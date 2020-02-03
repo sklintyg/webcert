@@ -43,6 +43,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
           enhetArendenFilterService.initLakareList(enhetArendenModel.enhetId);
 
           $scope.enhetArendenFilterModel = enhetArendenFilterModel;
+          $scope.vardenhetFilterModel = vardenhetFilterModel;
           $scope.showDateFromErrors = false;
           $scope.showDateToErrors = false;
 

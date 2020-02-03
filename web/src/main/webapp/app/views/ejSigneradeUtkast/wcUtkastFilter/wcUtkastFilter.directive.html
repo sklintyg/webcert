@@ -13,7 +13,7 @@
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
-  <div class="filter-field col-md-2" wc-authority="FILTRERA_PA_LAKARE" intygstyp="" id="filterFormSparatAv">
+  <div class="filter-field col-md-2" intygstyp="" id="filterFormSparatAv">
     <label>Sparat av</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
                  use-dynamic-label="false"></wc-dropdown>
@@ -30,7 +30,7 @@
     <span class="errorText" ng-if="filterForm.pnr.$invalid && filterForm.pnr.$touched && filterForm.pnr.$viewValue != ''"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
   </div>
 
-    <div class="filter-field date-group col-md-6">
+    <div class="filter-field date-group col-md-5">
       <label>Sparat datum</label><br>
       <label class="inline-label">Från</label>
       <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field  on-blur="setShowDateFromVisible()"
@@ -41,7 +41,7 @@
 
     </div>
 
-  <div class="filter-field col-md-6">
+  <div class="filter-field col-md-3">
     <div class="buttons">
       <button type="button" ng-disabled="filterForm.$invalid" id="uc-filter-btn" class="btn btn-success"
               uib-popover="Sök efter utkast."

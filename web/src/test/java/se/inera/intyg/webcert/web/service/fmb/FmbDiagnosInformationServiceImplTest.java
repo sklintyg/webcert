@@ -31,7 +31,6 @@ import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformatio
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall.TypFallBuilder.aTypFall;
 
-import com.google.common.collect.ImmutableList;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,12 +39,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableList;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -61,6 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FmbDiagnosInformationServiceImplTest {
@@ -81,12 +85,13 @@ public class FmbDiagnosInformationServiceImplTest {
     @InjectMocks
     private FmbDiagnosInformationServiceImpl diagnosInformationService;
 
+    private List<Period> PERIODS = Collections.emptyList();
+
     @Test
     public void validateSjukskrivningtidForPatientShouldReturnOK() {
 
         final int rekommenderad = 14;
-        final int foreslagen = 1;
-        final int tidigare = 12;
+        final int total = 12;
         final String sourceValue = "2";
         final String sourceUnit = "wk";
 
@@ -98,24 +103,22 @@ public class FmbDiagnosInformationServiceImplTest {
             .when(diagnosInformationRepository)
             .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 
-        doReturn(tidigare)
+        doReturn(total)
             .when(sjukfallService)
-            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class), any(List.class));
 
         doReturn(Optional.of(diagnosInformation))
             .when(diagnosInformationRepository)
             .findFirstByIcd10KodList_kod(anyString());
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
-            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
+            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), PERIODS);
 
         final MaximalSjukskrivningstidResponse response = diagnosInformationService.validateSjukskrivningtidForPatient(request);
 
         assertThat(response).isNotNull();
         assertThat(response.isOverskriderRekommenderadSjukskrivningstid()).isFalse();
-        assertThat(response.getForeslagenSjukskrivningstid()).isEqualTo(foreslagen);
-        assertThat(response.getTotalTidigareSjukskrivningstid()).isEqualTo(tidigare);
-        assertThat(response.getTotalSjukskrivningstidInklusiveForeslagen()).isEqualTo(tidigare + foreslagen);
+        assertThat(response.getTotalSjukskrivningstid()).isEqualTo(total);
         assertThat(response.getMaximaltRekommenderadSjukskrivningstidSource()).isEqualTo("2 veckor");
     }
 
@@ -123,8 +126,7 @@ public class FmbDiagnosInformationServiceImplTest {
     public void validateSjukskrivningtidForPatientShouldReturnNotOK() {
 
         final int rekommenderad = 7;
-        final int foreslagen = 1;
-        final int tidigare = 12;
+        final int total = 12;
         final String sourceValue = "1";
         final String sourceUnit = "wk";
 
@@ -136,24 +138,22 @@ public class FmbDiagnosInformationServiceImplTest {
             .when(diagnosInformationRepository)
             .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 
-        doReturn(tidigare)
+        doReturn(total)
             .when(sjukfallService)
-            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class), any(List.class));
 
         doReturn(Optional.of(diagnosInformation))
             .when(diagnosInformationRepository)
             .findFirstByIcd10KodList_kod(anyString());
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
-            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
+            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), PERIODS);
 
         final MaximalSjukskrivningstidResponse response = diagnosInformationService.validateSjukskrivningtidForPatient(request);
 
         assertThat(response).isNotNull();
         assertThat(response.isOverskriderRekommenderadSjukskrivningstid()).isTrue();
-        assertThat(response.getForeslagenSjukskrivningstid()).isEqualTo(foreslagen);
-        assertThat(response.getTotalTidigareSjukskrivningstid()).isEqualTo(tidigare);
-        assertThat(response.getTotalSjukskrivningstidInklusiveForeslagen()).isEqualTo(tidigare + foreslagen);
+        assertThat(response.getTotalSjukskrivningstid()).isEqualTo(total);
         assertThat(response.getMaximaltRekommenderadSjukskrivningstidSource()).isEqualTo("1 vecka");
     }
 
@@ -261,12 +261,12 @@ public class FmbDiagnosInformationServiceImplTest {
 
         doReturn(tidigare)
             .when(sjukfallService)
-            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class), any(List.class));
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
             Icd10KoderRequest.of("F314", null, null),
             Personnummer.createPersonnummer("191212121212").get(),
-            foreslagen);
+            PERIODS);
 
         doReturn(Optional.of(createDiagnosInformation("typfall1", "typfall2", icd10KodParent)))
             .when(diagnosInformationRepository)

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy',
-      function($timeout, UtkastProxy) {
+angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy', 'common.UserModel',
+      function($timeout, UtkastProxy, UserModel) {
         'use strict';
 
         return {
@@ -68,6 +68,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
 
             function resetFilterState() {
               $scope.filter.reset();
+              $scope.setDefaultSavedBy();
               // fiddle with the DOM to get rid of invalid data which isn't bind through the model
               angular.element('#filter-changedate-from').val('');
               angular.element('#filter-changedate-to').val('');
@@ -85,8 +86,18 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
               $scope.showDateToErrors = false;
             }
 
-            function loadSavedByList() {
+            $scope.setDefaultSavedBy = function() {
+              $scope.filter.selection.savedBy = undefined;
+              if(UserModel.isLakare()) {
+                $scope.widgetState.savedByList.forEach(function(lakare) {
+                  if (UserModel.user && lakare.id === UserModel.user.hsaId) {
+                    $scope.filter.selection.savedBy = UserModel.user.hsaId;
+                  }
+                });
+              }
+            };
 
+            function loadSavedByList() {
               $scope.widgetState.loadingSavedByList = true;
 
               UtkastProxy.getUtkastSavedByList(function(list) {
@@ -102,6 +113,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                 if ($scope.filter.savedByOptions.length === 1) {
                   $scope.filter.selection.savedBy = undefined;
                 }
+                $scope.setDefaultSavedBy();
               }, function() {
                 $scope.widgetState.loadingSavedByList = false;
                 $scope.widgetState.savedByList = [{

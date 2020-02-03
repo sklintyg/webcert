@@ -27,7 +27,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 
-import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -35,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -43,6 +43,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.Lists;
+
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
@@ -61,6 +64,7 @@ import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
@@ -77,8 +81,8 @@ import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 @RunWith(MockitoJUnitRunner.class)
 public class FmbSjukfallServiceImplTest {
 
-    private static final LocalDate START_DATUM = LocalDate.of(2018, 12, 12);
-    private static final LocalDate SLUT_DATUM = LocalDate.of(2028, 12, 12);
+    private static final LocalDate START_DATUM = LocalDate.of(2019, 12, 12);
+    private static final LocalDate SLUT_DATUM = LocalDate.of(2019, 12, 20);
     private static final LocalDateTime SIGNERING_TIDPUNKT = LocalDateTime.of(2018, 11, 11, 11, 11);
     private static final String INTYG_ID = "intyg-id";
     private static final String ROOT = "root";
@@ -114,13 +118,15 @@ public class FmbSjukfallServiceImplTest {
     @InjectMocks
     private FmbSjukfallServiceImpl fmbSjukfallService;
 
+    private List<Period> PERIODS = Collections.emptyList();
+
     @Test
     public void totalSjukskrivningstidForPatientAndCareUnit() {
 
         final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
         final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
 
-        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet();
+        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet(START_DATUM, SLUT_DATUM);
 
         doReturn(user)
             .when(webCertUserService)
@@ -135,13 +141,90 @@ public class FmbSjukfallServiceImplTest {
             .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
 
         final int tid = fmbSjukfallService
-            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get(), PERIODS);
 
         Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
 
         assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
-        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM));
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM)+1);
+
+    }
+
+    @Test
+    public void totalSjukskrivningstidForPatientAndCareUnitWithoutPreviousSickLeaves() {
+
+        final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+        final ListActiveSickLeavesForCareUnitResponseType response = createEmptyResponse();
+
+        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet(START_DATUM, SLUT_DATUM);
+
+        doReturn(user)
+            .when(webCertUserService)
+            .getUser();
+
+        doReturn(response)
+            .when(sickLeavesForCareUnit)
+            .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
+
+        doReturn(Collections.singletonList(sjukfallEnhet))
+            .when(sjukfallEngineService)
+            .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
+
+        final Period period = new Period();
+        period.setFrom(START_DATUM);
+        period.setTom(SLUT_DATUM);
+        period.setNedsattning(100);
+
+        final int tid = fmbSjukfallService
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get(), Arrays.asList(period));
+
+        Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
+        final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
+
+        assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM)+1);
+
+    }
+
+    @Test
+    public void totalSjukskrivningstidForPatientAndCareUnitChainOfSjukfall() {
+
+        final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+        final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
+
+        final LocalDate start1 = LocalDate.of(2019, 1, 1);
+        final LocalDate end1 = LocalDate.of(2019, 1, 5);
+        final SjukfallEnhet sjukfallEnhet1 = createSjukfallForEnhet(start1, end1);
+
+        final LocalDate start2 = LocalDate.of(2019, 1, 7);
+        final LocalDate end2 = LocalDate.of(2019, 1, 10);
+        final SjukfallEnhet sjukfallEnhet2 = createSjukfallForEnhet(start2, end2);
+
+        final LocalDate start3 = LocalDate.of(2019, 1, 11);
+        final LocalDate end3 = LocalDate.of(2019, 1, 15);
+        final SjukfallEnhet sjukfallEnhet3 = createSjukfallForEnhet(start3, end3);
+
+        doReturn(user)
+            .when(webCertUserService)
+            .getUser();
+
+        doReturn(response)
+            .when(sickLeavesForCareUnit)
+            .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
+
+        doReturn(Arrays.asList(sjukfallEnhet1, sjukfallEnhet2, sjukfallEnhet3))
+            .when(sjukfallEngineService)
+            .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
+
+        final int tid = fmbSjukfallService
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get(), PERIODS);
+
+        Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
+        final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
+
+        assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
+        assertThat(tid).isEqualTo(14);
 
     }
 
@@ -152,7 +235,7 @@ public class FmbSjukfallServiceImplTest {
         user.setValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getMottagningar().get(0));
         final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
 
-        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet();
+        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet(START_DATUM, SLUT_DATUM);
 
         doReturn(user)
             .when(webCertUserService)
@@ -167,24 +250,33 @@ public class FmbSjukfallServiceImplTest {
             .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
 
         final int tid = fmbSjukfallService
-            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get(), PERIODS);
 
         Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
 
         assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
-        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM));
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM) +1);
 
     }
 
-    private SjukfallEnhet createSjukfallForEnhet() {
+    private SjukfallEnhet createSjukfallForEnhet(LocalDate start, LocalDate slut) {
         SjukfallEnhet sjukfallEnhet = new SjukfallEnhet();
-        sjukfallEnhet.setStart(START_DATUM);
-        sjukfallEnhet.setSlut(SLUT_DATUM);
-        sjukfallEnhet.setDagar((int) DAYS.between(START_DATUM, SLUT_DATUM));
+        sjukfallEnhet.setStart(start);
+        sjukfallEnhet.setSlut(slut);
+        sjukfallEnhet.setDagar((int) DAYS.between(start, slut) +1);
         sjukfallEnhet.setAktivGrad(100);
 
         return sjukfallEnhet;
+    }
+
+    private ListActiveSickLeavesForCareUnitResponseType createEmptyResponse() {
+        ListActiveSickLeavesForCareUnitResponseType response = new ListActiveSickLeavesForCareUnitResponseType();
+        response.setIntygsLista(new IntygsLista());
+        response.setResultCode(ResultCodeEnum.OK);
+        response.setComment("kommentar");
+
+        return response;
     }
 
     private ListActiveSickLeavesForCareUnitResponseType createResponse() {
