@@ -18,8 +18,8 @@
 
       <wc-no-arenden-message ng-if="totalCount == 0"></wc-no-arenden-message>
 
-      <wc-list-dropdown  class="col-md-3 form-group"
-                          ng-show="listModel.totalCount > 10"
+      <wc-list-dropdown   class="col-md-3 form-group"
+                          ng-show="totalCount > 0 && listModel.totalCount > 10"
                           list-model="listModel"
                           filter-model="filterModel">
       </wc-list-dropdown>
@@ -86,9 +86,9 @@
       </div>
 
       <div ng-if="listModel.totalCount == 0 && totalCount > 0">Inga resultat att visa.</div>
-      <wc-list-number-of-hits ng-if="listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
+      <wc-list-number-of-hits ng-if="totalCount > 0 && listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
       <wc-list-page-numbers class="col-md-6"
-                            ng-show="(listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
+                            ng-show="totalCount > 0 && (listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
                             list-model="listModel"
                             filter-model="filterModel">
       </wc-list-page-numbers>

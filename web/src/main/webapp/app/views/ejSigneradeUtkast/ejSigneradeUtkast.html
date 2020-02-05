@@ -15,11 +15,12 @@
 
       <h1 class="page-heading1" ng-if="!widgetState.initialQueryWasEmpty">Intyg visas för {{widgetState.valdVardenhet.namn}} </h1>
 
+      <wc-utkast-filter filter="filter" on-search="onSearch()" on-reset="onReset()" ng-show="!widgetState.initialQueryWasEmpty"
+                        class="ng-hide"></wc-utkast-filter>
+
       <wc-spinner label="info.querydraft.inprogress" show-spinner="!widgetState.doneLoading">
 
 
-        <wc-utkast-filter filter="filter" on-search="onSearch()" on-reset="onReset()" ng-show="!widgetState.initialQueryWasEmpty"
-                          class="ng-hide"></wc-utkast-filter>
 
         <wc-spinner label="info.querydraft.inprogress" show-spinner="widgetState.runningQuery">
 
@@ -39,7 +40,7 @@
           </wc-alert-message>
 
           <wc-list-dropdown  class="col-md-3 form-group"
-                              ng-show="widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
+                              ng-show="widgetState.doneLoading && widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
                               list-model="widgetState"
                               filter-model="filter">
           </wc-list-dropdown>
@@ -54,10 +55,10 @@
             </div>
           </div>
 
-          <wc-list-number-of-hits ng-if="widgetState.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
+          <wc-list-number-of-hits ng-if="widgetState.doneLoading && widgetState.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
 
           <wc-list-page-numbers class="col-md-6"
-                                ng-show="(widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
+                                ng-show="widgetState.doneLoading && (widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
                                 list-model="widgetState"
                                 filter-model="filter">
           </wc-list-page-numbers>

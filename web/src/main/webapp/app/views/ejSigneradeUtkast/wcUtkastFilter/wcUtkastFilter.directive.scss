@@ -14,6 +14,19 @@ wc-utkast-filter {
     }
   }
 
+  #filter-changedate-from, #filter-changedate-to, #filter-person-id {
+    color: $wc-color-21;
+  }
+
+  input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty), .dateError input {
+    border-color: $wc-color-11 !important;
+    color: $wc-color-11 !important;
+  }
+
+  .dateError button {
+    border-color: $wc-color-11 !important;
+  }
+
   .filter-errors {
     padding-top: 10px;
 
