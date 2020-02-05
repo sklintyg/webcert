@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenFilter', [
   '$rootScope', '$log', '$cookies',
   'webcert.enhetArendenProxy',
-  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterService',
+  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterService', 'common.UserModel',
   function($rootScope, $log, $cookies,
       enhetArendenProxy,
-      enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService) {
+      enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService, UserModel) {
     'use strict';
 
     return {
@@ -33,6 +33,10 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
       scope: {},
       templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
       controller: function($scope) {
+
+        $scope.getAlwaysHighlightedSigneratAv = function() {
+            return UserModel.isLakare();
+        };
 
         $scope.maxdate = moment().format('YYYY-MM-DD');
 
@@ -46,6 +50,10 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
           $scope.vardenhetFilterModel = vardenhetFilterModel;
           $scope.showDateFromErrors = false;
           $scope.showDateToErrors = false;
+
+          $scope.showDateError = function () {
+            return ($scope.showDateFromErrors || $scope.showDateToErrors) && $scope.filterForm.$invalid && !$scope.filterForm.$pristine;
+          };
 
           $scope.setShowDateFromVisible = function() {
             $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
