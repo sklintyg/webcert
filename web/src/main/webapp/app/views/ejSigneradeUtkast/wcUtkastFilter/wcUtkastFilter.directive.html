@@ -16,7 +16,7 @@
   <div class="filter-field col-md-2" intygstyp="" id="filterFormSparatAv">
     <label>Sparat av</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
-                 use-dynamic-label="false" always-highlighted="getAlwaysHighlightedSparatAv()">
+                 use-dynamic-label="false" show-highlight="!widgetState.loadingSavedByList" always-highlighted="!widgetState.loadingSavedByList && getAlwaysHighlightedSparatAv()">
     </wc-dropdown>
   </div>
 
