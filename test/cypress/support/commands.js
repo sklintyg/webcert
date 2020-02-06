@@ -21,6 +21,10 @@ export const implementeradeIntyg = {
     DB: "DB",
     DOI: "DOI"
 }
+function generateQuickGuid() {
+    return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+}
 
 function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
     expect(vårdpersonal).to.exist;
@@ -145,7 +149,7 @@ function skapaUtkast(fx, intygstyp) {
             // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
             cy.wrap(certificateId).then((id) => {
                 return id;
-            })
+            });
         });
     });
 }
@@ -648,11 +652,421 @@ function skapaKomplettering(fx) {
             });
         });
 }
+function skickaRegisterLisjp(fx) {
 
-function generateQuickGuid() {
-    return Math.random().toString(36).substring(2, 15) +
-        Math.random().toString(36).substring(2, 15);
+    const vårdpersonal = fx.vårdpersonal;
+    const vårdtagare = fx.vårdtagare;
+    const vårdenhet = fx.vårdenhet;
+    const intygsID = "LISJP" +generateQuickGuid();
+    const intygsUrl = Cypress.env('intygTjanstUrl') + "/inera-certificate/register-certificate-se/v3.0"
+    cy.log(intygsID);
+    expect(vårdpersonal).to.exist;
+    expect(vårdtagare).to.exist;
+    expect(vårdenhet).to.exist;
+    //expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
+    //cy.log(vårdtagare.personnummerKompakt + vårdtagare.förnamn +vårdtagare.efternamn + vårdtagare.postadress + vårdtagare.postnummer + vårdtagare.postort);
+    cy.request({
+        method: 'POST',
+        url: intygsUrl,
+        body:'<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+        <soap:Header>\
+        <ns7:LogicalAddress  xmlns:ns7="urn:riv:itintegration:registry:1" xmlns:ns6="urn:riv:clinicalprocess:healthcond:certificate:3.2" xmlns:ns5="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:ns4="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:dsf="http://www.w3.org/2002/06/xmldsig-filter2 " xmlns:ds="http://www.w3.org/2000/09/xmldsig#"></ns7:LogicalAddress>\
+        </soap:Header>\
+        <soap:Body>\
+            <ns4:RegisterCertificate  xmlns:ds="http://www.w3.org/2000/09/xmldsig# " xmlns:dsf="http://www.w3.org/2002/06/xmldsig-filter2 " xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:ns4="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3" xmlns:ns5="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:ns6="urn:riv:clinicalprocess:healthcond:certificate:3.2" xmlns:ns7="urn:riv:itintegration:registry:1">\
+                <ns4:intyg>\
+                    <ns3:intygs-id>\
+                        <ns5:root>'+ vårdenhet.id +'</ns5:root>\
+                        <ns5:extension>'+ intygsID +'</ns5:extension>\
+                    </ns3:intygs-id>\
+                    <ns3:typ>\
+                        <ns5:code>LISJP</ns5:code>\
+                        <ns5:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</ns5:codeSystem>\
+                        <ns5:displayName>Läkarintyg för sjukpenning</ns5:displayName>\
+                    </ns3:typ>\
+                    <ns3:version>1.1</ns3:version>\
+                    <ns3:signeringstidpunkt>2020-02-02T08:39:40</ns3:signeringstidpunkt>\
+                    <ns3:skickatTidpunkt>2020-02-02T08:39:40</ns3:skickatTidpunkt>\
+                    <ns3:patient>\
+                        <ns3:person-id>\
+                            <ns5:root>1.2.752.129.2.1.3.1</ns5:root>\
+                            <ns5:extension>'+ vårdtagare.personnummerKompakt +'</ns5:extension>\
+                        </ns3:person-id>\
+                        <ns3:fornamn/>\
+                        <ns3:efternamn/>\
+                        <ns3:postadress/>\
+                        <ns3:postnummer/>\
+                        <ns3:postort/>\
+                    </ns3:patient>\
+                    <ns3:skapadAv>\
+                        <ns3:personal-id>\
+                            <ns5:root>1.2.752.129.2.1.4.1</ns5:root>\
+                            <ns5:extension>'+  vårdpersonal.id +'</ns5:extension>\
+                        </ns3:personal-id>\
+                        <ns3:fullstandigtNamn>'+ vårdpersonal.förnamn + " " + vårdpersonal.efternamn + intygsID +'</ns3:fullstandigtNamn>\
+                        <ns3:forskrivarkod>0000000</ns3:forskrivarkod>\
+                        <ns3:befattning>\
+                            <ns5:code>203090</ns5:code>\
+                            <ns5:codeSystem>1.2.752.129.2.2.1.4</ns5:codeSystem>\
+                            <ns5:displayName>Läkare legitimerad, annan</ns5:displayName>\
+                        </ns3:befattning>\
+                        <ns3:enhet>\
+                            <ns3:enhets-id>\
+                                <ns5:root>1.2.752.129.2.1.4.1</ns5:root>\
+                                <ns5:extension>' + vårdenhet.id +'</ns5:extension>\
+                            </ns3:enhets-id>\
+                            <ns3:arbetsplatskod>\
+                                <ns5:root>1.2.752.29.4.71</ns5:root>\
+                                <ns5:extension>0000000</ns5:extension>\
+                            </ns3:arbetsplatskod>\
+                            <ns3:enhetsnamn>Ivars integrationsenhet 2</ns3:enhetsnamn>\
+                            <ns3:postadress>Bryggaregatan 11</ns3:postadress>\
+                            <ns3:postnummer>65340</ns3:postnummer>\
+                            <ns3:postort>Karlstad</ns3:postort>\
+                            <ns3:telefonnummer>054100000</ns3:telefonnummer>\
+                            <ns3:epost>intygnmt@nordicmedtest.se</ns3:epost>\
+                            <ns3:vardgivare>\
+                                <ns3:vardgivare-id>\
+                                    <ns5:root>1.2.752.129.2.1.4.1</ns5:root>\
+                                    <ns5:extension>' +  vårdenhet.vårdgivareId +'</ns5:extension>\
+                                </ns3:vardgivare-id>\
+                                <ns3:vardgivarnamn>VG_TestAutomation</ns3:vardgivarnamn>\
+                            </ns3:vardgivare>\
+                        </ns3:enhet>\
+                    </ns3:skapadAv>\
+                    <ns3:svar id="27">\
+                        <ns3:delsvar id="27.1">false</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="1">\
+                        <ns3:instans>1</ns3:instans>\
+                        <ns3:delsvar id="1.1">\
+                            <ns5:cv>\
+                                <ns5:code>UNDERSOKNING</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0001</ns5:codeSystem>\
+                                <ns5:displayName>Min undersökning av patienten</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="1.2">2020-02-03</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="1">\
+                        <ns3:instans>2</ns3:instans>\
+                        <ns3:delsvar id="1.1">\
+                            <ns5:cv>\
+                                <ns5:code>TELEFONKONTAKT</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0001</ns5:codeSystem>\
+                                <ns5:displayName>Min telefonkontakt med patienten</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="1.2">2018-12-03</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="1">\
+                        <ns3:instans>3</ns3:instans>\
+                        <ns3:delsvar id="1.1">\
+                            <ns5:cv>\
+                                <ns5:code>JOURNALUPPGIFTER</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0001</ns5:codeSystem>\
+                                <ns5:displayName>Journaluppgifter från den</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="1.2">2018-12-03</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="1">\
+                        <ns3:instans>4</ns3:instans>\
+                        <ns3:delsvar id="1.1">\
+                            <ns5:cv>\
+                                <ns5:code>ANNAT</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0001</ns5:codeSystem>\
+                                <ns5:displayName>Annat</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="1.2">2018-12-03</ns3:delsvar>\
+                        <ns3:delsvar id="1.3">Journal from down below</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="28">\
+                        <ns3:instans>1</ns3:instans>\
+                        <ns3:delsvar id="28.1">\
+                            <ns5:cv>\
+                                <ns5:code>NUVARANDE_ARBETE</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0002</ns5:codeSystem>\
+                                <ns5:displayName>Nuvarande arbete</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="28">\
+                        <ns3:instans>2</ns3:instans>\
+                        <ns3:delsvar id="28.1">\
+                            <ns5:cv>\
+                                <ns5:code>ARBETSSOKANDE</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0002</ns5:codeSystem>\
+                                <ns5:displayName>Arbetssökande</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="28">\
+                        <ns3:instans>3</ns3:instans>\
+                        <ns3:delsvar id="28.1">\
+                            <ns5:cv>\
+                                <ns5:code>FORALDRALEDIG</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0002</ns5:codeSystem>\
+                                <ns5:displayName>Föräldraledighet för vård av barn</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="28">\
+                        <ns3:instans>4</ns3:instans>\
+                        <ns3:delsvar id="28.1">\
+                            <ns5:cv>\
+                                <ns5:code>STUDIER</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0002</ns5:codeSystem>\
+                                <ns5:displayName>Studier</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="29">\
+                        <ns3:delsvar id="29.1">Blomplockare på fritiden endast</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="6">\
+                        <ns3:delsvar id="6.2">\
+                            <ns5:cv>\
+                                <ns5:code>S47</ns5:code>\
+                                <ns5:codeSystem>1.2.752.116.1.1.1.1.3</ns5:codeSystem>\
+                                <ns5:displayName>Klämskada på skuldra och överarm</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="6.1">Klämskada på skuldra och överarm</ns3:delsvar>\
+                        <ns3:delsvar id="6.4">\
+                            <ns5:cv>\
+                                <ns5:code>Y1113</ns5:code>\
+                                <ns5:codeSystem>1.2.752.116.1.1.1.1.3</ns5:codeSystem>\
+                                <ns5:displayName>Förgiftning med och exponering för antiepileptika, lugnande läkemedel och sömnmedel, medel mot parkinsonism samt psykotropa läkemedel som ej klassificeras annorstädes, med oklar avsikt-institutionellt boende-annan sysselsättning</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="6.3">Förgiftning med och exponering för antiepileptika, lugnande läkemedel och sömnmedel, medel mot parkinsonism samt psykotropa läkemedel som ej klassificeras annorstädes, med oklar avsikt-institutionellt boende-annan sysselsättning</ns3:delsvar>\
+                        <ns3:delsvar id="6.6">\
+                            <ns5:cv>\
+                                <ns5:code>M659B</ns5:code>\
+                                <ns5:codeSystem>1.2.752.116.1.1.1.1.3</ns5:codeSystem>\
+                                <ns5:displayName>Ospecifik synovit/tenosynovit i axelled/överarm</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="6.5">Ospecifik synovit/tenosynovit i axelled/överarm</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="35">\
+                        <ns3:delsvar id="35.1">Problem som påverkar patientens möjlighet att utföra sin sysselsättning:Energinivå, motivation, aptit, begär, impulskontroll - Sömn - Uppmärksamhet - Smärta - Ledrörlighet - Muskelkraft - MuskeluthållighetKan inte plocka blommor.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="17">\
+                        <ns3:delsvar id="17.1">Svårigheter som påverkar patientens sysselsättning:Lyfta och bära föremål - Användning av hand och arm - Hantera stress och andra psykologiska krav - Använda handens finmotorik - Tvätta sig - Sköta toalettbehov - Klä sig - Sköta sin hälsaSe föregående.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="19">\
+                        <ns3:delsvar id="19.1">Smörjer med diverse krämer.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="20">\
+                        <ns3:delsvar id="20.1">Mer krämer.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="32">\
+                        <ns3:instans>1</ns3:instans>\
+                        <ns3:delsvar id="32.1">\
+                            <ns5:cv>\
+                                <ns5:code>HELT_NEDSATT</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0003</ns5:codeSystem>\
+                                <ns5:displayName>100%</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="32.2">\
+                            <ns5:datePeriod>\
+                                <ns5:start>2018-07-01</ns5:start>\
+                                <ns5:end>2020-01-01</ns5:end>\
+                            </ns5:datePeriod>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                            <ns3:svar id="37">\
+                        <ns3:delsvar id="37.1">Det krävdes mer kräm.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="34">\
+                        <ns3:delsvar id="34.1">true</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="39">\
+                        <ns3:delsvar id="39.1">\
+                            <ns5:cv>\
+                                <ns5:code>ATER_X_ANTAL_DGR</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0006</ns5:codeSystem>\
+                                <ns5:displayName>Patienten kommer med stor sannolikhet att återgå helt i nuvarande sysselsättning efter x antal dagar</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                        <ns3:delsvar id="39.3">\
+                            <ns5:cv>\
+                                <ns5:code>NITTIO_DGR</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0007</ns5:codeSystem>\
+                                <ns5:displayName>90 dagar</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>1</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>ARBETSTRANING</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Arbetsträning</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>2</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>ARBETSANPASSNING</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Arbetsanpassning</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>3</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>SOKA_NYTT_ARBETE</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Söka nytt arbete</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>4</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>BESOK_ARBETSPLATS</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Besök på arbetsplatsen</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>5</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>ERGONOMISK</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Ergonomisk bedömning</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>6</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>HJALPMEDEL</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Hjälpmedel</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>7</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>KONFLIKTHANTERING</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Konflikthantering</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>8</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>KONTAKT_FHV</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Kontakt med företagshälsovård</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>9</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>OMFORDELNING</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Omfördelning av arbetsuppgifter</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="40">\
+                        <ns3:instans>10</ns3:instans>\
+                        <ns3:delsvar id="40.1">\
+                            <ns5:cv>\
+                                <ns5:code>OVRIGA_ATGARDER</ns5:code>\
+                                <ns5:codeSystem>KV_FKMU_0004</ns5:codeSystem>\
+                                <ns5:displayName>Övrigt</ns5:displayName>\
+                            </ns5:cv>\
+                        </ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="44">\
+                        <ns3:delsvar id="44.1">Träna på att arbeta.</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="25">\
+                        <ns3:delsvar id="25.1">!#$%&amp;*+,-./0123456789:&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^)_`abcdefghijklmnopqrstuvwxyz{|}~¡¢£¤¥¦§¨©ª«¬¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ)</ns3:delsvar>\
+                    </ns3:svar>\
+                    <ns3:svar id="26">\
+                        <ns3:delsvar id="26.1">true</ns3:delsvar>\
+                        <ns3:delsvar id="26.2">Har väntat 12 år på att få öppna min löfbergs lila</ns3:delsvar>\
+                    </ns3:svar>\
+                </ns4:intyg>\
+            </ns4:RegisterCertificate>\
+        </soap:Body>\
+    </soap:Envelope>'
+    }).then((resp) => {
+        expect(resp.status).to.equal(200);
+
+        cy.wrap(resp).its('body').then((body) => {
+
+            // Check för att konstatera att responsen på tjänsteanropet innehåller resultCode och att värdet är OK
+            expect(body).to.contain("resultCode");
+            
+            var resultCodeStart = "<ns3:resultCode>"
+            var resultCodeEnd = "</ns3:resultCode>"
+            var resultCodeStartIdx = body.indexOf(resultCodeStart);
+            var resultCodeEndIdx = body.indexOf(resultCodeEnd);
+            var resultCode = body.substring(resultCodeStartIdx + resultCodeStart.length, resultCodeEndIdx);
+            expect(resultCode).to.equal("OK");
+            cy.log(resultCode);
+            
+            // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
+            cy.wrap(resultCode).then((result) => {
+                if(result == 'OK'){
+                    return intygsID;
+                }
+            });
+            
+        });
+    });
 }
+function taBortIntyg(fx) {
+   
+    const intygsID = fx.intygsID
+    const intygsUrl = Cypress.env('intygTjanstUrl') + "/inera-certificate/resources/certificate/" + intygsID;
+ 
+     cy.log(intygsID);
+    cy.request({
+        method: 'DELETE',
+        url: intygsUrl,
+        }).then((resp) =>{
+            expect(resp.status).to.equal(200);
+    });        
+            
+}
+Cypress.Commands.add("taBortIntyg", fx => {
+    taBortIntyg(fx);   
+
+});
+Cypress.Commands.add("skickaRegisterLisjp", fx => {
+    skickaRegisterLisjp(fx);   
+
+});
+
+//Cypress.Commands.add("generateQuickGuid",() =>{
+  //  return generateQuickGuid();
+//});
 Cypress.Commands.add("skapaKomplettering", fx => {
     return skapaKomplettering(fx);
 });     
