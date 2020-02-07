@@ -206,6 +206,13 @@ public class JsLogApiController extends AbstractApiController {
                     request.getInfo().get(CAREGIVER_ID),
                     request.getInfo().get(CARE_UNIT_ID));
                 break;
+            case SRS_MEASURES_DISPLAYED:
+                monitoringService.logSrsMeasuresDisplayed(
+                        request.getInfo().get(USER_CLIENT_CONTEXT),
+                        request.getInfo().get(INTYG_ID),
+                        request.getInfo().get(CAREGIVER_ID),
+                        request.getInfo().get(CARE_UNIT_ID));
+                break;
             default:
                 return status(BAD_REQUEST).build();
         }

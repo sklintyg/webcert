@@ -371,6 +371,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logSrsMeasuresDisplayed(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
+        logEvent(MonitoringEvent.SRS_MEASURES_DISPLAYED, userClientContext, intygsId, caregiverId, careUnitId);
+    }
+
+    @Override
     public void logSamlStatusForFailedLogin(String issuer, String samlStatus) {
         logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
     }
@@ -459,6 +464,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             "SRS statistics tab activated in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_STATISTICS_LINK_CLICKED(
             "SRS statistics link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+        SRS_MEASURES_DISPLAYED("SRS measures displayed in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
 
