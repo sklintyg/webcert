@@ -19,40 +19,38 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
-  xmlns:cxf="http://cxf.apache.org/core" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-  xmlns:http="http://cxf.apache.org/transports/http/configuration"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:cxf="http://cxf.apache.org/core" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
         http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
         http://cxf.apache.org/transports/http/configuration
                 http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-  <context:annotation-config />
+  <context:annotation-config/>
 
-  <import resource="classpath:fk-stub-context.xml" />
-  <import resource="classpath:fmb-stub-context.xml" />
-  <import resource="classpath:hsa-stub-context.xml" />
-  <import resource="classpath:tak-stub-context.xml" />
-  <import resource="classpath:pu-stub-context.xml" />
-  <import resource="classpath:ia-stub-context.xml" />
-  <import resource="classpath:srs-stub-context.xml" />
-  <import resource="classpath:pp-stub-context.xml" />
-  <import resource="classpath:grp-stub-context.xml" />
-  <import resource="classpath:nias-stub-context.xml" />
-  <import resource="classpath:/mail-stub-testability-api-context.xml" />
-  <import resource="classpath:/intygstjanst-stub-context.xml" />
-  <import resource="classpath:/loggtjanst-stub-context.xml" />
+  <import resource="classpath:fk-stub-context.xml"/>
+  <import resource="classpath:fmb-stub-context.xml"/>
+  <import resource="classpath:hsa-stub-context.xml"/>
+  <import resource="classpath:tak-stub-context.xml"/>
+  <import resource="classpath:pu-stub-context.xml"/>
+  <import resource="classpath:ia-stub-context.xml"/>
+  <import resource="classpath:srs-stub-context.xml"/>
+  <import resource="classpath:pp-stub-context.xml"/>
+  <import resource="classpath:grp-stub-context.xml"/>
+  <import resource="classpath:nias-stub-context.xml"/>
+  <import resource="classpath:/mail-stub-testability-api-context.xml"/>
+  <import resource="classpath:/intygstjanst-stub-context.xml"/>
+  <import resource="classpath:/loggtjanst-stub-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
-<!--  <import resource="classpath:/webcert-testability-api-context.xml" /> -->
-  <import resource="classpath:/swagger-api-context.xml" />
+  <!--  <import resource="classpath:/webcert-testability-api-context.xml" /> -->
+  <import resource="classpath:/swagger-api-context.xml"/>
 
   <cxf:bus>
     <cxf:features>
-      <cxf:logging />
+      <cxf:logging/>
     </cxf:features>
   </cxf:bus>
 
@@ -60,8 +58,8 @@
   <jaxws:endpoint address="/create-draft-certificate/v3.0" implementor="se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
-        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/clinicalprocess-healthcond-3/create-draft-certificate.xslt" />
+          class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/clinicalprocess-healthcond-3/create-draft-certificate.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
@@ -78,8 +76,8 @@
   <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.ReceiveQuestionResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
-        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/receive-question.xslt" />
+          class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/receive-question.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
@@ -87,8 +85,8 @@
   <jaxws:endpoint address="/receive-answer/v1.0" implementor="se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.ReceiveAnswerResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
-        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/receive-answer.xslt" />
+          class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/receive-answer.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
@@ -97,7 +95,7 @@
     <jaxws:outFaultInterceptors>
       <bean
           class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/get-privatepractitioner-terms.xslt" />
+        <constructor-arg value="transform/get-privatepractitioner-terms.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
@@ -105,7 +103,7 @@
   <jaxws:endpoint address="/send-message-to-care/v2.0" implementor="se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare.SendMessageToCareResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/clinicalprocess-healthcond-3/send-message-to-care.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-3/send-message-to-care.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
@@ -125,7 +123,7 @@
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/xmldsig-core-schema_0.1.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/xmldsig-filter2.xsd</jaxws:schemaLocation>
-      <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.2.xsd</jaxws:schemaLocation>
+      <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.3.xsd</jaxws:schemaLocation>
     </jaxws:schemaLocations>
   </jaxws:endpoint>
 

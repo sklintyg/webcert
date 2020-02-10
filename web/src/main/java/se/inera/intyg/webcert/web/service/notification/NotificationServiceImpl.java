@@ -312,7 +312,7 @@ public class NotificationServiceImpl implements NotificationService {
                 SchemaVersion.VERSION_3, reference, null, null);
 
             save(notificationMessage, careUnitId, careGiverId,
-                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
+                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null, null);
 
             send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
@@ -356,8 +356,9 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
             version, reference, amneskod, sistaDatumForSvar);
 
+        String hanteratAv = utkast.getSenastSparadAv().getHsaId();
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
-            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
+            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar, hanteratAv);
 
         send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
@@ -429,7 +430,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-        ArendeAmne amne, LocalDate sistaDatumForSvar) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar, String hanteratAv) {
 
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
@@ -440,6 +441,7 @@ public class NotificationServiceImpl implements NotificationService {
         handelse.setVardgivarId(vardgivarId);
         handelse.setAmne(amne);
         handelse.setSistaDatumForSvar(sistaDatumForSvar);
+        handelse.setHanteratAv(hanteratAv);
 
         handelseRepo.save(handelse);
     }

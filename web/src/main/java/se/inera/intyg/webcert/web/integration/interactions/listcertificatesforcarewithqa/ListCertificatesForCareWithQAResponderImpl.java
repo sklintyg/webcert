@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -124,6 +125,9 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         }
         res.setSistaDatumForSvar(e.getSistaDatumForSvar());
         res.setTidpunkt(e.getTimestamp());
+        if (e.getHanteratAv() != null) {
+            res.setHanteratAv(InternalConverterUtil.getHsaId(e.getHanteratAv()));
+        }
 
         return res;
     }
