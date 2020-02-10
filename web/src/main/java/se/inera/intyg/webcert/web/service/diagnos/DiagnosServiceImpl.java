@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
@@ -45,7 +44,6 @@ import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory;
  * @author npet
  */
 @Service
-@Transactional(readOnly = true)
 public class DiagnosServiceImpl implements DiagnosService {
 
     /**
