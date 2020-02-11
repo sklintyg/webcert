@@ -242,7 +242,7 @@ public final class AccessServiceEvaluation {
      * @param isTestCertificate If certificate is a test certificate or not.
      * @return AccessServiceEvaluation
      */
-    public AccessServiceEvaluation checkTestTestCertificate(boolean isTestCertificate) {
+    public AccessServiceEvaluation checkTestCertificate(boolean isTestCertificate) {
         this.checkTestCertificate = isTestCertificate;
         this.isTestCertificate = isTestCertificate;
         return this;
