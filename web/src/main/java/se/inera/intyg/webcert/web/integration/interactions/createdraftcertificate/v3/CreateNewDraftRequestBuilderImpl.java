@@ -19,11 +19,14 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -31,6 +34,7 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
@@ -41,6 +45,10 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
@@ -51,9 +59,11 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
         Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
 
+        final Patient patient = TransportConverterUtil.getPatient(intyg.getPatient(), true);
+        patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
+
         return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,
-            null, hosPerson,
-            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef(), forifyllnad);
+            null, hosPerson, patient, intyg.getRef(), forifyllnad);
     }
 
     private Optional<Forifyllnad> getOptionalForifyllnadIfApplicable(String intygsType, Forifyllnad forifyllnad, IntygUser user) {
