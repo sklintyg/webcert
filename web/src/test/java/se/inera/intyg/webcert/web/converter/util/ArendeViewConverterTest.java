@@ -29,9 +29,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -44,6 +41,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +50,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.collect.ImmutableList;
+
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
@@ -134,6 +137,7 @@ public class ArendeViewConverterTest {
                     .setSekretessmarkering(false)
                     .setPatientNameChangedInPU(false)
                     .setPatientAddressChangedInPU(false)
+                    .setTestIntyg(false)
                     .build());
     }
 

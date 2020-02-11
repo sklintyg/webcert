@@ -40,8 +40,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -53,10 +51,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -70,6 +70,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -1032,6 +1036,7 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygsTyp(intygTyp);
         utkast.setIntygTypeVersion(intygTypVersion);
+        utkast.setPatientPersonnummer(personnummer);
         utkast.setRelationKod(RelationKod.KOMPLT);
         utkast.setRelationIntygsId(relationIntygId);
         utkast.setModel(json);
@@ -1087,6 +1092,7 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygsTyp(intygTyp);
         utkast.setIntygTypeVersion(intygTypVersion);
+        utkast.setPatientPersonnummer(personnummer);
         utkast.setModel(json);
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(

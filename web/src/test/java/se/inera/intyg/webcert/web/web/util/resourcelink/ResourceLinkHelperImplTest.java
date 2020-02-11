@@ -198,6 +198,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
         expectedLinks.add(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
         expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+        expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
         expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
@@ -224,6 +225,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(false).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
         doReturn(false).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
         doReturn(false).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToApproveReceivers(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToCreateQuestion(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
@@ -274,6 +277,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
         expectedLinks.add(new ActionLink(ActionLinkType.ERSATT_INTYG));
         expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
+        expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
         expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
@@ -300,6 +304,7 @@ public class ResourceLinkHelperImplTest {
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
             .setUtlatande(utlatande)
+            .setTestIntyg(false)
             .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
@@ -361,6 +366,7 @@ public class ResourceLinkHelperImplTest {
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
             .setUtlatande(utlatande)
+            .setTestIntyg(false)
             .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
