@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
+
 import javax.validation.constraints.NotNull;
+
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -64,6 +66,7 @@ public final class AccessServiceEvaluation {
     private boolean checkInactiveCareUnit;
     private boolean checkRenew;
     private boolean checkPatientSecrecy;
+    private boolean checkPatientTestIndicator;
     private boolean checkUnique;
     private boolean checkUniqueOnlyCertificate;
     private boolean checkUnit;
@@ -72,6 +75,8 @@ public final class AccessServiceEvaluation {
     private boolean allowRenewForSameUnit;
     private boolean allowInactiveForSameUnit;
     private boolean allowDeceasedForSameUnit;
+    private boolean checkTestCertificate;
+    private boolean isTestCertificate;
 
     private List<String> excludeRenewCertificateTypes = new ArrayList<>();
     private List<String> excludeUnitCertificateTypes = new ArrayList<>();
@@ -224,6 +229,26 @@ public final class AccessServiceEvaluation {
     }
 
     /**
+     * Consider if patient has testIndicator flag when evaluating.
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation checkPatientTestIndicator() {
+        this.checkPatientTestIndicator = true;
+        return this;
+    }
+
+    /**
+     * Consider if certificate is flagged as a test certificate.
+     * @param isTestCertificate If certificate is a test certificate or not.
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation checkTestTestCertificate(boolean isTestCertificate) {
+        this.checkTestCertificate = isTestCertificate;
+        this.isTestCertificate = isTestCertificate;
+        return this;
+    }
+
+    /**
      * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
      *
      * @param allowForSameUnit Allow handling (if all other criterias are met) when use ris on the same unit.
@@ -341,6 +366,14 @@ public final class AccessServiceEvaluation {
                 invalidDeceasedCertificateTypes);
         }
 
+        if (checkPatientTestIndicator && !accessResult.isPresent()) {
+            accessResult = isPatientTestIndicated(patient);
+        }
+
+        if (checkTestCertificate && !accessResult.isPresent()) {
+            accessResult = isTestCertificate(isTestCertificate);
+        }
+
         if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
             accessResult = isInactiveUnitRuleValid(user, careUnit.getEnhetsid(), allowInactiveForSameUnit);
         }
@@ -415,6 +448,21 @@ public final class AccessServiceEvaluation {
             }
         }
 
+        return Optional.empty();
+    }
+
+    private Optional<AccessResult> isPatientTestIndicated(Personnummer patient) {
+        if (patientDetailsResolver.isTestIndicator(patient)) {
+            return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT, createMessage("Patient has Test Indicator")));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<AccessResult> isTestCertificate(boolean isTestCertificate) {
+        if (isTestCertificate) {
+            return Optional.of(AccessResult.create(AccessResultCode.TEST_CERTIFICATE,
+                createMessage("Certificate is flagged as test certificate")));
+        }
         return Optional.empty();
     }
 

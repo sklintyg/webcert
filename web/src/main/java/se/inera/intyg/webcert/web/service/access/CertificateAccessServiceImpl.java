@@ -29,9 +29,7 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -57,22 +55,22 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToRead(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .careUnit(vardenhet)
-            .patient(personnummer)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientSecrecy()
             .checkUnit(true, true)
             .evaluate();
     }
 
     @Override
-    public AccessResult allowToReplace(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToReplace(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
-            .careUnit(vardenhet)
-            .patient(personnummer)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
             .checkPatientDeceased(false)
             .checkInactiveCareUnit(false)
@@ -85,12 +83,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToRenew(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
             .checkInactiveCareUnit(false)
             .checkRenew(false)
@@ -100,13 +98,13 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient, boolean isEmployer) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToPrint(AccessEvaluationParameters accessEvaluationParameters, boolean isEmployer) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .featureIf(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT, isEmployer)
             .featureIf(AuthoritiesConstants.FEATURE_UTSKRIFT, !isEmployer)
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
@@ -116,12 +114,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToInvalidate(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToInvalidate(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
@@ -131,12 +129,14 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToSend(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToSend(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -145,13 +145,31 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+            .privilege(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(false)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
+    }
+
+    @Override
+    public AccessResult allowToCreateQuestion(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -160,15 +178,17 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient,
+    public AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters,
             boolean newCertificate) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -177,13 +197,15 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -192,12 +214,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToReadQuestions(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToReadQuestions(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_LASA_FRAGA)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .excludeCertificateTypesForDeceased(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID,
                 LuaenaEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID)
@@ -213,13 +235,15 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToForwardQuestions(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -228,13 +252,15 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToSetComplementAsHandled(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD)
-                .careUnit(careUnit)
-                .patient(patient)
+                .careUnit(accessEvaluationParameters.getUnit())
+                .patient(accessEvaluationParameters.getPatient())
                 .checkPatientDeceased(true)
+                .checkPatientTestIndicator()
+                .checkTestTestCertificate(accessEvaluationParameters.isTestCertificate())
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
                 .checkPatientSecrecy()

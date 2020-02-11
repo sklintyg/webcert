@@ -118,5 +118,10 @@ public enum ActionLinkType {
     /**
      * Set complement question as handled.
      */
-    MARKERA_KOMPLETTERING_SOM_HANTERAD
+    MARKERA_KOMPLETTERING_SOM_HANTERAD,
+
+    /**
+     * Select receivers of certificates.
+     */
+    GODKANNA_MOTTAGARE;
 }

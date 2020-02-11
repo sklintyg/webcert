@@ -79,5 +79,15 @@ public enum AccessResultCode {
     /**
      * No Access. Not allowed due to feature or privilege missing.
      */
-    AUTHORIZATION_VALIDATION
+    AUTHORIZATION_VALIDATION,
+
+    /**
+     * No access. Not allowed to perform action when Patient is Test indicated.
+     */
+    TEST_INDICATED_PATIENT,
+
+    /**
+     * No access. Not allowed to perform action when certificate is flagged as a test certificate.
+     */
+    TEST_CERTIFICATE;
 }
