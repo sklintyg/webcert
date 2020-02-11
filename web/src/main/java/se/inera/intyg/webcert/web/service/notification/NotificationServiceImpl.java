@@ -341,11 +341,12 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
+        String hanteratAv = utkast.getSenastSparadAv().getHsaId();
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), hanteratAv);
     }
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-        ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version, String hanteratAv) {
         Amneskod amneskod = null;
         if (amne != null) {
             amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
@@ -356,7 +357,6 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
             version, reference, amneskod, sistaDatumForSvar);
 
-        String hanteratAv = utkast.getSenastSparadAv().getHsaId();
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
             utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar, hanteratAv);
 
@@ -383,7 +383,7 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), null);
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
