@@ -138,6 +138,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             populatePatientDetailsFromPatient(utkast, patient);
         }
 
+        utkast.setTestIntyg(copyRequest.isTestIntyg());
+
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
         builderResponse.setUtkast(utkast);
@@ -220,6 +222,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             populatePatientDetailsFromUtkast(utkast, orgUtkast);
         }
 
+        utkast.setTestIntyg(copyRequest.isTestIntyg());
+
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
         builderResponse.setUtkast(utkast);
@@ -265,6 +269,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);
         newDraftCopyHolder.setIntygTypeVersion(copyRequest.getTypVersion());
+        newDraftCopyHolder.setTestIntyg(copyRequest.isTestIntyg());
 
         if (person != null) {
             Patient patient = new Patient();
@@ -277,6 +282,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             patient.setPostort(person.getPostort());
             patient.setFullstandigtNamn(
                 IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
+            patient.setTestIndicator(person.isTestIndicator());
             newDraftCopyHolder.setPatient(patient);
             LOG.debug("Added new patient data to CreateDraftCopyHolder");
         }

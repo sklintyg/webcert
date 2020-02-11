@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -54,8 +56,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -250,6 +252,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
             .setSekretessmarkering(false)
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
             .build();
     }
 
