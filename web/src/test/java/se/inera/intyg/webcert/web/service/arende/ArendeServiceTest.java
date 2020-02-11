@@ -714,7 +714,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(arendeRepository).findByIntygsId(INTYG_ID);
-        verify(arendeDraftService, times(3)).delete(eq(INTYG_ID), anyString());
+        verify(arendeDraftService, times(5)).delete(eq(INTYG_ID), anyString());
 
         assertTrue(result.stream()
             .map(ArendeConversationView::getFraga)
@@ -724,8 +724,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.stream()
             .map(ArendeConversationView::getSvar)
             .filter(Objects::nonNull)
-            .map(ArendeView::getInternReferens)
-            .collect(MoreCollectors.onlyElement()));
+            .map(ArendeView::getInternReferens));
     }
 
     @Test
