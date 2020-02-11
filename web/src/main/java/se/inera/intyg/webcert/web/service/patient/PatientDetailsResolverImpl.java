@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -128,9 +131,38 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
+    public Map<Personnummer, Boolean> getTestIndicatorForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, Boolean> testIndicatorStatusMap = new HashMap<>();
+        if (personnummerList == null || personnummerList.size() == 0) {
+            return testIndicatorStatusMap;
+        }
+
+        // Make sure we don't ask twice for a given personnummer.
+        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
+
+        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
+        persons.forEach((key, value) -> {
+            if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
+                testIndicatorStatusMap.put(key, value.getPerson().isTestIndicator());
+            } else {
+                // If no matching person was found, then consider it to have the testIndicator.
+                testIndicatorStatusMap.put(key, true);
+            }
+        });
+
+        return testIndicatorStatusMap;
+    }
+
+    @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
         return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
+    }
+
+    @Override
+    public boolean isTestIndicator(Personnummer personnummer) {
+        PersonSvar personSvar = getPersonSvar(personnummer);
+        return personSvar.getPerson().isTestIndicator();
     }
 
     @Override
@@ -213,6 +245,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         if (resolveOrder.getOtherStrategy() != null) {
             resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
         }
+
+        patient.setTestIndicator(personSvar.getPerson().isTestIndicator());
+
         return patient;
     }
 
