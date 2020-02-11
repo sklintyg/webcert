@@ -740,6 +740,18 @@
                       ng-disabled="!PU.patientId">
                 Sekretessmarkering: Av
               </button>
+
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'testindicator', true)"
+                      ng-disabled="!PU.patientId">
+                Valideringsperson: På
+              </button>
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'testindicator', false)"
+                      ng-disabled="!PU.patientId">
+                Valideringsperson: Av
+              </button>
+
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'avliden', true)" ng-disabled="!PU.patientId">
                 Avliden
