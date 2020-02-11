@@ -41,8 +41,8 @@ public class WebcertPUResponseValidator implements PUResponseValidator {
     private FeaturesHelper featuresHelper;
 
     public WebcertPUResponseValidator() {
-        LOG.info("**** WebcertPUResponseValidator activated - PU PersonRecords with testIndicator set will be allowed"
-            + " if TILLAT_VALIDERINGSPERSON is true. Current value is " + isTestIndicatedPersonAllowed() + " ****");
+        LOG.info("**** WebcertPUResponseValidator activated - PU PersonRecords with testIndicator set will be treated as NOT_FOUND"
+            + " if feature TILLAT_VALIDERINGSPERSON is false ****");
     }
 
     @Override
