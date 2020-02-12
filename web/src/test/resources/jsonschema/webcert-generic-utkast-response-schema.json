@@ -79,6 +79,9 @@
     },
     "skapad": {
       "type": "string"
+    },
+    "testIntyg": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false,
