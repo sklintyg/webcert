@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.persistence.utkast.model;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
@@ -39,7 +40,9 @@ import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
+
 import org.hibernate.annotations.Type;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
@@ -151,6 +154,9 @@ public class Utkast {
     @Column(name = "KLART_FOR_SIGNERING_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime klartForSigneringDatum;
+
+    @Column(name = "TEST_INTYG", columnDefinition = "TINYINT(1)")
+    private Boolean isTestIntyg = Boolean.FALSE;
 
     @PrePersist
     void onPrePersist() {
@@ -405,5 +411,13 @@ public class Utkast {
 
     public void setSkapad(LocalDateTime skapad) {
         this.skapad = skapad;
+    }
+
+    public void setTestIntyg(Boolean isTestIntyg) {
+        this.isTestIntyg = isTestIntyg;
+    }
+
+    public Boolean isTestIntyg() {
+        return isTestIntyg;
     }
 }

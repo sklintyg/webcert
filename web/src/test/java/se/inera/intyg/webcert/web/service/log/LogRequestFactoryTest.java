@@ -21,18 +21,21 @@ package se.inera.intyg.webcert.web.service.log;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -46,6 +49,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactoryImpl;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 @RunWith(MockitoJUnitRunner.class
 )
@@ -69,6 +73,9 @@ public class LogRequestFactoryTest {
     @Mock
     private ModuleEntryPoint moduleEntryPoint;
 
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+
     @InjectMocks
     private LogRequestFactoryImpl testee = new LogRequestFactoryImpl();
 
@@ -76,6 +83,7 @@ public class LogRequestFactoryTest {
     public void init() throws ModuleNotFoundException {
         when(moduleEntryPoint.getDefaultRecipient()).thenReturn("FKASSA");
         when(moduleRegistry.getModuleEntryPoint(anyString())).thenReturn(moduleEntryPoint);
+        when(patientDetailsResolver.isTestIndicator(any())).thenReturn(false);
     }
 
     @Test

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -40,6 +41,8 @@ public abstract class AbstractCreateCopyRequest {
     private HoSPersonal hosPerson;
 
     private boolean djupintegrerad = false;
+
+    private boolean isTestIntyg;
 
     public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson) {
         this(originalIntygId, intygTyp, patient, hosPerson, intygTyp);
@@ -124,5 +127,13 @@ public abstract class AbstractCreateCopyRequest {
 
     public void setTypVersion(String typVersion) {
         this.typVersion = typVersion;
+    }
+
+    public void setTestIntyg(boolean isTestIntyg) {
+        this.isTestIntyg = isTestIntyg;
+    }
+
+    public boolean isTestIntyg() {
+        return isTestIntyg;
     }
 }

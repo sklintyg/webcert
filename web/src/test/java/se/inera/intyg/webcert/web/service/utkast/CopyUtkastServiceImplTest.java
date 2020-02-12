@@ -75,6 +75,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -191,6 +192,9 @@ public class CopyUtkastServiceImplTest {
     @Mock
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
 
@@ -215,6 +219,7 @@ public class CopyUtkastServiceImplTest {
         patient.setPersonId(PATIENT_SSN);
 
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
+        when(patientDetailsResolver.isTestIndicator(any())).thenReturn(false);
     }
 
     @Before
@@ -612,6 +617,7 @@ public class CopyUtkastServiceImplTest {
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastFromTemplateRequest();
 
+        setupMockForGettingUtlatande(true);
         CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastFromSignedTemplate(copyReq);
 
         assertNotNull(utkastCopyResponse);

@@ -19,9 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.schemas.contract.Personnummer;
-
 /**
  * Service to check the current users right to access actions on a Certificate.
  */
@@ -30,126 +27,104 @@ public interface CertificateAccessService {
     /**
      * Check if the user is allowed to read a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param vardenhet The careUnit which the certificate belongs to.
-     * @param personnummer The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToRead(String certificateType, Vardenhet vardenhet, Personnummer personnummer);
+    AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to replace a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param vardenhet The careUnit which the certificate belongs to.
-     * @param personnummer The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToReplace(String certificateType, Vardenhet vardenhet, Personnummer personnummer);
+    AccessResult allowToReplace(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to renew a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToRenew(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to print a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
-     * @param isEmployer If the print out is for an employer.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient, boolean isEmployer);
+    AccessResult allowToPrint(AccessEvaluationParameters accessEvaluationParameters, boolean isEmployer);
 
     /**
      * Check if the user is allowed to invalidate a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToInvalidate(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToInvalidate(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to send a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToSend(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToSend(AccessEvaluationParameters accessEvaluationParameters);
+
+    /**
+     * Check if the user is allowed to approve certificate receivers.
+     *
+     * @param accessEvaluationParameters Parameters to use for access evaluation
+     * @return AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to create a administrative question for a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToCreateQuestion(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to answer a complement question for a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
-     * @param newCertificate If the answer includes creating a new certificate/draft.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, boolean newCertificate);
+    AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters, boolean newCertificate);
 
     /**
      * Check if the user is allowed to answer a administrative question for a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to read questions for a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToReadQuestions(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToReadQuestions(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to forward questions for a certificate.
      *
-     * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
-     * @param patient The patient which the certificate belongs to.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToForwardQuestions(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to set complement question as handled for a certificate.
      *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
+     * @param accessEvaluationParameters Parameters to use for access evaluation
+     * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToSetComplementAsHandled(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters);
 }

@@ -468,6 +468,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             draftHolder.setPatientAddressChangedInPU(false);
         }
 
+        draftHolder.setTestIntyg(utkast.isTestIntyg());
+
         return draftHolder;
     }
 

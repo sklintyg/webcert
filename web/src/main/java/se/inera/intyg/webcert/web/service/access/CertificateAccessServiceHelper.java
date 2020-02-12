@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -40,18 +41,20 @@ public final class CertificateAccessServiceHelper {
 
     public void validateAccessToRenewIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRenew(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     public void validateAccessToComplementIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande),
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()),
             true);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
@@ -59,9 +62,10 @@ public final class CertificateAccessServiceHelper {
 
     public void validateAccessToReplaceIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToReplace(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

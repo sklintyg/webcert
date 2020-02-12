@@ -29,12 +29,14 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -102,7 +104,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
             .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
     }
 
@@ -117,7 +119,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any(), any(), any());
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);

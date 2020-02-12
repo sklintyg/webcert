@@ -22,17 +22,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -145,7 +148,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
             .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());

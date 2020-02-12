@@ -68,6 +68,8 @@ public class ListIntygEntry {
 
     private List<ActionLink> links = new ArrayList<>();
 
+    private boolean isTestIntyg = false;
+
 
     public String getIntygId() {
         return intygId;
@@ -219,6 +221,14 @@ public class ListIntygEntry {
 
     public void setVardgivarId(String vardgivarId) {
         this.vardgivarId = vardgivarId;
+    }
+
+    public boolean isTestIntyg() {
+        return isTestIntyg;
+    }
+
+    public void setTestIntyg(boolean isTestIntyg) {
+        this.isTestIntyg = isTestIntyg;
     }
 
     @Override
