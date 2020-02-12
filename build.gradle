@@ -16,10 +16,10 @@ ext {
     intygHealthcondRehabilitationSchemasVersion = "1.1.3"
 
     funktionstjansterGrpSchemasVersion = "1.0.6"
-    intygClinicalprocessSchemasVersion = "1.0.22"
+    intygClinicalprocessSchemasVersion = "1.0.23"
     ppSchemasVersion = "1.0.5"
     ppTermsSchemasVersion = "1.0.5"
-    rivtaClinicalprocessSchemasVersion = "4.0.4"
+    rivtaClinicalprocessSchemasVersion = "4.0.5"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5"
 
     activeMqVersion = "5.13.5"
@@ -79,7 +79,7 @@ allprojects {
 
         publishAlways()
     }
-    
+
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/public/" }

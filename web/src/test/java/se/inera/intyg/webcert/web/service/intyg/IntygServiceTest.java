@@ -40,6 +40,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -51,12 +53,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -70,10 +70,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
-
+import se.inera.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -137,7 +134,6 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
 /**
@@ -356,7 +352,7 @@ public class IntygServiceTest {
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(new LogRequest());
     }
 
-    private void setupUserAndVardgivare(){
+    private void setupUserAndVardgivare() {
         when(webCertUserService.getUser()).thenReturn(user);
         when(user.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(user.getValdVardgivare()).thenReturn(vardgivare);
