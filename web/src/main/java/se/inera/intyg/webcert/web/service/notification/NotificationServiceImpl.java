@@ -341,7 +341,10 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        String hanteratAv = utkast.getSenastSparadAv().getHsaId();
+        String hanteratAv = null;
+        if (utkast.getSenastSparadAv() != null) {
+            hanteratAv = utkast.getSenastSparadAv().getHsaId();
+        }
         createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), hanteratAv);
     }
 
