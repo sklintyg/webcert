@@ -283,19 +283,18 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateAccessRightsToAnswerComplement(intygsId, false);
 
-        boolean notificationSent = false;
-        for (int i = 0; i < arendeList.size(); i++) {
-            if (arendeList.get(i).getStatus() != Status.CLOSED) {
-                Arende kompl = arendeList.get(i);
+        Arende latest = getLatestKomplArende(intygsId, arendeList);
+        for (Arende arende : arendeList) {
+            if (arende.getStatus() != Status.CLOSED) {
                 Arende answer = ArendeConverter.createAnswerFromArende(
                     meddelande,
-                    kompl,
+                    arende,
                     LocalDateTime.now(systemClock),
                     user.getNamn());
 
-                arendeDraftService.delete(kompl.getIntygsId(), kompl.getMeddelandeId());
-                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, !notificationSent);
-                notificationSent = true;
+                arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
+                    Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
                 allArende.add(saved);
             }
