@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +38,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -70,6 +73,7 @@ import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
@@ -473,6 +477,10 @@ public class ArendeServiceImpl implements ArendeService {
             .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
             .collect(Collectors.toList()));
 
+        Map<Personnummer, Boolean> testIndicatorStatusMap = patientDetailsResolver.getTestIndicatorForList(results.stream()
+            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
+            .collect(Collectors.toList()));
+
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
             .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
@@ -482,6 +490,10 @@ public class ArendeServiceImpl implements ArendeService {
         results.stream()
             .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE, sekretessStatusMap))
             .forEach(ali -> ali.setSekretessmarkering(true));
+
+        results.stream()
+            .filter(ali -> testIndicatorStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()))
+            .forEach(ali -> ali.setTestIntyg(true));
 
         response.setTotalCount(results.size());
 
@@ -834,10 +846,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande),
-            newCertificate);
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()), newCertificate);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -845,9 +857,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToForwardQuestions(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -855,9 +868,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToCreateQuestion(Utkast utkast) {
         final Utlatande utlatande = getUtlatande(utkast);
         final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -865,9 +879,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToReadArenden(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

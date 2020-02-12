@@ -29,6 +29,9 @@
         },
         "postort": {
           "type": "string"
+        },
+        "testIndicator": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,

@@ -158,7 +158,6 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private UtkastServiceHelper utkastServiceHelper;
 
-
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
     }
@@ -811,7 +810,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
         return new CreateNewDraftHolder(request.getIntygId(), request.getIntygTypeVersion(), request.getHosPerson(), request.getPatient(),
-            request.getForifyllnad());
+            request.getForifyllnad(), request.getPatient().isTestIndicator());
     }
 
     private Utkast getIntygAsDraft(String intygsId, String intygsTyp) {
@@ -910,6 +909,7 @@ public class UtkastServiceImpl implements UtkastService {
         utkast.setPatientFornamn(patient.getFornamn());
         utkast.setPatientMellannamn(patient.getMellannamn());
         utkast.setPatientEfternamn(patient.getEfternamn());
+        utkast.setTestIntyg(patient.isTestIndicator());
 
         utkast.setIntygsId(request.getIntygId());
         utkast.setIntygsTyp(request.getIntygType());

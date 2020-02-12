@@ -18,8 +18,8 @@
 
       <wc-no-arenden-message ng-if="totalCount == 0"></wc-no-arenden-message>
 
-      <wc-list-dropdown  class="col-md-3 form-group"
-                          ng-show="listModel.totalCount > 10"
+      <wc-list-dropdown   class="col-md-3 form-group"
+                          ng-show="totalCount > 0 && listModel.totalCount > 10"
                           list-model="listModel"
                           filter-model="filterModel">
       </wc-list-dropdown>
@@ -52,9 +52,11 @@
             <tr ng-repeat="arende in listModel.arendenList">
               <td ng-class="{'highlight': orderBy == 'amne'}"><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
               <td ng-class="{'highlight': orderBy == 'fragestallare'}"><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
-              <td ng-class="{'highlight': orderBy == 'patientId'}"id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18 md-icon-security"
-                uib-popover="Patienten har skyddade personuppgifter." popover-popup-delay="300" popover-append-to-body="true"
-                popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
+              <td ng-class="{'highlight': orderBy == 'patientId'}"id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}}
+                <wc-sekretess-avliden-ikon uuid="intyg.intygId"
+                   sekretessmarkering="arende.sekretessmarkering"
+                   avliden="arende.avliden"
+                   test-intyg="arende.testIntyg"></wc-sekretess-avliden-ikon>
               <td ng-class="{'highlight': orderBy == 'signeratAvNamn'}">{{arende.signeratAvNamn}}</td>
               <td class="unbreakable" ng-class="{'highlight': orderBy == 'receivedDate'}">{{arende.receivedDate | date:'short'}}</td>
               <td class="center" ng-class="{'highlight': orderBy == 'vidarebefordrad'}">
@@ -86,9 +88,9 @@
       </div>
 
       <div ng-if="listModel.totalCount == 0 && totalCount > 0">Inga resultat att visa.</div>
-      <wc-list-number-of-hits ng-if="listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
+      <wc-list-number-of-hits ng-if="totalCount > 0 && listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
       <wc-list-page-numbers class="col-md-6"
-                            ng-show="(listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
+                            ng-show="totalCount > 0 && (listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
                             list-model="listModel"
                             filter-model="filterModel">
       </wc-list-page-numbers>

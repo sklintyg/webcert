@@ -1032,6 +1032,7 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygsTyp(intygTyp);
         utkast.setIntygTypeVersion(intygTypVersion);
+        utkast.setPatientPersonnummer(personnummer);
         utkast.setRelationKod(RelationKod.KOMPLT);
         utkast.setRelationIntygsId(relationIntygId);
         utkast.setModel(json);
@@ -1087,6 +1088,7 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygsTyp(intygTyp);
         utkast.setIntygTypeVersion(intygTypVersion);
+        utkast.setPatientPersonnummer(personnummer);
         utkast.setModel(json);
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(

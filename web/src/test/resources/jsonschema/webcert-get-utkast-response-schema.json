@@ -90,6 +90,9 @@
     },
     "links": {
       "type": "array"
+    },
+    "testIntyg": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false,

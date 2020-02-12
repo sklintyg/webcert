@@ -59,6 +59,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -148,6 +149,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
 
     /*
      * (non-Javadoc)
@@ -173,6 +177,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 false);
 
             certificateAccessServiceHelper.validateAccessToComplementIntyg(utlatande);
+
+            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -222,6 +228,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             certificateAccessServiceHelper.validateAccessToRenewIntyg(utlatande);
 
+            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
+
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
@@ -267,6 +275,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             certificateAccessServiceHelper.validateAccessToReplaceIntyg(utlatande);
 
+            addTestIntygFlagIfNecessaryToCopyRequest(replacementRequest, utlatande.getGrundData().isTestIntyg());
+
             if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp(),
                 replacementRequest.isCoherentJournaling())) {
                 LOG.debug("Cannot create replacement certificate for id '{}', the certificate is revoked", originalIntygId);
@@ -296,6 +306,21 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    /**
+     * First, check if the original certificate was issued as a test intyg. If not, check
+     * if the patient currently have the testIndicator-flag.
+     * @param copyRequest   Request to add the TestIntyg-flag for.
+     * @param isSourceATestIntyg If the source intyg is a test intyg.
+     */
+    private void addTestIntygFlagIfNecessaryToCopyRequest(AbstractCreateCopyRequest copyRequest, boolean isSourceATestIntyg) {
+        if (isSourceATestIntyg) {
+            copyRequest.setTestIntyg(isSourceATestIntyg);
+        } else if (patientDetailsResolver.isTestIndicator(copyRequest.getPatient().getPersonId())) {
+            copyRequest.setTestIntyg(true);
+            copyRequest.getPatient().setTestIndicator(true);
+        }
+    }
+
     @Override
     public CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(CreateUtkastFromTemplateRequest templateRequest) {
         String originalIntygId = templateRequest.getOriginalIntygId();
@@ -316,6 +341,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             Person patientDetails = updatePatientDetails(templateRequest, false);
 
             draftAccessServiceHelper.validateAllowToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
+
+            final Utlatande utlatande = utkastServiceHelper.getUtlatande(templateRequest.getOriginalIntygId(),
+                templateRequest.getOriginalIntygTyp(),
+                false,
+                false);
+
+            addTestIntygFlagIfNecessaryToCopyRequest(templateRequest, utlatande.getGrundData().isTestIntyg());
 
             verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 
@@ -355,6 +387,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
 
             lockedDraftAccessServiceHelper.validateAccessToCopyLockedUtkast(utkast);
+
+            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utkast.isTestIntyg());
 
             // Validate draft locked
             if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
@@ -575,7 +609,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             copyRequest.getPatient().getEfternamn(),
             copyRequest.getPatient().getPostadress(),
             copyRequest.getPatient().getPostnummer(),
-            copyRequest.getPatient().getPostort());
+            copyRequest.getPatient().getPostort(),
+            copyRequest.getPatient().isTestIndicator());
     }
 
     private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {

@@ -31,8 +31,17 @@ wc-enhet-arenden-filter {
     }
   }
 
-  input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty) {
-    border-color: $wc-color-11;
+  .form-control, output {
+    color: $wc-color-21;
+  }
+
+  input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty), .dateError input {
+    border-color: $wc-color-11 !important;
+    color: $wc-color-11 !important;
+  }
+
+  .dateError button {
+    border-color: $wc-color-11 !important;
   }
 
   @media (max-width: 991px) {

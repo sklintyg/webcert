@@ -18,6 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +38,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -40,20 +54,6 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 
 public class ArendeServiceImplTest {
 
@@ -107,6 +107,9 @@ public class ArendeServiceImplTest {
         final HashMap<Personnummer, SekretessStatus> secMap = new HashMap<>();
         secMap.put(Personnummer.createPersonnummer(PATIENT_PERSON_ID).get(), SekretessStatus.FALSE);
         Mockito.when(patientDetailsResolver.getSekretessStatusForList(any())).thenReturn(secMap);
+        final HashMap<Personnummer, Boolean> testIndicatorMap = new HashMap<>();
+        testIndicatorMap.put(Personnummer.createPersonnummer(PATIENT_PERSON_ID).get(), Boolean.FALSE);
+        Mockito.when(patientDetailsResolver.getTestIndicatorForList(any())).thenReturn(testIndicatorMap);
         final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
         qfsr.setResults(Lists.emptyList());
         Mockito.when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);

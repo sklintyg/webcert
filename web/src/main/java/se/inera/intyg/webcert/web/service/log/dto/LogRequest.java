@@ -35,6 +35,7 @@ public class LogRequest {
     private String intygCareGiverName;
 
     private String additionalInfo;
+    private Boolean isTestIntyg;
 
     public LogRequest() {
         super();
@@ -102,5 +103,13 @@ public class LogRequest {
 
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
+    }
+
+    public void setTestIntyg(boolean isTestIntyg) {
+        this.isTestIntyg = isTestIntyg;
+    }
+
+    public boolean isTestIntyg() {
+        return isTestIntyg;
     }
 }

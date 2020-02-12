@@ -81,6 +81,7 @@ public class MonitoringRequest {
             case SRS_MEASURES_LINK_CLICKED:
             case SRS_STATISTICS_ACTIVATED:
             case SRS_STATISTICS_LINK_CLICKED:
+            case SRS_MEASURES_DISPLAYED:
                 return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
                     && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null;
         }
@@ -103,6 +104,7 @@ public class MonitoringRequest {
         SRS_MEASURES_EXPAND_ONE_CLICKED,
         SRS_MEASURES_LINK_CLICKED,
         SRS_STATISTICS_ACTIVATED,
-        SRS_STATISTICS_LINK_CLICKED
+        SRS_STATISTICS_LINK_CLICKED,
+        SRS_MEASURES_DISPLAYED
     }
 }

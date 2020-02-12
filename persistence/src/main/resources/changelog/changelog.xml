@@ -1260,6 +1260,18 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="62" author="mww">
+    <addColumn tableName="INTYG">
+      <column name="TEST_INTYG" type="boolean" defaultValueBoolean="false">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+    <createIndex indexName="IDX_INTYG_TEST_INTYG"
+        tableName="INTYG" unique="false">
+      <column name="TEST_INTYG"/>
+    </createIndex>
+  </changeSet>
+
   <changeSet id="62" author="mj">
     <addColumn tableName="HANDELSE">
       <column name="HANTERAT_AV" type="varchar(255)">
@@ -1267,5 +1279,4 @@
       </column>
     </addColumn>
   </changeSet>
-
 </databaseChangeLog>

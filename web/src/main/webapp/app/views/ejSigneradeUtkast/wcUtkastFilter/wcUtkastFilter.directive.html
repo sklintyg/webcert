@@ -4,19 +4,20 @@
   <div class="filter-field col-md-2" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" id="filterFormVidarebefordrad">
     <label>Vidarebefordrat</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.notified" items="filter.notifiedOptions"
-                 use-dynamic-label="false"></wc-dropdown>
+                 use-dynamic-label="false" show-highlight="true"></wc-dropdown>
   </div>
 
   <div class="filter-field col-md-2">
     <label>Utkast</label><br>
     <wc-dropdown id="filter-status" ng-model="filter.selection.status" items="filter.statusOptions"
-                 use-dynamic-label="false"></wc-dropdown>
+                 use-dynamic-label="false" show-highlight="true"></wc-dropdown>
   </div>
 
   <div class="filter-field col-md-2" intygstyp="" id="filterFormSparatAv">
     <label>Sparat av</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
-                 use-dynamic-label="false"></wc-dropdown>
+                 use-dynamic-label="false" show-highlight="!widgetState.loadingSavedByList" always-highlighted="!widgetState.loadingSavedByList && getAlwaysHighlightedSparatAv()">
+    </wc-dropdown>
   </div>
 
   <div class="filter-field col-md-2" id=utkastPnr">
@@ -33,10 +34,10 @@
     <div class="filter-field date-group col-md-5">
       <label>Sparat datum</label><br>
       <label class="inline-label">Från</label>
-      <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field  on-blur="setShowDateFromVisible()"
+      <span dom-id="filter-changedate-from"  target-model="filter.selection.savedFrom" ng-class="{'dateError' : showDateError()}" wc-date-picker-field  on-blur="setShowDateFromVisible()"
             add-date-parser="strict" max-date={{maxdate}}></span>
       <label class="inline-label">till</label>
-      <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}
+      <span dom-id="filter-changedate-to"  ng-class="{'dateError' : showDateError() }" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}
             wc-date-is-after-validator="filter-changedate-from"  on-blur="setShowDateToVisible()"></span>
 
     </div>
@@ -53,7 +54,7 @@
   </div>
 </div>
 
-<div ng-if="(showDateFromErrors || showDateToErrors) && filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
+<div ng-if="showDateError()" ng-cloak class="filter-errors">
   <div ng-if="showDateFromErrors">
     <p ng-show="filterForm['filter-changedate-from'].$error.date">
       <span dynamic-label key="common.validation.date_invalid"></span>

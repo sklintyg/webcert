@@ -200,6 +200,8 @@
       <property name="queueCapacity" value="25" />
     </bean>
 
+    <!-- Use the same PU validator for both prod and test. Set as primary so it is used instead of the default validator in infra -->
+    <bean id="puResponseValidator" class="se.inera.intyg.webcert.web.integration.validators.WebcertPUResponseValidator" primary="true"/>
   </beans>
 
 </beans>

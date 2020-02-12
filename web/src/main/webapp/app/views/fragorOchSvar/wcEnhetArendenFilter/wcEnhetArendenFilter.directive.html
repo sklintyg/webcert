@@ -16,6 +16,7 @@
                      id="vidarebefordradFilter"
                      label="vidarebefordradFilter"
                      use-dynamic-label="false"
+                     show-highlight="true"
                      ng-class="{'validation-error' : hasValidationError('specifikation',  $index)}">
         </wc-dropdown>
       </div>
@@ -29,6 +30,8 @@
                      id="qp-showStatus"
                      label="vidarebefordradFilter"
                      use-dynamic-label="false"
+                     show-highlight="true"
+                     default-index="1"
                      ng-class="{'validation-error' : hasValidationError('specifikation',  $index)}">
         </wc-dropdown>
       </div>
@@ -42,6 +45,7 @@
                      id="frageStallare"
                      label="frageStallare"
                      use-dynamic-label="false"
+                     show-highlight="true"
                      ng-class="{'validation-error' : hasValidationError('specifikation',  $index)}">
         </wc-dropdown>
       </div>
@@ -54,6 +58,8 @@
                      id="qp-lakareSelector"
                      label="qp-lakareSelector"
                      use-dynamic-label="false"
+                     show-highlight="true"
+                     always-highlighted="getAlwaysHighlightedSigneratAv()"
                      ng-class="{'validation-error' : hasValidationError('specifikation',  $index)}"
                      ng-disabled="enhetArendenFilterModel.loadingLakare">
         </wc-dropdown>
@@ -75,13 +81,19 @@
         <label>Skickat datum</label><br>
         <div class="form-inline">
           Från
-          <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom" on-blur="setShowDateFromVisible()"
+          <span dom-id="filter-changedate-from"
+                ng-class="{'dateError' : showDateError()}"
+                target-model="enhetArendenFilterModel.filterForm.changedFrom"
+                on-blur="setShowDateFromVisible()"
                 wc-date-picker-field add-date-parser="strict"
                 max-date={{maxdate}}></span>
 
           till
-          <span dom-id="filter-changedate-to" target-model="enhetArendenFilterModel.filterForm.changedTo"
-                wc-date-picker-field add-date-parser="strict" on-blur="setShowDateToVisible()"
+          <span dom-id="filter-changedate-to"
+                target-model="enhetArendenFilterModel.filterForm.changedTo"
+                ng-class="{'dateError' : showDateError()}"
+                wc-date-picker-field add-date-parser="strict"
+                on-blur="setShowDateToVisible()"
                 max-date={{maxdate}} wc-date-is-after-validator="filter-changedate-from"></span>
 
         </div>

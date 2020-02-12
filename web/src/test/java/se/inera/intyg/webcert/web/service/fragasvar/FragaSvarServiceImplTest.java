@@ -37,10 +37,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MoreCollectors;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,9 +49,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
+
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +66,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MoreCollectors;
+
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -697,6 +701,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             .setSekretessmarkering(false)
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
             .build();
     }
 
@@ -713,6 +718,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             .setSekretessmarkering(false)
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
             .build();
     }
 
@@ -731,6 +737,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             .setSekretessmarkering(false)
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
             .build();
     }
 

@@ -33,6 +33,14 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
             $scope.showDateFromErrors = false;
             $scope.showDateToErrors = false;
 
+            $scope.showDateError = function () {
+              return ($scope.showDateFromErrors || $scope.showDateToErrors) && $scope.filterForm.$invalid && !$scope.filterForm.$pristine;
+            };
+
+            $scope.getAlwaysHighlightedSparatAv = function () {
+              return UserModel.isLakare();
+            };
+
             $scope.setShowDateFromVisible = function() {
               $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
             };
