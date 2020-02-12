@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -44,6 +46,7 @@ public class ArendeListItem {
     private String vardgivarnamn;
     private boolean sekretessmarkering;
     private boolean avliden;
+    private boolean testIntyg;
 
     private List<ActionLink> links = new ArrayList<>();
 
@@ -181,5 +184,13 @@ public class ArendeListItem {
 
     public void addLink(ActionLink link) {
         this.links.add(link);
+    }
+
+    public void setTestIntyg(boolean isTestIntyg) {
+        this.testIntyg = isTestIntyg;
+    }
+
+    public boolean isTestIntyg() {
+        return testIntyg;
     }
 }

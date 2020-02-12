@@ -69,6 +69,9 @@ public class Handelse {
     @Enumerated(EnumType.STRING)
     private ArendeAmne amne;
 
+    @Column(name = "HANTERAT_AV")
+    private String hanteratAv;
+
     public Handelse() {
     }
 
@@ -142,5 +145,13 @@ public class Handelse {
 
     public void setAmne(ArendeAmne amne) {
         this.amne = amne;
+    }
+
+    public String getHanteratAv() {
+        return hanteratAv;
+    }
+
+    public void setHanteratAv(String hanteratAv) {
+        this.hanteratAv = hanteratAv;
     }
 }

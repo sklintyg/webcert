@@ -485,7 +485,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testCompletionContainsCommentStringInOvrigt() throws Exception {
-        final String personnummer = "19121212-1212";
+        final String personnummer = "19010101-0101";
         final String kommentar = "Testkommentar";
 
         Personnummer pers = Personnummer.createPersonnummer(personnummer).get();

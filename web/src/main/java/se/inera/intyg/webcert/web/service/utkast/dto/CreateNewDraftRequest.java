@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import java.util.Optional;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;

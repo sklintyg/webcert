@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -66,6 +68,8 @@ public class DraftHolder {
     private List<ActionLink> links = new ArrayList<>();
 
     private UtkastCandidateMetaData candidateMetaData;
+
+    private boolean isTestIntyg = false;
 
 
     // Getters and Setters
@@ -228,5 +232,13 @@ public class DraftHolder {
 
     public void setCandidateMetaData(UtkastCandidateMetaData candidateMetaData) {
         this.candidateMetaData = candidateMetaData;
+    }
+
+    public boolean isTestIntyg() {
+        return isTestIntyg;
+    }
+
+    public void setTestIntyg(boolean isTestIntyg) {
+        this.isTestIntyg = isTestIntyg;
     }
 }

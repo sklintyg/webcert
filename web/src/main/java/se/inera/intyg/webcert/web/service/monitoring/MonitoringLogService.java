@@ -136,6 +136,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSrsStatisticsLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
+    void logSrsMeasuresDisplayed(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
     void logGetSrsForDiagnose(String diagnosisCode);
 
     // Saml

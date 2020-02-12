@@ -32,7 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Strings;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +41,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.ws.rs.core.Response;
 import javax.xml.ws.WebServiceException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +53,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -156,6 +160,10 @@ public class UtkastApiControllerTest {
             personInformationTypeList.add(personInformation);
             return personInformationTypeList;
         });
+
+        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
+        when(testIndicatorMap.get(any())).thenReturn(Boolean.FALSE);
+        when(patientDetailsResolver.getTestIndicatorForList(anyList())).thenReturn(testIndicatorMap);
     }
 
     @Test
@@ -379,6 +387,11 @@ public class UtkastApiControllerTest {
         when(sekretessMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(sekretessMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
+
+        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
+        when(testIndicatorMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(Boolean.FALSE);
+        when(testIndicatorMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(Boolean.FALSE);
+        when(patientDetailsResolver.getTestIndicatorForList(anyList())).thenReturn(testIndicatorMap);
 
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));

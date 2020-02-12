@@ -30,11 +30,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.jms.Session;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -100,6 +104,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         logRequest.setIntygId("abc123");
         logRequest.setPatientId(createPnr("19121212-1212"));
         logRequest.setPatientName("Hans Olof van der Test");
+        logRequest.setTestIntyg(false);
 
         logService.logReadIntyg(logRequest);
 
@@ -151,6 +156,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         logRequest.setIntygId("abc123");
         logRequest.setPatientId(createPnr("19121212-1212"));
         logRequest.setPatientName("Hans Olof van der Test");
+        logRequest.setTestIntyg(false);
 
         try {
             logService.logReadIntyg(logRequest);
@@ -167,6 +173,21 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         logRequest.setAdditionalInfo("this is additional");
 
         logService.logPrintIntygAsPDF(logRequest);
+    }
+
+    @Test
+    public void logServiceTestIntygShouldNotBeLogged() throws Exception {
+        when(userService.getUser()).thenReturn(createUser());
+
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId("abc123");
+        logRequest.setPatientId(createPnr("19121212-1212"));
+        logRequest.setPatientName("Hans Olof van der Test");
+        logRequest.setTestIntyg(true);
+
+        logService.logReadIntyg(logRequest);
+
+        verify(template, times(0)).send(any(MessageCreator.class));
     }
 
     private WebCertUser createUser() {

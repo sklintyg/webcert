@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.time.format.DateTimeFormatter;
 import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateResponderInterface;
@@ -31,7 +32,6 @@ import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.v1.u
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 
 public class GetMedicalCertificateResponderStub implements
     GetMedicalCertificateResponderInterface {

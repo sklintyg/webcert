@@ -84,6 +84,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -587,7 +588,7 @@ public class IntygServiceImpl implements IntygService {
         boolean shouldCloseCompletions = shouldCloseCompletionCodes.stream().anyMatch(it -> it == utkast.getRelationKod());
         boolean isSigneraSkickaDirekt = authoritiesHelper
             .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
-        if (isSigneraSkickaDirekt || utkast.getRelationKod() == RelationKod.KOMPLT) {
+        if (isNotATestIntyg(utkast) && (isSigneraSkickaDirekt || utkast.getRelationKod() == RelationKod.KOMPLT)) {
             try {
                 LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
                 sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
@@ -601,6 +602,14 @@ public class IntygServiceImpl implements IntygService {
             LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
             arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
         }
+    }
+
+    /**
+     * Is considered a test intyg if the intyg is tagged with test intyg flag. Or if it was created without the flag, it will still
+     * be considered a test intyg if the patient currently holds the testIndicator-flag.
+     */
+    private boolean isNotATestIntyg(Utkast utkast) {
+        return !(utkast.isTestIntyg() || patientDetailsResolver.isTestIndicator(utkast.getPatientPersonnummer()));
     }
 
     @Override
@@ -827,6 +836,7 @@ public class IntygServiceImpl implements IntygService {
                 .setSekretessmarkering(sekretessmarkering)
                 .setPatientNameChangedInPU(patientNameChanged)
                 .setPatientAddressChangedInPU(patientAddressChanged)
+                .setTestIntyg(utlatande.getGrundData().getPatient().isTestIndicator())
                 .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -906,6 +916,7 @@ public class IntygServiceImpl implements IntygService {
                 .setSekretessmarkering(sekretessmarkerad)
                 .setPatientNameChangedInPU(patientNameChanged)
                 .setPatientAddressChangedInPU(patientAddressChanged)
+                .setTestIntyg(utkast.isTestIntyg())
                 .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {
@@ -969,37 +980,40 @@ public class IntygServiceImpl implements IntygService {
 
     private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
         final AccessResult accessResult = certificateAccessService.allowToPrint(
-            utlatande.getTyp(),
-            getVardEnhet(utlatande),
-            getPersonnummer(utlatande),
-            isEmployer);
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()), isEmployer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToInvalidate(
-            utlatande.getTyp(),
-            getVardEnhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToReadIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRead(
-            utlatande.getTyp(),
-            getVardEnhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToSendIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToSend(
-            utlatande.getTyp(),
-            getVardEnhet(utlatande),
-            getPersonnummer(utlatande));
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

@@ -35,6 +35,7 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -54,6 +55,9 @@ public class IntygDraftsConverter {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
 
     public static List<ListIntygEntry> merge(List<ListIntygEntry> intygList, List<Utkast> utkastList) {
 
@@ -90,6 +94,7 @@ public class IntygDraftsConverter {
         entry.setVersion(utkast.getVersion());
         entry.setVardenhetId(utkast.getEnhetsId());
         entry.setVardgivarId(utkast.getVardgivarId());
+        entry.setTestIntyg(utkast.isTestIntyg());
 
         return entry;
     }
@@ -168,19 +173,24 @@ public class IntygDraftsConverter {
         entry.setIntygTypeVersion(source.getVersion());
         entry.setSource(IntygSource.IT);
 
+        final Personnummer personnummer = createPnr(source.getPatient().getPersonId().getExtension());
+
         if (altSource == null) {
             entry.setStatus(findLatestStatus(source.getStatus()).name());
+            entry.setTestIntyg(patientDetailsResolver.isTestIndicator(personnummer));
         } else {
             entry.setStatus(determineMostRelevantStatus(findLatestStatus(source.getStatus()),
                 CertificateState.valueOf(altSource.getStatus())));
+            entry.setTestIntyg(altSource.isTestIntyg());
         }
 
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
-        entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
+        entry.setPatientId(personnummer);
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
         entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
+
         return entry;
     }
 

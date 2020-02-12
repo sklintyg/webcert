@@ -31,6 +31,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.inera.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
+import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.ReceiverApprovalStatus;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
@@ -38,9 +41,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 public class RegisterApprovedReceiversProcessor {
 

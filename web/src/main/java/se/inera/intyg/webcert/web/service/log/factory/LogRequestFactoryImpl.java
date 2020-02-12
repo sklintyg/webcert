@@ -18,15 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.log.factory;
 
-import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Joiner;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -46,6 +49,9 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     @Override
     public LogRequest createLogRequestFromUtkast(Utkast utkast) {
         return createLogRequestFromUtkast(utkast, false);
@@ -56,6 +62,7 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
         LogRequest logRequest = new LogRequest();
 
         logRequest.setIntygId(utkast.getIntygsId());
+        logRequest.setTestIntyg(utkast.isTestIntyg() || isPatientTestIndicated(utkast.getPatientPersonnummer()));
         logRequest.setPatientId(utkast.getPatientPersonnummer());
 
         addPatientNameIfNotFK(
@@ -84,6 +91,8 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     public LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling) {
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId(utlatande.getId());
+        logRequest.setTestIntyg(utlatande.getGrundData().isTestIntyg()
+            || isPatientTestIndicated(utlatande.getGrundData().getPatient().getPersonId()));
 
         logRequest.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
         addPatientNameIfNotFK(utlatande.getGrundData().getPatient().getFullstandigtNamn(), logRequest, utlatande.getTyp());
@@ -105,8 +114,10 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     public LogRequest createLogRequestFromUser(WebCertUser user, String patientId) {
         LogRequest request = new LogRequest();
 
-        request.setPatientId(Personnummer.createPersonnummer(patientId).get());
+        final Personnummer personnummer = Personnummer.createPersonnummer(patientId).get();
+        request.setPatientId(personnummer);
         request.setPatientName("");
+        request.setTestIntyg(isPatientTestIndicated(personnummer));
 
         request.setIntygCareUnitId(user.getValdVardenhet().getId());
         request.setIntygCareUnitName(user.getValdVardenhet().getNamn());
@@ -133,5 +144,9 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
         } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intyg-typ '" + intygsTyp + "', cannot determine default recipient");
         }
+    }
+
+    private boolean isPatientTestIndicated(Personnummer personnummer) {
+        return patientDetailsResolver.isTestIndicator(personnummer);
     }
 }

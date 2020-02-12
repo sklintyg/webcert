@@ -34,6 +34,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverRegistrationType;
+import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverType;
+import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversType;
@@ -43,9 +46,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceive
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
-import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverRegistrationType;
-import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverType;
-import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateReceiverServiceImplTest {

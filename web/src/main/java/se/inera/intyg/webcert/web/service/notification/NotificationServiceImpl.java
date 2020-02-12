@@ -312,7 +312,7 @@ public class NotificationServiceImpl implements NotificationService {
                 SchemaVersion.VERSION_3, reference, null, null);
 
             save(notificationMessage, careUnitId, careGiverId,
-                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
+                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null, null);
 
             send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
@@ -341,11 +341,15 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
+        String hanteratAv = null;
+        if (utkast.getSenastSparadAv() != null) {
+            hanteratAv = utkast.getSenastSparadAv().getHsaId();
+        }
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), hanteratAv);
     }
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-        ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version, String hanteratAv) {
         Amneskod amneskod = null;
         if (amne != null) {
             amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
@@ -357,7 +361,7 @@ public class NotificationServiceImpl implements NotificationService {
             version, reference, amneskod, sistaDatumForSvar);
 
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
-            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
+            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar, hanteratAv);
 
         send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
@@ -382,7 +386,7 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), null);
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
@@ -429,7 +433,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-        ArendeAmne amne, LocalDate sistaDatumForSvar) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar, String hanteratAv) {
 
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
@@ -440,6 +444,7 @@ public class NotificationServiceImpl implements NotificationService {
         handelse.setVardgivarId(vardgivarId);
         handelse.setAmne(amne);
         handelse.setSistaDatumForSvar(sistaDatumForSvar);
+        handelse.setHanteratAv(hanteratAv);
 
         handelseRepo.save(handelse);
     }

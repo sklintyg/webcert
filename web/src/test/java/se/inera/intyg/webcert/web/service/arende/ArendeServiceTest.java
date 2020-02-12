@@ -43,9 +43,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MoreCollectors;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,7 +58,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.ws.WebServiceException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +70,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MoreCollectors;
+
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -224,6 +228,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Map<Personnummer, SekretessStatus> map = mock(Map.class);
         when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         doReturn(map).when(patientDetailsResolver).getSekretessStatusForList(anyList());
+
+        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
+        when(testIndicatorMap.get(any(Personnummer.class))).thenReturn(Boolean.FALSE);
+        Mockito.when(patientDetailsResolver.getTestIndicatorForList(any())).thenReturn(testIndicatorMap);
     }
 
     @Test
@@ -1675,29 +1683,17 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         switch (accessToCheck) {
             case BESVARA_KOMPLETTERING:
-                Mockito.doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(
-                    anyString(),
-                    any(),
-                    any(),
+                Mockito.doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(),
                     anyBoolean());
                 break;
             case VIDAREBEFODRA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(
-                    anyString(),
-                    any(),
-                    any());
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
                 break;
             case LASA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(
-                    anyString(),
-                    any(),
-                    any());
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
                 break;
             case SKAPA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(
-                    anyString(),
-                    any(),
-                    any());
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
                 break;
         }
     }

@@ -26,7 +26,8 @@
       <td class="unbreakable" ng-class="{'highlight': sortingProperty == 'patientPersonnummer'}">{{::intyg.patientId | PersonIdFormatter}}
         <wc-sekretess-avliden-ikon uuid="intyg.intygId"
                                    sekretessmarkering="intyg.sekretessmarkering"
-                                   avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
+                                   avliden="intyg.avliden"
+                                   test-intyg="intyg.testIntyg"></wc-sekretess-avliden-ikon>
       </td>
       <td ng-class="{'highlight': sortingProperty == 'senastSparadAv'}">{{::intyg.updatedSignedBy}}</td>
       <td class="center" ng-class="{'highlight': sortingProperty == 'vidarebefordrad'}">
@@ -83,7 +84,8 @@
       <div class="col-xs-8 col-sm-9">{{::intyg.patientId | PersonIdFormatter}}
         <wc-sekretess-avliden-ikon uuid="intyg.intygId"
                                    sekretessmarkering="intyg.sekretessmarkering"
-                                   avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
+                                   avliden="intyg.avliden"
+                                   test-intyg="intyg.testIntyg"></wc-sekretess-avliden-ikon>
       </div>
     </div>
 

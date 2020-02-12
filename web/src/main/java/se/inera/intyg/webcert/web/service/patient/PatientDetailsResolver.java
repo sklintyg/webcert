@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.patient;
 
 import java.util.List;
 import java.util.Map;
+
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -43,4 +44,8 @@ public interface PatientDetailsResolver {
     boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
 
     Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList);
+
+    boolean isTestIndicator(Personnummer personnummer);
+
+    Map<Personnummer, Boolean> getTestIndicatorForList(List<Personnummer> personnummerList);
 }

@@ -285,6 +285,10 @@ public class UtkastApiController extends AbstractApiController {
             .map(lie -> lie.getPatientId())
             .collect(Collectors.toList()));
 
+        Map<Personnummer, Boolean> testIndicatorStatusMap = patientDetailsResolver.getTestIndicatorForList(listIntygEntries.stream()
+            .map(lie -> lie.getPatientId())
+            .collect(Collectors.toList()));
+
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
             .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
@@ -292,6 +296,8 @@ public class UtkastApiController extends AbstractApiController {
 
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
         listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
+
+        listIntygEntries.stream().forEach(lie -> markTestIndicator(lie, testIndicatorStatusMap));
 
         final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
         intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
@@ -386,4 +392,13 @@ public class UtkastApiController extends AbstractApiController {
         }
     }
 
+    /**
+     * If the patient is marked with testIndicator, always consider it as a test intyg. DON'T set it to false if it isn't, because
+     * the certificate could already have been marked as testintyg if it was created at the time that the patient was testIndicated.
+     */
+    private void markTestIndicator(ListIntygEntry lie, Map<Personnummer, Boolean> testIndicatorStatusMap) {
+        if (testIndicatorStatusMap.get(lie.getPatientId())) {
+            lie.setTestIntyg(true);
+        }
+    }
 }
