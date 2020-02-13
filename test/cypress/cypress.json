@@ -1,7 +1,7 @@
 {
   "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
   "env": {
-    "intygMockBaseUrl": "http://nmt-vs-tintyg.app-test1.ind-ocp.sth.basefarm.net:43000",
+    "intygMockBaseUrl": "http://nmt-vs-tintyg.app-test1.ind-ocp.sth.basefarm.net",
     "intygTjanstUrl": "https://intygstjanst-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
     "logSenderTimeout": 35000,
     "RETRIES": 2
