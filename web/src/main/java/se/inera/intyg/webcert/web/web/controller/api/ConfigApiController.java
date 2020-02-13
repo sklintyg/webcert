@@ -65,16 +65,16 @@ public class ConfigApiController extends AbstractApiController {
     @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
     private String cgiFunktionstjansterIdpUrl;
 
-    @Value("${webcert.user.survey.url}")
+    @Value("${webcert.user.survey.url:}")
     private String webcertUserSurveyUrl;
 
-    @Value("${webcert.user.survey.date.to}")
+    @Value("${webcert.user.survey.date.to:}")
     private String webcertUserSurveyDateTo;
 
-    @Value("${webcert.user.survey.date.from}")
+    @Value("${webcert.user.survey.date.from:}")
     private String webcertUserSurveyDateFrom;
 
-    @Value("${webcert.user.survey.version}")
+    @Value("${webcert.user.survey.version:}")
     private String webcertUserSurveyVersion;
 
     @Autowired
