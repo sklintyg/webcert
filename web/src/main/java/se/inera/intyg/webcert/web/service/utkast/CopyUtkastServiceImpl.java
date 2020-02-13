@@ -356,6 +356,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
+            monitoringService.logUtkastCreatedTemplate(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
+                savedUtkast.getSkapadAv().getHsaId(), savedUtkast.getEnhetsId(), originalIntygId, templateRequest.getOriginalIntygTyp());
+
             if (templateRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }

@@ -69,6 +69,9 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId, int nrPrefillElements);
 
+    void logUtkastCreatedTemplate(String intygsId, String intygsTyp, String userHsaId, String unitHsaId,
+        String originalIntygsId, String originalIntygsTyp);
+
     void logUtkastEdited(String intygsId, String intygsTyp);
 
     void logUtkastConcurrentlyEdited(String intygsId, String intygsTyp);

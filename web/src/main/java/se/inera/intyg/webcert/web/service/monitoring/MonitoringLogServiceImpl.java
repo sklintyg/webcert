@@ -174,6 +174,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logUtkastCreatedTemplate(String intygsId, String intygsTyp, String userHsaId, String unitHsaId,
+        String originalIntygsId, String originalIntygsTyp) {
+            logEvent(MonitoringEvent.UTKAST_CREATED_TEMPLATE, intygsId, intygsTyp,
+                userHsaId, unitHsaId, originalIntygsId, originalIntygsTyp);
+    }
+
+    @Override
     public void logUtkastEdited(String intygsId, String intygsTyp) {
         logEvent(MonitoringEvent.UTKAST_EDITED, intygsId, intygsTyp);
     }
@@ -421,6 +428,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_COPIED_COMPLETION("Utkast '{}' created as a completion copy of '{}'"),
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
+        UTKAST_CREATED_TEMPLATE("Utkast '{}' of type '{}' created by '{}' on unit '{}' from signed template '{}' of type '{}'"),
         UTKAST_CREATED_PREFILL("Utkast '{}' of type '{}' created with '{}' forifyllnad svar by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
