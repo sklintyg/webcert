@@ -51,9 +51,22 @@ public class ConfigResponse {
     @ApiModelProperty(name = "BANNERS")
     private List<Banner> banners;
 
+    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_URL", dataType = "String")
+    private String webcertUserSurveyUrl;
+
+    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_TO", dataType = "String")
+    private String webcertUserSurveyDateTo;
+
+    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_FROM", dataType = "String")
+    private String webcertUserSurveyDateFrom;
+
+    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_VERSION", dataType = "String")
+    private String webcertUserSurveyVersion;
+
     // CHECKSTYLE:OFF ParameterNumber
     public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
-        String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, List<Banner> banners) {
+        String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, String webcertUserSurveyUrl, List<Banner> banners,
+        String webcertUserSurveyDateTo, String webcertUserSurveyDateFrom, String webcertUserSurveyVersion) {
         this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;
@@ -62,6 +75,10 @@ public class ConfigResponse {
         this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
         this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
         this.banners = banners;
+        this.webcertUserSurveyUrl = webcertUserSurveyUrl;
+        this.webcertUserSurveyDateTo = webcertUserSurveyDateTo;
+        this.webcertUserSurveyDateFrom = webcertUserSurveyDateFrom;
+        this.webcertUserSurveyVersion = webcertUserSurveyVersion;
     }
     // CHECKSTYLE:ON ParameterNumber
 
@@ -103,5 +120,25 @@ public class ConfigResponse {
     @JsonProperty("BANNERS")
     public List<Banner> getBanners() {
         return banners;
+    }
+
+    @JsonProperty("WEBCERT_USER_SURVEY_URL")
+    public String getWebcertUserSurveyUrl() {
+        return webcertUserSurveyUrl;
+    }
+
+    @JsonProperty("WEBCERT_USER_SURVEY_DATE_TO")
+    public String getWebcertUserSurveyDateTo() {
+        return webcertUserSurveyDateTo;
+    }
+
+    @JsonProperty("WEBCERT_USER_SURVEY_DATE_FROM")
+    public String getWebcertUserSurveyDateFrom() {
+        return webcertUserSurveyDateFrom;
+    }
+
+    @JsonProperty("WEBCERT_USER_SURVEY_VERSION")
+    public String getWebcertUserSurveyVersion() {
+        return webcertUserSurveyVersion;
     }
 }

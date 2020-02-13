@@ -51,7 +51,9 @@
     <wc-main-menu></wc-main-menu>
   </div>
 
-  <%-- ui-view that holds dynamic content managed by angular app --%>
+  <wc-modal-user-survey app-label="'wc'"></wc-modal-user-survey>
+
+<%-- ui-view that holds dynamic content managed by angular app --%>
   <div ui-view="content" autoscroll="false" id="view" class="webcert-workarea"></div>
 
   <div ui-view="landing" autoscroll="false" id="webcertLanding" class="webcert-landing"></div>
