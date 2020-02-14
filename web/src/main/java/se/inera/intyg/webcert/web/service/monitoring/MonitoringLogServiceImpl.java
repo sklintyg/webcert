@@ -216,6 +216,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logUtkastLocked(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_LOCKED, intygsId, intygsTyp);
+    }
+
+    @Override
     public void logPULookup(Personnummer personNummer, String result) {
         logEvent(MonitoringEvent.PU_LOOKUP, Personnummer.getPersonnummerHashSafe(personNummer), result);
     }
@@ -438,6 +443,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         UTKAST_SIGN_FAILED("Utkast '{}' failed signing process with message '{}'"),
+        UTKAST_LOCKED("Utkast '{}' of type '{}' was locked"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),

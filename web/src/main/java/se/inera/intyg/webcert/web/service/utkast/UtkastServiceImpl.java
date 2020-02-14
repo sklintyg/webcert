@@ -678,6 +678,8 @@ public class UtkastServiceImpl implements UtkastService {
             // Set status locked
             utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
             utkastRepository.save(utkast);
+
+            monitoringService.logUtkastLocked(utkast.getIntygsId(), utkast.getIntygsTyp());
         });
 
         return utkasts.size();
