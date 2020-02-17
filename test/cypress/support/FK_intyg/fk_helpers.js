@@ -119,15 +119,19 @@ export function makuleraIntyg(arg) {
         cy.get('#button1makulera-dialog').click();
     }
 }
-export function komplettera(existerar) {
-    //TODO fixa en bättre logik
-    if((existerar =='kompl'))
-    {
-        cy.log('Existerar lika med true');
-        cy.get('#komplettera-open-utkast').click();
-    }
-    else{
-        cy.log('Existerar lika med false');
-        cy.get('#komplettera-intyg > span').click();  
-     } 
+export function komplettera() {
+        cy.wait(1500);        
+         cy.get('#intygstatus1 > .status > [ng-switch="intygstatus.modal"] > .ng-animate-disabled').then((knapp) => {
+            if(knapp.text().includes('Det finns redan en påbörjad komplettering')){
+                cy.get('#komplettera-open-utkast').click();
+                cy.log('Är och kompletterar på det redan skapade');
+            }
+            else {
+                cy.get('#komplettera-intyg').click();
+                cy.log('Är och kompletterar på det första');
+            
+            }           
+        
+        });
+        
  }

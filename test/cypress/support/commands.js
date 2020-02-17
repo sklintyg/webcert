@@ -574,7 +574,7 @@ function skapaLISJPIfylltUtkast(fx, intygstyp) {
         });
     });
 }
-function skapaKomplettering(fx) {
+function skapaKompletteringMotWebcert(fx) {//OBS Går mot Webcert borde gå mot intygstjänsten
     const vårdpersonal = fx.vårdpersonal;
     const vårdtagare = fx.vårdtagare;
     const vårdenhet = fx.vårdenhet;
@@ -645,8 +645,8 @@ function skapaKomplettering(fx) {
                 cy.log(resultCode);
                 
                 // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
-                cy.wrap(resultCode).then((resCode) => {
-                    return resCode;
+                cy.wrap(meddelandeId).then((theID) => {
+                    return theID;
                 })
                 
             });
@@ -1067,8 +1067,8 @@ Cypress.Commands.add("skickaRegisterLisjp", fx => {
 //Cypress.Commands.add("generateQuickGuid",() =>{
   //  return generateQuickGuid();
 //});
-Cypress.Commands.add("skapaKomplettering", fx => {
-    return skapaKomplettering(fx);
+Cypress.Commands.add("skapaKompletteringMotWebcert", fx => {
+    return skapaKompletteringMotWebcert(fx);
 });     
 // Skapa ett förifyllt LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLISJPIfylltUtkast", fx => {
@@ -1125,12 +1125,19 @@ Cypress.Commands.add("skapaDBUtkast", fx => {
 Cypress.Commands.add("skapaDOIUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.DOI);
 });
+Cypress.Commands.add("kontrolleraStausUppdatering", fx =>{
+    return kontrolleraStatusUppdatering(fx,status,intygsId);
+});
 
 /*
 Loopa igenom arrayen och plocka ut antal unika intygsid:n (detta påverkar vilka URL:er
 vi ska hämta loggar från). Skapa en tvådimensionell array med intygsid som första
 element på varje plats, följt av logghändelserna som ska verifieras.
 */
+function kontrolleraStatusUppdatering(status,intygsId){
+//gå mot mocksidan lägg till url
+//
+}
 function delaPdlEventsPåIntygsid(pdlLoggar) {
     var eventPerIntygsid = [];
     for (var i = 0; i < pdlLoggar.length; i++) {

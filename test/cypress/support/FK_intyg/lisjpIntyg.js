@@ -324,7 +324,7 @@ export function verifieraDiagnosUnderStatistik(diagnoskod) {
     cy.contains("Statistik").click();
     cy.get('#nationalStatisticsHeader').contains(diagnoskod);
 }
-export function kompletteraLisjp(existera){
-    fk.komplettera(existera);
+export function kompletteraLisjp(){
+    fk.komplettera();
 }
 
