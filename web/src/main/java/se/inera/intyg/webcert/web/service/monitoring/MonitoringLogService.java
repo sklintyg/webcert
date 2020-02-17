@@ -86,6 +86,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastSignFailed(String errorMessage, String intygsId);
 
+    void logUtkastLocked(String intygsId, String intygsTyp);
+
     void logPULookup(Personnummer personNummer, String result);
 
     void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion);
