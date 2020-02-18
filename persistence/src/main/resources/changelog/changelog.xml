@@ -1272,7 +1272,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="62" author="mj">
+  <changeSet id="63" author="mj">
     <addColumn tableName="HANDELSE">
       <column name="HANTERAT_AV" type="varchar(255)">
         <constraints nullable="true"/>
