@@ -228,7 +228,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
         arendeDraftService.delete(intygId, null);
         return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
@@ -266,7 +266,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -285,26 +285,26 @@ public class ArendeServiceImpl implements ArendeService {
         List<Arende> allArende = getArendeForIntygId(intygsId);
         List<Arende> arendeList = filterKompletteringar(allArende);
 
-        Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
-
         validateAccessRightsToAnswerComplement(intygsId, false);
 
-        // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
-        arendeList.stream()
-            .filter(arende -> !Objects.equals(arende.getMeddelandeId(), latestKomplArende.getMeddelandeId()))
-            .forEach(this::closeArendeAsHandled);
+        Arende latest = getLatestKomplArende(intygsId, arendeList);
+        for (Arende arende : arendeList) {
+            if (arende.getStatus() != Status.CLOSED) {
+                Arende answer = ArendeConverter.createAnswerFromArende(
+                    meddelande,
+                    arende,
+                    LocalDateTime.now(systemClock),
+                    user.getNamn());
 
-        Arende answer = ArendeConverter.createAnswerFromArende(
-            meddelande,
-            latestKomplArende,
-            LocalDateTime.now(systemClock),
-            user.getNamn());
+                arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
+                    Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
-        arendeDraftService.delete(latestKomplArende.getIntygsId(), latestKomplArende.getMeddelandeId());
-        // processOutgoingMessage modifies latestKomplArende in arendeList, which is invalidated from here on.
-        Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
+                allArende.add(saved);
+            }
+        }
 
-        allArende.add(saved);
+        arendeList.stream().filter(arende -> arende.getStatus() != Status.CLOSED).forEach(this::closeArendeAsHandled);
 
         return getArendeConversationViewList(intygsId, allArende);
     }
@@ -785,24 +785,26 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
             arende.getSvarPaId() != null);
 
         updateSenasteHandelseAndStatusForRelatedArende(arende);
 
-        SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
-            sendMessageToFKLogicalAddress);
+        if (sendToRecipient) {
+            SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
+                sendMessageToFKLogicalAddress);
 
-        // Send to recipient
-        try {
-            certificateSenderService.sendMessageToRecipient(arende.getIntygsId(), SendMessageToRecipientTypeConverter.toXml(request));
-        } catch (MarshallingFailureException | CertificateSenderException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
+            // Send to recipient
+            try {
+                certificateSenderService.sendMessageToRecipient(arende.getIntygsId(), SendMessageToRecipientTypeConverter.toXml(request));
+            } catch (MarshallingFailureException | CertificateSenderException e) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
+            }
+
+            sendNotification(saved, notificationEvent);
         }
-
-        sendNotification(saved, notificationEvent);
 
         return saved;
     }

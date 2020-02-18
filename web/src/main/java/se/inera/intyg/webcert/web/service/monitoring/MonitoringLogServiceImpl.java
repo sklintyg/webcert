@@ -174,6 +174,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logUtkastCreatedTemplate(String intygsId, String intygsTyp, String userHsaId, String unitHsaId,
+        String originalIntygsId, String originalIntygsTyp) {
+            logEvent(MonitoringEvent.UTKAST_CREATED_TEMPLATE, intygsId, intygsTyp,
+                userHsaId, unitHsaId, originalIntygsId, originalIntygsTyp);
+    }
+
+    @Override
     public void logUtkastEdited(String intygsId, String intygsTyp) {
         logEvent(MonitoringEvent.UTKAST_EDITED, intygsId, intygsTyp);
     }
@@ -206,6 +213,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logUtkastSignFailed(String errorMessage, String intygsId) {
         logEvent(MonitoringEvent.UTKAST_SIGN_FAILED, intygsId, errorMessage);
+    }
+
+    @Override
+    public void logUtkastLocked(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_LOCKED, intygsId, intygsTyp);
     }
 
     @Override
@@ -421,6 +433,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_COPIED_COMPLETION("Utkast '{}' created as a completion copy of '{}'"),
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
+        UTKAST_CREATED_TEMPLATE("Utkast '{}' of type '{}' created by '{}' on unit '{}' from signed template '{}' of type '{}'"),
         UTKAST_CREATED_PREFILL("Utkast '{}' of type '{}' created with '{}' forifyllnad svar by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
@@ -430,6 +443,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         UTKAST_SIGN_FAILED("Utkast '{}' failed signing process with message '{}'"),
+        UTKAST_LOCKED("Utkast '{}' of type '{}' was locked"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),

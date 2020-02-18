@@ -24,6 +24,18 @@
     "SAKERHETSTJANST_IDP_URL": {
       "type": "string"
     },
+    "WEBCERT_USER_SURVEY_URL": {
+      "type": "string"
+    },
+    "WEBCERT_USER_SURVEY_VERSION": {
+      "type": "string"
+    },
+    "WEBCERT_USER_SURVEY_DATE_TO": {
+      "type": "string"
+    },
+    "WEBCERT_USER_SURVEY_DATE_FROM": {
+      "type": "string"
+    },
     "BANNERS": {
       "type": "array",
       "minItems": 0,

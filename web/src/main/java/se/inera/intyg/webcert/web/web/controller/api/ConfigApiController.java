@@ -65,6 +65,18 @@ public class ConfigApiController extends AbstractApiController {
     @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
     private String cgiFunktionstjansterIdpUrl;
 
+    @Value("${webcert.user.survey.url:}")
+    private String webcertUserSurveyUrl;
+
+    @Value("${webcert.user.survey.date.to:}")
+    private String webcertUserSurveyDateTo;
+
+    @Value("${webcert.user.survey.date.from:}")
+    private String webcertUserSurveyDateFrom;
+
+    @Value("${webcert.user.survey.version:}")
+    private String webcertUserSurveyVersion;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -82,7 +94,8 @@ public class ConfigApiController extends AbstractApiController {
     public Response getConfig() {
         Boolean useMinifiedJavaScript = Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
         ConfigResponse configResponse = new ConfigResponse(version, build, ppHost, dashboardUrl, useMinifiedJavaScript,
-            sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl, iaBannerService.getCurrentBanners());
+            sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl, webcertUserSurveyUrl, iaBannerService.getCurrentBanners(),
+            webcertUserSurveyDateTo, webcertUserSurveyDateFrom, webcertUserSurveyVersion);
 
         return Response.ok(configResponse).build();
     }
