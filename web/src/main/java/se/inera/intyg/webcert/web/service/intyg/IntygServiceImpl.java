@@ -956,7 +956,8 @@ public class IntygServiceImpl implements IntygService {
 
     private void handleComplementedParent(String intygsId) {
         Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(intygsId);
-        if (isParentCompleted(relationsOfChild) && isLatestChildCompletionAndMatchIntygsId(relationsOfChild.getParent().getIntygsId(), intygsId)) {
+        if (isParentCompleted(relationsOfChild)
+            && isLatestChildCompletionAndMatchIntygsId(relationsOfChild.getParent().getIntygsId(), intygsId)) {
             arendeService.reopenClosedCompletions(relationsOfChild.getParent().getIntygsId());
         }
     }
