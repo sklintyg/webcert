@@ -942,6 +942,8 @@ public class IntygServiceImpl implements IntygService {
         // certificate has been closed.
         arendeService.closeAllNonClosedQuestions(intygsId);
 
+        handleComplementedParent(intygsId);
+
         // Third: create a log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg);
         logService.logRevokeIntyg(logRequest);
@@ -950,6 +952,23 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithRevokedDate(intygsId);
 
         return IntygServiceResult.OK;
+    }
+
+    private void handleComplementedParent(String intygsId) {
+        Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(intygsId);
+        if (relationsOfChild != null
+            && relationsOfChild.getParent() != null
+            && relationsOfChild.getParent().getRelationKod() == RelationKod.KOMPLT) {
+            Relations relationsOfParent = intygRelationHelper.getRelationsForIntyg(relationsOfChild.getParent().getIntygsId());
+
+            if (relationsOfParent != null
+                && relationsOfParent.getLatestChildRelations() != null
+                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg() != null
+                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getRelationKod() == RelationKod.KOMPLT
+                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getIntygsId().equals(intygsId)) {
+                arendeService.reopenClosedCompletions(relationsOfChild.getParent().getIntygsId());
+            }
+        }
     }
 
     private void markUtkastWithSendDateAndRecipient(final Utkast foundUtkast, String intygsId, String recipient) {

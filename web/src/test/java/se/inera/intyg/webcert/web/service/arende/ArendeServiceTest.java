@@ -1459,6 +1459,23 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
+    public void testReopenClosedCompletions() {
+        Arende arende = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        arende.setAmne(ArendeAmne.KOMPLT);
+        arende.setStatus(Status.CLOSED);
+        arende.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Collections.singletonList(arende));
+
+        service.reopenClosedCompletions(INTYG_ID);
+
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(arendeRepository, times(1)).save(arendeCaptor.capture());
+        assertEquals(Status.PENDING_INTERNAL_ACTION, arendeCaptor.getAllValues().get(0).getStatus());
+    }
+
+    @Test
     public void testCloseCompletionsAsHandled() {
         final String intygId = "intygId";
         Arende arende1 = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);

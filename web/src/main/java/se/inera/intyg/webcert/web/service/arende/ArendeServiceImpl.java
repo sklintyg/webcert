@@ -659,6 +659,19 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
+    public void reopenClosedCompletions(String intygsId) {
+
+        List<Arende> list = arendeRepository.findByIntygsId(intygsId);
+
+        for (Arende arende : list) {
+            if (arende.getAmne() == ArendeAmne.KOMPLT && arende.getStatus() == Status.CLOSED) {
+                reopenClosedCompletion(arende);
+            }
+        }
+
+    }
+
+    @Override
     public Arende getArende(String meddelandeId) {
         return arendeRepository.findOneByMeddelandeId(meddelandeId);
     }
@@ -748,6 +761,16 @@ public class ArendeServiceImpl implements ArendeService {
             } else {
                 return NotificationEvent.QUESTION_FROM_CARE_HANDLED;
             }
+        }
+
+        return null;
+    }
+
+    private NotificationEvent determineReopenedNotificationEvent(Arende arende) {
+        FrageStallare frageStallare = FrageStallare.getByKod(arende.getSkickatAv());
+
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+            return NotificationEvent.NEW_QUESTION_FROM_RECIPIENT;
         }
 
         return null;
@@ -843,6 +866,20 @@ public class ArendeServiceImpl implements ArendeService {
         sendNotification(closedArende, notificationEvent);
 
         return closedArende;
+    }
+
+    private void reopenClosedCompletion(Arende arende) {
+        if (arende.getStatus() != Status.CLOSED) {
+            return;
+        }
+
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        arende.setSenasteHandelse(LocalDateTime.now(systemClock));
+        Arende reopenedArende = arendeRepository.save(arende);
+
+        NotificationEvent notificationEvent = determineReopenedNotificationEvent(reopenedArende);
+        sendNotification(reopenedArende, notificationEvent);
+
     }
 
     private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
