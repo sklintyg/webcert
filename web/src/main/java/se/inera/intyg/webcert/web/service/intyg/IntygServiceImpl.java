@@ -956,20 +956,27 @@ public class IntygServiceImpl implements IntygService {
 
     private void handleComplementedParent(String intygsId) {
         Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(intygsId);
-        if (relationsOfChild != null
-            && relationsOfChild.getParent() != null
-            && relationsOfChild.getParent().getRelationKod() == RelationKod.KOMPLT) {
-            Relations relationsOfParent = intygRelationHelper.getRelationsForIntyg(relationsOfChild.getParent().getIntygsId());
-
-            if (relationsOfParent != null
-                && relationsOfParent.getLatestChildRelations() != null
-                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg() != null
-                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getRelationKod() == RelationKod.KOMPLT
-                && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getIntygsId().equals(intygsId)) {
-                arendeService.reopenClosedCompletions(relationsOfChild.getParent().getIntygsId());
-            }
+        if (isParentCompleted(relationsOfChild) && isLatestChildCompletionAndMatchIntygsId(relationsOfChild.getParent().getIntygsId(), intygsId)) {
+            arendeService.reopenClosedCompletions(relationsOfChild.getParent().getIntygsId());
         }
     }
+
+    private boolean isParentCompleted(Relations relationsOfChild) {
+        return relationsOfChild != null
+            && relationsOfChild.getParent() != null
+            && relationsOfChild.getParent().getRelationKod() == RelationKod.KOMPLT;
+    }
+
+    private boolean isLatestChildCompletionAndMatchIntygsId(String intygsIdOfParent, String intygsIdToMatch) {
+        Relations relationsOfParent = intygRelationHelper.getRelationsForIntyg(intygsIdOfParent);
+
+        return relationsOfParent != null
+            && relationsOfParent.getLatestChildRelations() != null
+            && relationsOfParent.getLatestChildRelations().getComplementedByIntyg() != null
+            && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getRelationKod() == RelationKod.KOMPLT
+            && relationsOfParent.getLatestChildRelations().getComplementedByIntyg().getIntygsId().equals(intygsIdToMatch);
+    }
+
 
     private void markUtkastWithSendDateAndRecipient(final Utkast foundUtkast, String intygsId, String recipient) {
 
