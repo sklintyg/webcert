@@ -85,7 +85,7 @@ describe('LUAE-FS-intyg', function () {
 
         // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
         cy.url().should('include', this.utkastId);
-        intyg.fornya();
+        intyg.fornyaLuaeFs();
         cy.contains("Grund för medicinskt underlag"); // Vänta på att intyget ska laddas färdigt
         cy.get('.intygs-id').invoke('text').then((text1) => {
             var intygsID_2 = text1.replace(/\s/g, '');

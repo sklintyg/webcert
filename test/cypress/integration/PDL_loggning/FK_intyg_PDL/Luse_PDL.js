@@ -92,7 +92,7 @@ describe('LUSE-intyg', function () {
 
         // Förnya intyget
         cy.url().should('include', this.utkastId);
-        intyg.fornya();
+        intyg.fornyaLuse();
         cy.contains("Grund för medicinskt underlag");
 
         cy.get('.intygs-id').invoke('text').then((text1) => {

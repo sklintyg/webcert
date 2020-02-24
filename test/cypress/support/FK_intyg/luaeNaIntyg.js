@@ -221,3 +221,13 @@ export function skrivUt(typAvUtskrift, intygsId){
     // ToDo: Använd konstant från ex.vis commands.js istället?
     fk.skrivUt(typAvUtskrift, intygsId, 'luae_na');
 }
+
+//-----------------'Förnya Luae-NA'-----------------------------------
+export function fornyaLuaeNa() {
+    cy.get('#fornyaBtn').click();
+    cy.get('body').then((ele) => {
+        if(ele.text().includes('I de fall patienten har ändrat namn eller adress så uppdateras den informationen.')) {
+            cy.get('#button1fornya-dialog').click();
+        }
+    });
+}

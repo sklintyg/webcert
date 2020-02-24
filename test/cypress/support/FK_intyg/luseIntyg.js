@@ -217,3 +217,12 @@ export function sektionMedicinskaFörutsättningarFörArbete(medFörutsättninga
 export function skrivUt(typAvUtskrift, intygsId){
     fk.skrivUt(typAvUtskrift, intygsId, 'luse');
 }
+//-----------------'Förnya Luse'-----------------------------------
+export function fornyaLuse() {
+    cy.get('#fornyaBtn').click();
+    cy.get('body').then((ele) => {
+        if(ele.text().includes('I de fall patienten har ändrat namn eller adress så uppdateras den informationen.')) {
+            cy.get('#button1fornya-dialog').click();
+        }
+    });
+}
