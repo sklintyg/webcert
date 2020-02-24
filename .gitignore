@@ -28,6 +28,4 @@ reports/
 jsconfig.json
 typings.json
 out
-secret-*
-secret-*
 test/reports
