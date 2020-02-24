@@ -132,11 +132,11 @@ public final class HoSPersonHelper {
     }
 
     public static void enrichHoSPerson(HoSPersonal hosPerson, IntygUser user) {
-        // set titel, medarbetaruppdrag, befattningar and specialiteter from user object
         hosPerson.setTitel(user.getTitel());
         hosPerson.setMedarbetarUppdrag(user.getSelectedMedarbetarUppdragNamn());
         hosPerson.getBefattningar().addAll(user.getBefattningar());
         hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
+        hosPerson.getLegitimeradeYrkesgrupper().addAll(user.getLegitimeradeYrkesgrupper());
     }
 
 }

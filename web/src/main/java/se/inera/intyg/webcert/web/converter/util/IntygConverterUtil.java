@@ -121,6 +121,7 @@ public final class IntygConverterUtil {
         } else {
             hosPersonal.setVardenhet(buildVardenhet(user));
         }
+        hosPersonal.getLegitimeradeYrkesgrupper().addAll(user.getLegitimeradeYrkesgrupper());
         return hosPersonal;
     }
 

@@ -208,19 +208,22 @@ public class IntygConverterUtilTest {
     }
 
     @Test
-    public void testBuildHosPersonalFromWebCertUserWithSpecialiseringarAndBefattningar() {
+    public void testBuildHosPersonalFromWebCertUserWithSpecialiseringarBefattningarAndLegitimeradeYrkesgrupper() {
         final String hsaId = "hsaid";
         final String namn = "namn";
         final String befattning1 = "befattning1";
         final String befattning2 = "befattning2";
         final String specialisering1 = "specialisering1";
         final String specialisering2 = "specialisering2";
+        final String legitimeradYrkesgrupp1 = "läkare";
+        final String legitimeradYrkesgrupp2 = "tandläkare";
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
         WebCertUser user = new WebCertUser();
         user.setHsaId(hsaId);
         user.setNamn(namn);
         user.setBefattningar(Arrays.asList(befattning1, befattning2));
         user.setSpecialiseringar(Arrays.asList(specialisering1, specialisering2));
+        user.setLegitimeradeYrkesgrupper(Arrays.asList(legitimeradYrkesgrupp1, legitimeradYrkesgrupp2));
 
         HoSPersonal result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
 
@@ -232,6 +235,9 @@ public class IntygConverterUtilTest {
         assertEquals(2, result.getSpecialiteter().size());
         assertEquals(specialisering1, result.getSpecialiteter().get(0));
         assertEquals(specialisering2, result.getSpecialiteter().get(1));
+        assertEquals(2, result.getLegitimeradeYrkesgrupper().size());
+        assertEquals(legitimeradYrkesgrupp1, result.getLegitimeradeYrkesgrupper().get(0));
+        assertEquals(legitimeradYrkesgrupp2, result.getLegitimeradeYrkesgrupper().get(1));
     }
 
     private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
