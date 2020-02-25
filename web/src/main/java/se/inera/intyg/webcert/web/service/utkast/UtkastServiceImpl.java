@@ -181,13 +181,19 @@ public class UtkastServiceImpl implements UtkastService {
     public Utkast createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
-        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         String intygType = request.getIntygType();
 
         CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
+
+        if (intygJsonModel != null && request.getForifyllnad().isPresent()) {
+            DraftValidation draftValidation = validateDraft(request.getIntygId(), request.getIntygType(), intygJsonModel);
+            request.setStatus(draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE);
+        } else {
+            request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        }
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
