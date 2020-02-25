@@ -112,7 +112,7 @@ gretty {
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,testability-api",
                "-Dconfig.folder=${projectDir}/../devops/dev",
                "-Dresources.folder=classpath:",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
