@@ -20,9 +20,11 @@
 package se.inera.intyg.webcert.web.service.testdata;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public interface TestDataService {
 
-    void createIntyg(String jsonData);
+    void createIntyg(JsonNode jsonData);
 
     void deleteIntyg();
 }

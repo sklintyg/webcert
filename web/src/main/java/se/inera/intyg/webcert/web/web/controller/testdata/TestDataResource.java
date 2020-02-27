@@ -19,23 +19,21 @@
 
 package se.inera.intyg.webcert.web.web.controller.testdata;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.Api;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import se.inera.intyg.webcert.web.service.testdata.TestDataService;
 
-@Transactional
 @Path("/testdata")
 @Api(value = "testdata", description = "REST API för inskjutning av testdata", produces = MediaType.APPLICATION_JSON)
 public class TestDataResource {
@@ -54,12 +52,11 @@ public class TestDataResource {
 
     @POST
     @Path("/")
-    //@Consumes(MediaType.APPLICATION_JSON)
-    //@Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response insertIntyg(@RequestBody String data,
-        @RequestHeader HttpHeaders headers) {
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response insertIntyg(IntygWrapper data) {
 
-        //service.createIntyg(request.getJsonData());
+        service.createIntyg(data.getData());
 
         return Response.ok().build();
     }
@@ -73,4 +70,16 @@ public class TestDataResource {
         return Response.ok().build();
     }
 
+    static class IntygWrapper {
+
+        JsonNode data;
+
+        JsonNode getData() {
+            return data;
+        }
+
+        void setData(JsonNode data) {
+            this.data = data;
+        }
+    }
 }

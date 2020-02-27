@@ -19,16 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.testdata;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
+@Transactional
 @Service
 public class TestDataServiceImpl implements TestDataService {
 
@@ -38,15 +45,9 @@ public class TestDataServiceImpl implements TestDataService {
     private UtkastRepository utkastRepository;
 
     @Override
-    public void createIntyg(String jsonData) {
+    public void createIntyg(JsonNode jsonData) {
 
-        Map<String, String> data = parseJsonData(jsonData);
-
-        persistIntyg(data);
-    }
-
-    private Map<String, String> parseJsonData(String jsonData) {
-        return null;
+        persistIntyg(jsonData);
     }
 
     @Override
@@ -54,46 +55,148 @@ public class TestDataServiceImpl implements TestDataService {
         utkastRepository.deleteAll();
     }
 
-    private void persistIntyg(Map<String, String> data) {
+    private void persistIntyg(JsonNode data) {
         Utkast utkast = new Utkast();
-        utkast.setPatientPersonnummer(getPersonnummerFromString(data.get("PersonNummer")));
-        utkast.setPatientFornamn(data.get("Fornamn"));
-        utkast.setPatientMellannamn(data.get("Mellannamn"));
-        utkast.setPatientEfternamn(data.get("Efternamn"));
-        utkast.setTestIntyg(Boolean.getBoolean(data.get("TestIntyg")));
+        JsonNode model = safeGet(data, "model");
+        JsonNode grundData = safeGet(model, "grundData");
+        JsonNode skapadAv = safeGet(grundData, "skapadAv");
+        JsonNode vardenhet = safeGet(skapadAv, "vardenhet");
+        JsonNode vardgivare = safeGet(vardenhet, "vardgivare");
+        JsonNode patient = safeGet(grundData, "patient");
 
-        utkast.setIntygsId(data.get("IntygId"));
-        utkast.setIntygsTyp(data.get("IntygType"));
-        utkast.setIntygTypeVersion(data.get("IntygTypeVersion"));
+        utkast.setPatientPersonnummer(getPersonnummerFromString(safeTextGet(patient, "personId")));
+        utkast.setPatientFornamn(safeTextGet(patient, "fornamn"));
+        utkast.setPatientMellannamn(safeTextGet(patient, "mellannamn"));
+        utkast.setPatientEfternamn(safeTextGet(patient, "efternamn"));
 
-        utkast.setStatus(getUtkastStatusFromString(data.get("Status")));
+        utkast.setTestIntyg(safeBoolGet(grundData, "testIntyg"));
 
-        utkast.setModel(data.get("Model"));
+        utkast.setIntygsId(safeTextGet(model, "id"));
+        utkast.setIntygsTyp(safeTextGet(model, "typ"));
+        utkast.setIntygTypeVersion(safeTextGet(model, "textVersion"));
 
-//        Vardenhe vardenhet = request.getHosPerson().getVardenhet();
-//
-//        utkast.setEnhetsId(vardenhet.getEnhetsid());
-//        utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
-//
-//        Object vardgivare = vardenhet.getVardgivare();
-//
-//        utkast.setVardgivarId(vardgivare.getVardgivarid());
-//        utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
-//
-//        Object creator = "";
-//
-//        utkast.setSenastSparadAv(creator);
-//        utkast.setSkapadAv(creator);
-//        utkast.setSkapad();
+        utkast.setStatus(getUtkastStatusFromString(safeTextGet(data, "status")));
+
+        utkast.setEnhetsId(safeTextGet(vardenhet, "enhetsid"));
+        utkast.setEnhetsNamn(safeTextGet(vardenhet, "enhetsnamn"));
+
+        utkast.setVardgivarId(safeTextGet(vardgivare, "vardgivarid"));
+        utkast.setVardgivarNamn(safeTextGet(vardgivare, "vardgivarnamn"));
+
+        VardpersonReferens senastSparad = new VardpersonReferens(safeTextGet(data, "senast_sparad_av_hsaid"),
+            safeTextGet(data, "senast_sparad_av_namn"));
+        utkast.setSenastSparadAv(senastSparad);
+
+        VardpersonReferens creator = new VardpersonReferens(safeTextGet(skapadAv, "personId"),
+            safeTextGet(skapadAv, "fullstandigtNamn"));
+        utkast.setSkapadAv(creator);
+
+        utkast.setSkapad(safeDateGet(data, "skapad"));
+
+        utkast.setAterkalladDatum(safeDateGet(data, "aterkallad_datum"));
+        utkast.setKlartForSigneringDatum(safeDateGet(data, "klart_for_signering_datum"));
+        utkast.setRelationIntygsId(safeTextGet(data, "relation_intyg_id"));
+        utkast.setRelationKod(getRelationKodFromString(safeTextGet(data, "relation_kod")));
+        utkast.setVidarebefordrad(safeBoolGet(data, "vidarebefodrad"));
+        utkast.setVersion(safeLongGet(data, "version"));
+        utkast.setSkickadTillMottagare(safeTextGet(data, "skickad_till_mottagare"));
+        utkast.setSkickadTillMottagareDatum(safeDateGet(data, "skickad_till_mottagare_datum"));
+
+        utkast.setModel(model.toString());
+
+        //utkast.setSignatur(getSignatur(safeGet(data, "signatur")));
 
         utkastRepository.save(utkast);
     }
 
+
+    private JsonNode safeGet(JsonNode data, String key) {
+        if (data == null) {
+            return null;
+        }
+
+        return data.get(key);
+    }
+
+    private String safeTextGet(JsonNode data, String key) {
+        if (data == null) {
+            return null;
+        }
+
+        JsonNode tmp = data.get(key);
+        if (tmp == null) {
+            return null;
+        }
+
+        return tmp.textValue();
+    }
+
+    private Boolean safeBoolGet(JsonNode data, String key) {
+        if (data == null) {
+            return null;
+        }
+
+        JsonNode tmp = data.get(key);
+        if (tmp == null) {
+            return null;
+        }
+
+        return tmp.booleanValue();
+    }
+
+    private Long safeLongGet(JsonNode data, String key) {
+        if (data == null) {
+            return null;
+        }
+
+        JsonNode tmp = data.get(key);
+        if (tmp == null) {
+            return null;
+        }
+
+        return tmp.longValue();
+    }
+
+    private LocalDateTime safeDateGet(JsonNode data, String key) {
+        if (data == null) {
+            return null;
+        }
+
+        JsonNode tmp = data.get(key);
+        if (tmp == null) {
+            return null;
+        }
+
+        String dateString = tmp.textValue();
+        if (dateString.isEmpty()) {
+            return null;
+        }
+
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+    }
+
     private UtkastStatus getUtkastStatusFromString(String status) {
-        return null;
+        if (status == null || status.isEmpty()) {
+            return null;
+        }
+        return UtkastStatus.fromValue(status);
     }
 
     private Personnummer getPersonnummerFromString(String personNummer) {
-        return null;
+        if (personNummer == null || personNummer.isEmpty()) {
+            return null;
+        }
+        return Personnummer.createPersonnummer(personNummer).get();
+    }
+
+    private RelationKod getRelationKodFromString(String relationKod) {
+        if (relationKod == null || relationKod.isEmpty()) {
+            return null;
+        }
+        return RelationKod.fromValue(relationKod);
+    }
+
+    private Signatur getSignatur(JsonNode signatur) {
+        return new Signatur();
     }
 }
