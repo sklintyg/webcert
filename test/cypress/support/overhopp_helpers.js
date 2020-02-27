@@ -17,6 +17,7 @@ export function verifyPatStatus(arg) {
             cy.contains('Patientens namn skiljer sig från det i journalsystemet').should('not.exist');
             cy.get('#wc-new-person-id-message-text').should('not.exist');
             cy.contains('Patienten har samordningsnummer kopplat till reservnummer:').should('not.exist');
+            //ska ej synas se jira nr INTYGFV-10854
             cy.contains('Patienten är avliden').should('not.exist');
             break;
 
@@ -76,6 +77,7 @@ export function verifyPatStatus(arg) {
             cy.contains('Ingen adress angavs av journalsystemet').should('exist');
             cy.contains('Journalsystemet angav inga adressuppgifter för patienten, därför har en slagning i den nationella personuppgiftstjänsten genomförts. Det är adressen som finns registrerad där som nu visas i intyget.').should('exist');
             cy.get('#confirmationOkButton').click();
+            break;
 
     };
 };

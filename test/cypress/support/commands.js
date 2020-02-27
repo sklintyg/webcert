@@ -19,7 +19,9 @@ export const implementeradeIntyg = {
     AFMU: "AF00213",
     AF00251: "AF00251",
     DB: "DB",
-    DOI: "DOI"
+    DOI: "DOI",
+    AG7804: "AG7804",
+    AG114: "AG1-14"
 }
 function generateQuickGuid() {
     return Math.random().toString(36).substring(2, 15) +
@@ -1041,6 +1043,35 @@ function skickaRegisterLisjp(fx) {
         });
     });
 }
+function rensaIntyg(fx){
+
+   
+    cy.request({
+    method: 'DELETE',
+    url: '/testability/intyg/handelser/patient/' + fx.personnummerKompakt,
+    }).then((resp) =>{
+        expect(resp.status).to.equal(200);
+    }); 
+   
+    
+    cy.request({
+        method: 'DELETE',
+        url: '/testability/intyg/patient/' + fx.personnummer,
+        }).then((resp) =>{
+            expect(resp.status).to.equal(200);
+        }); 
+        const intygsUrl = Cypress.env('intygTjanstUrl') + "/inera-certificate/resources/certificate/citizen/";
+    //expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
+    //cy.log(vårdtagare.personnummerKompakt + vårdtagare.förnamn +vårdtagare.efternamn + vårdtagare.postadress + vårdtagare.postnummer + vårdtagare.postort);
+   
+        cy.request({
+            method: 'DELETE',
+            url: intygsUrl + fx.personnummer,
+            }).then((resp) =>{
+                expect(resp.status).to.equal(200);
+            }); 
+     
+}
 function taBortIntyg(fx) {
    
     const intygsID = fx.intygsID
@@ -1064,6 +1095,10 @@ Cypress.Commands.add("skickaRegisterLisjp", fx => {
 
 });
 
+Cypress.Commands.add("rensaIntyg", fx => {
+    rensaIntyg(fx);   
+
+});
 //Cypress.Commands.add("generateQuickGuid",() =>{
   //  return generateQuickGuid();
 //});
@@ -1077,6 +1112,14 @@ Cypress.Commands.add("skapaLISJPIfylltUtkast", fx => {
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLisjpUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.LISJP);
+});
+// Skapa ett AG7804-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaAG7804Utkast", fx => {
+    return skapaUtkast(fx, implementeradeIntyg.AG7804);
+});
+// Skapa ett AG7804-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaAG114Utkast", fx => {
+    return skapaUtkast(fx, implementeradeIntyg.AG114);
 });
 
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
