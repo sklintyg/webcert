@@ -1,6 +1,6 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/SKR_intyg/Ag114intyg'
+import * as intyg from '../../../support/SKR_intyg/AG114intyg'
 import * as pdl from '../../../support/pdl_helpers'
 
 // AG114 = Läkarintyg om arbetsförmåga – arbetsgivaren, AG 114
