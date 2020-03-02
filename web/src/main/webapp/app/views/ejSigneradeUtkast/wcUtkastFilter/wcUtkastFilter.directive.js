@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy', 'common.UserModel',
-      function($timeout, UtkastProxy, UserModel) {
+angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope', 'webcert.UtkastProxy', 'common.UserModel',
+      function($timeout, $rootScope, UtkastProxy, UserModel) {
         'use strict';
 
         return {
@@ -122,6 +122,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                   $scope.filter.selection.savedBy = undefined;
                 }
                 $scope.setDefaultSavedBy();
+                $rootScope.$broadcast('utkastList.requestListUpdate', {startFrom: -1});
               }, function() {
                 $scope.widgetState.loadingSavedByList = false;
                 $scope.widgetState.savedByList = [{
