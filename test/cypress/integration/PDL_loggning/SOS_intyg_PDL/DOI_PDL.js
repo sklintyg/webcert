@@ -24,6 +24,7 @@ describe('Dödsorsaks-intyg', function () {
 
     beforeEach(function() {
         pdlEventArray = [];
+        cy.rensaIntyg(this);
         cy.skapaDOIUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("DOI-utkast med id " + utkastId + " skapat och används i testfallet");

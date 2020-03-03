@@ -24,6 +24,7 @@ describe('Dödsbevis-intyg', function () {
 
     beforeEach(function() {
         pdlEventArray = [];
+        cy.rensaIntyg(this);
         cy.skapaDBUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("DB-utkast med id " + utkastId + " skapat och används i testfallet");
