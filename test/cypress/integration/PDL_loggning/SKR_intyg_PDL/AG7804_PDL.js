@@ -24,6 +24,7 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
 
     beforeEach(function() {
         pdlEventArray = [];
+        cy.rensaIntyg(this);
         cy.skapaAG7804Utkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("AG7804-utkast med id " + utkastId + " skapat och används i testfallet");
@@ -31,12 +32,12 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
         });
     });
 
-    it('skapar en minimalt ifylld AG7804', function () {
+    it('skapar en maximalt ifylld AG7804', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
-        intyg.ifyllnadsstod();
+        //intyg.ifyllnadsstod();
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
         pdlEventArray.push(ag7804PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
