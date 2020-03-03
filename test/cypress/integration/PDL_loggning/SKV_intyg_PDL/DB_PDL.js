@@ -20,11 +20,13 @@ describe('Dödsbevis-intyg', function () {
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/charlieOlsson').as('vårdtagare');
+        
     })
 
     beforeEach(function() {
-        pdlEventArray = [];
         cy.rensaIntyg(this);
+        pdlEventArray = [];
+        
         cy.skapaDBUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("DB-utkast med id " + utkastId + " skapat och används i testfallet");
