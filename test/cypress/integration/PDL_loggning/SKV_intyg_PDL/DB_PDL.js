@@ -24,7 +24,7 @@ describe('Dödsbevis-intyg', function () {
     })
 
     beforeEach(function() {
-        cy.rensaIntyg(this);
+        
         pdlEventArray = [];
         
         cy.skapaDBUtkast(this).then((utkastId) => {

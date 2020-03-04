@@ -7,7 +7,7 @@
     "RETRIES": 2
   },
   "defaultCommandTimeout": 20000,
-  "pageLoadTimeout": 120000,
+  "pageLoadTimeout": 180000,
   "fixturesFolder": "fixtures",
   "integrationFolder": "integration",
   "pluginsFile": "plugins/index.js",
