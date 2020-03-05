@@ -18,21 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Strings;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -309,7 +306,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     /**
      * First, check if the original certificate was issued as a test intyg. If not, check
      * if the patient currently have the testIndicator-flag.
-     * @param copyRequest   Request to add the TestIntyg-flag for.
+     *
+     * @param copyRequest Request to add the TestIntyg-flag for.
      * @param isSourceATestIntyg If the source intyg is a test intyg.
      */
     private void addTestIntygFlagIfNecessaryToCopyRequest(AbstractCreateCopyRequest copyRequest, boolean isSourceATestIntyg) {
@@ -473,7 +471,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
         Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
             RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
-        if (complementedByRelation.isPresent()) {
+        if (complementedByRelation.isPresent() && !complementedByRelation.get().isMakulerat()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
                 operation, originalIntygId, complementedByRelation.get().getIntygsId());
             LOG.debug(errorString);
@@ -538,8 +536,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails, boolean addRelation, boolean coherentJournaling)
         throws ModuleNotFoundException, ModuleException {
 
-         return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                coherentJournaling);
+        return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
+            coherentJournaling);
     }
 
     private UtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
