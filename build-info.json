@@ -2,7 +2,7 @@
   "appVersion": "6.6.0",
   "commonVersion": "3.12.0.+",
   "infraVersion": "3.12.0.+",
-  "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false --scan s",
+  "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
   "tests": [
     "restAssuredTest",
     "protractorTest"
