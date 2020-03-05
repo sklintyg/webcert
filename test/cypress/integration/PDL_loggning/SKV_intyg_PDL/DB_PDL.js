@@ -20,7 +20,7 @@ describe('Dödsbevis-intyg', function () {
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/charlieOlsson').as('vårdtagare');
-        
+        cy.rensaIntyg(this);
     })
 
     beforeEach(function() {
