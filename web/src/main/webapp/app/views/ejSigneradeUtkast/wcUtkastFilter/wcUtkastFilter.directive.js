@@ -38,7 +38,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope',
             };
 
             $scope.getAlwaysHighlightedSparatAv = function () {
-              return UserModel.isLakare();
+              return !UserModel.isVardAdministrator();
             };
 
             $scope.setShowDateFromVisible = function() {
@@ -68,10 +68,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope',
             $scope.resetFilter = function() {
               resetFilterState();
               $scope.widgetState.searched = false;
-              $timeout(function() {
-                $scope.onReset();
-              });
-
+              $scope.onReset();
             };
 
             function resetFilterState() {
@@ -95,13 +92,28 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope',
             }
 
             $scope.setDefaultSavedBy = function() {
-              $scope.filter.selection.savedBy = undefined;
-              if(UserModel.isLakare()) {
+              if (!UserModel.isVardAdministrator()) {
+                $scope.filter.selection.savedBy = UserModel.user.hsaId;
+              } else {
+                $scope.filter.selection.savedBy = undefined;
+              }
+            };
+
+            $scope.addCurrentLakare = function() {
+              var inList = false;
+              if(!UserModel.isVardAdministrator()) {
                 $scope.widgetState.savedByList.forEach(function(lakare) {
                   if (UserModel.user && lakare.id === UserModel.user.hsaId) {
-                    $scope.filter.selection.savedBy = UserModel.user.hsaId;
+                    inList = true;
                   }
                 });
+
+                if(!inList) {
+                  var userLakare = {
+                    id: UserModel.user.hsaId, label: UserModel.user.namn
+                  };
+                  $scope.widgetState.savedByList.push(userLakare);
+                }
               }
             };
 
@@ -121,8 +133,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope',
                 if ($scope.filter.savedByOptions.length === 1) {
                   $scope.filter.selection.savedBy = undefined;
                 }
-                $scope.setDefaultSavedBy();
-                $rootScope.$broadcast('utkastList.requestListUpdate', {startFrom: -1});
+                $scope.addCurrentLakare();
               }, function() {
                 $scope.widgetState.loadingSavedByList = false;
                 $scope.widgetState.savedByList = [{

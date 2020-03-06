@@ -35,7 +35,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
       controller: function($scope) {
 
         $scope.getAlwaysHighlightedSigneratAv = function() {
-            return UserModel.isLakare();
+            return !UserModel.isVardAdministrator();
         };
 
         $scope.maxdate = moment().format('YYYY-MM-DD');
@@ -71,9 +71,9 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
           };
 
-          function updateArendenList(reset) {
+          function updateArendenList(reset, search) {
             enhetArendenModel.enhetId = vardenhetFilterModel.selectedUnit;
-            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset});
+            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset, search: search});
           }
 
           function resetFrom() {
@@ -90,7 +90,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
           };
 
           $scope.filterList = function() {
-            updateArendenList(false);
+            updateArendenList(false, true);
           };
 
           // Broadcast by vardenhet filter directive on load and selection
