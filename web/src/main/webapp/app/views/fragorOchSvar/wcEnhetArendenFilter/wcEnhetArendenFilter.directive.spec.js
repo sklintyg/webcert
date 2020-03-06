@@ -39,11 +39,12 @@ describe('wcEnhetArendenFilter', function() {
       $provide.value('common.User',
           jasmine.createSpyObj('common.User', ['getValdVardenhet', 'getValdVardgivare', 'getVardenhetFilterList']));
       $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat', 'getLatestData']));
+      $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
       $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel',
           ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration', 'isVardAdministrator']));
     }]);
 
-    inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend', 'webcert.vardenhetFilterModel', 'common.User',
+    inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend', 'webcert.vardenhetFilterModel', 'common.User', 'common.authorityService',
       function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_, _vardenhetFilterModel_, _User_) {
         $rootScope = _$rootScope_;
         $compile = _$compile_;
