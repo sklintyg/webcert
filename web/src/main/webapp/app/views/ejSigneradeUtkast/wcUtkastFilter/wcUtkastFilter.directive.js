@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope', 'webcert.UtkastProxy', 'common.UserModel',
-      function($timeout, $rootScope, UtkastProxy, UserModel) {
+angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope', 'webcert.UtkastProxy',
+  'common.UserModel', 'common.authorityService',
+      function($timeout, $rootScope, UtkastProxy, UserModel, authorityService) {
         'use strict';
 
         return {
@@ -32,6 +33,14 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope',
           controller: function($scope) {
             $scope.showDateFromErrors = false;
             $scope.showDateToErrors = false;
+
+            $scope.showVidarebefordra = function() {
+              var options = {
+                authority: 'VIDAREBEFORDRA_UTKAST',
+                intygstyp: ''
+              };
+              return authorityService.isAuthorityActive(options);
+            };
 
             $scope.showDateError = function () {
               return ($scope.showDateFromErrors || $scope.showDateToErrors) && $scope.filterForm.$invalid && !$scope.filterForm.$pristine;

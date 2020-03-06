@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenFilter', [
   '$rootScope', '$log', '$cookies',
   'webcert.enhetArendenProxy',
-  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterService', 'common.UserModel',
-  function($rootScope, $log, $cookies,
-      enhetArendenProxy,
-      enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService, UserModel) {
+  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
+  'webcert.enhetArendenFilterService', 'common.UserModel', 'common.authorityService',
+  function($rootScope, $log, $cookies, enhetArendenProxy, enhetArendenModel,
+      enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService, UserModel, authorityService) {
     'use strict';
 
     return {
@@ -33,6 +33,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
       scope: {},
       templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
       controller: function($scope) {
+
+        $scope.showVidarebefordra = function() {
+          var options = {
+            authority: 'VIDAREBEFORDRA_FRAGASVAR',
+            intygstyp: ''
+          };
+          return authorityService.isAuthorityActive(options);
+        };
 
         $scope.getAlwaysHighlightedSigneratAv = function() {
             return !UserModel.isVardAdministrator();
