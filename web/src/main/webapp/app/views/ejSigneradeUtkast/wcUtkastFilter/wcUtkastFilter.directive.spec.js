@@ -44,6 +44,12 @@ describe('wcUtkastFilterSpec', function() {
         hasIntygsTyp: function() {
           return true;
         }, isLakare: function() {
+          return false;
+        }, isTandlakare: function() {
+          return false;
+        }, isPrivatLakare: function() {
+          return false;
+        }, isVardAdministrator: function() {
           return true;
         }
       });

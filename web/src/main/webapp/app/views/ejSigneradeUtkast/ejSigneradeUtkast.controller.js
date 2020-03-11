@@ -21,11 +21,26 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
-      function($log, $scope, $timeout, $rootScope, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
+    ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.dialogService',
+      'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User', 'common.UserModel', 'common.statService',
+      function($log, $scope, $timeout, $rootScope, $window,
+          dialogService, UtkastFilterModel, UtkastProxy, User, UserModel, statService) {
         'use strict';
 
+        $scope.$on('statService.stat-update', function(event, message) {
+          $scope.stat = message;
+          $scope.unsignedUtkastCount = $scope.stat.intygValdEnhet;
+        });
+
         $scope.filter = UtkastFilterModel.build();
+
+        $scope.setDefaultSavedBy = function() {
+          if (!UserModel.isVardAdministrator()) {
+            $scope.filter.selection.savedBy = UserModel.user.hsaId;
+          } else {
+            $scope.filter.selection.savedBy = undefined;
+          }
+        };
 
         // Exposed page state variables
         $scope.widgetState = {
@@ -34,7 +49,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
           valdVardenhet: User.getValdVardenhet(),
 
           // Loading states
-          doneLoading: true,
+          doneLoading: false,
           runningQuery: false,
           fetchingMoreInProgress: false,
 
@@ -43,7 +58,6 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
           // Search states
           filteredYet: false,
-          initialQueryWasEmpty: true,
 
           //Active query
           currentFilterRequest: $scope.filter.convertToPayload(),
@@ -61,15 +75,22 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
         /**
          *  Load initial data
          */
-        $scope.widgetState.doneLoading = false;
+
+        $scope.listInit = function() {
+          $scope.widgetState.limit = $scope.widgetState.DEFAULT_PAGE_SIZE;
+          $scope.filter.pageSize = $scope.widgetState.DEFAULT_PAGE_SIZE;
+          $scope.widgetState.chosenPage = $scope.widgetState.DEFAULT_PAGE;
+          $scope.widgetState.chosenPageList = $scope.widgetState.DEFAULT_PAGE;
+        };
+
+        $scope.setDefaultSavedBy();
+        $scope.listInit();
 
         UtkastProxy.getUtkastList($scope.filter.convertToPayload(), function(data) {
 
-          $scope.widgetState.doneLoading = true;
           $scope.widgetState.activeErrorMessageKey = null;
           $scope.updateView(data);
-          $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
-
+          $scope.widgetState.doneLoading = true;
         }, function() {
           $log.debug('Query Error');
           $scope.widgetState.doneLoading = true;
@@ -92,9 +113,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
           $scope.updateLists();
         };
 
-        $scope.listInit = function() {
-          $scope.widgetState.limit = $scope.widgetState.DEFAULT_PAGE_SIZE;
-          $scope.filter.pageSize = $scope.widgetState.DEFAULT_PAGE_SIZE;
+        $scope.pageListInit = function() {
           $scope.widgetState.chosenPage = $scope.widgetState.DEFAULT_PAGE;
           $scope.widgetState.chosenPageList = $scope.widgetState.DEFAULT_PAGE;
         };
@@ -105,7 +124,8 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
         };
 
         $scope.onSearch = function () {
-          filterDrafts(null, { startFrom: -1 });
+          $scope.pageListInit();
+          filterDrafts(null, { startFrom: 0 });
         };
 
         $scope.onReset = function () {
@@ -118,7 +138,6 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
           $scope.widgetState.activeErrorMessageKey = null;
           $scope.widgetState.filteredYet = true;
-          $scope.widgetState.initialQueryWasEmpty = false;
 
           if (data.startFrom >= 0) {
             $scope.filter.startFrom = data.startFrom;
@@ -156,6 +175,5 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
         };
 
-        $scope.listInit();
         $scope.$on($scope.widgetState.LIST_NAME + '.requestListUpdate', filterDrafts);
       }]);

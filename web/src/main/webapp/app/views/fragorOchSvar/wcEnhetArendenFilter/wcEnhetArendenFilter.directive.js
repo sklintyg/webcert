@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenFilter', [
   '$rootScope', '$log', '$cookies',
   'webcert.enhetArendenProxy',
-  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterService', 'common.UserModel',
-  function($rootScope, $log, $cookies,
-      enhetArendenProxy,
-      enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService, UserModel) {
+  'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
+  'webcert.enhetArendenFilterService', 'common.UserModel', 'common.authorityService',
+  function($rootScope, $log, $cookies, enhetArendenProxy, enhetArendenModel,
+      enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService, UserModel, authorityService) {
     'use strict';
 
     return {
@@ -34,8 +34,16 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
       templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
       controller: function($scope) {
 
+        $scope.showVidarebefordra = function() {
+          var options = {
+            authority: 'VIDAREBEFORDRA_FRAGASVAR',
+            intygstyp: ''
+          };
+          return authorityService.isAuthorityActive(options);
+        };
+
         $scope.getAlwaysHighlightedSigneratAv = function() {
-            return UserModel.isLakare();
+            return !UserModel.isVardAdministrator();
         };
 
         $scope.maxdate = moment().format('YYYY-MM-DD');
@@ -71,9 +79,9 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
           };
 
-          function updateArendenList(reset) {
+          function updateArendenList(reset, search) {
             enhetArendenModel.enhetId = vardenhetFilterModel.selectedUnit;
-            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset});
+            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset, search: search});
           }
 
           function resetFrom() {
@@ -90,7 +98,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
           };
 
           $scope.filterList = function() {
-            updateArendenList(false);
+            updateArendenList(false, true);
           };
 
           // Broadcast by vardenhet filter directive on load and selection

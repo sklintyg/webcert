@@ -13,9 +13,9 @@
     <div class="col-md-12">
 
 
-      <h1 class="page-heading1" ng-if="!widgetState.initialQueryWasEmpty">Intyg visas för {{widgetState.valdVardenhet.namn}} </h1>
+      <h1 class="page-heading1" ng-if="unsignedUtkastCount > 0">Intyg visas för {{widgetState.valdVardenhet.namn}} </h1>
 
-      <wc-utkast-filter filter="filter" on-search="onSearch()" on-reset="onReset()" ng-show="!widgetState.initialQueryWasEmpty"
+      <wc-utkast-filter filter="filter" on-search="onSearch()" on-reset="onReset()" ng-show="unsignedUtkastCount > 0"
                         class="ng-hide"></wc-utkast-filter>
 
       <wc-spinner label="info.querydraft.inprogress" show-spinner="!widgetState.doneLoading">
@@ -25,8 +25,9 @@
         <wc-spinner label="info.querydraft.inprogress" show-spinner="widgetState.runningQuery">
 
 
-          <!-- No results on initial query -->
-          <div id="current-list-noResults-unit" class="no-drafts-icon-box" ng-if="widgetState.initialQueryWasEmpty">
+          <!-- No results -->
+          <div id="current-list-noResults-unit" class="no-drafts-icon-box"
+               ng-if="widgetState.doneLoading && unsignedUtkastCount != undefined && unsignedUtkastCount == 0">
             <img src="/app/views/ejSigneradeUtkast/ej_signerade_utkast.svg"/><br>
             <div dynamic-label key="info.nounsigned.intyg.for.unit"></div>
           </div>
@@ -40,25 +41,25 @@
           </wc-alert-message>
 
           <wc-list-dropdown  class="col-md-3 form-group"
-                              ng-show="widgetState.doneLoading && widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
+                              ng-show="unsignedUtkastCount > 0 && widgetState.doneLoading && widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
                               list-model="widgetState"
                               filter-model="filter">
           </wc-list-dropdown>
 
-          <div class="row ng-hide" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
+          <div class="row ng-hide" id="unsignedCertTable" ng-show="unsignedUtkastCount > 0">
             <wc-utkast-list utkast-list="widgetState.currentList" class="col-md-12"
                             on-order="orderByProperty(property, ascending)" sorting-property="filter.selection.orderBy" sorting-ascending="filter.selection.orderAscending"></wc-utkast-list>
             <!-- No results message for query -->
             <div id="current-list-noResults-query" class="col-xs-12"
-                 ng-if="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">
+                 ng-if="widgetState.doneLoading && widgetState.totalCount == 0  && unsignedUtkastCount > 0">
               Inga resultat att visa.
             </div>
           </div>
 
-          <wc-list-number-of-hits ng-if="widgetState.doneLoading && widgetState.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
+          <wc-list-number-of-hits ng-if="unsignedUtkastCount > 0 && widgetState.doneLoading && widgetState.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
 
           <wc-list-page-numbers class="col-md-6"
-                                ng-show="widgetState.doneLoading && (widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
+                                ng-show="widgetState.doneLoading && unsignedUtkastCount > 0 && (widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
                                 list-model="widgetState"
                                 filter-model="filter">
           </wc-list-page-numbers>

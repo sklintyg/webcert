@@ -53,14 +53,16 @@ wc-utkast-filter {
     padding-top: 0;
   }
 
-  .col-md-5 {
+  .buttonsRowUnder {
+    float: right;
+  }
+
+  .dateRowUnder {
     padding-top: 15px;
   }
 
-
   .buttons {
     padding-top: 40px;
-    float: right;
   }
 
   @media (max-width: 991px) {
