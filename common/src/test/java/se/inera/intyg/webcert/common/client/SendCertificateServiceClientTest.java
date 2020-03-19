@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,7 +109,7 @@ public class SendCertificateServiceClientTest {
         try {
             testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
         } catch (Exception e) {
-            verifyZeroInteractions(sendService);
+            verifyNoInteractions(sendService);
             throw e;
         }
         fail();
@@ -121,7 +121,7 @@ public class SendCertificateServiceClientTest {
         try {
             testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
         } catch (Exception e) {
-            verifyZeroInteractions(sendService);
+            verifyNoInteractions(sendService);
             throw e;
         }
         fail();
@@ -133,7 +133,7 @@ public class SendCertificateServiceClientTest {
         try {
             testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS);
         } catch (Exception e) {
-            verifyZeroInteractions(sendService);
+            verifyNoInteractions(sendService);
             throw e;
         }
         fail();
@@ -145,7 +145,7 @@ public class SendCertificateServiceClientTest {
         try {
             testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null);
         } catch (Exception e) {
-            verifyZeroInteractions(sendService);
+            verifyNoInteractions(sendService);
             throw e;
         }
         fail();

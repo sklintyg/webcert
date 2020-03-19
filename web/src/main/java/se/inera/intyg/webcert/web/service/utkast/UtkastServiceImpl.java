@@ -377,7 +377,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         LOG.debug("Deleting utkast '{}'", intygId);
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
         verifyUtkastExists(utkast, intygId, null, "The draft could not be deleted since it could not be found");
 
         // check that the draft hasn't been modified concurrently
@@ -499,7 +499,7 @@ public class UtkastServiceImpl implements UtkastService {
     public SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
         LOG.debug("Saving and validating utkast '{}'", intygId);
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
         verifyUtkastExists(utkast, intygId, null, "The draft could not be saved since it could not be found");
 
         // check that the draft hasn't been modified concurrently
@@ -553,7 +553,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         LOG.debug("Checking that Patient is up-to-date on Utkast '{}'", draftId);
 
-        Utkast utkast = utkastRepository.findOne(draftId);
+        Utkast utkast = utkastRepository.findById(draftId).orElse(null);
         verifyUtkastExists(utkast, draftId, null,
             "The draft could not be updated with patient details since it could not be found");
 
@@ -623,7 +623,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional
     public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
+        Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
 
         verifyUtkastExists(utkast, intygsId, null, "The draft could not be set to notified since it could not be found");
         draftAccessServiceHelper.validateAllowToForwardDraft(utkast);
@@ -688,7 +688,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     public void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason) {
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
         verifyUtkastExists(utkast, intygId, intygTyp, "The locked draft could not be revoked since it could not be found");
 
         if (!utkast.getIntygsTyp().equals(intygTyp)) {

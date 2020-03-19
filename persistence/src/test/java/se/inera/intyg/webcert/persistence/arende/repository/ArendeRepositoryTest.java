@@ -66,7 +66,8 @@ public class ArendeRepositoryTest {
     public void testFindOne() {
         Arende saved = buildArende();
         repo.save(saved);
-        Arende read = repo.findOne(saved.getId());
+        Arende read = repo.findById(saved.getId()).orElse(null);
+        assertNotNull(read);
         assertEquals(read.getId(), saved.getId());
         assertEquals(read.getAmne(), saved.getAmne());
         assertEquals(read.getIntygsId(), saved.getIntygsId());

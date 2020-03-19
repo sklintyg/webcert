@@ -105,7 +105,7 @@ public class UtkastBootstrapBean {
 
                     Utlatande utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
 
-                    if (utkastRepo.findOne(utlatande.getId()) == null) {
+                    if (utkastRepo.findById(utlatande.getId()).orElse(null) == null) {
                         UtkastStatus status = UtkastStatus.SIGNED;
                         if (filename.contains("locked")) {
                             status = UtkastStatus.DRAFT_LOCKED;

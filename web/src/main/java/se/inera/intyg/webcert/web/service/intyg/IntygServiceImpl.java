@@ -373,7 +373,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            Utkast utkast = utkastRepository.findOne(intygsId);
+            Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
 
             IntygContentHolder intyg;
             if (utkast == null || UtkastStatus.SIGNED.equals(utkast.getStatus())) {
@@ -461,7 +461,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean delay) {
 
-        final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findOne(intygsId));
+        final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findById(intygsId).orElse(null));
 
         final Utlatande utlatande = optionalUtkast
             .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
@@ -686,7 +686,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygTypeInfo getIntygTypeInfo(String intygsId) {
 
-        return getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId));
+        return getIntygTypeInfo(intygsId, utkastRepository.findById(intygsId).orElse(null));
     }
 
     @Override
@@ -983,7 +983,7 @@ public class IntygServiceImpl implements IntygService {
 
         final Utkast utkast = (foundUtkast != null)
             ? foundUtkast
-            : utkastRepository.findOne(intygsId);
+            : utkastRepository.findById(intygsId).orElse(null);
 
         if (utkast != null) {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
@@ -993,7 +993,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithRevokedDate(String intygsId) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
+        Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
         if (utkast != null) {
 
             utkast.setAterkalladDatum(LocalDateTime.now());

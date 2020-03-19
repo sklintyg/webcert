@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -399,7 +399,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -483,7 +483,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createCompletion(new CopyIntygRequest(), CERTIFICATE_TYPE, null);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -541,7 +541,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createRenewal(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -585,7 +585,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createUtkastFromSignedTemplate(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID, CERTIFICATE_TYPE);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 

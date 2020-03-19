@@ -34,7 +34,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -285,11 +285,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testDeleteDraftThatIsUnsigned() {
         WebCertUser user = createUser();
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
-        verify(utkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findById(INTYG_ID);
         verify(utkastRepository).delete(utkast);
 
         // Assert notification message
@@ -305,7 +305,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testDeleteDraftWrongVersion() {
         WebCertUser user = createUser();
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         try {
             utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
@@ -314,48 +314,48 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             // Expected
         }
 
-        verify(utkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findById(INTYG_ID);
         verifyNoMoreInteractions(utkastRepository);
 
         // Assert notification message
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
 
         // Assert pdl log
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(logService);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatDoesNotExist() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         utkastService.deleteUnsignedDraft(INTYG_ID, 0);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testDeleteDraftThatIsSignedWrongVersion() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsLocked() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
         utkastService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
 
         // Assert notification message
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
 
         // Assert pdl log
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(logService);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test
@@ -370,7 +370,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -407,7 +407,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -424,8 +424,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert that no logs are called
-        verifyZeroInteractions(logService);
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(logService);
+        verifyNoInteractions(monitoringService);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertEquals("Validation should fail", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
@@ -434,24 +434,23 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftThatIsSigned() {
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
         utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-        verify(utkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findById(INTYG_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftThatIsLocked() {
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
         utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-        verify(utkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findById(INTYG_ID);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftWithExceptionInModule() throws Exception {
         WebCertUser user = createUser();
@@ -462,7 +461,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(userService.getUser()).thenReturn(user);
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -490,7 +489,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testNotifyDraft() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(utkastRepository.save(utkast)).thenReturn(utkast);
 
         utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion(), true);
@@ -500,25 +499,25 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatDoesNotExist() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testNotifyDraftWrongVersion() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatIsSigned() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatIsLocked() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
         utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
@@ -539,7 +538,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -577,7 +576,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -611,7 +610,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
@@ -643,7 +642,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
@@ -674,7 +673,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(userService.getUser()).thenReturn(user);
 
         utkastService.updatePatientOnDraft(request);
@@ -689,7 +688,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = createUser();
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
         when(userService.getUser()).thenReturn(user);
 
         utkastService.updatePatientOnDraft(request);
@@ -698,12 +697,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
 
         // Assert notification message
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
 
         // Assert pdl log
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(logService);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test
@@ -725,7 +724,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -789,9 +788,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         // Assert notification message
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -805,9 +804,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         // Assert notification message
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test
@@ -1001,7 +1000,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testRevokeLockedDraft() {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
         String reason = "reason";
         String revokeMessage = "revokeMessage";
@@ -1017,47 +1016,47 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftNull() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
 
         utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(monitoringService);
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(monitoringService);
+        verifyNoInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftNotLocked() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(monitoringService);
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(monitoringService);
+        verifyNoInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftSigned() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
         utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(monitoringService);
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(monitoringService);
+        verifyNoInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftTypeMissMatch() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
         utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-        verifyZeroInteractions(monitoringService);
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(monitoringService);
+        verifyNoInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftAlreadyRevoked() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
         utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-        verifyZeroInteractions(monitoringService);
-        verifyZeroInteractions(logService);
+        verifyNoInteractions(monitoringService);
+        verifyNoInteractions(logService);
     }
 
     @Test
@@ -1183,8 +1182,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardenhet.setNamn("enhetnamn");
         user.setValdVardenhet(vardenhet);
 
-        vardgivare.setVardenheter(Arrays.asList(vardenhet));
-        user.setVardgivare(Arrays.asList(vardgivare));
+        vardgivare.setVardenheter(Collections.singletonList(vardenhet));
+        user.setVardgivare(Collections.singletonList(vardgivare));
 
         user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
 
@@ -1204,7 +1203,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         return newPatient;
     }
 
-    private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
+    private void setupReferensMocks() throws ModuleNotFoundException {
         ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
             "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));

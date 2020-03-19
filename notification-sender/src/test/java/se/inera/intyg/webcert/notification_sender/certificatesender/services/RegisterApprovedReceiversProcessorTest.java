@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -101,7 +101,7 @@ public class RegisterApprovedReceiversProcessorTest {
         try {
             testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
-            verifyZeroInteractions(registerApprovedReceiversClient);
+            verifyNoInteractions(registerApprovedReceiversClient);
         }
     }
 
@@ -112,7 +112,7 @@ public class RegisterApprovedReceiversProcessorTest {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
-            verifyZeroInteractions(registerApprovedReceiversClient);
+            verifyNoInteractions(registerApprovedReceiversClient);
         }
     }
 
@@ -122,7 +122,7 @@ public class RegisterApprovedReceiversProcessorTest {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
         } finally {
-            verifyZeroInteractions(registerApprovedReceiversClient);
+            verifyNoInteractions(registerApprovedReceiversClient);
         }
     }
 
@@ -132,7 +132,7 @@ public class RegisterApprovedReceiversProcessorTest {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
         } finally {
-            verifyZeroInteractions(registerApprovedReceiversClient);
+            verifyNoInteractions(registerApprovedReceiversClient);
         }
     }
 

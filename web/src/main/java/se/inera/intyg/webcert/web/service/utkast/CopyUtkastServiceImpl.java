@@ -504,7 +504,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         UtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
                 false);
         } else {
@@ -521,7 +521,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         UtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
                 coherentJournaling);
         } else {
@@ -546,7 +546,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         UtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
                 coherentJournaling);
         } else {
@@ -562,7 +562,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(replacementCopyRequest);
 
         UtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
                 true, replacementCopyRequest.isCoherentJournaling());
         } else {

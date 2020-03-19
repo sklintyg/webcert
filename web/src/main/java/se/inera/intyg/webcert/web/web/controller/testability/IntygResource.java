@@ -228,7 +228,7 @@ public class IntygResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
         deleteDraftAndRelatedQAs(utkast);
         return Response.ok().build();
     }
@@ -274,7 +274,7 @@ public class IntygResource {
 
         if (!toDelete.isEmpty()) {
             LOG.info("Removing HANDELSEr from {}", intygsId);
-            handelseRepository.delete(toDelete);
+            handelseRepository.deleteAll(toDelete);
         }
         return Response.ok().build();
     }
@@ -285,7 +285,7 @@ public class IntygResource {
     public Response deleteHandelserForPatient(@PathParam("id") String patientId) {
         List<Handelse> toDelete = handelseRepository.findByPersonnummer(patientId);
         if (!toDelete.isEmpty()) {
-            handelseRepository.delete(toDelete);
+            handelseRepository.deleteAll(toDelete);
         }
         return Response.ok().build();
     }
@@ -384,7 +384,7 @@ public class IntygResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id, String model) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
         if (utkast != null) {
             utkast.setModel(model);
             utkastRepository.save(utkast);
@@ -452,8 +452,8 @@ public class IntygResource {
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
-        Utkast utkast = utkastRepository.findOne(id);
-        Utkast relatedUtkast = utkastRepository.findOne(oldIntygId);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
+        Utkast relatedUtkast = utkastRepository.findById(oldIntygId).orElse(null);
         if ((utkast != null)
             && (relatedUtkast != null)
             && (relatedUtkast.getSignatur() != null)
@@ -479,7 +479,7 @@ public class IntygResource {
     }
 
     private void updateStatus(String id, UtkastStatus status) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
         if (utkast != null) {
             utkast.setStatus(status);
             utkastRepository.save(utkast);
@@ -487,7 +487,7 @@ public class IntygResource {
     }
 
     private void updateUtkastForSign(String id, String signeratAv) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
             Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "", SignaturTyp.LEGACY);
@@ -497,7 +497,7 @@ public class IntygResource {
     }
 
     private void updateUtkastForSend(String id) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).orElse(null);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
             Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());

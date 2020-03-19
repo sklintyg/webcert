@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -126,7 +127,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
     public void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
 
         CreateUtkastFromTemplateRequest createUtkastFromTemplateRequest = buildCreateUtkastFromTemplateRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",

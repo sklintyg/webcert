@@ -91,7 +91,7 @@ public class IntygInfoService {
 
     @Transactional(readOnly = true)
     public Optional<WcIntygInfo> getIntygInfo(String intygId) {
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
         WcIntygInfo response = new WcIntygInfo();
 
@@ -231,7 +231,7 @@ public class IntygInfoService {
             if (type != null) {
                 IntygInfoEvent relationEvent = createEvent(relation.getSkapad(), type, "intygsId", relation.getIntygsId());
 
-                Utkast relatedIntyg = utkastRepository.findOne(relation.getIntygsId());
+                Utkast relatedIntyg = utkastRepository.findById(relation.getIntygsId()).orElse(null);
                 if (relatedIntyg != null) {
                     relationEvent.addData("name", relatedIntyg.getSkapadAv().getNamn());
                     relationEvent.addData("hsaId", relatedIntyg.getSkapadAv().getHsaId());

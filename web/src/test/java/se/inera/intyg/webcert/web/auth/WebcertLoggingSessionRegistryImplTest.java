@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.auth;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
@@ -68,7 +68,7 @@ public class WebcertLoggingSessionRegistryImplTest {
         final String sessionId = "session-id";
         loggingSessionRegistry.registerNewSession(sessionId, "principal");
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -77,7 +77,7 @@ public class WebcertLoggingSessionRegistryImplTest {
         try {
             loggingSessionRegistry.registerNewSession(sessionId, null);
         } finally {
-            verifyZeroInteractions(monitoringService);
+            verifyNoInteractions(monitoringService);
         }
     }
 
@@ -105,13 +105,13 @@ public class WebcertLoggingSessionRegistryImplTest {
 
         loggingSessionRegistry.removeSessionInformation(sessionId);
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 
     @Test
     public void testRemoveSessionInformationNoSession() throws Exception {
         loggingSessionRegistry.removeSessionInformation("session-id");
 
-        verifyZeroInteractions(monitoringService);
+        verifyNoInteractions(monitoringService);
     }
 }

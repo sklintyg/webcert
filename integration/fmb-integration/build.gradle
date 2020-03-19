@@ -1,6 +1,20 @@
 dependencies {
   compile project(':webcert-persistence')
 
+  compile "org.springframework:spring-web"
+  compile "io.vavr:vavr:${vavrVersion}"
+  compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+  compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
+
+  testCompile "org.springframework:spring-test"
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+  testCompile "org.assertj:assertj-core"
+}
+
+/*
+dependencies {
+  compile project(':webcert-persistence')
+
   compile "org.springframework:spring-web:${springVersion}"
   compile "io.vavr:vavr:${vavrVersion}"
   compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
@@ -10,3 +24,4 @@ dependencies {
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
   testCompile "org.assertj:assertj-core:${assertjVersion}"
 }
+ */

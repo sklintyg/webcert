@@ -5,6 +5,6 @@ dependencies {
 
   compile "se.inera.intyg.common:integration-util:${commonVersion}"
 
-  testCompile "org.springframework:spring-test:${springVersion}"
+  testCompile "org.springframework:spring-test"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }

@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -98,7 +98,7 @@ public class IntygInfoServiceTest {
 
     @Test
     public void notFound() {
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
@@ -106,14 +106,14 @@ public class IntygInfoServiceTest {
         Optional<WcIntygInfo> intygInfo = testee.getIntygInfo("not_found");
 
         assertFalse(intygInfo.isPresent());
-        verifyZeroInteractions(moduleRegistry);
-        verifyZeroInteractions(relationService);
+        verifyNoInteractions(moduleRegistry);
+        verifyNoInteractions(relationService);
     }
 
     @Test
     public void onlyHandelser() {
         String intygId = "onlyHandelser";
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
@@ -129,14 +129,14 @@ public class IntygInfoServiceTest {
         WcIntygInfo intygInfo = optIntygInfo.get();
 
         assertEquals(1, intygInfo.getEvents().size());
-        verifyZeroInteractions(moduleRegistry);
-        verifyZeroInteractions(relationService);
+        verifyNoInteractions(moduleRegistry);
+        verifyNoInteractions(relationService);
     }
 
     @Test
     public void onlyArende() {
         String intygId = "onlyArende";
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
@@ -154,14 +154,14 @@ public class IntygInfoServiceTest {
         assertEquals(2, intygInfo.getEvents().size());
         assertEquals(1, intygInfo.getKompletteringar());
         assertEquals(1, intygInfo.getKompletteringarAnswered());
-        verifyZeroInteractions(moduleRegistry);
-        verifyZeroInteractions(relationService);
+        verifyNoInteractions(moduleRegistry);
+        verifyNoInteractions(relationService);
     }
 
     @Test
-    public void onlyFragaSvar() throws ModuleNotFoundException {
+    public void onlyFragaSvar() {
         String intygId = "onlyFragasvar";
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
 
@@ -180,18 +180,18 @@ public class IntygInfoServiceTest {
         assertEquals(0, intygInfo.getKompletteringarAnswered());
         assertEquals(1, intygInfo.getAdministrativaFragorReceived());
         assertEquals(1, intygInfo.getAdministrativaFragorReceivedAnswered());
-        verifyZeroInteractions(moduleRegistry);
-        verifyZeroInteractions(relationService);
+        verifyNoInteractions(moduleRegistry);
+        verifyNoInteractions(relationService);
     }
 
     @Test
-    public void existingUtkastLocked() throws IOException, ModuleException, ModuleNotFoundException {
+    public void existingUtkastLocked() throws IOException, ModuleException {
         // Arrange
         String intygId = "existingIntyg";
         Utkast utkast = createUtkast(intygId, UtkastStatus.DRAFT_LOCKED);
         utkast.setAterkalladDatum(utkast.getSkapad().plusDays(1));
 
-        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
 
         List<Handelse> handelser = new ArrayList<>();
         handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
@@ -223,7 +223,7 @@ public class IntygInfoServiceTest {
         assertEquals(0, intygInfo.getAdministrativaFragorReceivedAnswered());
 
         verify(handelseRepository).findByIntygsId(intygId);
-        verifyZeroInteractions(moduleRegistry);
+        verifyNoInteractions(moduleRegistry);
         verify(relationService).findChildRelations(intygId);
         verify(arendeService).getArendenInternal(intygId);
         verify(fragaSvarRepository).findByIntygsReferensIntygsId(intygId);
@@ -235,7 +235,7 @@ public class IntygInfoServiceTest {
         String intygId = "existingIntyg";
         Utkast utkast = createUtkast(intygId, UtkastStatus.SIGNED);
 
-        when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
+        when(utkastRepository.findById(eq(intygId))).thenReturn(Optional.of(utkast));
 
         List<Handelse> handelser = new ArrayList<>();
         handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
@@ -258,7 +258,7 @@ public class IntygInfoServiceTest {
         when(relationService.findChildRelations(anyString())).thenReturn(relations);
 
         Utkast utkast2 = createUtkast("forId", UtkastStatus.SIGNED);
-        when(utkastRepository.findOne(eq("forId"))).thenReturn(utkast2);
+        when(utkastRepository.findById(eq("forId"))).thenReturn(Optional.of(utkast2));
 
         // Act
         Optional<WcIntygInfo> optIntygInfo = testee.getIntygInfo(intygId);

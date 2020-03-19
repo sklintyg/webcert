@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -84,7 +84,7 @@ public class NotificationTransformerTest {
         try {
             transformer.process(message);
         } finally {
-            verifyZeroInteractions(notificationPatientEnricher);
+            verifyNoInteractions(notificationPatientEnricher);
         }
     }
 
@@ -138,6 +138,6 @@ public class NotificationTransformerTest {
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
         transformer.process(message);
-        verifyZeroInteractions(notificationPatientEnricher);
+        verifyNoInteractions(notificationPatientEnricher);
     }
 }

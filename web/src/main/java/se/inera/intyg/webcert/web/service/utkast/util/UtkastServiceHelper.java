@@ -54,8 +54,8 @@ public final class UtkastServiceHelper {
     public Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
         throws ModuleException, ModuleNotFoundException {
         Utlatande utlatande;
-        if (utkastRepository.exists(intygId)) {
-            final Utkast utkast = utkastRepository.findOne(intygId);
+        if (utkastRepository.existsById(intygId)) {
+            final Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
             if (utkast == null) {
                 throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
