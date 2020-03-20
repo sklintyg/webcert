@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
 
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelSpringRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 
-@RunWith(CamelSpringJUnit4ClassRunner.class)
+@RunWith(CamelSpringRunner.class)
 @ContextConfiguration("/certificates/integration-test-certificate-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -77,7 +77,7 @@ public class RouteIT {
     }
 
     @Test
-    public void ensureStubReceivesAllMessages() throws Exception {
+    public void ensureStubReceivesAllMessages() {
         sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
         sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
         sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
@@ -89,7 +89,7 @@ public class RouteIT {
     }
 
     @Test
-    public void ensureStubReceivesAllMessagesAfterResend() throws Exception {
+    public void ensureStubReceivesAllMessagesAfterResend() {
         sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2", Constants.SEND_MESSAGE);
         sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
 
@@ -100,7 +100,7 @@ public class RouteIT {
     }
 
     @Test
-    public void ensureMessageEndsUpInDLQ() throws Exception {
+    public void ensureMessageEndsUpInDLQ() {
         sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5", Constants.SEND_MESSAGE);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
@@ -109,7 +109,7 @@ public class RouteIT {
         });
     }
 
-    private void sendMessage(final String intygsId, final String messageType) throws Exception {
+    private void sendMessage(final String intygsId, final String messageType) {
         jmsTemplate.send(sendQueue, (MessageCreator) session -> {
             try {
                 TextMessage textMessage = session.createTextMessage("body");

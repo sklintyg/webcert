@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -31,8 +32,8 @@ public class MessageRedeliveryFlagTest {
 
         sf.lowered(System.currentTimeMillis());
 
-        assertEquals(true, sf.getSuccessTimestamp() > t0);
-        assertEquals(true, sf.isOutdated(t0));
+        assertTrue(sf.getSuccessTimestamp() > t0);
+        assertTrue(sf.isOutdated(t0));
     }
 
     @Test

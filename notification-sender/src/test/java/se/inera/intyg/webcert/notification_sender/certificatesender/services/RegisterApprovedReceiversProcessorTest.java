@@ -97,7 +97,7 @@ public class RegisterApprovedReceiversProcessorTest {
     }
 
     @Test(expected = PermanentException.class)
-    public void testUnparsableBodyThrowsPermanentException() throws TemporaryException, PermanentException, JsonProcessingException {
+    public void testUnparsableBodyThrowsPermanentException() throws TemporaryException, PermanentException {
         try {
             testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {

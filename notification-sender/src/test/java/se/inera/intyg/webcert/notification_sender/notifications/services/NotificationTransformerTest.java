@@ -31,7 +31,9 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +65,8 @@ public class NotificationTransformerTest {
     private static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
     private static final String LUSE = "luse";
 
+    private CamelContext camelContext = new DefaultCamelContext();
+
     @Mock
     private IntygModuleRegistry moduleRegistry;
 
@@ -77,7 +81,7 @@ public class NotificationTransformerTest {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
             LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
-        Message message = spy(new DefaultMessage());
+        Message message = spy(new DefaultMessage(camelContext));
         message.setBody(notificationMessage);
 
         // When
@@ -92,7 +96,7 @@ public class NotificationTransformerTest {
     public void testSchemaVersion2Transformation() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
             LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_3, "ref");
-        Message message = spy(new DefaultMessage());
+        Message message = spy(new DefaultMessage(camelContext));
         message.setBody(notificationMessage);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
@@ -135,9 +139,10 @@ public class NotificationTransformerTest {
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
             LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
-        Message message = new DefaultMessage();
+        Message message = new DefaultMessage(camelContext);
         message.setBody(notificationMessage);
         transformer.process(message);
         verifyNoInteractions(notificationPatientEnricher);
     }
+
 }

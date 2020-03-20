@@ -37,7 +37,7 @@ dependencies {
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
     testCompile "org.awaitility:awaitility"
-    testCompile "org.kubek2k:springockito:${springockitoVersion}"
+    //testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test"
     testCompile "org.apache.activemq:activemq-spring"

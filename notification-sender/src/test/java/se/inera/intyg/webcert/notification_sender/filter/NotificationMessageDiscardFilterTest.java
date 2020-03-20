@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
 
@@ -47,6 +49,7 @@ public class NotificationMessageDiscardFilterTest {
 
     private ObjectMapper om = new CustomObjectMapper();
     private NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
+    private CamelContext camelContext = new DefaultCamelContext();
 
     @Test
     public void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
@@ -83,7 +86,7 @@ public class NotificationMessageDiscardFilterTest {
     }
 
     private Message to(NotificationMessage nm) throws JsonProcessingException {
-        DefaultMessage df = new DefaultMessage();
+        DefaultMessage df = new DefaultMessage(camelContext);
         df.setBody(om.writeValueAsString(nm));
         return df;
     }
@@ -92,7 +95,7 @@ public class NotificationMessageDiscardFilterTest {
         List<Message> msgList = new ArrayList<>();
         String intygsId = UUID.randomUUID().toString();
         for (HandelsekodEnum ht : typer) {
-            DefaultMessage df = new DefaultMessage();
+            DefaultMessage df = new DefaultMessage(camelContext);
             df.setBody(om.writeValueAsString(buildNotificationMessage(intygsId, ht)));
             msgList.add(df);
         }
