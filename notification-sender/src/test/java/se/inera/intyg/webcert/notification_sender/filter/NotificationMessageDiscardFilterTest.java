@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +71,7 @@ public class NotificationMessageDiscardFilterTest {
     @Test
     public void testReturnsLatestSaved() throws IOException {
         String intygsId = UUID.randomUUID().toString();
-        LocalDateTime first = LocalDateTime.now().minusSeconds(5);
+        LocalDateTime first = LocalDateTime.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
         NotificationMessage nm2 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(10));
         NotificationMessage nm1 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, first);
         NotificationMessage nm3 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(15));

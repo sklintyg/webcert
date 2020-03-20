@@ -222,9 +222,11 @@ dependencies {
     testCompile "org.awaitility:awaitility"
     testCompile "io.rest-assured:rest-assured:${restassuredVersion}"
     testCompile "io.rest-assured:rest-assured-common:${restassuredVersion}"
+    testCompile "io.rest-assured:xml-path:${restassuredVersion}"
+    testCompile "io.rest-assured:json-path:${restassuredVersion}"
     testCompile "io.rest-assured:json-schema-validator:${restassuredVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
-
+    implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"

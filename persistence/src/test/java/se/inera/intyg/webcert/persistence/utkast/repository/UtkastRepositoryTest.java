@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -33,6 +33,7 @@ import static se.inera.intyg.webcert.persistence.utkast.repository.UtkastTestUti
 import com.google.common.collect.Sets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -110,13 +111,13 @@ public class UtkastRepositoryTest {
 
         List<Utkast> result = utkastRepository.findByEnhetsIdsAndStatuses(
             Arrays.asList(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.ENHET_3_ID),
-            Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
+            Collections.singletonList(UtkastStatus.DRAFT_COMPLETE));
 
         assertThat(result.size(), is(3));
 
-        assertThat(utkast1, isIn(result));
-        assertThat(utkast2, isIn(result));
-        assertThat(utkast3, isIn(result));
+        assertThat(utkast1, is(in(result)));
+        assertThat(utkast2, is(in(result)));
+        assertThat(utkast3, is(in(result)));
 
     }
 
@@ -132,7 +133,7 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.SIGNED));
 
         List<GroupableItem> result = utkastRepository.getIntygWithStatusesByEnhetsId(
-            Arrays.asList(UtkastTestUtil.ENHET_1_ID),
+            Collections.singletonList(UtkastTestUtil.ENHET_1_ID),
             UtkastStatus.getEditableDraftStatuses(),
             Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new)));
         assertThat(result.size(), is(3));
@@ -151,7 +152,7 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastStatus.DRAFT_COMPLETE));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
 
-        List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
+        List<String> enhetsIds = Collections.singletonList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
         List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
             enhetsIds, statuses, allIntygsTyper());
