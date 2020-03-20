@@ -1,5 +1,8 @@
 dependencies {
   compile project(":webcert-common")
 
-  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+  testCompile "org.hamcrest:hamcrest"
+  testCompile "org.hamcrest:hamcrest-library"
 }
+
+//testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

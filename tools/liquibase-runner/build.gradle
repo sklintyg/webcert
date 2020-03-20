@@ -40,6 +40,6 @@ sonarqube {
 dependencies {
     runtime project(':webcert-persistence')
 
-    runtime "mysql:mysql-connector-java:${mysqlVersion}"
-    runtime "org.liquibase:liquibase-core:${liquibaseVersion}"
+    runtime "mysql:mysql-connector-java"
+    runtime "org.liquibase:liquibase-core"
 }

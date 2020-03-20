@@ -9,6 +9,23 @@ dependencies {
   compile "org.springframework:spring-orm"
   compile "org.springframework.data:spring-data-jpa"
   compile "org.liquibase:liquibase-core"
+  compile "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
+
+  compile "com.h2database:h2"
+  compile "mysql:mysql-connector-java"
+  compile "com.zaxxer:HikariCP"
+
+  testCompile "org.springframework:spring-test"
+  testCompile "org.hamcrest:hamcrest"
+  testCompile "org.hamcrest:hamcrest-library"
+}
+ /*
+ dependencies {
+  compile project(':webcert-common')
+
+  compile "org.springframework:spring-orm"
+  compile "org.springframework.data:spring-data-jpa"
+  compile "org.liquibase:liquibase-core"
   compile "org.jadira.usertype:usertype.extended:${jadiraUserTypeVersion}"
   compile "com.h2database:h2"
   compile "mysql:mysql-connector-java"
@@ -18,3 +35,4 @@ dependencies {
   testCompile "org.springframework:spring-test"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }
+  */

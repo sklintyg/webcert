@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
@@ -29,12 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import org.awaitility.Duration;
+import org.awaitility.Durations;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
@@ -156,7 +156,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
             .when()
             .put(GRPAPI_STUBBE_BASE + "/status");
 
-        await().pollDelay(Duration.TWO_SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
+        await().pollDelay(Durations.TWO_SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
             .expect().statusCode(200)
             .when()
             .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
@@ -210,7 +210,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
             .post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash/" + SignMethod.FAKE.name())
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     private Intyg createIntyg() throws IOException {

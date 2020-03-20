@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
+import java.util.Collections;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
@@ -64,7 +65,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to
@@ -88,7 +89,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to

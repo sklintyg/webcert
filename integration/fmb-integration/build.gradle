@@ -7,7 +7,8 @@ dependencies {
   compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
   testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+  testCompile "org.hamcrest:hamcrest"
+  testCompile "org.hamcrest:hamcrest-library"
   testCompile "org.assertj:assertj-core"
 }
 

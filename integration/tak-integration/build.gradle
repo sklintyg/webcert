@@ -3,8 +3,22 @@ dependencies {
 
   compile "org.springframework:spring-web"
   compile "se.inera.intyg.infra:hsa-integration:${infraVersion}"
+  compile "org.apache.httpcomponents:httpclient"
+
+  testCompile "org.springframework:spring-test"
+  testCompile "org.hamcrest:hamcrest"
+  testCompile "org.hamcrest:hamcrest-library"
+}
+
+/*
+dependencies {
+  compile project(':webcert-common')
+
+  compile "org.springframework:spring-web"
+  compile "se.inera.intyg.infra:hsa-integration:${infraVersion}"
   compile "org.apache.httpcomponents:httpclient:${httpComponentsVersion}"
 
   testCompile "org.springframework:spring-test"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }
+ */

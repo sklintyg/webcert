@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.sessionId;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.sessionId;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-            .pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
+            .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
             .expect().statusCode(200)
             .when().get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
             .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"))

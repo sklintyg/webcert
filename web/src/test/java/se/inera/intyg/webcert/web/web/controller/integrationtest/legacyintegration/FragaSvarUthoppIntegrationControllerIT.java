@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.legacyintegration;
 
-import static com.jayway.restassured.RestAssured.given;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;

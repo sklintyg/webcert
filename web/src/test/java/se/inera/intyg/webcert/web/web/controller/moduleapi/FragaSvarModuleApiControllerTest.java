@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import org.junit.Before;
@@ -102,7 +103,7 @@ public class FragaSvarModuleApiControllerTest {
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
-        feature.setIntygstyper(Arrays.asList(FK7263));
+        feature.setIntygstyper(Collections.singletonList(FK7263));
         feature.setGlobal(true);
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
         user.setOrigin(UserOriginType.UTHOPP.name());
@@ -114,9 +115,9 @@ public class FragaSvarModuleApiControllerTest {
         priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName(UserOriginType.UTHOPP.name());
-        requestOrigin.setIntygstyper(Arrays.asList(FK7263));
-        priv.setRequestOrigins(Arrays.asList(requestOrigin));
-        priv.setIntygstyper(Arrays.asList(FK7263));
+        requestOrigin.setIntygstyper(Collections.singletonList(FK7263));
+        priv.setRequestOrigins(Collections.singletonList(requestOrigin));
+        priv.setIntygstyper(Collections.singletonList(FK7263));
         return priv;
     }
 }

@@ -23,23 +23,23 @@ dependencies {
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
 
-    compile "org.springframework:spring-jms:${springVersion}"
+    compile "org.springframework:spring-jms"
     compile "org.apache.camel:camel-spring:${camelVersion}"
     compile "org.apache.camel:camel-core:${camelVersion}"
     compile "org.apache.camel:camel-cxf:${camelVersion}"
     compile "org.apache.camel:camel-jms:${camelVersion}"
     compile "org.apache.camel:camel-jackson:${camelVersion}"
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
-    compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
+    compile "org.apache.activemq:activemq-camel"
 
     testCompile project(':notification-stub')
 
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
-    testCompile "org.awaitility:awaitility:${awaitilityVersion}"
+    testCompile "org.awaitility:awaitility"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test"
-    testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+    testCompile "org.apache.activemq:activemq-spring"
     testCompile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
 }

@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static io.restassured.RestAssured.given;
+import static io.restassured.matcher.RestAssuredMatchers.matchesXsd;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testResponseRespectsSchema() throws Exception {
+    public void testResponseRespectsSchema() {
 
         String enhetsId = "123456";
         String personnummer = "191212121212";
@@ -71,7 +71,7 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void messageNotFollowingXSDFails() throws Exception {
+    public void messageNotFollowingXSDFails() {
         String personnummer = "<root>123456</root>";
         String enhetsid = "enhetsid";
         requestTemplate.add("data", new ListCertificatesForCareWithQARequestParameters(personnummer, enhetsid));

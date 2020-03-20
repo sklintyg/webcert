@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.builder.RequestSpecBuilder;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import org.junit.After;
 import org.junit.Before;
 

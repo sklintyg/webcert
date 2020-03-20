@@ -18,15 +18,16 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static io.restassured.RestAssured.given;
+import static io.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.response.Response;
+import io.restassured.response.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,7 +248,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
             .post(CREATE_DRAFT_CERTIFICATE_V3_0)
             .then()
             .statusCode(200)
-            .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathSchemaResourceResolver()));
+            .body(matchesXsd(IOUtils.toString(xsdInputstream, StandardCharsets.UTF_8)).with(new ClasspathSchemaResourceResolver()));
 
     }
 
@@ -300,7 +301,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testCreateTsBasDraftForSekretessmarkeradPatient() throws IOException {
+    public void testCreateTsBasDraftForSekretessmarkeradPatient() {
 
         given().cookie("ROUTEID", ".1")
             .get(SEKRETESS_TESTABILITY_API + "191212121212/sekretessmarkerad?value=true")

@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.sessionId;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.sessionId;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -39,7 +39,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         spec()
-            .pathParameter("intygsId", intygId)
+            .pathParam("intygsId", intygId)
             .expect().statusCode(200)
             .when().get("moduleapi/arende/{intygsId}").then()
             .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"))
@@ -141,7 +141,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Check that the listing of arenden contains info about kompletterande intyg
         spec()
-            .pathParameter("intygsId", originalIntygId)
+            .pathParam("intygsId", originalIntygId)
             .expect().statusCode(200)
             .when().get("moduleapi/arende/{intygsId}").then()
             .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"))

@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static io.restassured.RestAssured.given;
+import static io.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableMap;
@@ -62,7 +62,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testResponseRespectsSchema() throws Exception {
+    public void testResponseRespectsSchema() {
 
         String enhetsId = "123456";
         String intygsId = "intyg-1";
@@ -77,7 +77,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testMessageForNonExistantCertificateFaildWithValidationError() throws Exception {
+    public void testMessageForNonExistantCertificateFaildWithValidationError() {
         String enhetsId = "123456";
         String intygsId = "intyg-nonexistant";
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
@@ -91,7 +91,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void messageNotFollowingXSDFailsWithValidationError() throws Exception {
+    public void messageNotFollowingXSDFailsWithValidationError() {
         String enhetsId = "<root>123456</root>";
         String intygsId = "intyg-1";
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
