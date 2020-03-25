@@ -54,7 +54,7 @@ public final class DiagnosInformation {
     @Column(name = "INFORMATION_OM_REHABILITERING", nullable = true)
     private String informationOmRehabilitering;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Beskrivning> beskrivningList = Lists.newArrayList();
 
