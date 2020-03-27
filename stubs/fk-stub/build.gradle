@@ -4,5 +4,3 @@ dependencies {
   testCompile "org.hamcrest:hamcrest"
   testCompile "org.hamcrest:hamcrest-library"
 }
-
-//testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

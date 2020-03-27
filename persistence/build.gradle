@@ -7,32 +7,21 @@ dependencies {
   compile project(':webcert-common')
 
   compile "org.springframework:spring-orm"
-  compile "org.springframework.data:spring-data-jpa"
+
+  // Exclude and import of non-BOM version of Hibernate due to
+  // bug in BOM-version 5.4.12
+  compile ("org.springframework.data:spring-data-jpa") {
+    exclude group: "org.hibernate", module: "hibernate-core"
+  }
+  compile "org.hibernate:hibernate-core:${hibernateVersion}"
+  compile "org.hibernate:hibernate-hikaricp:${hibernateVersion}"
   compile "org.liquibase:liquibase-core"
   compile "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
 
   compile "com.h2database:h2"
   compile "mysql:mysql-connector-java"
-  compile "com.zaxxer:HikariCP"
 
   testCompile "org.springframework:spring-test"
   testCompile "org.hamcrest:hamcrest"
   testCompile "org.hamcrest:hamcrest-library"
 }
- /*
- dependencies {
-  compile project(':webcert-common')
-
-  compile "org.springframework:spring-orm"
-  compile "org.springframework.data:spring-data-jpa"
-  compile "org.liquibase:liquibase-core"
-  compile "org.jadira.usertype:usertype.extended:${jadiraUserTypeVersion}"
-  compile "com.h2database:h2"
-  compile "mysql:mysql-connector-java"
-  compile "com.zaxxer:HikariCP-java6:${hikariCPVersion}"
-
-
-  testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-}
-  */

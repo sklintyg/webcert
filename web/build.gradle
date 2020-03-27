@@ -188,7 +188,7 @@ dependencies {
     compile "org.jxls:jxls-jexcel:${jexcelVersion}"
     compile "org.springframework:spring-web"
     compile "org.springframework:spring-webmvc"
-    compile "org.springframework.session:spring-session:${springSessionVersion}"
+    compile "org.springframework.session:spring-session-data-redis"
     compile "org.springframework.security:spring-security-web"
     compile "org.springframework.security:spring-security-taglibs"
     compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
@@ -206,8 +206,14 @@ dependencies {
 
     compile "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     compile "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+
     compile "com.auth0:jwks-rsa:${jwksVersion}"
     compile "com.google.auto.value:auto-value:${autovalueVersion}"
+
+    compile "org.apache.cxf:cxf-core:${cxfVersion}"
+    compile "org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}"
+    compile "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
@@ -217,14 +223,18 @@ dependencies {
     testCompile "org.assertj:assertj-core"
     testCompile "org.skyscreamer:jsonassert"
     testCompile "org.springframework:spring-test"
-    //testCompile "org.kubek2k:springockito:${springockitoVersion}"
-    testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
+    testCompile "org.xmlunit:xmlunit-legacy"
     testCompile "org.awaitility:awaitility"
-    testCompile "io.rest-assured:rest-assured:${restassuredVersion}"
-    testCompile "io.rest-assured:rest-assured-common:${restassuredVersion}"
-    testCompile "io.rest-assured:xml-path:${restassuredVersion}"
-    testCompile "io.rest-assured:json-path:${restassuredVersion}"
-    testCompile "io.rest-assured:json-schema-validator:${restassuredVersion}"
+
+
+    //testCompile "io.rest-assured:rest-assured-common:${restassuredVersion}"
+    //testCompile "io.rest-assured:rest-assured-spring-commons:${restassuredVersion}"
+    testCompile "io.rest-assured:rest-assured"
+    testCompile "io.rest-assured:xml-path"
+    testCompile "io.rest-assured:json-path"
+    testCompile "io.rest-assured:json-schema-validator"
+    testCompile "com.sun.xml.bind:jaxb-osgi:2.3.2" // Can remove when rest-assured version > 4.0
+
     testCompile "org.antlr:ST4:${stAntlr4Version}"
     implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
@@ -232,52 +242,3 @@ dependencies {
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
 }
-
-
-/*
-compile "commons-codec:commons-codec:1.8"
-    compile "commons-io:commons-io:${commonsIoVersion}"
-    compile "org.jxls:jxls-jexcel:${jexcelVersion}"
-    compile "org.springframework:spring-web"
-    compile "org.springframework:spring-webmvc"
-    compile "org.springframework.session:spring-session:${springSessionVersion}"
-    compile "org.springframework.security:spring-security-web"
-    compile "org.springframework.security:spring-security-taglibs"
-    compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
-    compile "org.opensaml:opensaml:${opensamlVersion}"
-    compile "org.opensaml:openws:${openWsVersion}"
-    compile "org.opensaml:xmltooling:${xmlToolingVersion}"
-    compile("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") {
-        exclude(module: "jsr311-api")
-    }
-
-    compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
-    compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
-
-    compile "javax.servlet:javax.servlet-api:${servletApiVersion}"
-
-    compile "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    compile "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
-    compile "com.auth0:jwks-rsa:${jwksVersion}"
-    compile "com.google.auto.value:auto-value:${autovalueVersion}"
-
-
-    compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
-
-    testCompile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
-    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-    testCompile "org.assertj:assertj-core:${assertjVersion}"
-    testCompile "org.skyscreamer:jsonassert:${jsonAssertVersion}"
-    testCompile "org.springframework:spring-test"
-    testCompile "org.kubek2k:springockito:${springockitoVersion}"
-    testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
-    testCompile "org.awaitility:awaitility:${awaitilityVersion}"
-    testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"
-    testCompile "com.jayway.restassured:json-schema-validator:${restassuredVersion}"
-    testCompile "org.antlr:ST4:${stAntlr4Version}"
-
-    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
-
-    gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
-    gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
- */
