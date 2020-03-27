@@ -29,6 +29,8 @@ import org.junit.Test;
 import io.restassured.RestAssured;
 import io.restassured.response.ResponseBody;
 
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**

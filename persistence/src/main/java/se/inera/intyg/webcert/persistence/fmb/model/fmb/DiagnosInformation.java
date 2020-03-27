@@ -54,7 +54,7 @@ public final class DiagnosInformation {
     @Column(name = "INFORMATION_OM_REHABILITERING", nullable = true)
     private String informationOmRehabilitering;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Beskrivning> beskrivningList = Lists.newArrayList();
 
@@ -117,23 +117,14 @@ public final class DiagnosInformation {
     public List<Beskrivning> getBeskrivningList() {
         return beskrivningList;
     }
-    //public Set<Beskrivning> getBeskrivningList() {
-    //    return beskrivningList;
-    //}
 
     public List<Icd10Kod> getIcd10KodList() {
         return icd10KodList;
     }
-    //public Set<Icd10Kod> getIcd10KodList() {
-    //    return icd10KodList;
-    //}
 
     public List<Referens> getReferensList() {
         return referensList;
     }
-    //public Set<Referens> getReferensList() {
-    //    return referensList;
-    //}
 
     public LocalDateTime getSenastUppdaterad() {
         return senastUppdaterad;

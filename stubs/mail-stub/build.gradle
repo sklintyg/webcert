@@ -1,7 +1,8 @@
 dependencies {
   compile project(":webcert-common")
   compile "org.aspectj:aspectjweaver"
-  compile "javax.mail:mail:${javaxMailVersion}"
+
+  compile "com.sun.mail:jakarta.mail"
 
   testCompile "org.hamcrest:hamcrest"
   testCompile "org.hamcrest:hamcrest-library"
