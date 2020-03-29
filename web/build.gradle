@@ -233,10 +233,10 @@ dependencies {
     testCompile "io.rest-assured:xml-path"
     testCompile "io.rest-assured:json-path"
     testCompile "io.rest-assured:json-schema-validator"
-    testCompile "com.sun.xml.bind:jaxb-osgi:2.3.2" // Can remove when rest-assured version > 4.0
+    testCompile "com.sun.xml.bind:jaxb-osgi:2.3.2" // Can remove when rest-assured in BOM > version 4.0
 
     testCompile "org.antlr:ST4:${stAntlr4Version}"
-    implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
+    //implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"

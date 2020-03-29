@@ -24,7 +24,6 @@ import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
-import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.JpaTransactionManager;

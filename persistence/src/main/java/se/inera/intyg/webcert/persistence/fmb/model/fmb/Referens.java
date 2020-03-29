@@ -25,7 +25,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity (name = "FmbReferens")
+@Entity(name = "FmbReferens")
 @Table(name = "FMB_REFERENS")
 public class Referens {
 
