@@ -109,6 +109,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -242,6 +243,47 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardperson.setHsaId(hoSPerson.getPersonId());
         vardperson.setNamn(hoSPerson.getFullstandigtNamn());
         return vardperson;
+    }
+
+    @Test
+    public void testDraftStatusIncomplete() throws IOException, ModuleNotFoundException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(REFERENS);
+        setupReferensMocks();
+        Utkast res = utkastService.createNewDraft(request);
+        assertFalse(request.getForifyllnad().isPresent());
+        assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+    }
+
+    @Test
+    public void testDraftStatusPrefilledIncomplete() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.INVALID);
+        Utkast res = utkastService.createNewDraft(request);
+        assertTrue(request.getForifyllnad().isPresent());
+        assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+    }
+
+    @Test
+    public void testDraftStatusPrefilledComplete() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.VALID);
+        Utkast res = utkastService.createNewDraft(request);
+        assertTrue(request.getForifyllnad().isPresent());
+        assertTrue(res.getStatus() == UtkastStatus.DRAFT_COMPLETE);
+    }
+
+    private CreateNewDraftRequest setupForifyllnadUtkast(ValidationStatus status) throws IOException, ModuleNotFoundException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(REFERENS);
+
+        Optional<Forifyllnad> optional = Optional.of(new Forifyllnad());
+        request.setForifyllnad(optional);
+
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(status, Collections.emptyList());
+        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(utkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
+
+        return request;
     }
 
     @Test

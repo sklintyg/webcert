@@ -181,13 +181,14 @@ public class UtkastServiceImpl implements UtkastService {
     public Utkast createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
-        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         String intygType = request.getIntygType();
 
         CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
+
+        setUtkastStatus(intygJsonModel, request);
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
@@ -204,6 +205,16 @@ public class UtkastServiceImpl implements UtkastService {
         logCreateDraft(savedUtkast, createLogUser(request), nrPrefillElements);
 
         return savedUtkast;
+    }
+
+    private void setUtkastStatus(String intygJsonModel, CreateNewDraftRequest request) {
+        if (request.getForifyllnad().isPresent()) {
+            DraftValidation draftValidation = validateDraft(request.getIntygId(),
+                request.getIntygType(), intygJsonModel != null ? intygJsonModel : "");
+            request.setStatus(draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE);
+        } else {
+            request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        }
     }
 
     /**
