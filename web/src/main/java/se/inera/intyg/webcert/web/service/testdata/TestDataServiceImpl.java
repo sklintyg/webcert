@@ -86,6 +86,7 @@ public class TestDataServiceImpl implements TestDataService {
         VardpersonReferens senastSparad = new VardpersonReferens(safeTextGet(data, "senast_sparad_av_hsaid"),
             safeTextGet(data, "senast_sparad_av_namn"));
         utkast.setSenastSparadAv(senastSparad);
+        utkast.setSenastSparadDatum(safeDateGet(data, "senast_sparad_datum"));
 
         VardpersonReferens creator = new VardpersonReferens(safeTextGet(skapadAv, "personId"),
             safeTextGet(skapadAv, "fullstandigtNamn"));
@@ -172,7 +173,7 @@ public class TestDataServiceImpl implements TestDataService {
             return null;
         }
 
-        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     private UtkastStatus getUtkastStatusFromString(String status) {
@@ -186,7 +187,7 @@ public class TestDataServiceImpl implements TestDataService {
         if (personNummer == null || personNummer.isEmpty()) {
             return null;
         }
-        return Personnummer.createPersonnummer(personNummer).get();
+        return Personnummer.createPersonnummer(personNummer).orElse(null);
     }
 
     private RelationKod getRelationKodFromString(String relationKod) {

@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.testdata.TestDataTransformer;
 import se.inera.intyg.webcert.web.service.testdata.TestDataService;
 
 @Path("/testdata")
@@ -44,6 +45,7 @@ public class TestDataResource {
     @Autowired
     private TestDataService service;
 
+
     @GET
     @Path("/")
     public Response intyg() {
@@ -54,9 +56,11 @@ public class TestDataResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertIntyg(IntygWrapper data) {
+    public Response insertIntyg(IntygWrapper intyg) {
 
-        service.createIntyg(data.getData());
+        JsonNode data = TestDataTransformer.transformIntyg(intyg.getData());
+
+        service.createIntyg(data);
 
         return Response.ok().build();
     }
