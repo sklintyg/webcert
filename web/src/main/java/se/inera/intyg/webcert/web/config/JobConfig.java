@@ -40,16 +40,7 @@ public class JobConfig {
 
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
-/*
-    @Bean
-    public ScheduledLockConfiguration taskScheduler(LockProvider lockProvider) {
-        return ScheduledLockConfigurationBuilder
-            .withLockProvider(lockProvider)
-            .withPoolSize(POOL_SIZE)
-            .withDefaultLockAtMostFor(Duration.ofMinutes(LOCK_AT_MOST_MINUTES))
-            .build();
-    }
-*/
+
     @Bean
     public LockProvider lockProvider() {
         return new RedisLockProvider(jedisConnectionFactory, "webcert");

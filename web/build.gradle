@@ -183,7 +183,7 @@ dependencies {
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
 
-    compile "commons-codec:commons-codec:1.8"
+    compile "commons-codec:commons-codec"
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.jxls:jxls-jexcel:${jexcelVersion}"
     compile "org.springframework:spring-web"
@@ -226,17 +226,11 @@ dependencies {
     testCompile "org.xmlunit:xmlunit-legacy"
     testCompile "org.awaitility:awaitility"
 
-
-    //testCompile "io.rest-assured:rest-assured-common:${restassuredVersion}"
-    //testCompile "io.rest-assured:rest-assured-spring-commons:${restassuredVersion}"
     testCompile "io.rest-assured:rest-assured"
-    testCompile "io.rest-assured:xml-path"
-    testCompile "io.rest-assured:json-path"
     testCompile "io.rest-assured:json-schema-validator"
     testCompile "com.sun.xml.bind:jaxb-osgi:2.3.2" // Can remove when rest-assured in BOM > version 4.0
 
     testCompile "org.antlr:ST4:${stAntlr4Version}"
-    //implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"

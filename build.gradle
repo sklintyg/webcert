@@ -34,7 +34,6 @@ ext {
     luceneAnalyzersCommonVersion = "8.5.0"
     openWsVersion = "1.5.1"
     opensamlVersion = "2.6.1"
-    restassuredVersion = "4.2.0"
     apacheJstlVersion = "9.4.27.v20200227"
     stAntlr4Version = "4.3"
     xmlToolingVersion = "1.4.1"

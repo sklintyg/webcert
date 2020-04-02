@@ -39,7 +39,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
  */
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 
-    private final RAMDirectory index = new RAMDirectory();
+    private final ByteBuffersDirectory index = new ByteBuffersDirectory();
     private IndexReader indexReader;
     private IndexSearcher indexSearcher;
 
@@ -83,7 +83,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         return searchDiagnosisByQuery(query, nbrOfResults);
     }
 
-    public RAMDirectory getLuceneIndex() {
+    public ByteBuffersDirectory getLuceneIndex() {
         return index;
     }
 
