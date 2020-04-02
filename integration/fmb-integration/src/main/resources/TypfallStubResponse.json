@@ -2748,7 +2748,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "i Upp till 6 månader",
+          "typfalletsrekommenderadesjukskrivning": "upp till 6 månader",
           "maximalsjukskrivningstid": "6",
           "maximalsjukskrivningsenhet": "mo"
         },
@@ -3360,6 +3360,1435 @@
           "maximalsjukskrivningsenhet": "wk"
         },
         "id": "119"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/633"
+      },
+      "type": "typfall",
+      "id": "633",
+      "attributes": {
+        "version": "1",
+        "id": "633",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "64368001",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "partiell mastektomi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Efter komplikationsfri bröstbevarande operation med mindre lymfkörtelingrepp vid icke-spridd bröstcancer kan arbetsförmågan vara helt nedsatt från 3 till uppemot 6 veckor.",
+        "fmbtillstand": {
+          "tillstandsmening": "komplikationsfri bröstbevarande operation med mindre lymfkörtelingrepp vid icke-spridd bröstcancer",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "255604002",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "lindrig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "64368001",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "partiell mastektomi"
+                }
+              ],
+              "status": {
+                "kod": "398166005",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "utförd"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "3 till 6 veckor",
+          "maximalsjukskrivningstid": "6",
+          "maximalsjukskrivningsenhet": "wk"
+        },
+        "id": "633"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/634"
+      },
+      "type": "typfall",
+      "id": "634",
+      "attributes": {
+        "version": "1",
+        "id": "634",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "384723003",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "radikal mastektomi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Efter större komplikationsfritt lymfkörtelingrepp och/eller mastektomi vid icke-spridd bröstcancer kan arbetsförmågan vara helt nedsatt från 4 till uppemot 8 veckor.",
+        "fmbtillstand": {
+          "tillstandsmening": "större komplikationsfritt lymfkörtelingrepp och/eller mastektomi vid icke-spridd bröstcancer",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "371923003",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "lindrig till måttlig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "384723003",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "radikal mastektomi"
+                }
+              ],
+              "status": {
+                "kod": "398166005",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "utförd"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "4 till 8 veckor",
+          "maximalsjukskrivningstid": "8",
+          "maximalsjukskrivningsenhet": "wk"
+        },
+        "id": "634"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/635"
+      },
+      "type": "typfall",
+      "id": "635",
+      "attributes": {
+        "version": "1",
+        "id": "635",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "367336001",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "cytostatikabehandling"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Under pågående cytostatikabehandling av icke-spridd bröstcancer är arbetsförmågan oftast helt eller delvis nedsatt.  Ett fåtal patienter kan ha hel arbetsförmåga mellan behandlingstillfällena. Deltidsarbete underlättas i de fall arbetstiderna kan anpassas efter cytostatikabehandlingen",
+        "fmbtillstand": {
+          "tillstandsmening": "pågående cytostatikabehandling av icke-spridd bröstcancer",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "371924009",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "måttlig till uttalad"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "367336001",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "cytostatikabehandling"
+                }
+              ],
+              "status": {
+                "kod": "385651009",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "pågående"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under behandlingen",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "635"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/636"
+      },
+      "type": "typfall",
+      "id": "636",
+      "attributes": {
+        "version": "1",
+        "id": "636",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "367336001",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "cytostatikabehandling"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Efter avslutad cytostatikabehandling av icke-spridd bröstcancer kan arbetsförmågan i vissa fall vara nedsatt uppemot ett år, men många kan successivt återgå i arbete efter 2–4 månader.",
+        "fmbtillstand": {
+          "tillstandsmening": "avslutad cytostatikabehandling av icke-spridd bröstcancer",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "6736007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "måttlig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "367336001",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "cytostatikabehandling"
+                }
+              ],
+              "status": {
+                "kod": "398166005",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "utförd"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "2-4 månader upp till ett år",
+          "maximalsjukskrivningstid": "12",
+          "maximalsjukskrivningsenhet": "mo"
+        },
+        "id": "636"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/637"
+      },
+      "type": "typfall",
+      "id": "637",
+      "attributes": {
+        "version": "1",
+        "id": "637",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "385798007",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "strålbehandling"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Under komplikationsfri strålbehandlingsperiod av icke-spridd bröstcancer är arbetsförmågan ofta god. Om patienter fått cytostatikabehandling före strålbehandlingen kan arbetsförmågan vara helt nedsatt under behandlingsperioden på grund av kvarstående biverkningar.",
+        "fmbtillstand": {
+          "tillstandsmening": "komplikationsfri strålbehandlingsperiod av icke-spridd bröstcancer",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "6736007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "måttlig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "385798007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "strålbehandling"
+                }
+              ],
+              "status": {
+                "kod": "385651009",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "pågående"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under behandlingsperioden",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "637"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/638"
+      },
+      "type": "typfall",
+      "id": "638",
+      "attributes": {
+        "version": "1",
+        "id": "638",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "169413002",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "hormonbehandling"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Vid efterbehandling av icke-spridd bröstcancer med hormonella medel är arbetsförmågan ofta god, men vissa individer har partiellt nedsatt arbetsförmåga under hela behandlingsperioden.",
+        "fmbtillstand": {
+          "tillstandsmening": "efterbehandling av icke-spridd bröstcancer med hormonella medel",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "6736007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "måttlig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "169413002",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "hormonbehandling"
+                }
+              ],
+              "status": {
+                "kod": "385651009",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "pågående"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "2",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "deltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under hela behandlingsperioden",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "638"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/639"
+      },
+      "type": "typfall",
+      "id": "639",
+      "attributes": {
+        "version": "1",
+        "id": "639",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "261985008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "inga metastaser"
+          },
+          {
+            "kod": "416608005",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "läkemedelsbehandling"
+          },
+          {
+            "kod": "49616005",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "monoklonal antikropp"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Vid efterbehandling av icke-spridd bröstcancer med antikroppar är arbetsförmågan ofta god, men vissa kan ha partiellt nedsatt arbetsförmåga under behandlingsperioden.",
+        "fmbtillstand": {
+          "tillstandsmening": "efterbehandling av icke-spridd bröstcancer med antikroppar",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "261985008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "inga metastaser"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "6736007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "måttlig"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "416608005",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "läkemedelsbehandling"
+                },
+                {
+                  "kod": "49616005",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "monoklonal antikropp"
+                }
+              ],
+              "status": {
+                "kod": "385651009",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "pågående"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "2",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "deltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under behandlingsperioden",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "639"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/640"
+      },
+      "type": "typfall",
+      "id": "640",
+      "attributes": {
+        "version": "1",
+        "id": "640",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "C50",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel"
+          },
+          {
+            "kod": "D05",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Cancer in situ i bröstkörtel"
+          },
+          {
+            "kod": "Z853",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+          },
+          {
+            "kod": "128462008",
+            "kodsystem": "1.2.752.116.2.1.1",
+            "kodsystemnamn": "SNOMED-CT",
+            "beskrivning": "sekundär malign neoplastisk sjukdom"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "tumor",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Tumörer"
+          }
+        },
+        "senastuppdaterad": "2019-06-17T22:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-06-18",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Vid spridd bröstcancer till organ utanför bröst/armhåla (fjärrmetastaser) är i de flesta fall arbetsförmågan helt nedsatt livet ut. Enstaka individer kan ha långa perioder med normal arbetsförmåga, andra har arbetsförmåga till viss del.",
+        "fmbtillstand": {
+          "tillstandsmening": "spridd bröstcancer till organ utanför bröst/armhåla (fjärrmetastaser)",
+          "diagnoskod": [
+            {
+              "kod": "C50",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel"
+            },
+            {
+              "kod": "D05",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Cancer in situ i bröstkörtel"
+            },
+            {
+              "kod": "Z853",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Malign tumör i bröstkörtel i den egna sjukhistorien"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "128462008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "sekundär malign neoplastisk sjukdom"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [
+            {
+              "svarighetsgrad": [
+                {
+                  "kod": "24484000",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "uttalad"
+                }
+              ]
+            }
+          ],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Livet ut",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "640"
       },
       "relationships": {
         "forsakringsmedicinskdiagnosinformation": null
@@ -5511,7 +6940,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt eller laparoskopiskt) med laparoskopiassisterad åtgärd där arbetsbelastningen innefattar måttlig belastning rekommenderas ingen sjukskrivning.",
+        "typfallsmening": "Vid gallstenssjukdom (opererad laparoskopiskt) där arbetsbelastningen innefattar måttlig belastning rekommenderas ingen sjukskrivning.",
         "fmbtillstand": {
           "tillstandsmening": "laparoskopiskt opererad gallstenssjukdom där arbetsbelastningen innefattar måttlig belastning",
           "diagnoskod": [
@@ -5650,7 +7079,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt eller laparoskopiskt) med laparoskopiassisterad åtgärd där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning upp till 1 vecka på heltid.",
+        "typfallsmening": "Vid gallstenssjukdom (opererad laparoskopiskt) där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning upp till 1 vecka på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "laparoskopiskt opererad gallstenssjukdom där arbetsbelastningen innefattar hög belastning",
           "diagnoskod": [
@@ -5783,9 +7212,9 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt eller laparoskopiskt) där arbetsbelastningen innefattar måttlig belastning rekommenderas sjukskrivning upp till 2 veckor på heltid.",
+        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt) där arbetsbelastningen innefattar måttlig belastning rekommenderas sjukskrivning upp till 2 veckor på heltid.",
         "fmbtillstand": {
-          "tillstandsmening": null,
+          "tillstandsmening": "buksnittsopererad gallstenssjukdom där arbetsbelastningen innefattar måttlig belastning",
           "diagnoskod": [
             {
               "kod": "K80",
@@ -5820,7 +7249,7 @@
             "beskrivning": "heltid"
           },
           "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
-          "maximalsjukskrivningstid": "3",
+          "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
         "id": "97"
@@ -5899,9 +7328,9 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt eller laparoskopiskt) där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning upp till 3 veckor på heltid.",
+        "typfallsmening": "Vid gallstenssjukdom (opererad med buksnitt) där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning upp till 3 veckor på heltid.",
         "fmbtillstand": {
-          "tillstandsmening": null,
+          "tillstandsmening": "buksnittsopererad gallstenssjukdom där arbetsbelastningen innefattar hög belastning",
           "diagnoskod": [
             {
               "kod": "K80",
@@ -7504,262 +8933,6 @@
     },
     {
       "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/121"
-      },
-      "type": "typfall",
-      "id": "121",
-      "attributes": {
-        "version": "1",
-        "id": "121",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "G40",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Epilepsi"
-          },
-          {
-            "kod": "G41",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Status epilepticus"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken  Epilepsi",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "nervsystemet",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Nervsystemets sjukdomar"
-          }
-        },
-        "senastuppdaterad": "2016-12-08T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid epilepsi med första episoden rekommenderas sjukskrivning på heltid upp till 2 veckor.",
-        "fmbtillstand": {
-          "tillstandsmening": "förstagångsepilepsi",
-          "diagnoskod": [
-            {
-              "kod": "G40",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Epilepsi"
-            },
-            {
-              "kod": "G41",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Status epilepticus"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "255217005",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "första episoden"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
-          "maximalsjukskrivningstid": "2",
-          "maximalsjukskrivningsenhet": "wk"
-        },
-        "id": "121"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/122"
-      },
-      "type": "typfall",
-      "id": "122",
-      "attributes": {
-        "version": "1",
-        "id": "122",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "G40",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Epilepsi"
-          },
-          {
-            "kod": "G41",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Status epilepticus"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken  Epilepsi",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "nervsystemet",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Nervsystemets sjukdomar"
-          }
-        },
-        "senastuppdaterad": "2016-12-08T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid ostadig epilepsi saknas uppgift om sjukskrivningsrekommendation.",
-        "fmbtillstand": {
-          "tillstandsmening": "ostadig epilepsi",
-          "diagnoskod": [
-            {
-              "kod": "G40",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Epilepsi"
-            },
-            {
-              "kod": "G41",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Status epilepticus"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "103361006",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ostadig"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Uppgift saknas",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
-        },
-        "id": "122"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
         "self": "https://api.socialstyrelsen.se/fmb/typfall/2"
       },
       "type": "typfall",
@@ -7997,7 +9170,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till  veckor 2 veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
           "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -9292,7 +10465,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid lesion av nervus plantaris och utförd åtgärd fotoperation för mortons metatarsalgi där arbetsbelastningen innefattar arbeten med mycket gående och stående  rekommenderas sjukskrivning upp till 2 mån på heltid.",
+        "typfallsmening": "Vid lesion av nervus plantaris och utförd åtgärd fotoperation för mortons metatarsalgi där arbetsbelastningen innefattar arbeten med mycket gående och stående  rekommenderas sjukskrivning upp till 2 mån på heltid.",
         "fmbtillstand": {
           "tillstandsmening": null,
           "diagnoskod": [
@@ -9613,7 +10786,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till 2 månader ",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 2 månader ",
           "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "mo"
         },
@@ -16816,7 +17989,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Ingen",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -17541,7 +18714,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid svår akillestendinit där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas ingen sjukskrivning.",
+        "typfallsmening": "Vid svår akillestendinit där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas ingen sjukskrivning.",
         "fmbtillstand": {
           "tillstandsmening": "svår akillestendinit med stillasittande arbete med låg belastning",
           "diagnoskod": [
@@ -17680,7 +18853,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid akillestendinit med smärta där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas sjukskrivning upp till två veckor på heltid.",
+        "typfallsmening": "Vid akillestendinit med smärta där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas sjukskrivning upp till två veckor på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "akillestendinit med smärta med stillasittande arbete med låg belastning",
           "diagnoskod": [
@@ -17807,7 +18980,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid långvarig akillestendinit med oförändrat tillstånd  där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas sjukskrivning upp till två veckor på heltid.",
+        "typfallsmening": "Vid långvarig akillestendinit med oförändrat tillstånd  där arbetsbelastningen innefattar stillastittande arbete med låg belastning rekommenderas sjukskrivning upp till två veckor på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "långvarig akillestendinit med oförändrat tillstånd med stillasittande arbete med låg belastning",
           "diagnoskod": [
@@ -17952,7 +19125,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid akillestendinit och övervikt där arbetsbelastningen innefattar arbete med mycket gående och stående rekommenderas ytterligare sjukskrivning upp till tre veckor på heltid.",
+        "typfallsmening": "Vid akillestendinit och övervikt där arbetsbelastningen innefattar arbete med mycket gående och stående rekommenderas ytterligare sjukskrivning upp till tre veckor på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "akillestendinit med övervikt med arbete som innefattar mycket gående och stående",
           "diagnoskod": [
@@ -18464,7 +19637,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Ingen",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning med undantag för vad som rekommenderas i samband med akut hjärtinfarkt",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -18966,818 +20139,6 @@
           "maximalsjukskrivningsenhet": null
         },
         "id": "383"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/412"
-      },
-      "type": "typfall",
-      "id": "412",
-      "attributes": {
-        "version": "1",
-        "id": "412",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer är sjukskrivning i upp till 3 veckor efter bröstbevarande operation med mindre lymfkörtelingrepp vägledande i de fall där ingen tilläggsbehandling ska ges.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "3 veckor",
-          "maximalsjukskrivningstid": "3",
-          "maximalsjukskrivningsenhet": "wk"
-        },
-        "id": "412"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/413"
-      },
-      "type": "typfall",
-      "id": "413",
-      "attributes": {
-        "version": "1",
-        "id": "413",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer när större lymfkörtelingrepp och/eller mastektomi utförts kan sjukskrivning i upp till 6 veckor vara motiverad i de fall där ingen tilläggsbehandling ska ges. Överväg arbetsanpassning och partiell sjukskrivning.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "6 veckor",
-          "maximalsjukskrivningstid": "5",
-          "maximalsjukskrivningsenhet": "wk"
-        },
-        "id": "413"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/414"
-      },
-      "type": "typfall",
-      "id": "414",
-      "attributes": {
-        "version": "1",
-        "id": "414",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer under den postoperativa cytostatikabehandlingsperioden, i regel 5 månader, är arbetsförmågan ofta helt nedsatt. Hos en mindre andel patienter finns arbetsförmåga mellan behandlingarna. Arbetsanpassning och successiv återgång i arbete med partiell sjukskrivning är oftast aktuellt. För patienter som erhåller preoperativ cytostatikabehandling krävs oftast längre sjukskrivningsperiod än ovan.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "5 månader. Hos en mindre andel patienter finns viss arbetsförmåga mellan behandlingarna.",
-          "maximalsjukskrivningstid": "5",
-          "maximalsjukskrivningsenhet": "mo"
-        },
-        "id": "414"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/415"
-      },
-      "type": "typfall",
-      "id": "415",
-      "attributes": {
-        "version": "1",
-        "id": "415",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer under den postoperativa cytostatikabehandlingsperioden, i regel 5 månader, är arbetsförmågan ofta helt nedsatt. Hos en mindre andel patienter finns arbetsförmåga mellan behandlingarna. Arbetsanpassning och successiv återgång i arbete med partiell sjukskrivning är oftast aktuellt. För patienter som erhåller preoperativ cytostatikabehandling krävs oftast längre sjukskrivningsperiod än ovan.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Oftast längre sjukskrivningsperiod, mer än 5 månader",
-          "maximalsjukskrivningstid": "5",
-          "maximalsjukskrivningsenhet": "mo"
-        },
-        "id": "415"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/416"
-      },
-      "type": "typfall",
-      "id": "416",
-      "attributes": {
-        "version": "1",
-        "id": "416",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer under komplikationsfri strålbehandling är arbetsförmågan ofta god. Om patienten behöver avstå från arbete för att behandlingen ska kunna genomföras kan sjukpenning i förebyggande syfte bli aktuellt. Patienter som fått cytostatikabehandling före strålbehandling har ofta helt nedsatt arbetsförmåga under behandlingen pga. kvarstående biverkningar.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Ofta helt nedsatt arbetsförmåga under behandlingen. \nEfter 1–2 månader kan gradvis återgång i arbete ofta inledas.",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
-        },
-        "id": "416"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/417"
-      },
-      "type": "typfall",
-      "id": "417",
-      "attributes": {
-        "version": "1",
-        "id": "417",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid icke-spridd bröstcancer och hormonell behandling eller antikroppsbehandling medför för de flesta patienter möjlighet att återgå i arbete åtminstone på deltid.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "278396003",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "ingen spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Medför för de flesta en möjlighet att återgå i arbete åtminstone på deltid. Efter avslutad behandling återställs funktionen i allmänhet inom några månader.",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
-        },
-        "id": "417"
-      },
-      "relationships": {
-        "forsakringsmedicinskdiagnosinformation": null
-      }
-    },
-    {
-      "links": {
-        "self": "https://api.socialstyrelsen.se/fmb/typfall/418"
-      },
-      "type": "typfall",
-      "id": "418",
-      "attributes": {
-        "version": "1",
-        "id": "418",
-        "malgrupp": [
-          {
-            "kod": "profession",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "profession"
-          },
-          {
-            "kod": "myndigheter",
-            "kodsystem": "1.2.752.116.3.2.2.2",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
-            "beskrivning": "andra statliga myndigheter"
-          }
-        ],
-        "nyckelord": [
-          {
-            "kod": "C50",
-            "kodsystem": "1.2.752.116.1.1.1.3.2",
-            "kodsystemnamn": "ICD-10",
-            "beskrivning": "Malign tumör i bröstkörtel"
-          },
-          {
-            "kod": "vagledande",
-            "kodsystem": "1.2.752.116.3.2.2.3",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
-            "beskrivning": "vägledande (rekommendationer)"
-          },
-          {
-            "kod": "utan_evidensgradering",
-            "kodsystem": "1.2.752.116.3.2.2.4",
-            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
-            "beskrivning": "kunskapssammanställning utan evidensgradering"
-          }
-        ],
-        "syfte": "syfte:val_av_atgard",
-        "beskrivning": "Typfall för diagnosrubriken Bröstcancer",
-        "typavdokument": {
-          "kod": "rekommendation_fmb",
-          "kodsystem": "1.2.752.116.3.2.1",
-          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
-          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
-        },
-        "sjukdomsgrupp": {
-          "kod": {
-            "kod": "tumor",
-            "kodsystem": "1.2.752.116.3.2.7",
-            "kodsystemnamn": "Sjukdomsgrupp",
-            "beskrivning": "Tumörer"
-          }
-        },
-        "senastuppdaterad": "2015-11-14T23:00:00+0000",
-        "giltighetsperiod": {
-          "start": "2015-11-15",
-          "slut": null
-        },
-        "status": {
-          "kod": "giltig",
-          "kodsystem": "1.2.752.116.3.2.3",
-          "kodsystemnamn": "Status",
-          "beskrivning": "giltig"
-        },
-        "typfallsmening": "Vid spridd bröstcancer är sjukskrivning under lång tid – 1 år eller längre – ofta motiverad, men i perioder med remission (förbättring) kan arbetsförmåga finnas.",
-        "fmbtillstand": {
-          "tillstandsmening": null,
-          "diagnoskod": [
-            {
-              "kod": "C50",
-              "kodsystem": "1.2.752.116.1.1.1.3.2",
-              "kodsystemnamn": "ICD-10",
-              "beskrivning": "Malign tumör i bröstkörtel"
-            }
-          ],
-          "urvalsjukdomsforlopp": [
-            {
-              "sjukdomsforlopp": [
-                {
-                  "kod": "277204007",
-                  "kodsystem": "1.2.752.116.2.1.1",
-                  "kodsystemnamn": "SNOMED-CT",
-                  "beskrivning": "extrasellär spridning"
-                }
-              ]
-            }
-          ],
-          "urvalsvarighetsgrad": [],
-          "urvalatgard": [],
-          "urvalarbetsbelastning": [],
-          "urvalkomplicerandefaktor": [],
-          "urvalsamsjuklighet": []
-        },
-        "rekommenderadsjukskrivning": {
-          "maximalsjukskrivningsgrad": {
-            "kod": "1",
-            "kodsystem": "1.2.752.116.3.1.14",
-            "kodsystemnamn": "Sjukskrivningsgrad",
-            "beskrivning": "heltid"
-          },
-          "typfalletsrekommenderadesjukskrivning": "Sjukskrivning under lång tid – ofta 1 år eller längre",
-          "maximalsjukskrivningstid": "12",
-          "maximalsjukskrivningsenhet": "mo"
-        },
-        "id": "418"
       },
       "relationships": {
         "forsakringsmedicinskdiagnosinformation": null
@@ -21190,7 +21551,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Behov av sjukskrivning kan föreligga.",
+          "typfalletsrekommenderadesjukskrivning": "Behov av sjukskrivning kan föreligga",
           "maximalsjukskrivningstid": null,
           "maximalsjukskrivningsenhet": null
         },
@@ -21558,9 +21919,9 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Vid samsjuklighet kan hel- eller deltidssjukskrivning behövas under 3-6 månader.",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
+          "typfalletsrekommenderadesjukskrivning": "Upp till 6 månader",
+          "maximalsjukskrivningstid": "6",
+          "maximalsjukskrivningsenhet": "mo"
         },
         "id": "575"
       },
@@ -22081,7 +22442,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till 6 veckor.",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 6 veckor",
           "maximalsjukskrivningstid": "6",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -22431,7 +22792,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "8-9 månader\nCellgiftbehandlingen kan ge specifika terapirelaterade symtom, som i sig kan motivera en längre tids sjukskrivning.",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 9 månader",
           "maximalsjukskrivningstid": "9",
           "maximalsjukskrivningsenhet": "mo"
         },
@@ -25826,7 +26187,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -26750,7 +27111,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Sjukskrivning är alltid motiverad.",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 8 veckor",
           "maximalsjukskrivningstid": "8",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -26901,7 +27262,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Sjukskrivning är ofta motiverad.",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 9 månader",
           "maximalsjukskrivningstid": "9",
           "maximalsjukskrivningsenhet": "mo"
         },
@@ -28300,7 +28661,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "ingen sjukskrivning",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -28380,7 +28741,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid medelsvårt karpaltunnelsyndrom där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning på heltid upp till två veckor.",
+        "typfallsmening": "Vid medelsvårt karpaltunnelsyndrom där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning på heltid upp till 2 veckor.",
         "fmbtillstand": {
           "tillstandsmening": "medelsvårt karpaltunnelsyndrom med hög arbetsbelastning",
           "diagnoskod": [
@@ -28427,7 +28788,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till två veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
           "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -28507,7 +28868,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid svårt karpaltunnelsyndrom där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning på heltid upp till fyra veckor.",
+        "typfallsmening": "Vid svårt karpaltunnelsyndrom där arbetsbelastningen innefattar hög belastning rekommenderas sjukskrivning på heltid upp till 4 veckor.",
         "fmbtillstand": {
           "tillstandsmening": "svårt karpaltunnelsyndrom med hög arbetsbelastning",
           "diagnoskod": [
@@ -28554,7 +28915,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till fyra veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 4 veckor",
           "maximalsjukskrivningstid": "4",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -29937,7 +30298,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "ingen",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -30576,7 +30937,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid gikt rekommenderas sjukskrivning upp till en vecka på heltid.",
+        "typfallsmening": "Vid gikt rekommenderas sjukskrivning upp till 1 vecka på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "gikt",
           "diagnoskod": [
@@ -30601,7 +30962,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till en vecka",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 1 vecka",
           "maximalsjukskrivningstid": "1",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -30846,7 +31207,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "sällan nedsatt arbetsförmåga",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -31440,7 +31801,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "sällan mer än en vecka",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 1 vecka",
           "maximalsjukskrivningstid": "1",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -31661,7 +32022,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "sällan mer än en vecka",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 1 vecka",
           "maximalsjukskrivningstid": "1",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -31882,7 +32243,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Sätter normalt inte ner arbetsförmågan",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -33302,7 +33663,7 @@
             "beskrivning": "heltid"
           },
           "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
-          "maximalsjukskrivningstid": "3",
+          "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
         "id": "159"
@@ -36789,7 +37150,7 @@
           },
           "typfalletsrekommenderadesjukskrivning": "Upp till tre veckor",
           "maximalsjukskrivningstid": "3",
-          "maximalsjukskrivningsenhet": "mo"
+          "maximalsjukskrivningsenhet": "wk"
         },
         "id": "320"
       },
@@ -37693,8 +38054,8 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "3 dagar (inom ramen för egen sjukanmälan)",
-          "maximalsjukskrivningstid": "3",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).",
+          "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
         "id": "440"
@@ -41314,7 +41675,7 @@
           "kodsystemnamn": "Status",
           "beskrivning": "giltig"
         },
-        "typfallsmening": "Vid distorsion i halskotpelaren (inklusive whiplash-skada) rekommenderas sjukskrivning upp till en vecka på heltid.",
+        "typfallsmening": "Vid distorsion i halskotpelaren (inklusive whiplash-skada) rekommenderas sjukskrivning upp till 1 vecka på heltid.",
         "fmbtillstand": {
           "tillstandsmening": "distorsion i halskotpelaren (inklusive whiplash-skada)",
           "diagnoskod": [
@@ -41339,7 +41700,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till en vecka",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 1 vecka",
           "maximalsjukskrivningstid": "1",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -42725,7 +43086,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Oftast ingen",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -42852,7 +43213,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till två veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
           "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -43234,7 +43595,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Oftast ingen",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -43361,7 +43722,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Upp till två veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 2 veckor",
           "maximalsjukskrivningstid": "2",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -45426,8 +45787,8 @@
             "beskrivning": "heltid"
           },
           "typfalletsrekommenderadesjukskrivning": "Arbetsförmågan kan vara nedsatt i alla former av arbeten i upp till 3 veckor (i enstaka fall upp till några månader).",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
+          "maximalsjukskrivningstid": "3",
+          "maximalsjukskrivningsenhet": "wk"
         },
         "id": "68"
       },
@@ -51997,7 +52358,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Uppgift saknas",
+          "typfalletsrekommenderadesjukskrivning": "Upp till någon månad vanligt, ibland krävs sjukskrivning i flera månader beroende på arbetets krav.",
           "maximalsjukskrivningstid": null,
           "maximalsjukskrivningsenhet": null
         },
@@ -53618,7 +53979,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "ingen sjukskrivning",
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
           "maximalsjukskrivningstid": "0",
           "maximalsjukskrivningsenhet": "d"
         },
@@ -55950,7 +56311,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "5 veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 5 veckor",
           "maximalsjukskrivningstid": "5",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -56078,7 +56439,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "5-7 v",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 5-7 veckor",
           "maximalsjukskrivningstid": "7",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -56223,7 +56584,7 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "12 veckor",
+          "typfalletsrekommenderadesjukskrivning": "Upp till 12 veckor",
           "maximalsjukskrivningstid": "12",
           "maximalsjukskrivningsenhet": "wk"
         },
@@ -59387,9 +59748,9 @@
             "kodsystemnamn": "Sjukskrivningsgrad",
             "beskrivning": "heltid"
           },
-          "typfalletsrekommenderadesjukskrivning": "Någon eller några dagar inom ramen för egen sjukanmälan.",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
+          "typfalletsrekommenderadesjukskrivning": "Ingen sjukskrivning",
+          "maximalsjukskrivningstid": "0",
+          "maximalsjukskrivningsenhet": "d"
         },
         "id": "104"
       },
@@ -61849,8 +62210,8 @@
             "beskrivning": "heltid"
           },
           "typfalletsrekommenderadesjukskrivning": "Upp till  2 veckor",
-          "maximalsjukskrivningstid": null,
-          "maximalsjukskrivningsenhet": null
+          "maximalsjukskrivningstid": "2",
+          "maximalsjukskrivningsenhet": "wk"
         },
         "id": "594"
       },
@@ -63091,6 +63452,761 @@
           "maximalsjukskrivningsenhet": null
         },
         "id": "507"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/626"
+      },
+      "type": "typfall",
+      "id": "626",
+      "attributes": {
+        "version": "1",
+        "id": "626",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Efter epilepsianfall är arbetsförmågan vanligtvis nedsatt från någon dag upp till några veckor.",
+        "fmbtillstand": {
+          "tillstandsmening": "epilepsianfall",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "255251009",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "akut fas"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Från någon dag upp till några veckor",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "626"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/627"
+      },
+      "type": "typfall",
+      "id": "627",
+      "attributes": {
+        "version": "1",
+        "id": "627",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Vid inställning eller byte av läkemedel mot epilepsi kan arbetsförmågan vara partiellt eller helt nedsatt under flera veckor, ibland månader.",
+        "fmbtillstand": {
+          "tillstandsmening": "inställning eller byte av läkemedel mot epilepsi",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [
+            {
+              "kod": [
+                {
+                  "kod": "401062003",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "granskning av epilepsimedicinering"
+                }
+              ],
+              "status": {
+                "kod": "385651009",
+                "kodsystem": "1.2.752.116.2.1.1",
+                "kodsystemnamn": "SNOMED-CT",
+                "beskrivning": "pågående"
+              }
+            }
+          ],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under flera veckor, ibland månader",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "627"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/628"
+      },
+      "type": "typfall",
+      "id": "628",
+      "attributes": {
+        "version": "1",
+        "id": "628",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Vid farmakologiskt terapiresistent epilepsi med återkommande epileptiska anfall kan heltidsarbete vara möjligt i perioder. I andra perioder kan partiell eller hel sjukskrivning behövas, under flera veckor upp till flera månader.",
+        "fmbtillstand": {
+          "tillstandsmening": "farmakologiskt terapiresistent epilepsi med återkommande epileptiska anfall",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [
+            {
+              "sjukdomsforlopp": [
+                {
+                  "kod": "263855007",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "återfallsfas"
+                }
+              ]
+            }
+          ],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [
+            {
+              "komplicerandefaktor": [
+                {
+                  "kod": "20646008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "terapiresistent"
+                }
+              ]
+            }
+          ],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under flera veckor upp till flera månader",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "628"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/629"
+      },
+      "type": "typfall",
+      "id": "629",
+      "attributes": {
+        "version": "1",
+        "id": "629",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Pålagrad oro och ångest för ytterligare anfall och utveckling av depressiva symtom kan sätta ned arbetsförmågan under långa perioder. Sjukskrivningsbehovet får då styras av allvarlighetsgraden i dessa symtom och effekt av behandling.",
+        "fmbtillstand": {
+          "tillstandsmening": "pålagrad oro och ångest för ytterligare epileptiska anfall och utveckling av depressiva symtom",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [
+            {
+              "komplicerandefaktor": [
+                {
+                  "kod": "58901008",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "oro"
+                },
+                {
+                  "kod": "48694002",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "ångest"
+                },
+                {
+                  "kod": "277821009",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "ångest för att få ett anfall"
+                },
+                {
+                  "kod": "394924000",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "symtom på depression"
+                }
+              ]
+            }
+          ],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Under långa perioder",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "629"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/630"
+      },
+      "type": "typfall",
+      "id": "630",
+      "attributes": {
+        "version": "1",
+        "id": "630",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Under perioder av stress och påfrestning kan risk för epilepsianfall öka, framför allt hos personer med kognitiva svårigheter, och arbetsförmågan bli nedsatt. I sådana situationer ger inte medicinomställning alltid önskad effekt utan personen har behov av vila och minskade krav. Överväg partiell eller hel sjukskrivning.",
+        "fmbtillstand": {
+          "tillstandsmening": "perioder av stress och påfrestning vid epilepsi, framför allt hos personer med kognitiva svårigheter",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [
+            {
+              "komplicerandefaktor": [
+                {
+                  "kod": "23085004",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "ökad stress"
+                },
+                {
+                  "kod": "386806002",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "nedsatt kognition"
+                },
+                {
+                  "kod": "58848006",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "bristande läkemedelseffekt"
+                }
+              ]
+            }
+          ],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Kan finnas behov av vila och minskade krav",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "630"
+      },
+      "relationships": {
+        "forsakringsmedicinskdiagnosinformation": null
+      }
+    },
+    {
+      "links": {
+        "self": "https://api.socialstyrelsen.se/fmb/typfall/631"
+      },
+      "type": "typfall",
+      "id": "631",
+      "attributes": {
+        "version": "1",
+        "id": "631",
+        "malgrupp": [
+          {
+            "kod": "profession",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "profession"
+          },
+          {
+            "kod": "myndigheter",
+            "kodsystem": "1.2.752.116.3.2.2.2",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: primär målgrupp",
+            "beskrivning": "andra statliga myndigheter"
+          }
+        ],
+        "nyckelord": [
+          {
+            "kod": "G40",
+            "kodsystem": "1.2.752.116.1.1.1.3.2",
+            "kodsystemnamn": "ICD-10",
+            "beskrivning": "Epilepsi"
+          },
+          {
+            "kod": "vagledande",
+            "kodsystem": "1.2.752.116.3.2.2.3",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: grad av styrning",
+            "beskrivning": "vägledande (rekommendationer)"
+          },
+          {
+            "kod": "utan_evidensgradering",
+            "kodsystem": "1.2.752.116.3.2.2.4",
+            "kodsystemnamn": "Kunskapsstödsdomäner metadata: bästa tillgängliga kunskap",
+            "beskrivning": "kunskapssammanställning utan evidensgradering"
+          }
+        ],
+        "syfte": "syfte:val_av_atgard",
+        "beskrivning": "Typfall för diagnosrubriken Epilepsi",
+        "typavdokument": {
+          "kod": "rekommendation_fmb",
+          "kodsystem": "1.2.752.116.3.2.1",
+          "kodsystemnamn": "Socialstyrelsens kunskapsstöd",
+          "beskrivning": "Rekommendation inom försäkringsmedicinskt beslutstöd"
+        },
+        "sjukdomsgrupp": {
+          "kod": {
+            "kod": "nervsystemet",
+            "kodsystem": "1.2.752.116.3.2.7",
+            "kodsystemnamn": "Sjukdomsgrupp",
+            "beskrivning": "Nervsystemets sjukdomar"
+          }
+        },
+        "senastuppdaterad": "2019-03-12T23:00:00+0000",
+        "giltighetsperiod": {
+          "start": "2019-03-13",
+          "slut": null
+        },
+        "status": {
+          "kod": "giltig",
+          "kodsystem": "1.2.752.116.3.2.3",
+          "kodsystemnamn": "Status",
+          "beskrivning": "giltig"
+        },
+        "typfallsmening": "Under graviditet och efter förlossning kan, på grund av ökad anfallsrisk och vid bristfällig anfallskontroll, behov av partiell eller hel sjukskrivning finnas.",
+        "fmbtillstand": {
+          "tillstandsmening": "graviditet och postpartumfas vid epilepsi",
+          "diagnoskod": [
+            {
+              "kod": "G40",
+              "kodsystem": "1.2.752.116.1.1.1.3.2",
+              "kodsystemnamn": "ICD-10",
+              "beskrivning": "Epilepsi"
+            }
+          ],
+          "urvalsjukdomsforlopp": [],
+          "urvalsvarighetsgrad": [],
+          "urvalatgard": [],
+          "urvalarbetsbelastning": [],
+          "urvalkomplicerandefaktor": [
+            {
+              "komplicerandefaktor": [
+                {
+                  "kod": "77386006",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "patienten gravid för närvarande"
+                },
+                {
+                  "kod": "86569001",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "postpartumfas"
+                },
+                {
+                  "kod": "314828009",
+                  "kodsystem": "1.2.752.116.2.1.1",
+                  "kodsystemnamn": "SNOMED-CT",
+                  "beskrivning": "dålig epilepsikontroll"
+                }
+              ]
+            }
+          ],
+          "urvalsamsjuklighet": []
+        },
+        "rekommenderadsjukskrivning": {
+          "maximalsjukskrivningsgrad": {
+            "kod": "1",
+            "kodsystem": "1.2.752.116.3.1.14",
+            "kodsystemnamn": "Sjukskrivningsgrad",
+            "beskrivning": "heltid"
+          },
+          "typfalletsrekommenderadesjukskrivning": "Behov av partiell eller hel sjukskrivning kan finnas",
+          "maximalsjukskrivningstid": null,
+          "maximalsjukskrivningsenhet": null
+        },
+        "id": "631"
       },
       "relationships": {
         "forsakringsmedicinskdiagnosinformation": null
