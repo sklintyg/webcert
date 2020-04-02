@@ -23,6 +23,10 @@ import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHel
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
@@ -33,10 +37,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.xml.ws.WebServiceException;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -360,8 +356,8 @@ public class IntygServiceImpl implements IntygService {
 
     private boolean checkSjf(IntygContentHolder intyg) {
         WebCertUser user = webCertUserService.getUser();
-        if (intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().
-            equals(user.getValdVardgivare().getId())) {
+        if (intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid()
+            .equals(user.getValdVardgivare().getId())) {
             return false;
         } else {
             return userIsDjupintegreradWithSjf();
