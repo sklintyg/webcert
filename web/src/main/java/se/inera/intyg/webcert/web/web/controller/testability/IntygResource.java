@@ -458,10 +458,12 @@ public class IntygResource {
             && (relatedUtkast != null)
             && (relatedUtkast.getSignatur() != null)
             && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
+
             utkast.setRelationIntygsId(oldIntygId);
             utkast.setRelationKod(RelationKod.KOMPLT);
+
+            utkastRepository.saveAndFlush(utkast);
         }
-        utkastRepository.saveAndFlush(utkast);
     }
 
     private void deleteDraftAndRelatedQAs(Utkast utkast) {
