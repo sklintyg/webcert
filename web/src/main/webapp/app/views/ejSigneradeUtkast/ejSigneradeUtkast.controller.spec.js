@@ -47,9 +47,21 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
       $provide.value('common.UserModel', {
         userContext: {authenticationScheme: null}, getActiveFeatures: function() {
         },
+        isVardAdministrator: function() {
+          return true;
+        },
         hasIntygsTyp: function() {
           return true;
         }, isLakare: function() {
+          return false;
+        }, isTandlakare: function() {
+          return false;
+        }, isPrivatLakare: function() {
+          return false;
+        }
+      });
+      $provide.value('common.authorityService', {
+        isAuthorityActive: function() {
           return true;
         }
       });
@@ -59,7 +71,6 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
       var featureService = jasmine.createSpyObj('common.featureService', ['isFeatureActive']);
       featureService.features = {};
       $provide.value('common.featureService', featureService);
-      $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
       $provide.value('common.moduleService', {});
       $provide.value('common.messageService', {});
       $provide.value('common.DateUtilsService', {
@@ -90,7 +101,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
         utkastFilterModel = _utkastFilterModel_;
         emptyFilter = _utkastFilterModel_.build();
 
-        $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(200,
+        $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
             mockResponse.utkastList);
         $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
         $httpBackend.flush();
@@ -101,7 +112,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller startup', function() {
 
     it('should load utkast list on valid response', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(200,
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
           mockResponse.utkastList);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
@@ -109,7 +120,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -119,7 +130,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller filter', function() {
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();

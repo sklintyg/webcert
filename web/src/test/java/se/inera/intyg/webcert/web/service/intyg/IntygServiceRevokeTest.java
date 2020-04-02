@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -50,6 +51,7 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -59,6 +61,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -72,11 +75,13 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private static final String HSA_ID = "AAA";
 
     private static final String INTYG_ID = "123";
+    private static final String PARENT_INTYG_ID = "1234";
 
     private static final String USER_REFERENCE = "some-ref";
 
     private Utkast signedUtkast;
-    private Utkast revokedUtkast;
+    private Relations childRelations;
+    private Relations parentRelations;
 
     @Before
     public void setup() throws Exception {
@@ -85,8 +90,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         WebCertUser user = buildWebCertUser(person);
 
         signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, INTYG_TYPE_VERSION, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
-        revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, INTYG_TYPE_VERSION, UtkastStatus.SIGNED, json, vardperson);
-        revokedUtkast.setAterkalladDatum(LocalDateTime.now());
+        childRelations = buildRelations(false);
+        parentRelations = buildRelations(true);
 
         when(webCertUserService.getUser()).thenReturn(user);
     }
@@ -151,6 +156,30 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         }
     }
 
+    @Test
+    public void testRevokeCompletedIntyg() throws Exception {
+
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(intygRelationHelper.getRelationsForIntyg(INTYG_ID)).thenReturn(childRelations);
+        when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);
+
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
+
+        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
+
+        verify(arendeService).closeAllNonClosedQuestions(INTYG_ID);
+        verify(arendeService).reopenClosedCompletions(PARENT_INTYG_ID);
+        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
+        verify(logService).logRevokeIntyg(any(LogRequest.class));
+        verify(intygRepository).save(any(Utkast.class));
+        verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK), eq(INTYG_TYPE_VERSION));
+        verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
+        verify(monitoringService).logIntygRevoked(INTYG_ID, INTYG_TYP_FK, HSA_ID, REVOKE_REASON);
+
+        assertEquals(IntygServiceResult.OK, res);
+    }
+
     private HoSPersonal buildHosPerson() {
         HoSPersonal person = new HoSPersonal();
         person.setPersonId(HSA_ID);
@@ -171,6 +200,24 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         intyg.setSenastSparadAv(vardperson);
 
         return intyg;
+    }
+
+    private Relations buildRelations(boolean buildParent) {
+        if (buildParent) {
+            Relations relations = new Relations();
+            FrontendRelations frontendRelations = new FrontendRelations();
+            WebcertCertificateRelation webcertCertificateRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.KOMPLT,
+                LocalDateTime.now(), UtkastStatus.SIGNED, false);
+            frontendRelations.setComplementedByIntyg(webcertCertificateRelation);
+            relations.setLatestChildRelations(frontendRelations);
+            return relations;
+        } else {
+            Relations relations = new Relations();
+            WebcertCertificateRelation webcertCertificateRelation = new WebcertCertificateRelation(PARENT_INTYG_ID, RelationKod.KOMPLT,
+                LocalDateTime.now(), UtkastStatus.SIGNED, false);
+            relations.setParent(webcertCertificateRelation);
+            return relations;
+        }
     }
 
     private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {

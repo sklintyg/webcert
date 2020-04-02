@@ -24,7 +24,8 @@
     },
     "highcharts": {
       "main": [
-        "highcharts.js"
+        "highcharts.js",
+        "modules/accessibility.js"
       ]
     }
   },

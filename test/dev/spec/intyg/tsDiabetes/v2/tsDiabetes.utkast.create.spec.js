@@ -21,7 +21,6 @@
 'use strict';
 
 var wcTestTools = require('webcert-testtools');
-var testdataHelper = require('common-testtools').testdataHelper;
 var specHelper = wcTestTools.helpers.spec;
 var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v2.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v2.intyg;
@@ -29,19 +28,21 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Create and Sign ts-diabetes v2 utkast', function() {
 
-  var utkastId = testdataHelper.generateTestGuid(),
+  var utkastId = null,
       data = null;
 
   beforeAll(function() {
     browser.ignoreSynchronization = false;
     specHelper.login();
-    restTestdataHelper.createEmptyUtkast(UtkastPage.intygType, UtkastPage.intygTypeVersion, utkastId);
+    specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
   });
 
-  it('Öppna intyget', function() {
-    UtkastPage.get(utkastId);
-
+  it('Spara undan intygsId från URL', function() {
     UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
+    });
 
     data = wcTestTools.testdata.ts.diabetes.v2.get(utkastId);
   });

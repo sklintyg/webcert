@@ -62,6 +62,7 @@ module.exports = function(config) {
       'src/main/webapp/bower_components/momentjs/moment.js',
       'src/main/webapp/bower_components/oclazyload/dist/ocLazyLoad.js',
       'src/main/webapp/bower_components/highcharts/highcharts.js',
+      'src/main/webapp/bower_components/highcharts/modules/accessibility.js',
       // endbower
       'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 

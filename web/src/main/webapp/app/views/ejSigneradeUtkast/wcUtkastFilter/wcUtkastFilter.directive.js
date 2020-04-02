@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy', 'common.UserModel',
-      function($timeout, UtkastProxy, UserModel) {
+angular.module('webcert').directive('wcUtkastFilter', ['$timeout', '$rootScope', 'webcert.UtkastProxy',
+  'common.UserModel', 'common.authorityService',
+      function($timeout, $rootScope, UtkastProxy, UserModel, authorityService) {
         'use strict';
 
         return {
@@ -33,12 +34,20 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
             $scope.showDateFromErrors = false;
             $scope.showDateToErrors = false;
 
+            $scope.showVidarebefordra = function() {
+              var options = {
+                authority: 'VIDAREBEFORDRA_UTKAST',
+                intygstyp: ''
+              };
+              return authorityService.isAuthorityActive(options);
+            };
+
             $scope.showDateError = function () {
               return ($scope.showDateFromErrors || $scope.showDateToErrors) && $scope.filterForm.$invalid && !$scope.filterForm.$pristine;
             };
 
             $scope.getAlwaysHighlightedSparatAv = function () {
-              return UserModel.isLakare();
+              return !UserModel.isVardAdministrator();
             };
 
             $scope.setShowDateFromVisible = function() {
@@ -68,10 +77,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
             $scope.resetFilter = function() {
               resetFilterState();
               $scope.widgetState.searched = false;
-              $timeout(function() {
-                $scope.onReset();
-              });
-
+              $scope.onReset();
             };
 
             function resetFilterState() {
@@ -95,13 +101,28 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
             }
 
             $scope.setDefaultSavedBy = function() {
-              $scope.filter.selection.savedBy = undefined;
-              if(UserModel.isLakare()) {
+              if (!UserModel.isVardAdministrator()) {
+                $scope.filter.selection.savedBy = UserModel.user.hsaId;
+              } else {
+                $scope.filter.selection.savedBy = undefined;
+              }
+            };
+
+            $scope.addCurrentLakare = function() {
+              var inList = false;
+              if(!UserModel.isVardAdministrator()) {
                 $scope.widgetState.savedByList.forEach(function(lakare) {
                   if (UserModel.user && lakare.id === UserModel.user.hsaId) {
-                    $scope.filter.selection.savedBy = UserModel.user.hsaId;
+                    inList = true;
                   }
                 });
+
+                if(!inList) {
+                  var userLakare = {
+                    id: UserModel.user.hsaId, label: UserModel.user.namn
+                  };
+                  $scope.widgetState.savedByList.push(userLakare);
+                }
               }
             };
 
@@ -121,7 +142,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                 if ($scope.filter.savedByOptions.length === 1) {
                   $scope.filter.selection.savedBy = undefined;
                 }
-                $scope.setDefaultSavedBy();
+                $scope.addCurrentLakare();
               }, function() {
                 $scope.widgetState.loadingSavedByList = false;
                 $scope.widgetState.savedByList = [{

@@ -46,6 +46,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
         $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
+        enhetArendenListModel.viewState.runningQuery = true;
 
         var vidarebefordraArendeMailModel = null;
 
@@ -55,11 +56,15 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
         }
 
+        $scope.pageListInit = function() {
+          $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+          $scope.listModel.chosenPageList = $scope.listModel.DEFAULT_PAGE;
+        };
+
         $scope.listInit = function() {
           $scope.listModel.limit = $scope.listModel.DEFAULT_PAGE_SIZE;
           $scope.filterModel.pageSize = $scope.listModel.limit;
-          $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
-          $scope.listModel.chosenPageList = $scope.listModel.DEFAULT_PAGE;
+          $scope.pageListInit();
         };
 
         updateArenden(null, {startFrom: 0}, true);
@@ -72,6 +77,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
           enhetArendenListModel.viewState.activeErrorMessageKey = null;
 
+          if(data.search) {
+            $scope.pageListInit();
+          }
           if(data.reset) {
             $scope.orderBy = 'receivedDate';
             $scope.orderAscending = false;

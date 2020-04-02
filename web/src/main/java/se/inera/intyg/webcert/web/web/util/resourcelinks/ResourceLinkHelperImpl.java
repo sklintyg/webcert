@@ -110,6 +110,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
                 draftHolder.addLink(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
             }
 
+            if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
+                draftHolder.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
+            }
+
             // Add action links related to questions, as the utkast can be part of a kompletteringsbegäran.
             final List<ActionLink> actionLinkList = getActionLinksForQuestions(accessEvaluationParameters);
             for (ActionLink actionLink : actionLinkList) {

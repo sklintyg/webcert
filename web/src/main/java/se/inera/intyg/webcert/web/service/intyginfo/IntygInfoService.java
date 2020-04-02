@@ -28,12 +28,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -111,6 +113,8 @@ public class IntygInfoService {
         response.setIntygId(utkast.getIntygsId());
         response.setIntygType(utkast.getIntygsTyp());
         response.setIntygVersion(utkast.getIntygTypeVersion());
+
+        response.setTestCertificate(utkast.isTestIntyg());
 
         response.setDraftCreated(utkast.getSkapad());
 

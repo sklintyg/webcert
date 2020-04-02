@@ -71,6 +71,8 @@ public interface ArendeService {
      */
     void closeAllNonClosedQuestions(String intygsId);
 
+    void reopenClosedCompletions(String intygsId);
+
     Arende getArende(String meddelandeId);
 
     Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> allUnitIds, Set<String> intygsTyper);

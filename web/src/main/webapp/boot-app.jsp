@@ -95,6 +95,7 @@
       <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
       <script type="text/javascript" src="/bower_components/oclazyload/dist/ocLazyLoad.js"></script>
       <script type="text/javascript" src="/bower_components/highcharts/highcharts.js"></script>
+      <script type="text/javascript" src="/bower_components/highcharts/modules/accessibility.js"></script>
       <!-- endbower -->
       <script type="text/javascript" src="/bower_components/angular-ui-router/release/stateEvents.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>

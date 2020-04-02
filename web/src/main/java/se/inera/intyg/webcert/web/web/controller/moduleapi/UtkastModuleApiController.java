@@ -300,7 +300,10 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             SaveDraftResponse response =
                 utkastService.updateDraftFromCandidate(request.getCandidateId(), request.getCandidateType(), utkast);
-
+            if (utkast.getSkapadAv() != null) {
+                monitoringLogService.logUtkastCreatedTemplateAuto(intygsId, intygsTyp, utkast.getSkapadAv().getHsaId(),
+                    utkast.getEnhetsId(), request.getCandidateId(), request.getCandidateType());
+            }
             error = false;
             return Response.ok().entity(response).build();
 

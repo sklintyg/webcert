@@ -18,7 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.common.collect.Sets;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,9 +64,10 @@ public class Icd10KoderRequest {
     }
 
     public Set<String> getIcd10Codes() {
-        return Sets.newHashSet(icd10Kod1, icd10Kod2, icd10Kod3).stream()
+        Set<String> set = new LinkedHashSet<>(Arrays.asList(icd10Kod1, icd10Kod2, icd10Kod3));
+        return set.stream()
             .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static Icd10KoderRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
