@@ -519,7 +519,7 @@ public class ArendeServiceImpl implements ArendeService {
             response.setResults(resultList);
 
             // PDL Logging
-            results.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
+            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
                 logService.logListIntyg(user, patient);
             });
         }
