@@ -92,6 +92,8 @@ describe('svarameddelande - arende on luse intyg', function() {
       expect(LuseUtkastPage.isAt()).toBeTruthy();
       LuseUtkastPage.radera.knapp.click();
       LuseUtkastPage.radera.bekrafta.click();
+      expect(LuseIntygPage.utkastDeletedModal.isDisplayed()).toBeTruthy();
+      browser.sleep(1500);
       expect(LuseIntygPage.isAt()).toBeTruthy();
     });
 
