@@ -21,9 +21,6 @@ package se.inera.intyg.webcert.common.service.log.template;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
-/**
- * @author andreaskaltenbach
- */
 public abstract class IntygListsMessage {
 
     public static PdlLogMessage build() {
