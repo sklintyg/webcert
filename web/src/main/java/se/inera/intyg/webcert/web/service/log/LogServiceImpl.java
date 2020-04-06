@@ -18,11 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +33,13 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygListsMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygPredictionMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
@@ -237,6 +235,13 @@ public class LogServiceImpl implements LogService {
         send(logMessagePopulator.populateLogMessage(
             IntygPredictionMessage.build(logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE), logRequest, user),
             logRequest.isTestIntyg());
+    }
+
+    @Override
+    public void logListIntyg(WebCertUser user, String patient) {
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
+        send(logMessagePopulator.populateLogMessage(
+            IntygListsMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());
     }
 
     @Override

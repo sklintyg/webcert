@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -86,6 +83,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogServiceImpl;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -167,6 +165,8 @@ public class ArendeServiceImpl implements ArendeService {
     private AccessResultExceptionHelper accessResultExceptionHelper;
     @Autowired
     private IntygService intygService;
+    @Autowired
+    private LogServiceImpl logService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -517,6 +517,11 @@ public class ArendeServiceImpl implements ArendeService {
                 .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
 
             response.setResults(resultList);
+
+            // PDL Logging
+            results.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
+                logService.logListIntyg(user, patient);
+            });
         }
 
         return response;
