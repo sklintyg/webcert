@@ -41,6 +41,7 @@
         <appender-ref ref="MONITORING" />
     </logger>
 
+    <logger name="org.springframework.beans.factory.xml" level="debug" />
 
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>

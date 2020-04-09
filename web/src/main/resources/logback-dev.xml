@@ -130,6 +130,8 @@
 
   <logger name="liquibase" level="info" />
 
+  <logger name="org.springframework.beans.factory.xml" level="debug" />
+
   <root>
     <level value="error" />
     <appender-ref ref="STDOUT" />
