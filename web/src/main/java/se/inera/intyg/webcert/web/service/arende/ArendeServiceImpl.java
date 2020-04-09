@@ -83,7 +83,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.log.LogServiceImpl;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -166,7 +166,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private IntygService intygService;
     @Autowired
-    private LogServiceImpl logService;
+    private LogService logService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
