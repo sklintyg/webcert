@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.log.LogServiceImpl;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -100,7 +100,7 @@ public class IntygApiController extends AbstractApiController {
     private ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
-    private LogServiceImpl logService;
+    private LogService logService;
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
