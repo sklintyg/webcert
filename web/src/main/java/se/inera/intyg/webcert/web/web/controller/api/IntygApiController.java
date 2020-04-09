@@ -52,8 +52,10 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogServiceImpl;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -97,6 +99,9 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private ResourceLinkHelper resourceLinkHelper;
 
+    @Autowired
+    private LogServiceImpl logService;
+
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
@@ -121,7 +126,8 @@ public class IntygApiController extends AbstractApiController {
                 "Error checking sekretessmarkering state in PU-service.");
         }
 
-        authoritiesValidator.given(getWebCertUserService().getUser())
+        WebCertUser user = getWebCertUserService().getUser();
+        authoritiesValidator.given(user)
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                 patientSekretess == SekretessStatus.TRUE)
             .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
@@ -139,9 +145,9 @@ public class IntygApiController extends AbstractApiController {
 
         List<Utkast> utkastList;
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .isVerified()) {
-            Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(),
+            Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(user,
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
@@ -169,6 +175,9 @@ public class IntygApiController extends AbstractApiController {
         if (intygItemListResponse.getRight()) {
             responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
         }
+
+        // PDL Logging
+        logService.logListIntyg(user,  personNummer.getPersonnummerWithDash());
 
         return responseBuilder.build();
     }
