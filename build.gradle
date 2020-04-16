@@ -70,6 +70,30 @@ allprojects {
     }
 
     dependencies {
+        // Exclude and import of non-BOM version of Hibernate due to
+        // bug in BOM-version 5.4.12.
+        compile("org.hibernate:hibernate-core") {
+            version {
+                strictly "${hibernateVersion}"
+            }
+        }
+        compile("org.hibernate:hibernate-hikaricp") {
+            version {
+                strictly "${hibernateVersion}"
+            }
+        }
+        compile("org.hibernate:hibernate-entitymanager") {
+            version {
+                strictly "${hibernateVersion}"
+            }
+        }
+
+        compile "javax.annotation:javax.annotation-api"
+        compile "jakarta.xml.bind:jakarta.xml.bind-api"
+        compile "jakarta.xml.ws:jakarta.xml.ws-api"
+        compile "com.sun.xml.messaging.saaj:saaj-impl"
+        testCompile "org.glassfish.jaxb:jaxb-runtime"
+
         testCompile "se.inera.intyg.refdata:refdata:${refDataVersion}"
         testCompile 'junit:junit:4.+'
         testCompile "org.mockito:mockito-core"
