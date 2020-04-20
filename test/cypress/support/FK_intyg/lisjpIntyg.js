@@ -5,7 +5,7 @@ import * as fk from './fk_helpers'
 // Datumen är inte specifika för något testfall
 
 // De funktioner etc. som är gemensamma för alla FK-intyg kan exporteras direkt
-export {besökÖnskadUrl, loggaUtLoggaIn, sektionÖvrigt, sektionKontakt,
+export {besökÖnskadUrl, loggaUtLoggaIn, sektionÖvrigt, sektionKontakt,loggaUt,
         skickaTillFk, fornya, raderaUtkast, makuleraIntyg,komplettera} from './fk_helpers';
 
 // -------------------- 'Smittbärarpenning' --------------------
@@ -275,7 +275,23 @@ export function skrivUt(typAvUtskrift, intygsId){
             cy.log('Ingen korrekt typ av utskrift vald');
     }
 }
-
+//--------------------Ställa fråga på intyg till FK------------------
+export function stallaFragaTillFK(typAvFraga){
+    switch(typAvFraga) {
+        case "Administrativ":
+            cy.get('#arende-filter-administrativafragor').click();
+            cy.get('.dropdown-label > .material-icons').click();
+                cy.get('#new-question-topic-AVSTMN').click();
+                cy.get('#arendeNewModelText').click().type('Detta är en ' + typAvFraga + ' fråga');
+                cy.get('#sendArendeBtn').click().then(() =>{
+                    
+                    cy.contains('Detta är en ' + typAvFraga + ' fråga');
+                });
+        break;
+        default:      
+        
+    }    
+}
 // -------------------- SRS-specifika funktioner --------------------
 export function bytTillSrsPanel() {
     cy.get('#tab-link-wc-srs-panel-tab').click();
@@ -327,4 +343,3 @@ export function verifieraDiagnosUnderStatistik(diagnoskod) {
 export function kompletteraLisjp(){
     fk.komplettera();
 }
-

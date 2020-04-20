@@ -34,7 +34,7 @@ function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
     assert.isBoolean(ärDjup);
 
     const originSträng = (ärDjup ? "DJUPINTEGRATION" : "NORMAL");
-
+cy.log(vårdpersonal.förnamn + vårdpersonal.efternamn+vårdpersonal.hsaId);
     cy.request({
         method: 'POST',
         url: '/fake',
@@ -50,11 +50,175 @@ function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
                 "authenticationMethod": "FAKE"}'
         }
     }).then((resp) => {
-        expect(resp.status).to.equal(200);
+        expect(resp.status).to.equal(200);  
+            
+    });
+}
+function skapaIntygWebcert(fx) {
+    const vårdpersonal = fx.vårdpersonal;
+    const läkare = fx.vårdpersonal1;
+    const vårdenhet = fx.vårdenhet;
+    const patient = fx.vårdtagare;
+    const idagMinus1  = Cypress.moment().subtract(1,  'days').format('YYYY-MM-DD');
+  
+    expect(vårdpersonal).to.exist;
+    expect(vårdenhet).to.exist;
+    expect(patient).to.exist;
+    expect(läkare).to.exist;
+    const intygsID = generateQuickGuid();
+    cy.log(vårdpersonal.hsaId);
+   
+    cy.request({
+        method: 'POST',
+        url: '/testability/intyg/utkast',
+        raw: true,
+        body: {
+            "contents":{
+               "grundData":{
+                  "signeringsdatum": idagMinus1 +"T13:22:13.000",
+                  "skapadAv":{
+                     "personId": läkare.hsaId,
+                     "fullstandigtNamn":läkare.förnamn + " " + läkare.efternamn,
+                     "forskrivarKod":"0000000",
+                     "befattningar":[
+                        "203090"
+                     ],
+                     "specialiteter":[
+                        "Medicinsk gastroenterologi och hepatologi",
+                        "Thoraxkirugi",
+                        "Öron-, näs- och halssjukdomar"
+                     ],
+                     "vardenhet":{
+                        "enhetsid":"TSTNMT2321000156-1077",
+                        "enhetsnamn":"Alfaenheten",
+                        "postadress":"NMT gata 2",
+                        "postnummer":"12345",
+                        "postort":"Testhult",
+                        "telefonnummer":"0101112131415",
+                        "epost":"enhet2@webcert.invalid.se",
+                        "vardgivare":{
+                           "vardgivarid":vårdenhet.vårdgivareId,
+                           "vardgivarnamn":vårdenhet.vårgivareNamn
+                        },
+                        "arbetsplatsKod":"1234567890"
+                     },
+                     "testIntyg":false
+                  },
+                  "patient":{
+                     "avliden":false,
+                     "personId":patient.personnummerKompakt,
+                     "fullstandigtNamn":patient.fornamn + " " + patient.efternamn,
+                     "fornamn":patient.fornamn,
+                     "efternamn":patient.fornamn,
+                     "sekretessmarkering":false,
+                     "testIndicator":false,
+                     "samordningsNummer":false
+                  }
+               },
+               "annatGrundForMU":"2020-04-15",
+               "arbetslivsinriktadeAtgarder":[
+                  {
+                     "typ":"ARBETSTRANING"
+                  }
+               ],
+               "aktivitetsKategorier":[
+         
+               ],
+               "anledningTillKontakt":"Visst ska det gå.",
+               "arbetslivsinriktadeAtgarderBeskrivning":"Träna på att arbeta.",
+               "arbetsresor":true,
+               "arbetstidsforlaggning":true,
+               "arbetstidsforlaggningMotivering":"HejHejHej",
+               "avstangningSmittskydd":false,
+               "forsakringsmedicinsktBeslutsstod":"Det krävdes mer kräm.",
+               "funktionsKategorier":[
+         
+               ],
+               "funktionsnedsattning":"Kan inte plocka blommor.",
+               "diagnoser":[
+                  {
+                     "diagnosBeskrivning":"Covid-19, virus ej påvisat",
+                     "diagnosDisplayName":"Covid-19, virus ej påvisat",
+                     "diagnosKod":"U072",
+                     "diagnosKodSystem":"ICD_10_SE"
+                  }
+               ],
+               "textVersion":"1.0",
+               "undersokningAvPatienten":"2020-03-03",
+               "journaluppgifter":"2020-03-17",
+               "nuvarandeArbete":"Blomplockare",
+               "anhorigsBeskrivningAvPatienten":"2020-03-03",
+               "annatGrundForMUBeskrivning":"test",
+               "kannedomOmPatient":"2020-03-03",
+               "underlagFinns":false,
+               "underlag":[
+         
+               ],
+               "telefonkontaktMedPatienten":"2020-04-15",
+               "sjukskrivningar":[
+                  {
+                     "period":{
+                        "from":"2020-06-02",
+                        "tom":"2021-06-16"
+                     },
+                     "sjukskrivningsgrad":"HELT_NEDSATT"
+                  }
+               ],
+               "sysselsattning":[
+                  {
+                     "typ":"NUVARANDE_ARBETE"
+                  }
+               ],
+               "sjukdomsforlopp":"test",
+               "diagnosgrund":"test",
+               "nyBedomningDiagnosgrund":false,
+               "funktionsnedsattningIntellektuell":"test",
+               "funktionsnedsattningKommunikation":"test",
+               "funktionsnedsattningKoncentration":"test",
+               "funktionsnedsattningPsykisk":"test",
+               "funktionsnedsattningSynHorselTal":"test",
+               "funktionsnedsattningBalansKoordination":"test",
+               "funktionsnedsattningAnnan":"test",
+               "aktivitetsbegransning":"test",
+               "pagaendeBehandling":"Smörjer med krämer",
+               "avslutadBehandling":"test",
+               "planeradBehandling":"mer Smörj",
+               "substansintag":"test",
+               "medicinskaForutsattningarForArbete":"test",
+               "formagaTrotsBegransning":"test",
+               "ovrigt":"test",
+               "prognos":{
+                  "dagarTillArbete":"NITTIO_DGR"},
+               "kontaktMedFk":true,
+               "tillaggsfragor":[
+         
+               ],
+               "typ":"lisjp",
+               "id":intygsID
+            },
+            "utkastStatus":"SIGNED",
+            "revoked":false,
+            "relations":{
+               "parent":null,
+               "children":null
+            }
+         }
+    }).then((resp) => {
+        expect(resp.status).to.equal(200); 
+
+        cy.wrap(resp).its('body').then((body) => {
+            
+            // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
+            cy.wrap(intygsID).then((id) => {
+                
+                return id;
+            });
+                
+        });       
     });
 }
 
-Cypress.Commands.add("loggaInVårdpersonalNormal", (vårdpersonal, vårdenhet) => {
+Cypress.Commands.add("VårdpersonalNormal", (vårdpersonal, vårdenhet) => {
     loggaInVårdpersonal(vårdpersonal, vårdenhet, false);
 });
 
@@ -62,7 +226,7 @@ Cypress.Commands.add("loggaInVårdpersonalIntegrerat", (vårdpersonal, vårdenhe
     loggaInVårdpersonal(vårdpersonal, vårdenhet, true);
 });
 Cypress.Commands.add("loggaUt",() => {
-  //  loggaUt();
+ 
 });
 
 // Skapa ett utkast enligt intygstyp
@@ -580,12 +744,14 @@ function skapaKompletteringMotWebcert(fx) {//OBS Går mot Webcert borde gå mot 
     const vårdpersonal = fx.vårdpersonal;
     const vårdtagare = fx.vårdtagare;
     const vårdenhet = fx.vårdenhet;
-    const intygsID = fx.utkastId
+    const intygsID = fx.utkastId;
+    const kompletteringstext = fx.kompletteringstext;
     const meddelandeId = generateQuickGuid();
     expect(intygsID).to.exist;
     expect(vårdpersonal).to.exist;
     expect(vårdtagare).to.exist;
     expect(vårdenhet).to.exist;
+    expect(kompletteringstext).to.exist;
     //expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
     cy.log(vårdtagare.personnummerKompakt + vårdtagare.förnamn +vårdtagare.efternamn + vårdtagare.postadress + vårdtagare.postnummer + vårdtagare.postort);
     cy.request({
@@ -615,7 +781,7 @@ function skapaKompletteringMotWebcert(fx) {//OBS Går mot Webcert borde gå mot 
                         <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>\
                     </urn1:amne>\
                     <urn1:rubrik>Komplettering</urn1:rubrik>\
-                    <urn1:meddelande>Komplettering</urn1:meddelande>\
+                    <urn1:meddelande>'+ kompletteringstext +'</urn1:meddelande>\
                     <urn1:skickatAv>\
                         <urn1:part>\
                         <urn2:code>FKASSA</urn2:code>\
@@ -625,7 +791,7 @@ function skapaKompletteringMotWebcert(fx) {//OBS Går mot Webcert borde gå mot 
                     <urn1:komplettering>\
                         <urn1:frage-id>1</urn1:frage-id>\
                         <urn1:instans>1</urn1:instans>\
-                        <urn1:text>Detta är kompletteringstexten...</urn1:text>\
+                        <urn1:text>Detta är själva kompletteringstexten</urn1:text>\
                     </urn1:komplettering>\
                 </urn1:SendMessageToCare>\
             </soapenv:Body>\
@@ -1102,6 +1268,9 @@ Cypress.Commands.add("rensaIntyg", fx => {
 //Cypress.Commands.add("generateQuickGuid",() =>{
   //  return generateQuickGuid();
 //});
+Cypress.Commands.add("skapaIntygWebcert", fx =>{
+    return skapaIntygWebcert(fx);
+});
 Cypress.Commands.add("skapaKompletteringMotWebcert", fx => {
     return skapaKompletteringMotWebcert(fx);
 });     
