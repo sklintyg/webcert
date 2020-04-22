@@ -9,14 +9,14 @@ startScripts {
 
         def originalScript = unixScript.text
         unixScript.text = unixScript.text.replaceAll(/save \"\$@\"/,
-            'save --driver=com.mysql.jdbc.Driver --classpath=lib/' + persistenceDependency + ' --changeLogFile=changelog/changelog.xml "\\$@"')
+            'save --driver=com.mysql.cj.jdbc.Driver --classpath=lib/' + persistenceDependency + ' --changeLogFile=changelog/changelog.xml "\\$@"')
         if (originalScript.equals(unixScript.text)) {
                 throw new RuntimeException("No replacement seems to have been made to the liquibase script.")
         }
 
         def originalWindowsScript = windowsScript.text
         windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
-            "--driver=com.mysql.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
+            "--driver=com.mysql.cj.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
         if (originalWindowsScript.equals(windowsScript.text)) {
                 throw new RuntimeException("No replacement seems to have been made to the windows liquibase script.")
         }
