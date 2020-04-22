@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,12 +35,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -61,6 +58,7 @@ import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -112,6 +110,9 @@ public class UtkastApiController extends AbstractApiController {
 
     @Autowired
     private IntygDraftDecorator intygDraftDecorator;
+
+    @Autowired
+    private LogService logService;
 
     /**
      * Create a new draft.
@@ -331,6 +332,11 @@ public class UtkastApiController extends AbstractApiController {
         }
 
         listIntygEntries.sort(intygComparator);
+
+        // PDL Logging
+        listIntygEntries.stream().map(ListIntygEntry::getPatientId).distinct().forEach(patient -> {
+            logService.logListIntyg(user, patient.getPersonnummerWithDash());
+        });
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
