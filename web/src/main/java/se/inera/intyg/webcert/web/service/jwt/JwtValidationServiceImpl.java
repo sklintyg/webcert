@@ -59,9 +59,10 @@ public class JwtValidationServiceImpl implements JwtValidationService {
     @Override
     public Jws<Claims> validateJwsToken(String jwtToken) {
 
-        return Jwts.parser()
+        return Jwts.parserBuilder()
             .setSigningKeyResolver(new WebcertSigningKeyResolverAdapter(provider))
             .setAllowedClockSkewSeconds(idpOidcJwksSkewSeconds)
+            .build()
             .parseClaimsJws(jwtToken);
     }
 

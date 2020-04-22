@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.PERSON_ID;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
@@ -68,7 +68,7 @@ public class NiasUnderskriftServiceImplTest {
         when(niasCollectPollerFactory.getInstance()).thenReturn(mock(NiasCollectPoller.class));
 
         testee.startNiasCollectPoller(PERSON_ID, createSignaturBiljett(SignaturStatus.BEARBETAR));
-        verifyZeroInteractions(redisTicketTracker);
+        verifyNoInteractions(redisTicketTracker);
         verify(taskExecutor, times(1)).execute(any(Runnable.class), anyLong());
     }
 

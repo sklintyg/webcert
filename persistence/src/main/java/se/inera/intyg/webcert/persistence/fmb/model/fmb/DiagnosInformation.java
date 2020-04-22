@@ -54,15 +54,15 @@ public final class DiagnosInformation {
     @Column(name = "INFORMATION_OM_REHABILITERING", nullable = true)
     private String informationOmRehabilitering;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Beskrivning> beskrivningList = Lists.newArrayList();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Icd10Kod> icd10KodList = Lists.newArrayList();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Referens> referensList = Lists.newArrayList();
 

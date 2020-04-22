@@ -23,6 +23,10 @@ import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHel
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
@@ -33,10 +37,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.xml.ws.WebServiceException;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -360,8 +356,8 @@ public class IntygServiceImpl implements IntygService {
 
     private boolean checkSjf(IntygContentHolder intyg) {
         WebCertUser user = webCertUserService.getUser();
-        if (intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().
-            equals(user.getValdVardgivare().getId())) {
+        if (intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid()
+            .equals(user.getValdVardgivare().getId())) {
             return false;
         } else {
             return userIsDjupintegreradWithSjf();
@@ -373,7 +369,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            Utkast utkast = utkastRepository.findOne(intygsId);
+            Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
 
             IntygContentHolder intyg;
             if (utkast == null || UtkastStatus.SIGNED.equals(utkast.getStatus())) {
@@ -461,7 +457,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean delay) {
 
-        final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findOne(intygsId));
+        final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findById(intygsId).orElse(null));
 
         final Utlatande utlatande = optionalUtkast
             .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
@@ -686,7 +682,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygTypeInfo getIntygTypeInfo(String intygsId) {
 
-        return getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId));
+        return getIntygTypeInfo(intygsId, utkastRepository.findById(intygsId).orElse(null));
     }
 
     @Override
@@ -983,7 +979,7 @@ public class IntygServiceImpl implements IntygService {
 
         final Utkast utkast = (foundUtkast != null)
             ? foundUtkast
-            : utkastRepository.findOne(intygsId);
+            : utkastRepository.findById(intygsId).orElse(null);
 
         if (utkast != null) {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
@@ -993,7 +989,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithRevokedDate(String intygsId) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
+        Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
         if (utkast != null) {
 
             utkast.setAterkalladDatum(LocalDateTime.now());

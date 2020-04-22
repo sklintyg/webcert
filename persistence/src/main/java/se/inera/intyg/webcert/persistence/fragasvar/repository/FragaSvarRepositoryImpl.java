@@ -83,7 +83,9 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         Predicate pred = builder.conjunction();
 
         pred = builder.and(pred, root.get("vardperson").get("enhetsId").in(filter.getEnhetsIds()));
-        pred = builder.and(pred, root.get("intygsReferens").get("intygsTyp").in(filter.getIntygsTyper()));
+        //pred = builder.and(pred, root.get("intygsReferens").get("intygsTyp").in(filter.getIntygsTyper()));
+        pred = builder.and(pred, filter.getIntygsTyper().isEmpty()
+            ? root.get("intygsReferens").isNull() : root.get("intygsReferens").get("intygsTyp").in(filter.getIntygsTyper()));
 
         if (filter.isQuestionFromFK()) {
             pred = builder.and(pred, builder.equal(root.get("frageStallare"), "FK"));

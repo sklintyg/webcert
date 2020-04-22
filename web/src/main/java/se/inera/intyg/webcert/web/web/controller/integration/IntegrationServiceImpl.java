@@ -64,7 +64,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         final String intygTyp, final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
         // INTYG-7088: since we now always need intygTypeVersion we always fetch intygTypeInfo for the intyg,
         // either from WC or IT.

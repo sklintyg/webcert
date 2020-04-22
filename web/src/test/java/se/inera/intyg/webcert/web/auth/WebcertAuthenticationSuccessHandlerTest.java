@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -137,7 +137,7 @@ public class WebcertAuthenticationSuccessHandlerTest {
         when(user.getParameters()).thenReturn(IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false, false));
 
         testee.onAuthenticationSuccess(req, resp, auth);
-        verifyZeroInteractions(redirectStrategy);
+        verifyNoInteractions(redirectStrategy);
     }
 
     private Map<String, String[]> buildParameterMap() {

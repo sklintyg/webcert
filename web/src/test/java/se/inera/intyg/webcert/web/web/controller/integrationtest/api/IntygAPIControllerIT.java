@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +57,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
             .as(ListIntygEntry[].class);
 
         // assert there are no drafts from WebCert
-        assertFalse(Arrays.asList(intygArray).stream().anyMatch(i -> IntygSource.WC.equals(i.getSource())));
+        assertFalse(Arrays.stream(intygArray).anyMatch(i -> IntygSource.WC.equals(i.getSource())));
     }
 
     @Test

@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         String personnummer = "19121212-1212";
         String utkastId = createUtkast("luse", personnummer);
 
-        List<SrsQuestionResponse> body = Arrays.asList(
+        List<SrsQuestionResponse> body = Collections.singletonList(
             SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -85,7 +86,7 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
     public void getSrsShouldRejectIfMissingMandatoryHeaders() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        List<SrsQuestionResponse> body = Arrays.asList(
+        List<SrsQuestionResponse> body = Collections.singletonList(
             SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -101,7 +102,7 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
     public void getSrsShouldRejectIfDiagnoseDoesntExist() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        List<SrsQuestionResponse> body = Arrays.asList(
+        List<SrsQuestionResponse> body = Collections.singletonList(
             SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)

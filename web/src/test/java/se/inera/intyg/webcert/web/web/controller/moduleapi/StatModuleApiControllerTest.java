@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -276,10 +276,10 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         assertNotNull(response);
         verify(webCertUserService).getUser();
-        verifyZeroInteractions(authoritiesHelper);
-        verifyZeroInteractions(fragaSvarService);
-        verifyZeroInteractions(arendeService);
-        verifyZeroInteractions(intygDraftService);
+        verifyNoInteractions(authoritiesHelper);
+        verifyNoInteractions(fragaSvarService);
+        verifyNoInteractions(arendeService);
+        verifyNoInteractions(intygDraftService);
 
         assertEquals(OK, response.getStatus());
 

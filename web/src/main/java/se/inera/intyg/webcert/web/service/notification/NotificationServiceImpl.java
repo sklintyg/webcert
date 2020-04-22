@@ -479,7 +479,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Utkast getUtkast(String intygsId) {
-        return utkastRepo.findOne(intygsId);
+        return utkastRepo.findById(intygsId).orElse(null);
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) {

@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -133,7 +134,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     public void testPopulateCompletionFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
 
@@ -202,7 +203,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Arende arende = new Arende();
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createOriginalUtkast()));
         when(mockModuleApi.validateDraft(isNull()))
             .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);

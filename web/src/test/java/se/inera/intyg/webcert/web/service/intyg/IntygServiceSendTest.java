@@ -29,8 +29,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
@@ -78,7 +80,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
-        when(intygRepository.findOne(eq(INTYG_ID))).thenReturn(getUtkast(INTYG_ID));
+        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(getUtkast(INTYG_ID)));
     }
 
     @Test
@@ -96,7 +98,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
@@ -104,7 +106,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findById(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -114,7 +116,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         final Utkast utkast = getUtkast(INTYG_ID);
         utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
 
-        when(intygRepository.findOne(eq(INTYG_ID))).thenReturn(utkast);
+        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -148,7 +150,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
             UtkastStatus.SIGNED, false);
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
@@ -194,7 +196,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findById(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -206,14 +208,14 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
         Utlatande completionUtlatande = utlatande;
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
 
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
-            eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
+            eq(Collections.singletonList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
@@ -221,7 +223,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findById(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -242,19 +244,19 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findById(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
     @Test
-    public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() throws IOException {
+    public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() {
         final String completionMeddelandeId = "meddelandeId";
 
         Utlatande completionUtlatande = utlatande;
@@ -270,7 +272,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     }
 
     @Test
-    public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() throws Exception {
+    public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() {
         final String completionMeddelandeId = "meddelandeId";
         intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
 
@@ -305,7 +307,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     private Utkast getUtkast(String intygId) throws IOException {
         Utkast utkast = new Utkast();
         String json = IOUtils.toString(new ClassPathResource(
-            "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
+            "FragaSvarServiceImplTest/utlatande.json").getInputStream(), StandardCharsets.UTF_8);
         utkast.setModel(json);
         utkast.setIntygsId(intygId);
         utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);

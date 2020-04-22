@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
@@ -85,7 +85,7 @@ public class ArendeDraftApiControllerTest {
 
         assertNotNull(res);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), res.getStatus());
-        verifyZeroInteractions(arendeDraftService);
+        verifyNoInteractions(arendeDraftService);
     }
 
     @Test

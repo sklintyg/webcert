@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +67,8 @@ public class ArendeRepositoryTest {
     public void testFindOne() {
         Arende saved = buildArende();
         repo.save(saved);
-        Arende read = repo.findOne(saved.getId());
+        Arende read = repo.findById(saved.getId()).orElse(null);
+        assertNotNull(read);
         assertEquals(read.getId(), saved.getId());
         assertEquals(read.getAmne(), saved.getAmne());
         assertEquals(read.getIntygsId(), saved.getIntygsId());
@@ -305,7 +307,7 @@ public class ArendeRepositoryTest {
     @Test
     public void testFilterArendeChangedFrom() {
         final String enhet = "enhet";
-        final LocalDateTime changedFrom = LocalDateTime.now();
+        final LocalDateTime changedFrom = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
         final LocalDateTime beforeChangedFrom = changedFrom.minusDays(1);
         final LocalDateTime afterChangedFrom = changedFrom.plusDays(1);
         repo.save(
@@ -328,7 +330,7 @@ public class ArendeRepositoryTest {
     @Test
     public void testFilterArendeChangedTo() {
         final String enhet = "enhet";
-        final LocalDateTime changedTo = LocalDateTime.now();
+        final LocalDateTime changedTo = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
         final LocalDateTime beforeChangedTo = changedTo.minusDays(1);
         final LocalDateTime afterChangedTo = changedTo.plusDays(1);
         repo.save(

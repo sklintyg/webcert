@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -87,7 +87,7 @@ public class NotificationMessageFactoryTest {
         assertNull(msg.getAmne());
         assertNull(msg.getSistaSvarsDatum());
 
-        verifyZeroInteractions(mockFragorOchSvarCreator);
+        verifyNoInteractions(mockFragorOchSvarCreator);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class NotificationMessageFactoryTest {
         assertNull(msg.getAmne());
         assertNull(msg.getSistaSvarsDatum());
 
-        verifyZeroInteractions(mockFragorOchSvarCreator);
+        verifyNoInteractions(mockFragorOchSvarCreator);
     }
 
     @Test

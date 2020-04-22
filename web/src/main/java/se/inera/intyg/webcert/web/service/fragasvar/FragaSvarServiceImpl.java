@@ -167,7 +167,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
 
         // lookup question in database
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
+        FragaSvar fragaSvar = fragaSvarRepository.findById(internId).orElse(null);
 
         if (fragaSvar == null) {
             throw new IllegalStateException("No question found with internal ID " + internId);
@@ -443,7 +443,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             .peek(FragaSvar::setToVidareBefordrad)
             .collect(Collectors.toList());
 
-        return fragaSvarRepository.save(fragaSvarList);
+        return fragaSvarRepository.saveAll(fragaSvarList);
     }
 
     @Override
@@ -638,7 +638,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private FragaSvar lookupFragaSvar(Long fragaSvarId) {
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarId);
+        FragaSvar fragaSvar = fragaSvarRepository.findById(fragaSvarId).orElse(null);
         if (fragaSvar == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                 "Could not find FragaSvar with id:" + fragaSvarId);

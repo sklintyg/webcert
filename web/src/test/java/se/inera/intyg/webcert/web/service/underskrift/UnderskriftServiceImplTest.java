@@ -41,9 +41,10 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import org.junit.Before;
 import org.junit.Test;
@@ -183,9 +184,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test
     public void testStartSigning() {
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID));
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
@@ -199,23 +200,23 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testStartSignUtkastVersionsDifferFound() {
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID));
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastNotReadyForSign() {
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID));
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
@@ -225,9 +226,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.plusDays(1);
         final String doiTyp = "doi";
 
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID, ersattandeIntygSkapad));
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
+                ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
@@ -249,8 +250,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastAlreadySigned() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
-            ENHET_ID, PERSON_ID));
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
+            ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
@@ -274,15 +275,14 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     public void testNetidSignature() {
         Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
             ENHET_ID, PERSON_ID);
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
         when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
         when(xmlUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), anyString(), any(Utkast.class),
             any(WebCertUser.class)))
             .thenReturn(createSignaturBiljett(SIGNERAD));
 
-        SignaturBiljett sb = testee.netidSignature(TICKET_ID, "signatur".getBytes(Charset.forName("UTF-8")), "certifikat");
+        SignaturBiljett sb = testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
         assertNotNull(sb);
         assertEquals(SIGNERAD, sb.getStatus());
     }
@@ -291,15 +291,14 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     public void testGrpSignature() {
         Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
             ENHET_ID, PERSON_ID);
-        when(utkastRepository.findOne(INTYG_ID))
-            .thenReturn(utkast);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
         when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
         when(grpUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), ArgumentMatchers.isNull(),
             any(Utkast.class), any(WebCertUser.class)))
             .thenReturn(createSignaturBiljett(SIGNERAD));
 
-        SignaturBiljett sb = testee.grpSignature(TICKET_ID, "signatur".getBytes(Charset.forName("UTF-8")));
+        SignaturBiljett sb = testee.grpSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8));
         assertNotNull(sb);
         assertEquals(SIGNERAD, sb.getStatus());
     }

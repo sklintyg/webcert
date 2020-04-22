@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
 import io.vavr.Tuple2;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -89,6 +90,7 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
         Preconditions.checkArgument(Objects.nonNull(icd10Kod));
         return getFmbContent(icd10Kod);

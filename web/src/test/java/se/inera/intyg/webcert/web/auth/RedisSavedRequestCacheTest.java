@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.helger.commons.collection.iterate.EmptyEnumeration;
@@ -86,7 +86,7 @@ public class RedisSavedRequestCacheTest {
         testee.setRequestMatcher(new RegexRequestMatcher("/other/.*", null));
         testee.saveRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
 
-        verifyZeroInteractions(valueOps);
+        verifyNoInteractions(valueOps);
     }
 
     @Test

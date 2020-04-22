@@ -192,7 +192,7 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
         }
 
-        Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
+        Utkast utkast = utkastRepository.findById(arende.getIntygsId()).orElse(null);
         validateArende(arende.getIntygsId(), utkast);
 
         ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
@@ -219,7 +219,7 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                 + " for new question from vard!");
         }
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
         validateArende(intygId, utkast);
 
@@ -336,7 +336,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateAccessRightsToForwardQuestions(intygsId);
 
-        List<Arende> arendenToForward = arendeRepository.save(
+        List<Arende> arendenToForward = arendeRepository.saveAll(
             allArende
                 .stream()
                 .filter(isCorrectEnhet(webcertUserService))
@@ -932,7 +932,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Utlatande getUtlatande(String intygsId) {
-        final Utkast utkast = utkastRepository.findOne(intygsId);
+        final Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
         if (utkast == null) {
             final IntygTypeInfo intygTypInfo = intygService.getIntygTypeInfo(intygsId, null);
             final IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygTypInfo.getIntygType(), true, false);

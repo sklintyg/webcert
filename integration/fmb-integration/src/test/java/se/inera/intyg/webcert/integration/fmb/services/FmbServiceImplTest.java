@@ -92,7 +92,7 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
         List<DiagnosInformation> fmbCaptorAllValues = fmbCaptor.getValue();
         assertEquals(116, fmbCaptorAllValues.size());
     }
@@ -113,7 +113,7 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
         List<List<DiagnosInformation>> fmbCaptorAllValues = fmbCaptor.getAllValues();
         assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(0).getKod());
         assertEquals("J224", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(1).getKod());
@@ -131,7 +131,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
             .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
@@ -150,7 +150,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
             .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
@@ -169,7 +169,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(diagnosInformationRepository, times(0)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(0)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
 
     }
 
@@ -185,7 +185,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(diagnosInformationRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(diagnosInformationRepository, times(0)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
     }
 
     private Fmb createFmbDi(String icd10, String text) {

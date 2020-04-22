@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,7 +113,7 @@ public class UtkastIntygDecoratorTest {
     public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
         signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
+        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
 
         CertificateResponse response = buildCertificateResponse();
         response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
@@ -124,7 +125,7 @@ public class UtkastIntygDecoratorTest {
     @Test
     public void testSentStatusIsAddedFromUtkast() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
+        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -139,7 +140,7 @@ public class UtkastIntygDecoratorTest {
     public void testRevokedStatusIsAddedFromUtkast() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
         signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
+        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -152,13 +153,12 @@ public class UtkastIntygDecoratorTest {
     }
 
     private CertificateResponse buildCertificateResponse() {
-        CertificateResponse response = new CertificateResponse("{}", null, buildCertificateMetaData(), false);
-        return response;
+        return new CertificateResponse("{}", null, buildCertificateMetaData(), false);
     }
 
     private CertificateMetaData buildCertificateMetaData() {
         CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<Status>());
+        metaData.setStatus(new ArrayList<>());
         Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
         metaData.getStatus().add(statusSigned);
         return metaData;

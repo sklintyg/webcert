@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.sessionId;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.sessionId;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-import com.jayway.restassured.http.ContentType;
+import io.restassured.http.ContentType;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
@@ -39,7 +39,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
         createArendeDraft(intygId, text, amne);
 
         spec()
-            .pathParameter("intygId", intygId)
+            .pathParam("intygId", intygId)
             .expect()
             .statusCode(200)
             .when()
@@ -56,7 +56,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
     private void deleteDraft(String intygId) {
 
         spec()
-            .pathParameters("intygId", intygId)
+            .pathParams("intygId", intygId)
             .expect()
             .statusCode(200)
             .when()

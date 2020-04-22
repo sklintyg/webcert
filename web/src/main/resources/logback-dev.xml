@@ -128,6 +128,10 @@
   <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
   <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
 
+  <logger name="liquibase" level="info" />
+
+  <logger name="org.springframework.beans.factory.xml" level="debug" />
+
   <root>
     <level value="error" />
     <appender-ref ref="STDOUT" />

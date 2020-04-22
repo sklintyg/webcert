@@ -41,8 +41,10 @@
         <appender-ref ref="MONITORING" />
     </logger>
 
+    <logger name="liquibase" level="info" />
+    <logger name="org.springframework.beans.factory.xml" level="debug" />
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="HSA"/>
     </root>
