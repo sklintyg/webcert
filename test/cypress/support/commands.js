@@ -54,13 +54,14 @@ cy.log(vårdpersonal.förnamn + vårdpersonal.efternamn+vårdpersonal.hsaId);
             
     });
 }
-function skapaIntygWebcert(fx) {
+function skapaIntygWebcert(fx, status) {
     const vårdpersonal = fx.vårdpersonal;
     const läkare = fx.vårdpersonal1;
     const vårdenhet = fx.vårdenhet;
     const patient = fx.vårdtagare;
+    const intygStatus = (status ? "SIGNED" : "DRAFT_LOCKED");
+      
     const idagMinus1  = Cypress.moment().subtract(1,  'days').format('YYYY-MM-DD');
-  
     expect(vårdpersonal).to.exist;
     expect(vårdenhet).to.exist;
     expect(patient).to.exist;
@@ -68,6 +69,7 @@ function skapaIntygWebcert(fx) {
     const intygsID = generateQuickGuid();
     cy.log(vårdpersonal.hsaId);
    
+    cy.log(intygStatus);
     cy.request({
         method: 'POST',
         url: '/testability/intyg/utkast',
@@ -194,9 +196,9 @@ function skapaIntygWebcert(fx) {
          
                ],
                "typ":"lisjp",
-               "id":intygsID
+               "id": intygsID
             },
-            "utkastStatus":"SIGNED",
+            "utkastStatus": intygStatus,
             "revoked":false,
             "relations":{
                "parent":null,

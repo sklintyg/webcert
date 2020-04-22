@@ -4,7 +4,7 @@
 
 export function besökÖnskadUrl(önskadUrl, vårdpersonal, vårdenhet, utkastId) {
     cy.visit(önskadUrl);
-
+    cy.get('.intygs-id').should('be.visible');
     // Om vi dirigeras till sidan som säger att 'Intygsutkastet är raderat'
     // så försöker vi igen eftersom det antagligen gick för snabbt.
     cy.get('body').then(($body) => {
@@ -100,6 +100,12 @@ export function fornya() {
         if(ele.text().includes('De uppgifter som inte kommer med till det nya utkastet är:')) {
             cy.get('#button1fornya-dialog').click();
         }
+    });
+}
+export function kopiera(){
+    cy.get('#copy-utkast').click().then(() => {
+        cy.get('#confirm-draft-copy-button').click();
+        
     });
 }
 

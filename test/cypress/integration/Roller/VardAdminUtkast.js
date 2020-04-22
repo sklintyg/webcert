@@ -48,13 +48,13 @@ describe('Behörigheter för Vårdadmin gällande LISJP-utkast', function () {
             intyg.sektionBedömning(this.intygsdata.bedömning);
             intyg.sektionÅtgärder(this.intygsdata.åtgärder);
             intyg.sektionMedicinskBehandling(this.intygsdata.medicinskBehandling);
-            //cy.wait(200);
+            
         })
         it('Kan inte signera', function(){
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
-            //cy.wait(100);
+            
             cy.contains("Klart att signera");
             cy.get('#signera-utkast-button').should('not.be.visible');
             
