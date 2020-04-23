@@ -449,7 +449,8 @@ export function ersatta() {
 
 // ------------------'Radera utkast'--------------------------
 export function raderaUtkast() {
-    cy.get('#ta-bort-utkast').click();
+    
+    cy.get('#ta-bort-utkast > span').click();
     cy.get('#confirm-draft-delete-button').click();   
 }
 
