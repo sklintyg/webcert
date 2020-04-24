@@ -49,7 +49,7 @@ describe('LUAE-FS-intyg', function () {
         cy.visit(önskadUrl);
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-
+        cy.get('.intygs-id').should('be.visible');
         intyg.sektionFunktionsnedsättning(this.intygsdata.funkNedsättning);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
