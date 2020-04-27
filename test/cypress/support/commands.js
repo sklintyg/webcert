@@ -220,7 +220,7 @@ function skapaIntygWebcert(fx, status) {
     });
 }
 
-Cypress.Commands.add("VårdpersonalNormal", (vårdpersonal, vårdenhet) => {
+Cypress.Commands.add("loggaInVårdpersonalNormal", (vårdpersonal, vårdenhet) => {
     loggaInVårdpersonal(vårdpersonal, vårdenhet, false);
 });
 

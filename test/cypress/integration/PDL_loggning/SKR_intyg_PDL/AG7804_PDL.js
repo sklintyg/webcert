@@ -98,7 +98,7 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
         // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
         cy.url().should('include', this.utkastId);
         intyg.fornya();
-        cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
+        cy.get('.intygs-id').should('be.visible');// Vänta på att intyget ska laddas färdigt
         cy.get('.intygs-id').invoke('text').then((text1) => {
             var intygsID_2 = text1.replace(/\s/g, '');
             intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
