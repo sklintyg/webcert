@@ -49,7 +49,7 @@ describe('LUAE-FS-intyg', function () {
         cy.visit(önskadUrl);
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        cy.get('.intygs-id').should('be.visible');
+        //cy.get('.intygs-id').should('be.visible');
         intyg.sektionFunktionsnedsättning(this.intygsdata.funkNedsättning);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
@@ -70,14 +70,15 @@ describe('LUAE-FS-intyg', function () {
         intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet_2);
         const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
         cy.visit(sjfUrl);
-        cy.get('.intygs-id').should('be.visible');// Vänta på att intyget ska laddas färdigt
+        cy.contains(this.vårdtagare.förnamn);
+       
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
         cy.log("Testar återigen utan SJF");
         intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
-        cy.get('.intygs-id').should('be.visible');// Vänta på att intyget ska laddas färdigt
+        cy.contains(this.vårdtagare.förnamn);        
         pdlEventArray.push(luaeFsPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
