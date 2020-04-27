@@ -1,5 +1,5 @@
 {
-  "appVersion": "6.7.1",
+  "appVersion": "6.7.0",
   "commonVersion": "3.13.1.+",
   "infraVersion": "3.13.1.+",
   "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
@@ -7,5 +7,5 @@
     "restAssuredTest",
     "protractorTest"
   ],
-  "backingService": "intygstjanst:3.12.1.+"
+  "backingService": "intygstjanst:3.12.0.+"
 }
