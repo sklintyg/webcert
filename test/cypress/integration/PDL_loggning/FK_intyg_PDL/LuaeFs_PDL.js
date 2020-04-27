@@ -70,14 +70,14 @@ describe('LUAE-FS-intyg', function () {
         intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet_2);
         const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
         cy.visit(sjfUrl);
-        cy.contains("Grund för medicinskt underlag"); // Vänta på att intyget ska laddas färdigt
+        cy.get('.intygs-id').should('be.visible');// Vänta på att intyget ska laddas färdigt
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(luaeFsPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
         cy.log("Testar återigen utan SJF");
         intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
-        cy.contains("Grund för medicinskt underlag");
+        cy.get('.intygs-id').should('be.visible');// Vänta på att intyget ska laddas färdigt
         pdlEventArray.push(luaeFsPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
@@ -86,7 +86,6 @@ describe('LUAE-FS-intyg', function () {
         // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
         cy.url().should('include', this.utkastId);
         intyg.fornyaLuaeFs();
-        cy.contains("Grund för medicinskt underlag"); // Vänta på att intyget ska laddas färdigt
         cy.get('.intygs-id').invoke('text').then((text1) => {
             var intygsID_2 = text1.replace(/\s/g, '');
             intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
