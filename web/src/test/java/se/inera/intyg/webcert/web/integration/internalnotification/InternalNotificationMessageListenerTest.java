@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CARE_UNIT_ID;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_ID;
@@ -97,7 +97,7 @@ public class InternalNotificationMessageListenerTest {
         when(textMessage.getStringProperty(CERTIFICATE_ID)).thenReturn(null);
         testee.onMessage(textMessage);
 
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -105,8 +105,8 @@ public class InternalNotificationMessageListenerTest {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString())).thenReturn(false);
 
         testee.onMessage(createMessage());
-        verifyZeroInteractions(intygModuleRegistry);
-        verifyZeroInteractions(notificationService);
+        verifyNoInteractions(intygModuleRegistry);
+        verifyNoInteractions(notificationService);
     }
 
     private Message createMessage() {

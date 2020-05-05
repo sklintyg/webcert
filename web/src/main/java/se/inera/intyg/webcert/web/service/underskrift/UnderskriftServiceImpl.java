@@ -232,7 +232,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
      * @return the specified Utkast iff it's ready to be signed
      */
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
         if (utkast == null) {
             LOG.warn("Utkast '{}' was not found", intygId);

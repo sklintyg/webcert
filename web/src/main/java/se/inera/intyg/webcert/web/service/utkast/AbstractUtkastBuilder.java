@@ -179,7 +179,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
-        Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
+        Utkast orgUtkast = utkastRepository.findById(orignalIntygsId).orElse(null);
 
         if (orgUtkast == null) {
             throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");

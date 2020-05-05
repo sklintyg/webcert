@@ -41,7 +41,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -110,7 +110,7 @@ public class FmbServiceImpl implements FmbService {
 
             if (!isEmpty(diagnosInformationList)) {
                 repository.deleteAll();
-                repository.save(diagnosInformationList);
+                repository.saveAll(diagnosInformationList);
             }
         });
 

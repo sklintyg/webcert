@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.internalapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;

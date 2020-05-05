@@ -511,21 +511,14 @@ public final class AccessServiceEvaluation {
     private Optional<AccessResult> isUnitRuleValid(Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
         boolean isReadOnlyOperation) {
 
-        if (allowSJF && user.isLakare() && user.getParameters() != null && user.getParameters().isSjf()) {
+        if (allowSJF && user.getParameters() != null && user.getParameters().isSjf()) {
             return Optional.empty();
         }
 
         final String errorMessage = "User is logged in on a different unit than the draft/certificate";
-        if (isDjupIntegrationAndDoctor(user)) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
             final String vardgivarId = vardenhet.getVardgivare().getVardgivarid();
             if (isReadOnlyOperation && vardgivarId != null && !user.getValdVardgivare().getId().equals(vardgivarId)) {
-                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                    createMessage(errorMessage)));
-            }
-        }
-
-        if (isDjupIntegrationAndVardadministrator(user)) {
-            if (isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
                     createMessage(errorMessage)));
             }
@@ -543,14 +536,6 @@ public final class AccessServiceEvaluation {
         }
 
         return Optional.empty();
-    }
-
-    private boolean isDjupIntegrationAndDoctor(WebCertUser user) {
-        return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && user.isLakare();
-    }
-
-    private boolean isDjupIntegrationAndVardadministrator(WebCertUser user) {
-        return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && !user.isLakare();
     }
 
     private boolean isUserLoggedInOnDifferentUnit(String enhetsId) {

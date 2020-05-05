@@ -91,7 +91,7 @@ public abstract class JpaConfigBase {
 
 
     @Bean(destroyMethod = "close")
-    DataSource standaloneDataSource() {
+    HikariDataSource standaloneDataSource() {
         final HikariConfig config = new HikariConfig();
 
         config.setDriverClassName(dbDriver);

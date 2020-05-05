@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.internalapi;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import java.io.FileNotFoundException;
 import org.junit.Before;
 import org.springframework.http.HttpStatus;

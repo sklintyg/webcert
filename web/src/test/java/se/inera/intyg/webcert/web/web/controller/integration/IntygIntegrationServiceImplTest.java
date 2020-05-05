@@ -30,9 +30,11 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -121,7 +123,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void prepareRedirectToIntygSuccess() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
@@ -136,7 +138,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
         verify(utkastService, times(1)).updatePatientOnDraft(any());
 
@@ -149,7 +151,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void prepareRedirectToIntygSuccessWithoutUpdatingPatient() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(false);
 
@@ -164,7 +166,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
         verify(utkastService, times(0)).updatePatientOnDraft(any());
 
@@ -180,7 +182,7 @@ public class IntygIntegrationServiceImplTest {
         Utkast utkast = createUtkast();
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -194,7 +196,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
         verify(utkastService, times(0)).updatePatientOnDraft(any());
 
@@ -207,7 +209,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void userIsAuthorizedToHandleSekretessmarkeradPatient() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
@@ -218,8 +220,8 @@ public class IntygIntegrationServiceImplTest {
         Privilege p = createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
             Arrays.asList(
-                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas"))));
+                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("lisjp")),
+                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("ts-bas"))));
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -229,7 +231,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
@@ -241,7 +243,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
@@ -263,7 +265,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
@@ -286,7 +288,7 @@ public class IntygIntegrationServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void expectExceptionWhenSekretessStatusIsUndefined() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -312,7 +314,7 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
 
-        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user, null);
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0L, user, null);
 
         verify(utkastService, times(1)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }
@@ -326,7 +328,7 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
 
-        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user, null);
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0L, user, null);
 
         verify(utkastService, times(0)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }
@@ -346,7 +348,7 @@ public class IntygIntegrationServiceImplTest {
 
             @Override
             public List<String> getHsaIds() {
-                return Arrays.asList(VARDENHETID_USER);
+                return Collections.singletonList(VARDENHETID_USER);
             }
         };
         return selectableVardenhet;
@@ -421,13 +423,13 @@ public class IntygIntegrationServiceImplTest {
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
                 Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
                 Arrays.asList(
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("lisjp")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("ts-bas")))),
             Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
                 .collect(Collectors.toMap(Function.identity(), s -> {
                     Feature feature = new Feature();
                     feature.setName(s);
-                    feature.setIntygstyper(Arrays.asList("lisjp"));
+                    feature.setIntygstyper(Collections.singletonList("lisjp"));
                     feature.setGlobal(true);
                     return feature;
                 })),

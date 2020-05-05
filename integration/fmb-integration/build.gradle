@@ -1,12 +1,13 @@
 dependencies {
   compile project(':webcert-persistence')
 
-  compile "org.springframework:spring-web:${springVersion}"
+  compile "org.springframework:spring-web"
   compile "io.vavr:vavr:${vavrVersion}"
   compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
   compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
-  testCompile "org.springframework:spring-test:${springVersion}"
-  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-  testCompile "org.assertj:assertj-core:${assertjVersion}"
+  testCompile "org.springframework:spring-test"
+  testCompile "org.hamcrest:hamcrest"
+  testCompile "org.hamcrest:hamcrest-library"
+  testCompile "org.assertj:assertj-core"
 }

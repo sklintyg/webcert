@@ -52,7 +52,7 @@ public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
         if (isSent && isRevoked) {
             return;
         }
-        Utkast utkast = utkastRepository.findOne(certificate.getMetaData().getCertificateId());
+        Utkast utkast = utkastRepository.findById(certificate.getMetaData().getCertificateId()).orElse(null);
 
         // Don't try to decorate if utkast not found. May be a non-webcert intyg.
         if (utkast == null) {

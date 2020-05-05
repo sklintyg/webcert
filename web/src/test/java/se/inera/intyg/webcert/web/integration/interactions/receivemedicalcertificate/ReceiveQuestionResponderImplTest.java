@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -95,8 +95,8 @@ public class ReceiveQuestionResponderImplTest {
         request.getQuestion().setAmne(null); // invalid
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
 
-        verifyZeroInteractions(mockNotificationService);
-        verifyZeroInteractions(mockFragaSvarService);
+        verifyNoInteractions(mockNotificationService);
+        verifyNoInteractions(mockFragaSvarService);
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());

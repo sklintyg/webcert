@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -65,7 +66,8 @@ public class AvtalRepositoryTest {
     public void testFindById() {
         Avtal saved = buildAvtal(1, AVTAL_TEXT);
         avtalRepository.save(saved);
-        Avtal read = avtalRepository.findOne(saved.getAvtalVersion());
+        Avtal read = avtalRepository.findById(saved.getAvtalVersion()).orElse(null);
+        assertNotNull(read);
         assertEquals(read.getAvtalText(), AVTAL_TEXT);
     }
 

@@ -25,9 +25,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
 import org.junit.Before;
@@ -91,7 +92,7 @@ public class MailNotificationServiceImplTest {
     private ArgumentCaptor<MimeMessage> mimeCaptor;
 
     @Test
-    public void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner() throws Exception {
+    public void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner() {
         // Given
         MailNotification mailNotification = mailNotification("intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -108,7 +109,7 @@ public class MailNotificationServiceImplTest {
     }
 
     @Test
-    public void testSendMailForIncomingQuestionHsaIsNotCalledIfPrivatePractitioner() throws Exception {
+    public void testSendMailForIncomingQuestionHsaIsNotCalledIfPrivatePractitioner() {
         // Given
         HoSPersonType hoSPersonType = new HoSPersonType();
         EnhetType enhet = new EnhetType();
@@ -153,7 +154,7 @@ public class MailNotificationServiceImplTest {
     }
 
     @Test
-    public void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner() throws Exception {
+    public void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner() {
         // Given
         MailNotification mailNotification = mailNotification("intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -170,7 +171,7 @@ public class MailNotificationServiceImplTest {
     }
 
     @Test
-    public void testSendMailForIncomingAnswerHsaIsNotCalledIfPrivatePractitioner() throws Exception {
+    public void testSendMailForIncomingAnswerHsaIsNotCalledIfPrivatePractitioner() {
         // Given
         HoSPersonType hoSPersonType = new HoSPersonType();
         EnhetType enhet = new EnhetType();
@@ -215,40 +216,40 @@ public class MailNotificationServiceImplTest {
     }
 
     @Test
-    public void testIntygsUrlUthopp() throws Exception {
+    public void testIntygsUrlUthopp() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId, null);
 
-        when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
-    public void testIntygsUrlLandsting() throws Exception {
+    public void testIntygsUrlLandsting() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId, null);
 
         Utkast utkast = new Utkast();
-        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
-    public void testIntygsUrlPp() throws Exception {
+    public void testIntygsUrlPp() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId,
@@ -260,44 +261,44 @@ public class MailNotificationServiceImplTest {
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
-        verifyZeroInteractions(utkastRepository);
+        verifyNoInteractions(utkastRepository);
     }
 
     @Test
-    public void testIntygsUrlUthoppNotFk7263() throws Exception {
+    public void testIntygsUrlUthoppNotFk7263() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
-        when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
-    public void testIntygsUrlLandstingNotFk7263() throws Exception {
+    public void testIntygsUrlLandstingNotFk7263() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
         Utkast utkast = new Utkast();
-        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
-    public void testIntygsUrlPpNotFk7263() throws Exception {
+    public void testIntygsUrlPpNotFk7263() {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId,
@@ -309,7 +310,7 @@ public class MailNotificationServiceImplTest {
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
-        verifyZeroInteractions(utkastRepository);
+        verifyNoInteractions(utkastRepository);
     }
 
     private MailNotification mailNotification(String intygsId, String enhetsId) {

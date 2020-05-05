@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("/visa/intyg/{intygsId}/readonly")
             .then()
             .header(HttpHeaders.LOCATION, stringContainsInOrder(Arrays.asList("/intyg-read-only/lisjp/1." , utkastId)))
-            .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
+            .header(XFRAME_OPTIONS_HEADER, emptyOrNullString());
     }
 
 }

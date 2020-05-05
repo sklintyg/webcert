@@ -1,9 +1,11 @@
 dependencies {
     compile project(":webcert-common")
     // compile "net.openhft:chronicle-map:3.13.0"
-    compile "org.apache.commons:commons-lang3:3.1"
+    compile "org.apache.commons:commons-lang3"
     
-    testCompile "javax.servlet:javax.servlet-api:3.1.0"
-    testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+    testCompile "javax.servlet:javax.servlet-api"
+    testCompile "org.springframework:spring-test"
+    testCompile "org.hamcrest:hamcrest"
+    testCompile "org.hamcrest:hamcrest-library"
+
 }

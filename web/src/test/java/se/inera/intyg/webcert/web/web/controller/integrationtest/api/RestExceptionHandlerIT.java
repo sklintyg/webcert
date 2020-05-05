@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.isEmptyString;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import org.junit.Test;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
@@ -48,7 +48,7 @@ public class RestExceptionHandlerIT extends BaseRestIntegrationTest {
             .expect().statusCode(500)
             .when().get("api/anvandare/non-existing-endpoint}")
             .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
 }

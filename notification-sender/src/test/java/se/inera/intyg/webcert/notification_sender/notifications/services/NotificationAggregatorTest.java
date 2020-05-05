@@ -49,7 +49,7 @@ public class NotificationAggregatorTest {
     private NotificationAggregator aggregator = new NotificationAggregator();
 
     @Test
-    public void testProcessNoGroupedExchange() throws Exception {
+    public void testProcessNoGroupedExchange() {
         Exchange exchange = mock(Exchange.class);
         List<Message> res = aggregator.process(exchange);
 
@@ -58,7 +58,7 @@ public class NotificationAggregatorTest {
     }
 
     @Test
-    public void testProcessGroupedExchangeEmpty() throws Exception {
+    public void testProcessGroupedExchangeEmpty() {
         Exchange exchange = mock(Exchange.class);
         when(exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class)).thenReturn(new ArrayList<>());
         List<Message> res = aggregator.process(exchange);

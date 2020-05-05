@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static io.restassured.RestAssured.given;
+import static io.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableMap;
@@ -78,7 +78,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testReceiveQuestionSuccess() throws IOException {
+    public void testReceiveQuestionSuccess() {
 
         given().body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
             .when()
@@ -90,7 +90,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testResponseMatchesSchema() throws IOException {
+    public void testResponseMatchesSchema() {
         given().filter(
             responseBodyExtractorFilter)
             .body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))

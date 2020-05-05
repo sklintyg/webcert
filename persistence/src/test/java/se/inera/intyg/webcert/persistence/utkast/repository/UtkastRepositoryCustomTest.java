@@ -124,15 +124,16 @@ public class UtkastRepositoryCustomTest {
             RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
 
         // Verify relation
-        Utkast intygChild1 = utkastRepository.findOne(intygIdChild1);
+        Utkast intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
 
+        assertNotNull(intygChild1);
         assertEquals(RelationKod.ERSATT, intygChild1.getRelationKod());
         assertEquals(intygIdParent, intygChild1.getRelationIntygsId());
 
         // Remove relations
         utkastRepositoryCustom.removeRelationsToDraft(intygIdParent);
 
-        intygChild1 = utkastRepository.findOne(intygIdChild1);
+        intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
 
         assertNull(intygChild1.getRelationKod());
         assertNull(intygChild1.getRelationIntygsId());

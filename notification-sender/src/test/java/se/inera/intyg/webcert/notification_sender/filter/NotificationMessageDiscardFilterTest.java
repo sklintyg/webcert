@@ -22,12 +22,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
 
@@ -46,6 +49,7 @@ public class NotificationMessageDiscardFilterTest {
 
     private ObjectMapper om = new CustomObjectMapper();
     private NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
+    private CamelContext camelContext = new DefaultCamelContext();
 
     @Test
     public void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
@@ -70,7 +74,7 @@ public class NotificationMessageDiscardFilterTest {
     @Test
     public void testReturnsLatestSaved() throws IOException {
         String intygsId = UUID.randomUUID().toString();
-        LocalDateTime first = LocalDateTime.now().minusSeconds(5);
+        LocalDateTime first = LocalDateTime.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
         NotificationMessage nm2 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(10));
         NotificationMessage nm1 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, first);
         NotificationMessage nm3 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(15));
@@ -82,7 +86,7 @@ public class NotificationMessageDiscardFilterTest {
     }
 
     private Message to(NotificationMessage nm) throws JsonProcessingException {
-        DefaultMessage df = new DefaultMessage();
+        DefaultMessage df = new DefaultMessage(camelContext);
         df.setBody(om.writeValueAsString(nm));
         return df;
     }
@@ -91,7 +95,7 @@ public class NotificationMessageDiscardFilterTest {
         List<Message> msgList = new ArrayList<>();
         String intygsId = UUID.randomUUID().toString();
         for (HandelsekodEnum ht : typer) {
-            DefaultMessage df = new DefaultMessage();
+            DefaultMessage df = new DefaultMessage(camelContext);
             df.setBody(om.writeValueAsString(buildNotificationMessage(intygsId, ht)));
             msgList.add(df);
         }

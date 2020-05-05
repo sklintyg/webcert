@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,7 +70,7 @@ public class FragaSvarRepositoryTest {
     private LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2013-04-01T12:00:00");
 
     private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk7263",
-        Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE);
+        Objects.requireNonNull(Personnummer.createPersonnummer("19121212-1212").orElse(null)), "Sven Persson", FRAGA_SENT_DATE);
 
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
@@ -89,7 +91,8 @@ public class FragaSvarRepositoryTest {
     public void testFindOne() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         fragasvarRepository.save(saved);
-        FragaSvar read = fragasvarRepository.findOne(saved.getInternReferens());
+        FragaSvar read = fragasvarRepository.findById(saved.getInternReferens()).orElse(null);
+        assertNotNull(read);
         assertEquals(read.getInternReferens(), saved.getInternReferens());
         assertEquals(read.getAmne(), saved.getAmne());
         assertEquals(read.getExternReferens(), saved.getExternReferens());
@@ -192,7 +195,7 @@ public class FragaSvarRepositoryTest {
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk",
-            Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE));
+            Objects.requireNonNull(Personnummer.createPersonnummer("19121212-1212").orElse(null)), "Sven Persson", FRAGA_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_4_ID));
@@ -346,13 +349,13 @@ public class FragaSvarRepositoryTest {
 
         // Assert that no value is HSA_4_ID. Wrong Enhet
         for (int i = 0; i < lakare.size(); i++) {
-            assertFalse(lakare.get(i)[0].equals(HSA_4_ID));
+            assertNotEquals(lakare.get(i)[0], HSA_4_ID);
         }
 
         // Results should be sorted by name, so we should always get them in the same order.
-        assertTrue(lakare.get(0)[0].equals(HSA_1_ID));
-        assertTrue(lakare.get(1)[0].equals(HSA_2_ID));
-        assertTrue(lakare.get(2)[0].equals(HSA_3_ID));
+        assertEquals(lakare.get(0)[0], HSA_1_ID);
+        assertEquals(lakare.get(1)[0], HSA_2_ID);
+        assertEquals(lakare.get(2)[0], HSA_3_ID);
     }
 
     @Test

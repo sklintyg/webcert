@@ -59,7 +59,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion3) {
 
         String enhetsId = entry.getEnhetsId();
-        IntegreradEnhet integreradEnhet = integreradEnhetRepository.findOne(enhetsId);
+        IntegreradEnhet integreradEnhet = integreradEnhetRepository.findById(enhetsId).orElse(null);
         if (integreradEnhet != null) {
             LOG.debug("Updating existing integrerad enhet: {}", enhetsId);
             if (schemaVersion1) {
@@ -96,7 +96,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional(readOnly = true)
     public IntegreradEnhet getIntegreradEnhet(String enhetsId) {
-        return integreradEnhetRepository.findOne(enhetsId);
+        return integreradEnhetRepository.findById(enhetsId).orElse(null);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional
     public void deleteIntegreradEnhet(String enhetsHsaId) {
-        IntegreradEnhet unit = integreradEnhetRepository.findOne(enhetsHsaId);
+        IntegreradEnhet unit = integreradEnhetRepository.findById(enhetsHsaId).orElse(null);
         if (unit != null) {
             integreradEnhetRepository.delete(unit);
             LOG.debug("IntegreradEnhet {} deleted", enhetsHsaId);
@@ -171,7 +171,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     private IntegreradEnhet getIntegreradEnhetAndUpdateControlDate(String enhetsHsaId) {
-        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
+        IntegreradEnhet enhet = integreradEnhetRepository.findById(enhetsHsaId).orElse(null);
 
         if (enhet == null) {
             LOG.debug("Unit {} is not in the registry of integrated units", enhetsHsaId);

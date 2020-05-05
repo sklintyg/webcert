@@ -26,7 +26,7 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelSpringRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
-@RunWith(CamelSpringJUnit4ClassRunner.class)
+@RunWith(CamelSpringRunner.class)
 @ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -62,25 +62,25 @@ public class RouteTest {
     CamelContext camelContext;
 
     @Produce(uri = "direct://receiveCertificateTransferEndpoint")
-    private ProducerTemplate producerTemplate;
+    protected ProducerTemplate producerTemplate;
 
     @EndpointInject(uri = "mock:bean:certificateStoreProcessor")
-    private MockEndpoint storeProcessor;
+    protected MockEndpoint storeProcessor;
 
     @EndpointInject(uri = "mock:bean:certificateSendProcessor")
-    private MockEndpoint sendProcessor;
+    protected MockEndpoint sendProcessor;
 
     @EndpointInject(uri = "mock:bean:certificateRevokeProcessor")
-    private MockEndpoint revokeProcessor;
+    protected MockEndpoint revokeProcessor;
 
     @EndpointInject(uri = "mock:bean:sendMessageToRecipientProcessor")
-    private MockEndpoint sendMessageProcessor;
+    protected MockEndpoint sendMessageProcessor;
 
     @EndpointInject(uri = "mock:direct:certPermanentErrorHandlerEndpoint")
-    private MockEndpoint permanentErrorHandlerEndpoint;
+    protected MockEndpoint permanentErrorHandlerEndpoint;
 
     @EndpointInject(uri = "mock:direct:certTemporaryErrorHandlerEndpoint")
-    private MockEndpoint temporaryErrorHandlerEndpoint;
+    protected MockEndpoint temporaryErrorHandlerEndpoint;
 
     @Before
     public void setup() {

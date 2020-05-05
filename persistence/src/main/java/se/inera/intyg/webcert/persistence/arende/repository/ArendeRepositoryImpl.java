@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.persistence.arende.repository;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,8 +27,12 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
+import org.hibernate.query.criteria.internal.predicate.NullnessPredicate;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -78,7 +83,9 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
         Predicate pred = builder.conjunction();
 
         pred = builder.and(pred, root.get("enhetId").in(filter.getEnhetsIds()));
-        pred = builder.and(pred, root.get("intygTyp").in(filter.getIntygsTyper()));
+        //pred = builder.and(pred, root.get("intygTyp").in(filter.getIntygsTyper()));
+        pred = builder.and(pred, filter.getIntygsTyper().isEmpty()
+            ? root.get("intygTyp").isNull() : root.get("intygTyp").in(filter.getIntygsTyper()));
         pred = builder.and(pred, root.get("paminnelseMeddelandeId").isNull());
         pred = builder.and(pred, root.get("svarPaId").isNull());
 

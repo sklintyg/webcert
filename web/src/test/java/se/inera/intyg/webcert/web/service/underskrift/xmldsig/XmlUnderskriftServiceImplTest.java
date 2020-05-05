@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.buildIntygXMLSignature;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
@@ -169,7 +169,7 @@ public class XmlUnderskriftServiceImplTest {
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {
-            verifyZeroInteractions(monitoringLogService);
+            verifyNoInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
@@ -191,7 +191,7 @@ public class XmlUnderskriftServiceImplTest {
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {
-            verifyZeroInteractions(monitoringLogService);
+            verifyNoInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
@@ -217,7 +217,7 @@ public class XmlUnderskriftServiceImplTest {
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {
-            verifyZeroInteractions(monitoringLogService);
+            verifyNoInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }

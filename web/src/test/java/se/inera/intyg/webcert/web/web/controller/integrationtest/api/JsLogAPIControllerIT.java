@@ -23,7 +23,7 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.NET_ID_VERSION;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import java.util.HashMap;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;

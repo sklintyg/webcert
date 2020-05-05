@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
@@ -36,10 +36,10 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -184,7 +184,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(500)
             .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
             .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
 
         deleteUtkast(intygsId);
     }
@@ -240,7 +240,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().get("moduleapi/intyg/lisjp/{intygsId}")
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     // @Test
@@ -266,7 +266,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
             .then()
-            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(emptyString()))
             .body("intygsUtkastId", not(equalTo(utkastId)))
             .body("intygsTyp", equalTo("lisjp"));
     }
@@ -295,7 +295,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(500)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
             .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
 
     }
 
@@ -322,13 +322,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(500)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
             .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
 
     }
 
     // @Test
     // This is commented out as the signUtkast method doesn't work correctly and the test fails due to a new validationimplementation.
-    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() throws IOException {
+    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
@@ -359,7 +359,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(HttpServletResponse.SC_OK)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
             .then()
-            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(emptyString()))
             .body("intygsUtkastId", not(equalTo(intygsId)))
             .body("intygsTyp", equalTo("lisjp"))
             .extract()
@@ -376,7 +376,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() throws IOException {
+    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
@@ -407,7 +407,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     // @Test
@@ -432,7 +432,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/ersatt")
             .then()
-            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(emptyString()))
             .body("intygsUtkastId", not(equalTo(intygsId)))
             .body("intygsTyp", equalTo("lisjp")).extract().response();
 
@@ -478,13 +478,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
             .then()
-            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(emptyString()))
             .body("intygsUtkastId", not(equalTo(dbIntyg)))
             .body("intygsTyp", equalTo("doi"));
     }
 
     @Test
-    public void testCompletionContainsCommentStringInOvrigt() throws Exception {
+    public void testCompletionContainsCommentStringInOvrigt() {
         final String personnummer = "19010101-0101";
         final String kommentar = "Testkommentar";
 
@@ -510,7 +510,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/komplettera")
             .then()
-            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(emptyString()))
             .body("intygsUtkastId", not(equalTo(intygsId)))
             .body("intygsTyp", equalTo(intygsTyp)).extract().response();
 

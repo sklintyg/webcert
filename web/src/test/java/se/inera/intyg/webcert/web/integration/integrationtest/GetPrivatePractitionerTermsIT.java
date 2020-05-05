@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.Matchers.isEmptyString;
+import static io.restassured.RestAssured.given;
+import static io.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
@@ -64,7 +64,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testGetTerms() throws Exception {
+    public void testGetTerms() {
 
         given().body(requestTemplate.render())
             .when()
@@ -72,13 +72,13 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
             .then().statusCode(200)
             .rootPath(BASE)
             .body("resultCode", is(ResultCodeEnum.OK.value()))
-            .body("avtal.avtalVersion", not(isEmptyString()))
-            .body("avtal.avtalText", not(isEmptyString()));
+            .body("avtal.avtalVersion", not(emptyString()))
+            .body("avtal.avtalText", not(emptyString()));
 
     }
 
     @Test
-    public void testResponseRespectsSchema() throws Exception {
+    public void testResponseRespectsSchema() {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
             .when()
@@ -104,7 +104,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testErronousRequestResponseRespectsSchema() throws Exception {
+    public void testErronousRequestResponseRespectsSchema() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().filter(responseBodyExtractorFilter).body(brokenTemplate.render())
             .when()

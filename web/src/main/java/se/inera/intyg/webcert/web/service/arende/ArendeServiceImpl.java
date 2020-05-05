@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -86,6 +83,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -167,6 +165,8 @@ public class ArendeServiceImpl implements ArendeService {
     private AccessResultExceptionHelper accessResultExceptionHelper;
     @Autowired
     private IntygService intygService;
+    @Autowired
+    private LogService logService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -192,7 +192,7 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
         }
 
-        Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
+        Utkast utkast = utkastRepository.findById(arende.getIntygsId()).orElse(null);
         validateArende(arende.getIntygsId(), utkast);
 
         ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
@@ -219,7 +219,7 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                 + " for new question from vard!");
         }
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
         validateArende(intygId, utkast);
 
@@ -336,7 +336,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateAccessRightsToForwardQuestions(intygsId);
 
-        List<Arende> arendenToForward = arendeRepository.save(
+        List<Arende> arendenToForward = arendeRepository.saveAll(
             allArende
                 .stream()
                 .filter(isCorrectEnhet(webcertUserService))
@@ -517,6 +517,11 @@ public class ArendeServiceImpl implements ArendeService {
                 .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
 
             response.setResults(resultList);
+
+            // PDL Logging
+            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
+                logService.logListIntyg(user, patient);
+            });
         }
 
         return response;
@@ -927,7 +932,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Utlatande getUtlatande(String intygsId) {
-        final Utkast utkast = utkastRepository.findOne(intygsId);
+        final Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
         if (utkast == null) {
             final IntygTypeInfo intygTypInfo = intygService.getIntygTypeInfo(intygsId, null);
             final IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygTypInfo.getIntygType(), true, false);

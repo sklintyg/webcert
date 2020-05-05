@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultMessage;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelSpringRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.After;
@@ -66,15 +65,17 @@ import se.inera.intyg.webcert.notification_sender.notifications.helper.Notificat
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 @Ignore("This test is unstable, INTYGFV-12301")
-@RunWith(CamelSpringJUnit4ClassRunner.class)
+@RunWith(CamelSpringRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClientV3|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
 
     private static int currentId = 1000;
+
     @Autowired
     CamelContext camelContext;
+
     @Mock
     private ModuleApi moduleApi; // this is a mock from unit-test-notification-sender-config.xml
 
@@ -88,17 +89,17 @@ public class RouteTest {
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
 
     @Produce(uri = "direct:receiveNotificationForAggregationRequestEndpoint")
-    private ProducerTemplate producerTemplate;
+    protected ProducerTemplate producerTemplate;
     @EndpointInject(uri = "mock:bean:notificationAggregator")
-    private MockEndpoint notificationAggregator;
+    protected MockEndpoint notificationAggregator;
     @EndpointInject(uri = "mock:direct:signatWireTap")
-    private MockEndpoint signatWireTap;
+    protected MockEndpoint signatWireTap;
     @EndpointInject(uri = "mock:bean:notificationWSClientV3")
-    private MockEndpoint notificationWSClientV3;
+    protected MockEndpoint notificationWSClientV3;
     @EndpointInject(uri = "mock:direct:permanentErrorHandlerEndpoint")
-    private MockEndpoint permanentErrorHandlerEndpoint;
+    protected MockEndpoint permanentErrorHandlerEndpoint;
     @EndpointInject(uri = "mock:direct:temporaryErrorHandlerEndpoint")
-    private MockEndpoint temporaryErrorHandlerEndpoint;
+    protected MockEndpoint temporaryErrorHandlerEndpoint;
 
     @Before
     public void setup() throws Exception {
@@ -117,10 +118,10 @@ public class RouteTest {
     }
 
     @Test
-    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException, IOException {
+    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException {
         notificationAggregator.whenAnyExchangeReceived(exchange -> {
-            Message msg = new DefaultMessage();
-            exchange.setOut(msg);
+            Message msg = new DefaultMessage(camelContext);
+            exchange.setMessage(msg);
         });
 
         // Given
@@ -173,14 +174,14 @@ public class RouteTest {
     }
 
     @Test
-    public void testRoutesToAggregatorForLuaeFsAndrat() throws InterruptedException, ModuleException {
+    public void testRoutesToAggregatorForLuaeFsAndrat() throws InterruptedException {
         // This is just a hack in order to not fail subsequent tests due to camel unit tests leaking context between
         // tests. This one just makes sure the notficationAggregator doesn't cause the subsequent "split(body())"
         // to throw some exception caught by later tests.
 
         notificationAggregator.whenAnyExchangeReceived(exchange -> {
-            Message msg = new DefaultMessage();
-            exchange.setOut(msg);
+            Message msg = new DefaultMessage(camelContext);
+            exchange.setMessage(msg);
         });
 
         // Given
@@ -366,7 +367,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testTemporaryException() throws InterruptedException, ModuleException {
+    public void testTemporaryException() throws InterruptedException {
         // Given
         notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("Testing application error, with exhausted retries");
@@ -453,14 +454,14 @@ public class RouteTest {
 
     private String createNotificationMessage(SchemaVersion version, String intygsTyp) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp
-            + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
+        sb.append("{\"intygsId\":\"").append(currentId++).append("\",\"intygsTyp\":\"").append(intygsTyp)
+            .append("\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
         if (version != null) {
             sb.append("\"version\":\"");
             sb.append(version.name());
             sb.append("\",");
         }
-        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp + "\" },");
+        sb.append("\"utkast\":{\"id\":\"").append(currentId).append("\",\"typ\":\"").append(intygsTyp).append("\" },");
         if (SchemaVersion.VERSION_3 == version) {
             sb.append("\"skickadeFragor\":{\"totalt\":0,\"besvarade\":0,\"ejBesvarade\":0,\"hanterade\":0},");
             sb.append("\"mottagnaFragor\":{\"totalt\":0,\"besvarade\":0,\"ejBesvarade\":0,\"hanterade\":0}}");

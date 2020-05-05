@@ -183,7 +183,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         ScheduledFuture<?> task = scheduler.schedule(() -> {
             LOG.debug("Removing session {}", sessionId);
 
-            sessionRepository.delete(sessionId);
+            sessionRepository.deleteById(sessionId);
             session.invalidate();
             session.setMaxInactiveInterval(0);
             taskMap.remove(sessionId);

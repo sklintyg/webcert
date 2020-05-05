@@ -90,9 +90,9 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
     private Patient createPatient(LogRequest logRequest) {
         return createPatient(
-            logRequest.getPatientId().getPersonnummer().
-                replace("-", "").
-                replace("+", ""),
+            logRequest.getPatientId().getPersonnummer()
+                .replace("-", "")
+                .replace("+", ""),
             logRequest.getPatientName());
     }
 

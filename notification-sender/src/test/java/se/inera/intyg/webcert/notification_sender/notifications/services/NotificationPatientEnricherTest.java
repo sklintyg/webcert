@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class NotificationPatientEnricherTest {
     @Test
     public void testFk7263IsNotEnriched() throws TemporaryException {
         testee.enrichWithPatient(buildIntyg("fk7263"));
-        verifyZeroInteractions(puService);
+        verifyNoInteractions(puService);
     }
 
     @Test(expected = TemporaryException.class)

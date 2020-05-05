@@ -27,12 +27,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -399,7 +400,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -483,7 +484,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createCompletion(new CopyIntygRequest(), CERTIFICATE_TYPE, null);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -541,7 +542,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createRenewal(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -585,7 +586,7 @@ public class IntygModuleApiControllerTest {
         try {
             moduleApiController.createUtkastFromSignedTemplate(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID, CERTIFICATE_TYPE);
         } finally {
-            verifyZeroInteractions(copyUtkastService);
+            verifyNoInteractions(copyUtkastService);
         }
     }
 
@@ -598,11 +599,11 @@ public class IntygModuleApiControllerTest {
             new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false,
                 fornyaOk));
         Privilege privilege = new Privilege();
-        privilege.setIntygstyper(Arrays.asList(intygType));
+        privilege.setIntygstyper(Collections.singletonList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName("NORMAL");
         requestOrigin.setIntygstyper(privilege.getIntygstyper());
-        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+        privilege.setRequestOrigins(Collections.singletonList(requestOrigin));
         user.getAuthorities().put(privilegeString, privilege);
         user.setOrigin("NORMAL");
         when(webcertUserService.getUser()).thenReturn(user);
@@ -612,7 +613,7 @@ public class IntygModuleApiControllerTest {
         user.setFeatures(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
             Feature feature = new Feature();
             feature.setName(s);
-            feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setIntygstyper(Collections.singletonList(intygType));
             feature.setGlobal(true);
             return feature;
         })));
@@ -621,11 +622,11 @@ public class IntygModuleApiControllerTest {
     private void addPrivileges(WebCertUser user, String intygType, String... privileges) {
         user.setAuthorities(new HashMap<>());
         Privilege privilege = new Privilege();
-        privilege.setIntygstyper(Arrays.asList(intygType));
+        privilege.setIntygstyper(Collections.singletonList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName("NORMAL");
         requestOrigin.setIntygstyper(privilege.getIntygstyper());
-        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+        privilege.setRequestOrigins(Collections.singletonList(requestOrigin));
         for (String privilegeString : privileges) {
             user.getAuthorities().put(privilegeString, privilege);
         }

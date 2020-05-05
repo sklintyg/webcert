@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.google.common.base.Strings;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     @Test
@@ -444,7 +444,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING.name()))
-            .body("message", not(isEmptyString()));
+            .body("message", not(emptyString()));
     }
 
     private String getFullName(CreateUtkastRequest request) {

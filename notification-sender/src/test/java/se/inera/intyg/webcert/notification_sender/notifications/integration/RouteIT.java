@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,9 +48,9 @@ public class RouteIT extends AbstractBaseIT {
 
     @Test
     public void ensureAggregatorFiltersOutOldestAndratMessages() throws Exception {
-        LocalDateTime first = LocalDateTime.now().minusSeconds(15);
-        LocalDateTime second = LocalDateTime.now().minusSeconds(10);
-        LocalDateTime third = LocalDateTime.now().minusSeconds(5);
+        LocalDateTime first = LocalDateTime.now().minusSeconds(15).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime second = LocalDateTime.now().minusSeconds(10).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime third = LocalDateTime.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
 
         NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT,
             "luae_fs", SchemaVersion.VERSION_3);
@@ -96,8 +97,8 @@ public class RouteIT extends AbstractBaseIT {
 
     @Test
     public void ensureWiretapWorks() throws Exception {
-        LocalDateTime first = LocalDateTime.now().minusSeconds(15);
-        LocalDateTime second = LocalDateTime.now().minusSeconds(10);
+        LocalDateTime first = LocalDateTime.now().minusSeconds(15).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime second = LocalDateTime.now().minusSeconds(10).truncatedTo(ChronoUnit.MILLIS);
 
         NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelsekodEnum.ANDRAT, "luae_fs",
             SchemaVersion.VERSION_3);

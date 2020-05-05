@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.ORDER_REF;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.TICKET_ID;
@@ -91,7 +91,7 @@ public class NiasCollectPollerImplTest {
         verify(underskriftService, times(1)).netidSignature(eq(TICKET_ID), any(byte[].class), anyString());
 
         // when all is OK, the collect poller should NOT update the ticket, that's done inside the underskriftService
-        verifyZeroInteractions(redisTicketTracker);
+        verifyNoInteractions(redisTicketTracker);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class NiasCollectPollerImplTest {
         when(netiDAccessServerSoap.collect(ORDER_REF)).thenReturn(buildCollectResponse(HSA_ID_2));
 
         testee.run();
-        verifyZeroInteractions(underskriftService);
+        verifyNoInteractions(underskriftService);
         verify(redisTicketTracker, times(1)).updateStatus(TICKET_ID, SignaturStatus.ERROR);
     }
 
@@ -122,7 +122,7 @@ public class NiasCollectPollerImplTest {
         when(netiDAccessServerSoap.collect(ORDER_REF)).thenReturn(buildErrorCollectResponse(HSA_ID, "CANCELLED"));
 
         testee.run();
-        verifyZeroInteractions(underskriftService);
+        verifyNoInteractions(underskriftService);
 
         verify(redisTicketTracker, times(1)).updateStatus(TICKET_ID, SignaturStatus.AVBRUTEN);
     }
@@ -133,7 +133,7 @@ public class NiasCollectPollerImplTest {
         when(netiDAccessServerSoap.collect(ORDER_REF)).thenReturn(buildErrorCollectResponse(HSA_ID, "UNKNOWN_USER"));
 
         testee.run();
-        verifyZeroInteractions(underskriftService);
+        verifyNoInteractions(underskriftService);
 
         verify(redisTicketTracker, times(1)).updateStatus(TICKET_ID, SignaturStatus.ERROR);
     }

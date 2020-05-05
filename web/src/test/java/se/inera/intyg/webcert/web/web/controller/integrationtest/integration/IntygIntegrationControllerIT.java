@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.hasKey;
@@ -28,7 +28,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
@@ -150,7 +150,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParam("intygsId", intygsId)
-            .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
+            .and().queryParams("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
             .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
             .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
     }
@@ -168,7 +168,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParams(pathParams)
-            .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
+            .and().formParams("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
             .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsId}").then()
             .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
     }

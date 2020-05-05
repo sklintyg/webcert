@@ -43,7 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 public class NotificationTypeConverterTest {
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final String intygsId = "intygsid";
 
         final LocalDateTime handelsetid = LocalDateTime.now().minusDays(1);
@@ -89,7 +89,7 @@ public class NotificationTypeConverterTest {
     }
 
     @Test
-    public void testConvertWhenHandelsekodIsNYFRFM() throws Exception {
+    public void testConvertWhenHandelsekodIsNYFRFM() {
         final String intygsId = "intygsid";
 
         final LocalDateTime handelsetid = LocalDateTime.now().minusDays(1);

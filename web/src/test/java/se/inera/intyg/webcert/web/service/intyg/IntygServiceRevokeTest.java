@@ -25,11 +25,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 
+import java.util.Optional;
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private Relations parentRelations;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         HoSPersonal person = buildHosPerson();
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
@@ -122,7 +123,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     public void testRevokeIntyg() throws Exception {
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
 
@@ -143,16 +144,16 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         when(moduleFacade.getCertificate(anyString(), anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
         // Do the call
         try {
             intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
         } finally {
-            verifyZeroInteractions(certificateSenderService);
+            verifyNoInteractions(certificateSenderService);
             verify(intygRepository, times(0)).save(any(Utkast.class));
-            verifyZeroInteractions(notificationService);
-            verifyZeroInteractions(logService);
+            verifyNoInteractions(notificationService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -160,7 +161,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     public void testRevokeCompletedIntyg() throws Exception {
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         when(intygRelationHelper.getRelationsForIntyg(INTYG_ID)).thenReturn(childRelations);
         when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);
 

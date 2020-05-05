@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -59,7 +60,10 @@ public class AnvandarPreferenceRepositoryTest {
     public void testFindOne() {
         AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
         anvandarMetadataRepository.save(saved);
-        AnvandarPreference read = anvandarMetadataRepository.findOne(saved.getInternReferens());
+        AnvandarPreference read = anvandarMetadataRepository.findById(saved.getInternReferens())
+            .orElse(null);
+
+        assertNotNull(read);
         assertEquals(saved, read);
     }
 

@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -33,8 +33,10 @@ import static se.inera.intyg.webcert.persistence.utkast.repository.UtkastTestUti
 import com.google.common.collect.Sets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,8 +69,9 @@ public class UtkastRepositoryTest {
     @Test
     public void testFindOne() {
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID));
-        Utkast read = utkastRepository.findOne(saved.getIntygsId());
+        Utkast read = utkastRepository.findById(saved.getIntygsId()).orElse(null);
 
+        assertNotNull(read);
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
         assertThat(read.getPatientFornamn(), is(equalTo(saved.getPatientFornamn())));
@@ -90,8 +93,9 @@ public class UtkastRepositoryTest {
         utkast.setSignatur(UtkastTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
 
         Utkast saved = utkastRepository.save(utkast);
-        Utkast read = utkastRepository.findOne(intygsId);
+        Utkast read = utkastRepository.findById(intygsId).orElse(null);
 
+        assertNotNull(read);
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getSignatur(), is(notNullValue()));
     }
@@ -107,13 +111,13 @@ public class UtkastRepositoryTest {
 
         List<Utkast> result = utkastRepository.findByEnhetsIdsAndStatuses(
             Arrays.asList(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.ENHET_3_ID),
-            Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
+            Collections.singletonList(UtkastStatus.DRAFT_COMPLETE));
 
         assertThat(result.size(), is(3));
 
-        assertThat(utkast1, isIn(result));
-        assertThat(utkast2, isIn(result));
-        assertThat(utkast3, isIn(result));
+        assertThat(utkast1, is(in(result)));
+        assertThat(utkast2, is(in(result)));
+        assertThat(utkast3, is(in(result)));
 
     }
 
@@ -129,7 +133,7 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.SIGNED));
 
         List<GroupableItem> result = utkastRepository.getIntygWithStatusesByEnhetsId(
-            Arrays.asList(UtkastTestUtil.ENHET_1_ID),
+            Collections.singletonList(UtkastTestUtil.ENHET_1_ID),
             UtkastStatus.getEditableDraftStatuses(),
             Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new)));
         assertThat(result.size(), is(3));
@@ -148,7 +152,7 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastStatus.DRAFT_COMPLETE));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
 
-        List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
+        List<String> enhetsIds = Collections.singletonList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
         List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
             enhetsIds, statuses, allIntygsTyper());
@@ -207,10 +211,11 @@ public class UtkastRepositoryTest {
     @Test
     public void testDelete() {
 
-        utkastRepository.save(UtkastTestUtil.buildUtkast("intyg-1", UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
+        Utkast intyg1 = utkastRepository.save(
+            UtkastTestUtil.buildUtkast("intyg-1", UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
 
-        utkastRepository.delete("intyg-1");
-        Utkast one = utkastRepository.findOne("intyg-1");
+        utkastRepository.delete(intyg1);
+        Utkast one = utkastRepository.findById("intyg-1").orElse(null);
         assertNull(one);
     }
 
@@ -226,8 +231,10 @@ public class UtkastRepositoryTest {
         final String relationIntygsId = "relationIntygsId";
         final RelationKod relationKod = RelationKod.FRLANG;
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, relationKod));
-        Utkast read = utkastRepository.findOne(saved.getIntygsId());
+        Optional<Utkast> readItem = utkastRepository.findById(saved.getIntygsId());
+        Utkast read = readItem.orElse(null);
 
+        assertNotNull(read);
         assertEquals(UtkastTestUtil.ENHET_1_ID, read.getEnhetsId());
         assertEquals(relationIntygsId, read.getRelationIntygsId());
         assertEquals(relationKod, read.getRelationKod());

@@ -35,6 +35,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
@@ -70,6 +71,7 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public IcfResponse findIcfInformationByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
 
         Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest), "Icd10KoderRequest can not be null");

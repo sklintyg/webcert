@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.persistence.legacy.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import org.junit.Test;
@@ -60,11 +59,11 @@ public class MigratedMedcertIntygRepositoryTest {
 
         medcertIntygRepository.save(intyg1);
 
-        MigreratMedcertIntyg intyg2 = medcertIntygRepository.findOne("intyg1");
+        MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").orElse(null);
         assertNotNull(intyg2);
         assertEquals("intyg1", intyg2.getIntygsId());
         assertEquals("Test Testsson", intyg2.getPatientNamn());
         assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
-        assertTrue(intyg2.getIntygsData() != null);
+        assertNotNull(intyg2.getIntygsData());
     }
 }

@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -105,7 +106,7 @@ public class UtkastBootstrapBean {
 
                     Utlatande utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
 
-                    if (utkastRepo.findOne(utlatande.getId()) == null) {
+                    if (utkastRepo.findById(utlatande.getId()).orElse(null) == null) {
                         UtkastStatus status = UtkastStatus.SIGNED;
                         if (filename.contains("locked")) {
                             status = UtkastStatus.DRAFT_LOCKED;

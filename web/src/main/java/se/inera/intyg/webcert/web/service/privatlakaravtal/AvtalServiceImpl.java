@@ -51,7 +51,7 @@ public class AvtalServiceImpl implements AvtalService {
     @Override
     public Optional<Avtal> getLatestAvtal() {
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        return Optional.of(avtalRepository.findOne(latestAvtalVersion));
+        return avtalRepository.findById(latestAvtalVersion);
     }
 
     @Override

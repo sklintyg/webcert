@@ -16,32 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
+package se.inera.intyg.webcert.common.service.log.template;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import se.inera.intyg.infra.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
-import org.junit.Test;
+public abstract class IntygListsMessage {
 
-public class MessageRedeliveryFlagTest {
-
-    @Test
-    public void lowerAndoutdatedTest() {
-        long t0 = System.currentTimeMillis() - 1L;
-        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
-
-        sf.lowered(System.currentTimeMillis());
-
-        assertTrue(sf.getSuccessTimestamp() > t0);
-        assertTrue(sf.isOutdated(t0));
-    }
-
-    @Test
-    public void raisedTest() {
-        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
-
-        sf.raised();
-
-        assertEquals(0L, sf.getSuccessTimestamp());
+    public static PdlLogMessage build() {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.READ);
+        pdlLogMessage.setActivityLevel("2");
+        return pdlLogMessage;
     }
 }

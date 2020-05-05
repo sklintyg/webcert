@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,16 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -267,9 +264,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 case PREDECESSOR:
                     done = setAdressFromPredecessor(patient, predecessor);
                     break;
-                default:
-                    LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
-                    break;
             }
             index++;
         }
@@ -294,9 +288,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     break;
                 case PREDECESSOR:
                     done = setOtherFromPredecessor(patient, predecessor);
-                    break;
-                default:
-                    LOG.info("Unexpected other lookup strategy encountered, bailing out.");
                     break;
             }
             index++;

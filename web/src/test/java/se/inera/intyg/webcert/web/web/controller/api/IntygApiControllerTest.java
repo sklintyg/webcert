@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -85,6 +86,9 @@ public class IntygApiControllerTest {
 
     @Mock
     private ResourceLinkHelper resourceLinkHelper;
+
+    @Mock
+    private LogService logService;
 
     @InjectMocks
     private IntygApiController intygCtrl = new IntygApiController();
@@ -130,8 +134,8 @@ public class IntygApiControllerTest {
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        verifyZeroInteractions(intygService);
-        verifyZeroInteractions(mockUtkastRepository);
+        verifyNoInteractions(intygService);
+        verifyNoInteractions(mockUtkastRepository);
     }
 
     @Test
