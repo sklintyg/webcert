@@ -98,7 +98,7 @@ public class TestDataServiceImpl implements TestDataService {
         utkast.setKlartForSigneringDatum(safeDateGet(data, "klart_for_signering_datum"));
         utkast.setRelationIntygsId(safeTextGet(data, "relation_intyg_id"));
         utkast.setRelationKod(getRelationKodFromString(safeTextGet(data, "relation_kod")));
-        utkast.setVidarebefordrad(safeBoolGet(data, "vidarebefodrad"));
+        utkast.setVidarebefordrad(safeBoolGet(data, "vidarebefordrad"));
         utkast.setVersion(safeLongGet(data, "version"));
         utkast.setSkickadTillMottagare(safeTextGet(data, "skickad_till_mottagare"));
         utkast.setSkickadTillMottagareDatum(safeDateGet(data, "skickad_till_mottagare_datum"));
