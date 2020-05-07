@@ -184,13 +184,14 @@
     <security:http security="none" pattern="/testability/anvandare/**"/>
     <security:http security="none" pattern="/testability/arendetest/**"/>
     <security:http security="none" pattern="/testability/utkast/**"/>
-    <security:http security="none" pattern="/testability/testdata/**"/>
-    <security:http security="none" pattern="/testdata/**"/>
 
     <!--
       This enable access to the HSA service stub
     -->
     <security:http security="none" pattern="/api/hsa-api/**"/>
+
+    <!--    This enables the testdataapi  -->
+    <security:http security="none" pattern="/testdata/**"/>
   </beans>
 
   <!-- =============================================================== -->

@@ -38,7 +38,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserAgreementResource"/>
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.FmbResource"/>
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntegreradEnhetResource"/>
-      <bean class="se.inera.intyg.webcert.web.web.controller.testdata.TestDataResource"/>
+<!--      <bean class="se.inera.intyg.webcert.web.web.controller.testdata.TestDataResource"/>-->
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider"/>

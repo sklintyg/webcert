@@ -147,6 +147,17 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <!-- Webcert Module REST services -->
+    <servlet>
+        <servlet-name>testdataapi</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/testdataapi-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <!-- Prometheus, metrics -->
     <servlet>
         <servlet-name>metrics</servlet-name>
@@ -192,6 +203,10 @@
     <servlet-mapping>
         <servlet-name>metrics</servlet-name>
         <url-pattern>/metrics</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>testdataapi</servlet-name>
+        <url-pattern>/testdata/*</url-pattern>
     </servlet-mapping>
 
     <!-- when running local tomcat9 via gretty in unminified mode, some json files (e.g app/app-deps.json) are served by tomcat and must
