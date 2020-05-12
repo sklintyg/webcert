@@ -60,6 +60,7 @@ function skapaIntygWebcert(fx, status) {
     const vårdenhet = fx.vårdenhet;
     const patient = fx.vårdtagare;
     const intygStatus = (status ? "SIGNED" : "DRAFT_LOCKED");
+    
       
     const idagMinus1  = Cypress.moment().subtract(1,  'days').format('YYYY-MM-DD');
     expect(vårdpersonal).to.exist;
@@ -241,7 +242,7 @@ function skapaUtkast(fx, intygstyp) {
     expect(vårdenhet).to.exist;
 
     expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
-
+    
     cy.request({
         method: 'POST',
         url: '/services/create-draft-certificate/v3.0',
@@ -1267,11 +1268,18 @@ Cypress.Commands.add("rensaIntyg", fx => {
     rensaIntyg(fx);   
 
 });
-//Cypress.Commands.add("generateQuickGuid",() =>{
-  //  return generateQuickGuid();
-//});
-Cypress.Commands.add("skapaIntygWebcert", fx =>{
-    return skapaIntygWebcert(fx);
+/*Cypress.Commands.add("loggaInVårdpersonalNormal", (vårdpersonal, vårdenhet) => {
+    loggaInVårdpersonal(vårdpersonal, vårdenhet, false);
+});
+
+Cypress.Commands.add("loggaInVårdpersonalIntegrerat", (vårdpersonal, vårdenhet) => {
+    loggaInVårdpersonal(vårdpersonal, vårdenhet, true);
+});*/
+Cypress.Commands.add("skapaLåstIntygWebcert", (fx) =>{
+    skapaIntygWebcert(fx,false);
+});
+Cypress.Commands.add("skapaSigneratIntygWebcert", (fx) =>{
+    skapaIntygWebcert(fx,true);
 });
 Cypress.Commands.add("skapaKompletteringMotWebcert", fx => {
     return skapaKompletteringMotWebcert(fx);

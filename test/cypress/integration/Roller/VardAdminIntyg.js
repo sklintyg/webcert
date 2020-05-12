@@ -1,6 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 import * as intyg from '../../support/FK_intyg/lisjpIntyg'
+import * as agIntyg from '../../support/SKR_intyg/AG7804intyg'
 
 describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
     
@@ -23,7 +24,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
        
         it('Kan Läsa och Skriva ut intyg',function(){
            
-            cy.skapaIntygWebcert(this,true).then((utkastId) =>{
+            cy.skapaSigneratIntygWebcert(this).then((utkastId) =>{
         
                 cy.wrap(utkastId).as('utkastId');
                 cy.log("LISJP förifyllt utkast med id " + utkastId + " skapat och används i testfallet");
@@ -50,24 +51,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
             intyg.fornya();
 
         });
-         it('Kan skapa ett AG7804 utifrån ett LISJP',function(){
-            
-            cy.skapaAG7804Utkast(this).then((ag7804Id) => {
-                cy.wrap(ag7804Id).as('ag7804Id');
-                cy.log("AG7804-utkast med id " + ag7804Id + " skapat och används i testfallet");
-                cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-                const önskadUrl = "/visa/intyg/" + ag7804Id + "?enhet=" + this.vårdenhet.id;
-                intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, ag7804Id);
-
-                cy.get('#copy-from-candidate-dialog-button1').click().then(() =>{
-
-                    cy.get('#prognos-STOR_SANNOLIKHET').click();
-                    cy.get('#onskarFormedlaDiagnosNo').click();                
-                    intyg.sektionBedömning(this.AGintygsdata.bedömning);
-                    cy.contains("Klart att signera");
-                });           
-            });
-        });
+         
         it('Kan Ställa Administrativ fråga till FK',function(){
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl4 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
@@ -92,10 +76,31 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
             const önskadUrl6 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl6, this.vårdpersonal, this.vårdenhet, this.utkastId);
             intyg.komplettera();
-            cy.wait(100);
-            intyg.sektionBedömning(this.intygsdata.bedömning);
+            cy.wait(1000);
+            intyg.sektionBedömning75Nedsatt(this.intygsdata.bedömning);
+            intyg.sektionDelAvBedömning(this.intygsdata.bedömning);
             cy.contains("Klart att signera")          
             
+        });
+        it('Kan skapa ett AG7804 utifrån ett LISJP',function(){
+            
+            cy.skapaAG7804Utkast(this).then((ag7804Id) => {
+                cy.wrap(ag7804Id).as('ag7804Id');
+                cy.log("AG7804-utkast med id " + ag7804Id + " skapat och används i testfallet");
+                cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+                const önskadUrl = "/visa/intyg/" + ag7804Id + "?enhet=" + this.vårdenhet.id;
+                intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, ag7804Id);
+
+                cy.get('#copy-from-candidate-dialog-button1').click().then(() =>{
+
+                    cy.get('#prognos-STOR_SANNOLIKHET').click();
+                    cy.get('#onskarFormedlaDiagnosNo').click(); 
+                    intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
+                    agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
+                    //agIntyg.sektionBedömning(this.AGintygsdata.bedömning);
+                    cy.contains("Klart att signera");
+                });           
+            });
         });
     });
 });

@@ -133,6 +133,18 @@ export function sektionMedicinskBehandling(medBehandling) {
     cy.get("#pagaendeBehandling").type(medBehandling.pågåendeBehandling);
     cy.get("#planeradBehandling").type(medBehandling.planeradeBehandling);
 }
+// -------------------- 'Bedömning Helt Nedsatt' --------------------
+export function sektionBedömning75Nedsatt(bedömning) {
+    // Beräkna datum både framåt och bakåt från idag
+    const idagPlus1  = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); //start
+    const idagPlus11 = Cypress.moment().add(11, 'days').format('YYYY-MM-DD'); //slut
+    const nedsättningArbetsförmåga = bedömning.minBedömningAvPatientensNedsättningAvArbetsförmågan;
+    expect(nedsättningArbetsförmåga).to.exist;
+    if (nedsättningArbetsförmåga.treFjärdedel) {
+        cy.get('#sjukskrivningar-TRE_FJARDEDEL-from').type(idagPlus1);
+        cy.get('#sjukskrivningar-TRE_FJARDEDEL-tom').type(idagPlus11).type('{enter}');
+    }
+}
 
 // -------------------- 'Bedömning' --------------------
 export function sektionBedömning(bedömning) {
@@ -179,6 +191,29 @@ export function sektionBedömning(bedömning) {
     } else {
         cy.get('#arbetstidsforlaggningNo').check();
     }
+
+    if (bedömning.resorTillOchFrånArbete) {
+        cy.get('#arbetsresor').check();
+    }
+
+    const arbetsFörmågaAktuelltTillfälle = bedömning.prognosFörArbetsförmågaUtifrånAktuelltUndersökningstillfälle;
+    if (arbetsFörmågaAktuelltTillfälle.återgåHeltEfterSjukskrivning) {
+        cy.get('#prognos-STOR_SANNOLIKHET').check();
+    }
+}
+// -------------------- 'Del av Bedömning' --------------------
+export function sektionDelAvBedömning(bedömning) {
+    if (bedömning.längreNedsattArbetsförmåga) {
+        cy.get('#forsakringsmedicinsktBeslutsstod').type(bedömning.längreNedsattArbetsförmåga);
+    }
+/*
+    if (bedömning.förläggaArbetstidOlika.ja) {
+        cy.get('#arbetstidsforlaggningYes').check();
+        cy.get('#arbetstidsforlaggningMotivering')
+            .type(bedömning.förläggaArbetstidOlika.arbetstidsförläggningstext);
+    } else {
+        cy.get('#arbetstidsforlaggningNo').check();
+    }*/
 
     if (bedömning.resorTillOchFrånArbete) {
         cy.get('#arbetsresor').check();

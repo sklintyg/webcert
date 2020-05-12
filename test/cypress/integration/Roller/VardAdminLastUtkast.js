@@ -22,7 +22,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
        
         it('Kan Läsa och Skriva ut låst utkast',function(){
            
-            cy.skapaIntygWebcert(this,false).then((utkastId) =>{
+            cy.skapaLåstIntygWebcert(this).then((utkastId) =>{
         
                 cy.wrap(utkastId).as('utkastId');
                 cy.log("LISJP förifyllt utkast med id " + utkastId + " skapat och används i testfallet");

@@ -137,6 +137,18 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
         cy.get("#pagaendeBehandling").type(medBehandling.pågåendeBehandling);
         cy.get("#planeradBehandling").type(medBehandling.planeradeBehandling);
     }
+    //-------------------- 'Bedömning Helt Nedsatt' --------------------
+    export function sektionBedömning75Nedsatt(bedömning) {
+        // Beräkna datum både framåt och bakåt från idag
+        const idagPlus1  = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); //start
+        const idagPlus11 = Cypress.moment().add(11, 'days').format('YYYY-MM-DD'); //slut
+        const nedsättningArbetsförmåga = bedömning.minBedömningAvPatientensNedsättningAvArbetsförmågan;
+        expect(nedsättningArbetsförmåga).to.exist;
+        if (nedsättningArbetsförmåga.treFjärdedel) {
+            cy.get('#sjukskrivningar-TRE_FJARDEDEL-from').type(idagPlus1);
+            cy.get('#sjukskrivningar-TRE_FJARDEDEL-tom').type(idagPlus11).type('{enter}');
+        }
+    }
     
     // -------------------- 'Bedömning' --------------------
     export function sektionBedömning(bedömning) {
@@ -169,6 +181,8 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
     
         if (nedsättningArbetsförmåga.hel) {
             cy.get('#sjukskrivningar-HELT_NEDSATT-from').type(idagPlus29);
+           
+            cy.log("100 % första datum" + idagPlus29);
             cy.get('#sjukskrivningar-HELT_NEDSATT-tom').type(idagPlus41).type('{enter}');
         }
     
@@ -193,12 +207,38 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
             cy.get('#prognos-STOR_SANNOLIKHET').check();
         }
     }
+     // -------------------- 'Del Av Bedömning' --------------------
+     export function sektionDelAvBedömning(bedömning) {
+        const nedsättningArbetsförmåga = bedömning.minBedömningAvPatientensNedsättningAvArbetsförmågan;
+        expect(nedsättningArbetsförmåga).to.exist;
+        
+        if (bedömning.längreNedsattArbetsförmåga) {
+            cy.get('#forsakringsmedicinsktBeslutsstod').type(bedömning.längreNedsattArbetsförmåga);
+        }
+    
+        if (bedömning.förläggaArbetstidOlika.ja) {
+            cy.get('#arbetstidsforlaggningYes').check();
+            cy.get('#arbetstidsforlaggningMotivering')
+                .type(bedömning.förläggaArbetstidOlika.arbetstidsförläggningstext);
+        } else {
+            cy.get('#arbetstidsforlaggningNo').check();
+        }
+    
+        if (bedömning.resorTillOchFrånArbete) {
+            cy.get('#arbetsresor').check();
+        }
+    
+        const arbetsFörmågaAktuelltTillfälle = bedömning.prognosFörArbetsförmågaUtifrånAktuelltUndersökningstillfälle;
+        if (arbetsFörmågaAktuelltTillfälle.återgåHeltEfterSjukskrivning) {
+            cy.get('#prognos-STOR_SANNOLIKHET').check();
+        }
+    }
     
     // -------------------- 'Åtgärder' --------------------
     export function sektionÅtgärder(åtgärder) {
-        if (åtgärder.inteAktuellt) {
+       /* if (åtgärder.inteAktuellt) {
             cy.get('#arbetslivsinriktadeAtgarder-EJ_AKTUELLT').check();
-        }
+        }*/
         if (åtgärder.arbetsträning) {
             cy.get('#arbetslivsinriktadeAtgarder-ARBETSTRANING').check();
         }

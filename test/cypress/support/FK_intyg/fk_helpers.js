@@ -4,7 +4,7 @@
 
 export function besökÖnskadUrl(önskadUrl, vårdpersonal, vårdenhet, utkastId) {
     cy.visit(önskadUrl);
-    cy.get('.intygs-id').should('be.visible');
+    //cy.get('.intygs-id').should('be.visible');
     // Om vi dirigeras till sidan som säger att 'Intygsutkastet är raderat'
     // så försöker vi igen eftersom det antagligen gick för snabbt.
     cy.get('body').then(($body) => {
