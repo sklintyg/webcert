@@ -18,14 +18,16 @@
  */
 angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$log', '$scope', '$stateParams', '$state', '$location', '$rootScope', '$q',
-      'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
+      'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel', 'common.IntygViewStateService',
       'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
       'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService', 'common.User', 'common.messageService',
       function($log, $scope, $stateParams, $state, $location, $rootScope, $q,
-          Viewstate, IntygTypeSelectorModel, PatientModel,
+          Viewstate, IntygTypeSelectorModel, PatientModel, IntygViewState,
           IntygProxy, UtkastProxy, Service, ObjectHelper,
           commonUtkastProxy, authorityService, UserModel, moduleService, UserService, messageService) {
         'use strict';
+
+        IntygViewState.deletedDraft = false;
 
         var favouriteList,
             intygTypeModel,

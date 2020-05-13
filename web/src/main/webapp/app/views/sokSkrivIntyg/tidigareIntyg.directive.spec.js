@@ -84,6 +84,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
       $provide.value('common.PatientProxy', {});
       $provide.value('common.messageService', CommonMessageServiceSpy);
       $provide.value('common.featureService', {});
+      $provide.value('common.IntygViewStateService', {});
       $provide.value('common.UtkastProxy', {});
       $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
       UserModel = jasmine.createSpyObj('common.UserModel', ['isNormalOrigin']);

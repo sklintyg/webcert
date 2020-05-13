@@ -73,6 +73,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
       $provide.value('common.featureService', featureService);
       $provide.value('common.moduleService', {});
       $provide.value('common.messageService', {});
+      $provide.value('common.IntygViewStateService', {});
       $provide.value('common.DateUtilsService', {
         addStrictDateParser: function() {
         }
