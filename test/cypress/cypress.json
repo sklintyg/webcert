@@ -1,8 +1,6 @@
 {
   "baseUrl": "https://webcert-reltest.intyg.nordicmedtest.se/",
   "env": {
-    "WEBCERT_REL":"https://webcert-reltest.intyg.nordicmedtest.se",
-    "WEBCERT_DEV":"https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
     "intygMockBaseUrl": "http://nmt-vs-tintyg.app-test1.ind-ocp.sth.basefarm.net",
     "intygTjanstUrl": "https://intygstjanst-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
     "logSenderTimeout": 35000,
