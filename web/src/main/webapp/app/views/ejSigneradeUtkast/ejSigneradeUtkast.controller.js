@@ -21,12 +21,13 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.dialogService',
+    ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.dialogService', 'common.IntygViewStateService',
       'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User', 'common.UserModel', 'common.statService',
       function($log, $scope, $timeout, $rootScope, $window,
-          dialogService, UtkastFilterModel, UtkastProxy, User, UserModel, statService) {
+          dialogService, IntygViewState, UtkastFilterModel, UtkastProxy, User, UserModel, statService) {
         'use strict';
 
+        IntygViewState.deletedDraft = false;
         $scope.$on('statService.stat-update', function(event, message) {
           $scope.stat = message;
           $scope.unsignedUtkastCount = $scope.stat.intygValdEnhet;
