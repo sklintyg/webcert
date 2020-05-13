@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.service.testcertificate;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
+import se.inera.intyg.webcert.persistence.referens.model.Referens;
+import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+
+@Service
+public class EraseTestCertificateService {
+
+    @Autowired
+    private UtkastRepository utkastRepository;
+
+    @Autowired
+    private ReferensRepository referensRepository;
+
+    @Autowired
+    private HandelseRepository handelseRepository;
+
+    @Transactional (propagation = Propagation.REQUIRES_NEW)
+    public void eraseTestCertificates(List<String> testCertificateIds) {
+        for (String testCertificateId: testCertificateIds) {
+            utkastRepository.deleteById(testCertificateId);
+
+            final Referens reference = referensRepository.findByIntygId(testCertificateId);
+            if (reference != null) {
+                referensRepository.delete(reference);
+            }
+
+            final List<Handelse> eventList = handelseRepository.findByIntygsId(testCertificateId);
+            if (eventList.size() > 0) {
+                handelseRepository.deleteAll(eventList);
+            }
+        }
+    }
+}

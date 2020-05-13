@@ -126,4 +126,17 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      */
     @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
     List<WebcertCertificateRelation> findChildRelations(@Param("intygsId") String intygsId);
+
+    @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true")
+    List<String> findTestCertificates();
+
+    @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore")
+    List<String> findTestCertificatesByCreatedBefore(@Param("createdBefore") LocalDateTime createdBefore);
+
+    @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad >= :createdAfter")
+    List<String> findTestCertificatesByCreatedAfter(@Param("createdAfter") LocalDateTime createdAfter);
+
+    @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore AND u.skapad >= :createdAfter")
+    List<String> findTestCertificatesByCreatedBeforeAndAfter(@Param("createdAfter") LocalDateTime createdAfter,
+        @Param("createdBefore") LocalDateTime createdBefore);
 }

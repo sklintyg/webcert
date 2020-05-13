@@ -399,6 +399,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
     }
 
+    @Override
+    public void logTestCertificateErased(String certificateId, String careUnit, String createdUser) {
+        logEvent(MonitoringEvent.TEST_CERTIFICATE_ERASED, certificateId, careUnit, createdUser);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -494,7 +499,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}"),
 
-        SAML_STATUS_LOGIN_FAIL("Login failed at IDP '{}' with status message '{}'");
+        SAML_STATUS_LOGIN_FAIL("Login failed at IDP '{}' with status message '{}'"),
+
+        TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' create by '{}' was erased");
 
 
         private final String msg;
