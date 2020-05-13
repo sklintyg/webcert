@@ -43,8 +43,7 @@ pipeline {
     // Denna variabel måste börja på "CYPRESS" och därefter heta exakt samma som parametern i
     // cypress.json eftersom den då skrivs över
     CYPRESS_intygMockBaseUrl = "https://intyg-validatemock.nordicmedtest.se"
-    WEBCERT_REL="https://webcert-reltest.intyg.nordicmedtest.se"
-    WEBCERT_DEV="https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net"
+
   }
 
   agent {
