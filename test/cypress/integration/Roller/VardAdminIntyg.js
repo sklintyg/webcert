@@ -38,6 +38,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
             });        
         });           
         it('Kan Skicka till FK',function(){
+
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl2 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl2, this.vårdpersonal, this.vårdenhet, this.utkastId);
@@ -45,7 +46,8 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
 
         });
        it('Kan Förnya intyg',function(){
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+
+            cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl3 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl3, this.vårdpersonal, this.vårdenhet, this.utkastId);
             intyg.fornya();
@@ -53,6 +55,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
         });
          
         it('Kan Ställa Administrativ fråga till FK',function(){
+
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl4 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl4, this.vårdpersonal, this.vårdenhet, this.utkastId);
@@ -60,11 +63,11 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
 
         });
         it('Kan Läsa fråga från FK',function(){
+
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const kompletteringstext = "Denna kompletteringstext ska vi kunna se";
-            cy.wrap(kompletteringstext).as('kompletteringstext').then(() => {
-                cy.skapaKompletteringMotWebcert(this);
-            });            
+            cy.wrap(kompletteringstext).as('kompletteringstext');
+            cy.skapaKompletteringMotWebcert(this);
             const önskadUrl5 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl5, this.vårdpersonal, this.vårdenhet, this.utkastId);
             cy.contains(kompletteringstext);
@@ -97,7 +100,6 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
                 agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
                 cy.contains("Klart att signera"); 
-                
                 cy.get('#markeraKlartForSigneringButton').click();       
             });
         });
