@@ -91,15 +91,14 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 const önskadUrl = "/visa/intyg/" + ag7804Id + "?enhet=" + this.vårdenhet.id;
                 intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, ag7804Id);
 
-                cy.get('#copy-from-candidate-dialog-button1').click().then(() =>{
-
-                    cy.get('#prognos-STOR_SANNOLIKHET').click();
-                    cy.get('#onskarFormedlaDiagnosNo').click(); 
-                    intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
-                    agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
-                    //agIntyg.sektionBedömning(this.AGintygsdata.bedömning);
-                    cy.contains("Klart att signera");
-                });           
+                cy.get('#copy-from-candidate-dialog-button1').click();
+                cy.get('#prognos-STOR_SANNOLIKHET').click();
+                cy.get('#onskarFormedlaDiagnosNo').click(); 
+                intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
+                agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
+                cy.contains("Klart att signera"); 
+                
+                cy.get('#markeraKlartForSigneringButton').click();       
             });
         });
     });

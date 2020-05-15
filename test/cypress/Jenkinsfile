@@ -1,7 +1,7 @@
 pipeline {
 
   options {
-    //timestamps () // Kräver plugin "Timestamper"
+    timestamps () // Kräver plugin "Timestamper"
     timeout(time: 60, unit: 'MINUTES')
   }
 
