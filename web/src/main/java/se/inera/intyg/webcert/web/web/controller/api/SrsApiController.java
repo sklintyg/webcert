@@ -18,13 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
+import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
+import se.inera.intyg.infra.integration.srs.model.SrsResponse;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
+import se.inera.intyg.webcert.web.service.srs.SrsService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -36,34 +49,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Utdatafilter;
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType;
-import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
-import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
-import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
-import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
-import se.inera.intyg.infra.integration.srs.model.SrsResponse;
-import se.inera.intyg.infra.integration.srs.services.SrsService;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
-import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
-import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
+import java.util.List;
 
 //CHECKSTYLE:OFF ParameterNumber
 @Path("/srs")
 @Api(value = "srs", description = "REST API för Stöd för rätt sjukskrivning", produces = MediaType.APPLICATION_JSON)
 public class SrsApiController extends AbstractApiController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
 
     private static final int OK = 200;
     private static final int NO_CONTENT = 204;
@@ -71,18 +64,6 @@ public class SrsApiController extends AbstractApiController {
 
     @Autowired
     private SrsService srsService;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private WebCertUserService userService;
-
-    @Autowired
-    private MonitoringLogService monitoringLog;
-
-    @Autowired
-    private DiagnosService diagnosService;
 
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}")
@@ -102,19 +83,12 @@ public class SrsApiController extends AbstractApiController {
         @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
         @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-
-        if (Strings.isNullOrEmpty(personnummer) || Strings.isNullOrEmpty(diagnosisCode)) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        LOG.debug("getSrs(intygId: {}, diagnosisCode: {}, prediktion: {}, atgard: {}, statistik: {})",
+                intygId, diagnosisCode, prediktion, atgard, statistik);
         try {
-            Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
-            SrsResponse response = srsService
-                .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
-            if (response.getPredictionProbabilityOverLimit() != null) {
-                logService.logShowPrediction(personnummer, intygId);
-            }
-            decorateWithDiagnosisDescription(response);
-            return Response.ok(response).build();
+            SrsResponse srsResponse = srsService.getSrs(getWebCertUserService().getUser(), intygId, personnummer, diagnosisCode,
+                    prediktion, atgard, statistik, questions);
+            return Response.ok(srsResponse).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -127,12 +101,12 @@ public class SrsApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-
-        if (Strings.isNullOrEmpty(diagnosisCode)) {
+        try {
+            List<SrsQuestion> questionList = srsService.getQuestions(diagnosisCode);
+            return Response.ok(questionList).build();
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        List<SrsQuestion> response = srsService.getQuestions(diagnosisCode);
-        return Response.ok(response).build();
     }
 
     @GET
@@ -142,12 +116,10 @@ public class SrsApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getConsent(
         @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-        @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitsaId) {
+        @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-
         try {
-            Personnummer p = createPnr(personnummer);
-            Samtyckesstatus response = srsService.getConsent(careUnitsaId, p);
+            Samtyckesstatus response = srsService.getConsent(careUnitHsaId, personnummer);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -167,8 +139,7 @@ public class SrsApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
-            Personnummer p = createPnr(personnummer);
-            ResultCodeEnum result = srsService.setConsent(careUnitHsaId, p, consent);
+            ResultCodeEnum result = srsService.setConsent(personnummer, careUnitHsaId, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -190,17 +161,11 @@ public class SrsApiController extends AbstractApiController {
         String opinion) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
-        if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
-            ResultCodeEnum result =
-                srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode,
-                    EgenBedomningRiskType.fromValue(opinion));
-            if (result != ResultCodeEnum.ERROR) {
-
-                // send PDL log event
-                logService.logSetOwnOpinion(personnummer, intygId);
-            }
+        try {
+            ResultCodeEnum result = srsService.setOwnOpinion(personnummer, vardgivareHsaId, vardenhetHsaId, intygId,
+                    diagnosisCode, opinion);
             return Response.ok(result).build();
-        } else {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
@@ -221,51 +186,8 @@ public class SrsApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-
-        final SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnose(diagnosisCode);
-        monitoringLog.logGetSrsForDiagnose(diagnosisCode);
-
+        SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnosis(diagnosisCode);
         return Response.ok(srsForDiagnose).build();
-    }
-
-    private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean statistik) {
-        Utdatafilter filter = new Utdatafilter();
-        filter.setPrediktion(prediktion);
-        filter.setAtgardsrekommendation(atgard);
-        filter.setStatistik(statistik);
-        return filter;
-    }
-
-    private void decorateWithDiagnosisDescription(SrsResponse response) {
-        if (!Strings.isNullOrEmpty(response.getPredictionDiagnosisCode())) {
-            DiagnosResponse diagnosResponse = diagnosService
-                .getDiagnosisByCode(response.getPredictionDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
-            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                && !diagnosResponse.getDiagnoser().isEmpty()) {
-                response.setPredictionDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
-            }
-        }
-        if (!Strings.isNullOrEmpty(response.getAtgarderDiagnosisCode())) {
-            DiagnosResponse diagnosResponse = diagnosService
-                .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
-            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                && !diagnosResponse.getDiagnoser().isEmpty()) {
-                response.setAtgarderDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
-            }
-        }
-        if (!Strings.isNullOrEmpty(response.getStatistikDiagnosisCode())) {
-            DiagnosResponse diagnosResponse = diagnosService
-                .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
-            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                && !diagnosResponse.getDiagnoser().isEmpty()) {
-                response.setStatistikDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
-            }
-        }
-    }
-
-    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 
 }
