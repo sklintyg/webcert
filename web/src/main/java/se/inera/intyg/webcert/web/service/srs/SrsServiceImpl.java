@@ -88,7 +88,7 @@ public class SrsServiceImpl implements SrsService {
     @Override
     public SrsResponse getSrs(WebCertUser user, String certificateId, String personalIdentificationNumber, String diagnosisCode,
                               boolean performRiskPrediction, boolean addMeasures, boolean addStatistics,
-                              List<SrsQuestionResponse> answers) throws InvalidPersonNummerException, IllegalArgumentException {
+                              List<SrsQuestionResponse> answers) throws InvalidPersonNummerException {
         LOG.debug("getSrs(user: [not logged], certificateId: {}, personalIdentificationNumber: [not logged], diagnosisCode: {},"
                         + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged])",
                 certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics);
@@ -109,14 +109,14 @@ public class SrsServiceImpl implements SrsService {
         if (response.getPredictionProbabilityOverLimit() != null) {
             logService.logShowPrediction(personalIdentificationNumber, certificateId);
         }
-        decorateWithIntygsKedja(response, certificateId);
+        decorateWithExtensionChain(response, certificateId);
         decorateWithDiagnosisDescription(response);
         return response;
     }
     //CHECKSTYLE:ON ParameterNumber
 
     @Override
-    public List<SrsQuestion> getQuestions(String diagnosisCode) throws IllegalArgumentException {
+    public List<SrsQuestion> getQuestions(String diagnosisCode) {
         LOG.debug("getQuestions(diagnosisCode:{}", diagnosisCode);
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             throw new IllegalArgumentException("Missing diagnosis code");
@@ -128,8 +128,7 @@ public class SrsServiceImpl implements SrsService {
     public Samtyckesstatus getConsent(String personalIdentityNumber, String careUnitHsaId) throws InvalidPersonNummerException {
         LOG.debug("getConsent(personalIdentityNumber: [not logged], careUnitHsaId: {})", careUnitHsaId);
         Personnummer p = createPnr(personalIdentityNumber);
-        Samtyckesstatus response = srsInfraService.getConsent(careUnitHsaId, p);
-        return response;
+        return srsInfraService.getConsent(careUnitHsaId, p);
     }
 
     @Override
@@ -137,14 +136,12 @@ public class SrsServiceImpl implements SrsService {
             throws InvalidPersonNummerException {
         LOG.debug("setConsent(personalIdentityNumber: [not logged], careUnitHsaId: {}, consent: {})", careUnitHsaId, consent);
         Personnummer p = createPnr(personalIdentificationNumber);
-        ResultCodeEnum result = srsInfraService.setConsent(careUnitHsaId, p, consent);
-        return result;
+        return srsInfraService.setConsent(careUnitHsaId, p, consent);
     }
 
     @Override
     public ResultCodeEnum setOwnOpinion(String personalIdentificationNumber, String careGiverHsaId, String careUnitHsaId,
-                                        String certificateId, String diagnosisCode, String opinion)
-            throws IllegalArgumentException {
+                                        String certificateId, String diagnosisCode, String opinion) {
         LOG.debug("setOwnOpinion(personalIdentityNumber: [not logged], careGiverHsaId: {}, careUnitHsaId: {}, "
                 + "certificateId: {}, diagnosisCode: {})", careGiverHsaId, careUnitHsaId, certificateId, diagnosisCode);
         if (!EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
@@ -181,7 +178,7 @@ public class SrsServiceImpl implements SrsService {
      */
     private LisjpUtlatandeV1 getLispjV1UtlatandeFromModel(String model) throws ConverterException {
         Utlatande utlatande = intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, model);
-        if (!LisjpUtlatandeV1.class.isInstance(utlatande)) {
+        if (!(utlatande instanceof LisjpUtlatandeV1)) {
             throw new ConverterException("Utlatande is not of type LisjpUtlatandeV1, utlatande: " + utlatande);
         }
         return (LisjpUtlatandeV1) utlatande;
@@ -201,7 +198,7 @@ public class SrsServiceImpl implements SrsService {
         if (lisjpUtlatandeV1.getGrundData() != null && lisjpUtlatandeV1.getGrundData().getSigneringsdatum() != null) {
             srsCert.setSignedDate(lisjpUtlatandeV1.getGrundData().getSigneringsdatum().toLocalDate());
         }
-        if (lisjpUtlatandeV1.getDiagnoser() != null && lisjpUtlatandeV1.getDiagnoser().size() > 0) {
+        if (lisjpUtlatandeV1.getDiagnoser() != null && !lisjpUtlatandeV1.getDiagnoser().isEmpty()) {
             srsCert.setMainDiagnosisCode(lisjpUtlatandeV1.getDiagnoser().get(0).getDiagnosKod());
         }
         LOG.debug("SrsCertificate(id:{}, mainDiagCode:{}, signedDate:{})",
@@ -264,7 +261,7 @@ public class SrsServiceImpl implements SrsService {
      * @param response the decorated response object
      * @param certificateId the certificate id of the starting certificate/draft
      */
-    protected void decorateWithIntygsKedja(SrsResponse response, String certificateId) {
+    protected void decorateWithExtensionChain(SrsResponse response, String certificateId) {
         LOG.debug("decorateWithIntygsKedja(certificateId:{})", certificateId);
         List<SrsCertificate> chain = new ArrayList<>();
         int i = 0;
@@ -344,34 +341,6 @@ public class SrsServiceImpl implements SrsService {
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
                 .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
-    }
-
-    public void setSrsInfraService(SrsInfraService srsInfraService) {
-        this.srsInfraService = srsInfraService;
-    }
-
-    public void setLogService(LogService logService) {
-        this.logService = logService;
-    }
-
-    public void setMonitoringLog(MonitoringLogService monitoringLog) {
-        this.monitoringLog = monitoringLog;
-    }
-
-    public void setDiagnosService(DiagnosService diagnosService) {
-        this.diagnosService = diagnosService;
-    }
-
-    public void setIntygService(IntygService intygService) {
-        this.intygService = intygService;
-    }
-
-    public void setIntygModuleFacade(IntygModuleFacade intygModuleFacade) {
-        this.intygModuleFacade = intygModuleFacade;
-    }
-
-    public void setUtkastRepository(UtkastRepository utkastRepository) {
-        this.utkastRepository = utkastRepository;
     }
 
 }
