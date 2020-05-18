@@ -28,9 +28,9 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseRequest;
+import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseResult;
 import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.TestCertificateEraseRequest;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.TestCertificateEraseResult;
 
 /**
  * Internal REST endpoint for managing test certificates.

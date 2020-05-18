@@ -31,11 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseResult;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.TestCertificateEraseResult;
 
 @Service
 public class TestCertificateService {
@@ -53,40 +51,40 @@ public class TestCertificateService {
 
     @Transactional (readOnly = true)
     public TestCertificateEraseResult eraseTestCertificates(LocalDateTime from, LocalDateTime to) {
-        final Set<String> erasedTestCertificates = new HashSet<>();
-        final Set<String> failedTestCertificates = new HashSet<>();
+        final var erasedTestCertificateIds = new HashSet<String>();
+        final var failedTestCertificateIds = new HashSet<String>();
 
-        final List<String> certificateIds = getTestCertificateToErase(from, to);
+        final var certificateIds = getTestCertificateToErase(from, to);
 
-        for (String certificateId: certificateIds) {
-            if (skipIfAlreadyErasedDueToRelation(certificateId, erasedTestCertificates)) {
+        for (var certificateId: certificateIds) {
+            if (skipIfAlreadyErasedDueToRelation(certificateId, erasedTestCertificateIds)) {
                 continue;
             }
 
-            final List<String> idsToErase = new ArrayList<>();
+            final var idsToErase = new ArrayList<String>();
             idsToErase.add(certificateId);
             collectCertificateIdsToErase(certificateId, idsToErase);
 
-            final Map<String, String> unitMap = new Hashtable<>(idsToErase.size());
-            final Map<String, String> userMap = new Hashtable<>(idsToErase.size());
+            final var unitMap = new Hashtable<String, String>(idsToErase.size());
+            final var userMap = new Hashtable<String, String>(idsToErase.size());
             collectLogInformation(idsToErase, unitMap, userMap);
 
-            final List<String> idsToLog = new ArrayList<>(idsToErase.size());
+            final var idsToLog = new ArrayList<String>(idsToErase.size());
 
             try {
                 eraseTestCertificateService.eraseTestCertificates(idsToErase);
-                erasedTestCertificates.addAll(idsToErase);
+                erasedTestCertificateIds.addAll(idsToErase);
                 idsToLog.addAll(idsToErase);
             } catch (Exception ex) {
                 LOG.error(
                     String.format("Couldn't not erase certificate with ids %s when erasing test certificates", idsToErase.toString()), ex);
-                failedTestCertificates.addAll(idsToErase);
+                failedTestCertificateIds.addAll(idsToErase);
             }
 
             logErasedCertificates(idsToLog, unitMap, userMap);
         }
 
-        return TestCertificateEraseResult.create(erasedTestCertificates.size(), failedTestCertificates.size());
+        return TestCertificateEraseResult.create(erasedTestCertificateIds.size(), failedTestCertificateIds.size());
     }
 
     private boolean skipIfAlreadyErasedDueToRelation(String certificateId, Set<String> erasedTestCertificates) {
@@ -94,32 +92,32 @@ public class TestCertificateService {
     }
 
     private void collectLogInformation(List<String> idsToErase, Map<String, String> unitMap, Map<String, String> userMap) {
-        for (String idToErase: idsToErase) {
-            final Utkast certificateToErase = utkastRepository.getOne(idToErase);
+        for (var idToErase: idsToErase) {
+            final var certificateToErase = utkastRepository.getOne(idToErase);
             unitMap.put(certificateToErase.getIntygsId(), certificateToErase.getEnhetsId());
             userMap.put(certificateToErase.getIntygsId(), certificateToErase.getSkapadAv().getHsaId());
         }
     }
 
     private void logErasedCertificates(List<String> idsToLog, Map<String, String> unitMap, Map<String, String> userMap) {
-        for (String idToLog: idsToLog) {
+        for (var idToLog: idsToLog) {
             monitoringLogService.logTestCertificateErased(idToLog, unitMap.get(idToLog), userMap.get(idToLog));
         }
     }
 
     private void collectCertificateIdsToErase(String certificateId, List<String> idsToErase) {
-        final List<WebcertCertificateRelation> parentRelations = utkastRepository.findParentRelation(certificateId);
-        for (WebcertCertificateRelation parentRelation: parentRelations) {
-            final String parentRelationId = parentRelation.getIntygsId();
+        final var parentRelations = utkastRepository.findParentRelation(certificateId);
+        for (var parentRelation: parentRelations) {
+            final var parentRelationId = parentRelation.getIntygsId();
             if (!idsToErase.contains(parentRelationId)) {
                 idsToErase.add(parentRelationId);
                 collectCertificateIdsToErase(parentRelationId, idsToErase);
             }
         }
 
-        final List<WebcertCertificateRelation> childrenRelations = utkastRepository.findChildRelations(certificateId);
-        for (WebcertCertificateRelation childRelation: childrenRelations) {
-            final String childRelationId = childRelation.getIntygsId();
+        final var childrenRelations = utkastRepository.findChildRelations(certificateId);
+        for (var childRelation: childrenRelations) {
+            final var childRelationId = childRelation.getIntygsId();
             if (!idsToErase.contains(childRelationId)) {
                 idsToErase.add(childRelationId);
                 collectCertificateIdsToErase(childRelationId, idsToErase);

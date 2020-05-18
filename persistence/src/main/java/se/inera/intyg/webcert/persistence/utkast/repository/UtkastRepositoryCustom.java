@@ -127,15 +127,27 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
     List<WebcertCertificateRelation> findChildRelations(@Param("intygsId") String intygsId);
 
+    /**
+     * Returns any existing test certificate´s ids.
+     */
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true")
     List<String> findTestCertificates();
 
+    /**
+     * Returns the ids of any test certificates created before the specified datetime.
+     */
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore")
     List<String> findTestCertificatesByCreatedBefore(@Param("createdBefore") LocalDateTime createdBefore);
 
+    /**
+     * Returns the ids of any test certificates created after the specified datetime.
+     */
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad >= :createdAfter")
     List<String> findTestCertificatesByCreatedAfter(@Param("createdAfter") LocalDateTime createdAfter);
 
+    /**
+     * Returns the ids of any test certificates created between the specified datetimes.
+     */
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore AND u.skapad >= :createdAfter")
     List<String> findTestCertificatesByCreatedBeforeAndAfter(@Param("createdAfter") LocalDateTime createdAfter,
         @Param("createdBefore") LocalDateTime createdBefore);

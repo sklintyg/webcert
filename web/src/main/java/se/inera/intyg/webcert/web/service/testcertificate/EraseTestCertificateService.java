@@ -24,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
-import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
@@ -44,15 +42,15 @@ public class EraseTestCertificateService {
 
     @Transactional (propagation = Propagation.REQUIRES_NEW)
     public void eraseTestCertificates(List<String> testCertificateIds) {
-        for (String testCertificateId: testCertificateIds) {
+        for (var testCertificateId: testCertificateIds) {
             utkastRepository.deleteById(testCertificateId);
 
-            final Referens reference = referensRepository.findByIntygId(testCertificateId);
+            final var reference = referensRepository.findByIntygId(testCertificateId);
             if (reference != null) {
                 referensRepository.delete(reference);
             }
 
-            final List<Handelse> eventList = handelseRepository.findByIntygsId(testCertificateId);
+            final var eventList = handelseRepository.findByIntygsId(testCertificateId);
             if (eventList.size() > 0) {
                 handelseRepository.deleteAll(eventList);
             }
