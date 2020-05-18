@@ -19,6 +19,8 @@
 package se.inera.intyg.webcert.web.service.srs;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
@@ -54,9 +56,6 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class SrsServiceImpl implements SrsService {
@@ -235,15 +234,24 @@ public class SrsServiceImpl implements SrsService {
      * Checks first in Webcert draft repo and then in the certificate service to find.
      * the given certificate and returns the model.
      * @param certificateId the certificate to look for
+     * @param webcertFirst true to look in Webcert before looking in the certificate service
      * @return the model of the draft or intyg, or null if no certificate was found
      */
-    private String getModelForCertificateId(String certificateId) {
+    private String getModelForCertificateId(String certificateId, boolean webcertFirst) {
+        if (StringUtils.isBlank(certificateId)) {
+            return null;
+        }
         String currentModel = null;
-        // The first one is a draft most of the times and doesn't yet exist in the certificate service
-        Utkast currentUtkast = utkastRepository.findById(certificateId).orElse(null);
-        if (currentUtkast != null) {
-            currentModel = currentUtkast.getModel();
-        } else { // If no draft/certificate was found in Webcert, look in the certificate service
+        if (webcertFirst) {
+            // The first one is a draft most of the times and doesn't yet exist in the certificate service
+            // therefore it is useful to call this method with webcertFirst = true on the first certificate
+            Utkast currentUtkast = utkastRepository.findById(certificateId).orElse(null);
+            if (currentUtkast != null) {
+                currentModel = currentUtkast.getModel();
+            }
+        }
+        if (currentModel == null) {
+            // If webcertfirst is false or no draft/certificate was found in Webcert, look in the certificate service
             // This will fallback and check in Webcert if it gets no hit in certificate service
             // If we do it the other way around and use this first we will get unnecessary round trips to the
             // certificate service and we will also get an error in the logs each time the certificate is not in
@@ -267,18 +275,14 @@ public class SrsServiceImpl implements SrsService {
         int i = 0;
         try {
             String currentCertificateId = certificateId;
-            while (StringUtils.isNotBlank(currentCertificateId)) {
-                String currentModel = getModelForCertificateId(currentCertificateId);
-                if (currentModel != null) {
-                    LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
-                    chain.add(buildSrsCertFromUtlatande(currentUtlatande));
-                    LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
-                    currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
-                    LOG.debug("next parentCertificateId: {}", currentCertificateId);
-                } else {
-                    LOG.debug("No certificate was found with id: {}", currentCertificateId);
-                    break;
-                }
+            String currentModel = getModelForCertificateId(currentCertificateId, true);
+            while (StringUtils.isNotBlank(currentModel)) {
+                LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
+                chain.add(buildSrsCertFromUtlatande(currentUtlatande));
+                LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
+                currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
+                LOG.debug("next parentCertificateId: {}", currentCertificateId);
+                currentModel = getModelForCertificateId(currentCertificateId, false);
             }
             response.replaceExtensionChain(chain);
         } catch (ConverterException e) {
