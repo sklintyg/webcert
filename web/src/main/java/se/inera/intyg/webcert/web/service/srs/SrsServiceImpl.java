@@ -44,8 +44,6 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsInfraService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -71,9 +69,6 @@ public class SrsServiceImpl implements SrsService {
 
     @Autowired
     private DiagnosService diagnosService;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygService intygService;
@@ -234,32 +229,14 @@ public class SrsServiceImpl implements SrsService {
      * Checks first in Webcert draft repo and then in the certificate service to find.
      * the given certificate and returns the model.
      * @param certificateId the certificate to look for
-     * @param webcertFirst true to look in Webcert before looking in the certificate service
      * @return the model of the draft or intyg, or null if no certificate was found
      */
-    private String getModelForCertificateId(String certificateId, boolean webcertFirst) {
+    private String getModelForCertificateId(String certificateId) {
         if (StringUtils.isBlank(certificateId)) {
             return null;
         }
-        String currentModel = null;
-        if (webcertFirst) {
-            // The first one is a draft most of the times and doesn't yet exist in the certificate service
-            // therefore it is useful to call this method with webcertFirst = true on the first certificate
-            Utkast currentUtkast = utkastRepository.findById(certificateId).orElse(null);
-            if (currentUtkast != null) {
-                currentModel = currentUtkast.getModel();
-            }
-        }
-        if (currentModel == null) {
-            // If webcertfirst is false or no draft/certificate was found in Webcert, look in the certificate service
-            // This will fallback and check in Webcert if it gets no hit in certificate service
-            // If we do it the other way around and use this first we will get unnecessary round trips to the
-            // certificate service and we will also get an error in the logs each time the certificate is not in
-            // the certificate service (i.e. when it is still a draft, which will happen often)
-            IntygContentHolder currentCert = getCertificate(certificateId);
-            currentModel = currentCert != null ? currentCert.getContents() : null;
-        }
-        return currentModel;
+        IntygContentHolder currentCert = getCertificate(certificateId); // will fallback to check in Webcert if no hit in cert. service
+        return currentCert != null ? currentCert.getContents() : null;
     }
 
     /**
@@ -275,14 +252,17 @@ public class SrsServiceImpl implements SrsService {
         int i = 0;
         try {
             String currentCertificateId = certificateId;
-            String currentModel = getModelForCertificateId(currentCertificateId, true);
-            while (StringUtils.isNotBlank(currentModel)) {
+            while (StringUtils.isNotBlank(currentCertificateId)) {
+                String currentModel = getModelForCertificateId(currentCertificateId);
+                if (currentModel == null) {
+                    LOG.debug("No model found for certificate id " + currentCertificateId);
+                    break;
+                }
                 LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
                 chain.add(buildSrsCertFromUtlatande(currentUtlatande));
                 LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
                 currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
                 LOG.debug("next parentCertificateId: {}", currentCertificateId);
-                currentModel = getModelForCertificateId(currentCertificateId, false);
             }
             response.replaceExtensionChain(chain);
         } catch (ConverterException e) {
