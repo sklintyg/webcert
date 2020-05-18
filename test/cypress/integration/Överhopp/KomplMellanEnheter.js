@@ -24,6 +24,8 @@ describe('Det är möjligt att komplettera från parallell enhet', function () {
 
     it('skapar ett maxLISJP loggar in på utkastet från underliggande enheter', function () {
        //Besöker intyget som skapats på överliggande enheter från två underliggande enheter
+        const kompletteringstext = "Denna kompletteringstext ska vi kunna se";
+        cy.wrap(kompletteringstext).as('kompletteringstext');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhetTvå);
         const önskadUrl2 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhetTvå.id;
        

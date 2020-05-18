@@ -126,19 +126,22 @@ export function makuleraIntyg(arg) {
     }
 }
 export function komplettera() {
-        cy.wait(1500);        
-         cy.get('#intygstatus1 > .status > [ng-switch="intygstatus.modal"] > .ng-animate-disabled').then((knapp) => {
-            if(knapp.text().includes('Det finns redan en påbörjad komplettering')){
-                cy.get('#komplettera-open-utkast').click();
+        cy.wait(3000);
+      
+        cy.get('#showallstatusesLink > span').click();
+        cy.get('body').then(($body) => {        
+            if($body.text().includes('Det finns redan en påbörjad komplettering')){           
+                cy.get('#confirmationOkButton').click();
                 cy.log('Är och kompletterar på det redan skapade');
-            }
-            else {
-                cy.get('#komplettera-intyg').click();
-                cy.log('Är och kompletterar på det första');
-            
+                cy.get('#komplettera-open-utkast').click();                
+            }           
+            else { 
+                cy.get('#confirmationOkButton').click();
+                cy.log('Är och kompletterar på det första');              
+                cy.get('#komplettera-intyg').click();                
             }           
         
-        });
+       });
         
  }
  export function vidarebefordra(){
