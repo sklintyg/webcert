@@ -19,6 +19,8 @@
 package se.inera.intyg.webcert.web.service.srs;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
@@ -42,8 +44,6 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsInfraService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -54,9 +54,6 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class SrsServiceImpl implements SrsService {
@@ -72,9 +69,6 @@ public class SrsServiceImpl implements SrsService {
 
     @Autowired
     private DiagnosService diagnosService;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygService intygService;
@@ -238,20 +232,11 @@ public class SrsServiceImpl implements SrsService {
      * @return the model of the draft or intyg, or null if no certificate was found
      */
     private String getModelForCertificateId(String certificateId) {
-        String currentModel = null;
-        // The first one is a draft most of the times and doesn't yet exist in the certificate service
-        Utkast currentUtkast = utkastRepository.findById(certificateId).orElse(null);
-        if (currentUtkast != null) {
-            currentModel = currentUtkast.getModel();
-        } else { // If no draft/certificate was found in Webcert, look in the certificate service
-            // This will fallback and check in Webcert if it gets no hit in certificate service
-            // If we do it the other way around and use this first we will get unnecessary round trips to the
-            // certificate service and we will also get an error in the logs each time the certificate is not in
-            // the certificate service (i.e. when it is still a draft, which will happen often)
-            IntygContentHolder currentCert = getCertificate(certificateId);
-            currentModel = currentCert != null ? currentCert.getContents() : null;
+        if (StringUtils.isBlank(certificateId)) {
+            return null;
         }
-        return currentModel;
+        IntygContentHolder currentCert = getCertificate(certificateId); // will fallback to check in Webcert if no hit in cert. service
+        return currentCert != null ? currentCert.getContents() : null;
     }
 
     /**
@@ -269,16 +254,15 @@ public class SrsServiceImpl implements SrsService {
             String currentCertificateId = certificateId;
             while (StringUtils.isNotBlank(currentCertificateId)) {
                 String currentModel = getModelForCertificateId(currentCertificateId);
-                if (currentModel != null) {
-                    LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
-                    chain.add(buildSrsCertFromUtlatande(currentUtlatande));
-                    LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
-                    currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
-                    LOG.debug("next parentCertificateId: {}", currentCertificateId);
-                } else {
-                    LOG.debug("No certificate was found with id: {}", currentCertificateId);
+                if (currentModel == null) {
+                    LOG.debug("No model found for certificate id " + currentCertificateId);
                     break;
                 }
+                LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
+                chain.add(buildSrsCertFromUtlatande(currentUtlatande));
+                LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
+                currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
+                LOG.debug("next parentCertificateId: {}", currentCertificateId);
             }
             response.replaceExtensionChain(chain);
         } catch (ConverterException e) {
