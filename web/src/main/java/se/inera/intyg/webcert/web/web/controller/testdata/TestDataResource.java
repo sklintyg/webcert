@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.testdata;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.Api;
 import javax.ws.rs.Consumes;
@@ -35,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.testdata.TestDataTransformer;
 import se.inera.intyg.webcert.web.service.testdata.TestDataService;
 
-@Path("/testdata")
+@Path("/")
 @Api(value = "testdata", description = "REST API för inskjutning av testdata", produces = MediaType.APPLICATION_JSON)
 public class TestDataResource {
 
@@ -47,26 +48,31 @@ public class TestDataResource {
 
 
     @GET
-    @Path("/")
+    @Path("/cert/")
     public Response intyg() {
         return Response.ok().build();
     }
 
     @POST
-    @Path("/")
+    @Path("/cert/")
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertIntyg(IntygWrapper intyg) {
+    public Response insertIntyg(TestDataWrapper intyg) {
 
         JsonNode data = TestDataTransformer.transformIntyg(intyg.getData());
 
-        service.createIntyg(data);
+        try {
+            service.createIntyg(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
 
         return Response.ok().build();
     }
 
     @DELETE
-    @Path("/")
+    @Path("/cert/")
     public Response deleteIntyg() {
 
         service.deleteIntyg();
@@ -74,7 +80,40 @@ public class TestDataResource {
         return Response.ok().build();
     }
 
-    static class IntygWrapper {
+    @GET
+    @Path("/arende/")
+    public Response arende() {
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/arende/")
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response insertArende(TestDataWrapper arende) {
+
+        JsonNode data = TestDataTransformer.transformIntyg(arende.getData());
+
+        try {
+            service.createArende(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/arende/")
+    public Response deleteArende() {
+
+        service.deleteArende();
+
+        return Response.ok().build();
+    }
+
+    static class TestDataWrapper {
 
         JsonNode data;
 

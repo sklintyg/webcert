@@ -20,11 +20,16 @@
 package se.inera.intyg.webcert.web.service.testdata;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface TestDataService {
 
-    void createIntyg(JsonNode jsonData);
+    void createIntyg(JsonNode jsonData) throws JsonProcessingException;
 
     void deleteIntyg();
+
+    void createArende(JsonNode data) throws JsonProcessingException;
+
+    void deleteArende();
 }

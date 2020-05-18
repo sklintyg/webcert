@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.testdata;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -42,10 +46,16 @@ public class TestDataServiceImpl implements TestDataService {
     private static final Logger LOG = LoggerFactory.getLogger(TestDataServiceImpl.class);
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private UtkastRepository utkastRepository;
 
+    @Autowired
+    private ArendeRepository arendeRepository;
+
     @Override
-    public void createIntyg(JsonNode jsonData) {
+    public void createIntyg(JsonNode jsonData) throws JsonProcessingException {
 
         persistIntyg(jsonData);
     }
@@ -55,9 +65,21 @@ public class TestDataServiceImpl implements TestDataService {
         utkastRepository.deleteAll();
     }
 
+    @Override
+    public void createArende(JsonNode data) throws JsonProcessingException {
+        Arende arende = objectMapper.treeToValue(data, Arende.class);
+        arendeRepository.save(arende);
+    }
+
+    @Override
+    public void deleteArende() {
+        arendeRepository.deleteAll();
+    }
+
     private void persistIntyg(JsonNode data) {
-        Utkast utkast = new Utkast();
         JsonNode model = safeGet(data, "model");
+
+        Utkast utkast = new Utkast();
         JsonNode grundData = safeGet(model, "grundData");
         JsonNode skapadAv = safeGet(grundData, "skapadAv");
         JsonNode vardenhet = safeGet(skapadAv, "vardenhet");
