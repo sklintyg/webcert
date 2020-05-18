@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.srs;
 
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +54,6 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsInfraService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -49,23 +62,6 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SrsServiceImplTest {
@@ -118,13 +114,6 @@ public class SrsServiceImplTest {
         return certHolder;
     }
 
-    private static Utkast buildUtkast(String certificateId, String diagnosisCode, String extendsCertificateId) {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(certificateId);
-        utkast.setModel("DUMMY-MODEL-" + certificateId);
-        return utkast;
-    }
-
     @Mock
     private WebCertUser user;
 
@@ -133,9 +122,6 @@ public class SrsServiceImplTest {
 
     @Mock
     private LogService logService;
-
-    @Mock
-    private UtkastRepository utkastRepository;
 
     @Mock
     private DiagnosService diagnosService;
@@ -201,8 +187,8 @@ public class SrsServiceImplTest {
         when(diagnosService.getDiagnosisByCode(eq("F43"), eq(Diagnoskodverk.ICD_10_SE)))
                 .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
 
-        when(utkastRepository.findById(eq("intyg-id-123")))
-                .thenReturn(Optional.of(buildUtkast("intyg-id-123", "F438A", "parent-intyg-id-1")));
+        when(intygService.fetchIntygData(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID), eq(false), eq(false)))
+                .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
 
         when(intygService.fetchIntygData(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID), eq(false), eq(false)))
                 .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
