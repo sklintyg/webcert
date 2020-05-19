@@ -35,7 +35,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
                 const önskadUrl1 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
                 intyg.besökÖnskadUrl(önskadUrl1, this.vårdpersonal, this.vårdenhet, this.utkastId);
-                //cy.wait(1000);
+                cy.wait(1000);
                 cy.contains("Intyget är signerat").should('exist');
                 intyg.skrivUt("fullständigt", this.utkastId);
 
@@ -75,7 +75,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 const önskadUrl6 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
                 intyg.besökÖnskadUrl(önskadUrl6, this.vårdpersonal, this.vårdenhet, this.utkastId);
                 intyg.komplettera();
-                //cy.wait(1000);
+                cy.wait(1000);
                 intyg.sektionBedömning75Nedsatt(this.intygsdata.bedömning);
                 intyg.sektionDelAvBedömning(this.intygsdata.bedömning);
                 cy.contains("Klart att signera")          
