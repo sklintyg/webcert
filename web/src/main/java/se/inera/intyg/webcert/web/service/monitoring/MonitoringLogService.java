@@ -151,4 +151,11 @@ public interface MonitoringLogService extends AuthenticationLogger {
     // Saml
     void logSamlStatusForFailedLogin(String issuer, String samlStatus);
 
+    /**
+     * Log that the test certificate has been erased.
+     * @param certificateId Id of the certificate.
+     * @param careUnit  Care unit from which the certificate was issued from
+     * @param createdUser   User that issued the certificate
+     */
+    void logTestCertificateErased(String certificateId, String careUnit, String createdUser);
 }
