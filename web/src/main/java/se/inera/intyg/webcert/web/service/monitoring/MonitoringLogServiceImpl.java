@@ -501,7 +501,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         SAML_STATUS_LOGIN_FAIL("Login failed at IDP '{}' with status message '{}'"),
 
-        TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' create by '{}' was erased");
+        TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' created by '{}' was erased");
 
 
         private final String msg;
