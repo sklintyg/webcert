@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.config;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -110,7 +109,6 @@ public class IneraCookieSerializer implements CookieSerializer {
         return matchingCookieValues;
     }
 
-    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     @Override
     public void writeCookieValue(CookieValue cookieValue) {
         HttpServletRequest request = cookieValue.getRequest();
@@ -137,7 +135,7 @@ public class IneraCookieSerializer implements CookieSerializer {
             sb.append("; Domain=").append(domain);
         }
         String path = getCookiePath(request);
-        if (path != null && path.length() > 0) {
+        if (path.length() > 0) {
             validatePath(path);
             sb.append("; Path=").append(path);
         }
