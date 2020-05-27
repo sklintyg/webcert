@@ -22,12 +22,12 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
         
 
     beforeEach(function() {
-        
+       
     });
 
     context('Vårdadmin kan utföra endast behöriga uppgifter på ett LISJP intyg i integrerat läge' , function() {
         beforeEach(function() {
-           
+            
         });
         describe('Vårdadmin och LISJP', () => {
             it('Kan Läsa och Skriva ut intyg',function(){
@@ -77,6 +77,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 intyg.komplettera();
                 cy.wait(1000);
                 intyg.sektionBedömning75Nedsatt(this.intygsdata.bedömning);
+                cy.get('#sjukskrivningarHELT_NEDSATT').click();
                 intyg.sektionDelAvBedömning(this.intygsdata.bedömning);
                 cy.contains("Klart att signera")          
             
@@ -90,16 +91,22 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
 
             });
         });
-    });
-    context('Vårdadmin kan utföra endast behöriga uppgifter på ett AG7804-intyg i integrerat läge' , function() {
-        beforeEach(function() {
-            cy.skapaAG7804Utkast(this).then((ag7804Id) => {
-                cy.wrap(ag7804Id).as('ag7804Id');
-                cy.log("AG7804-utkast med id " + this.ag7804Id + " skapat och används i testfallet");
-            });
+        afterEach(function() {
+
         });
+    });
+    afterEach(function() {
+
+    }); 
+    context('Vårdadmin kan utföra endast behöriga uppgifter på ett AG7804-intyg i integrerat läge' , function() {
+       
         describe('Vårdadmin och AG7804',() => {
-            
+            beforeEach(function() {
+                    cy.skapaAG7804Utkast(this).then((ag7804Id) => {
+                    cy.wrap(ag7804Id).as('ag7804Id');
+                    cy.log("AG7804-utkast med id " + this.ag7804Id + " skapat och används i testfallet");
+                });
+            });
             it('Kan skapa  och fylla i ett AG7804 utifrån ett LISJP',function(){
 
                 cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
@@ -109,13 +116,20 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 cy.get('#prognos-STOR_SANNOLIKHET').click();
                 cy.get('#onskarFormedlaDiagnosNo').click(); 
                 intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
+                cy.get('#sjukskrivningarHELT_NEDSATT').click();
                 agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
                 cy.contains("Klart att signera"); 
                 cy.get('#markeraKlartForSigneringButton').click(); 
+                
             });
         });
+        afterEach(function() {
+
+        }); 
     });
     
-        
+        afterEach(function() {
+
+        }); 
 });
 
