@@ -27,8 +27,6 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
           commonUtkastProxy, authorityService, UserModel, moduleService, UserService, messageService) {
         'use strict';
 
-        IntygViewState.deletedDraft = false;
-
         var favouriteList,
             intygTypeModel,
             choosePatientStateName = 'webcert.create-choosepatient-index';
@@ -193,6 +191,18 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
           }
           return false;
         }
+
+        $scope.resetUtkastDeletedModalValues = function() {
+          $scope.IntygViewState = IntygViewState;
+          if(!$scope.IntygViewState.intygWasRenewed) {
+            $scope.IntygViewState.deletedDraft = false;
+          }
+          if(!$scope.IntygViewState.deletedDraft) {
+            $scope.IntygViewState.intygWasRenewed = false;
+          }
+        };
+
+        $scope.resetUtkastDeletedModalValues();
 
         //Use loaded module metadata to look up name for a intygsType
         function getTypeName(intygsType) {
