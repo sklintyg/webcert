@@ -48,6 +48,7 @@ data:
   MAIL_HOST: ""
   REDIS_KEY_TTL: "3600"
   INTERNAL_API_PORT: "8081"
+  REFDATA_URL: "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/se/inera/intyg/refdata/refdata/1.0-SNAPSHOT/refdata-1.0-20200318.100934-75.jar"
 kind: ConfigMap
 metadata:
   name: webcert-demo-configmap-envvar
