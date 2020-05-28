@@ -830,6 +830,7 @@ function skickaRegisterLisjp(fx) {
     const vårdenhet = fx.vårdenhet;
     const intygsID = "LISJP" +generateQuickGuid();
     const intygsUrl = Cypress.env('intygTjanstUrl') + "/inera-certificate/register-certificate-se/v3.0"
+    cy.log(intygsUrl);
     cy.log(intygsID);
     expect(vårdpersonal).to.exist;
     expect(vårdtagare).to.exist;

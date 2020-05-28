@@ -48,16 +48,17 @@ describe('Behörigheter för Vårdadmin gällande LISJP-utkast', function () {
             intyg.sektionBedömning(this.intygsdata.bedömning);
             intyg.sektionÅtgärder(this.intygsdata.åtgärder);
             intyg.sektionMedicinskBehandling(this.intygsdata.medicinskBehandling);
+            cy.contains("Klart att signera");
             
         })
         it('Kan inte signera', function(){
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
             const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
-            
+            cy.get('.intygs-id').should('be.visible')
             cy.contains("Klart att signera");
             cy.get('#signera-utkast-button').should('not.be.visible');
-            
+                        
         })
         it('Kan skriva ut utkast',function(){
             
@@ -65,15 +66,22 @@ describe('Behörigheter för Vårdadmin gällande LISJP-utkast', function () {
             const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
             intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
             intyg.skrivUt("fullständigt", this.utkastId);
-        })
-       
+        });
+     context('Vårdadmin kan utföra radering av utkast' , function() { 
+        beforeEach(function() {
+            cy.skapaLisjpUtkast(this).then((utkastId1) => {
+                cy.wrap(utkastId1).as('utkastId1');
+                cy.log("LISJP utkast med id " + utkastId1 + " skapat och används i testfallet");
+            });
+        }); 
            
         it('Kan radera utkast',function(){
             cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-            const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
-            intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
+            const önskadUrl = "/visa/intyg/" + this.utkastId1 + "?enhet=" + this.vårdenhet.id
+            intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId1);
             intyg.raderaUtkast();
-        })
+        });
+    });
         
     });
         

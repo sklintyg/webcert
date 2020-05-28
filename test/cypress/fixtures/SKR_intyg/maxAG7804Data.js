@@ -22,7 +22,7 @@ skr = {
     "diagnos": {
         "formedlaDiagnos": true,
         "rad1": {
-            "kod": "O26",
+            "kod": "O267",
             "text": "Symfyseolys under graviditet, förlossning och barnsängstid"
         },
         "rad2": {
