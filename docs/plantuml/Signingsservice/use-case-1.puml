@@ -1,0 +1,100 @@
+@startuml
+!include style.puml
+
+actor "Signatory with browser" as user
+participant "Webcert/Service Provider " as wc
+participant "CGI Signature Service" as sign
+participant "Inera Identity Provider (IdP 1.x)" as idp
+participant "Inera Identity Provider (IdP 2.x)" as idp2
+
+activate user
+user -> wc: Login Request
+activate wc
+wc -> user: HTTP 302 redirect\n with SAML Request
+deactivate wc
+
+user -> idp: HTTP GET SAML Request
+activate idp
+note right of idp
+    Här skulle det vara bra
+    om man i sitt AuthnRequest
+    kan ange vilken autentiseringsmetod
+    som skall användas
+end note
+note left of idp
+    Authenticate user
+    with mTLS
+end note
+idp -> user: SAML Response
+deactivate idp
+
+user -> wc: POST SAML Response
+activate wc
+wc -> user: Show Application
+
+... User interaction with Webcert ...
+
+
+wc -> user: Show what to be signed
+user -> wc: Agree to sign
+wc -> wc: Prepare Signature
+activate wc #SteelBlue
+note right of wc
+    - Hash Document (Unik Webcert transform)
+    - Create Signature Request (För XMLDsig)
+    - Sign Signature Request (Funkar med SITHS!)
+end note
+wc -> wc: Prepared Signature Request
+deactivate wc
+wc -> user: XHTML form with Signature Request
+deactivate wc
+
+user -> sign: HTTP POST Signature Request
+activate sign
+
+sign -> user: XHTML form with SAML Request
+deactivate sign
+
+user -> idp2: POST SAML Request
+activate idp2
+note right of idp2
+    Det är Signeringstjänsten
+    som agerar SP för signering
+    mot en IdP åt respektive kund
+end note
+note left of idp2
+    Authenticate user
+    with NLS
+end note
+idp2 -> user: XHTML form with SAML Response
+deactivate idp2
+
+user -> sign: POST SAML Response
+activate sign
+note right of sign
+    - Verify SAML Response
+    - Create keypair
+    - Issue certificate
+    - Create Signature
+    - Delete private key
+end note
+sign -> user: XHTML form with Sign Response
+deactivate sign
+
+user -> wc: POST Sign Response
+activate wc
+wc -> wc: Complete Signature
+activate wc #SteelBlue
+note right of wc
+    - Validate Sign Response
+    - Complete e-Signature
+end note
+wc -> wc: Complete Signature Response
+deactivate wc
+wc -> user: Show result
+deactivate wc
+deactivate user
+
+
+
+@enduml

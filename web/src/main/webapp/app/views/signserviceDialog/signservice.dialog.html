@@ -1,0 +1,22 @@
+<div class="modal-body">
+  <!-- TODO autosubmit-->
+<!--  <noscript>-->
+<!--    <p>-->
+<!--      <strong>Note:</strong>-->
+<!--      Since your browser does not support JavaScript,-->
+<!--      you must press the Continue button once to-->
+<!--      proceed. </p>-->
+<!--  </noscript>-->
+  <form action="{{actionUrl}}" method="POST">
+    <div>
+      <p><label>Binding</label><input name="Binding" type="text" value="POST/XML/1.0"></p>
+      <p><label>RelayState</label><input name="RelayState" type="text" value="{{transactionId}}"></p>
+      <p><label>EidSignRequest</label><input name="EidSignRequest" type="text" value="{{signRequest}}"></p>
+    </div>
+<!--    <noscript>-->
+      <div>
+        <input type="submit" value="Signera">
+      </div>
+<!--    </noscript>-->
+  </form>
+</div>

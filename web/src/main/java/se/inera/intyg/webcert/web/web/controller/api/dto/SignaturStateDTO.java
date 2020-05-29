@@ -33,6 +33,10 @@ public class SignaturStateDTO {
     private String hash;
     private SignaturTyp signaturTyp;
 
+    // Signing Service
+    private String actionUrl;
+    private String signRequest;
+
     public String getId() {
         return id;
     }
@@ -69,6 +73,22 @@ public class SignaturStateDTO {
         this.hash = hash;
     }
 
+    public String getActionUrl() {
+        return actionUrl;
+    }
+
+    public void setActionUrl(String actionUrl) {
+        this.actionUrl = actionUrl;
+    }
+
+    public String getSignRequest() {
+        return signRequest;
+    }
+
+    public void setSignRequest(String signRequest) {
+        this.signRequest = signRequest;
+    }
+
     @JsonIgnore
     public SignaturTyp getSignaturTyp() {
         return signaturTyp;
@@ -101,6 +121,10 @@ public class SignaturStateDTO {
         private SignaturStatus status;
         private String hash;
         private SignaturTyp signaturTyp;
+
+        // Signing Service
+        private String actionUrl;
+        private String signRequest;
 
         private SignaturStateDTOBuilder() {
         }
@@ -139,6 +163,16 @@ public class SignaturStateDTO {
             return this;
         }
 
+        public SignaturStateDTOBuilder withActionUrl(String actionUrl) {
+            this.actionUrl = actionUrl;
+            return this;
+        }
+
+        public SignaturStateDTOBuilder withSignRequest(String signRequest) {
+            this.signRequest = signRequest;
+            return this;
+        }
+
         public SignaturStateDTO build() {
             SignaturStateDTO signaturStateDTO = new SignaturStateDTO();
             signaturStateDTO.setId(id);
@@ -147,6 +181,8 @@ public class SignaturStateDTO {
             signaturStateDTO.setStatus(status);
             signaturStateDTO.setHash(hash);
             signaturStateDTO.setSignaturTyp(signaturTyp);
+            signaturStateDTO.setActionUrl(actionUrl);
+            signaturStateDTO.setSignRequest(signRequest);
             return signaturStateDTO;
         }
     }

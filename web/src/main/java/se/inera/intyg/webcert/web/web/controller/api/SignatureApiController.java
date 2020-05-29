@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
@@ -80,6 +81,12 @@ public class SignatureApiController extends AbstractApiController {
                     + Arrays.asList(SignMethod.values()).stream()
                     .map(SignMethod::name)
                     .collect(Collectors.joining(", ")));
+        }
+
+        // TODO Remove
+        if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
+            return SignaturStateDTOBuilder.aSignaturStateDTO().withId("123").withActionUrl("https://inera.se")
+                .withSignRequest("SignRequestet").build();
         }
 
         try {
