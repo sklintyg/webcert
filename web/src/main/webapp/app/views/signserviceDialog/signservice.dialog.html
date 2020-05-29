@@ -19,4 +19,17 @@
       </div>
 <!--    </noscript>-->
   </form>
+
+  <!-- TEMP FORM-->
+  <form action="http://localhost:9089/api/signature/signservice/v1/response" method="POST">
+    <div>
+      <p><label>RelayState</label><input name="RelayState" type="text" value="{{transactionId}}"></p>
+      <p><label>EidSignRequest</label><input name="EidSignResponse" type="text" value="EidSignResponse"></p>
+    </div>
+    <!--    <noscript>-->
+    <div>
+      <input type="submit" value="Response">
+    </div>
+    <!--    </noscript>-->
+  </form>
 </div>

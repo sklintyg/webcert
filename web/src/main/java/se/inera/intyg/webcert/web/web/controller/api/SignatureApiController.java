@@ -19,11 +19,13 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import com.google.common.base.Strings;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,6 +33,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +100,20 @@ public class SignatureApiController extends AbstractApiController {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
+    }
+
+    @POST
+    @Path("/signservice/v1/response")
+    @PrometheusTimeMethod
+    public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
+
+        // TODO finalize signing
+        // Get context so redirect can be done to the correct certificate
+
+        // This will give a 307. Check if 302 is required
+        ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create("http://localhost:9089"));
+
+        return responseBuilder.build();
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {

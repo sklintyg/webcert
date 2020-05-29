@@ -91,7 +91,11 @@ note right of wc
 end note
 wc -> wc: Complete Signature Response
 deactivate wc
-wc -> user: Show result
+wc -> user: HTTP 302 redirect\nto Signed certificate
+deactivate wc
+user -> wc: GET signed Certificate
+activate wc
+wc -> user: Show signed certificate
 deactivate wc
 deactivate user
 
