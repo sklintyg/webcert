@@ -40,6 +40,11 @@ ext {
     xmlToolingVersion = "1.4.1"
     shedlockSpringVersion = "4.5.0"
     vavrVersion = "0.10.2"
+    jaxbXjcVersion = "2.3.0.1"
+    jaxbCoreVersion = "2.3.0.1"
+    jaxbImplVersion = "2.3.1"
+    jaxbRuntimeVersion = "2.3.1"
+    javaxActivationVersion = "1.2.0"
 
     nodeJsVersion = "10.16.2"
     npmVersion = "6.10.3"

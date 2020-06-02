@@ -130,7 +130,41 @@ configurations {
     runtime {
         exclude group: 'xalan', module: 'xalan'
     }
+
+    xsdgen
 }
+
+ext.xsdDir = file("src/main/resources/schemas/dss")
+ext.generatedJavaDir = file("${buildDir}/generatedSource/java")
+ext.xsdCatalog = file("src/main/resources/schemas/dss/catalog.xml")
+
+sourceSets.main.java {
+    srcDir generatedJavaDir
+}
+
+idea {
+    module {
+        generatedSourceDirs.add(generatedJavaDir)
+    }
+}
+
+task xsd2Java() {
+    doLast {
+        mkdir generatedJavaDir.path
+        ant.taskdef(
+                name: 'xjc',
+                classname: 'com.sun.tools.xjc.XJCTask',
+                classpath: configurations.xsdgen.asPath
+        )
+        ant.xjc(
+                destdir: generatedJavaDir.path,
+                catalog: xsdCatalog) {
+            schema(dir: xsdDir.path, includes: "**/*.xsd")
+        }
+    }
+}
+
+compileJava.dependsOn(xsd2Java)
 
 dependencies {
     compile project(':fmb-integration')
@@ -236,4 +270,6 @@ dependencies {
 
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
+
+    xsdgen "org.glassfish.jaxb:jaxb-xjc-jdk9:${jaxbXjcVersion}"
 }

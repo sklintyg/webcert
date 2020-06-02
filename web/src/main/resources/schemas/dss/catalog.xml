@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE catalog
+  PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
+  "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <public
+    publicId="urn:oasis:names:tc:SAML:2.0:assertion"
+    uri="saml-schema-assertion-2.0.xsd"/>
+  <public
+    publicId="urn:oasis:names:tc:SAML:1.0:assertion"
+    uri="oasis-sstc-saml-schema-protocol-1.1.xsd"/>
+  <public
+    publicId="http://www.w3.org/2000/09/xmldsig#"
+    uri="xmldsig-core-schema.xsd"/>
+  <public
+    publicId="http://www.w3.org/2001/04/xmlenc#"
+    uri="xenc-schema.xsd"/>
+  <public
+    publicId="urn:oasis:names:tc:SAML:2.0:assertion"
+    uri="saml-schema-assertion-2.0.xsd"/>
+</catalog>
