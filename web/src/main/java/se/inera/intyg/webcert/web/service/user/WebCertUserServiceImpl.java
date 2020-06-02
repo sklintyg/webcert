@@ -192,6 +192,15 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         LOG.debug("Scheduled removal of session {}", sessionId);
     }
 
+    @Override
+    public void removeSessionNow(HttpSession session) {
+        String sessionId = session.getId();
+        LOG.debug("Now removing session {}", sessionId);
+        sessionRepository.deleteById(sessionId);
+        session.invalidate();
+        session.setMaxInactiveInterval(0);
+    }
+
     private void updateUserRole(Role role) {
         getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
         getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
