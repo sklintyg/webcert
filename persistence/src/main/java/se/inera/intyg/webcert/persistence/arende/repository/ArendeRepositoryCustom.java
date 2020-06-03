@@ -51,8 +51,8 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**
      * List {@link Arende} entities in the repository with an enhet matching one of the
-     * supplied list of id's, that are not of status
-     * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     * supplied list of id's, that are not of status CLOSED {@link se.inera.intyg.webcert.persistence.model.Status}.
+     * The result is NOT ordered.
      *
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
      * an empty list.
@@ -84,8 +84,8 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**
      * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with
-     * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     * supplied list of id's. Is also discards any entity with status CLOSED {@link se.inera.intyg.webcert.persistence.model.Status}.
+     * The result is NOT ordered.
      *
      * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
      * an empty list.
@@ -100,6 +100,14 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * @return the {@link Arende}
      */
     Arende findOneByMeddelandeId(String meddelandeId);
+
+    /**
+     * Returns the {@link Arende} with the sought for referenceId.
+     *
+     * @param referenceId the referenceId which specifies the {@link Arende}
+     * @return the {@link Arende}
+     */
+    Arende findOneByReferensId(String referenceId);
 
     /**
      * Returns all answers to the {@link Arende} of the given meddelandeId.
@@ -119,4 +127,13 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      */
     List<Arende> findByPaminnelseMeddelandeId(String paminnelseMeddelandeId);
 
+    /**
+     * Returns all messageIds that exists.
+     *
+     * @param messageIds the messageIds to see if they exists
+     * @return a list of messageIds matching the search criteria. If none are found, this method returns
+     * an empty list.
+     */
+    @Query("SELECT ar.meddelandeId FROM Arende ar WHERE ar.meddelandeId IN (:meddelandeIds)")
+    List<String> findMeddelandeIdByMeddelandeId(@Param("meddelandeIds") List<String> messageIds);
 }
