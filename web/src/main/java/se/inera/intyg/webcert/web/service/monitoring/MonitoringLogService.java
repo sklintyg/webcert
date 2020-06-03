@@ -158,4 +158,14 @@ public interface MonitoringLogService extends AuthenticationLogger {
      * @param createdUser   User that issued the certificate
      */
     void logTestCertificateErased(String certificateId, String careUnit, String createdUser);
+
+    /**
+     * Log that a message has been imported.
+     * @param certificateId Id of the certificate.
+     * @param messageId Id of the message.
+     * @param caregiverId   HSA-Id of the care giver.
+     * @param careUnitId    HSA-Id of the care unit.
+     * @param messageType   Type of message.
+     */
+    void logMessageImported(String certificateId, String messageId, String caregiverId, String careUnitId, String messageType);
 }

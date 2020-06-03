@@ -538,4 +538,17 @@ public class MonitoringLogServiceImplTest {
             "SRS_STATISTICS_LINK_CLICKED SRS statistics link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
+    @Test
+    public void shouldLogTestCertificateErased() {
+        logService.logTestCertificateErased("CertificateId", "CareUnitId", "CreatedUserId");
+        verifyLog(Level.INFO,
+            "TEST_CERTIFICATE_ERASED Test certificate 'CertificateId' on care unit 'CareUnitId' created by 'CreatedUserId' was erased");
+    }
+
+    @Test
+    public void shouldLogMessageImported() {
+        logService.logMessageImported("CertificateId", "MessageId", "CareGiverId", "CareUnitId", "MessageType");
+        verifyLog(Level.INFO,
+            "MESSAGE_IMPORTED Message 'MessageId' with type 'MessageType' for certificate 'CertificateId' on caregiver 'CareGiverId' and care unit 'CareUnitId' was imported");
+    }
 }
