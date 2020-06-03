@@ -95,6 +95,7 @@ public class SignatureApiController extends AbstractApiController {
 
         try {
             SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod);
+
             return convertToSignatureStateDTO(sb);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
@@ -110,7 +111,7 @@ public class SignatureApiController extends AbstractApiController {
         // TODO finalize signing
         // Get context so redirect can be done to the correct certificate
 
-        // This will give a 307. Check if 302 is required
+        // This will give HTTP-status 307.
         ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create("http://localhost:9089"));
 
         return responseBuilder.build();

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" ID="https___localhost_19088" entityID="https://localhost:19088">
+  <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor>
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate>MIID7DCCAdQCCQCimXki+vmkATANBgkqhkiG9w0BAQ0FADA8MQswCQYDVQQGEwJT
+            RTEVMBMGA1UECgwMU29wcmEgU3RlcmlhMRYwFAYDVQQDDA0yUyBSb290IENBIHYx
+            MB4XDTE5MDQwMTA3MTEyMVoXDTM5MDMyNzA3MTEyMVowNDELMAkGA1UEBhMCU0Ux
+            ETAPBgNVBAoMCEluZXJhIEFCMRIwEAYDVQQDDAlsb2NhbGhvc3QwggEiMA0GCSqG
+            SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDGBMQ5mjhU2rctIH0dxwm4qT6CJJglb5HD
+            tC5UzvKkm4RGLDJKyru9nYcC/VPETNG1T7nVy86jXlNf6LKDiX+kJ+R/3Fh1hnPT
+            gdszOFHqzf0s5YRz2owBN0fj7S1Dbqxnj1n16Ex+05W8U88yXEZ6HTUbsYjIBUUU
+            rX6wm3+th/hfj3BnvvpPifS6qrwvhxBA44wTKVvX3nNr1k+refsRYMu9UMCuQ7Ut
+            GjWvrWBUBJ3aQ3rrYUI0AOsqr2qF/yfPmscW2ILwLwR+a++oUl0h52pj6Y0xCFuB
+            OQ/J59aIxQ7d4u6uSyvoNLJtXD6OgXbrFd8K6qMaVf2+Fh/M6AvpAgMBAAEwDQYJ
+            KoZIhvcNAQENBQADggIBACW9EHq7MOnGYxMMFZG4zdwpVVuJpFzXRIJYbIphOrXB
+            e+bJz0bpetWDiDgeWqEEmk+kB4JH5v2QhfE3HLerW2X5qsxDcSzRAcN+ykzHPaUI
+            Hvw7dZnk8cUb3i7kdpmIlb0QRNz7knc9ROt8abxn+KQLPw4Je5WAp4cVyTZKDIn/
+            ju4JY0Mt5Ep3koWbmf2DVktkUc+q+kC3U/YTzFRgJymQD5UjQYOYJTzg8aOE1Rji
+            3SSBhdz7wM1paGlLp8NFNXaGY1dClYiDaNGygktSVKkEeJm+iOiyzNvUQAFJkGbI
+            BAxFqPR/euyMTKYs4JrplzJ55Rgi2oRKiIvQpLHqdK5fnnqyW069ftbvBUnwEF4n
+            MxSqXrGCc0/oqgWBik7+CFL8SRQfGGfpMjmgAt/dQM9vH/GB9gimyBm+GYZB47sB
+            RdSYsD+OxKqFNV69JQN2iWdRhIxlPXNyROzU4muDVsg4y9um360YKUmh3Lb3o7ys
+            4kO5b4fQpfmpe5hcpjOxKnXS1a1sW3J1ujwW9VDJ7bgOPDyyaXhgP+9CODTY3YHm
+            d4ChaOTiG+4i0bdmJVuUowWD81IeSg9rPVS4T4BZuCKh4yMVn0hSJha2qLODWzZ0
+            YH8OX56t7EzjlMtcMXfXPluLAd4PF2PDWEmiY09S9a3K1IS9X4zzaLXs7w//WUmE
+          </dsig:X509Certificate>
+        </dsig:X509Data>
+      </dsig:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://localhost:19088/saml/SingleLogout/alias/defaultAlias"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://localhost:19088/saml/SingleLogout/alias/defaultAlias"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://localhost:19088/saml/SSO/alias/defaultAlias" index="0" isDefault="true"/>
+    <md:AttributeConsumingService index="1">
+      <md:ServiceName xml:lang="sv">Webcert uppdragslöst</md:ServiceName>
+      <md:RequestedAttribute Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId" isRequired="true"/>
+      <md:RequestedAttribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod" isRequired="true"/>
+    </md:AttributeConsumingService>
+  </md:SPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="sv">Inera AB</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="sv">Webcert DEV</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="sv">https://inera.se</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson xml:lang="sv" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="sv" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>
