@@ -19,11 +19,14 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.util.Optional;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface SendNotificationStrategy {
 
     Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast);
+
+    Optional<SchemaVersion> decideNotificationForIntyg(Utlatande certificate);
 
 }
