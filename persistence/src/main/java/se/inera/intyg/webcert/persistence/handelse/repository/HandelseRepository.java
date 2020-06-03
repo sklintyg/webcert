@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.handelse.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -27,4 +28,20 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     List<Handelse> findByIntygsId(String intygsId);
 
     List<Handelse> findByPersonnummer(String personId);
+
+    List<Handelse> findByPersonnummerAndEnhetsIdIn(String personId, List<String> unitId);
+
+    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBetween(String personId, List<String> unitIds, LocalDateTime from, LocalDateTime to);
+
+    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampAfter(String personId, List<String> unitIds, LocalDateTime from);
+
+    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBefore(String personId, List<String> unitIds, LocalDateTime to);
+
+    List<Handelse> findByPersonnummerAndVardgivarId(String personId, String careProviderId);
+
+    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBetween(String personId, String careProviderId, LocalDateTime from, LocalDateTime to);
+
+    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampAfter(String personId, String careProviderId, LocalDateTime from);
+
+    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(String personId, String careProviderId, LocalDateTime to);
 }

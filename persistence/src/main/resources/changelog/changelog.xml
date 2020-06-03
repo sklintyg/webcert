@@ -1279,4 +1279,11 @@
       </column>
     </addColumn>
   </changeSet>
+
+  <changeSet id="64" author="mww">
+    <createIndex indexName="IDX_HANDELSE_PATIENT_PERSON_ID"
+        tableName="HANDELSE" unique="false">
+      <column name="PATIENT_PERSON_ID"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>
