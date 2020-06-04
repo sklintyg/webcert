@@ -20,12 +20,15 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.xml.ConfigurationException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class DssMetadataServiceTest {
 
@@ -38,10 +41,11 @@ public class DssMetadataServiceTest {
     public void getDssActionUrl() {
 
         DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
-        service.setDssServiceMetadataEntityId("https://localhost:19088");
-        service.setDssServiceMetadataPath("src/test/resources/dss/dss-sp-valid.xml");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId", "https://localhost:19088");
+        // TODO Make this work from gradle in jenkins. Can't use this path
+        ReflectionTestUtils.setField(service, "dssServiceMetadataPath", "src/test/resources/dss/dss-sp-valid.xml");
 
-        service.initialize();
+        service.initDssMetadata();
 
         assertEquals("https://localhost:19088/saml/SSO/alias/defaultAlias", service.getDssActionUrl());
 
@@ -50,5 +54,25 @@ public class DssMetadataServiceTest {
     @Test
     public void getDssCertificate() {
 
+    }
+
+    @Test
+    public void getClientMetadataAsString() {
+        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+
+        ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
+        ReflectionTestUtils.setField(service, "webcertHostUrl", "https://wc.localtest.me:9088");
+
+        ReflectionTestUtils.setField(service, "organizationName", "Inera AB");
+        ReflectionTestUtils.setField(service, "organizationDisplayName", "Webcert");
+        ReflectionTestUtils.setField(service, "organizationUrl", "https://inera.se");
+        ReflectionTestUtils.setField(service, "organizationEmail", "teknik.intyg@inera.se");
+
+        service.initClientKeyManager();
+        service.initClientMetadata();
+
+        assertNotNull(service.getClientMetadataAsString());
     }
 }

@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
@@ -46,6 +47,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -60,6 +62,10 @@ public class SignatureApiController extends AbstractApiController {
 
     private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
+    public static final String SIGNATUR_API_CONTEXT_PATH = "/api/signature";
+    public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
+    public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
+
     @Autowired
     private UnderskriftService underskriftService;
 
@@ -68,6 +74,9 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired(required = false)
     private FakeSignatureServiceImpl fakeSignatureService;
+
+    @Autowired
+    private DssMetadataService dssMetadataService;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -104,7 +113,7 @@ public class SignatureApiController extends AbstractApiController {
     }
 
     @POST
-    @Path("/signservice/v1/response")
+    @Path(SIGN_SERVICE_RESPONSE_PATH)
     @PrometheusTimeMethod
     public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
 
@@ -126,6 +135,19 @@ public class SignatureApiController extends AbstractApiController {
             .withSignaturTyp(sb.getSignaturTyp())
             .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
             .build();
+    }
+
+    @GET
+    @Path(SIGN_SERVICE_METADATA_PATH)
+    public Response signServiceClientMetadata() {
+
+        String clientMetadataAsString = dssMetadataService.getClientMetadataAsString();
+
+        ResponseBuilder responseBuilder = Response.ok(clientMetadataAsString)
+            .header(HttpHeaders.CONTENT_TYPE, "application/samlmetadata+xml")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"wc_dss_client_metadata.xml\"");
+
+        return responseBuilder.build();
     }
 
     @GET

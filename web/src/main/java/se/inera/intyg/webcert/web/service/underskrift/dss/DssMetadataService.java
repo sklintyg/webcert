@@ -20,21 +20,48 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml2.metadata.Company;
+import org.opensaml.saml2.metadata.ContactPerson;
+import org.opensaml.saml2.metadata.ContactPersonTypeEnumeration;
+import org.opensaml.saml2.metadata.EmailAddress;
 import org.opensaml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml2.metadata.LocalizedString;
+import org.opensaml.saml2.metadata.Organization;
+import org.opensaml.saml2.metadata.OrganizationDisplayName;
+import org.opensaml.saml2.metadata.OrganizationName;
+import org.opensaml.saml2.metadata.OrganizationURL;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml2.metadata.impl.AssertionConsumerServiceBuilder;
+import org.opensaml.saml2.metadata.impl.CompanyBuilder;
+import org.opensaml.saml2.metadata.impl.ContactPersonBuilder;
+import org.opensaml.saml2.metadata.impl.EmailAddressBuilder;
+import org.opensaml.saml2.metadata.impl.OrganizationBuilder;
+import org.opensaml.saml2.metadata.impl.OrganizationDisplayNameBuilder;
+import org.opensaml.saml2.metadata.impl.OrganizationNameBuilder;
+import org.opensaml.saml2.metadata.impl.OrganizationURLBuilder;
 import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.signature.X509Certificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.security.saml.key.JKSKeyManager;
+import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.metadata.MetadataGenerator;
+import org.springframework.security.saml.util.SAMLUtil;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 
 /**
  * This service initializes metadata needed in the DSS (Digital Signing Service) integration
@@ -45,76 +72,159 @@ import org.springframework.stereotype.Service;
 public class DssMetadataService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DssMetadataService.class);
+    private static final String LANG = "sv";
 
+    // TODO default.properties and deploy properties
 
+    @Value("${dss.service.metadata.path}")
     private String dssServiceMetadataPath;
+
+    @Value("${dss.service.metadata.entityid}")
     private String dssServiceMetadataEntityId;
+
+    @Value("${dss.client.keystore.alias}")
+    private String keystoreAlias;
+
+    @Value("${dss.client.keystore.password}")
+    private String keystorePassword;
+
+    @Value("${dss.client.keystore.file}")
+    private Resource keystoreFile;
+
+    @Value("${webcert.host.url}")
+    private String webcertHostUrl;
+
+    @Value("${dss.client.metadata.org.name}")
+    private String organizationName;
+
+    @Value("${dss.client.metadata.org.displayname}")
+    private String organizationDisplayName;
+
+    @Value("${dss.client.metadata.org.url}")
+    private String organizationUrl;
+
+    @Value("${dss.client.metadata.org.email}")
+    private String organizationEmail;
+
     private ParserPool parserPool;
     private FilesystemMetadataProvider dssServiceMetadata;
+    private EntityDescriptor clientEntityDescriptor;
+    private ExtendedMetadata clientExtendedMetadata;
+    private JKSKeyManager clientKeyManager;
 
     @Autowired
     public DssMetadataService(ParserPool parserPool) {
         this.parserPool = parserPool;
     }
 
-    @Autowired
-    public void setDssServiceMetadataPath(@Value("${dss.service.metadata.path}") String dssServiceMetadataPath) {
-        this.dssServiceMetadataPath = dssServiceMetadataPath;
-    }
-
-    @Autowired
-    public void setDssServiceMetadataEntityId(@Value("${dss.service.metadata.entityid}") String dssServiceMetadataEntityId) {
-        this.dssServiceMetadataEntityId = dssServiceMetadataEntityId;
-    }
-
-
     @PostConstruct
     void initialize() {
+        initDssMetadata();
+        initClientKeyManager();
+        initClientMetadata();
+
+    }
+
+    protected void initDssMetadata() {
         try {
-            this.dssServiceMetadata = initDssMetadata(this.dssServiceMetadataPath);
+            File dssMetadataFile = new File(dssServiceMetadataPath);
+            dssServiceMetadata = new FilesystemMetadataProvider(dssMetadataFile);
+            dssServiceMetadata.setParserPool(parserPool);
+            dssServiceMetadata.setRequireValidMetadata(true);
+            dssServiceMetadata.initialize();
         } catch (MetadataProviderException exception) {
-            LOG.error("Unable to load DSS metadata with path: " + this.dssServiceMetadataPath);
+            LOG.error("Unable to load DSS metadata with path: " + dssServiceMetadataPath);
             throw new RuntimeException(exception);
         }
+    }
+
+    protected void initClientKeyManager() {
+
+        Map<String, String> map = new HashMap<>();
+        map.put(keystoreAlias, keystorePassword);
+        this.clientKeyManager = new JKSKeyManager(keystoreFile, keystorePassword, map, keystoreAlias);
+    }
+
+    protected void initClientMetadata() {
+
+        clientExtendedMetadata = new ExtendedMetadata();
+        clientExtendedMetadata.setSigningKey(keystoreAlias);
+        clientExtendedMetadata.setSignMetadata(true);
+        clientExtendedMetadata.setKeyInfoGeneratorName(""); // This will use the default one
+        clientExtendedMetadata.setLocal(true);
+
+        MetadataGenerator mdg = new MetadataGenerator();
+        mdg.setEntityId(
+            webcertHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
+        mdg.setEntityBaseURL(webcertHostUrl);
+        mdg.setRequestSigned(false);
+        mdg.setWantAssertionSigned(false);
+        mdg.setBindingsHoKSSO(null);
+        mdg.setBindingsSLO(null);
+        mdg.setBindingsSSO(null); // Will add our own AssertionConsumingService later
+        mdg.setKeyManager(clientKeyManager);
+        mdg.setNameID(Collections.emptyList());
+        mdg.setExtendedMetadata(clientExtendedMetadata);
+
+        clientEntityDescriptor = mdg.generateMetadata();
+
+        SPSSODescriptor spssoDescriptor = clientEntityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
+        spssoDescriptor.getAssertionConsumerServices()
+            .add(createAssertionConsumerService(
+                webcertHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH));
+
+        clientEntityDescriptor.getContactPersons()
+            .add(createContactPerson(ContactPersonTypeEnumeration.SUPPORT));
+        clientEntityDescriptor.getContactPersons()
+            .add(createContactPerson(ContactPersonTypeEnumeration.TECHNICAL));
+
+        clientEntityDescriptor.setOrganization(createOrganization());
+
 
     }
 
-    private FilesystemMetadataProvider initDssMetadata(String dssServiceMetadataPath)
-        throws MetadataProviderException {
-        File dssMetadataFile = new File(dssServiceMetadataPath);
-        FilesystemMetadataProvider metadataProvider = new FilesystemMetadataProvider(dssMetadataFile);
-        metadataProvider.setParserPool(this.parserPool);
 
-        metadataProvider.initialize();
-
-        return metadataProvider;
-    }
-
-    private SPSSODescriptor getDssSpSsoDescriptor() {
-        EntityDescriptor entityDescriptor = null;
-        try {
-            entityDescriptor = this.dssServiceMetadata.getEntityDescriptor(this.dssServiceMetadataEntityId);
-        } catch (MetadataProviderException e) {
-            // TODO
-            e.printStackTrace();
-        }
-
-        return entityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
-    }
-
-    // Get POST address for the form (actionURL)
+    /**
+     * Extracts the URL to use in SignRequest form. This URL should be used in
+     * the POST action of the form.
+     *
+     * The source of this URL  in this implementation is based on SAML SP metadata
+     * and is taken from the default AssertionConsumingService.
+     *
+     * @return URL for posting SignRequst form
+     */
     public String getDssActionUrl() {
 
         SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
-
         AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
-
-        // TODO Check binding. Should be HTTP-Post
-
         return assertionConsumerService.getLocation();
     }
 
-    // Get DSS certificate to use in validation of SigningResponse
+    /**
+     * Creates metadata for this dss client from the configured values.
+     *
+     * @return Client metadata as a String
+     */
+    public String getClientMetadataAsString() {
+        try {
+            return SAMLUtil.getMetadataAsString(null, clientKeyManager, clientEntityDescriptor, clientExtendedMetadata);
+        } catch (MarshallingException exception) {
+            LOG.error("Unable to get DSS Client metadata");
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private SPSSODescriptor getDssSpSsoDescriptor() {
+        try {
+            EntityDescriptor entityDescriptor = dssServiceMetadata.getEntityDescriptor(dssServiceMetadataEntityId);
+            return entityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
+        } catch (Exception exception) {
+            LOG.error("Unable to get DSS metadata with entityId: " + dssServiceMetadataEntityId);
+            throw new RuntimeException(exception);
+        }
+    }
+
+    // TODO Unsure what we need to extract from this method
     public List<X509Certificate> getDssCertificate() {
         SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
 
@@ -122,7 +232,40 @@ public class DssMetadataService {
         return dssSpSsoDescriptor.getKeyDescriptors().get(0).getKeyInfo().getX509Datas().get(0).getX509Certificates();
     }
 
-    // Get Client certificate to add as keyInfo in SignRequest
 
-    // Get client credentials used then signing SignRequest
+    private AssertionConsumerService createAssertionConsumerService(String location) {
+        AssertionConsumerService assertionConsumerService = new AssertionConsumerServiceBuilder().buildObject();
+        assertionConsumerService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        assertionConsumerService.setLocation(location);
+        assertionConsumerService.setIsDefault(true);
+        assertionConsumerService.setIndex(0);
+
+        return assertionConsumerService;
+    }
+
+    private Organization createOrganization() {
+        OrganizationURL xmlOrganizationURL = new OrganizationURLBuilder().buildObject();
+        xmlOrganizationURL.setURL(new LocalizedString(organizationUrl, LANG));
+        Organization organization = new OrganizationBuilder().buildObject();
+        organization.getURLs().add(xmlOrganizationURL);
+        OrganizationDisplayName xmlOrganizationDisplayName = new OrganizationDisplayNameBuilder().buildObject();
+        xmlOrganizationDisplayName.setName(new LocalizedString(organizationDisplayName, LANG));
+        organization.getDisplayNames().add(xmlOrganizationDisplayName);
+        OrganizationName xmlOrganizationName = new OrganizationNameBuilder().buildObject();
+        xmlOrganizationName.setName(new LocalizedString(organizationName, LANG));
+        organization.getOrganizationNames().add(xmlOrganizationName);
+        return organization;
+    }
+
+    private ContactPerson createContactPerson(ContactPersonTypeEnumeration type) {
+        EmailAddress emailAddress = new EmailAddressBuilder().buildObject();
+        emailAddress.setAddress(organizationEmail);
+        Company company = new CompanyBuilder().buildObject();
+        company.setName(organizationName);
+        ContactPerson contactPerson = new ContactPersonBuilder().buildObject();
+        contactPerson.setType(type);
+        contactPerson.setCompany(company);
+        return contactPerson;
+    }
+
 }
