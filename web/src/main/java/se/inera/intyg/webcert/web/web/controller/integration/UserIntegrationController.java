@@ -35,20 +35,22 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 @Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
 public class UserIntegrationController extends BaseIntegrationController {
 
-    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.READONLY;
+    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
 
     private static final String[] GRANTED_ROLES = new String[]{
-        AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN
+        AuthoritiesConstants.ROLE_LAKARE,
+        AuthoritiesConstants.ROLE_ADMIN,
+        AuthoritiesConstants.ROLE_PRIVATLAKARE,
+        AuthoritiesConstants.ROLE_TANDLAKARE
     };
 
     @GET
     @Path("/logout/now")
     @PrometheusTimeMethod
     public Response logoutUserNow(@Context HttpServletRequest request) {
+        super.validateAuthorities();
         HttpSession session = request.getSession();
-
         getWebCertUserService().removeSessionNow(session);
-
         return Response.ok().build();
     }
 

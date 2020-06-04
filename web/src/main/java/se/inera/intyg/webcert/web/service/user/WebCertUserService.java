@@ -103,7 +103,7 @@ public interface WebCertUserService {
      * The removal of session is performed with no delay and was introduced based on requirements specified
      * in INTYGFV-13152.
      *
-     * @param session The HttpSession to call invalidate on after timeout.
+     * @param session The HttpSession to immediately call invalidate on.
      */
     void removeSessionNow(HttpSession session);
 }
