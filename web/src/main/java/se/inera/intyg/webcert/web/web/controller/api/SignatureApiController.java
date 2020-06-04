@@ -48,12 +48,15 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignRequestDTO;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
+
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
@@ -78,6 +81,9 @@ public class SignatureApiController extends AbstractApiController {
     @Autowired
     private DssMetadataService dssMetadataService;
 
+    @Autowired
+    private DssSignatureService dssSignatureService;
+
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -96,16 +102,19 @@ public class SignatureApiController extends AbstractApiController {
                     .collect(Collectors.joining(", ")));
         }
 
-        // TODO Remove
-        if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
-            return SignaturStateDTOBuilder.aSignaturStateDTO().withId("123").withActionUrl("https://inera.se")
-                .withSignRequest("SignRequestet").build();
-        }
-
         try {
             SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod);
 
-            return convertToSignatureStateDTO(sb);
+            if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
+                DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
+
+                return SignaturStateDTOBuilder.aSignaturStateDTO().withId(signRequestDTO.getTransactionId())
+                    .withActionUrl(signRequestDTO.getActionUrl())
+                    .withSignRequest(signRequestDTO.getSignRequest()).build();
+
+            } else {
+                return convertToSignatureStateDTO(sb);
+            }
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());

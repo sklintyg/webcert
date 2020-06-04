@@ -235,6 +235,8 @@ dependencies {
         exclude(module: "jsr311-api")
     }
 
+    compile "org.springframework.ws:spring-xml"
+
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
