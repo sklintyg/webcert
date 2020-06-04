@@ -106,7 +106,7 @@ public class SrsServiceImpl implements SrsService {
 
         // If we are in a draft, the main diagnosis might not yet have been persisted on the draft, instead we use
         // the diagnosisCode parameter
-        if (extensionChain != null && extensionChain.size() > 0) {
+        if (extensionChain.size() > 0) {
             extensionChain.get(0).setMainDiagnosisCode(diagnosisCode);
         }
 
