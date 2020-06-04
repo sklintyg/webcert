@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.web.service.srs;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -84,10 +82,10 @@ public class SrsServiceImpl implements SrsService {
     @Override
     public SrsResponse getSrs(WebCertUser user, String certificateId, String personalIdentificationNumber, String diagnosisCode,
                               boolean performRiskPrediction, boolean addMeasures, boolean addStatistics,
-                              List<SrsQuestionResponse> answers) throws InvalidPersonNummerException {
+                              List<SrsQuestionResponse> answers, Integer daysIntoSickLeave) throws InvalidPersonNummerException {
         LOG.debug("getSrs(user: [not logged], certificateId: {}, personalIdentificationNumber: [not logged], diagnosisCode: {},"
-                        + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged])",
-                certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics);
+                        + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged], daysIntoSickLeave: {})",
+                certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics, daysIntoSickLeave);
 
         if (user == null) {
             throw new IllegalArgumentException("Missing user object");
@@ -97,6 +95,9 @@ public class SrsServiceImpl implements SrsService {
         }
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             throw new IllegalArgumentException("Missing diagnosis code");
+        }
+        if (daysIntoSickLeave == null) {
+            daysIntoSickLeave = 15;
         }
 
         Utdatafilter filter = buildResponseFilter(performRiskPrediction, addMeasures, addStatistics);
@@ -109,7 +110,8 @@ public class SrsServiceImpl implements SrsService {
             extensionChain.get(0).setMainDiagnosisCode(diagnosisCode);
         }
 
-        SrsResponse response = srsInfraService.getSrs(user, createPnr(personalIdentificationNumber), extensionChain, filter, answers);
+        SrsResponse response =
+            srsInfraService.getSrs(user, createPnr(personalIdentificationNumber), extensionChain, filter, answers, daysIntoSickLeave);
         response.getPredictions().forEach(p -> {
             if (p.getProbabilityOverLimit() != null) {
                 logService.logShowPrediction(personalIdentificationNumber, p.getCertificateId());
