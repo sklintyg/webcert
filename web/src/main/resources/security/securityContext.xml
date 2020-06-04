@@ -62,6 +62,9 @@
 
   <security:http security="none" pattern="/favicon.ico"/>
 
+  <!-- Signing Service Metadata-->
+  <security:http security="none" create-session="never" pattern="/api/signature/signservice/v1/metadata"/>
+
   <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
     <property name="redisNamespace" value="${app.name}"/>
     <property name="redisFlushMode" value="IMMEDIATE" />

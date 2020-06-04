@@ -76,6 +76,9 @@ public class DssMetadataService {
 
     // TODO default.properties and deploy properties
 
+    @Value("${webcert.host.url}")
+    private String webcertHostUrl;
+
     @Value("${dss.service.metadata.path}")
     private String dssServiceMetadataPath;
 
@@ -90,9 +93,6 @@ public class DssMetadataService {
 
     @Value("${dss.client.keystore.file}")
     private Resource keystoreFile;
-
-    @Value("${webcert.host.url}")
-    private String webcertHostUrl;
 
     @Value("${dss.client.metadata.org.name}")
     private String organizationName;
@@ -127,11 +127,13 @@ public class DssMetadataService {
 
     protected void initDssMetadata() {
         try {
+
             File dssMetadataFile = new File(dssServiceMetadataPath);
             dssServiceMetadata = new FilesystemMetadataProvider(dssMetadataFile);
             dssServiceMetadata.setParserPool(parserPool);
             dssServiceMetadata.setRequireValidMetadata(true);
             dssServiceMetadata.initialize();
+
         } catch (MetadataProviderException exception) {
             LOG.error("Unable to load DSS metadata with path: " + dssServiceMetadataPath);
             throw new RuntimeException(exception);
@@ -216,10 +218,11 @@ public class DssMetadataService {
 
     private SPSSODescriptor getDssSpSsoDescriptor() {
         try {
-            EntityDescriptor entityDescriptor = dssServiceMetadata.getEntityDescriptor(dssServiceMetadataEntityId);
-            return entityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
+            return dssServiceMetadata
+                .getEntityDescriptor(dssServiceMetadataEntityId)
+                .getSPSSODescriptor(SAMLConstants.SAML20P_NS);
         } catch (Exception exception) {
-            LOG.error("Unable to get DSS metadata with entityId: " + dssServiceMetadataEntityId);
+            LOG.error("Unable to get DSS SpSsoDescriptor with entityId: " + dssServiceMetadataEntityId);
             throw new RuntimeException(exception);
         }
     }

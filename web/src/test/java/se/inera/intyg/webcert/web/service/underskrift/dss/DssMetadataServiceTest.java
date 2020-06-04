@@ -41,13 +41,14 @@ public class DssMetadataServiceTest {
     public void getDssActionUrl() {
 
         DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
-        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId", "https://localhost:19088");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
+            "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
         // TODO Make this work from gradle in jenkins. Can't use this path
-        ReflectionTestUtils.setField(service, "dssServiceMetadataPath", "src/test/resources/dss/dss-sp-valid.xml");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataPath", "src/test/resources/dss/dss-valid-metadata.xml");
 
         service.initDssMetadata();
 
-        assertEquals("https://localhost:19088/saml/SSO/alias/defaultAlias", service.getDssActionUrl());
+        assertEquals("https://esign.v2.st.signatureservice.se/signservice-frontend/consumeassertion", service.getDssActionUrl());
 
     }
 
