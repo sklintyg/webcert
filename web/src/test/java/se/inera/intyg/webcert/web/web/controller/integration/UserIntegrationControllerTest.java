@@ -28,6 +28,9 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.ImmutableMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import org.apache.cxf.transport.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,9 +46,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class UserIntegrationControllerTest {
 
-    private static final String LOGOUT_NOW_COMPATIBLE_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
-    private static final String LOGOUT_NOW_NON_COMPATIBLE_ORIGIN = UserOriginType.NORMAL.name();
-    private static final String LOGOUT_NOW_COMPATIBLE_ROLE = AuthoritiesConstants.ROLE_LAKARE;
+    private static final String GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
+    private static final String NON_GRANTED_ORIGIN = UserOriginType.NORMAL.name();
+    private static final String GRANTED_ROLE = AuthoritiesConstants.ROLE_LAKARE;
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -59,25 +62,25 @@ public class UserIntegrationControllerTest {
         HttpSession session = mock(HttpSession.class);
 
         WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setOrigin(LOGOUT_NOW_COMPATIBLE_ORIGIN);
-        webCertUser.setRoles(ImmutableMap.of(LOGOUT_NOW_COMPATIBLE_ROLE, new Role()));
+        webCertUser.setOrigin(GRANTED_ORIGIN);
+        webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
 
         when(request.getSession()).thenReturn(session);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
 
-        userIntegrationController.logoutUserNow(request);
+        Response res = userIntegrationController.logoutUserNow(request);
 
+        assertEquals(Status.OK.getStatusCode(), res.getStatus());
         verify(webCertUserService).removeSessionNow(session);
     }
 
     @Test
     public void testLogoutNowWithoutDjupintegration() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpSession session = mock(HttpSession.class);
 
         WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setOrigin(LOGOUT_NOW_NON_COMPATIBLE_ORIGIN);
-        webCertUser.setRoles(ImmutableMap.of(LOGOUT_NOW_COMPATIBLE_ROLE, new Role()));
+        webCertUser.setOrigin(NON_GRANTED_ORIGIN);
+        webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
 
