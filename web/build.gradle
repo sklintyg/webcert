@@ -160,6 +160,7 @@ task xsd2Java() {
                 destdir: generatedJavaDir.path,
                 catalog: xsdCatalog) {
             schema(dir: xsdDir.path, includes: "**/*.xsd")
+            produces(dir: generatedJavaDir.path, includes: "**/*")
         }
     }
 }
