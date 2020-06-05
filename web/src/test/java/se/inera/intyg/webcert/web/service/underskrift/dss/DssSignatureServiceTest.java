@@ -80,7 +80,7 @@ public class DssSignatureServiceTest {
             .withHash("HASH").build();
         var res = dssSignatureService.createSignatureRequestDTO(sb);
 
-//        System.out.println(res.getSignRequest());
+        System.out.println(res.getSignRequest());
 
         assertNotNull(res);
     }

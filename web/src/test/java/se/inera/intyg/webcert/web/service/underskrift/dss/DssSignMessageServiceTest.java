@@ -19,10 +19,29 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.util.ReflectionTestUtils;
+import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignRequestExtensionType;
+import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DssSignMessageServiceTest {
+
+    @Mock
+    XMLDSigService infraXMLDSigServiceMock;
+
+    @InjectMocks
+    private DssSignMessageService service;
 
     @BeforeClass
     public static void init() {
@@ -32,9 +51,30 @@ public class DssSignMessageServiceTest {
 
     @Test
     public void signSignRequest() {
+
+        ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
+
+        System.out.println(service.signSignRequest(getSignRequest()));
+
+
     }
 
     @Test
     public void validateSignResponseSignature() {
+    }
+
+    private SignRequest getSignRequest() {
+        try {
+            JAXBContext jaxbContext = JAXBContext
+                .newInstance(SignRequest.class, SignRequestExtensionType.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("dss/unsigned_signRequest.xml").getInputStream()),
+                SignRequest.class).getValue();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+
     }
 }
