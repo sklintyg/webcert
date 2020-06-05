@@ -96,4 +96,11 @@ public interface WebCertUserService {
      * @param sessionId The id of the session to cancel removal of.
      */
     void cancelScheduledLogout(String sessionId);
+
+    /**
+     * Performs immediate removal of backend session (both HttpSession and Spring session) for user.
+     *
+     * @param session The HttpSession to be immediately invalidated.
+     */
+    void removeSessionNow(HttpSession session);
 }

@@ -44,6 +44,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -75,11 +76,15 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
+
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
     @Mock
     private ThreadPoolTaskScheduler scheduler;
+
+    @Mock
+    private FindByIndexNameSessionRepository<?> sessionRepository;
 
     @Test
     public void testCheckIfAuthorizedForUnit() {
@@ -310,6 +315,20 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         assertFalse(webcertUserService.taskMap.containsKey(sessionId));
 
         verify(future).cancel(false);
+    }
+
+    @Test
+    public void testLogoutNow() {
+        String sessionId = "sessionId";
+        HttpSession session = mock(HttpSession.class);
+
+        when(session.getId()).thenReturn(sessionId);
+
+        webcertUserService.removeSessionNow(session);
+
+        verify(sessionRepository).deleteById(sessionId);
+        verify(session).invalidate();
+        verify(session).setMaxInactiveInterval(0);
     }
 
     @Test
