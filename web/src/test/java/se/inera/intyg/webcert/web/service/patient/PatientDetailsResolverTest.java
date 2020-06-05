@@ -562,6 +562,23 @@ public class PatientDetailsResolverTest {
         assertNull(patient);
     }
 
+    @Test
+    public void testWhenNoUserSession() throws ModuleNotFoundException {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(webCertUserService.getUser()).thenReturn(null);
+
+        Patient patient = testee.resolvePatient(PNR, "luae_fs", "1.0");
+        assertEquals(PNR, patient.getPersonId());
+        assertNull(patient.getFornamn());
+        assertNull(patient.getMellannamn());
+        assertNull(patient.getEfternamn());
+        assertNull(patient.getPostadress());
+        assertNull(patient.getPostnummer());
+        assertNull(patient.getPostort());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(false, patient.isSekretessmarkering());
+    }
+
 
     private Utlatande buildSosDbUtlatande() {
         GrundData grundData = new GrundData();

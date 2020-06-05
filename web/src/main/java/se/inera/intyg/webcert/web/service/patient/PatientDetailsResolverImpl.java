@@ -180,12 +180,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     @Transactional(readOnly = true)
     public Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion) {
-        WebCertUser user;
+        WebCertUser user = null;
         if (webCertUserService.hasAuthenticationContext()) {
             user = webCertUserService.getUser();
-        } else {
-            throw new IllegalStateException("The PatientDetailsResolver#resolvePatient method cannot be used without a "
-                + "valid authentication context");
         }
 
         // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
@@ -197,7 +194,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(internalIntygsTyp, intygsTypVersion);
             PatientDetailResolveOrder resolveOrder = moduleApi.getPatientDetailResolveOrder();
-            return resolvePatient(personnummer, user, resolveOrder);
+            if (user != null) {
+                return resolvePatient(personnummer, user, resolveOrder);
+            } else {
+                return resolvePatient(personnummer, resolveOrder);
+            }
         } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
         }
@@ -243,6 +244,22 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
         }
 
+        patient.setTestIndicator(personSvar.getPerson().isTestIndicator());
+
+        return patient;
+    }
+
+    private Patient resolvePatient(Personnummer personnummer, PatientDetailResolveOrder resolveOrder) {
+        PersonSvar personSvar = getPersonSvar(personnummer);
+
+        //PU unavailable
+        if (personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
+            return null;
+        }
+
+        Patient patient = new Patient();
+        patient.setPersonId(personnummer);
+        resolvePatientAvlidenDetails(patient, personSvar);
         patient.setTestIndicator(personSvar.getPerson().isTestIndicator());
 
         return patient;
