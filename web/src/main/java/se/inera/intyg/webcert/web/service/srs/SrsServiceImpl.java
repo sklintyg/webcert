@@ -82,10 +82,10 @@ public class SrsServiceImpl implements SrsService {
     @Override
     public SrsResponse getSrs(WebCertUser user, String certificateId, String personalIdentificationNumber, String diagnosisCode,
                               boolean performRiskPrediction, boolean addMeasures, boolean addStatistics,
-                              List<SrsQuestionResponse> answers) throws InvalidPersonNummerException {
+                              List<SrsQuestionResponse> answers, Integer daysIntoSickLeave) throws InvalidPersonNummerException {
         LOG.debug("getSrs(user: [not logged], certificateId: {}, personalIdentificationNumber: [not logged], diagnosisCode: {},"
-                        + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged])",
-                certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics);
+                        + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged], daysIntoSickLeave: {})",
+                certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics, daysIntoSickLeave);
 
         if (user == null) {
             throw new IllegalArgumentException("Missing user object");
@@ -96,14 +96,28 @@ public class SrsServiceImpl implements SrsService {
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             throw new IllegalArgumentException("Missing diagnosis code");
         }
+        if (daysIntoSickLeave == null) {
+            daysIntoSickLeave = 15;
+        }
 
         Utdatafilter filter = buildResponseFilter(performRiskPrediction, addMeasures, addStatistics);
-        SrsResponse response = srsInfraService
-                .getSrs(user, certificateId, createPnr(personalIdentificationNumber), diagnosisCode, filter, answers);
-        if (response.getPredictionProbabilityOverLimit() != null) {
-            logService.logShowPrediction(personalIdentificationNumber, certificateId);
+
+        List<SrsCertificate> extensionChain = getExtensionChain(certificateId);
+
+        // If we are in a draft, the main diagnosis might not yet have been persisted on the draft, instead we use
+        // the diagnosisCode parameter
+        if (extensionChain.size() > 0) {
+            extensionChain.get(0).setMainDiagnosisCode(diagnosisCode);
         }
-        decorateWithExtensionChain(response, certificateId);
+
+        SrsResponse response =
+            srsInfraService.getSrs(user, createPnr(personalIdentificationNumber), extensionChain, filter, answers, daysIntoSickLeave);
+        response.getPredictions().forEach(p -> {
+            if (p.getProbabilityOverLimit() != null) {
+                logService.logShowPrediction(personalIdentificationNumber, p.getCertificateId());
+            }
+        });
+        response.replaceExtensionChain(extensionChain);
         decorateWithDiagnosisDescription(response);
         return response;
     }
@@ -217,12 +231,12 @@ public class SrsServiceImpl implements SrsService {
 
     /**
      * Use certificate service to look for a certificate.
-     * NB! will not PDL log which needs to be done elsewhere if required.
+     * Uses fetchIntygWithRelations that will PDL log the access to certificates in the extension chain.
      * @param certificateId
      * @return
      */
     private IntygContentHolder getCertificate(String certificateId) {
-        return intygService.fetchIntygData(certificateId, LisjpEntryPoint.MODULE_ID, false, false);
+        return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID, false);
     }
 
     /**
@@ -240,19 +254,19 @@ public class SrsServiceImpl implements SrsService {
     }
 
     /**
-     * Decorates the response object with a chain of certificates directly linked parent relations of type extension (FRLANG).
+     * Returns a chain of a certificate and its' directly linked parent relations of type extension (FRLANG).
      * E.g. certificateId --extends--> certificateId2 --extends--> certificateId3 --extends---> nothing yields a chain of three
      * certificates.
-     * @param response the decorated response object
      * @param certificateId the certificate id of the starting certificate/draft
+     * @return the extension chain as described above
      */
-    protected void decorateWithExtensionChain(SrsResponse response, String certificateId) {
-        LOG.debug("decorateWithIntygsKedja(certificateId:{})", certificateId);
+    protected List<SrsCertificate> getExtensionChain(String certificateId) {
+        LOG.debug("getExtensionChain(certificateId:{})", certificateId);
         List<SrsCertificate> chain = new ArrayList<>();
         int i = 0;
         try {
             String currentCertificateId = certificateId;
-            while (StringUtils.isNotBlank(currentCertificateId)) {
+            while (StringUtils.isNotBlank(currentCertificateId) && chain.size() < 3) {
                 String currentModel = getModelForCertificateId(currentCertificateId);
                 if (currentModel == null) {
                     LOG.debug("No model found for certificate id " + currentCertificateId);
@@ -264,24 +278,26 @@ public class SrsServiceImpl implements SrsService {
                 currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
                 LOG.debug("next parentCertificateId: {}", currentCertificateId);
             }
-            response.replaceExtensionChain(chain);
         } catch (ConverterException e) {
             LOG.error("Couldn't convert certificate to correct type while decorating extension chain for SRS", e);
         }
+        return chain;
     }
 
     /**
      * Decorates the response with descriptions of the diagnosis codes that already are in the response.
      */
     private void decorateWithDiagnosisDescription(SrsResponse response) {
-        if (!Strings.isNullOrEmpty(response.getPredictionDiagnosisCode())) {
-            DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getPredictionDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
-            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
+        response.getPredictions().forEach(p -> {
+            if (!Strings.isNullOrEmpty(p.getDiagnosisCode())) {
+                DiagnosResponse diagnosResponse = diagnosService
+                    .getDiagnosisByCode(p.getDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
                     && !diagnosResponse.getDiagnoser().isEmpty()) {
-                response.setPredictionDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
+                    p.setDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
+                }
             }
-        }
+        });
         if (!Strings.isNullOrEmpty(response.getAtgarderDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
                     .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
