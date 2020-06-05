@@ -98,12 +98,9 @@ public interface WebCertUserService {
     void cancelScheduledLogout(String sessionId);
 
     /**
-     * Immediate removal of backend session (both HttpSession and Spring session) for user.
-     * <p>
-     * The removal of session is performed with no delay and was introduced based on requirements specified
-     * in INTYGFV-13152.
+     * Performs immediate removal of backend session (both HttpSession and Spring session) for user.
      *
-     * @param session The HttpSession to immediately call invalidate on.
+     * @param session The HttpSession to be immediately invalidated.
      */
     void removeSessionNow(HttpSession session);
 }
