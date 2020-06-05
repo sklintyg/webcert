@@ -68,8 +68,8 @@ public class DssSignatureServiceTest {
         when(patient.getPersonnummerWithDash()).thenReturn("19121212-1212");
 
         ReflectionTestUtils.setField(dssSignatureService, "webcertHostUrl", "https://wc.localtest.me:9088");
-        ReflectionTestUtils.setField(dssSignatureService, "customerId", "clientId");
-        ReflectionTestUtils.setField(dssSignatureService, "applicationId", "appId");
+        ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
+        ReflectionTestUtils.setField(dssSignatureService, "applicationId", "App/ID\\With--w€|rd__CH@r$");
         ReflectionTestUtils.setField(dssSignatureService, "idpUrl", "https://idpurl.se/samlv2/idp/metadata");
         ReflectionTestUtils.setField(dssSignatureService, "serviceUrl",
             "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");

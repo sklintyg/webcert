@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.UUID;
 import javax.xml.bind.JAXBElement;
@@ -104,7 +105,12 @@ public class DssSignatureService {
     private String createTransactionID(DateTime dateTimeNow) {
         var timestamp = Long.toHexString(dateTimeNow.getMillis());
         var uuid = generateUUID();
-        return String.format("%s-%s-%s-%s", customerId, applicationId, timestamp, uuid);
+        return String.format("%s-%s-%s-%s", formatIdField(customerId), formatIdField(applicationId), timestamp, uuid);
+    }
+
+    private String formatIdField(String id) {
+        var idStr = id.replaceAll("[^a-zA-Z\\d:]", "");
+        return idStr.substring(0, Math.min(idStr.length(), 11)).toLowerCase();
     }
 
     private InputDocuments createInputDocuments(SignaturBiljett sb) {
@@ -176,7 +182,7 @@ public class DssSignatureService {
         String message = this.signMessage.replace("{intygsTyp}", intygsTyp)
             .replace("{patientPnr}", patientPersonnummer != null ? patientPersonnummer.getPersonnummerWithDash() : "")
             .replace("{intygsId}", intygsId);
-        signMessage.setMessage(message.getBytes());
+        signMessage.setMessage(Base64.getEncoder().encode(message.getBytes()));
 
         return signMessage;
     }
