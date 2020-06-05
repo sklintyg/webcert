@@ -79,7 +79,7 @@ public class DssSignatureService {
         dssSignRequestDTO.setActionUrl(dssMetadataService.getDssActionUrl());
 
         var signRequest = objectFactoryDssCore.createSignRequest();
-        signRequest.setRequestID(generateUUID());
+        signRequest.setRequestID(sb.getTicketId());
         signRequest.setProfile("http://id.elegnamnden.se/csig/1.1/dss-ext/profile");
         signRequest.setInputDocuments(createInputDocuments(sb));
 
