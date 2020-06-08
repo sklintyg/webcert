@@ -68,10 +68,20 @@ public class DssSignMessageService {
 
     private XMLDSigService infraXMLDSigService;
 
+    private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
     @Autowired
     public DssSignMessageService(XMLDSigService infraXMLDSigService) {
         this.infraXMLDSigService = infraXMLDSigService;
+
+        String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
+        marshaller.setPackagesToScan(packages);
+        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
+            {
+                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
+                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
+            }
+        });
     }
 
     @PostConstruct
@@ -118,26 +128,10 @@ public class DssSignMessageService {
     }
 
     private String toXmlString(SignRequest signRequest) {
-        Jaxb2Marshaller marshaller = getJaxb2Marshaller();
         var stringResult = new StringResult();
         marshaller.marshal(signRequest, stringResult);
 
         return stringResult.toString();
-    }
-
-    private Jaxb2Marshaller getJaxb2Marshaller() {
-        // TODO Make inte fields
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
-        marshaller.setPackagesToScan(packages);
-
-        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
-            {
-                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
-                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
-            }
-        });
-        return marshaller;
     }
 
     private String documentToString(Document document) {

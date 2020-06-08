@@ -80,7 +80,6 @@ public class DssSignMessageServiceTest {
                 XPathConstants.NODE);
 
         assertNotNull(node);
-        assertEquals("SignedInfo", node.getFirstChild().getLocalName());
 
         ValidationResponse validationResponse = service.validateSignResponseSignature(signedSignRequest);
         assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
