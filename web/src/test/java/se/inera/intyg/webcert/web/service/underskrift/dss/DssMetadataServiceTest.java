@@ -38,17 +38,34 @@ public class DssMetadataServiceTest {
     }
 
     @Test
-    public void getDssActionUrl() {
+    public void getDssActionUrl_useMetadata() {
 
         DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(service, "actionUrlProperty", "");
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
             "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
-        // TODO Make this work from gradle in jenkins. Can't use this path
-        ReflectionTestUtils.setField(service, "dssServiceMetadataPath", "src/test/resources/dss/dss-valid-metadata.xml");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss-valid-metadata.xml"));
 
         service.initDssMetadata();
 
         assertEquals("https://esign.v2.st.signatureservice.se/signservice-frontend/consumeassertion", service.getDssActionUrl());
+
+    }
+
+    @Test
+    public void getDssActionUrl_useProperty() {
+
+        String actionUrlProperty = "http://test.me";
+
+        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(service, "actionUrlProperty", actionUrlProperty);
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
+            "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss-valid-metadata.xml"));
+
+        service.initDssMetadata();
+
+        assertEquals(actionUrlProperty, service.getDssActionUrl());
 
     }
 

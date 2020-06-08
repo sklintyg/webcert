@@ -19,11 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import javax.annotation.PostConstruct;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
@@ -46,7 +46,7 @@ import org.opensaml.saml2.metadata.impl.OrganizationBuilder;
 import org.opensaml.saml2.metadata.impl.OrganizationDisplayNameBuilder;
 import org.opensaml.saml2.metadata.impl.OrganizationNameBuilder;
 import org.opensaml.saml2.metadata.impl.OrganizationURLBuilder;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
+import org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.ParserPool;
@@ -61,6 +61,7 @@ import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.util.SAMLUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 
 /**
@@ -74,19 +75,20 @@ public class DssMetadataService {
     private static final Logger LOG = LoggerFactory.getLogger(DssMetadataService.class);
     private static final String LANG = "sv";
 
-    // TODO default.properties and deploy properties
-
     @Value("${webcert.host.url}")
     private String webcertHostUrl;
 
-    @Value("${dss.service.metadata.path}")
-    private String dssServiceMetadataPath;
+    @Value("${dss.service.metadata.resource}")
+    private Resource dssServiceMetadataResource;
 
     @Value("${dss.service.metadata.entityid}")
     private String dssServiceMetadataEntityId;
 
     @Value("${dss.client.keystore.alias}")
     private String keystoreAlias;
+
+    @Value("${dss.service.action.url}")
+    private String actionUrlProperty;
 
     @Value("${dss.client.keystore.password}")
     private String keystorePassword;
@@ -107,7 +109,7 @@ public class DssMetadataService {
     private String organizationEmail;
 
     private ParserPool parserPool;
-    private FilesystemMetadataProvider dssServiceMetadata;
+    private AbstractReloadingMetadataProvider dssServiceMetadataProvider;
     private EntityDescriptor clientEntityDescriptor;
     private ExtendedMetadata clientExtendedMetadata;
     private JKSKeyManager clientKeyManager;
@@ -128,14 +130,13 @@ public class DssMetadataService {
     protected void initDssMetadata() {
         try {
 
-            File dssMetadataFile = new File(dssServiceMetadataPath);
-            dssServiceMetadata = new FilesystemMetadataProvider(dssMetadataFile);
-            dssServiceMetadata.setParserPool(parserPool);
-            dssServiceMetadata.setRequireValidMetadata(true);
-            dssServiceMetadata.initialize();
+            dssServiceMetadataProvider = new SpringResourceBackedMetadataProvider(new Timer(true), dssServiceMetadataResource);
+            dssServiceMetadataProvider.setParserPool(parserPool);
+            dssServiceMetadataProvider.setRequireValidMetadata(true);
+            dssServiceMetadataProvider.initialize();
 
         } catch (MetadataProviderException exception) {
-            LOG.error("Unable to load DSS metadata with path: " + dssServiceMetadataPath);
+            LOG.error("Unable to load DSS metadata from resource: " + dssServiceMetadataResource.toString());
             throw new RuntimeException(exception);
         }
     }
@@ -190,16 +191,19 @@ public class DssMetadataService {
      * Extracts the URL to use in SignRequest form. This URL should be used in
      * the POST action of the form.
      *
-     * The source of this URL  in this implementation is based on SAML SP metadata
-     * and is taken from the default AssertionConsumingService.
+     * The source of this URL could either come from property or metadata
      *
      * @return URL for posting SignRequst form
      */
     public String getDssActionUrl() {
 
-        SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
-        AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
-        return assertionConsumerService.getLocation();
+        if (StringUtils.hasText(actionUrlProperty)) {
+            return actionUrlProperty;
+        } else {
+            SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
+            AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
+            return assertionConsumerService.getLocation();
+        }
     }
 
     /**
@@ -218,7 +222,7 @@ public class DssMetadataService {
 
     private SPSSODescriptor getDssSpSsoDescriptor() {
         try {
-            return dssServiceMetadata
+            return dssServiceMetadataProvider
                 .getEntityDescriptor(dssServiceMetadataEntityId)
                 .getSPSSODescriptor(SAMLConstants.SAML20P_NS);
         } catch (Exception exception) {
