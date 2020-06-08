@@ -19,62 +19,134 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import oasis.names.tc.dss._1_0.core.schema.SignRequest;
+import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignRequestExtensionType;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
+import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.infra.xmldsig.model.ValidationResult;
+import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DssSignMessageServiceTest {
 
-    @Mock
-    XMLDSigService infraXMLDSigServiceMock;
-
-    @InjectMocks
-    private DssSignMessageService service;
-
     @BeforeClass
     public static void init() {
         org.apache.xml.security.Init.init();
-//        System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
     }
 
     @Test
-    public void signSignRequest() {
+    public void signSignRequest() throws IOException, XPathExpressionException {
+
+        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
 
         ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
 
-        System.out.println(service.signSignRequest(getSignRequest()));
+        String signedSignRequest = service.signSignRequest(getSignRequest("dss/unsigned_signRequest.xml"));
 
+        assertNotNull(signedSignRequest);
+
+        // Signature should be in the correct node
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath path = factory.newXPath();
+        Node node = (Node) path
+            .evaluate("//*[local-name()='OptionalInputs']/*[local-name()='Signature']", convertStringToXMLDocument(signedSignRequest),
+                XPathConstants.NODE);
+
+        assertNotNull(node);
+        assertEquals("SignedInfo", node.getFirstChild().getLocalName());
+
+        ValidationResponse validationResponse = service.validateSignResponseSignature(signedSignRequest);
+        assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
+        assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
+
+        // Use this block if you need a new valid signed signRequest.
+        // Copy paste from System.out doesn't always work due to formatting issues
+
+/*        try (OutputStreamWriter writer =
+            new OutputStreamWriter(new FileOutputStream(new File("/temp/signed_valid_signRequest.xml")), StandardCharsets.UTF_8)) {
+            writer.write(signedSignRequest);
+        }*/
 
     }
 
     @Test
-    public void validateSignResponseSignature() {
+    public void validateSignResponseSignature_valid() {
+        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
+
+        ValidationResponse validationResponse = service
+            .validateSignResponseSignature(getSignRequestString("dss/signed_valid_signRequest.xml"));
+        assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
+        assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
+
     }
 
-    private SignRequest getSignRequest() {
+    @Test
+    public void validateSignResponseSignature_invalid() {
+        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
+
+        ValidationResponse validationResponse = service
+            .validateSignResponseSignature(getSignRequestString("dss/signed_invalid_signRequest.xml"));
+        assertEquals("Signature", ValidationResult.INVALID, validationResponse.getSignatureValid());
+        assertEquals("Reference", ValidationResult.INVALID, validationResponse.getReferencesValid());
+
+    }
+
+    private String getSignRequestString(String resource) {
+        try {
+            var xmlAsString = IOUtils.toString(new ClassPathResource(resource).getInputStream(), StandardCharsets.UTF_8);
+            return xmlAsString;
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private SignRequest getSignRequest(String resource) {
         try {
             JAXBContext jaxbContext = JAXBContext
                 .newInstance(SignRequest.class, SignRequestExtensionType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("dss/unsigned_signRequest.xml").getInputStream()),
+            return unmarshaller.unmarshal(new StreamSource(new ClassPathResource(resource).getInputStream()),
                 SignRequest.class).getValue();
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
+    }
 
+    private Document convertStringToXMLDocument(String xmlString) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+
+        try {
+            return dbf.newDocumentBuilder().parse(new InputSource(new StringReader(xmlString)));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

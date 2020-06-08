@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -27,12 +27,17 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.algorithms.MessageDigestAlgorithm;
+import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.transforms.Transforms;
-import org.apache.xml.security.utils.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +80,7 @@ public class DssSignMessageService {
     }
 
     public String signSignRequest(SignRequest signRequest) {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+        try {
             KeyStore ks = KeyStore.getInstance("JKS");
             ks.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
             PrivateKey privateKey =
@@ -89,9 +94,9 @@ public class DssSignMessageService {
             Document doc = dbf.newDocumentBuilder().parse(IOUtils.toInputStream(toXmlString(signRequest), StandardCharsets.UTF_8));
 
             XMLSignature sig =
-                new XMLSignature(doc, "", XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256);
+                new XMLSignature(doc, "", XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 
-            NodeList optionalInputsList = doc.getElementsByTagName("OptionalInputs");
+            NodeList optionalInputsList = doc.getElementsByTagNameNS("urn:oasis:names:tc:dss:1.0:core:schema", "OptionalInputs");
             Node optionalItemNode = optionalInputsList.item(0);
             optionalItemNode.appendChild(sig.getElement());
 
@@ -99,12 +104,9 @@ public class DssSignMessageService {
             transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
             sig.addDocument("", transforms, MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256);
             sig.addKeyInfo(cert);
-            sig.addKeyInfo(cert.getPublicKey());
             sig.sign(privateKey);
 
-            XMLUtils.outputDOM(doc, os);
-
-            return os.toString();
+            return documentToString(doc);
 
         } catch (Exception exception) {
             throw new RuntimeException(exception);
@@ -138,5 +140,17 @@ public class DssSignMessageService {
         return marshaller;
     }
 
+    private String documentToString(Document document) {
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer trans = tf.newTransformer();
+            StringWriter sw = new StringWriter();
+            trans.transform(new DOMSource(document), new StreamResult(sw));
+            return sw.toString();
+        } catch (TransformerException tEx) {
+            tEx.printStackTrace();
+        }
+        return null;
+    }
 
 }

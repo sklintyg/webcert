@@ -1,17 +1,24 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.Optional;
+import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.xml.ConfigurationException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.xml.transform.StringResult;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -30,6 +37,9 @@ public class DssSignatureServiceTest {
     WebCertUserService webCertUserService;
 
     @Mock
+    DssSignMessageService dssSignMessageService;
+
+    @Mock
     WebCertUser user;
 
     @Mock
@@ -41,14 +51,32 @@ public class DssSignatureServiceTest {
     @Mock
     Utkast utkast;
 
+    @Captor
+    ArgumentCaptor<SignRequest> signRequestCaptor;
+
     @Mock
     Personnummer patient;
 
     DssSignatureService dssSignatureService;
 
+    static Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+    static {
+        String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
+        marshaller.setPackagesToScan(packages);
+
+        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
+            {
+                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
+                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
+            }
+        });
+    }
+
+
     public DssSignatureServiceTest() {
         MockitoAnnotations.initMocks(this);
-        dssSignatureService = new DssSignatureService(dssMetadataService, webCertUserService, utkastRepository);
+        dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository);
     }
 
     @BeforeClass
@@ -66,6 +94,8 @@ public class DssSignatureServiceTest {
         when(utkast.getIntygsTyp()).thenReturn("intygsTyp");
         when(utkast.getPatientPersonnummer()).thenReturn(patient);
         when(patient.getPersonnummerWithDash()).thenReturn("19121212-1212");
+        when(dssSignMessageService.signSignRequest(Mockito.any()))
+            .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
 
         ReflectionTestUtils.setField(dssSignatureService, "webcertHostUrl", "https://wc.localtest.me:9088");
         ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
@@ -78,10 +108,22 @@ public class DssSignatureServiceTest {
 
         var sb = SignaturBiljettBuilder.aSignaturBiljett("ticketId", SignaturTyp.XMLDSIG, SignMethod.SIGN_SERVICE).withIntygsId("intygsId")
             .withHash("HASH").build();
-        var res = dssSignatureService.createSignatureRequestDTO(sb);
 
-        System.out.println(res.getSignRequest());
+        var createSignatureRequestDTOResponse = dssSignatureService.createSignatureRequestDTO(sb);
+        verify(dssSignMessageService).signSignRequest(signRequestCaptor.capture());
+        var capturedSignRequest = signRequestCaptor.getValue();
 
-        assertNotNull(res);
+        // TODO Assert some things in the capturedSignRequest
+
+        System.out.println(toXmlString(capturedSignRequest));
+
+        assertNotNull(createSignatureRequestDTOResponse);
+    }
+
+    private String toXmlString(SignRequest signRequest) {
+        var stringResult = new StringResult();
+        marshaller.marshal(signRequest, stringResult);
+
+        return stringResult.toString();
     }
 }

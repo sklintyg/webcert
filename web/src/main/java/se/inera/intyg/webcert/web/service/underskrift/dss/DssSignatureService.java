@@ -1,13 +1,13 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import oasis.names.tc.dss._1_0.core.schema.InputDocuments;
+import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import oasis.names.tc.saml._2_0.assertion.AttributeStatementType;
 import oasis.names.tc.saml._2_0.assertion.ConditionsType;
 import org.joda.time.DateTime;
@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
-import org.springframework.xml.transform.StringResult;
-import org.w3._2000._09.xmldsig_.SignatureType;
 import se.elegnamnden.id.csig._1_1.dss_ext.ns.CertRequestPropertiesType;
 import se.elegnamnden.id.csig._1_1.dss_ext.ns.MappedAttributeType;
 import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignMessageType;
@@ -37,6 +34,7 @@ public class DssSignatureService {
     private final DssMetadataService dssMetadataService;
     private final WebCertUserService userService;
     private final UtkastRepository utkastRepository;
+    private final DssSignMessageService dssSignMessageService;
 
     private final oasis.names.tc.dss._1_0.core.schema.ObjectFactory objectFactoryDssCore;
     private final se.elegnamnden.id.csig._1_1.dss_ext.ns.ObjectFactory objectFactoryCsig;
@@ -62,13 +60,15 @@ public class DssSignatureService {
 
 
     @Autowired
-    public DssSignatureService(DssMetadataService dssMetadataService, WebCertUserService userService, UtkastRepository utkastRepository) {
+    public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
+        WebCertUserService userService, UtkastRepository utkastRepository) {
         objectFactoryDssCore = new oasis.names.tc.dss._1_0.core.schema.ObjectFactory();
         objectFactoryCsig = new se.elegnamnden.id.csig._1_1.dss_ext.ns.ObjectFactory();
         objectFactorySaml = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
         this.dssMetadataService = dssMetadataService;
         this.userService = userService;
         this.utkastRepository = utkastRepository;
+        this.dssSignMessageService = dssSignMessageService;
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
@@ -78,6 +78,12 @@ public class DssSignatureService {
         dssSignRequestDTO.setTransactionId(createTransactionID(dateTimeNow));
         dssSignRequestDTO.setActionUrl(dssMetadataService.getDssActionUrl());
 
+        dssSignRequestDTO.setSignRequest(dssSignMessageService.signSignRequest(createSignRequest(dateTimeNow, sb)));
+
+        return dssSignRequestDTO;
+    }
+
+    private SignRequest createSignRequest(DateTime dateTimeNow, SignaturBiljett sb) {
         var signRequest = objectFactoryDssCore.createSignRequest();
         signRequest.setRequestID(sb.getTicketId());
         signRequest.setProfile("http://id.elegnamnden.se/csig/1.1/dss-ext/profile");
@@ -85,17 +91,10 @@ public class DssSignatureService {
 
         var optionalInputs = objectFactoryDssCore.createAnyType();
         optionalInputs.getAny().add(createSignRequestExtension(sb.getIntygsId(), dateTimeNow));
-        optionalInputs.getAny().add(createSignature());
 
         signRequest.setOptionalInputs(optionalInputs);
 
-        Jaxb2Marshaller marshaller = getJaxb2Marshaller();
-
-        var stringResult = new StringResult();
-        marshaller.marshal(signRequest, stringResult);
-
-        dssSignRequestDTO.setSignRequest(stringResult.toString());
-        return dssSignRequestDTO;
+        return signRequest;
     }
 
     private String generateUUID() {
@@ -187,11 +186,6 @@ public class DssSignatureService {
         return signMessage;
     }
 
-    private JAXBElement<SignatureType> createSignature() {
-        org.w3._2000._09.xmldsig_.ObjectFactory of = new org.w3._2000._09.xmldsig_.ObjectFactory();
-        return of.createSignature(of.createSignatureType()); //TODO Signature
-    }
-
     private CertRequestPropertiesType createCertRequestProperties() {
 
         var certRequestPropertiesType = objectFactoryCsig.createCertRequestPropertiesType();
@@ -272,17 +266,4 @@ public class DssSignatureService {
         return xmlGregorianCalendar;
     }
 
-    private Jaxb2Marshaller getJaxb2Marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
-        marshaller.setPackagesToScan(packages);
-
-        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
-            {
-                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
-            }
-        });
-        return marshaller;
-    }
 }

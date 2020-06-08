@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><ns2:SignRequest xmlns:ns2="urn:oasis:names:tc:dss:1.0:core:schema" xmlns="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns5="http://www.w3.org/2001/04/xmlenc#" xmlns:ns6="http://id.elegnamnden.se/csig/1.1/dss-ext/ns" Profile="http://id.elegnamnden.se/csig/1.1/dss-ext/profile" RequestID="10b18f91-69c7-403c-8eb7-4dcb09a0a564"><ns2:OptionalInputs><ns6:SignRequestExtension><ns6:RequestTime>2020-06-05T15:21:03.081+02:00</ns6:RequestTime><ns4:Conditions NotBefore="2020-06-05T15:19:03.081+02:00" NotOnOrAfter="2020-06-05T15:26:03.081+02:00"><ns4:AudienceRestriction><ns4:Audience>https://wc.localtest.me:9088/api/signature/signservice/v1/response</ns4:Audience></ns4:AudienceRestriction></ns4:Conditions><ns6:Signer><ns4:Attribute Name="urn:oid:1.2.752.29.4.13"><ns4:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/></ns4:Attribute></ns6:Signer><ns6:IdentityProvider Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://idpurl.se/samlv2/idp/metadata</ns6:IdentityProvider><ns6:SignRequester Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://wc.localtest.me:9088/api/signature/signservice/v1/metadata</ns6:SignRequester><ns6:SignService Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111</ns6:SignService><ns6:RequestedSignatureAlgorithm>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</ns6:RequestedSignatureAlgorithm><ns6:CertRequestProperties CertType="PKC"><ns4:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</ns4:AuthnContextClassRef><ns6:RequestedCertAttributes><ns6:RequestedCertAttribute CertAttributeRef="2.5.4.42" FriendlyName="givenName" Required="true"><ns6:SamlAttributeName>urn:oid:2.5.4.42</ns6:SamlAttributeName></ns6:RequestedCertAttribute><ns6:RequestedCertAttribute CertAttributeRef="2.5.4.4" FriendlyName="sn" Required="true"><ns6:SamlAttributeName>urn:oid:2.5.4.4</ns6:SamlAttributeName></ns6:RequestedCertAttribute><ns6:RequestedCertAttribute CertAttributeRef="2.5.4.5" FriendlyName="serialNumber" Required="false"><ns6:SamlAttributeName>urn:oid:1.2.752.29.4.13</ns6:SamlAttributeName></ns6:RequestedCertAttribute><ns6:RequestedCertAttribute CertAttributeRef="2.5.4.3" FriendlyName="commonName" Required="false"><ns6:SamlAttributeName>urn:oid:2.16.840.1.113730.3.1.241</ns6:SamlAttributeName></ns6:RequestedCertAttribute><ns6:RequestedCertAttribute CertAttributeRef="2.16.840.1.113730.3.1.241" FriendlyName="displayName" Required="false"><ns6:SamlAttributeName>urn:oid:2.16.840.1.113730.3.1.241</ns6:SamlAttributeName></ns6:RequestedCertAttribute></ns6:RequestedCertAttributes></ns6:CertRequestProperties><ns6:SignMessage MimeType="text" MustShow="true"><ns6:Message>SMOkcm1lZCBza3JpdmVyIGphZyB1bmRlciBpbnR5Z3NUeXAgdXRmw6RyZGF0IGbDtnIgMTkxMjEyMTItMTIxMjxicj48YnI+SW50eWdzLWlkOiBpbnR5Z3NJZA==</ns6:Message></ns6:SignMessage></ns6:SignRequestExtension><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+<ds:Reference URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>n4zAYjtxu457pqgy8WgfBGPfy6hSVpPHpeN67vTjdgU=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+exc3sFv20jOzu3pG/ZimCoGlZzBjhVK6BVyxkNTtJTu8FaqXtUrB8QZIWx1fG4+L+6w00pJ7cg6C&#xD;
+wIbaiaQh+2Ihx495BB7kom8ip6tknE4vutxLLqCvhUvUcsD+fgW3VndG1YBGu1UOWm1AFnLTNIG0&#xD;
+cn4YQiwVYjSzG7sdlVsTxhdygbbApxYid9ghOp5lGhcfLYGutPnx/tAWPLa95xHDt7OcpOCzssQ6&#xD;
+UfuSu7vW4N3tmBbJz3AMNnoyuwjSxV+PdTsd+s9GyzEn43xyZX267vptRmCHoubs9tEDaEa3blMN&#xD;
+hJK7ekYxf7OnfEP9SUMzi2+f9rWpKqxAvZfr8w==
+</ds:SignatureValue>
+<ds:KeyInfo>
+<ds:X509Data>
+<ds:X509Certificate>
+MIID7DCCAdQCCQCimXki+vmkATANBgkqhkiG9w0BAQ0FADA8MQswCQYDVQQGEwJTRTEVMBMGA1UE&#xD;
+CgwMU29wcmEgU3RlcmlhMRYwFAYDVQQDDA0yUyBSb290IENBIHYxMB4XDTE5MDQwMTA3MTEyMVoX&#xD;
+DTM5MDMyNzA3MTEyMVowNDELMAkGA1UEBhMCU0UxETAPBgNVBAoMCEluZXJhIEFCMRIwEAYDVQQD&#xD;
+DAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDGBMQ5mjhU2rctIH0d&#xD;
+xwm4qT6CJJglb5HDtC5UzvKkm4RGLDJKyru9nYcC/VPETNG1T7nVy86jXlNf6LKDiX+kJ+R/3Fh1&#xD;
+hnPTgdszOFHqzf0s5YRz2owBN0fj7S1Dbqxnj1n16Ex+05W8U88yXEZ6HTUbsYjIBUUUrX6wm3+t&#xD;
+h/hfj3BnvvpPifS6qrwvhxBA44wTKVvX3nNr1k+refsRYMu9UMCuQ7UtGjWvrWBUBJ3aQ3rrYUI0&#xD;
+AOsqr2qF/yfPmscW2ILwLwR+a++oUl0h52pj6Y0xCFuBOQ/J59aIxQ7d4u6uSyvoNLJtXD6OgXbr&#xD;
+Fd8K6qMaVf2+Fh/M6AvpAgMBAAEwDQYJKoZIhvcNAQENBQADggIBACW9EHq7MOnGYxMMFZG4zdwp&#xD;
+VVuJpFzXRIJYbIphOrXBe+bJz0bpetWDiDgeWqEEmk+kB4JH5v2QhfE3HLerW2X5qsxDcSzRAcN+&#xD;
+ykzHPaUIHvw7dZnk8cUb3i7kdpmIlb0QRNz7knc9ROt8abxn+KQLPw4Je5WAp4cVyTZKDIn/ju4J&#xD;
+Y0Mt5Ep3koWbmf2DVktkUc+q+kC3U/YTzFRgJymQD5UjQYOYJTzg8aOE1Rji3SSBhdz7wM1paGlL&#xD;
+p8NFNXaGY1dClYiDaNGygktSVKkEeJm+iOiyzNvUQAFJkGbIBAxFqPR/euyMTKYs4JrplzJ55Rgi&#xD;
+2oRKiIvQpLHqdK5fnnqyW069ftbvBUnwEF4nMxSqXrGCc0/oqgWBik7+CFL8SRQfGGfpMjmgAt/d&#xD;
+QM9vH/GB9gimyBm+GYZB47sBRdSYsD+OxKqFNV69JQN2iWdRhIxlPXNyROzU4muDVsg4y9um360Y&#xD;
+KUmh3Lb3o7ys4kO5b4fQpfmpe5hcpjOxKnXS1a1sW3J1ujwW9VDJ7bgOPDyyaXhgP+9CODTY3YHm&#xD;
+d4ChaOTiG+4i0bdmJVuUowWD81IeSg9rPVS4T4BZuCKh4yMVn0hSJha2qLODWzZ0YH8OX56t7Ezj&#xD;
+lMtcMXfXPluLAd4PF2PDWEmiY09S9a3K1IS9X4zzaLXs7w//WUmE
+</ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+</ds:Signature></ns2:OptionalInputs><ns2:InputDocuments><ns2:Other><ns6:SignTasks><ns6:SignTaskData SigType="XML" SignTaskId="02c6f7cf-c699-468d-aee9-b2bc7c17108b"><ns6:ToBeSignedBytes>SEFTSA==</ns6:ToBeSignedBytes></ns6:SignTaskData></ns6:SignTasks></ns2:Other></ns2:InputDocuments></ns2:SignRequest>
