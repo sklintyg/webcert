@@ -72,6 +72,22 @@ public interface IntygService {
     IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ, boolean coherentJournaling);
 
     /**
+     * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
+     *
+     * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
+     * an attempt to find an utkast stored in Webcert will be performed.
+     *
+     * Also includes a list of the relations the intyg has to other intyg if requested.
+     *
+     * The call will not be PDL-logged and no user validation will be made.
+     *
+     * @param certificateId   Certificate id
+     * @param includeRelations If the returned {@link IntygContentHolder} should include relations to other certificates.
+     * @return  IntygContentHolder
+     */
+    IntygContentHolder fetchIntygDataForInternalUse(String certificateId, boolean includeRelations);
+
+    /**
      * Returns all certificates for the given patient within all the given units.
      *
      * @param enhetId list of HSA IDs for the units

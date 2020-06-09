@@ -33,6 +33,7 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +60,6 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -222,18 +222,24 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, true);
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, true, true);
     }
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging);
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging, true);
     }
 
     @Override
     public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling, true);
+        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling, true, true);
     }
+
+    @Override
+    public IntygContentHolder fetchIntygDataForInternalUse(String certificateId, boolean includeRelations) {
+        return fetchIntygData(certificateId, null, includeRelations, false, false, false);
+    }
+
 
     /**
      * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.
@@ -243,13 +249,16 @@ public class IntygServiceImpl implements IntygService {
      * @param relations If the relations between intyg should be populated. This can be expensive (several database
      * operations). Use sparsely.
      * @param pdlLogging If the call should be logged.
+     * @param validateAccess If the call should validate access for logged in user.
      * @return IntygContentHolder.
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling,
-        boolean pdlLogging) {
+        boolean pdlLogging, boolean validateAccess) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
-        validateAccessToReadIntyg(intygsData.getUtlatande());
+        if (validateAccess) {
+            validateAccessToReadIntyg(intygsData.getUtlatande());
+        }
 
         if (pdlLogging) {
             LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
@@ -632,51 +641,82 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request) {
-        List<Utkast> utkastList;
-        if (request.shouldUseEnhetId()) {
-            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getEnhetId(), Arrays.asList(UtkastStatus.values()),
-                moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
-        } else {
-            utkastList = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(
-                DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getVardgivarId(),
-                Arrays.asList(UtkastStatus.values()),
-                moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
-        }
+        final var res = new ArrayList<IntygWithNotificationsResponse>();
 
-        List<IntygWithNotificationsResponse> res = new ArrayList<>();
-        for (Utkast utkast : utkastList) {
-            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId());
+        final var allNotifications = notificationService.findNotifications(request);
 
-            String ref = referensService.getReferensForIntygsId(utkast.getIntygsId());
+        final var notificationCertificateIdHash = getNotificationCertificateIdHash(allNotifications);
 
-            notifications = notifications.stream().filter(handelse -> {
-                if (request.getStartDate() != null && handelse.getTimestamp().isBefore(request.getStartDate())) {
-                    return false;
-                }
-                if (request.getEndDate() != null && handelse.getTimestamp().isAfter(request.getEndDate())) {
-                    return false;
-                }
-                return true;
-            }).collect(Collectors.toList());
+        final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
-            // If the request contained either start date or end date we should not return any intyg with no handelse in
-            // this time span
-            if ((request.getStartDate() != null || request.getEndDate() != null) && notifications.isEmpty()) {
-                continue;
+        for (var certificateId: notificationCertificateIdHash.keySet()) {
+            final var notifications = notificationCertificateIdHash.get(certificateId);
+
+            IntygWithNotificationsResponse response = null;
+
+            if (draftMap.containsKey(certificateId)) {
+                final var draft = draftMap.get(certificateId);
+                response = getIntygWithNotificationsResponse(draft, notifications);
+            } else {
+                final var certificate = getIntygData(certificateId, null, false);
+                response = getIntygWithNotificationsResponse(certificate, notifications);
             }
 
-            try {
-                ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-                Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
-                Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
-                    utkast.getIntygsTyp());
-                res.add(new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), ref));
-            } catch (ModuleNotFoundException | ModuleException | IOException e) {
-                LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
+            if (response != null) {
+                res.add(response);
             }
         }
+
         return res;
+    }
+
+    private HashMap<String, List<Handelse>> getNotificationCertificateIdHash(List<Handelse> allNotifications) {
+        final var notificationCertificateIdHash = new HashMap<String, List<Handelse>>();
+        for (var notification: allNotifications) {
+            final var certificateId = notification.getIntygsId();
+            if (!notificationCertificateIdHash.containsKey(certificateId)) {
+                notificationCertificateIdHash.put(certificateId, new ArrayList<>());
+            }
+
+            notificationCertificateIdHash.get(certificateId).add(notification);
+        }
+        return notificationCertificateIdHash;
+    }
+
+    private HashMap<String, Utkast> getDraftMap(Set<String> certificateIds) {
+        final var draftList = utkastRepository.findAllById(certificateIds);
+        final var draftMap = new HashMap<String, Utkast>(draftList.size());
+        for (var draft: draftList) {
+            draftMap.put(draft.getIntygsId(), draft);
+        }
+        return draftMap;
+    }
+
+    private IntygWithNotificationsResponse getIntygWithNotificationsResponse(Utkast draft, List<Handelse> notifications) {
+        try {
+            final var ref = referensService.getReferensForIntygsId(draft.getIntygsId());
+            final ModuleApi api = moduleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
+            final Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(draft.getModel()));
+            final Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(draft.getIntygsId(), draft.getIntygsTyp());
+            return new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), ref);
+        } catch (ModuleNotFoundException | ModuleException | IOException e) {
+            LOG.error("Could not convert intyg {} to external format", draft.getIntygsId());
+            return null;
+        }
+    }
+
+    private IntygWithNotificationsResponse getIntygWithNotificationsResponse(IntygContentHolder certificate, List<Handelse> notifications) {
+        try {
+            final var certificateType = certificate.getUtlatande().getTyp();
+            final var certificateTypeVersion = certificate.getUtlatande().getTextVersion();
+            final Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(certificate.getUtlatande().getId(), certificateType);
+            final ModuleApi api = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+            final var intyg = api.getIntygFromUtlatande(certificate.getUtlatande());
+            return new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), "");
+        } catch (ModuleNotFoundException | ModuleException e) {
+            LOG.error("Could not convert intyg {} to external format", certificate.getUtlatande().getId());
+            return null;
+        }
     }
 
     @Override
@@ -767,16 +807,19 @@ public class IntygServiceImpl implements IntygService {
      * The data will be updated with current patient data from PU unless otherwise stated in the module api.
      */
     private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
+        var intygType = typ;
         try {
-            String intygTypeVersion = getIntygTypeInfo(intygId).getIntygTypeVersion();
-            CertificateResponse certificate = moduleFacade.getCertificate(intygId, typ, intygTypeVersion);
+            final var intygTypeInfo = getIntygTypeInfo(intygId);
+            intygType = intygTypeInfo.getIntygType();
+            final var intygTypeVersion = intygTypeInfo.getIntygTypeVersion();
+            CertificateResponse certificate = moduleFacade.getCertificate(intygId, intygType, intygTypeVersion);
             String internalIntygJsonModel = certificate.getInternalModel();
 
             final Personnummer personId = certificate.getUtlatande().getGrundData().getPatient().getPersonId();
 
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
-            Patient newPatientData = patientDetailsResolver.resolvePatient(personId, typ, intygTypeVersion);
+            Patient newPatientData = patientDetailsResolver.resolvePatient(personId, intygType, intygTypeVersion);
 
             if (newPatientData == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
@@ -787,7 +830,7 @@ public class IntygServiceImpl implements IntygService {
             boolean patientNameChanged = false;
             boolean patientAddressChanged = false;
             try {
-                utlatande = moduleRegistry.getModuleApi(typ, intygTypeVersion).getUtlatandeFromJson(internalIntygJsonModel);
+                utlatande = moduleRegistry.getModuleApi(intygType, intygTypeVersion).getUtlatandeFromJson(internalIntygJsonModel);
                 patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
                     newPatientData);
                 patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
@@ -799,7 +842,7 @@ public class IntygServiceImpl implements IntygService {
             // Get the module api and use the "updateBeforeViewing" to update the outbound "model" with the
             // Patient object (not done for models with patient data saved in the model).
 
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ, intygTypeVersion);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
@@ -818,7 +861,7 @@ public class IntygServiceImpl implements IntygService {
             }
             final boolean sekretessmarkering = SekretessStatus.TRUE.equals(sekretessStatus);
 
-            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, intygType);
             final LocalDateTime created = utkast != null ? utkast.getSkapad() : null;
 
             return IntygContentHolder.builder()
@@ -838,14 +881,14 @@ public class IntygServiceImpl implements IntygService {
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
             // exception
-            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, intygType);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
             return buildIntygContentHolderFromUtkast(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
-            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, intygType);
             if (utkast == null) {
                 throw new WebCertServiceException(DATA_NOT_FOUND,
                     "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
