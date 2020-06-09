@@ -18,17 +18,10 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
             cy.log("LISJP förifyllt utkast med id " + utkastId + " skapat och används i testfallet");
            
         }); 
-    });
-        
-
-    beforeEach(function() {
-       
-    });
+    });       
 
     context('Vårdadmin kan utföra endast behöriga uppgifter på ett LISJP intyg i integrerat läge' , function() {
-        beforeEach(function() {
-            
-        });
+
         describe('Vårdadmin och LISJP', () => {
             it('Kan Läsa och Skriva ut intyg',function(){
            
@@ -110,8 +103,9 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 const önskadUrl = "/visa/intyg/" + this.ag7804Id + "?enhet=" + this.vårdenhet.id;
                 intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.ag7804Id);
                 cy.get('#copy-from-candidate-dialog-button1').click();
-                cy.get('#onskarFormedlaDiagnosNo').click(); 
+                cy.get('.intygs-id').contains(this.ag7804Id);
                 intyg.sektionBedömning75Nedsatt(this.AGintygsdata.bedömning);
+                cy.get('#onskarFormedlaDiagnosNo').click(); 
                 cy.get('#sjukskrivningarHELT_NEDSATT').click();
                 agIntyg.sektionDelAvBedömning(this.AGintygsdata.bedömning);               
                 cy.contains("Klart att signera"); 
@@ -119,13 +113,8 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
                 cy.contains("Klart att signera"); 
             });
         });
-        afterEach(function() {
-
-        });
+      
     }); 
     
-        afterEach(function() {
-
-        }); 
 });
 
