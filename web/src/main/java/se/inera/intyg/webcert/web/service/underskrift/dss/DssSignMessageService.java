@@ -19,13 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
+import javax.xml.crypto.KeySelectorException;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -50,12 +60,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
+import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 
 @Service
 public class DssSignMessageService {
 
+    // TODO add logging
     private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageService.class);
+    public static final String DEFAULT_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
     @Value("${dss.client.keystore.alias}")
     private String keystoreAlias;
@@ -66,13 +78,15 @@ public class DssSignMessageService {
     @Value("${dss.client.keystore.file}")
     private Resource keystoreFile;
 
-    private XMLDSigService infraXMLDSigService;
+    private DssMetadataService dssMetadataService;
 
     private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
+    private KeyStore keyStore;
+
     @Autowired
-    public DssSignMessageService(XMLDSigService infraXMLDSigService) {
-        this.infraXMLDSigService = infraXMLDSigService;
+    public DssSignMessageService(DssMetadataService dssMetadataService) {
+        this.dssMetadataService = dssMetadataService;
 
         String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
         marshaller.setPackagesToScan(packages);
@@ -87,16 +101,22 @@ public class DssSignMessageService {
     @PostConstruct
     public void init() {
         org.apache.xml.security.Init.init();
+
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public String signSignRequest(SignRequest signRequest) {
         try {
-            KeyStore ks = KeyStore.getInstance("JKS");
-            ks.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
+
             PrivateKey privateKey =
-                (PrivateKey) ks.getKey(keystoreAlias, keystorePassword.toCharArray());
+                (PrivateKey) keyStore.getKey(keystoreAlias, keystorePassword.toCharArray());
             X509Certificate cert =
-                (X509Certificate) ks.getCertificate(keystoreAlias);
+                (X509Certificate) keyStore.getCertificate(keystoreAlias);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
@@ -104,7 +124,7 @@ public class DssSignMessageService {
             Document doc = dbf.newDocumentBuilder().parse(IOUtils.toInputStream(toXmlString(signRequest), StandardCharsets.UTF_8));
 
             XMLSignature sig =
-                new XMLSignature(doc, "", XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+                new XMLSignature(doc, "", DEFAULT_SIGN_ALGORITHM, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 
             NodeList optionalInputsList = doc.getElementsByTagNameNS("urn:oasis:names:tc:dss:1.0:core:schema", "OptionalInputs");
             Node optionalItemNode = optionalInputsList.item(0);
@@ -123,8 +143,8 @@ public class DssSignMessageService {
         }
     }
 
-    public ValidationResponse validateSignResponseSignature(String signResponseXmlString) {
-        return infraXMLDSigService.validateSignatureValidity(signResponseXmlString, true);
+    public ValidationResponse validateDssMessageSignature(String signResponseXmlString) {
+        return verifySignature(signResponseXmlString);
     }
 
     private String toXmlString(SignRequest signRequest) {
@@ -145,6 +165,65 @@ public class DssSignMessageService {
             tEx.printStackTrace();
         }
         return null;
+    }
+
+    private ValidationResponse verifySignature(String signedXml) {
+        XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+
+        try {
+            Document doc = dbf.newDocumentBuilder().parse(IOUtils.toInputStream(signedXml, Charset.forName("UTF-8")));
+            NodeList nl = doc.getElementsByTagNameNS(javax.xml.crypto.dsig.XMLSignature.XMLNS, "Signature");
+            if (nl.getLength() != 1) {
+                throw new Exception("Cannot find exactly one Signature element");
+            }
+            return verifySignature(true, fac, nl.item(0));
+        } catch (Exception e) {
+            LOG.error("Caught {} validating signature. Msg: {}", e.getClass().getName(), e.getMessage());
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private ValidationResponse verifySignature(boolean checkReferences, XMLSignatureFactory fac, Node node)
+        throws MarshalException, XMLSignatureException {
+        // Create a DOMValidateContext and specify a KeySelector
+        // and document context.
+        DOMValidateContext valContext = new DOMValidateContext(dssMetadataService.getDssKeySelector(), node);
+
+        // Unmarshal the XMLSignature.
+        javax.xml.crypto.dsig.XMLSignature sig = fac.unmarshalXMLSignature(valContext);
+
+        try {
+            if (checkReferences) {
+                boolean result = sig.validate(valContext);
+                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+                    .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+                    .withReferencesValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+                    .build();
+            } else {
+                boolean result = sig.getSignatureValue().validate(valContext);
+                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+                    .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+                    .withReferencesValid(ValidationResult.NOT_CHCEKED)
+                    .build();
+            }
+        } catch (XMLSignatureException xmlSignatureException) {
+            // Check if keyselectoer failed to find a valid matching certificate
+            // and treat this as an invalid signature
+            var cause = xmlSignatureException.getCause();
+            if (cause instanceof KeySelectorException) {
+                LOG.warn("Invalid signature. Key in XML doesn't match metadata. {}", cause.getMessage());
+                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+                    .withSignatureValid(ValidationResult.INVALID)
+                    .withReferencesValid(ValidationResult.INVALID)
+                    .build();
+            } else {
+                throw xmlSignatureException;
+            }
+
+        }
     }
 
 }
