@@ -65,7 +65,6 @@ import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 @Service
 public class DssSignMessageService {
 
-    // TODO add logging
     private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageService.class);
     public static final String DEFAULT_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
@@ -82,7 +81,7 @@ public class DssSignMessageService {
 
     private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    private KeyStore keyStore;
+    private KeyStore clientKeyStore;
 
     @Autowired
     public DssSignMessageService(DssMetadataService dssMetadataService) {
@@ -103,8 +102,8 @@ public class DssSignMessageService {
         org.apache.xml.security.Init.init();
 
         try {
-            keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
+            clientKeyStore = KeyStore.getInstance("JKS");
+            clientKeyStore.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
             throw new RuntimeException(exception);
         }
@@ -114,9 +113,9 @@ public class DssSignMessageService {
         try {
 
             PrivateKey privateKey =
-                (PrivateKey) keyStore.getKey(keystoreAlias, keystorePassword.toCharArray());
+                (PrivateKey) clientKeyStore.getKey(keystoreAlias, keystorePassword.toCharArray());
             X509Certificate cert =
-                (X509Certificate) keyStore.getCertificate(keystoreAlias);
+                (X509Certificate) clientKeyStore.getCertificate(keystoreAlias);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);

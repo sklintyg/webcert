@@ -135,6 +135,61 @@ public class DssMetadataService {
 
     }
 
+
+    /**
+     * Extracts the URL to use in SignRequest form. This URL should be used in
+     * the POST action of the form.
+     *
+     * The source of this URL could either come from property or metadata
+     *
+     * @return URL for posting SignRequst form
+     */
+    public String getDssActionUrl() {
+
+        if (StringUtils.hasText(actionUrlProperty)) {
+            LOG.info("Using property for actionURL");
+            return actionUrlProperty;
+        } else {
+            LOG.info("Using AssertionConsumerService from metadata for actionURL");
+            SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
+            AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
+            return assertionConsumerService.getLocation();
+        }
+    }
+
+    /**
+     * Creates metadata for this dss client from the configured values.
+     *
+     * @return Client metadata as a String
+     */
+    public String getClientMetadataAsString() {
+        try {
+            return SAMLUtil.getMetadataAsString(null, clientKeyManager, clientEntityDescriptor, clientExtendedMetadata);
+        } catch (MarshallingException exception) {
+            LOG.error("Unable to get DSS Client metadata");
+            throw new RuntimeException(exception);
+        }
+    }
+
+    /**
+     * Get a KeyStore created from the x509Certificates from the
+     * DSS metadata.
+     *
+     * @return A KeyStore with valid certificates for the DSS
+     */
+    public KeyStore getDssKeyStore() {
+        return dssKeyStore;
+    }
+
+    /**
+     * Get the KeySelector that maps the DSS KeyStore.
+     *
+     * @return A KeySelector with valid certificates for the DSS
+     */
+    public KeySelector getDssKeySelector() {
+        return dssKeySelector;
+    }
+
     protected void initDssMetadata() {
         try {
 
@@ -147,49 +202,6 @@ public class DssMetadataService {
 
         } catch (MetadataProviderException exception) {
             LOG.error("Unable to load DSS metadata from resource: " + dssServiceMetadataResource.toString());
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private void initDssKeyStore(SPSSODescriptor spSSODescriptor) {
-
-        int aliasNumber = 0;
-
-        try {
-            dssKeyStore = KeyStore.getInstance("JKS");
-            char[] pwdArray = keystorePassword.toCharArray();
-            dssKeyStore.load(null, pwdArray);
-
-            if (spSSODescriptor != null) {
-                var keyDescriptors = spSSODescriptor.getKeyDescriptors();
-                if (keyDescriptors != null) {
-                    for (var keyDescriptor : keyDescriptors) {
-                        if (UsageType.SIGNING.equals(keyDescriptor.getUse())) {
-                            var keyInfo = keyDescriptor.getKeyInfo();
-                            if (keyInfo != null) {
-                                var x509Datas = keyInfo.getX509Datas();
-                                if (x509Datas != null) {
-                                    for (var x509Data : x509Datas) {
-                                        var x509Certificates = x509Data.getX509Certificates();
-                                        if (x509Certificates != null) {
-                                            for (var x509Certificate : x509Certificates) {
-                                                var base64Certificate = SecurityHelper.buildJavaX509Cert(x509Certificate.getValue());
-                                                dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
-                                                aliasNumber++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            dssKeySelector = new KeyStoreKeySelector(dssKeyStore);
-
-        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
-            LOG.error("Unable to load DSS kyeStore from metadata resource: " + dssServiceMetadataResource.toString());
             throw new RuntimeException(exception);
         }
     }
@@ -236,41 +248,6 @@ public class DssMetadataService {
 
         clientEntityDescriptor.setOrganization(createOrganization());
 
-
-    }
-
-
-    /**
-     * Extracts the URL to use in SignRequest form. This URL should be used in
-     * the POST action of the form.
-     *
-     * The source of this URL could either come from property or metadata
-     *
-     * @return URL for posting SignRequst form
-     */
-    public String getDssActionUrl() {
-
-        if (StringUtils.hasText(actionUrlProperty)) {
-            return actionUrlProperty;
-        } else {
-            SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
-            AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
-            return assertionConsumerService.getLocation();
-        }
-    }
-
-    /**
-     * Creates metadata for this dss client from the configured values.
-     *
-     * @return Client metadata as a String
-     */
-    public String getClientMetadataAsString() {
-        try {
-            return SAMLUtil.getMetadataAsString(null, clientKeyManager, clientEntityDescriptor, clientExtendedMetadata);
-        } catch (MarshallingException exception) {
-            LOG.error("Unable to get DSS Client metadata");
-            throw new RuntimeException(exception);
-        }
     }
 
     private SPSSODescriptor getDssSpSsoDescriptor() {
@@ -282,25 +259,6 @@ public class DssMetadataService {
             LOG.error("Unable to get DSS SpSsoDescriptor with entityId: " + dssServiceMetadataEntityId);
             throw new RuntimeException(exception);
         }
-    }
-
-    /**
-     * Get a KeyStore created from the x509Certificates from the
-     * DSS metadata.
-     *
-     * @return A KeyStore with valid certificates for the DSS
-     */
-    public KeyStore getDssKeyStore() {
-        return dssKeyStore;
-    }
-
-    /**
-     * Get the KeySelector that maps the DSS Key Store.
-     *
-     * @return A KeySelector with valid certificates for the DSS
-     */
-    public KeySelector getDssKeySelector() {
-        return dssKeySelector;
     }
 
 
@@ -337,6 +295,54 @@ public class DssMetadataService {
         contactPerson.setType(type);
         contactPerson.setCompany(company);
         return contactPerson;
+    }
+
+    private void initDssKeyStore(SPSSODescriptor spSSODescriptor) {
+
+        int aliasNumber = 0;
+
+        try {
+            dssKeyStore = KeyStore.getInstance("JKS");
+            char[] pwdArray = keystorePassword.toCharArray();
+            dssKeyStore.load(null, pwdArray);
+
+            if (spSSODescriptor != null) {
+                var keyDescriptors = spSSODescriptor.getKeyDescriptors();
+                if (keyDescriptors != null) {
+                    for (var keyDescriptor : keyDescriptors) {
+                        if (UsageType.SIGNING.equals(keyDescriptor.getUse())) {
+                            var keyInfo = keyDescriptor.getKeyInfo();
+                            if (keyInfo != null) {
+                                var x509Datas = keyInfo.getX509Datas();
+                                if (x509Datas != null) {
+                                    for (var x509Data : x509Datas) {
+                                        var x509Certificates = x509Data.getX509Certificates();
+                                        if (x509Certificates != null) {
+                                            for (var x509Certificate : x509Certificates) {
+                                                var base64Certificate = SecurityHelper.buildJavaX509Cert(x509Certificate.getValue());
+                                                dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
+                                                aliasNumber++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (dssKeyStore.size() == 0) {
+                LOG.error("No valid certificates found in dss metadata: " + dssServiceMetadataResource.toString());
+                throw new RuntimeException();
+            }
+
+            dssKeySelector = new KeyStoreKeySelector(dssKeyStore);
+
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
+            LOG.error("Unable to load DSS kyeStore from metadata resource: " + dssServiceMetadataResource.toString());
+            throw new RuntimeException(exception);
+        }
     }
 
 }
