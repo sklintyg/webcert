@@ -135,7 +135,7 @@ public class SignatureApiController extends AbstractApiController {
 //        monitoringLogService.logSignResponseReceived(relayState); //TODO
 
         var signResponse = new String(Base64.getDecoder().decode(eidSignResponse));
-        var validationResponse = dssSignMessageService.validateSignResponseSignature(signResponse);
+        var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponse);
 
         //Return and log error TODO
 //        if (validationResponse.isValid()) {

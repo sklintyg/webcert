@@ -72,7 +72,7 @@ public class DssSignatureServiceTest {
     static Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
     static {
-        String[] packages = {"oasis.names.tc", "org.w3._2000._09.xmldsig_", "org.w3._2001._04.xmlenc_", "se.elegnamnden.id.csig"};
+        String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
         marshaller.setPackagesToScan(packages);
 
         marshaller.setMarshallerProperties(new HashMap<String, Object>() {

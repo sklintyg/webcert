@@ -65,6 +65,7 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
      * @return whether cached metadata should be discarded if it expires and can not be refreshed.
      * @deprecated use {@link #requireValidMetadata()} instead
      */
+    @Deprecated
     public boolean maintainExpiredMetadata() {
         return !requireValidMetadata();
     }
@@ -75,6 +76,7 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
      * @param maintain whether cached metadata should be discarded if it expires and can not be refreshed.
      * @deprecated use {@link #setRequireValidMetadata(boolean)} instead
      */
+    @Deprecated
     public void setMaintainExpiredMetadata(boolean maintain) {
         setRequireValidMetadata(!maintain);
     }
