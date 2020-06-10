@@ -72,9 +72,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -90,6 +93,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -117,6 +121,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.message.MessageImportService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -128,6 +133,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
@@ -204,6 +211,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private LogService logService;
+
+    @Mock
+    private MessageImportService messageImportService;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -391,16 +401,33 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testProcessIncomingMessageCertificateNotFound() {
-        try {
-            service.processIncomingMessage(new Arende());
-            fail("Should throw");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
-            verify(arendeRepository, never()).save(any(Arende.class));
-            verifyNoInteractions(notificationService);
-            verifyNoInteractions(arendeDraftService);
-        }
+    public void testProcessIncomingMessageCertificateNotFoundInWC() {
+        final String signeratAvName = "signeratAvName";
+
+        Arende arende = new Arende();
+        arende.setIntygsId(INTYG_ID);
+        arende.setMeddelandeId(MEDDELANDE_ID);
+
+        doReturn(true).when(messageImportService).isImportNeeded(INTYG_ID);
+
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+
+        final var intygContentHolder = mock(IntygContentHolder.class);
+        final var utlatande = buildUtlatande();
+        doReturn(utlatande).when(intygContentHolder).getUtlatande();
+
+        when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intygContentHolder);
+
+        Arende res = service.processIncomingMessage(arende);
+
+        assertNotNull(res);
+        assertEquals(FIXED_TIME_INSTANT, res.getTimestamp().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+        assertEquals(FIXED_TIME_INSTANT,
+            res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+        assertEquals(signeratAvName, res.getSigneratAvName());
+
+        verify(messageImportService).importMessages(INTYG_ID, MEDDELANDE_ID);
     }
 
     @Test
@@ -506,8 +533,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void createQuestionCertificateDoesNotExistTest() {
+    public void createQuestionCertificateDoesNotExistInWCTest() {
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
+
+        final var intygContentHolder = mock(IntygContentHolder.class);
+        final var utlatande = buildUtlatande();
+        doReturn(utlatande).when(intygContentHolder).getUtlatande();
+
+        when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
@@ -521,7 +558,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void createQuestionCertificateNotSignedTest() {
-        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(new Utkast()));
+        Utkast utkast = buildUtkast();
+        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        utkast.setSignatur(null);
+
+        Utlatande utlatande = buildUtlatande();
+
+        when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
+        when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
@@ -533,12 +579,41 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         }
     }
 
+    private Utlatande buildUtlatande() {
+        final var utlatande = mock(Utlatande.class);
+        doReturn(INTYG_ID).when(utlatande).getId();
+        final var grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+        final var skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
+        doReturn("signeratAvName").when(skapadAv).getFullstandigtNamn();
+        final var vardenhet = mock(se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
+        doReturn(vardenhet).when(skapadAv).getVardenhet();
+        final var vardgivare = mock(se.inera.intyg.common.support.model.common.internal.Vardgivare.class);
+        doReturn(vardgivare).when(vardenhet).getVardgivare();
+        final var patient = mock(Patient.class);
+        doReturn(patient).when(grundData).getPatient();
+        doReturn(PNR).when(patient).getPersonId();
+
+        return utlatande;
+    }
+
     @Test
     public void createQuestionInvalidCertificateTypeTest() {
-        Utkast utkast = new Utkast();
+        Utkast utkast = buildUtkast();
         utkast.setSignatur(new Signatur());
         utkast.setIntygsTyp("fk7263");
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
+
+        final var intygContentHolder = mock(IntygContentHolder.class);
+        final var utlatande = buildUtlatande();
+        doReturn(utlatande).when(intygContentHolder).getUtlatande();
+
+        when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
@@ -555,6 +630,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Utkast utkast = buildUtkast();
         utkast.setAterkalladDatum(LocalDateTime.now());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
+
+        final var intygContentHolder = mock(IntygContentHolder.class);
+        final var utlatande = buildUtlatande();
+        doReturn(utlatande).when(intygContentHolder).getUtlatande();
+
+        when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("Should throw");
@@ -1105,9 +1190,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         final GrundData grundData = mock(GrundData.class);
         doReturn(grundData).when(utlatande).getGrundData();
+        doReturn(LocalDateTime.now()).when(grundData).getSigneringsdatum();
 
         final HoSPersonal skapadAv = mock(HoSPersonal.class);
         doReturn(skapadAv).when(grundData).getSkapadAv();
+        doReturn("Signerat av").when(skapadAv).getFullstandigtNamn();
 
         final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
             se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
@@ -1119,15 +1206,26 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).orElse(null);
         doReturn(personnummer).when(patient).getPersonId();
 
+        final var relations = new Relations();
+        final var frontendRelations = new FrontendRelations();
+        final var complementedByIntyg = new WebcertCertificateRelation("ID", RelationKod.KOMPLT, LocalDateTime.now(), null, false);
+        frontendRelations.setComplementedByIntyg(complementedByIntyg);
+        relations.setLatestChildRelations(frontendRelations);
+        doReturn(relations).when(intygContentHolder).getRelations();
+
+        doReturn(true).when(messageImportService).isImportNeeded(INTYG_ID);
+
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         when(intygService.getIntygTypeInfo(INTYG_ID, null)).thenReturn(intygTypeInfo);
         when(intygTypeInfo.getIntygType()).thenReturn(intygsTyp);
         when(intygService.fetchIntygData(INTYG_ID, intygsTyp, true, false)).thenReturn(intygContentHolder);
+        when(intygService.fetchIntygDataForInternalUse(INTYG_ID, true)).thenReturn(intygContentHolder);
         when(intygContentHolder.getUtlatande()).thenReturn(utlatande);
 
         List<ArendeConversationView> result = service.getArenden(INTYG_ID);
 
         verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verify(messageImportService).importMessages(INTYG_ID);
 
         assertEquals(4, result.size());
         assertEquals(1, Objects.requireNonNull(result.get(0).getPaminnelser()).size());
@@ -1141,7 +1239,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(DECEMBER_YEAR_9999, result.get(1).getSenasteHandelse());
         assertEquals(FEBRUARY, result.get(2).getSenasteHandelse());
         assertEquals(JANUARY, result.get(3).getSenasteHandelse());
-
     }
 
     @Test(expected = WebCertServiceException.class)
