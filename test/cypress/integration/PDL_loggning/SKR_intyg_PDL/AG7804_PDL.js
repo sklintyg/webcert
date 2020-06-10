@@ -37,7 +37,9 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
-        intyg.ifyllnadsstod();
+        //cy.get('#copy-from-candidate-dialog-button1').click();
+        //cy.get('.intygs-id').contains(this.utkastId);
+        //intyg.ifyllnadsstod();
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
         pdlEventArray.push(ag7804PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
