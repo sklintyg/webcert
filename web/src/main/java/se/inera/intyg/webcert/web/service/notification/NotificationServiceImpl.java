@@ -430,7 +430,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     void createAndSendNotification(String certificateId, HandelsekodEnum handelse) {
-        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId);
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
         createAndSendNotification(certificate, handelse, null, null);
     }
 
@@ -475,7 +475,7 @@ public class NotificationServiceImpl implements NotificationService {
     private void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
-        if (!version.isPresent()) {
+        if (version.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent");
             return;
         }
@@ -492,10 +492,10 @@ public class NotificationServiceImpl implements NotificationService {
     private void createAndSendNotificationForQAs(String certificateId, NotificationEvent event, ArendeAmne amne,
         LocalDate sistaDatumForSvar) {
 
-        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId);
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
 
         final var optionalSchemaVersion = sendNotificationStrategy.decideNotificationForIntyg(certificate.getUtlatande());
-        if (!optionalSchemaVersion.isPresent()) {
+        if (optionalSchemaVersion.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent");
             return;
         }

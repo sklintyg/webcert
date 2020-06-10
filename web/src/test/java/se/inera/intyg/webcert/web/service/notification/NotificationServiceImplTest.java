@@ -388,7 +388,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testIntygSentMissingInWC() throws Exception {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
-        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID);
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
         doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
         doReturn(createNotificationMessage(HandelsekodEnum.SKICKA, INTYG_JSON))
             .when(mockNotificationMessageFactory)
@@ -436,7 +436,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testIntygRevokedMissingInWC() throws Exception {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
-        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID);
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
         doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
         doReturn(createNotificationMessage(HandelsekodEnum.MAKULE, INTYG_JSON))
             .when(mockNotificationMessageFactory)
@@ -800,7 +800,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testSendNotificationForQAsForCertificate() throws Exception {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
-        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID);
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
         doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
         doReturn(createNotificationMessage(HandelsekodEnum.HANFRFM, INTYG_JSON))
             .when(mockNotificationMessageFactory)
