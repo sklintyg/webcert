@@ -22,10 +22,7 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import javax.xml.bind.JAXBContext;
@@ -105,10 +102,10 @@ public class DssSignMessageServiceTest {
         // Use this block if you need a new valid signed signRequest.
         // Copy paste from System.out doesn't always work due to formatting issues
 
-        try (OutputStreamWriter writer =
+/*        try (OutputStreamWriter writer =
             new OutputStreamWriter(new FileOutputStream(new File("/temp/signed_valid_signRequest.xml")), StandardCharsets.UTF_8)) {
             writer.write(signedSignRequest);
-        }
+        }*/
 
     }
 
