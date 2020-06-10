@@ -19,12 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import javax.annotation.PostConstruct;
+import javax.xml.crypto.KeySelector;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml2.metadata.Company;
@@ -50,7 +55,8 @@ import org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.ParserPool;
-import org.opensaml.xml.signature.X509Certificate;
+import org.opensaml.xml.security.SecurityHelper;
+import org.opensaml.xml.security.credential.UsageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +119,8 @@ public class DssMetadataService {
     private EntityDescriptor clientEntityDescriptor;
     private ExtendedMetadata clientExtendedMetadata;
     private JKSKeyManager clientKeyManager;
+    private KeyStore dssKeyStore;
+    private KeySelector dssKeySelector;
 
     @Autowired
     public DssMetadataService(ParserPool parserPool) {
@@ -135,8 +143,53 @@ public class DssMetadataService {
             dssServiceMetadataProvider.setRequireValidMetadata(true);
             dssServiceMetadataProvider.initialize();
 
+            initDssKeyStore(getDssSpSsoDescriptor());
+
         } catch (MetadataProviderException exception) {
             LOG.error("Unable to load DSS metadata from resource: " + dssServiceMetadataResource.toString());
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private void initDssKeyStore(SPSSODescriptor spSSODescriptor) {
+
+        int aliasNumber = 0;
+
+        try {
+            dssKeyStore = KeyStore.getInstance("JKS");
+            char[] pwdArray = keystorePassword.toCharArray();
+            dssKeyStore.load(null, pwdArray);
+
+            if (spSSODescriptor != null) {
+                var keyDescriptors = spSSODescriptor.getKeyDescriptors();
+                if (keyDescriptors != null) {
+                    for (var keyDescriptor : keyDescriptors) {
+                        if (UsageType.SIGNING.equals(keyDescriptor.getUse())) {
+                            var keyInfo = keyDescriptor.getKeyInfo();
+                            if (keyInfo != null) {
+                                var x509Datas = keyInfo.getX509Datas();
+                                if (x509Datas != null) {
+                                    for (var x509Data : x509Datas) {
+                                        var x509Certificates = x509Data.getX509Certificates();
+                                        if (x509Certificates != null) {
+                                            for (var x509Certificate : x509Certificates) {
+                                                var base64Certificate = SecurityHelper.buildJavaX509Cert(x509Certificate.getValue());
+                                                dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
+                                                aliasNumber++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            dssKeySelector = new KeyStoreKeySelector(dssKeyStore);
+
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
+            LOG.error("Unable to load DSS kyeStore from metadata resource: " + dssServiceMetadataResource.toString());
             throw new RuntimeException(exception);
         }
     }
@@ -231,12 +284,23 @@ public class DssMetadataService {
         }
     }
 
-    // TODO Unsure what we need to extract from this method
-    public List<X509Certificate> getDssCertificate() {
-        SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
+    /**
+     * Get a KeyStore created from the x509Certificates from the
+     * DSS metadata.
+     *
+     * @return A KeyStore with valid certificates for the DSS
+     */
+    public KeyStore getDssKeyStore() {
+        return dssKeyStore;
+    }
 
-        // TODO
-        return dssSpSsoDescriptor.getKeyDescriptors().get(0).getKeyInfo().getX509Datas().get(0).getX509Certificates();
+    /**
+     * Get the KeySelector that maps the DSS Key Store.
+     *
+     * @return A KeySelector with valid certificates for the DSS
+     */
+    public KeySelector getDssKeySelector() {
+        return dssKeySelector;
     }
 
 

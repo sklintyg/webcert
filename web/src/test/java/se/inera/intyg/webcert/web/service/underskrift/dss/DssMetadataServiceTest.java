@@ -22,6 +22,10 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.Certificate;
+import javax.xml.crypto.KeySelector;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensaml.Configuration;
@@ -41,14 +45,16 @@ public class DssMetadataServiceTest {
     public void getDssActionUrl_useMetadata() {
 
         DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
-        ReflectionTestUtils.setField(service, "actionUrlProperty", "");
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
-            "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
-        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss-valid-metadata.xml"));
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
 
         service.initDssMetadata();
+        assertEquals("http://localhost:9088/api/signature/signservice/v1/response", service.getDssActionUrl());
 
-        assertEquals("https://esign.v2.st.signatureservice.se/signservice-frontend/consumeassertion", service.getDssActionUrl());
+        ReflectionTestUtils.setField(service, "actionUrlProperty", "");
+        assertEquals("http://localhost:9088/api/signature/signservice/v1/response", service.getDssActionUrl());
 
     }
 
@@ -60,17 +66,42 @@ public class DssMetadataServiceTest {
         DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
         ReflectionTestUtils.setField(service, "actionUrlProperty", actionUrlProperty);
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
-            "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
-        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss-valid-metadata.xml"));
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
 
         service.initDssMetadata();
-
         assertEquals(actionUrlProperty, service.getDssActionUrl());
 
     }
 
     @Test
-    public void getDssCertificate() {
+    public void getDssKeyStore() throws KeyStoreException {
+        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+
+        service.initDssMetadata();
+        KeyStore dssKeyStore = service.getDssKeyStore();
+        Certificate dss0 = dssKeyStore.getCertificate("dss0");
+
+        assertNotNull(dss0);
+        assertEquals("Certificate Type", "X.509", dss0.getType());
+    }
+
+    @Test
+    public void getDssKeySelector() throws KeyStoreException {
+        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+
+        service.initDssMetadata();
+        KeySelector dssKeySelector = service.getDssKeySelector();
+        assertNotNull(dssKeySelector);
 
     }
 
@@ -81,7 +112,7 @@ public class DssMetadataServiceTest {
         ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
-        ReflectionTestUtils.setField(service, "webcertHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(service, "webcertHostUrl", "http://localhost:9088");
 
         ReflectionTestUtils.setField(service, "organizationName", "Inera AB");
         ReflectionTestUtils.setField(service, "organizationDisplayName", "Webcert");
@@ -91,6 +122,17 @@ public class DssMetadataServiceTest {
         service.initClientKeyManager();
         service.initClientMetadata();
 
-        assertNotNull(service.getClientMetadataAsString());
+        String clientMetadataAsString = service.getClientMetadataAsString();
+        assertNotNull(clientMetadataAsString);
+
+        // Use this block if you need a new valid metadata xml
+        // Copy paste from System.out doesn't always work due to formatting issues
+
+/*        try (OutputStreamWriter writer =
+            new OutputStreamWriter(new FileOutputStream(new File("/temp/localhost_sign_md.xml")), StandardCharsets.UTF_8)) {
+            writer.write(clientMetadataAsString);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
     }
 }

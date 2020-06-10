@@ -39,6 +39,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opensaml.Configuration;
+import org.opensaml.DefaultBootstrap;
+import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
@@ -47,26 +50,37 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResult;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DssSignMessageServiceTest {
 
+    public DssSignMessageServiceTest() {
+    }
+
     @BeforeClass
-    public static void init() {
+    public static void init() throws ConfigurationException {
         org.apache.xml.security.Init.init();
+        DefaultBootstrap.bootstrap();
     }
 
     @Test
     public void signSignRequest() throws IOException, XPathExpressionException {
 
-        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
+        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
+        dssMetadataService.initDssMetadata();
+
+        DssSignMessageService service = new DssSignMessageService(dssMetadataService);
 
         ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
+        service.init();
 
         String signedSignRequest = service.signSignRequest(getSignRequest("dss/unsigned_signRequest.xml"));
 
@@ -81,7 +95,7 @@ public class DssSignMessageServiceTest {
 
         assertNotNull(node);
 
-        ValidationResponse validationResponse = service.validateSignResponseSignature(signedSignRequest);
+        ValidationResponse validationResponse = service.validateDssMessageSignature(signedSignRequest);
         assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
         assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
 
@@ -97,10 +111,17 @@ public class DssSignMessageServiceTest {
 
     @Test
     public void validateSignResponseSignature_valid() {
-        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
+        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
+        dssMetadataService.initDssMetadata();
+
+        DssSignMessageService service = new DssSignMessageService(dssMetadataService);
 
         ValidationResponse validationResponse = service
-            .validateSignResponseSignature(getSignRequestString("dss/signed_valid_signRequest.xml"));
+            .validateDssMessageSignature(getSignRequestString("dss/signed_valid_signRequest.xml"));
         assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
         assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
 
@@ -108,10 +129,35 @@ public class DssSignMessageServiceTest {
 
     @Test
     public void validateSignResponseSignature_invalid() {
-        DssSignMessageService service = new DssSignMessageService(new XMLDSigServiceImpl());
+        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
+        dssMetadataService.initDssMetadata();
+
+        DssSignMessageService service = new DssSignMessageService(dssMetadataService);
 
         ValidationResponse validationResponse = service
-            .validateSignResponseSignature(getSignRequestString("dss/signed_invalid_signRequest.xml"));
+            .validateDssMessageSignature(getSignRequestString("dss/signed_invalid_signRequest.xml"));
+        assertEquals("Signature", ValidationResult.INVALID, validationResponse.getSignatureValid());
+        assertEquals("Reference", ValidationResult.INVALID, validationResponse.getReferencesValid());
+
+    }
+
+    @Test
+    public void validateSignResponseSignature_certMissingInKeyStore() {
+        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
+            "http://localhost:9088/api/signature/signservice/v1/metadata");
+        ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
+        ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
+        dssMetadataService.initDssMetadata();
+
+        DssSignMessageService service = new DssSignMessageService(dssMetadataService);
+
+        ValidationResponse validationResponse = service
+            .validateDssMessageSignature(getSignRequestString("dss/signed_invalidcert_signRequest.xml"));
         assertEquals("Signature", ValidationResult.INVALID, validationResponse.getSignatureValid());
         assertEquals("Reference", ValidationResult.INVALID, validationResponse.getReferencesValid());
 
