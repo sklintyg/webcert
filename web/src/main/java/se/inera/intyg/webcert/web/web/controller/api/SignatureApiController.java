@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +49,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignMessageService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignRequestDTO;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
@@ -83,6 +85,9 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired
     private DssSignatureService dssSignatureService;
+
+    @Autowired
+    private DssSignMessageService dssSignMessageService;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -126,8 +131,20 @@ public class SignatureApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
 
-        // TODO finalize signing
-        // Get context so redirect can be done to the correct certificate
+        LOG.debug("Received sign response from sign service with transactionID {}", relayState);
+//        monitoringLogService.logSignResponseReceived(relayState); //TODO
+
+        var signResponse = new String(Base64.getDecoder().decode(eidSignResponse));
+        var validationResponse = dssSignMessageService.validateSignResponseSignature(signResponse);
+
+        //Return and log error TODO
+//        if (validationResponse.isValid()) {
+//        LOG.debug("Failed to validate sign response with transactionID {}", relayState);
+//        monitoringLogService.logSignResponseInvalid(relayState);
+//        return Response.serverError().build();
+//        }
+
+        dssSignatureService.receiveSignResponse(signResponse);
 
         // This will give HTTP-status 307.
         ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create("http://localhost:9089"));

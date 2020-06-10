@@ -1,27 +1,35 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import oasis.names.tc.dss._1_0.core.schema.InputDocuments;
-import oasis.names.tc.dss._1_0.core.schema.SignRequest;
-import oasis.names.tc.saml._2_0.assertion.AttributeStatementType;
-import oasis.names.tc.saml._2_0.assertion.ConditionsType;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.elegnamnden.id.csig._1_1.dss_ext.ns.CertRequestPropertiesType;
-import se.elegnamnden.id.csig._1_1.dss_ext.ns.MappedAttributeType;
-import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignMessageType;
-import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignRequestExtensionType;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.dss.xsd.dsscore.InputDocuments;
+import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
+import se.inera.intyg.webcert.dss.xsd.dsscore.SignResponse;
+import se.inera.intyg.webcert.dss.xsd.dssext.CertRequestPropertiesType;
+import se.inera.intyg.webcert.dss.xsd.dssext.MappedAttributeType;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignMessageType;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignResponseExtensionType;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignTasksType;
+import se.inera.intyg.webcert.dss.xsd.samlassertion.v2.AttributeStatementType;
+import se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ConditionsType;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
@@ -36,9 +44,11 @@ public class DssSignatureService {
     private final UtkastRepository utkastRepository;
     private final DssSignMessageService dssSignMessageService;
 
-    private final oasis.names.tc.dss._1_0.core.schema.ObjectFactory objectFactoryDssCore;
-    private final se.elegnamnden.id.csig._1_1.dss_ext.ns.ObjectFactory objectFactoryCsig;
-    private final oasis.names.tc.saml._2_0.assertion.ObjectFactory objectFactorySaml;
+    private final UnderskriftService underskriftService;
+
+    private final se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory objectFactoryDssCore;
+    private final se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory objectFactoryCsig;
+    private final se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory objectFactorySaml;
 
     @Value("${webcert.host.url}")
     private String webcertHostUrl;
@@ -61,14 +71,15 @@ public class DssSignatureService {
 
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
-        WebCertUserService userService, UtkastRepository utkastRepository) {
-        objectFactoryDssCore = new oasis.names.tc.dss._1_0.core.schema.ObjectFactory();
-        objectFactoryCsig = new se.elegnamnden.id.csig._1_1.dss_ext.ns.ObjectFactory();
-        objectFactorySaml = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
+        WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService) {
+        objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();
+        objectFactoryCsig = new se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory();
+        objectFactorySaml = new se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory();
         this.dssMetadataService = dssMetadataService;
         this.userService = userService;
         this.utkastRepository = utkastRepository;
         this.dssSignMessageService = dssSignMessageService;
+        this.underskriftService = underskriftService;
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
@@ -266,4 +277,36 @@ public class DssSignatureService {
         return xmlGregorianCalendar;
     }
 
+    public SignaturBiljett receiveSignResponse(String eIdSignResponse) {
+        try {
+            var signResponse = unMarshallSignResponse(eIdSignResponse);
+
+            var requestId = signResponse.getRequestID();
+            var result = signResponse.getResult();
+
+            //TODO validate result
+//            result.getResultMajor();
+
+            var signatureObject = signResponse.getSignatureObject();
+            var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
+
+            var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
+            byte[] signatur = signTasks.getValue().getSignTaskData().get(0).getBase64Signature()
+                .getValue(); // SignatureObject Base64Signature
+            String certifikat = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
+                .get(0)); // SignResponseExtension SignatureCertificateChain X509Certificate
+
+            var sb = underskriftService.netidSignature(requestId, signatur, certifikat);
+
+            return sb;
+        } catch (JAXBException e) {
+            e.printStackTrace(); //TODO
+        }
+        return null;
+    }
+
+    private SignResponse unMarshallSignResponse(String eIdSignResponse) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(SignResponse.class, SignResponseExtensionType.class, SignTasksType.class);
+        return (SignResponse) context.createUnmarshaller().unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes()));
+    }
 }

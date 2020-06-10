@@ -3,9 +3,9 @@
 	<xs:annotation>
 		<xs:documentation xml:lang="en">This Schema defines the Digital Signature Service Core Protocols, Elements, and Bindings Committee Specification version 1.0 release 1</xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
-	<xs:import namespace="urn:oasis:names:tc:SAML:1.0:assertion" schemaLocation="http://www.oasis-open.org/committees/download.php/3408/oasis-sstc-saml-schema-protocol-1.1.xsd"/>
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+	<xs:import namespace="urn:oasis:names:tc:SAML:1.0:assertion" schemaLocation="oasis-sstc-saml-schema-protocol-1.1.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:complexType name="AnyType">
 		<xs:sequence>
 			<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>

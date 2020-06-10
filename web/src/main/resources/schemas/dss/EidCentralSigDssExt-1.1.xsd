@@ -14,7 +14,7 @@
   </xs:annotation>
 
   <xs:import namespace="urn:oasis:names:tc:SAML:2.0:assertion"
-      schemaLocation="https://docs.oasis-open.org/security/saml/v2.0/saml-schema-assertion-2.0.xsd"/>
+      schemaLocation="saml-schema-assertion-2.0.xsd"/>
 
   <xs:element name="SignRequestExtension" type="csig:SignRequestExtensionType">
     <xs:annotation>

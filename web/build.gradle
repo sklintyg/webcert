@@ -136,7 +136,7 @@ configurations {
 
 ext.xsdDir = file("src/main/resources/schemas/dss")
 ext.generatedJavaDir = file("${buildDir}/generatedSource/java")
-ext.xsdCatalog = file("src/main/resources/schemas/dss/catalog.xml")
+ext.xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
 
 sourceSets.main.java {
     srcDir generatedJavaDir
@@ -158,9 +158,11 @@ task xsd2Java() {
         )
         ant.xjc(
                 destdir: generatedJavaDir.path,
-                catalog: xsdCatalog) {
+                binding: xsdBindings,
+                fork: true) {
             schema(dir: xsdDir.path, includes: "**/*.xsd")
             produces(dir: generatedJavaDir.path, includes: "**/*")
+            jvmarg(value: '-Djavax.xml.accessExternalDTD=file')
         }
     }
 }

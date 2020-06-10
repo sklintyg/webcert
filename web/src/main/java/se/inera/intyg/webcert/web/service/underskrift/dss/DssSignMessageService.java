@@ -32,7 +32,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.algorithms.MessageDigestAlgorithm;
 import org.apache.xml.security.c14n.Canonicalizer;
@@ -51,6 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
+import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 
 @Service
 public class DssSignMessageService {

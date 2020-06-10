@@ -62,8 +62,9 @@
 
   <security:http security="none" pattern="/favicon.ico"/>
 
-  <!-- Signing Service Metadata-->
+  <!-- Signing Service -->
   <security:http security="none" create-session="never" pattern="/api/signature/signservice/v1/metadata"/>
+  <security:http security="none" create-session="never" pattern="/api/signature/signservice/v1/response"/>
 
   <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
     <property name="redisNamespace" value="${app.name}"/>

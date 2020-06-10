@@ -4,10 +4,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Optional;
-import oasis.names.tc.dss._1_0.core.schema.SignRequest;
+import java.util.stream.Collectors;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -16,13 +20,16 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.xml.ConfigurationException;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.xml.transform.StringResult;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett.SignaturBiljettBuilder;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -57,6 +64,9 @@ public class DssSignatureServiceTest {
     @Mock
     Personnummer patient;
 
+    @Mock
+    UnderskriftService underskriftService;
+
     DssSignatureService dssSignatureService;
 
     static Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
@@ -76,7 +86,8 @@ public class DssSignatureServiceTest {
 
     public DssSignatureServiceTest() {
         MockitoAnnotations.initMocks(this);
-        dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository);
+        dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository,
+            underskriftService);
     }
 
     @BeforeClass
@@ -125,5 +136,13 @@ public class DssSignatureServiceTest {
         marshaller.marshal(signRequest, stringResult);
 
         return stringResult.toString();
+    }
+
+    @Test
+    @Ignore
+    public void receiveSignatureResponse() throws IOException {
+        var stream = new ClassPathResource("dss/signResponse.xml").getInputStream();
+        var string = new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
+        dssSignatureService.receiveSignResponse(string);
     }
 }

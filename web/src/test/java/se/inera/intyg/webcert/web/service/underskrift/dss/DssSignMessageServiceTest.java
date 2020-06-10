@@ -34,7 +34,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,10 +45,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import se.elegnamnden.id.csig._1_1.dss_ext.ns.SignRequestExtensionType;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
+import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DssSignMessageServiceTest {
