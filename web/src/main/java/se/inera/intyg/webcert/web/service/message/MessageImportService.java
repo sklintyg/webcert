@@ -36,9 +36,20 @@ public interface MessageImportService {
      *
      * Note: Before calling the method check if import is really needed.
      *
-     *
      * @param certificateId Id of the certificate to import any messages.
      */
     void importMessages(String certificateId);
 
+    /**
+     * Imports any messages that doesn't already exists in Webcert.
+     *
+     * Use this method if importing while receiving a new message for care. Then pass receiving messageId as the
+     * excludeMessageId argument. This is to make sure that the import message doesn't import the received message.
+     *
+     * Note: Before calling the method check if import is really needed.
+     *
+     * @param certificateId Id of the certificate to import any messages.
+     * @param excludeMessageId Id of a message not to import.
+     */
+    void importMessages(String certificateId, String excludeMessageId);
 }
