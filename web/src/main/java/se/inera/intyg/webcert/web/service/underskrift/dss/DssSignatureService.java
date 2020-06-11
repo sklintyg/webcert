@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
@@ -86,17 +87,20 @@ public class DssSignatureService {
         var dateTimeNow = DateTime.now();
 
         var dssSignRequestDTO = new DssSignRequestDTO();
-        dssSignRequestDTO.setTransactionId(createTransactionID(dateTimeNow));
+        String transactionID = createTransactionID(dateTimeNow);
+        dssSignRequestDTO.setTransactionId(transactionID);
         dssSignRequestDTO.setActionUrl(dssMetadataService.getDssActionUrl());
 
-        dssSignRequestDTO.setSignRequest(dssSignMessageService.signSignRequest(createSignRequest(dateTimeNow, sb)));
+        String signRequest = dssSignMessageService.signSignRequest(createSignRequest(dateTimeNow, sb, transactionID));
+        String base64EncodedSignRequest = Base64.getEncoder().encodeToString(signRequest.getBytes(Charset.forName("UTF-8")));
+        dssSignRequestDTO.setSignRequest(base64EncodedSignRequest);
 
         return dssSignRequestDTO;
     }
 
-    private SignRequest createSignRequest(DateTime dateTimeNow, SignaturBiljett sb) {
+    private SignRequest createSignRequest(DateTime dateTimeNow, SignaturBiljett sb, String transactionID) {
         var signRequest = objectFactoryDssCore.createSignRequest();
-        signRequest.setRequestID(sb.getTicketId());
+        signRequest.setRequestID(transactionID);
         signRequest.setProfile("http://id.elegnamnden.se/csig/1.1/dss-ext/profile");
         signRequest.setInputDocuments(createInputDocuments(sb));
 
@@ -126,7 +130,7 @@ public class DssSignatureService {
     private InputDocuments createInputDocuments(SignaturBiljett sb) {
         var signTaskDataType = objectFactoryCsig.createSignTaskDataType();
         signTaskDataType.setSigType("XML");
-        signTaskDataType.setSignTaskId(generateUUID());
+        signTaskDataType.setSignTaskId(sb.getTicketId());
         signTaskDataType.setToBeSignedBytes(sb.getHash().getBytes());
 
         var tasks = objectFactoryCsig.createSignTasksType();
