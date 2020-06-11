@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -124,9 +125,14 @@ public class DssSignatureServiceTest {
         verify(dssSignMessageService).signSignRequest(signRequestCaptor.capture());
         var capturedSignRequest = signRequestCaptor.getValue();
 
-        // TODO Assert some things in the capturedSignRequest
+        assertNotNull(capturedSignRequest);
+        assertEquals("Profile", "http://id.elegnamnden.se/csig/1.1/dss-ext/profile", capturedSignRequest.getProfile());
+        assertNotNull(capturedSignRequest.getInputDocuments());
+        assertNotNull(capturedSignRequest.getOptionalInputs());
+        assertNotNull(capturedSignRequest.getOptionalInputs().getAny());
+        assertEquals(1, capturedSignRequest.getOptionalInputs().getAny().size());
 
-        System.out.println(toXmlString(capturedSignRequest));
+//        System.out.println(toXmlString(capturedSignRequest));
 
         assertNotNull(createSignatureRequestDTOResponse);
     }
