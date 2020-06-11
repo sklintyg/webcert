@@ -709,7 +709,8 @@ public class IntygServiceImpl implements IntygService {
         try {
             final var certificateType = certificate.getUtlatande().getTyp();
             final var certificateTypeVersion = certificate.getUtlatande().getTextVersion();
-            final Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(certificate.getUtlatande().getId(), certificateType);
+            final Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(certificate.getUtlatande().getId(),
+                certificateType);
             final ModuleApi api = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
             final var intyg = api.getIntygFromUtlatande(certificate.getUtlatande());
             return new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), "");

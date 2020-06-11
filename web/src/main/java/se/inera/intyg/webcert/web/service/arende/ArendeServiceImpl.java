@@ -259,8 +259,8 @@ public class ArendeServiceImpl implements ArendeService {
 
             validateArende(certificate);
 
-            arende = ArendeConverter.createMessageFromCertificate(amne, rubrik, meddelande, certificate.getUtlatande(), LocalDateTime.now(systemClock),
-                webcertUserService.getUser().getNamn(), hsaEmployeeService);
+            arende = ArendeConverter.createMessageFromCertificate(amne, rubrik, meddelande, certificate.getUtlatande(),
+                LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
         }
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
@@ -880,7 +880,8 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateArende(IntygContentHolder certificate) {
         if (BLACKLISTED.contains(certificate.getUtlatande().getTyp())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "Certificate " + certificate.getUtlatande().getId() + " has wrong type. " + certificate.getUtlatande().getTyp() + " is blacklisted.");
+                "Certificate " + certificate.getUtlatande().getId() + " has wrong type. " + certificate.getUtlatande().getTyp()
+                    + " is blacklisted.");
         } else if (certificate.isRevoked()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
                 "Certificate " + certificate.getUtlatande().getId()  + " is revoked.");
