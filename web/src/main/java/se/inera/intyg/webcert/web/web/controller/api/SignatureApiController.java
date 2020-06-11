@@ -102,7 +102,7 @@ public class SignatureApiController extends AbstractApiController {
         } catch (IllegalArgumentException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                 "Parameter signMethod is missing or has illegal value. Allowed values are: "
-                    + Arrays.asList(SignMethod.values()).stream()
+                    + Arrays.stream(SignMethod.values())
                     .map(SignMethod::name)
                     .collect(Collectors.joining(", ")));
         }
@@ -134,20 +134,30 @@ public class SignatureApiController extends AbstractApiController {
         LOG.debug("Received sign response from sign service with transactionID {}", relayState);
 //        monitoringLogService.logSignResponseReceived(relayState); //TODO
 
-        var signResponse = new String(Base64.getDecoder().decode(eidSignResponse));
-        var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponse);
+        String signResponseString = "";
+        try {
+            signResponseString = new String(Base64.getDecoder().decode(eidSignResponse));
+
+        } catch (Exception e) {
+            LOG.error("Could not decode Sign Response", e);
+            return Response.serverError().build();
+        }
+
+        var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponseString);
 
         //Return and log error TODO
-//        if (validationResponse.isValid()) {
-//        LOG.debug("Failed to validate sign response with transactionID {}", relayState);
+        if (!validationResponse.isValid()) {
+            LOG.debug("Failed to validate sign response with transactionID {}", relayState);
 //        monitoringLogService.logSignResponseInvalid(relayState);
-//        return Response.serverError().build();
-//        }
+            return Response.serverError().build();
+        }
 
-        dssSignatureService.receiveSignResponse(signResponse);
+        var signaturBiljett = dssSignatureService.receiveSignResponse(signResponseString);
+
+        var returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
 
         // This will give HTTP-status 307.
-        ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create("http://localhost:9089"));
+        ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create(returnUrl));
 
         return responseBuilder.build();
     }

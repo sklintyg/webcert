@@ -205,7 +205,7 @@ public class DssSignatureService {
 
         var certRequestPropertiesType = objectFactoryCsig.createCertRequestPropertiesType();
         certRequestPropertiesType.setCertType("PKC");
-        certRequestPropertiesType.setAuthnContextClassRef("urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI");
+        certRequestPropertiesType.setAuthnContextClassRef("http://id.sambi.se/loa/loa3");
 
         var requestedAttributesType = objectFactoryCsig.createRequestedAttributesType();
 
@@ -281,26 +281,30 @@ public class DssSignatureService {
         return xmlGregorianCalendar;
     }
 
+    @SuppressWarnings("unchecked")
     public SignaturBiljett receiveSignResponse(String eIdSignResponse) {
         try {
             var signResponse = unMarshallSignResponse(eIdSignResponse);
 
-            var requestId = signResponse.getRequestID();
             var result = signResponse.getResult();
 
-            //TODO validate result
-//            result.getResultMajor();
+            //TODO validate result?
+            var resultMajor = result.getResultMajor();
 
             var signatureObject = signResponse.getSignatureObject();
             var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
 
             var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
-            byte[] signatur = signTasks.getValue().getSignTaskData().get(0).getBase64Signature()
-                .getValue(); // SignatureObject Base64Signature
-            String certifikat = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
-                .get(0)); // SignResponseExtension SignatureCertificateChain X509Certificate
+            var signTask = signTasks.getValue().getSignTaskData().get(0);
 
-            var sb = underskriftService.netidSignature(requestId, signatur, certifikat);
+            byte[] signature = signTask.getBase64Signature()
+                .getValue();
+            String signTaskId = signTask.getSignTaskId();
+
+            String certificate = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
+                .get(0));
+
+            var sb = underskriftService.netidSignature(signTaskId, signature, certificate);
 
             return sb;
         } catch (JAXBException e) {
@@ -312,5 +316,21 @@ public class DssSignatureService {
     private SignResponse unMarshallSignResponse(String eIdSignResponse) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(SignResponse.class, SignResponseExtensionType.class, SignTasksType.class);
         return (SignResponse) context.createUnmarshaller().unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes()));
+    }
+
+    public String findReturnUrl(String intygsId) {
+        var utkastOptional = utkastRepository.findById(intygsId);
+
+        if (utkastOptional.isPresent()) {
+            var utkast = utkastOptional.get();
+            var intygsTyp = utkast.getIntygsTyp();
+            var intygTypeVersion = utkast.getIntygTypeVersion();
+
+            //#/intyg/lisjp/1.1/4dfd56f4-7321-4dda-a35a-8df6fa942a8a/?signed
+            return String.format("%s/#/intyg/%s/%s/%s/?signed", webcertHostUrl, intygsTyp, intygTypeVersion, intygsId);
+        } else {
+            return null;
+        }
+
     }
 }

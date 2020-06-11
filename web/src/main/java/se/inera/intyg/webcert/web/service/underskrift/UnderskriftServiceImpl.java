@@ -172,7 +172,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         if (signaturBiljett == null) {
             String errMsg = "No SignaturBiljett found for ticketId '{}' when finalizing signature. "
                 + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
-            LOG.error(errMsg);
+            LOG.error(errMsg, biljettId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, errMsg);
         }
 
