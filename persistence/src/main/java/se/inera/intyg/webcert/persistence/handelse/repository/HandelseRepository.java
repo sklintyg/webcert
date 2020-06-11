@@ -31,7 +31,8 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     List<Handelse> findByPersonnummerAndEnhetsIdIn(String personId, List<String> unitId);
 
-    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBetween(String personId, List<String> unitIds, LocalDateTime from, LocalDateTime to);
+    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBetween(String personId, List<String> unitIds, LocalDateTime from,
+        LocalDateTime to);
 
     List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampAfter(String personId, List<String> unitIds, LocalDateTime from);
 
@@ -39,7 +40,8 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     List<Handelse> findByPersonnummerAndVardgivarId(String personId, String careProviderId);
 
-    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBetween(String personId, String careProviderId, LocalDateTime from, LocalDateTime to);
+    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBetween(String personId, String careProviderId, LocalDateTime from,
+        LocalDateTime to);
 
     List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampAfter(String personId, String careProviderId, LocalDateTime from);
 
