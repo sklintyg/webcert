@@ -793,6 +793,10 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private AnsweredWithIntyg getAnsweredFromCertificateOutsideWebcert(String certificateId) {
+        if (utkastRepository.existsById(certificateId)) {
+            return null;
+        }
+
         final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, true);
         if (isComplementedByCertificate(certificate)) {
             final var signedDate = certificate.getUtlatande().getGrundData().getSigneringsdatum();
