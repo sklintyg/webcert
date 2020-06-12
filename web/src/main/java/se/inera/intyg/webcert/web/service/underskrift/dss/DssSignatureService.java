@@ -192,7 +192,7 @@ public class DssSignatureService {
 
         SignMessageType signMessage = objectFactoryCsig.createSignMessageType();
         signMessage.setMimeType("text");
-        signMessage.setMustShow(true);
+        signMessage.setMustShow(false);
         String message = this.signMessage.replace("{intygsTyp}", intygsTyp)
             .replace("{patientPnr}", patientPersonnummer != null ? patientPersonnummer.getPersonnummerWithDash() : "")
             .replace("{intygsId}", intygsId);
