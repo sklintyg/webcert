@@ -19,14 +19,7 @@
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Every.everyItem;
 import static org.junit.Assert.assertEquals;
@@ -34,8 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +44,9 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryTest {
 
-    private static final String FILE_1 = "classpath:DiagnosService/KSH97_TESTKODER_1.ANS";
+    private static final String FILE_1 = "classpath:DiagnosService/icd10se/digit3.txt";
+    private static final String FILE_2 = "classpath:DiagnosService/icd10se/digit4.txt";
+    private static final String FILE_3 = "classpath:DiagnosService/icd10se/digit5.txt";
 
     @Autowired
     private DiagnosRepositoryFactory factory;
@@ -58,8 +55,10 @@ public class DiagnosRepositoryTest {
 
     @Before
     public void setup() {
-        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(Collections.singletonList(FILE_1));
-        assertEquals(100, repoImpl.nbrOfDiagosis());
+        List<String> fileList = Arrays.asList(FILE_1, FILE_2, FILE_3);
+        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
+                StandardCharsets.UTF_8);
+        assertEquals(35600, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }
 
@@ -134,18 +133,18 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testGetByCodeWithMalformedCode() {
-        String code = " a 051  ";
+        String code = " c 76  ";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
         assertNotNull(res);
-        assertEquals("A051", res.get(0).getKod());
+        assertEquals("C76", res.get(0).getKod());
     }
 
     @Test
     public void testCodeSearchWithFragmentThree() {
         String codeFragment = "A08";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
-        assertEquals(9, res.size());
+        assertEquals(10, res.size());
     }
 
     @Test
@@ -178,7 +177,7 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testCodeSearchWithNonExistingFragment() {
-        String codeFragment = "X01";
+        String codeFragment = "C99";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
         assertTrue(res.isEmpty());
@@ -298,14 +297,14 @@ public class DiagnosRepositoryTest {
         // Then
         assertThat(result, Matchers.<List<Diagnos>>allOf(
             is(notNullValue()),
-            hasSize(4),
-            everyItem(hasProperty("beskrivning", containsString(searchTerm)))));
+            hasSize(8),
+            everyItem(hasProperty("beskrivning", containsStringIgnoringCase(searchTerm)))));
     }
 
     @Test
     public void testDescriptionSearchWithMultipleWordSearchTerm() {
         // Given
-        String searchTerm = "Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation";
+        String searchTerm = "Tuberkulos i andningsorganen, ej verifierad bakteriologiskt eller histologiskt";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
 
         // When
@@ -321,14 +320,14 @@ public class DiagnosRepositoryTest {
     @Test
     public void testDescriptionSearchWithMultipleTruncatedWordSearchTerm() {
         // Given
-        String searchTerm = "Tuber intrato lymfkö, utan uppg om bakteri eller histol verifi";
+        String searchTerm = "Tuber i andningsor, ej verifie bakteriologi eller histologi";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
 
         // When
         List<Diagnos> result = repo.searchDiagnosisByDescription(searchTerm, greaterThanAvailableResults);
 
         // Then
-        String expectedResult = "Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation";
+        String expectedResult = "Tuberkulos i andningsorganen, ej verifierad bakteriologiskt eller histologiskt";
         assertThat(result, Matchers.<List<Diagnos>>allOf(
             is(notNullValue()),
             hasSize(1),
@@ -338,14 +337,14 @@ public class DiagnosRepositoryTest {
     @Test
     public void testDescriptionSearchWithMultiplePartialWordSearchTerm() {
         // Given
-        String searchTerm = "berku i ntratora ymfkörtla, tan ppgi m riologisk eller histolo ifikatio";
+        String searchTerm = "ber i ndningsor, j rifie teriologi eller histologi";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
 
         // When
         List<Diagnos> result = repo.searchDiagnosisByDescription(searchTerm, greaterThanAvailableResults);
 
         // Then
-        String expectedResult = "Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation";
+        String expectedResult = "Tuberkulos i andningsorganen, ej verifierad bakteriologiskt eller histologiskt";
         assertThat(result, Matchers.<List<Diagnos>>allOf(
             is(notNullValue()),
             hasSize(1),
@@ -355,7 +354,7 @@ public class DiagnosRepositoryTest {
     @Test
     public void testDescriptionSearchWithMultipleResultsCanReturnLess() {
         // Given
-        String searchTerm = "Paratyfoidfebe";
+        String searchTerm = "Sekundär malign tumör";
         int oneLessThanAvailableResults = 2;
 
         // When
@@ -382,8 +381,8 @@ public class DiagnosRepositoryTest {
         // Then
         assertThat(mixedCaseResults, Matchers.<List<Diagnos>>allOf(
             is(notNullValue()),
-            hasSize(7),
-            everyItem(hasProperty("beskrivning", containsString(searchTerm))),
+            hasSize(8),
+            everyItem(hasProperty("beskrivning", containsStringIgnoringCase(searchTerm))),
             contains(upperCaseResults.toArray()), // Converting to array needed, to match correct method signature
             contains(lowerCaseResults.toArray())));
     }

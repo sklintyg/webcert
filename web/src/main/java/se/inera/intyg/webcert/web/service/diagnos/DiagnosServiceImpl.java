@@ -19,6 +19,9 @@
 package se.inera.intyg.webcert.web.service.diagnos;
 
 import com.google.common.base.Strings;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -89,15 +92,17 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     @PostConstruct
     public void initDiagnosRepository() {
-        this.icd10seDiagnosRepo = createDiagnosRepo(icd10seCodeFilesStr, Diagnoskodverk.ICD_10_SE.getCodeSystemName());
-        this.ksh97pDiagnosRepo = createDiagnosRepo(ksh97pCodeFilesStr, Diagnoskodverk.KSH_97_P.getCodeSystemName());
+        this.icd10seDiagnosRepo = createDiagnosRepo(icd10seCodeFilesStr, Diagnoskodverk.ICD_10_SE.getCodeSystemName(),
+                StandardCharsets.UTF_8);
+        this.ksh97pDiagnosRepo = createDiagnosRepo(ksh97pCodeFilesStr, Diagnoskodverk.KSH_97_P.getCodeSystemName(),
+                StandardCharsets.ISO_8859_1);
     }
 
-    private DiagnosRepository createDiagnosRepo(String codeFilesStr, String repoName) {
+    private DiagnosRepository createDiagnosRepo(String codeFilesStr, String repoName, Charset fileEncoding) {
         Assert.hasText(codeFilesStr, "Can not populate " + repoName + " DiagnosRepository since no diagnosis code files was supplied");
 
         String[] splittedcodeFiles = codeFilesStr.split(COMMA);
-        return diagnosRepositoryFactory.createAndInitDiagnosRepository(Arrays.asList(splittedcodeFiles));
+        return diagnosRepositoryFactory.createAndInitDiagnosRepository(Arrays.asList(splittedcodeFiles), fileEncoding);
     }
 
     @Override

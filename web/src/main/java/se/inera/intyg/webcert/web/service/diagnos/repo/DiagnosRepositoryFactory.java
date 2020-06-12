@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -33,13 +34,10 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
@@ -49,22 +47,18 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
  * @author npet
  */
 @Component
-public class DiagnosRepositoryFactory implements InitializingBean {
+public class DiagnosRepositoryFactory {
 
-    private static final String SPACE = " ";
+    private static final String BOM = "\uFEFF";
+    private static final String ASTERISK_TAB_OR_DAGGER_TAB = "\\u002A\t|\u2020\t";
+    private static final char SPACE = ' ';
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
-
-    /**
-     * Diagnosis files are usually encoded as ISO-8859-1.
-     */
-    @Value("${diagnos.code.encoding:ISO-8859-1}")
-    private String fileEncoding;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList) {
+    public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList, Charset fileEncoding) {
         try {
 
             DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
@@ -72,7 +66,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
             LOG.info("Creating DiagnosRepository from {} files using encoding '{}'", filesList.size(), fileEncoding);
 
             for (String file : filesList) {
-                populateRepoFromDiagnosisCodeFile(file, diagnosRepository);
+                populateRepoFromDiagnosisCodeFile(file, diagnosRepository, fileEncoding);
             }
 
             diagnosRepository.openLuceneIndexReader();
@@ -87,7 +81,8 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
     }
 
-    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) {
+    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository,
+                                                  Charset fileEncoding) {
 
         if (Strings.nullToEmpty(fileUrl).trim().isEmpty()) {
             return;
@@ -106,21 +101,27 @@ public class DiagnosRepositoryFactory implements InitializingBean {
                 return;
             }
 
+            int count = 0;
             IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
             try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(),
+                        fileEncoding))) {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (line != null) {
-                        Diagnos diagnos = createDiagnosFromString(line);
+                        Diagnos diagnos = createDiagnosFromString(line, count == 0);
+                        if (diagnos != null) {
+                            Document doc = new Document();
+                            doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
+                            doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
+                            idxWriter.addDocument(doc);
 
-                        Document doc = new Document();
-                        doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
-                        doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
-                        idxWriter.addDocument(doc);
+                            count++;
+                        }
                     }
                 }
             }
+            LOG.info("Loaded {} codes from file {}", count, fileUrl);
 
         } catch (IOException ioe) {
             LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
@@ -128,23 +129,22 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
     }
 
-    public Diagnos createDiagnosFromString(String diagnosStrParam) {
+    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile) {
 
-        if (Strings.nullToEmpty(diagnosStrParam).trim().isEmpty()) {
+        if (Strings.nullToEmpty(line).trim().isEmpty()) {
             return null;
         }
 
-        // remove excess space in the string
-        String diagnosStr = CharMatcher.whitespace().trimAndCollapseFrom(diagnosStrParam, ' ');
+        String cleanedLine = removeUnwantedCharacters(line, firstLineInFile);
 
-        int firstSpacePos = diagnosStr.indexOf(SPACE);
+        int firstSpacePos = cleanedLine.indexOf(SPACE);
 
         if (firstSpacePos == -1) {
             return null;
         }
 
-        String kodStr = diagnosStr.substring(0, firstSpacePos);
-        String beskStr = diagnosStr.substring(firstSpacePos + 1);
+        String kodStr = cleanedLine.substring(0, firstSpacePos);
+        String beskStr = cleanedLine.substring(firstSpacePos + 1);
 
         Diagnos d = new Diagnos();
         d.setKod(kodStr.toUpperCase());
@@ -153,8 +153,12 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         return d;
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        Assert.hasText(fileEncoding, "File-encoding for diagnos code files not set!");
+    private String removeUnwantedCharacters(String line, boolean firstLineInFile) {
+        String cleanedLine = line;
+        if (firstLineInFile) {
+            cleanedLine = cleanedLine.replaceFirst(BOM, "");
+        }
+        cleanedLine = cleanedLine.replaceFirst(ASTERISK_TAB_OR_DAGGER_TAB, String.valueOf(SPACE));
+        return CharMatcher.whitespace().trimAndCollapseFrom(cleanedLine, SPACE);
     }
 }
