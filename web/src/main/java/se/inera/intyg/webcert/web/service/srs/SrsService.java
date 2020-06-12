@@ -57,6 +57,7 @@ public interface SrsService {
      * @param addMeasures true to include a recommended measurements in the response
      * @param addStatistics true to include sick leave statistics in the response
      * @param answers A list of answers to questions used as input for the risk prediction
+     * @param daysIntoSickLeave Number of days into the current sick leave, used as input to to the prediction
      * @return An object containing the requested response.
      * @throws InvalidPersonNummerException If the format of the personal identification number is incorrect
      * @throws IllegalArgumentException If other input parameters are found to be incorrect
@@ -68,7 +69,8 @@ public interface SrsService {
                        boolean performRiskPrediction,
                        boolean addMeasures,
                        boolean addStatistics,
-                       List<SrsQuestionResponse> answers)
+                       List<SrsQuestionResponse> answers,
+                       Integer daysIntoSickLeave)
             throws InvalidPersonNummerException, IllegalArgumentException;
     //CHECKSTYLE:ON ParameterNumber
 

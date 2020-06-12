@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,6 +49,7 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.infra.integration.srs.model.SrsPrediction;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsRecommendation;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
@@ -137,45 +139,47 @@ public class SrsServiceImplTest {
 
     @Before
     public void init() throws Exception {
-        SrsResponse srsResponse = new SrsResponse(1,"desc",
+        SrsResponse srsResponse = new SrsResponse(
                 asList(SrsRecommendation.create("please observe", "text")),
                 asList(SrsRecommendation.create("recommended measure", "text")),
                 asList(SrsRecommendation.create("extension measure", "text")),
                 asList(SrsRecommendation.create("rehab measure", "text")),
-                "F438", "OK",
-                asList(SrsQuestionResponse.create("question1", "answer1")),
-                "KORREKT",
-                LocalDateTime.now(),
-                "F438A","OK", "F43", "OK",
-                0.68, 0.54,
-                asList(13432, 37494, 50517, 62952, 71240));
-
+                asList(new SrsPrediction("intyg-id-123", "F438", null,
+                    "OK", 1, "desc",
+                    0.68, 0.54,
+                    asList(SrsQuestionResponse.create("question1", "answer1")),
+                    "KORREKT", LocalDateTime.now())
+                ),
+                "F438A","OK",
+                "F43","OK",
+                asList(13432, 37494, 50517, 62952, 71240)
+        );
         // Initialize descriptions to null when returned from infra mock, they are decorated in SrsService.getSrs
         srsResponse.setStatistikDiagnosisDescription(null);
-        srsResponse.setPredictionDiagnosisDescription(null);
         srsResponse.setAtgarderDiagnosisDescription(null);
 
-        SrsResponse srsResponseWithoutPrediction = new SrsResponse(1,"desc",
+        SrsResponse srsResponseWithoutPrediction = new SrsResponse(
                 asList(SrsRecommendation.create("please observe", "text")),
                 asList(SrsRecommendation.create("recommended measure", "text")),
                 asList(SrsRecommendation.create("extension measure", "text")),
                 asList(SrsRecommendation.create("rehab measure", "text")),
-                null, null,
-                null,
-                null,
-                LocalDateTime.now(),
-                "F438A","OK", "F43", "OK",
-                null, 0.54,
+                asList(new SrsPrediction("certId", "F438", null,
+                    "OK", 1, "desc",
+                    null, 0.54, null,null,
+                    LocalDateTime.now())
+                ),
+                "F438A","OK",
+                "F43", "OK",
                 asList(13432, 37494, 50517, 62952, 71240));
 
         // Initilize mock responses
         // full SRS response with prediction
-        when(srsInfraService.getSrs(any(WebCertUser.class), any(), any(Personnummer.class), anyString(),
-                refEq(buildUtdataFilter(true, true, true)), anyList()))
+        when(srsInfraService.getSrs(any(WebCertUser.class), any(Personnummer.class), anyList(),
+                refEq(buildUtdataFilter(true, true, true)), anyList(), anyInt()))
                 .thenReturn(srsResponse);
         // SRS response without prediction
-        when(srsInfraService.getSrs(any(WebCertUser.class), any(), any(Personnummer.class), anyString(),
-                refEq(buildUtdataFilter(false, true, true)), anyList()))
+        when(srsInfraService.getSrs(any(WebCertUser.class), any(Personnummer.class), anyList(),
+                refEq(buildUtdataFilter(false, true, true)), anyList(), anyInt()))
                 .thenReturn(srsResponseWithoutPrediction);
 
         when(diagnosService.getDiagnosisByCode(eq("F438A"), eq(Diagnoskodverk.ICD_10_SE)))
@@ -187,14 +191,17 @@ public class SrsServiceImplTest {
         when(diagnosService.getDiagnosisByCode(eq("F43"), eq(Diagnoskodverk.ICD_10_SE)))
                 .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
 
-        when(intygService.fetchIntygData(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID), eq(false), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
                 .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
 
-        when(intygService.fetchIntygData(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID), eq(false), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
                 .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
 
-        when(intygService.fetchIntygData(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID), eq(false), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
                 .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
+
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-3"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
+            .thenReturn(buildIntygContentHolder("parent-intyg-id-3", "F438A", null, true));
 
         // Match dummy models to generate different utlatande
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-intyg-id-123")))
@@ -204,49 +211,59 @@ public class SrsServiceImplTest {
                 .thenReturn(buildUtlatande("parent-intyg-id-1", "F438A", "parent-intyg-id-2"));
 
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-2")))
-                .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", null));
+                .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", "parent-intyg-id-3"));
+
+        when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-3")))
+            .thenReturn(buildUtlatande("parent-intyg-id-3", "F438A", null));
 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getSrsMissingPersonalIdentityNumberShouldThrowException() throws Exception{
-        srsServiceUnderTest.getSrs(user, "intyg-id-123", "", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+        srsServiceUnderTest.getSrs(user, "intyg-id-123", "", "F438A",
+            true, true, true, new ArrayList<SrsQuestionResponse>(), null);
     }
 
     @Test(expected = InvalidPersonNummerException.class)
     public void getSrsIllFormedPersonalIdentityNumberShouldThrowException() throws Exception {
-        srsServiceUnderTest.getSrs(user, "intyg-id-123", "incorrectform1912-12-12-1212", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+        srsServiceUnderTest.getSrs(user, "intyg-id-123", "incorrectform1912-12-12-1212", "F438A",
+            true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getSrsMissingDiagnosisCodeShouldThrowException() throws Exception {
-        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "", true, true, true, new ArrayList<SrsQuestionResponse>());
+        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "",
+            true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
     }
 
     @Test
     public void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
-        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A",
+            true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
         verify(logService, times(1)).logShowPrediction(eq("191212121212"), eq("intyg-id-123"));
     }
 
     @Test
     public void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
-        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A", false, true, true, new ArrayList<SrsQuestionResponse>());
+        srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A",
+            false, true, true, new ArrayList<SrsQuestionResponse>(), 15);
         verify(logService, times(0)).logShowPrediction(eq("191212121212"), eq("intyg-id-123"));
     }
 
     @Test
     public void getSrsShouldAddDiagnosisDescriptions() throws Exception {
-        SrsResponse resp = srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+        SrsResponse resp = srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212",
+            "F438A", true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
         assertNotNull(resp);
-        assertEquals("Andra specificerade reaktioner på svår stress", resp.getPredictionDiagnosisDescription());
+        assertEquals("Andra specificerade reaktioner på svår stress", resp.getPredictions().get(0).getDiagnosisDescription());
         assertEquals("Utmattningssyndrom", resp.getAtgarderDiagnosisDescription());
         assertEquals("Anpassningsstörningar och reaktion på svår stress", resp.getStatistikDiagnosisDescription());
     }
 
     @Test
-    public void getSrsShouldAddCertificateExtensionChain() throws Exception {
-        SrsResponse resp = srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+    public void getSrsShouldAddCertificateExtensionChainWithMaxThreeEntries() throws Exception {
+        SrsResponse resp = srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212",
+            "F438A", true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
         assertNotNull(resp);
         assertNotNull(resp.getExtensionChain());
         assertEquals(3, resp.getExtensionChain().size());
@@ -257,11 +274,12 @@ public class SrsServiceImplTest {
 
     @Test
     public void getSrsShouldAddCertificateExtensionChainEvenIfNoExtension() throws Exception {
-        SrsResponse resp = srsServiceUnderTest.getSrs(user, "parent-intyg-id-2", "191212121212", "F438A", true, true, true, new ArrayList<SrsQuestionResponse>());
+        SrsResponse resp = srsServiceUnderTest.getSrs(user, "parent-intyg-id-3", "191212121212",
+            "F438A", false, true, true, new ArrayList<SrsQuestionResponse>(), null);
         assertNotNull(resp);
         assertNotNull(resp.getExtensionChain());
         assertEquals(1, resp.getExtensionChain().size());
-        assertEquals("parent-intyg-id-2", resp.getExtensionChain().get(0).getCertificateId());
+        assertEquals("parent-intyg-id-3", resp.getExtensionChain().get(0).getCertificateId());
     }
 
 }
