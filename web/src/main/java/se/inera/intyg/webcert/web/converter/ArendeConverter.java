@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -85,6 +86,27 @@ public final class ArendeConverter {
         arende.setVardgivareName(utkast.getVardgivarNamn());
     }
 
+    /**
+     * Decorate a message ({@link Arende}) with metadata from the certificate. This method can be used when there is no {@link Utkast}
+     * available, but the {@link Utlatande} is.
+     * @param arende    Message to decorate
+     * @param certificate   Certificate to decorate with
+     * @param timestamp DateTime of the message
+     */
+    public static void decorateMessageFromCertificate(Arende arende, Utlatande certificate, LocalDateTime timestamp) {
+        arende.setTimestamp(timestamp);
+        arende.setSenasteHandelse(timestamp);
+        arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
+        arende.setVidarebefordrad(Boolean.FALSE);
+
+        arende.setIntygTyp(certificate.getTyp());
+        arende.setSigneratAv(certificate.getGrundData().getSkapadAv().getPersonId());
+        arende.setSigneratAvName(certificate.getGrundData().getSkapadAv().getFullstandigtNamn());
+        arende.setEnhetId(certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        arende.setEnhetName(certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        arende.setVardgivareName(certificate.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
+    }
+
     public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
         String vardaktorNamn, HsaEmployeeService hsaEmployeeService) {
         Arende arende = new Arende();
@@ -102,6 +124,37 @@ public final class ArendeConverter {
         arende.setSigneratAvName(getSignedByName(utkast, hsaEmployeeService));
         decorateOutgoingArende(arende, now, vardaktorNamn);
         return arende;
+    }
+
+    /**
+     * Creates a message ({@link Arende}) with metadata from the certificate. This method can be used when there is no {@link Utkast}
+     * available, but the {@link Utlatande} is.
+     * @param subject  Subject of the message
+     * @param header    Header of the message
+     * @param messageText   The actual message
+     * @param certificate   Certificate that the message is related to
+     * @param timestamp Timestamp of the message
+     * @param nameOfCareGiver    Name of the care giver
+     * @param hsaEmployeeService    {@link HsaEmployeeService} implementation to use
+     * @return  The created message
+     */
+    public static Arende createMessageFromCertificate(ArendeAmne subject, String header, String messageText, Utlatande certificate,
+        LocalDateTime timestamp, String nameOfCareGiver, HsaEmployeeService hsaEmployeeService) {
+        final var message = new Arende();
+        message.setStatus(Status.PENDING_EXTERNAL_ACTION);
+        message.setAmne(subject);
+        message.setEnhetId(certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        message.setEnhetName(certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        message.setVardgivareName(certificate.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
+        message.setIntygsId(certificate.getId());
+        message.setIntygTyp(certificate.getTyp());
+        message.setMeddelande(messageText);
+        message.setPatientPersonId(certificate.getGrundData().getPatient().getPersonId().getPersonnummer());
+        message.setRubrik(header);
+        message.setSigneratAv(certificate.getGrundData().getSkapadAv().getPersonId());
+        message.setSigneratAvName(getNameByHsaId(message.getSigneratAv(), hsaEmployeeService));
+        decorateOutgoingArende(message, timestamp, nameOfCareGiver);
+        return message;
     }
 
     public static Arende createAnswerFromArende(String meddelande, Arende svarPaMeddelande, LocalDateTime now, String vardaktorNamn) {
@@ -178,9 +231,7 @@ public final class ArendeConverter {
         hsaIds.forEach(hsaId -> {
             Optional<String> name = getNameByHsaIdNullIfNotFound(hsaId, hsaEmployeeService);
 
-            if (name.isPresent()) {
-                hsaIdNameMap.put(hsaId, name.get());
-            }
+            name.ifPresent(s -> hsaIdNameMap.put(hsaId, s));
         });
 
         return hsaIdNameMap;

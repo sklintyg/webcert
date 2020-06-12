@@ -404,6 +404,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.TEST_CERTIFICATE_ERASED, certificateId, careUnit, createdUser);
     }
 
+    @Override
+    public void logMessageImported(String certificateId, String messageId, String caregiverId, String careUnitId, String messageType) {
+        logEvent(MonitoringEvent.MESSAGE_IMPORTED, messageId, messageType, certificateId, caregiverId, careUnitId);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -501,7 +506,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         SAML_STATUS_LOGIN_FAIL("Login failed at IDP '{}' with status message '{}'"),
 
-        TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' created by '{}' was erased");
+        TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' created by '{}' was erased"),
+
+        MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported");
 
 
         private final String msg;

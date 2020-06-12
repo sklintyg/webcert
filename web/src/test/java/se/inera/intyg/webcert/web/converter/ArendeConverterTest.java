@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +43,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -208,6 +215,48 @@ public class ArendeConverterTest {
     }
 
     @Test
+    public void testDecorateMessageFromCertificatet() throws WebCertServiceException {
+        final String certificateType = "certificateType";
+        final String signedBy = "signedBy";
+        final String unitId = "unitId";
+        final String unitName = "unitName";
+        final String careProviderName = "careProviderName";
+        final LocalDateTime now = LocalDateTime.now();
+        final String fullName = "Test Testorsson Svensson";
+
+        final var certificate = mock(Utlatande.class);
+        doReturn(certificateType).when(certificate).getTyp();
+        final var basicData = mock(GrundData.class);
+        doReturn(basicData).when(certificate).getGrundData();
+        final var createdBy = mock(HoSPersonal.class);
+        doReturn(createdBy).when(basicData).getSkapadAv();
+        doReturn(signedBy).when(createdBy).getPersonId();
+        doReturn(fullName).when(createdBy).getFullstandigtNamn();
+        final var unit = mock(Vardenhet.class);
+        doReturn(unit).when(createdBy).getVardenhet();
+        doReturn(unitId).when(unit).getEnhetsid();
+        doReturn(unitName).when(unit).getEnhetsnamn();
+        final var careProvider = mock(Vardgivare.class);
+        doReturn(careProvider).when(unit).getVardgivare();
+        doReturn(careProviderName).when(careProvider).getVardgivarnamn();
+
+        Arende actualMessage = new Arende();
+        ArendeConverter.decorateMessageFromCertificate(actualMessage, certificate, now);
+
+        assertNotNull(actualMessage);
+        assertEquals(now, actualMessage.getTimestamp());
+        assertEquals(now, actualMessage.getSenasteHandelse());
+        assertEquals(Boolean.FALSE, actualMessage.getVidarebefordrad());
+        assertEquals(Status.PENDING_INTERNAL_ACTION, actualMessage.getStatus());
+        assertEquals(certificateType, actualMessage.getIntygTyp());
+        assertEquals(signedBy, actualMessage.getSigneratAv());
+        assertEquals(unitId, actualMessage.getEnhetId());
+        assertEquals(unitName, actualMessage.getEnhetName());
+        assertEquals(careProviderName, actualMessage.getVardgivareName());
+        assertEquals(fullName, actualMessage.getSigneratAvName());
+    }
+
+    @Test
     public void testCreateArendeQuestionFromUtkast() throws CertificateSenderException {
         final ArendeAmne amne = ArendeAmne.OVRIGT;
         final String enhetsId = "enhetsId";
@@ -261,6 +310,76 @@ public class ArendeConverterTest {
         assertNull(res.getSvarPaReferens());
         assertEquals(Boolean.FALSE, res.getVidarebefordrad());
         assertEquals(vardaktorName, res.getVardaktorName());
+    }
+
+    @Test
+    public void testCreateMessageFromCertificate() throws CertificateSenderException {
+        final var subject = ArendeAmne.OVRIGT;
+        final var unitId = "unitId";
+        final var certificateId = "certificateId";
+        final var certificateType = "certificateType";
+        final var messageText = "messageText";
+        final var patientPersonId = "191212121212";
+        final var header = "header";
+        final var signedBy = "signedBy";
+        final var givenName = "Test";
+        final var surname = "Testorsson Svensson";
+        final var careGiverName = "Test Testorsson Svensson";
+        final var unitName = "unitName";
+        final var careProviderName = "careProviderName";
+        final var now = LocalDateTime.now();
+
+        Utkast utkast = new Utkast();
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
+
+        final var certificate = mock(Utlatande.class);
+        doReturn(certificateType).when(certificate).getTyp();
+        doReturn(certificateId).when(certificate).getId();
+        final var basicData = mock(GrundData.class);
+        doReturn(basicData).when(certificate).getGrundData();
+        final var patient = mock(Patient.class);
+        doReturn(patient).when(basicData).getPatient();
+        doReturn(Personnummer.createPersonnummer(patientPersonId).get()).when(patient).getPersonId();
+        final var createdBy = mock(HoSPersonal.class);
+        doReturn(createdBy).when(basicData).getSkapadAv();
+        doReturn(signedBy).when(createdBy).getPersonId();
+        final var unit = mock(Vardenhet.class);
+        doReturn(unit).when(createdBy).getVardenhet();
+        doReturn(unitId).when(unit).getEnhetsid();
+        doReturn(unitName).when(unit).getEnhetsnamn();
+        final var careProvider = mock(Vardgivare.class);
+        doReturn(careProvider).when(unit).getVardgivare();
+        doReturn(careProviderName).when(careProvider).getVardgivarnamn();
+
+        when(hsaEmployeeService.getEmployee(signedBy, null)).thenReturn(createHsaResponse(givenName, surname));
+
+        Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName, hsaEmployeeService);
+
+        assertNotNull(res);
+        assertEquals(subject, res.getAmne());
+        assertEquals(unitId, res.getEnhetId());
+        assertEquals(unitName, res.getEnhetName());
+        assertEquals(careProviderName, res.getVardgivareName());
+        assertEquals(certificateId, res.getIntygsId());
+        assertEquals(certificateType, res.getIntygTyp());
+        assertEquals(messageText, res.getMeddelande());
+        assertNotNull(res.getMeddelandeId());
+        assertNull(res.getPaminnelseMeddelandeId());
+        assertEquals(patientPersonId, res.getPatientPersonId());
+        assertNull(res.getReferensId());
+        assertEquals(header, res.getRubrik());
+        assertEquals(now, res.getSenasteHandelse());
+        assertEquals(now, res.getSkickatTidpunkt());
+        assertEquals(now, res.getTimestamp());
+        assertEquals(signedBy, res.getSigneratAv());
+        assertEquals(givenName + " " + surname, res.getSigneratAvName());
+        assertNull(res.getSistaDatumForSvar());
+        assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
+        assertEquals(Status.PENDING_EXTERNAL_ACTION, res.getStatus());
+        assertNull(res.getSvarPaId());
+        assertNull(res.getSvarPaReferens());
+        assertEquals(Boolean.FALSE, res.getVidarebefordrad());
+        assertEquals(careGiverName, res.getVardaktorName());
     }
 
     @Test

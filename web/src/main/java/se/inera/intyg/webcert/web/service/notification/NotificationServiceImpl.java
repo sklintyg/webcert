@@ -77,6 +77,9 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -125,6 +128,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private ReferensService referensService;
+
+    @Autowired
+    private IntygService intygService;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -223,6 +229,8 @@ public class NotificationServiceImpl implements NotificationService {
         Utkast utkast = getUtkast(intygsId);
         if (utkast != null) {
             createAndSendNotification(utkast, SKICKA);
+        } else {
+            createAndSendNotification(intygsId, SKICKA);
         }
     }
 
@@ -239,6 +247,8 @@ public class NotificationServiceImpl implements NotificationService {
         Utkast utkast = getUtkast(intygsId);
         if (utkast != null) {
             createAndSendNotification(utkast, MAKULE);
+        } else {
+            createAndSendNotification(intygsId, MAKULE);
         }
     }
 
@@ -321,10 +331,66 @@ public class NotificationServiceImpl implements NotificationService {
 
     }
 
+    @Override
+    public List<Handelse> findNotifications(IntygWithNotificationsRequest request) {
+        final var hasStartDate = request.getStartDate() != null;
+        final var hasEndDate = request.getEndDate() != null;
+
+        if (hasStartDate && hasEndDate) {
+            return findNotificationsBetweenTimestamp(request);
+        } else if (hasStartDate) {
+            return findNotificationsAfterTimestamp(request);
+        } else if (hasEndDate) {
+            return findNotificationsBeforeTimestamp(request);
+        } else {
+            return findNotificationsWithoutTimestamp(request);
+        }
+    }
+
+    private List<Handelse> findNotificationsBetweenTimestamp(IntygWithNotificationsRequest request) {
+        if (request.shouldUseEnhetId()) {
+            return handelseRepo.findByPersonnummerAndEnhetsIdInAndTimestampBetween(request.getPersonnummer().getPersonnummer(),
+                request.getEnhetId(), request.getStartDate(), request.getEndDate());
+        } else {
+            return handelseRepo.findByPersonnummerAndVardgivarIdAndTimestampBetween(request.getPersonnummer().getPersonnummer(),
+                request.getVardgivarId(), request.getStartDate(), request.getEndDate());
+        }
+    }
+
+    private List<Handelse> findNotificationsAfterTimestamp(IntygWithNotificationsRequest request) {
+        if (request.shouldUseEnhetId()) {
+            return handelseRepo.findByPersonnummerAndEnhetsIdInAndTimestampAfter(request.getPersonnummer().getPersonnummer(),
+                request.getEnhetId(), request.getStartDate());
+        } else {
+            return handelseRepo.findByPersonnummerAndVardgivarIdAndTimestampAfter(request.getPersonnummer().getPersonnummer(),
+                request.getVardgivarId(), request.getStartDate());
+        }
+    }
+
+    private List<Handelse> findNotificationsBeforeTimestamp(IntygWithNotificationsRequest request) {
+        if (request.shouldUseEnhetId()) {
+            return handelseRepo.findByPersonnummerAndEnhetsIdInAndTimestampBefore(request.getPersonnummer().getPersonnummer(),
+                request.getEnhetId(), request.getEndDate());
+        } else {
+            return handelseRepo.findByPersonnummerAndVardgivarIdAndTimestampBefore(request.getPersonnummer().getPersonnummer(),
+                request.getVardgivarId(), request.getEndDate());
+        }
+    }
+
+    private List<Handelse> findNotificationsWithoutTimestamp(IntygWithNotificationsRequest request) {
+        if (request.shouldUseEnhetId()) {
+            return handelseRepo.findByPersonnummerAndEnhetsIdIn(request.getPersonnummer().getPersonnummer(), request.getEnhetId());
+        } else {
+            return handelseRepo.findByPersonnummerAndVardgivarId(request.getPersonnummer().getPersonnummer(), request.getVardgivarId());
+        }
+    }
+
     private void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
         Utkast utkast = getUtkast(intygsId);
         if (utkast != null) {
             createAndSendNotificationForQAs(utkast, event, amne, date);
+        } else {
+            createAndSendNotificationForQAs(intygsId, event, amne, date);
         }
     }
 
@@ -350,10 +416,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
         ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version, String hanteratAv) {
-        Amneskod amneskod = null;
-        if (amne != null) {
-            amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
-        }
+        final Amneskod amneskod = getAmnesKod(amne);
 
         String reference = referensService.getReferensForIntygsId(utkast.getIntygsId());
 
@@ -366,27 +429,92 @@ public class NotificationServiceImpl implements NotificationService {
         send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
 
+    void createAndSendNotification(String certificateId, HandelsekodEnum handelse) {
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
+        createAndSendNotification(certificate, handelse, null, null);
+    }
+
+    private void createAndSendNotification(IntygContentHolder certificate, HandelsekodEnum handelse, ArendeAmne amne,
+        LocalDate sistaDatumForSvar) {
+
+        final var optionalSchemaVersion = sendNotificationStrategy.decideNotificationForIntyg(certificate.getUtlatande());
+        if (!optionalSchemaVersion.isPresent()) {
+            LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
+            return;
+        }
+
+        final var hanteratAv = currentUserId();
+        createAndSendNotification(certificate, handelse, amne, sistaDatumForSvar, optionalSchemaVersion.get(), hanteratAv);
+    }
+
+    private void createAndSendNotification(IntygContentHolder certificate, HandelsekodEnum handelse, ArendeAmne amne,
+        LocalDate sistaDatumForSvar, SchemaVersion version, String hanteratAv) {
+        final var amneskod = getAmnesKod(amne);
+
+        final var reference = referensService.getReferensForIntygsId(certificate.getUtlatande().getId());
+
+        final var certificateId = certificate.getUtlatande().getId();
+        final var certificateType = certificate.getUtlatande().getTyp();
+        final var careUnitId = certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+        final var careProviderId = certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid();
+        final var patientId = certificate.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummer();
+        final var draftJson = certificate.getContents();
+
+        final var notificationMessage = notificationMessageFactory.createNotificationMessage(certificateId, certificateType, careUnitId,
+            draftJson, handelse, version, reference, amneskod, sistaDatumForSvar);
+
+        save(notificationMessage, careUnitId, careProviderId, patientId, amne, sistaDatumForSvar, hanteratAv);
+
+        send(notificationMessage, careUnitId, certificate.getUtlatande().getTextVersion());
+    }
+
+    private Amneskod getAmnesKod(ArendeAmne amne) {
+        return amne != null ? AmneskodCreator.create(amne.name(), amne.getDescription()) : null;
+    }
+
     private void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
-        if (!version.isPresent()) {
+        if (version.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent");
             return;
         }
 
-        HandelsekodEnum handelse = null;
-        if (SchemaVersion.VERSION_3 == version.get()) {
-            handelse = getHandelseV3(event);
-        } else {
-            handelse = getHandelseV1(event);
-        }
-
-        if (handelse == null) {
+        final var handelseKod = getHandelseKod(version.get(), event);
+        if (handelseKod == null) {
             LOGGER.debug("Notification message not sent for event {} in version {}", event.name(), version.get().name());
             return;
         }
 
-        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get(), null);
+        createAndSendNotification(utkast, handelseKod, amne, sistaDatumForSvar, version.get(), null);
+    }
+
+    private void createAndSendNotificationForQAs(String certificateId, NotificationEvent event, ArendeAmne amne,
+        LocalDate sistaDatumForSvar) {
+
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
+
+        final var optionalSchemaVersion = sendNotificationStrategy.decideNotificationForIntyg(certificate.getUtlatande());
+        if (optionalSchemaVersion.isEmpty()) {
+            LOGGER.debug("Schema version is not present. Notification message not sent");
+            return;
+        }
+
+        final var handelseKod = getHandelseKod(optionalSchemaVersion.get(), event);
+        if (handelseKod == null) {
+            LOGGER.debug("Notification message not sent for event {} in version {}", event.name(), optionalSchemaVersion.get().name());
+            return;
+        }
+
+        createAndSendNotification(certificate, handelseKod, amne, sistaDatumForSvar, optionalSchemaVersion.get(), null);
+    }
+
+    private HandelsekodEnum getHandelseKod(SchemaVersion schemaVersion, NotificationEvent event) {
+        if (SchemaVersion.VERSION_3 == schemaVersion) {
+            return getHandelseV3(event);
+        } else {
+            return getHandelseV1(event);
+        }
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
@@ -472,7 +600,6 @@ public class NotificationServiceImpl implements NotificationService {
         monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
     }
 
-    //
     private String currentUserId() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (Objects.isNull(auth)) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
