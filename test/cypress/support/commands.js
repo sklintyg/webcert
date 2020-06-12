@@ -470,12 +470,12 @@ function skapaLISJPIfylltUtkast(fx, intygstyp) {
             <urn5:svar id="6">\
                 <urn3:delsvar id="6.2">\
                 <urn2:cv>\
-                    <urn2:code>M79</urn2:code>\
+                    <urn2:code>U071</urn2:code>\
                     <urn2:codeSystem>1.2.752.116.1.1.1.1.3</urn2:codeSystem>\
                     <urn2:displayName>Icke specificerad akut infektion i nedre luftvägarna</urn2:displayName>\
                 </urn2:cv>\
                 </urn3:delsvar>\
-                <urn3:delsvar id="6.1">Icke specificerad akut infektion i nedre luftvägarna</urn3:delsvar>\
+                <urn3:delsvar id="6.1">Covid-19, virus påvisat</urn3:delsvar>\
                 <urn3:delsvar id="6.4">\
                 <urn2:cv>\
                     <urn2:code>M46</urn2:code>\
