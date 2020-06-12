@@ -772,7 +772,7 @@ public class ArendeServiceImpl implements ArendeService {
     private List<ArendeConversationView> getArendeConversationViewList(String intygsId, List<Arende> arendeList) {
         List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygsId, utkastRepository);
 
-        final var answerWithCertificate = checkAnsweredFromCertificateOutsideWebcert(intygsId);
+        final var answerWithCertificate = getAnsweredFromCertificateOutsideWebcert(intygsId);
         if (answerWithCertificate != null && isNotDuplicateAnswer(answerWithCertificate, kompltToIntyg)) {
             kompltToIntyg.add(answerWithCertificate);
         }
@@ -792,7 +792,7 @@ public class ArendeServiceImpl implements ArendeService {
             .noneMatch(answeredWithIntyg -> answeredWithIntyg.getIntygsId().equalsIgnoreCase(answerWithCertificate.getIntygsId()));
     }
 
-    private AnsweredWithIntyg checkAnsweredFromCertificateOutsideWebcert(String certificateId) {
+    private AnsweredWithIntyg getAnsweredFromCertificateOutsideWebcert(String certificateId) {
         final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, true);
         if (isComplementedByCertificate(certificate)) {
             final var signedDate = certificate.getUtlatande().getGrundData().getSigneringsdatum();

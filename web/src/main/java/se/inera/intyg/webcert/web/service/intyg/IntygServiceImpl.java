@@ -641,7 +641,7 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request) {
-        final var res = new ArrayList<IntygWithNotificationsResponse>();
+        final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
         final var allNotifications = notificationService.findNotifications(request);
 
@@ -663,11 +663,11 @@ public class IntygServiceImpl implements IntygService {
             }
 
             if (response != null) {
-                res.add(response);
+                intygWithNotificationsResponses.add(response);
             }
         }
 
-        return res;
+        return intygWithNotificationsResponses;
     }
 
     private HashMap<String, List<Handelse>> getNotificationCertificateIdHash(List<Handelse> allNotifications) {

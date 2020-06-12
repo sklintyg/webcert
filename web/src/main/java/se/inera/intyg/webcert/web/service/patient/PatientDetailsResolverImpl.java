@@ -197,7 +197,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             if (user != null) {
                 return resolvePatient(personnummer, user, resolveOrder);
             } else {
-                return resolvePatient(personnummer, resolveOrder);
+                return resolvePatient(personnummer);
             }
         } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
@@ -249,7 +249,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return patient;
     }
 
-    private Patient resolvePatient(Personnummer personnummer, PatientDetailResolveOrder resolveOrder) {
+    private Patient resolvePatient(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
 
         //PU unavailable
