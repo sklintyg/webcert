@@ -19,7 +19,7 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
-        cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
+        cy.fixture('vårdtagare/AG7804patientPatrikKarlsson').as('vårdtagare');
     })
 
     beforeEach(function() {
@@ -38,7 +38,7 @@ describe('Läkarintyg om arbetsförmåga – arbetsgivaren PDL loggning', functi
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
         //cy.get('#copy-from-candidate-dialog-button1').click();
-        //cy.get('.intygs-id').contains(this.utkastId);
+        cy.get('.intygs-id').contains(this.utkastId);
         //intyg.ifyllnadsstod();
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
         pdlEventArray.push(ag7804PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));

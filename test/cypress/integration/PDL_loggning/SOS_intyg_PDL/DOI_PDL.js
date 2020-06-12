@@ -35,7 +35,7 @@ describe('Dödsorsaks-intyg', function () {
 
     it('skapar ett minimalt ifyllt dödsorsaksintyg', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-
+        cy.wait(1000);
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         cy.visit(önskadUrl);
 
