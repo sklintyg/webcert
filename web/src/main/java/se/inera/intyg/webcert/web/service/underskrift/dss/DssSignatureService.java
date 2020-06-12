@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.dss.xsd.dsscore.InputDocuments;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
@@ -191,12 +193,12 @@ public class DssSignatureService {
         }
 
         SignMessageType signMessage = objectFactoryCsig.createSignMessageType();
-        signMessage.setMimeType("text");
+        signMessage.setMimeType(MimeTypeUtils.TEXT_HTML_VALUE);
         signMessage.setMustShow(false);
         String message = this.signMessage.replace("{intygsTyp}", intygsTyp)
             .replace("{patientPnr}", patientPersonnummer != null ? patientPersonnummer.getPersonnummerWithDash() : "")
             .replace("{intygsId}", intygsId);
-        signMessage.setMessage(Base64.getEncoder().encode(message.getBytes()));
+        signMessage.setMessage(message.getBytes(StandardCharsets.UTF_8));
 
         return signMessage;
     }

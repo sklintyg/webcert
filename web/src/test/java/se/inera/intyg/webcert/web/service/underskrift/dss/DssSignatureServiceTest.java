@@ -8,9 +8,11 @@ import static org.mockito.Mockito.when;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.xml.bind.JAXBElement;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import org.springframework.xml.transform.StringResult;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
+import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
@@ -115,8 +118,9 @@ public class DssSignatureServiceTest {
         ReflectionTestUtils.setField(dssSignatureService, "idpUrl", "https://idpurl.se/samlv2/idp/metadata");
         ReflectionTestUtils.setField(dssSignatureService, "serviceUrl",
             "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
+        var signMessageTemplate = "Härmed skriver jag under {intygsTyp} utfärdat för {patientPnr}<br/><br/>Intygs-id: {intygsId}";
         ReflectionTestUtils.setField(dssSignatureService, "signMessage",
-            "Härmed skriver jag under {intygsTyp} utfärdat för {patientPnr}<br><br>Intygs-id: {intygsId}");
+            signMessageTemplate);
 
         var sb = SignaturBiljettBuilder.aSignaturBiljett("ticketId", SignaturTyp.XMLDSIG, SignMethod.SIGN_SERVICE).withIntygsId("intygsId")
             .withHash("HASH").build();
@@ -130,7 +134,19 @@ public class DssSignatureServiceTest {
         assertNotNull(capturedSignRequest.getInputDocuments());
         assertNotNull(capturedSignRequest.getOptionalInputs());
         assertNotNull(capturedSignRequest.getOptionalInputs().getAny());
+
         assertEquals(1, capturedSignRequest.getOptionalInputs().getAny().size());
+
+        // Check signMessage
+        var signRequestExtensionTypeJAXBElement = (JAXBElement<SignRequestExtensionType>) capturedSignRequest.getOptionalInputs().getAny()
+            .get(0);
+        assertNotNull(signRequestExtensionTypeJAXBElement);
+        var actualSignMessageBytes = signRequestExtensionTypeJAXBElement.getValue().getSignMessage().getMessage();
+        assertNotNull(actualSignMessageBytes);
+        var actualSignMessage = new String(actualSignMessageBytes, StandardCharsets.UTF_8);
+        var expectedSignMessage = signMessageTemplate.replace("{intygsTyp}", "intygsTyp").replace("{patientPnr}", "19121212-1212")
+            .replace("{intygsId}", "intygsId");
+        assertEquals(expectedSignMessage, actualSignMessage);
 
 //        System.out.println(toXmlString(capturedSignRequest));
 
