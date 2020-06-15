@@ -148,7 +148,7 @@ public class SrsServiceImplTest {
                     "OK", 1, "desc",
                     0.68, 0.54,
                     asList(SrsQuestionResponse.create("question1", "answer1")),
-                    "KORREKT", LocalDateTime.now())
+                    "KORREKT", LocalDateTime.now(), 15, "2.2")
                 ),
                 "F438A","OK",
                 "F43","OK",
@@ -166,7 +166,7 @@ public class SrsServiceImplTest {
                 asList(new SrsPrediction("certId", "F438", null,
                     "OK", 1, "desc",
                     null, 0.54, null,null,
-                    LocalDateTime.now())
+                    LocalDateTime.now(), null, "2.2")
                 ),
                 "F438A","OK",
                 "F43", "OK",
