@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -36,6 +37,8 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -56,6 +59,12 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
@@ -74,6 +83,9 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -94,6 +106,7 @@ public class NotificationServiceImplTest {
     private static final String ENHET_NAMN = "enhetName";
     private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
     private static final String ARENDE_ID = "arendeId";
+    private static final String VARDGIVAR_ID = "vardgivarId";
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElse(null);
 
@@ -136,6 +149,9 @@ public class NotificationServiceImplTest {
 
     @Mock
     private ReferensServiceImpl referensService;
+
+    @Mock
+    private IntygService intygService;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -369,6 +385,18 @@ public class NotificationServiceImplTest {
         verifySuccessfulInvocations(HandelsekodEnum.SKICKA);
     }
 
+    @Test
+    public void testIntygSentMissingInWC() throws Exception {
+        when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
+        doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
+        doReturn(createNotificationMessage(HandelsekodEnum.SKICKA, INTYG_JSON))
+            .when(mockNotificationMessageFactory)
+            .createNotificationMessage(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        notificationService.sendNotificationForIntygSent(INTYG_ID);
+        verifySuccessfulInvocationsForCertificate(HandelsekodEnum.SKICKA);
+    }
+
     @Test(expected = JmsException.class)
     public void testIntygSentJmsException() {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -403,6 +431,18 @@ public class NotificationServiceImplTest {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
         notificationService.sendNotificationForIntygRevoked(INTYG_ID);
         verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
+    }
+
+    @Test
+    public void testIntygRevokedMissingInWC() throws Exception {
+        when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
+        doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
+        doReturn(createNotificationMessage(HandelsekodEnum.MAKULE, INTYG_JSON))
+            .when(mockNotificationMessageFactory)
+            .createNotificationMessage(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        notificationService.sendNotificationForIntygRevoked(INTYG_ID);
+        verifySuccessfulInvocationsForCertificate(HandelsekodEnum.MAKULE);
     }
 
     @Test(expected = JmsException.class)
@@ -757,6 +797,150 @@ public class NotificationServiceImplTest {
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
     }
 
+    @Test
+    public void testSendNotificationForQAsForCertificate() throws Exception {
+        when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
+        doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
+        doReturn(Optional.of(SchemaVersion.VERSION_3)).when(mockSendNotificationStrategy).decideNotificationForIntyg(any(Utlatande.class));
+        doReturn(createNotificationMessage(HandelsekodEnum.HANFRFM, INTYG_JSON))
+            .when(mockNotificationMessageFactory)
+            .createNotificationMessage(any(), any(), any(), any(), any(), any(), any(), any(), any());
+        notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        verifySuccessfulInvocationsForCertificate(HandelsekodEnum.HANFRFM);
+    }
+
+    @Test
+    public void testFindNotificationsOnUnitsWithoutTimestamp() {
+        final var unitIds = Arrays.asList("UnitId1", "UnitId2");
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var request = new IntygWithNotificationsRequest(null, null, unitIds, null, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdIn(patientId.getPersonnummer(), unitIds);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnUnitsWithTimestamp() {
+        final var unitIds = Arrays.asList("UnitId1", "UnitId2");
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var from = LocalDateTime.now();
+        final var to = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(from, to, unitIds, null, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampBetween(patientId.getPersonnummer(), unitIds, from, to);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnUnitsWithFromTimestamp() {
+        final var unitIds = Arrays.asList("UnitId1", "UnitId2");
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var from = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(from, null, unitIds, null, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampAfter(patientId.getPersonnummer(), unitIds, from);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnUnitsWithToTimestamp() {
+        final var unitIds = Arrays.asList("UnitId1", "UnitId2");
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var to = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(null, to, unitIds, null, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampBefore(patientId.getPersonnummer(), unitIds, to);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnCareProvierWithoutTimestamp() {
+        final var unitIds = Collections.EMPTY_LIST;
+        final var careProviderId = "careProviderId";
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var request = new IntygWithNotificationsRequest(null, null, unitIds, careProviderId, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarId(patientId.getPersonnummer(), careProviderId);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnCareProviderWithTimestamp() {
+        final var unitIds = Collections.EMPTY_LIST;
+        final var careProviderId = "careProviderId";
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var from = LocalDateTime.now();
+        final var to = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(from, to, unitIds, careProviderId, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampBetween(patientId.getPersonnummer(), careProviderId, from, to);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnCareProviderWithFromTimestamp() {
+        final var unitIds = Collections.EMPTY_LIST;
+        final var careProviderId = "careProviderId";
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var from = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(from, null, unitIds, careProviderId, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampAfter(patientId.getPersonnummer(), careProviderId, from);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
+    @Test
+    public void testFindNotificationsOnCareProviderWithToTimestamp() {
+        final var unitIds = Collections.EMPTY_LIST;
+        final var careProviderId = "careProviderId";
+        final var patientId = Personnummer.createPersonnummer("191212121212").get();
+        final var to = LocalDateTime.now();
+        final var request = new IntygWithNotificationsRequest(null, to, unitIds, careProviderId, patientId);
+
+        final var notifications = Collections.EMPTY_LIST;
+
+        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampBefore(patientId.getPersonnummer(), careProviderId, to);
+
+        final var actualNotifications = notificationService.findNotifications(request);
+
+        assertEquals(notifications, actualNotifications);
+    }
+
     private void verifySuccessfulInvocations(HandelsekodEnum kod) throws Exception {
         verifySuccessfulInvocations(kod, SchemaVersion.VERSION_3);
     }
@@ -764,6 +948,38 @@ public class NotificationServiceImplTest {
     private void verifySuccessfulInvocations(HandelsekodEnum kod, SchemaVersion schemaVersion) throws Exception {
         verify(mockNotificationMessageFactory).createNotificationMessage(
             any(Utkast.class),
+            eq(kod),
+            eq(schemaVersion),
+            anyString(),
+            or(isNull(), any(Amneskod.class)),
+            or(isNull(), any(LocalDate.class)));
+
+        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+        verify(template).send(messageCaptor.capture());
+
+        Message res = messageCaptor.getValue().createMessage(session);
+        assertEquals(INTYG_ID, res.getStringProperty(NotificationRouteHeaders.INTYGS_ID));
+        assertEquals(INTYG_TYP_FK, res.getStringProperty(NotificationRouteHeaders.INTYGS_TYP));
+        assertEquals(kod.value(), res.getStringProperty(NotificationRouteHeaders.HANDELSE));
+        assertNotNull(((TextMessage) res).getText());
+
+        NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
+        assertEquals(INTYG_JSON, nm.getUtkast());
+
+        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
+        verify(handelseRepository).save(any(Handelse.class));
+    }
+
+    private void verifySuccessfulInvocationsForCertificate(HandelsekodEnum kod) throws Exception {
+        verifySuccessfulInvocationsForCertificate(kod, SchemaVersion.VERSION_3);
+    }
+
+    private void verifySuccessfulInvocationsForCertificate(HandelsekodEnum kod, SchemaVersion schemaVersion) throws Exception {
+        verify(mockNotificationMessageFactory).createNotificationMessage(
+            eq(INTYG_ID),
+            eq(INTYG_TYP_FK),
+            eq(ENHET_ID),
+            eq(INTYG_JSON),
             eq(kod),
             eq(schemaVersion),
             anyString(),
@@ -805,6 +1021,29 @@ public class NotificationServiceImplTest {
         utkast.setModel(INTYG_JSON);
         utkast.setPatientPersonnummer(PATIENT_ID);
         return utkast;
+    }
+
+    private IntygContentHolder createCertificate() {
+        final var certificate = mock(IntygContentHolder.class);
+        doReturn(INTYG_JSON).when(certificate).getContents();
+        final var utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(certificate).getUtlatande();
+        doReturn(INTYG_ID).when(utlatande).getId();
+        doReturn(INTYG_TYP_FK).when(utlatande).getTyp();
+        final var basicData = mock(GrundData.class);
+        doReturn(basicData).when(utlatande).getGrundData();
+        final var createdBy = mock(HoSPersonal.class);
+        doReturn(createdBy).when(basicData).getSkapadAv();
+        final var careUnit = mock(Vardenhet.class);
+        doReturn(careUnit).when(createdBy).getVardenhet();
+        doReturn(ENHET_ID).when(careUnit).getEnhetsid();
+        final var careProvider = mock(Vardgivare.class);
+        doReturn(careProvider).when(careUnit).getVardgivare();
+        doReturn(VARDGIVAR_ID).when(careProvider).getVardgivarid();
+        final var patient = mock(Patient.class);
+        doReturn(patient).when(basicData).getPatient();
+        doReturn(PATIENT_ID).when(patient).getPersonId();
+        return certificate;
     }
 
     private TextMessage createTextMessage(String s) throws JMSException {

@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,7 +64,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.util.Lists;
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -518,6 +518,18 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(certificateRelationService).getRelations(eq(CERTIFICATE_ID));
+    }
+
+    @Test
+    public void testFetchIntygDataForInternalUse() throws Exception {
+        IntygContentHolder res = intygService.fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+        verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
+        verifyNoInteractions(logservice, mockMonitoringService);
     }
 
     @Test
@@ -1134,6 +1146,7 @@ public class IntygServiceTest {
         Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(intygId);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
@@ -1142,15 +1155,12 @@ public class IntygServiceTest {
 
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository
-            .findDraftsByPatientAndEnhetAndStatus(eq(PERSON_ID), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
-                eq(Collections.singleton(intygType)))).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.singletonList(handelse));
+        when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
+        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1169,32 +1179,46 @@ public class IntygServiceTest {
     }
 
     @Test
-    public void testListCertificatesForCareWithQANoNotifications() throws Exception {
+    public void testListCertificatesForCareWithQAOkWithTimestamp() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
         final String intygType = "intygType";
         final String intygId = "intygId";
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+
+        Handelse handelse = new Handelse();
+        handelse.setTimestamp(localDateTime);
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(intygId);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
+        final var request = new IntygWithNotificationsRequest.Builder()
+            .setPersonnummer(PERSNR)
+            .setEnhetId(enhetList)
+            .setStartDate(LocalDateTime.now())
+            .build();
+        final var draftList = new ArrayList<Utkast>();
+        draftList.add(getDraft(intygId));
+
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository
-            .findDraftsByPatientAndEnhetAndStatus(eq(PERSON_ID), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
-                eq(Collections.singleton(intygType)))).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
+        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
+        doReturn(draftList).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request);
 
         assertNotNull(res);
         assertEquals(1, res.size());
-        assertTrue(res.get(0).getNotifications().isEmpty());
+        assertEquals(1, res.get(0).getNotifications().size());
+        assertEquals(HandelsekodEnum.SKAPAT, res.get(0).getNotifications().get(0).getCode());
+        assertEquals(localDateTime, res.get(0).getNotifications().get(0).getTimestamp());
         assertEquals(1, res.get(0).getSentQuestions().getTotalt());
         assertEquals(2, res.get(0).getSentQuestions().getEjBesvarade());
         assertEquals(3, res.get(0).getSentQuestions().getBesvarade());
@@ -1203,6 +1227,74 @@ public class IntygServiceTest {
         assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
         assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
         assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
+        assertEquals(REFERENCE, res.get(0).getRef());
+    }
+
+    @Test
+    public void testListCertificatesForCareWithQAOkWithTimestampMissingDraft() throws Exception {
+        final List<String> enhetList = Collections.singletonList("enhet");
+
+        final String intygType = "intygType";
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+
+        Handelse handelse = new Handelse();
+        handelse.setTimestamp(localDateTime);
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(CERTIFICATE_ID);
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
+
+        final var request = new IntygWithNotificationsRequest.Builder()
+            .setPersonnummer(PERSNR)
+            .setEnhetId(enhetList)
+            .setStartDate(LocalDateTime.now())
+            .build();
+        final var draftList = new ArrayList<Utkast>();
+
+        when(moduleRegistry.listAllModules()).thenReturn(
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(fragorOchSvarCreator.createArenden(eq(CERTIFICATE_ID), anyString())).thenReturn(Pair.of(sent, received));
+        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
+        doReturn(Collections.emptyList()).when(utkastRepository).findAllById(any());
+
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request);
+
+        assertNotNull(res);
+        assertEquals(1, res.size());
+        assertEquals(1, res.get(0).getNotifications().size());
+        assertEquals(HandelsekodEnum.SKAPAT, res.get(0).getNotifications().get(0).getCode());
+        assertEquals(localDateTime, res.get(0).getNotifications().get(0).getTimestamp());
+        assertEquals(1, res.get(0).getSentQuestions().getTotalt());
+        assertEquals(2, res.get(0).getSentQuestions().getEjBesvarade());
+        assertEquals(3, res.get(0).getSentQuestions().getBesvarade());
+        assertEquals(4, res.get(0).getSentQuestions().getHanterade());
+        assertEquals(5, res.get(0).getReceivedQuestions().getTotalt());
+        assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
+        assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
+        assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
+        assertEquals("", res.get(0).getRef());
+    }
+
+    @Test
+    public void testListCertificatesForCareWithQANoNotifications() throws Exception {
+        final List<String> enhetList = Collections.singletonList("enhet");
+
+        final String intygId = "intygId";
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
+        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
+
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+
+        assertNotNull(res);
+        assertEquals(0, res.size());
     }
 
     @Test
@@ -1216,6 +1308,7 @@ public class IntygServiceTest {
         Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(intygId);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
@@ -1224,11 +1317,8 @@ public class IntygServiceTest {
 
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(PERSON_ID), eq(vardgivarId),
-            eq(Arrays.asList(UtkastStatus.values())),
-            eq(Collections.singleton(intygType)))).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId)))
-            .thenReturn(Collections.singletonList(handelse));
+        when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
+        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 

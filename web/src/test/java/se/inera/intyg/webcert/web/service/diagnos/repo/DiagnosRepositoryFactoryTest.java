@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
@@ -42,11 +43,18 @@ public class DiagnosRepositoryFactoryTest {
     private static final String LINE_2 = "A083W  Enterit orsakad av annat specificerat virus";
     private static final String LINE_2_KOD = "A083W";
     private static final String LINE_2_BESK = "Enterit orsakad av annat specificerat virus";
+    private static final String LINE_3 = "A17\t†\tTuberkulos i nervsystemet";
+    private static final String LINE_3_KOD = "A17";
+    private static final String LINE_3_BESK = "Tuberkulos i nervsystemet";
+    private static final String LINE_4 = "A17\t*\tTuberkulos i nervsystemet";
+    private static final String LINE_4_KOD = "A17";
+    private static final String LINE_4_BESK = "Tuberkulos i nervsystemet";
 
     private static final String REALLY_MESSY_LINE = "  A050   Matförgiftning orsakad av stafylokocker  ";
+    private static final String LINE_WITH_BOM = "\uFEFFA050   Matförgiftning orsakad av stafylokocker  ";
 
-    private static final String FILE_1 = "classpath:/DiagnosService/KSH97_TESTKODER_1.ANS";
-    private static final String FILE_2 = "classpath:/DiagnosService/KSH97_TESTKODER_2.ANS";
+    private static final String FILE_1 = "classpath:/DiagnosService/icd10se/digit3.txt";
+    private static final String FILE_2 = "classpath:/DiagnosService/icd10se/digit4.txt";
     private static final String FILE_3 = "classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS";
 
     @Autowired
@@ -60,15 +68,16 @@ public class DiagnosRepositoryFactoryTest {
     @Test
     public void testCreateRepository() {
         List<String> fileList = Arrays.asList(FILE_1, FILE_2);
-        DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList);
+        DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
+                StandardCharsets.UTF_8);
         assertNotNull(repository);
-        assertEquals(150, repository.nbrOfDiagosis());
+        assertEquals(11652, repository.nbrOfDiagosis());
     }
 
     @Test
     public void testReadDiagnosFile() throws Exception {
         DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
-        factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository);
+        factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository, StandardCharsets.ISO_8859_1);
         diagnosRepository.openLuceneIndexReader();
         assertEquals(980, diagnosRepository.nbrOfDiagosis());
         assertNotNull(diagnosRepository.getDiagnosesByCode("A00-"));
@@ -77,37 +86,59 @@ public class DiagnosRepositoryFactoryTest {
     @Test
     public void testCreateDiagnosFromString() {
 
-        Diagnos res = factory.createDiagnosFromString(LINE_1);
+        Diagnos res = factory.createDiagnosFromString(LINE_1, false);
 
         assertNotNull(res);
         assertEquals(LINE_1_KOD, res.getKod());
         assertEquals(LINE_1_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_2);
+        res = factory.createDiagnosFromString(LINE_2, false);
 
         assertNotNull(res);
         assertEquals(LINE_2_KOD, res.getKod());
         assertEquals(LINE_2_BESK, res.getBeskrivning());
+
+        res = factory.createDiagnosFromString(LINE_3, false);
+
+        assertNotNull(res);
+        assertEquals(LINE_3_KOD, res.getKod());
+        assertEquals(LINE_3_BESK, res.getBeskrivning());
+
+        res = factory.createDiagnosFromString(LINE_4, false);
+
+        assertNotNull(res);
+        assertEquals(LINE_4_KOD, res.getKod());
+        assertEquals(LINE_4_BESK, res.getBeskrivning());
 
     }
 
     @Test
     public void testWithNullsAndEmpty() {
 
-        Diagnos res = factory.createDiagnosFromString(null);
+        Diagnos res = factory.createDiagnosFromString(null, false);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("");
+        res = factory.createDiagnosFromString("", false);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("  ");
+        res = factory.createDiagnosFromString("  ", false);
         assertNull(res);
     }
 
     @Test
     public void testWithMessyString() {
 
-        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE);
+        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false);
+        assertNotNull(res);
+        assertEquals("A050", res.getKod());
+        assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
+
+    }
+
+    @Test
+    public void testRemoveBOMFromString() {
+
+        Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true);
         assertNotNull(res);
         assertEquals("A050", res.getKod());
         assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());

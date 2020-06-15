@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -35,14 +36,6 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.
-     * intyg.webcert.web.
-     * persistence.utkast.model.Utkast)
-     */
     @Override
     public Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast) {
 
@@ -50,6 +43,18 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
         if (!schemaVersion.isPresent()) {
             LOG.debug("Utkast '{}' (type = '{}', unit = '{}') will not spawn notifications", utkast.getIntygsId(), utkast.getIntygsTyp(),
                 utkast.getEnhetsId());
+        }
+        return schemaVersion;
+    }
+
+    @Override
+    public Optional<SchemaVersion> decideNotificationForIntyg(Utlatande certificate) {
+        final var unitId = certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+        final var certificateId = certificate.getId();
+        final var certificateType = certificate.getTyp();
+        final Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(unitId, certificateType);
+        if (!schemaVersion.isPresent()) {
+            LOG.debug("Certificate '{}' (type = '{}', unit = '{}') will not spawn notifications", certificateId, certificateType, unitId);
         }
         return schemaVersion;
     }

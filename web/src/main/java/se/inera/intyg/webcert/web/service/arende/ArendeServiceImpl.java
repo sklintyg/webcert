@@ -84,6 +84,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.message.MessageImportService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -167,6 +168,8 @@ public class ArendeServiceImpl implements ArendeService {
     private IntygService intygService;
     @Autowired
     private LogService logService;
+    @Autowired
+    private MessageImportService messageImportService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -184,6 +187,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Arende processIncomingMessage(Arende arende) {
+        final var certificateId = arende.getIntygsId();
+        if (messageImportService.isImportNeeded(certificateId)) {
+            messageImportService.importMessages(certificateId, arende.getMeddelandeId());
+        }
+
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
         }
@@ -192,16 +200,31 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
         }
 
-        Utkast utkast = utkastRepository.findById(arende.getIntygsId()).orElse(null);
-        validateArende(arende.getIntygsId(), utkast);
+        Utkast utkast = utkastRepository.findById(certificateId).orElse(null);
+        if (utkast != null) {
+            validateArende(certificateId, utkast);
 
-        ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
+            ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
 
-        updateSenasteHandelseAndStatusForRelatedArende(arende);
+            updateSenasteHandelseAndStatusForRelatedArende(arende);
 
-        monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
-            arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-            arende.getSvarPaId() != null);
+            monitoringLog.logArendeReceived(certificateId, utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
+                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+                arende.getSvarPaId() != null);
+        } else {
+            final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
+
+            validateArende(certificate);
+
+            ArendeConverter.decorateMessageFromCertificate(arende, certificate.getUtlatande(), LocalDateTime.now(systemClock));
+
+            updateSenasteHandelseAndStatusForRelatedArende(arende);
+
+            monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
+                certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
+                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+                arende.getSvarPaId() != null);
+        }
 
         Arende saved = arendeRepository.save(arende);
 
@@ -219,14 +242,26 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                 + " for new question from vard!");
         }
+
+        validateAccessRightsToCreateQuestion(intygId);
+
         Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
-        validateArende(intygId, utkast);
+        Arende arende;
+        if (utkast != null) {
+            validateArende(intygId, utkast);
 
-        validateAccessRightsToCreateQuestion(utkast);
+            arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
+                webcertUserService.getUser().getNamn(), hsaEmployeeService);
+        } else {
+            final var certificateTypeInformation = intygService.getIntygTypeInfo(intygId, null);
+            final var certificate = intygService.fetchIntygData(intygId, certificateTypeInformation.getIntygType(), true, false);
 
-        Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
-            webcertUserService.getUser().getNamn(), hsaEmployeeService);
+            validateArende(certificate);
+
+            arende = ArendeConverter.createMessageFromCertificate(amne, rubrik, meddelande, certificate.getUtlatande(),
+                LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
+        }
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
@@ -430,6 +465,10 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
+        if (messageImportService.isImportNeeded(intygsId)) {
+            messageImportService.importMessages(intygsId);
+        }
+
         validateAccessRightsToReadArenden(intygsId);
 
         List<Arende> arendeList = getArendeForIntygId(intygsId);
@@ -731,8 +770,12 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private List<ArendeConversationView> getArendeConversationViewList(String intygsId, List<Arende> arendeList) {
-
         List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygsId, utkastRepository);
+
+        final var answerWithCertificate = getAnsweredFromCertificateOutsideWebcert(intygsId);
+        if (answerWithCertificate != null && isNotDuplicateAnswer(answerWithCertificate, kompltToIntyg)) {
+            kompltToIntyg.add(answerWithCertificate);
+        }
 
         List<ArendeDraft> arendeDraftList = arendeDraftService.listAnswerDrafts(intygsId);
 
@@ -742,6 +785,31 @@ public class ArendeServiceImpl implements ArendeService {
             kompltToIntyg,
             arendeDraftList);
 
+    }
+
+    private boolean isNotDuplicateAnswer(AnsweredWithIntyg answerWithCertificate, List<AnsweredWithIntyg> answeredWithIntygList) {
+        return answeredWithIntygList.stream()
+            .noneMatch(answeredWithIntyg -> answeredWithIntyg.getIntygsId().equalsIgnoreCase(answerWithCertificate.getIntygsId()));
+    }
+
+    private AnsweredWithIntyg getAnsweredFromCertificateOutsideWebcert(String certificateId) {
+        if (utkastRepository.existsById(certificateId)) {
+            return null;
+        }
+
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, true);
+        if (isComplementedByCertificate(certificate)) {
+            final var signedDate = certificate.getUtlatande().getGrundData().getSigneringsdatum();
+            final var issuerByName = certificate.getUtlatande().getGrundData().getSkapadAv().getFullstandigtNamn();
+
+            return AnsweredWithIntyg.create(certificateId, issuerByName, signedDate, signedDate, issuerByName);
+        }
+        return null;
+    }
+
+    private boolean isComplementedByCertificate(IntygContentHolder certificate) {
+        return certificate != null && certificate.getRelations().getLatestChildRelations().getComplementedByIntyg() != null
+            && !certificate.getRelations().getLatestChildRelations().getComplementedByIntyg().isMakulerat();
     }
 
     private NotificationEvent determineNotificationEvent(Arende arende, boolean arendeIsAnswered) {
@@ -810,6 +878,17 @@ public class ArendeServiceImpl implements ArendeService {
         } else if (utkast.getAterkalladDatum() != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
                 "Certificate " + arendeIntygsId + " is revoked.");
+        }
+    }
+
+    private void validateArende(IntygContentHolder certificate) {
+        if (BLACKLISTED.contains(certificate.getUtlatande().getTyp())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                "Certificate " + certificate.getUtlatande().getId() + " has wrong type. " + certificate.getUtlatande().getTyp()
+                    + " is blacklisted.");
+        } else if (certificate.isRevoked()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
+                "Certificate " + certificate.getUtlatande().getId()  + " is revoked.");
         }
     }
 
@@ -909,8 +988,8 @@ public class ArendeServiceImpl implements ArendeService {
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    private void validateAccessRightsToCreateQuestion(Utkast utkast) {
-        final Utlatande utlatande = getUtlatande(utkast);
+    private void validateAccessRightsToCreateQuestion(String certificateId) {
+        final Utlatande utlatande = getUtlatande(certificateId);
         final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
             AccessEvaluationParameters.create(utlatande.getTyp(),
                 getVardenhet(utlatande),

@@ -16,17 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.Optional;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+package se.inera.intyg.webcert.web.integration;
 
-public interface SendNotificationStrategy {
+import java.util.List;
+import se.inera.intyg.infra.message.dto.MessageFromIT;
 
-    Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast);
+/**
+ * Service to use when calling Intygstjanstens internal Rest APIs.
+ */
+public interface ITIntegrationService {
 
-    Optional<SchemaVersion> decideNotificationForIntyg(Utlatande certificate);
-
+    /**
+     * Get all messages for a certificate.
+     * @param certificateId Id of certificate
+     * @return  List of messages. If no messages exists for the certificate, then list will be empty.
+     */
+    List<MessageFromIT> findMessagesByCertificateId(String certificateId);
 }

@@ -310,6 +310,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
             "FragaSvarServiceImplTest/utlatande.json").getInputStream(), StandardCharsets.UTF_8);
         utkast.setModel(json);
         utkast.setIntygsId(intygId);
+        utkast.setIntygsTyp(INTYG_TYP_FK);
         utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(
