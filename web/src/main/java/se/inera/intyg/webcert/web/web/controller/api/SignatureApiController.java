@@ -113,6 +113,8 @@ public class SignatureApiController extends AbstractApiController {
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
 
+                monitoringLogService.logSignRequestCreated(signRequestDTO.getTransactionId());
+
                 return SignaturStateDTOBuilder.aSignaturStateDTO().withId(signRequestDTO.getTransactionId())
                     .withActionUrl(signRequestDTO.getActionUrl())
                     .withSignRequest(signRequestDTO.getSignRequest()).build();
@@ -131,13 +133,12 @@ public class SignatureApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
 
-        LOG.debug("Received sign response from sign service with transactionID {}", relayState);
-//        monitoringLogService.logSignResponseReceived(relayState); //TODO
+//        LOG.debug("Received sign response from sign service with transactionID {}", relayState);
+        monitoringLogService.logSignResponseReceived(relayState);
 
         String signResponseString = "";
         try {
             signResponseString = new String(Base64.getDecoder().decode(eidSignResponse));
-
         } catch (Exception e) {
             LOG.error("Could not decode Sign Response", e);
             return Response.serverError().build();
@@ -147,8 +148,8 @@ public class SignatureApiController extends AbstractApiController {
 
         //Return and log error TODO
         if (!validationResponse.isValid()) {
-            LOG.debug("Failed to validate sign response with transactionID {}", relayState);
-//        monitoringLogService.logSignResponseInvalid(relayState);
+//            LOG.debug("Failed to validate sign response with transactionID {}", relayState);
+            monitoringLogService.logSignResponseInvalid(relayState);
             return Response.serverError().build();
         }
 

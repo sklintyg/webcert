@@ -409,6 +409,21 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.MESSAGE_IMPORTED, messageId, messageType, certificateId, caregiverId, careUnitId);
     }
 
+    @Override
+    public void logSignResponseReceived(String transactionId) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_RECEIVED, transactionId);
+    }
+
+    @Override
+    public void logSignResponseInvalid(String transactionId) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_INVALID, transactionId);
+    }
+
+    @Override
+    public void logSignRequestCreated(String transactionId) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_REQUEST_CREATED, transactionId);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -508,7 +523,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         TEST_CERTIFICATE_ERASED("Test certificate '{}' on care unit '{}' created by '{}' was erased"),
 
-        MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported");
+        MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported"),
+
+        DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID {}"),
+
+        DSS_SIGNATURE_RESPONSE_INVALID("Failed to validate sign response with transactionID {}"),
+
+        DSS_SIGNATURE_REQUEST_CREATED("Sign request created with transactionID {}");
 
 
         private final String msg;

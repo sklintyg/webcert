@@ -297,11 +297,11 @@ public class DssSignatureService {
             var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
 
             var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
-            var signTask = signTasks.getValue().getSignTaskData().get(0);
+            var signTaskDataType = signTasks.getValue().getSignTaskData().get(0);
 
-            byte[] signature = signTask.getBase64Signature()
+            byte[] signature = signTaskDataType.getBase64Signature()
                 .getValue();
-            String signTaskId = signTask.getSignTaskId();
+            String signTaskId = signTaskDataType.getSignTaskId();
 
             String certificate = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
                 .get(0));
@@ -310,7 +310,7 @@ public class DssSignatureService {
 
             return sb;
         } catch (JAXBException e) {
-            e.printStackTrace(); //TODO
+            LOG.error("Could not unmarshal sign response", e);
         }
         return null;
     }
@@ -333,6 +333,5 @@ public class DssSignatureService {
         } else {
             return null;
         }
-
     }
 }
