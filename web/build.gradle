@@ -95,19 +95,17 @@ task restAssuredTest(type: Test) {
 gretty {
     servletContainer = 'tomcat9'
     contextPath = '/'
-
     integrationTestTask = null
     scanInterval = 0
     httpEnabled = true
-    httpsEnabled = true
-    sslKeyStorePath = file("../devops/dev/certifikat/localhost.p12")
-    sslKeyStorePassword = 'password'
+    httpsEnabled = false
     httpPort = 9088
-    httpsPort = 19088
     debugPort = 5007
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
+    serverConfigFile = 'tomcat-gretty.xml'
+
 
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
@@ -119,8 +117,7 @@ gretty {
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-dev.xml",
                "-DuseMinifiedJavaScript=${minified}",
-               "-Djetty.port=${httpPort}",
-               "-Djetty.https.port=${httpsPort}"]
+               "-Djetty.port=${httpPort}"]
 
     extraResourceBase webappOutputDir
 }
