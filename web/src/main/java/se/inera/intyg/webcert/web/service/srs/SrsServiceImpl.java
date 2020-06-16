@@ -124,12 +124,12 @@ public class SrsServiceImpl implements SrsService {
     //CHECKSTYLE:ON ParameterNumber
 
     @Override
-    public List<SrsQuestion> getQuestions(String diagnosisCode) {
-        LOG.debug("getQuestions(diagnosisCode:{}", diagnosisCode);
+    public List<SrsQuestion> getQuestions(String diagnosisCode, String modelVersion) {
+        LOG.debug("getQuestions(diagnosisCode:{}, modelVersion: {})", diagnosisCode, modelVersion);
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             throw new IllegalArgumentException("Missing diagnosis code");
         }
-        return srsInfraService.getQuestions(diagnosisCode);
+        return srsInfraService.getQuestions(diagnosisCode, modelVersion);
     }
 
     @Override
@@ -165,9 +165,9 @@ public class SrsServiceImpl implements SrsService {
     }
 
     @Override
-    public List<String> getAllDiagnosisCodes() {
-        LOG.debug("getAllDiagnosisCodes()");
-        return srsInfraService.getAllDiagnosisCodes();
+    public List<String> getAllDiagnosisCodes(String modelVersion) {
+        LOG.debug("getAllDiagnosisCodes(modelVersion: {})", modelVersion);
+        return srsInfraService.getAllDiagnosisCodes(modelVersion);
     }
 
     @Override

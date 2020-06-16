@@ -100,10 +100,13 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
-    public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
+    public Response getQuestions(
+        @ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode,
+        @ApiParam(value = "Prediction model version") @QueryParam("modelVersion") String modelVersion
+    ) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
         try {
-            List<SrsQuestion> questionList = srsService.getQuestions(diagnosisCode);
+            List<SrsQuestion> questionList = srsService.getQuestions(diagnosisCode, modelVersion);
             return Response.ok(questionList).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -175,9 +178,11 @@ public class SrsApiController extends AbstractApiController {
     @Path("/codes")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getDiagnosisCodes() {
+    public Response getDiagnosisCodes(
+        @ApiParam(value = "Prediction model version") @QueryParam("modelVersion") String modelVersion
+    ) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-        return Response.ok(srsService.getAllDiagnosisCodes()).build();
+        return Response.ok(srsService.getAllDiagnosisCodes(modelVersion)).build();
     }
 
     @GET
