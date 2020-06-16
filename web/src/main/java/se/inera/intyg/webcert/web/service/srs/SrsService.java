@@ -77,10 +77,11 @@ public interface SrsService {
     /**
      * Returns questions to be used as input when performing risk predictions for a given diagnosis.
      * @param diagnosisCode A diagnosis code (ICD-10)
+     * @param modelVersion Wanted prediction model version
      * @return A list of questions used for predicting the given diagnosis
      * @throws IllegalArgumentException If the diagnosis code is missing
      */
-    List<SrsQuestion> getQuestions(String diagnosisCode) throws IllegalArgumentException;
+    List<SrsQuestion> getQuestions(String diagnosisCode, String modelVersion) throws IllegalArgumentException;
 
     /**
      * Returns the consent status for SRS for a given person at a given care unit.
@@ -125,9 +126,10 @@ public interface SrsService {
 
     /**
      * Returns a list of all the diagnoses that has SRS support.
+     * @param modelVersion Prediction model version
      * @return A list of diagnosis codes
      */
-    List<String> getAllDiagnosisCodes();
+    List<String> getAllDiagnosisCodes(String modelVersion);
 
     /**
      * Gets non personalized SRS information for a given diagnosis code.
