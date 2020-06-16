@@ -74,13 +74,13 @@ public class MessageImportServiceImpl implements MessageImportService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void importMessages(String certificateId) {
         importMessages(certificateId, null);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void importMessages(String certificateId, String excludeMessageId) {
         final var messagesToImport = findMessagesToImport(certificateId, excludeMessageId);
         if (messagesToImport.isEmpty()) {
