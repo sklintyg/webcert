@@ -119,7 +119,6 @@ public class DssMetadataServiceTest {
         ReflectionTestUtils.setField(service, "organizationUrl", "https://inera.se");
         ReflectionTestUtils.setField(service, "organizationEmail", "teknik.intyg@inera.se");
 
-        service.initClientKeyManager();
         service.initClientMetadata();
 
         String clientMetadataAsString = service.getClientMetadataAsString();

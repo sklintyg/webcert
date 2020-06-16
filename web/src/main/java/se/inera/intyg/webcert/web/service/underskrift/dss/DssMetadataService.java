@@ -130,7 +130,6 @@ public class DssMetadataService {
     @PostConstruct
     void initialize() {
         initDssMetadata();
-        initClientKeyManager();
         initClientMetadata();
 
     }
@@ -147,10 +146,10 @@ public class DssMetadataService {
     public String getDssActionUrl() {
 
         if (StringUtils.hasText(actionUrlProperty)) {
-            LOG.info("Using property for actionURL");
+            LOG.debug("Using property for actionURL");
             return actionUrlProperty;
         } else {
-            LOG.info("Using AssertionConsumerService from metadata for actionURL");
+            LOG.debug("Using AssertionConsumerService from metadata for actionURL");
             SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
             AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
             return assertionConsumerService.getLocation();
@@ -206,14 +205,10 @@ public class DssMetadataService {
         }
     }
 
-    protected void initClientKeyManager() {
-
+    protected void initClientMetadata() {
         Map<String, String> map = new HashMap<>();
         map.put(keystoreAlias, keystorePassword);
         this.clientKeyManager = new JKSKeyManager(keystoreFile, keystorePassword, map, keystoreAlias);
-    }
-
-    protected void initClientMetadata() {
 
         clientExtendedMetadata = new ExtendedMetadata();
         clientExtendedMetadata.setSigningKey(keystoreAlias);

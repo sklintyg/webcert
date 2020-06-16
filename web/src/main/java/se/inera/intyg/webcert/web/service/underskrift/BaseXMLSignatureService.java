@@ -153,11 +153,10 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // Note: Determine whether we should use the payload json here or the utkast.getModel.
         String utkastXml = utkastModelToXMLConverter.utkastToXml(payloadJson, utkast.getIntygsTyp());
 
-        // Use the JSON->XML converted XML and perform a _new_ prepare on it so we can compare digests.
-        IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(utkastXml, biljett.getIntygsId());
+        // Use the JSON->XML converted XML and perform a _new_ digest on it so we can compare digests.
+        byte[] base64EncodedDigest = prepareSignatureService.transformAndGenerateDigest(utkastXml);
 
-        checkDigests(utkast, signingXmlHash, Base64.getEncoder()
-            .encodeToString(intygSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue()));
+        checkDigests(utkast, signingXmlHash, new String(base64EncodedDigest));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

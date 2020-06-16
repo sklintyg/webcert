@@ -139,6 +139,8 @@ public class DssSignatureServiceTest {
             .withHash("HASH").build();
 
         var createSignatureRequestDTOResponse = dssSignatureService.createSignatureRequestDTO(sb);
+        assertNotNull(createSignatureRequestDTOResponse);
+
         verify(dssSignMessageService).signSignRequest(signRequestCaptor.capture());
         var capturedSignRequest = signRequestCaptor.getValue();
 
@@ -147,15 +149,16 @@ public class DssSignatureServiceTest {
         assertNotNull(capturedSignRequest.getInputDocuments());
         assertNotNull(capturedSignRequest.getOptionalInputs());
         assertNotNull(capturedSignRequest.getOptionalInputs().getAny());
-
         assertEquals(1, capturedSignRequest.getOptionalInputs().getAny().size());
 
         // Check signMessage
         var signRequestExtensionTypeJAXBElement = (JAXBElement<SignRequestExtensionType>) capturedSignRequest.getOptionalInputs().getAny()
             .get(0);
         assertNotNull(signRequestExtensionTypeJAXBElement);
+
         var actualSignMessageBytes = signRequestExtensionTypeJAXBElement.getValue().getSignMessage().getMessage();
         assertNotNull(actualSignMessageBytes);
+
         var actualSignMessage = new String(actualSignMessageBytes, StandardCharsets.UTF_8);
         var expectedSignMessage = signMessageTemplate.replace("{intygsTyp}", "intygsTyp").replace("{patientPnr}", "19121212-1212")
             .replace("{intygsId}", "intygsId");
@@ -163,7 +166,6 @@ public class DssSignatureServiceTest {
 
 //        System.out.println(toXmlString(capturedSignRequest));
 
-        assertNotNull(createSignatureRequestDTOResponse);
     }
 
     private String toXmlString(SignRequest signRequest) {

@@ -23,12 +23,14 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignMessageService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -50,7 +52,16 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
         SignMethod signMethod) {
         String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
-        IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(registerCertificateXml, intygsId);
+
+        String signatureAlgorithm;
+        if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
+            signatureAlgorithm = DssSignMessageService.DEFAULT_SIGN_ALGORITHM;
+        } else {
+            signatureAlgorithm = PartialSignatureFactory.DEFAULT_SIGNATURE_ALGORITHM;
+        }
+
+        IntygXMLDSignature intygSignature = prepareSignatureService
+            .prepareSignature(registerCertificateXml, intygsId, signatureAlgorithm);
         intygSignature.setIntygJson(utkastJson);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
