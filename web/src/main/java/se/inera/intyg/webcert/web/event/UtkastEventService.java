@@ -30,8 +30,6 @@ public interface UtkastEventService {
 
     void createUtkastEventFromCopyUtkast(Utkast utkast, String user, EventKod eventKod, String originalIntygsId);
 
-    //void createUtkastEventFromCopyUtkast(String intygsId, String user, EventKod eventKod, String originalIntygsId);
-
     void createUtkastEvent(String intygsId, String anvandare, EventKod eventKod);
 
     void createUtkastEvent(String intygsId, String anvandare, EventKod eventKod, String meddelande);

@@ -74,8 +74,6 @@ public class UtkastEventServiceImpl implements UtkastEventService {
 
     private String getMeddelandeForCopyUtkastEvent(Utkast utkast, EventKod event, String originalId) {
         switch (event) {
-            case ODEFINIERAT:
-                return "testing, testing " + originalId;
             case ERSATTER:
                 return "Ersätter " + originalId;
             case KOMPLETTERAR:
@@ -83,7 +81,7 @@ public class UtkastEventServiceImpl implements UtkastEventService {
             case FORLANGER:
                 return "Förlänger " + originalId;
             case SKAPATFRAN:
-                return "Skapar " + utkast.getIntygsTyp() + " från " + originalId;
+                return "Skapat " + utkast.getIntygsTyp() + " från " + originalId;
         }
         return event.getKlartext();
     }

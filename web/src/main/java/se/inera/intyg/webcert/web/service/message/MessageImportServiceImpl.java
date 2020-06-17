@@ -121,7 +121,7 @@ public class MessageImportServiceImpl implements MessageImportService {
     private void importMessages(IntygContentHolder certificate, List<MessageFromIT> messages) {
         final var sortedMessages = sortInChronologicalOrder(messages);
 
-        for (var messageFromIT: sortedMessages) {
+        for (var messageFromIT : sortedMessages) {
             try {
                 processMessage(messageFromIT, certificate);
             } catch (Exception ex) {
@@ -146,14 +146,14 @@ public class MessageImportServiceImpl implements MessageImportService {
         }
 
         final var messageIds = new ArrayList<String>();
-        for (var message: messages) {
+        for (var message : messages) {
             messageIds.add(message.getMessageId());
         }
 
         final var existingMessageIds = messageRepository.findMeddelandeIdByMeddelandeId(messageIds);
 
         final var messagesToImport = new ArrayList<MessageFromIT>(messages.size());
-        for (var message: messages) {
+        for (var message : messages) {
             if (existingMessageIds.contains(message.getMessageId())) {
                 continue;
             }

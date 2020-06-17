@@ -35,7 +35,6 @@ public class UtkastEventTestUtil {
 
     public static final EventKod EVENT_KOD_SKAPAT = EventKod.SKAPAT;
     public static final EventKod EVENT_KOD_SIGNAT = EventKod.SIGNAT;
-    public static final EventKod EVENT_KOD_SKICKAT = EventKod.SKICKAT;
 
     public static final String MEDDELANDE_1 = "Really important event.";
 

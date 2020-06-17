@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -38,8 +39,6 @@ import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
 import se.inera.intyg.webcert.web.event.UtkastEventServiceImpl;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastEventServiceImplTest {
@@ -52,12 +51,6 @@ public class UtkastEventServiceImplTest {
     @Mock
     private UtkastEventRepository utkastEventRepository;
 
-    @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
-    private WebCertUser webcertUser;
-
     @InjectMocks
     private UtkastEventServiceImpl utkastEventService;
 
@@ -67,7 +60,6 @@ public class UtkastEventServiceImplTest {
 
     @Test
     public void testGetAllUtkastEventsByIntygsId() {
-     //  when(utkastEventRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
 
         List<UtkastEvent> list = new ArrayList<UtkastEvent>();
         UtkastEvent event = new UtkastEvent();
@@ -76,7 +68,6 @@ public class UtkastEventServiceImplTest {
 
         when(utkastEventRepository.findByIntygsId(anyString())).thenReturn(list);
 
-        //test
         List<UtkastEvent> eventList = utkastEventService.getUtkastEvents("intygsId1");
 
         assertEquals(1, eventList.size());

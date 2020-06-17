@@ -698,6 +698,8 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
             utkastRepository.save(utkast);
 
+            utkastEventService.createUtkastEvent(utkast.getIntygsId(), "UtkastLockJob", EventKod.LAST, "Utkast locked after 14 days");
+
             monitoringService.logUtkastLocked(utkast.getIntygsId(), utkast.getIntygsTyp());
         });
 

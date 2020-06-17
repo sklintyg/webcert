@@ -88,9 +88,10 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
 
         // Notify stakeholders and return the response
         sendNotification(processAnswer(referensId, answerType.getSvar()));
-        utkastEventService.createUtkastEvent(
-            referensId.toString(), "FK", EventKod.NYSVFM,
+
+        utkastEventService.createUtkastEvent(referensId.toString(), "FK", EventKod.NYSVFM,
             String.format("received medical certificate answer: %s}", answerType.getSvar()));
+
         return response;
     }
 

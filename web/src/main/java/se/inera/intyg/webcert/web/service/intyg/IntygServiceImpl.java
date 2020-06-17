@@ -656,7 +656,7 @@ public class IntygServiceImpl implements IntygService {
 
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
-        for (var certificateId: notificationCertificateIdHash.keySet()) {
+        for (var certificateId : notificationCertificateIdHash.keySet()) {
             final var notifications = notificationCertificateIdHash.get(certificateId);
 
             IntygWithNotificationsResponse response = null;
@@ -679,7 +679,7 @@ public class IntygServiceImpl implements IntygService {
 
     private HashMap<String, List<Handelse>> getNotificationCertificateIdHash(List<Handelse> allNotifications) {
         final var notificationCertificateIdHash = new HashMap<String, List<Handelse>>();
-        for (var notification: allNotifications) {
+        for (var notification : allNotifications) {
             final var certificateId = notification.getIntygsId();
             if (!notificationCertificateIdHash.containsKey(certificateId)) {
                 notificationCertificateIdHash.put(certificateId, new ArrayList<>());
@@ -693,7 +693,7 @@ public class IntygServiceImpl implements IntygService {
     private HashMap<String, Utkast> getDraftMap(Set<String> certificateIds) {
         final var draftList = utkastRepository.findAllById(certificateIds);
         final var draftMap = new HashMap<String, Utkast>(draftList.size());
-        for (var draft: draftList) {
+        for (var draft : draftList) {
             draftMap.put(draft.getIntygsId(), draft);
         }
         return draftMap;
@@ -985,8 +985,8 @@ public class IntygServiceImpl implements IntygService {
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
 
-        // failar revoke testRevokeIntyg()
         utkastEventService.createUtkastEvent(intygsId, webCertUserService.getUser().getHsaId(), EventKod.MAKULERAT, reason);
+        checkIfAddEventOnParent(intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
@@ -1002,6 +1002,17 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithRevokedDate(intygsId);
 
         return IntygServiceResult.OK;
+    }
+
+    private void checkIfAddEventOnParent(String intygsId) {
+        Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(intygsId);
+        if (relationsOfChild != null) {
+            WebcertCertificateRelation parent = relationsOfChild.getParent();
+            if (parent != null && parent.getIntygsId() != null) {
+                utkastEventService.createUtkastEvent(parent.getIntygsId(), webCertUserService.getUser().getHsaId(), EventKod.RELINTYGMAKULE,
+                    "Relaterat intyg " + intygsId + " makulerat");
+            }
+        }
     }
 
     private void handleComplementedParent(String intygsId) {

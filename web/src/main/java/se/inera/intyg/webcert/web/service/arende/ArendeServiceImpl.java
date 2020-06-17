@@ -421,8 +421,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende openedArende = arendeRepository.save(arende);
 
-        sendNotification(openedArende, notificationEvent);
-        // generateUtkastEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), notificationEvent);
+        sendNotificationAndCreateEvent(openedArende, notificationEvent);
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
             arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -856,18 +855,13 @@ public class ArendeServiceImpl implements ArendeService {
         return null;
     }
 
-    // eller ska logiken för vilket event läggas i eventservicen istället? Fast blir fult att ta med sig NotificationEvent dit?
-    private void sendNotification(Arende arende, NotificationEvent event) {
+    private void sendNotificationAndCreateEvent(Arende arende, NotificationEvent event) {
         if (event != null) {
+            notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
             EventKod eventKod = getEventKod(event);
             if (eventKod != null) {
                 utkastEventService.createUtkastEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventKod, event.name());
             }
-            notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
-        } else { // TODO hur hantera ingen händelse men kanske ett utkastevent?
-            utkastEventService
-                .createUtkastEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), EventKod.ODEFINIERAT,
-                    "case: no notification event");
         }
     }
 
@@ -889,17 +883,8 @@ public class ArendeServiceImpl implements ArendeService {
             case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
                 return EventKod.NYSVFM;
         }
-        return EventKod.ODEFINIERAT;
+        return null;
     }
-
-    /*
-    private void sendNotification(Arende arende, NotificationEvent event) {
-        if (event != null) {
-            notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
-        }
-    }
-     */
-
 
     private Arende lookupArende(String meddelandeId) {
         Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
@@ -934,9 +919,10 @@ public class ArendeServiceImpl implements ArendeService {
                     + " is blacklisted.");
         } else if (certificate.isRevoked()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
-                "Certificate " + certificate.getUtlatande().getId()  + " is revoked.");
+                "Certificate " + certificate.getUtlatande().getId() + " is revoked.");
         }
     }
+
 
     private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventKod eventKod, boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
@@ -956,9 +942,7 @@ public class ArendeServiceImpl implements ArendeService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
             }
 
-            sendNotification(saved, notificationEvent);
-            utkastEventService.createUtkastEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventKod,
-                notificationEvent.name() + " test outgoingMessage");
+            sendNotificationAndCreateEvent(saved, notificationEvent);
         }
 
         return saved;
@@ -995,7 +979,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende closedArende = arendeRepository.save(arendeToClose);
 
         arendeDraftService.delete(closedArende.getIntygsId(), closedArende.getMeddelandeId());
-        sendNotification(closedArende, notificationEvent);
+        sendNotificationAndCreateEvent(closedArende, notificationEvent);
 
         return closedArende;
     }
@@ -1010,7 +994,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende reopenedArende = arendeRepository.save(arende);
 
         NotificationEvent notificationEvent = determineReopenedNotificationEvent(reopenedArende);
-        sendNotification(reopenedArende, notificationEvent);
+        sendNotificationAndCreateEvent(reopenedArende, notificationEvent);
 
     }
 
