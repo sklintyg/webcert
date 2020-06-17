@@ -34,7 +34,9 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -53,6 +55,9 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UtkastEventService utkastEventService;
 
     @Override
     public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
@@ -83,6 +88,9 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
 
         // Notify stakeholders and return the response
         sendNotification(processAnswer(referensId, answerType.getSvar()));
+        utkastEventService.createUtkastEvent(
+            referensId.toString(), "FK", EventKod.NYSVFM,
+            String.format("received medical certificate answer: %s}", answerType.getSvar()));
         return response;
     }
 

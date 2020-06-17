@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,18 +31,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.OptimisticLockException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -74,6 +71,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -130,6 +128,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UtkastEventService utkastEventService;
 
     @Autowired
     private MonitoringLogService monitoringService;
@@ -197,6 +198,8 @@ public class UtkastServiceImpl implements UtkastService {
             referensService.saveReferens(request.getIntygId(), request.getReferens());
         }
         int nrPrefillElements = request.getForifyllnad().isPresent() ? request.getForifyllnad().get().getSvar().size() : 0;
+
+        generateUtkastEvent(savedUtkast, EventKod.SKAPAT);
 
         // Notify stakeholders when a draft has been created
         sendNotification(savedUtkast, Event.CREATED);
@@ -327,6 +330,9 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
+
+            generateUtkastEvent(utkast, EventKod.KFSIGN);
+
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
         }
     }
@@ -413,6 +419,8 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
+
+        generateUtkastEvent(utkast, EventKod.RADERAT);
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
@@ -737,6 +745,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Secondly: notify stakeholders that draft is revoked
         sendNotification(utkast, Event.REVOKED);
+        generateUtkastEvent(utkast, EventKod.MAKULERAT);
 
         // Third: create a log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
@@ -985,6 +994,11 @@ public class UtkastServiceImpl implements UtkastService {
                 notificationService.sendNotificationForDraftRevoked(utkast);
                 break;
         }
+    }
+
+    private void generateUtkastEvent(Utkast utkast, EventKod eventKod) {
+        utkastEventService.createUtkastEvent(
+            utkast.getIntygsId(), webCertUserService.getUser().getHsaId(), eventKod);
     }
 
     private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {

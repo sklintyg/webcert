@@ -27,7 +27,8 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
           dialogService, IntygViewState, UtkastFilterModel, UtkastProxy, User, UserModel, statService) {
         'use strict';
 
-        IntygViewState.deletedDraft = false;
+        IntygViewState.intygWasRenewed = false;
+
         $scope.$on('statService.stat-update', function(event, message) {
           $scope.stat = message;
           $scope.unsignedUtkastCount = $scope.stat.intygValdEnhet;

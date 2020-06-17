@@ -81,13 +81,14 @@ public class SrsApiController extends AbstractApiController {
         @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
         @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
         @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
+        @ApiParam(value = "Dag i sjukskrivning") @QueryParam("daysIntoSickLeave") @DefaultValue("15") Integer daysIntoSickLeave,
         @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-        LOG.debug("getSrs(intygId: {}, diagnosisCode: {}, prediktion: {}, atgard: {}, statistik: {})",
-                intygId, diagnosisCode, prediktion, atgard, statistik);
+        LOG.debug("getSrs(intygId: {}, diagnosisCode: {}, prediktion: {}, atgard: {}, statistik: {}, daysIntoSickLeave, {})",
+                intygId, diagnosisCode, prediktion, atgard, statistik, daysIntoSickLeave);
         try {
             SrsResponse srsResponse = srsService.getSrs(getWebCertUserService().getUser(), intygId, personnummer, diagnosisCode,
-                    prediktion, atgard, statistik, questions);
+                    prediktion, atgard, statistik, questions, daysIntoSickLeave);
             return Response.ok(srsResponse).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

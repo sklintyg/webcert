@@ -40,6 +40,7 @@
     <jaxrs:serviceBeans>
       <ref bean="intygIntegrationController" />
       <ref bean="viewIntegrationController" />
+      <ref bean="userIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -61,6 +62,11 @@
       class="se.inera.intyg.webcert.web.web.controller.integration.ViewIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlIntygFragmentTemplate" value="${certificate.view.url.intyg-read-only.integration.template}" />
+  </bean>
+
+  <bean id="userIntegrationController"
+      class="se.inera.intyg.webcert.web.web.controller.integration.UserIntegrationController">
+    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
   </bean>
 
 </beans>

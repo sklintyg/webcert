@@ -1280,7 +1280,14 @@
     </addColumn>
   </changeSet>
 
-  <changeSet id="64" author="ar">
+  <changeSet id="64" author="mww">
+    <createIndex indexName="IDX_HANDELSE_PATIENT_PERSON_ID"
+        tableName="HANDELSE" unique="false">
+      <column name="PATIENT_PERSON_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="65" author="ar">
     <createTable tableName="INTYG_EVENT">
       <column name="ID" type="bigint">
         <constraints primaryKey="true" unique="true" nullable="false"/>
@@ -1306,9 +1313,9 @@
         columnName="ID" incrementBy="1" startWith="1"
         tableName="INTYG_EVENT"/>
 
-    <addForeignKeyConstraint baseColumnNames="INTYGS_ID"
+<!--    <addForeignKeyConstraint baseColumnNames="INTYGS_ID"
         baseTableName="INTYG_EVENT" constraintName="INTYG_EVENT_FK"
-        referencedColumnNames="INTYGS_ID" referencedTableName="INTYG"/>
+        referencedColumnNames="INTYGS_ID" referencedTableName="INTYG"/>-->
   </changeSet>
 
 </databaseChangeLog>

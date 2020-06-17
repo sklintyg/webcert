@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -37,6 +38,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -71,6 +73,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private UtkastEventService utkastEventService;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -211,6 +216,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private void finalizeSignature(Utkast utkast, WebCertUser user) {
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
+
+        utkastEventService.createUtkastEvent(utkast.getIntygsId(), user.getHsaId(), EventKod.SIGNAT,
+            String.format("Intygstyp: %s", utkast.getIntygsTyp()));
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
 
