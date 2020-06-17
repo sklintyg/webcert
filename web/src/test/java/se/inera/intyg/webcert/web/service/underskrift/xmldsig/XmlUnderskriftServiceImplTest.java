@@ -121,7 +121,8 @@ public class XmlUnderskriftServiceImplTest {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString())).thenReturn(buildIntygXMLSignature());
 
-        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE);
+        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE,
+            TICKET_ID);
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }

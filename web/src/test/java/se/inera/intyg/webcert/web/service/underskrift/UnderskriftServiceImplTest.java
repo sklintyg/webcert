@@ -188,10 +188,11 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
+            anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_ACCESS);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_ACCESS, TICKET_ID);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
 
@@ -201,7 +202,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -209,7 +210,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -217,7 +218,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test
@@ -230,7 +231,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
+            anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
@@ -244,15 +246,16 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
         verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastAlreadySigned() {
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
-            ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test

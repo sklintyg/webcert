@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.dss.xsd.dsscore.InputDocuments;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignResponse;
@@ -53,8 +55,8 @@ public class DssSignatureService {
     private final se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory objectFactoryCsig;
     private final se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory objectFactorySaml;
 
-    @Value("${webcert.host.url}")
-    private String webcertHostUrl;
+    @Value("${dss.client.metadata.host.url}")
+    private String dssClientHostUrl;
 
     @Value("${dss.service.clientid}")
     private String customerId;
@@ -89,7 +91,7 @@ public class DssSignatureService {
         var dateTimeNow = DateTime.now();
 
         var dssSignRequestDTO = new DssSignRequestDTO();
-        String transactionID = createTransactionID(dateTimeNow);
+        String transactionID = sb.getTicketId();
         dssSignRequestDTO.setTransactionId(transactionID);
         dssSignRequestDTO.setActionUrl(dssMetadataService.getDssActionUrl());
 
@@ -118,8 +120,8 @@ public class DssSignatureService {
         return UUID.randomUUID().toString();
     }
 
-    private String createTransactionID(DateTime dateTimeNow) {
-        var timestamp = Long.toHexString(dateTimeNow.getMillis());
+    public String createTransactionID() {
+        var timestamp = Long.toHexString(DateTime.now().getMillis());
         var uuid = generateUUID();
         return String.format("%s-%s-%s-%s", formatIdField(customerId), formatIdField(applicationId), timestamp, uuid);
     }
@@ -132,7 +134,7 @@ public class DssSignatureService {
     private InputDocuments createInputDocuments(SignaturBiljett sb) {
         var signTaskDataType = objectFactoryCsig.createSignTaskDataType();
         signTaskDataType.setSigType("XML");
-        signTaskDataType.setSignTaskId(sb.getTicketId());
+        signTaskDataType.setSignTaskId(generateUUID());
         signTaskDataType.setToBeSignedBytes(sb.getHash().getBytes());
 
         var tasks = objectFactoryCsig.createSignTasksType();
@@ -165,7 +167,7 @@ public class DssSignatureService {
         var signRequester = objectFactorySaml.createNameIDType();
         signRequester.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
         signRequester.setValue(
-            webcertHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
+            dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
         signRequestExtensionType.setSignRequester(signRequester);
 
         var signService = objectFactorySaml.createNameIDType();
@@ -266,7 +268,7 @@ public class DssSignatureService {
 
         var audienceRestrictionType = objectFactorySaml.createAudienceRestrictionType();
         audienceRestrictionType.getAudience()
-            .add(webcertHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH);
+            .add(dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH);
 
         conditionsType.getConditionOrAudienceRestrictionOrOneTimeUse().add(audienceRestrictionType);
         return conditionsType;
@@ -284,35 +286,44 @@ public class DssSignatureService {
     }
 
     @SuppressWarnings("unchecked")
-    public SignaturBiljett receiveSignResponse(String eIdSignResponse) {
+    public SignaturBiljett receiveSignResponse(String relayState, String eIdSignResponse) {
+        SignResponse signResponse;
         try {
-            var signResponse = unMarshallSignResponse(eIdSignResponse);
+            signResponse = unMarshallSignResponse(eIdSignResponse);
 
             var result = signResponse.getResult();
 
             //TODO validate result?
             var resultMajor = result.getResultMajor();
+            if ("urn:oasis:names:tc:dss:1.0:resultmajor:Success".equals(resultMajor)) {
 
-            var signatureObject = signResponse.getSignatureObject();
-            var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
+                var signatureObject = signResponse.getSignatureObject();
+                var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
 
-            var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
-            var signTaskDataType = signTasks.getValue().getSignTaskData().get(0);
+                var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
+                var signTaskDataType = signTasks.getValue().getSignTaskData().get(0);
 
-            byte[] signature = signTaskDataType.getBase64Signature()
-                .getValue();
-            String signTaskId = signTaskDataType.getSignTaskId();
+                byte[] signature = signTaskDataType.getBase64Signature()
+                    .getValue();
 
-            String certificate = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
-                .get(0));
+                String certificate = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
+                    .get(0));
 
-            var sb = underskriftService.netidSignature(signTaskId, signature, certificate);
+                return underskriftService.netidSignature(relayState, signature, certificate);
+            } else {
+                var resultMinor = result.getResultMinor();
+                var resultMessage = result.getResultMessage().getValue();
+                String message = String.format("Received error from sign service: %s - %s - %s", resultMajor, resultMinor, resultMessage);
 
-            return sb;
+                LOG.error(message);
+                throw new WebCertServiceException(
+                    WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    message);
+            }
         } catch (JAXBException e) {
             LOG.error("Could not unmarshal sign response", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not unmarshal sign response");
         }
-        return null;
     }
 
     private SignResponse unMarshallSignResponse(String eIdSignResponse) throws JAXBException {
@@ -329,7 +340,7 @@ public class DssSignatureService {
             var intygTypeVersion = utkast.getIntygTypeVersion();
 
             //#/intyg/lisjp/1.1/4dfd56f4-7321-4dda-a35a-8df6fa942a8a/?signed
-            return String.format("%s/#/intyg/%s/%s/%s/?signed", webcertHostUrl, intygsTyp, intygTypeVersion, intygsId);
+            return String.format("%s/#/intyg/%s/%s/%s/?signed", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId);
         } else {
             return null;
         }

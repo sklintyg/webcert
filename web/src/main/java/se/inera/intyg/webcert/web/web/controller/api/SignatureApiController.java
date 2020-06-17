@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
@@ -108,7 +109,15 @@ public class SignatureApiController extends AbstractApiController {
         }
 
         try {
-            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod);
+            String ticketId;
+
+            if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
+                ticketId = dssSignatureService.createTransactionID();
+            } else {
+                ticketId = UUID.randomUUID().toString();
+            }
+
+            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId);
 
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
@@ -153,7 +162,7 @@ public class SignatureApiController extends AbstractApiController {
             return Response.serverError().build();
         }
 
-        var signaturBiljett = dssSignatureService.receiveSignResponse(signResponseString);
+        var signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
         var returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
 

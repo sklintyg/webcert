@@ -103,7 +103,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Override
-    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
+        String ticketId) {
         WebCertUser user = webCertUserService.getUser();
 
         // Check if Utkast is eligible for signing right now, if so get it.
@@ -120,12 +121,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case EFOS:
             case FAKE:
                 signaturBiljett = xmlUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
                 break;
         }
 

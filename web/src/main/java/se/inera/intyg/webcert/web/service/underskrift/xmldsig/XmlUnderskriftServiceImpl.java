@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -50,7 +49,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
-        SignMethod signMethod) {
+        SignMethod signMethod, String ticketId) {
         String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
 
         String signatureAlgorithm;
@@ -65,7 +64,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         intygSignature.setIntygJson(utkastJson);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
-            .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG, signMethod)
+            .aSignaturBiljett(ticketId, SignaturTyp.XMLDSIG, signMethod)
             .withIntygsId(intygsId)
             .withVersion(version)
             .withIntygSignature(intygSignature)
