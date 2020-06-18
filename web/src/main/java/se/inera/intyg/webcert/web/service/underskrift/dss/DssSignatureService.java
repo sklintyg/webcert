@@ -3,8 +3,13 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.security.cert.CertPath;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -34,8 +39,11 @@ import se.inera.intyg.webcert.dss.xsd.dssext.SignTasksType;
 import se.inera.intyg.webcert.dss.xsd.samlassertion.v2.AttributeStatementType;
 import se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ConditionsType;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 
@@ -43,6 +51,7 @@ import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 public class DssSignatureService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DssSignatureService.class);
+    public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success"; //TODO
 
     private final DssMetadataService dssMetadataService;
     private final WebCertUserService userService;
@@ -50,6 +59,10 @@ public class DssSignatureService {
     private final DssSignMessageService dssSignMessageService;
 
     private final UnderskriftService underskriftService;
+
+    private final RedisTicketTracker redisTicketTracker;
+
+    private final MonitoringLogService monitoringLogService;
 
     private final se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory objectFactoryDssCore;
     private final se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory objectFactoryCsig;
@@ -76,7 +89,8 @@ public class DssSignatureService {
 
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
-        WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService) {
+        WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService,
+        RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService) {
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();
         objectFactoryCsig = new se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory();
         objectFactorySaml = new se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory();
@@ -85,6 +99,8 @@ public class DssSignatureService {
         this.utkastRepository = utkastRepository;
         this.dssSignMessageService = dssSignMessageService;
         this.underskriftService = underskriftService;
+        this.redisTicketTracker = redisTicketTracker;
+        this.monitoringLogService = monitoringLogService;
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
@@ -281,6 +297,7 @@ public class DssSignatureService {
                 .newXMLGregorianCalendar(beforeCalendar.toGregorianCalendar());
         } catch (DatatypeConfigurationException e) {
             LOG.error("Error converting date for SignRequest!", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
         return xmlGregorianCalendar;
     }
@@ -293,42 +310,73 @@ public class DssSignatureService {
 
             var result = signResponse.getResult();
 
-            //TODO validate result?
             var resultMajor = result.getResultMajor();
-            if ("urn:oasis:names:tc:dss:1.0:resultmajor:Success".equals(resultMajor)) {
+            if (RESULTMAJOR_SUCCESS.equals(resultMajor)) {
 
-                var signatureObject = signResponse.getSignatureObject();
-                var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
-
-                var signTasks = (JAXBElement<SignTasksType>) signatureObject.getOther().getAny().get(0);
+                var signTasks = (JAXBElement<SignTasksType>) signResponse.getSignatureObject().getOther().getAny().get(0);
                 var signTaskDataType = signTasks.getValue().getSignTaskData().get(0);
-
                 byte[] signature = signTaskDataType.getBase64Signature()
                     .getValue();
 
-                String certificate = Arrays.toString(signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate()
-                    .get(0));
+                var signResponseExtension = (JAXBElement<SignResponseExtensionType>) signResponse.getOptionalOutputs().getAny().get(0);
+                var certificates = signResponseExtension.getValue().getSignatureCertificateChain().getX509Certificate();
+                var certificate = findFirstCertificateInChain(certificates);
 
                 return underskriftService.netidSignature(relayState, signature, certificate);
             } else {
                 var resultMinor = result.getResultMinor();
                 var resultMessage = result.getResultMessage().getValue();
-                String message = String.format("Received error from sign service: %s - %s - %s", resultMajor, resultMinor, resultMessage);
 
-                LOG.error(message);
-                throw new WebCertServiceException(
-                    WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    message);
+                SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
+                monitoringLogService
+                    .logSignServiceErrorReceived(relayState, signaturBiljett.getIntygsId(), resultMajor, resultMinor, resultMessage);
+
+                return signaturBiljett;
             }
         } catch (JAXBException e) {
-            LOG.error("Could not unmarshal sign response", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not unmarshal sign response");
+            SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
+            monitoringLogService
+                .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(), "Could not unmarshal sign response: " + e.getMessage());
+            return signaturBiljett;
         }
+    }
+
+    private String findFirstCertificateInChain(List<byte[]> certificateByteArrayList) {
+        try {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+
+            List<Certificate> certificateList = new ArrayList<>();
+            for (var certBytes : certificateByteArrayList) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(certBytes);
+                certificateList.add(factory.generateCertificate(bais));
+            }
+
+            CertPath cp = factory.generateCertPath(certificateList);
+            return Base64.getEncoder().encodeToString(cp.getCertificates().get(0).getEncoded());
+        } catch (CertificateException e) {
+            e.printStackTrace(); //TODO
+        }
+        return "";
     }
 
     private SignResponse unMarshallSignResponse(String eIdSignResponse) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(SignResponse.class, SignResponseExtensionType.class, SignTasksType.class);
         return (SignResponse) context.createUnmarshaller().unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes()));
+    }
+
+    public String findReturnErrorUrl(String intygsId) {
+        var utkastOptional = utkastRepository.findById(intygsId);
+
+        if (utkastOptional.isPresent()) {
+            var utkast = utkastOptional.get();
+            var intygsTyp = utkast.getIntygsTyp();
+            var intygTypeVersion = utkast.getIntygTypeVersion();
+
+            //#/lisjp/1.1/edit/86beec75-b790-42cd-9fb9-3c9585e1bbed/
+            return String.format("%s/#/%s/%s/edit/%s/?error", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId);
+        } else {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Can't find certificate to return to!");
+        }
     }
 
     public String findReturnUrl(String intygsId) {
@@ -342,7 +390,11 @@ public class DssSignatureService {
             //#/intyg/lisjp/1.1/4dfd56f4-7321-4dda-a35a-8df6fa942a8a/?signed
             return String.format("%s/#/intyg/%s/%s/%s/?signed", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId);
         } else {
-            return null;
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Can't find certificate to return to!");
         }
+    }
+
+    public SignaturBiljett updateSignatureTicketWithError(String relayState) {
+        return redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
     }
 }

@@ -415,13 +415,19 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logSignResponseInvalid(String transactionId) {
-        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_INVALID, transactionId);
+    public void logSignResponseInvalid(String transactionId, String intygsId, String s) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_INVALID, transactionId, intygsId, s);
     }
 
     @Override
-    public void logSignRequestCreated(String transactionId) {
-        logEvent(MonitoringEvent.DSS_SIGNATURE_REQUEST_CREATED, transactionId);
+    public void logSignRequestCreated(String transactionId, String intygsId) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_REQUEST_CREATED, intygsId, transactionId);
+    }
+
+    @Override
+    public void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor, String resultMinor,
+        String resultMessage) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED, transactionId, intygsId, resultMajor, resultMinor, resultMessage);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -525,11 +531,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported"),
 
-        DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID {}"),
+        DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID {} for certificate {}"),
 
-        DSS_SIGNATURE_RESPONSE_INVALID("Failed to validate sign response with transactionID {}"),
+        DSS_SIGNATURE_RESPONSE_INVALID("Failed to read or validate sign response with transactionID {} for certificate {}: {}"),
 
-        DSS_SIGNATURE_REQUEST_CREATED("Sign request created with transactionID {}");
+        DSS_SIGNATURE_REQUEST_CREATED("Sign request for certificate {} created with transactionID {}"),
+
+        DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED(
+            "Received error from sign service for request with transactionID {} for certificate {} with error message: {} - {} - {}");
 
 
         private final String msg;

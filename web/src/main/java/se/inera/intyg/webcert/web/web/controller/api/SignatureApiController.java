@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignRequestDTO;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
@@ -122,7 +123,7 @@ public class SignatureApiController extends AbstractApiController {
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
 
-                monitoringLogService.logSignRequestCreated(signRequestDTO.getTransactionId());
+                monitoringLogService.logSignRequestCreated(signRequestDTO.getTransactionId(), intygsId);
 
                 return SignaturStateDTOBuilder.aSignaturStateDTO().withId(signRequestDTO.getTransactionId())
                     .withActionUrl(signRequestDTO.getActionUrl())
@@ -141,35 +142,43 @@ public class SignatureApiController extends AbstractApiController {
     @Path(SIGN_SERVICE_RESPONSE_PATH)
     @PrometheusTimeMethod
     public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
-
-//        LOG.debug("Received sign response from sign service with transactionID {}", relayState);
+        SignaturBiljett signaturBiljett;
         monitoringLogService.logSignResponseReceived(relayState);
 
         String signResponseString = "";
         try {
             signResponseString = new String(Base64.getDecoder().decode(eidSignResponse));
         } catch (Exception e) {
-            LOG.error("Could not decode Sign Response", e);
-            return Response.serverError().build();
+            signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
+            monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
+                "Could decode sign response: " + e.getMessage());
+            return getRedirectResponseWithReturnUrl(signaturBiljett);
         }
 
         var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponseString);
 
-        //Return and log error TODO
         if (!validationResponse.isValid()) {
-//            LOG.debug("Failed to validate sign response with transactionID {}", relayState);
-            monitoringLogService.logSignResponseInvalid(relayState);
-            return Response.serverError().build();
+            signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
+            monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
+                "Validation of sign response signature failed!");
+            return getRedirectResponseWithReturnUrl(signaturBiljett);
         }
 
-        var signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
+        signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
-        var returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
+        return getRedirectResponseWithReturnUrl(signaturBiljett);
+    }
+
+    private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett) {
+        String returnUrl;
+        if (SignaturStatus.ERROR.equals(signaturBiljett.getStatus())) {
+            returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId());
+        } else {
+            returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
+        }
 
         // This will give HTTP-status 307.
-        ResponseBuilder responseBuilder = Response.temporaryRedirect(URI.create(returnUrl));
-
-        return responseBuilder.build();
+        return Response.temporaryRedirect(URI.create(returnUrl)).build();
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
