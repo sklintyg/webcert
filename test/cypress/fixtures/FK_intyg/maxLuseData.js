@@ -35,7 +35,7 @@ fk = {
         },
         "rad3": {
             "kod": "f102x",
-            "text": "Alkoholberoendesyndrom, ospecificerad"
+            "text": "Alkoholberoende, ospecificerat"
         },
         "diagnosgrund": "Autismen fastställd vid BUP, och bipolär sjukdom fastställd vid rättspsykiatriska kliniken.",
         "revidera": {
