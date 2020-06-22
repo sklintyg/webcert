@@ -49,6 +49,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
@@ -135,11 +136,11 @@ public class XmlUnderskriftServiceImplTest {
 
         when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.transformAndGenerateDigest(anyString()))
-            .thenReturn(
+        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+            .thenReturn(new TransformAndDigestResponse(null,
                 Base64.getEncoder().encode(
                     UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
-                        .getDigestValue()));
+                        .getDigestValue())));
         when(utkastRepository.save(any(Utkast.class)))
             .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
                 ENHET_ID, PERSON_ID));
@@ -188,11 +189,11 @@ public class XmlUnderskriftServiceImplTest {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
         when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.transformAndGenerateDigest(anyString()))
-            .thenReturn(
+        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+            .thenReturn(new TransformAndDigestResponse(null,
                 Base64.getEncoder().encode(
                     UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
-                        .getDigestValue()));
+                        .getDigestValue())));
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),

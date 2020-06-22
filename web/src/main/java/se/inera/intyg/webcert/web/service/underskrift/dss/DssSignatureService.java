@@ -8,9 +8,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.util.StringUtils;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -86,6 +89,9 @@ public class DssSignatureService {
     @Value("${dss.service.signmessage}")
     private String signMessage;
 
+    @Value("${dss.client.ie.unit.whitelist:}")
+    private String dssUnitWhitelistForIeProperty;
+    private List<String> dssUnitWhitelistForIe = new ArrayList<>();
 
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
@@ -101,6 +107,44 @@ public class DssSignatureService {
         this.underskriftService = underskriftService;
         this.redisTicketTracker = redisTicketTracker;
         this.monitoringLogService = monitoringLogService;
+    }
+
+    @PostConstruct
+    private void init() {
+        if (StringUtils.hasText(dssUnitWhitelistForIeProperty)) {
+            for (String s : dssUnitWhitelistForIeProperty.split(",")) {
+                dssUnitWhitelistForIe.add(s.trim());
+            }
+        }
+    }
+
+    /**
+     * Checks whether the current Care unit HSA-id is in the whitelist
+     * for IE. If HSA id, or a wildcard version of it is in the list
+     * then this method will return true.
+     *
+     * @param currentCareUnitHsaId The users currently selected care unit
+     * @return true id care unit is in whitelist.
+     */
+    public boolean isUnitInIeWhitelist(String currentCareUnitHsaId) {
+        if (StringUtils.isEmpty(currentCareUnitHsaId)) {
+            return false;
+        }
+
+        boolean inWhitelist = false;
+        for (String hsaIdInWhitelist : dssUnitWhitelistForIe) {
+            if (hsaIdInWhitelist.endsWith("*")) {
+                var wildcardRemovedSubstring = hsaIdInWhitelist.substring(0, hsaIdInWhitelist.lastIndexOf("*"));
+                inWhitelist = currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
+            } else {
+                inWhitelist = currentCareUnitHsaId.equalsIgnoreCase(hsaIdInWhitelist);
+            }
+            if (inWhitelist) {
+                break;
+            }
+
+        }
+        return inWhitelist;
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {

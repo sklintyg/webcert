@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
+import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -154,9 +155,10 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         String utkastXml = utkastModelToXMLConverter.utkastToXml(payloadJson, utkast.getIntygsTyp());
 
         // Use the JSON->XML converted XML and perform a _new_ digest on it so we can compare digests.
-        byte[] base64EncodedDigest = prepareSignatureService.transformAndGenerateDigest(utkastXml);
+        TransformAndDigestResponse transformAndDigestResponse = prepareSignatureService
+            .transformAndGenerateDigest(utkastXml, biljett.getIntygsId());
 
-        checkDigests(utkast, signingXmlHash, new String(base64EncodedDigest));
+        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest()));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

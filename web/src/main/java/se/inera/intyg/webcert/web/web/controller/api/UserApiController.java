@@ -46,6 +46,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
@@ -69,6 +70,9 @@ public class UserApiController extends AbstractApiController {
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
+    @Autowired
+    private DssSignatureService dssSignatureService;
+
     /**
      * Retrieves the security context of the logged in user as JSON.
      */
@@ -77,6 +81,11 @@ public class UserApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getUser() {
         WebCertUser user = getWebCertUserService().getUser();
+
+        var valdVardenhet = user.getValdVardenhet();
+        if (valdVardenhet != null) {
+            user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(valdVardenhet.getId()));
+        }
         return Response.ok(user.getAsJson()).build();
     }
 
@@ -113,6 +122,11 @@ public class UserApiController extends AbstractApiController {
         if (!changeSuccess) {
             LOG.error("Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
             return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
+        }
+
+        var valdVardenhet = user.getValdVardenhet();
+        if (valdVardenhet != null) {
+            user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(valdVardenhet.getId()));
         }
 
         user.setFeatures(commonAuthoritiesResolver.getFeatures(
