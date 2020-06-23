@@ -33,6 +33,9 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.xml.transform.StringResult;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
@@ -85,6 +88,9 @@ public class DssSignatureServiceTest {
     @Mock
     RedisTicketTracker redisTicketTracker;
 
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
     @Captor
     ArgumentCaptor<String> ticketIdCaptor;
 
@@ -118,7 +124,7 @@ public class DssSignatureServiceTest {
     public DssSignatureServiceTest() {
         MockitoAnnotations.initMocks(this);
         dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository,
-            underskriftService, redisTicketTracker, monitoringLogService);
+            underskriftService, redisTicketTracker, monitoringLogService, moduleRegistry);
     }
 
     @BeforeClass
@@ -127,7 +133,7 @@ public class DssSignatureServiceTest {
     }
 
     @Test
-    public void createSignatureRequestDTO() {
+    public void createSignatureRequestDTO() throws ModuleNotFoundException {
         when(dssMetadataService.getDssActionUrl()).thenReturn("ActionUrl");
         when(webCertUserService.getUser()).thenReturn(user);
         when(user.getPersonId()).thenReturn("191212121212");
@@ -138,6 +144,8 @@ public class DssSignatureServiceTest {
         when(patient.getPersonnummerWithDash()).thenReturn("19121212-1212");
         when(dssSignMessageService.signSignRequest(Mockito.any()))
             .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+        when(moduleRegistry.getIntygModule(anyString()))
+            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
 
         ReflectionTestUtils.setField(dssSignatureService, "dssClientHostUrl", "https://wc.localtest.me:9088");
         ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
