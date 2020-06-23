@@ -123,7 +123,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             case NETID_PLUGIN:
             case FAKE:
             case SIGN_SERVICE:
-                // Don't decode RAW signatures from the NetiD plugin.
+                // Don't decode RAW signatures from the NetiD plugin, or Sign Service.
                 svt.setValue(rawSignature);
                 break;
 

@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -59,12 +61,10 @@ public class DssSignatureService {
     private final WebCertUserService userService;
     private final UtkastRepository utkastRepository;
     private final DssSignMessageService dssSignMessageService;
-
     private final UnderskriftService underskriftService;
-
     private final RedisTicketTracker redisTicketTracker;
-
     private final MonitoringLogService monitoringLogService;
+    private final IntygModuleRegistry moduleRegistry;
 
     private final se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory objectFactoryDssCore;
     private final se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory objectFactoryCsig;
@@ -95,7 +95,7 @@ public class DssSignatureService {
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
         WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService,
-        RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService) {
+        RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService, IntygModuleRegistry moduleRegistry) {
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();
         objectFactoryCsig = new se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory();
         objectFactorySaml = new se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory();
@@ -106,6 +106,7 @@ public class DssSignatureService {
         this.underskriftService = underskriftService;
         this.redisTicketTracker = redisTicketTracker;
         this.monitoringLogService = monitoringLogService;
+        this.moduleRegistry = moduleRegistry;
     }
 
     @PostConstruct
@@ -249,8 +250,12 @@ public class DssSignatureService {
         Personnummer patientPersonnummer = null;
 
         if (utkast != null) {
-            intygsTyp = utkast.getIntygsTyp();
             patientPersonnummer = utkast.getPatientPersonnummer();
+            try {
+                intygsTyp = moduleRegistry.getIntygModule(utkast.getIntygsTyp()).getLabel();
+            } catch (ModuleNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         SignMessageType signMessage = objectFactoryCsig.createSignMessageType();
