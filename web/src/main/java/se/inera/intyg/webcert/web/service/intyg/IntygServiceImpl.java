@@ -658,7 +658,7 @@ public class IntygServiceImpl implements IntygService {
             if (draftMap.containsKey(certificateId)) {
                 final var draft = draftMap.get(certificateId);
                 response = getIntygWithNotificationsResponse(draft, notifications);
-            } else if (!missingDraftWasRemoved(notifications)){
+            } else if (!missingDraftWasRemoved(notifications)) {
                 final var certificate = getIntygData(certificateId, null, false);
                 response = getIntygWithNotificationsResponse(certificate, notifications);
             }
