@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.xml.security.signature.XMLSignature;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public class DssSignatureService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DssSignatureService.class);
     public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success"; //TODO
+    public static final String REQUESTED_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256;
 
     private final DssMetadataService dssMetadataService;
     private final WebCertUserService userService;
@@ -235,7 +237,7 @@ public class DssSignatureService {
         signService.setValue(serviceUrl);
         signRequestExtensionType.setSignService(signService);
 
-        signRequestExtensionType.setRequestedSignatureAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+        signRequestExtensionType.setRequestedSignatureAlgorithm(REQUESTED_SIGN_ALGORITHM);
 
         signRequestExtensionType.setCertRequestProperties(createCertRequestProperties());
 

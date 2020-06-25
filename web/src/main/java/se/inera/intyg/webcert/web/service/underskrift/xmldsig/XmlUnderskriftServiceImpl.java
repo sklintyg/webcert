@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignMessageService;
+import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -54,7 +54,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
         String signatureAlgorithm;
         if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
-            signatureAlgorithm = DssSignMessageService.DEFAULT_SIGN_ALGORITHM;
+            signatureAlgorithm = DssSignatureService.REQUESTED_SIGN_ALGORITHM;
         } else {
             signatureAlgorithm = PartialSignatureFactory.DEFAULT_SIGNATURE_ALGORITHM;
         }
