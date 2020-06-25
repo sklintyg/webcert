@@ -51,6 +51,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -664,7 +665,7 @@ public class IntygServiceImpl implements IntygService {
             if (draftMap.containsKey(certificateId)) {
                 final var draft = draftMap.get(certificateId);
                 response = getIntygWithNotificationsResponse(draft, notifications);
-            } else {
+            } else if (!missingDraftWasRemoved(notifications)) {
                 final var certificate = getIntygData(certificateId, null, false);
                 response = getIntygWithNotificationsResponse(certificate, notifications);
             }
@@ -675,6 +676,22 @@ public class IntygServiceImpl implements IntygService {
         }
 
         return intygWithNotificationsResponses;
+    }
+
+    /**
+     * When no draft is found in WC but there are notifications in the database, it could be of two reasons. Either the certificate
+     * wasn't issued in WC (and will be found in IT) or it was removed before it got signed. This method checks the latter based
+     * on what notifications exists for the draft/certificate.
+     * @param notifications List of notifications for the draft/certificate.
+     * @return  True if it was a draft that has been removed before signed.
+     */
+    private boolean missingDraftWasRemoved(List<Handelse> notifications) {
+        final var statusToExclude = Arrays.asList(HandelsekodEnum.SKAPAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.RADERA,
+            HandelsekodEnum.KFSIGN);
+        return notifications.stream()
+            .filter(notification -> !statusToExclude.contains(notification.getCode()))
+            .collect(Collectors.toList())
+            .isEmpty();
     }
 
     private HashMap<String, List<Handelse>> getNotificationCertificateIdHash(List<Handelse> allNotifications) {
