@@ -37,8 +37,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -108,6 +108,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -183,6 +184,9 @@ public class IntygServiceTest {
 
     @Mock
     private UtkastRepository utkastRepository;
+
+    @Mock
+    private UtkastEventService utkastEventService;
 
     @Mock
     private LogService logservice;

@@ -33,8 +33,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -89,6 +89,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -147,6 +148,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private IntygService intygService;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private UtkastEventService utkastEventService;
     @Mock
     private MonitoringLogService monitoringService;
     @Mock
@@ -247,6 +250,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusIncomplete() throws IOException, ModuleNotFoundException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(REFERENS);
         setupReferensMocks();
@@ -257,6 +263,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusPrefilledIncomplete() throws ModuleNotFoundException, IOException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.INVALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
@@ -265,6 +274,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusPrefilledComplete() throws ModuleNotFoundException, IOException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.VALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
@@ -288,6 +300,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testReferensGetsPersistedWhenSupplied() throws ModuleNotFoundException, IOException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(REFERENS);
 
@@ -301,6 +316,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testEmptyReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens("");
 
@@ -313,6 +331,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testNullReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(null);
 
@@ -327,6 +347,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testDeleteDraftThatIsUnsigned() {
         WebCertUser user = createUser();
 
+        when(userService.getUser()).thenReturn(user);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());

@@ -38,14 +38,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -65,6 +63,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -132,6 +131,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
+
+    @Mock
+    private UtkastEventService utkastEventService;
 
     @Mock
     private IntygService intygService;

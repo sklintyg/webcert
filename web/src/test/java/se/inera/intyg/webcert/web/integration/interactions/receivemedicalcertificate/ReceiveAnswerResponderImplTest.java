@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -67,6 +68,9 @@ public class ReceiveAnswerResponderImplTest {
 
     @Mock
     private NotificationService mockNotificationService;
+
+    @Mock
+    private UtkastEventService utkastEventService;
 
     @InjectMocks
     private ReceiveAnswerResponderImpl receiveAnswerResponder;
