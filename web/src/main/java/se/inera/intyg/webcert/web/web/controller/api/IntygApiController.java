@@ -48,9 +48,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -86,6 +88,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private UtkastService utkastService;
+
+    @Autowired
+    private UtkastEventService utkastEventService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -233,6 +238,30 @@ public class IntygApiController extends AbstractApiController {
         return Personnummer.createPersonnummer(pnr)
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                 String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
+    }
+
+    /**
+     * Compiles a list of events for an Intyg from Webcerts db.
+     *
+     * @param intygsId intygsId
+     * @return a Response carrying a list containing all events for Intyg.
+     */
+    @GET
+    @Path("/{intygsTyp}/{intygsId}/events")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getEventsForIntyg(@PathParam("intygsId") String intygsId) {
+
+        List<UtkastEvent> eventList = utkastEventService.getUtkastEvents(intygsId);
+
+        if (eventList.isEmpty()) {
+            LOG.error("No events for utkast/intyg on intyg with id {}", intygsId);
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
+        LOG.debug("Got {} events", eventList.size());
+
+        return Response.ok(eventList).build();
     }
 
     @GET

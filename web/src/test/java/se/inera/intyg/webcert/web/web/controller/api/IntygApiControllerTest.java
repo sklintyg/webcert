@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +43,10 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.event.UtkastEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -77,6 +80,9 @@ public class IntygApiControllerTest {
 
     @Mock
     private IntygService intygService = mock(IntygService.class);
+
+    @Mock
+    private UtkastEventService utkastEventService = mock(UtkastEventService.class);
 
     @Mock
     private UtkastRepository mockUtkastRepository = mock(UtkastRepository.class);
@@ -125,6 +131,35 @@ public class IntygApiControllerTest {
 
         assertNotNull(res);
         assertEquals(2, res.size());
+    }
+
+    @Test
+    public void testNoIntygEvents() {
+
+        when(utkastEventService.getUtkastEvents("intId")).thenReturn(Collections.<UtkastEvent>emptyList());
+
+        Response response = intygCtrl.getEventsForIntyg("intId");
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testListIntygEvents() {
+
+        UtkastEvent event1 = new UtkastEvent();
+        event1.setIntygsId("intId");
+        UtkastEvent event2 = new UtkastEvent();
+        event1.setIntygsId("intId");
+
+        when(utkastEventService.getUtkastEvents("intId")).thenReturn(Arrays.asList(event1, event2));
+
+        Response response = intygCtrl.getEventsForIntyg("intId");
+
+        List<UtkastEvent> responseList = (List<UtkastEvent>) response.getEntity();
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(responseList);
+        assertEquals(2, responseList.size());
     }
 
     @Test
