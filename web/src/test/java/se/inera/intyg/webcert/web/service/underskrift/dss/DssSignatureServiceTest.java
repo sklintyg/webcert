@@ -247,9 +247,9 @@ public class DssSignatureServiceTest {
         when(utkastOptional.isPresent()).thenReturn(true);
         when(utkastOptional.get()).thenReturn(utkastLocal);
 
-        String returnUrl = dssSignatureService.findReturnErrorUrl(intygsId);
+        String returnUrl = dssSignatureService.findReturnErrorUrl(intygsId, "123");
 
-        assertEquals(String.format("https://wc.localtest.me:9088/#/lisjp/1.1/edit/%s/?error", intygsId), returnUrl);
+        assertEquals(String.format("https://wc.localtest.me:9088/#/lisjp/1.1/edit/%s/?error&ticket=123", intygsId), returnUrl);
 
     }
 

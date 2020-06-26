@@ -151,7 +151,7 @@ public class SignatureApiController extends AbstractApiController {
         } catch (Exception e) {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
-                "Could decode sign response: " + e.getMessage());
+                "Could not decode sign response: " + e.getMessage());
             return getRedirectResponseWithReturnUrl(signaturBiljett);
         }
 
@@ -172,7 +172,7 @@ public class SignatureApiController extends AbstractApiController {
     private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett) {
         String returnUrl;
         if (SignaturStatus.ERROR.equals(signaturBiljett.getStatus())) {
-            returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId());
+            returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId(), signaturBiljett.getTicketId());
         } else {
             returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
         }

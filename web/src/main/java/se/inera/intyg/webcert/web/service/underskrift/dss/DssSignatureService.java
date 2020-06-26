@@ -375,7 +375,7 @@ public class DssSignatureService {
                 return underskriftService.netidSignature(relayState, signature, certificate);
             } else {
                 var resultMinor = result.getResultMinor();
-                var resultMessage = result.getResultMessage().getValue();
+                var resultMessage = result.getResultMessage() == null ? null : result.getResultMessage().getValue();
 
                 SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
                 monitoringLogService
@@ -387,6 +387,12 @@ public class DssSignatureService {
             SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
             monitoringLogService
                 .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(), "Could not unmarshal sign response: " + e.getMessage());
+            return signaturBiljett;
+        } catch (Exception e) {
+            SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
+            monitoringLogService
+                .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
+                    "Internal problem: " + e.getMessage());
             return signaturBiljett;
         }
     }
@@ -414,7 +420,7 @@ public class DssSignatureService {
         return (SignResponse) context.createUnmarshaller().unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes()));
     }
 
-    public String findReturnErrorUrl(String intygsId) {
+    public String findReturnErrorUrl(String intygsId, String ticketId) {
         var utkastOptional = utkastRepository.findById(intygsId);
 
         if (utkastOptional.isPresent()) {
@@ -423,7 +429,7 @@ public class DssSignatureService {
             var intygTypeVersion = utkast.getIntygTypeVersion();
 
             //#/lisjp/1.1/edit/86beec75-b790-42cd-9fb9-3c9585e1bbed/
-            return String.format("%s/#/%s/%s/edit/%s/?error", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId);
+            return String.format("%s/#/%s/%s/edit/%s/?error&ticket=%s", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId, ticketId);
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Can't find certificate to return to!");
         }
