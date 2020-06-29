@@ -531,14 +531,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported"),
 
-        DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID {} for certificate {}"),
+        DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID '{}'"),
 
-        DSS_SIGNATURE_RESPONSE_INVALID("Failed to read or validate sign response with transactionID {} for certificate {}: {}"),
+        DSS_SIGNATURE_RESPONSE_INVALID("Failed to read or validate sign response with transactionID '{}' for certificate '{}': {}"),
 
-        DSS_SIGNATURE_REQUEST_CREATED("Sign request for certificate {} created with transactionID {}"),
+        DSS_SIGNATURE_REQUEST_CREATED("Sign request for certificate '{}' created with transactionID '{}'"),
 
         DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED(
-            "Received error from sign service for request with transactionID {} for certificate {} with error message: {} - {} - {}");
+            "Received error from sign service for request with transactionID '{}' for certificate '{}' with error message: {} - {} - {}");
 
 
         private final String msg;
