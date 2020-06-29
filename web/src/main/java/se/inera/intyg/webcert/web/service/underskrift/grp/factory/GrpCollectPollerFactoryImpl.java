@@ -26,7 +26,7 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPoller;
 /**
  * Created by eriklupander on 2015-08-25.
  *
- * Uses applicationContext in singleton bean to produce instances of the prototype-scoped NiasCollectPoller.
+ * Uses applicationContext in singleton bean to produce instances of the prototype-scoped GrpCollectPoller.
  */
 @Component
 public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, ApplicationContextAware {

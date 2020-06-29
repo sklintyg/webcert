@@ -97,7 +97,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
             utkastXml);
 
-        // Only store if we received a certificate. Note - if cert comes from NIAS, it's been encoded as Base64 already.
+        // Only store if we received a certificate.
         if (x509certificate != null && !x509certificate.isEmpty()) {
 
             // Due to a bug with SAXON and the JDK DSIG validator, do NOT check references.
@@ -125,11 +125,6 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             case SIGN_SERVICE:
                 // Don't decode RAW signatures from the NetiD plugin, or Sign Service.
                 svt.setValue(rawSignature);
-                break;
-
-            case NETID_ACCESS:
-                // From NetiD Access Server, we must decode from Base64 to binary.
-                svt.setValue(Base64.getDecoder().decode(rawSignature));
                 break;
 
             case GRP:

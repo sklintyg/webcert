@@ -26,8 +26,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus.SIGNERAD;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.ENHET_ID;
@@ -86,7 +84,6 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceI
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -134,9 +131,6 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Mock
     private RedisTicketTracker redisTicketTracker;
-
-    @Mock
-    private NiasUnderskriftService niasUnderskriftService;
 
     @Mock
     private DraftAccessService draftAccessService;
@@ -192,11 +186,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_ACCESS, TICKET_ID);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
-
-        verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -247,7 +239,6 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
-        verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -322,7 +313,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         user.setVardgivare(Collections.singletonList(vardgivare));
         user.setValdVardenhet(vardenhet);
         user.setValdVardgivare(vardgivare);
-        user.setAuthenticationMethod(AuthenticationMethod.EFOS);
+        user.setAuthenticationMethod(AuthenticationMethod.SITHS);
+        user.setPersonId(hoSPerson.getPersonId());
 
         return user;
     }
