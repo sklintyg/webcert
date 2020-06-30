@@ -1179,6 +1179,34 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void testListCertificatesForCareWithQADeletedDraft() throws Exception {
+        final List<String> enhetList = Collections.singletonList("enhet");
+
+        final String intygType = "intygType";
+        final String intygId = "intygId";
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+
+        Handelse handelse = new Handelse();
+        handelse.setTimestamp(localDateTime);
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(intygId);
+
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
+
+        when(moduleRegistry.listAllModules()).thenReturn(
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+        when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
+        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
+
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+
+        assertNotNull(res);
+        assertEquals(0, res.size());
+    }
+
+    @Test
     public void testListCertificatesForCareWithQAOkWithTimestamp() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
@@ -1240,7 +1268,7 @@ public class IntygServiceTest {
 
         Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
-        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setCode(HandelsekodEnum.NYFRFV);
         handelse.setIntygsId(CERTIFICATE_ID);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -1253,7 +1281,6 @@ public class IntygServiceTest {
             .setEnhetId(enhetList)
             .setStartDate(LocalDateTime.now())
             .build();
-        final var draftList = new ArrayList<Utkast>();
 
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
@@ -1267,7 +1294,7 @@ public class IntygServiceTest {
         assertNotNull(res);
         assertEquals(1, res.size());
         assertEquals(1, res.get(0).getNotifications().size());
-        assertEquals(HandelsekodEnum.SKAPAT, res.get(0).getNotifications().get(0).getCode());
+        assertEquals(HandelsekodEnum.NYFRFV, res.get(0).getNotifications().get(0).getCode());
         assertEquals(localDateTime, res.get(0).getNotifications().get(0).getTimestamp());
         assertEquals(1, res.get(0).getSentQuestions().getTotalt());
         assertEquals(2, res.get(0).getSentQuestions().getEjBesvarade());
