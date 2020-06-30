@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -261,7 +260,10 @@ public class DssSignatureService {
         }
 
         SignMessageType signMessage = objectFactoryCsig.createSignMessageType();
-        signMessage.setMimeType(MimeTypeUtils.TEXT_HTML_VALUE);
+        // MimeTypeUtils.TEXT_PLAIN_VALUE = NOK
+        // MimeTypeUtils.TEXT_HTML_VALUE = OK
+        // "text" = OK
+        signMessage.setMimeType("text");
         signMessage.setMustShow(false);
         String message = this.signMessage.replace("{intygsTyp}", intygsTyp)
             .replace("{patientPnr}", patientPersonnummer != null ? patientPersonnummer.getPersonnummerWithDash() : "")
