@@ -3,7 +3,7 @@
 
 actor "Signatory with browser" as user
 participant "Webcert/Service Provider " as wc
-participant "CGI Signature Service" as sign
+participant "Signature Service" as sign
 participant "Inera Identity Provider (IdP 1.x)" as idp
 participant "Inera Identity Provider (IdP 2.x)" as idp2
 
