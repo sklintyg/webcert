@@ -78,16 +78,16 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
                 .map(IIType::getExtension)
                 .collect(Collectors.toList());
 
-            List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
-            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
+            List<Arende> arendeList = arendeService.getArendenExternal(extensions);
+            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, arendeList)));
 
-            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} kompletteringar in {} seconds",
+            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} arenden in {} seconds",
                 response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
                 getExecutionTime(start));
             response.setResult(ResultCodeType.OK);
 
         } catch (Exception e) {
-            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning kompletteringar", e);
+            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning arenden", e);
             response.setResult(ResultCodeType.ERROR);
         }
 
@@ -105,10 +105,10 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
     }
 
     private IntygAdditionsType buildIntygAdditionsType(IntygId intygId,
-        List<Arende> kompletteringar) {
+        List<Arende> arendeList) {
 
-        List<AdditionType> additions = kompletteringar.stream()
-            .filter(kmplt -> kmplt.getIntygsId().equals(intygId.getExtension()))
+        List<AdditionType> additions = arendeList.stream()
+            .filter(arende -> arende.getIntygsId().equals(intygId.getExtension()))
             .map(this::mapArende)
             .collect(Collectors.toList());
 
@@ -124,6 +124,7 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
         additionType.setId(String.valueOf(arende.getId()));
         additionType.setSkapad(arende.getTimestamp());
         additionType.setStatus(mapStatus(arende.getStatus()));
+        additionType.getAny().add(arende.getAmne().name());
 
         return additionType;
     }
@@ -131,6 +132,8 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
     private StatusType mapStatus(Status status) {
         switch (status) {
             case CLOSED:
+            case ANSWERED:
+            case PENDING_EXTERNAL_ACTION:
                 return StatusType.BESVARAD;
             default:
                 return StatusType.OBESVARAD;
