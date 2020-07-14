@@ -32,6 +32,7 @@ import se.inera.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AdditionType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AmneType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
@@ -39,6 +40,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateaddit
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.util.StreamUtil;
@@ -124,9 +126,13 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
         additionType.setId(String.valueOf(arende.getId()));
         additionType.setSkapad(arende.getTimestamp());
         additionType.setStatus(mapStatus(arende.getStatus()));
-        additionType.getAny().add(arende.getAmne().name());
+        additionType.setAmne(mapAmne(arende.getAmne()));
 
         return additionType;
+    }
+
+    private AmneType mapAmne(ArendeAmne amne) {
+        return AmneType.valueOf(amne.name());
     }
 
     private StatusType mapStatus(Status status) {
