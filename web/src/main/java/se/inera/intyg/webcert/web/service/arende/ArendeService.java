@@ -85,5 +85,7 @@ public interface ArendeService {
 
     List<Arende> getKompletteringar(List<String> intygsIds);
 
+    List<Arende> getArendenExternal(List<String> intygsIds);
+
     List<Arende> getArendenInternal(String intygsId);
 }

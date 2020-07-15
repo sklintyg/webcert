@@ -128,7 +128,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Clock systemClock = Clock.systemDefaultZone();
 
-    private Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
+    private final Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
 
     @Value("${sendmessagetofk.logicaladdress}")
     private String sendMessageToFKLogicalAddress;
@@ -171,7 +171,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private MessageImportService messageImportService;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     private static Predicate<Arende> isQuestion() {
         return a -> a.getSvarPaId() == null;
@@ -750,6 +750,12 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<Arende> getKompletteringar(List<String> intygsIds) {
         return arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
+    }
+
+
+    @Override
+    public List<Arende> getArendenExternal(List<String> intygsIds) {
+        return arendeRepository.findByIntygsIds(intygsIds);
     }
 
     @Override

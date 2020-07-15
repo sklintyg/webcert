@@ -32,6 +32,7 @@ import se.inera.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AdditionType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AmneType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
@@ -39,6 +40,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateaddit
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.util.StreamUtil;
@@ -78,16 +80,16 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
                 .map(IIType::getExtension)
                 .collect(Collectors.toList());
 
-            List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
-            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
+            List<Arende> arendeList = arendeService.getArendenExternal(extensions);
+            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, arendeList)));
 
-            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} kompletteringar in {} seconds",
+            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} arenden in {} seconds",
                 response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
                 getExecutionTime(start));
             response.setResult(ResultCodeType.OK);
 
         } catch (Exception e) {
-            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning kompletteringar", e);
+            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning arenden", e);
             response.setResult(ResultCodeType.ERROR);
         }
 
@@ -105,10 +107,10 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
     }
 
     private IntygAdditionsType buildIntygAdditionsType(IntygId intygId,
-        List<Arende> kompletteringar) {
+        List<Arende> arendeList) {
 
-        List<AdditionType> additions = kompletteringar.stream()
-            .filter(kmplt -> kmplt.getIntygsId().equals(intygId.getExtension()))
+        List<AdditionType> additions = arendeList.stream()
+            .filter(arende -> arende.getIntygsId().equals(intygId.getExtension()))
             .map(this::mapArende)
             .collect(Collectors.toList());
 
@@ -124,13 +126,20 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
         additionType.setId(String.valueOf(arende.getId()));
         additionType.setSkapad(arende.getTimestamp());
         additionType.setStatus(mapStatus(arende.getStatus()));
+        additionType.setAmne(mapAmne(arende.getAmne()));
 
         return additionType;
+    }
+
+    private AmneType mapAmne(ArendeAmne amne) {
+        return AmneType.valueOf(amne.name());
     }
 
     private StatusType mapStatus(Status status) {
         switch (status) {
             case CLOSED:
+            case ANSWERED:
+            case PENDING_EXTERNAL_ACTION:
                 return StatusType.BESVARAD;
             default:
                 return StatusType.OBESVARAD;
