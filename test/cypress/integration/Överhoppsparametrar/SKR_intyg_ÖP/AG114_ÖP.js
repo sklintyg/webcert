@@ -15,166 +15,176 @@ describe('AG114 test av Överhoppsparametrar', function () {
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     })
-
-    beforeEach(function() {
-        cy.skapaAG114Utkast(this).then((utkastId) => {
-            cy.wrap(utkastId).as('utkastId');
-            cy.log("AG114-utkast med id " + utkastId + " skapat och används i testfallet");
-        });
-    });
-
-    it('skapar ett AG114 intyg', function () {
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-
-        const normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
-        const avlidenUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&avliden=true';
-        const ändratNamnUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&fornamn=Gunilla&efternamn=Karlsson';
-        const originalPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=' + this.vårdtagare.personnummerKompakt;
-        const ändratPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=191212121212';
-        const reservNrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=19270926308A';
-        //reservnummer = 19270926308A
-        //samordningsnummer = 196812732391
-
-        
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        intyg.besökÖnskadUrl(normalUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
-        
-        cy.contains("Grund för medicinskt underlag").should('exist');
-        cy.log('Överhoppsparametrar: Ingen');
-        overhopp.verifyPatStatus("utanParameter");
-        
-        // Verifiera att endast observandum med information om att patienten är avliden inte visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(avlidenUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: avliden');
-        overhopp.verifyPatStatus("avliden");
-        
-        // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratNamnUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: fornamn & efternamn');
-        overhopp.verifyPatStatus("patientNamn");
-        
-        // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(reservNrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
-        overhopp.verifyPatStatus("reservnummer");
-        
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(normalUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: Ingen');
-        overhopp.verifyPatStatus("utanParameter");
-        
-        // Verifiera att observandum om att patientens personnummer har ändrats visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
-        overhopp.verifyPatStatus("ändratPnr");
-        
-        // Verifiera att ändrat personnummer visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
-        overhopp.verifyPatStatus("ändratPnr");
-       
-        //Fyll i och signera intyget
-        intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
-        intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
-        intyg.sektionDiagnos(this.intygsdata.diagnos);
-        intyg.sektionArbetsförmåga(this.intygsdata.arbetsförmåga);
-        intyg.sektionBedömning(this.intygsdata.bedömning);
-        intyg.sektionÖvrigaUpplysningar(this.intygsdata.övrigt);
-        intyg.sektionKontaktArbetsgivaren(this.intygsdata.kontakt);
-        intyg.signera();
-
-        
- // --- Verifera observandum triggade utifrån olika uthoppsparametrar i intyg --- //
-
-        // Verifiera att endast observandum med information om att patienten är avliden  inte visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(avlidenUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: avliden');
-        overhopp.verifyPatStatus("avliden");
-
-        // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratNamnUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: fornamn & efternamn');
-        overhopp.verifyPatStatus("patientNamn");
-
-        // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(reservNrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
-        overhopp.verifyPatStatus("reservnummer");
-
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(normalUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: Ingen');
-        overhopp.verifyPatStatus("utanParameter");
-
-        // Verifiera att observandum om att patientens personnummer har ändrats visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
-        overhopp.verifyPatStatus("ändratPnr");
-
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.contains("Grund för medicinskt underlag");
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
-        overhopp.verifyPatStatus("utanParameter");
-
-    });
+    context('Observandum triggade utifrån olika uthoppsparametrar i AG114 intygsutkast', function () {
+	    beforeEach(function() {
+			cy.skapaAG114Utkast(this).then((utkastId) => {
+				cy.wrap(utkastId).as('utkastId');
+				cy.log("AG114-utkast med id " + utkastId + " skapat och används i testfallet");
+				cy.clearCookies();
+				cy.visit('/logout');
+				cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+			});
+		});
+		it('Normal - Inget observandum visas när inga överhoppsparametrar skickas med', function () {
+			let normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
+				
+			cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);	
+			
+			// Någon anledning att använda intyg.besökÖnskadUrl istället för cy.visit? Tog bort ev. dublett 2 tester för "normal url"
+			//intyg.besökÖnskadUrl(normalUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
+			cy.visit(normalUrl);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: Ingen');
+			overhopp.verifyPatStatus("utanParameter");
+		})
+		it('Avliden - Endast observandum med information om att patienten är avliden visas', function(){
+			let avlidenUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&avliden=true';
+			cy.visit(avlidenUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: avliden');
+			overhopp.verifyPatStatus("avliden");
+		})
+		it('Ändrat namn - Endast observandum om att patientens namn skiljer sig från Journalsystemet visas', function () {
+			let ändratNamnUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&fornamn=Gunilla&efternamn=Karlsson';
+			cy.visit(ändratNamnUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: fornamn & efternamn');
+			overhopp.verifyPatStatus("patientNamn");
+		})
+		it('ReservNr - Endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer', function () {
+			let reservNrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=19270926308A';
+			cy.visit(reservNrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
+			overhopp.verifyPatStatus("reservnummer");
+		})
+		it('ÄndratPnr - Observandum om att patientens personnummer har ändrats visas', function () {
+			let ändratPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=191212121212';			
+			cy.visit(ändratPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
+			overhopp.verifyPatStatus("ändratPnr");
+		})
+		it('originalPnrUrl - Observandum om att ändrat personnummer visas', function (){
+			// Skicka med ett ändrat pnr
+			let ändratPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=191212121212';			
+			cy.visit(ändratPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
+			overhopp.verifyPatStatus("ändratPnr");
+			
+			//Avbryt inloggad session och loggga in på nytt
+			cy.clearCookies();
+			cy.visit('/logout');
+			cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+			
+			//Skicka med orginalet
+			let originalPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=' + this.vårdtagare.personnummerKompakt;
+			cy.visit(originalPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
+			overhopp.verifyPatStatus("ändratPnr");
+		})
+	})
+	context('Observandum triggade utifrån olika uthoppsparametrar i signerat AG114 intyg', function () {
+		before(function() {
+			cy.skapaAG114Utkast(this).then((utkastId) => {
+				cy.wrap(utkastId).as('utkastId');
+				cy.log("AG114-utkast med id " + utkastId + " skapat och används i testfallet");
+	
+				cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+				
+				//let normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
+				//cy.visit(normalUrl);
+				//Fyll i och signera intyget
+				intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
+				intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
+				intyg.sektionDiagnos(this.intygsdata.diagnos);
+				intyg.sektionArbetsförmåga(this.intygsdata.arbetsförmåga);
+				intyg.sektionBedömning(this.intygsdata.bedömning);
+				intyg.sektionÖvrigaUpplysningar(this.intygsdata.övrigt);
+				intyg.sektionKontaktArbetsgivaren(this.intygsdata.kontakt);
+				intyg.signera();
+			});
+		});
+		//Behöver nedan kommentarer sparas?
+			//reservnummer = 19270926308A
+			//samordningsnummer = 196812732391
+			
+		beforeEach(function(){
+			cy.clearCookies();
+			cy.visit('/logout');
+			cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+		})
+		it('Normal - inga observandum visas när inga överhoppsparametrar skickas med', function () {
+			let normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
+			cy.visit(normalUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: Ingen');
+			overhopp.verifyPatStatus("utanParameter");			
+		})
+		it('Avliden - Endast observandum med information om att patienten är avliden visas', function () {
+			let avlidenUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&avliden=true';
+			cy.visit(avlidenUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: avliden');
+			overhopp.verifyPatStatus("avliden");
+		})
+		it('Ändrat Namn - Endast observandum om att patientens namn skiljer sig från Journalsystemet visas', function () {
+			let ändratNamnUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&fornamn=Gunilla&efternamn=Karlsson';
+			cy.visit(ändratNamnUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: fornamn & efternamn');
+			overhopp.verifyPatStatus("patientNamn");
+		})
+		it('ReservNr - endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer', function () {
+			let reservNrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=19270926308A';
+			cy.visit(reservNrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
+			overhopp.verifyPatStatus("reservnummer");			
+		})
+		it('ÄndratPnrUrl - Observandum om att patientens personnummer har ändrats visas', function () {
+			let ändratPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=191212121212';			
+			cy.visit(ändratPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
+			overhopp.verifyPatStatus("ändratPnr");			
+		})
+		it('originalPnrUrl - Observandum om att ändrat personnummer visas', function () {
+			//Skicka med ändrat pnr
+			let ändratPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=191212121212';			
+			cy.visit(ändratPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
+			overhopp.verifyPatStatus("ändratPnr");	
+		
+			//Rensa session och Logga in igen
+			cy.clearCookies();
+			cy.visit('/logout');
+			cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+			
+			//Skicka med orginal pnr
+			let originalPnrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&alternatePatientSSn=' + this.vårdtagare.personnummerKompakt;
+			cy.visit(originalPnrUrl);
+			cy.url().should('include', this.utkastId);
+			cy.contains("Postort").should('exist');
+			cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
+			//Tidigare utanParameter, misstänker att det finns race-condition med denne kontrollen och att egentligen skall ändrat pnr visas.
+			//overhopp.verifyPatStatus("utanParameter");			
+			overhopp.verifyPatStatus("ändratPnr");	
+		})
+	})
 });
