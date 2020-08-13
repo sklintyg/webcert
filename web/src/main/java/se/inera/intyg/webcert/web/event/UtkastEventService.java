@@ -26,12 +26,12 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastEventService {
 
-    List<UtkastEvent> getUtkastEvents(String intygsId);
-
-    void createUtkastEventFromCopyUtkast(Utkast utkast, String user, EventKod eventKod, String originalIntygsId);
-
     void createUtkastEvent(String intygsId, String anvandare, EventKod eventKod);
 
     void createUtkastEvent(String intygsId, String anvandare, EventKod eventKod, String meddelande);
+
+    void createUtkastEventFromCopyUtkast(Utkast utkast, String user, EventKod eventKod, String originalIntygsId);
+
+    List<UtkastEvent> getUtkastEvents(String intygsId, String intygsTyp);
 
 }

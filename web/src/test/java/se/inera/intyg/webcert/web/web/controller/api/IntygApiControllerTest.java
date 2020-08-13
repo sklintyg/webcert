@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,7 @@ import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
+import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.event.UtkastEventService;
@@ -62,6 +64,8 @@ public class IntygApiControllerTest {
     private static final Personnummer PNR = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String ENHET_ID = "ABC123";
+    private static final String INTYG_ID = "intygId";
+    private static final String INTYG_TYP = "intygTyp";
 
     private static final List<String> ENHET_IDS = Arrays.asList("ABC123", "DEF456");
     private static final List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
@@ -86,6 +90,9 @@ public class IntygApiControllerTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository = mock(UtkastRepository.class);
+
+    @Mock
+    private UtkastEventRepository utkastEventRepository = mock(UtkastEventRepository.class);
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
@@ -134,35 +141,6 @@ public class IntygApiControllerTest {
     }
 
     @Test
-    public void testNoIntygEvents() {
-
-        when(utkastEventService.getUtkastEvents("intId")).thenReturn(Collections.<UtkastEvent>emptyList());
-
-        Response response = intygCtrl.getEventsForIntyg("intId");
-
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void testListIntygEvents() {
-
-        UtkastEvent event1 = new UtkastEvent();
-        event1.setIntygsId("intId");
-        UtkastEvent event2 = new UtkastEvent();
-        event1.setIntygsId("intId");
-
-        when(utkastEventService.getUtkastEvents("intId")).thenReturn(Arrays.asList(event1, event2));
-
-        Response response = intygCtrl.getEventsForIntyg("intId");
-
-        List<UtkastEvent> responseList = (List<UtkastEvent>) response.getEntity();
-
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertNotNull(responseList);
-        assertEquals(2, responseList.size());
-    }
-
-    @Test
     public void testListIntygWhenUserHasNoAssignments() {
         when(user.getIdsOfSelectedVardenhet()).thenReturn(Collections.<String>emptyList());
 
@@ -188,6 +166,34 @@ public class IntygApiControllerTest {
         assertNotNull(res);
         assertEquals(2, res.size());
         assertEquals("true", response.getHeaderString("offline_mode"));
+    }
+
+    @Test
+    public void testNoIntygEvents() {
+
+        when(utkastEventService.getUtkastEvents(anyString(), anyString())).thenReturn(Collections.<UtkastEvent>emptyList());
+
+        Response response = intygCtrl.getEventsForIntyg(INTYG_TYP, INTYG_ID);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testListIntygEvents() {
+
+        UtkastEvent event = new UtkastEvent();
+        List<UtkastEvent> eventList = Arrays.asList(event);
+
+        when(utkastEventService.getUtkastEvents(anyString(), anyString())).thenReturn(eventList);
+
+        Response response = intygCtrl.getEventsForIntyg(INTYG_TYP, INTYG_ID);
+
+        List<UtkastEvent> responseList = (List<UtkastEvent>) response.getEntity();
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(responseList);
+        assertEquals(1, responseList.size());
+        assertEquals(event, responseList.get(0));
     }
 
 }

@@ -243,22 +243,21 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Compiles a list of events for an Intyg from Webcerts db.
      *
-     * @param intygsId intygsId
+     * @param intygsTyp Type of intyg
+     * @param intygsId Id of the intyg
      * @return a Response carrying a list containing all events for Intyg.
      */
     @GET
     @Path("/{intygsTyp}/{intygsId}/events")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getEventsForIntyg(@PathParam("intygsId") String intygsId) {
+    public Response getEventsForIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
 
-        List<UtkastEvent> eventList = utkastEventService.getUtkastEvents(intygsId);
-
+        List<UtkastEvent> eventList = utkastEventService.getUtkastEvents(intygsId, intygsTyp);
         if (eventList.isEmpty()) {
             LOG.error("No events for utkast/intyg on intyg with id {}", intygsId);
             return Response.status(Status.BAD_REQUEST).build();
         }
-
         LOG.debug("Got {} events", eventList.size());
 
         return Response.ok(eventList).build();

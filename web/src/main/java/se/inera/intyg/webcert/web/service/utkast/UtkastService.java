@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -56,6 +57,18 @@ public interface UtkastService {
      * @return Utkast
      */
     Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent);
+
+    /**
+     * Returns an optional utkast and will only create a PDL log event if createPdlLogEvent is set as true.
+     *
+     * Can be used when the utkast need to be retrieved for another service but won't be returned to the user.
+     *
+     * @param intygId utkast id
+     * @param intygType utkast type
+     * @param createPdlLogEvent true if a PDL log event should be logged.
+     * @return Optional<Utkast>
+     */
+    Optional<Utkast> getOptionalDraft(String intygId, String intygType, boolean createPdlLogEvent);
 
     /**
      * Updates a draft (i.e Utkast) with data from an existing signed certificate.
