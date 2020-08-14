@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,11 +49,16 @@ import se.inera.intyg.common.support.common.enumerations.EventKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
+import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.event.UtkastEventServiceImpl;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -61,7 +67,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class UtkastEventServiceImplTest {
 
     private static final String INTYG_ID = "1234";
-    private static final String INTYG_TYP = "typ";
+    private static final String INTYG_TYP = "lisjp";
     private static final String HSA_ID = "anvandareHsaId";
     private static final EventKod EVENT_KOD_SKAPAT = EventKod.SKAPAT;
     private static final String MEDDELANDE = "Inte köra, bara testa";
@@ -74,6 +80,9 @@ public class UtkastEventServiceImplTest {
 
     @Mock
     private UtkastService utkastService;
+
+    @Mock
+    private ArendeService arendeService;
 
     @InjectMocks
     private UtkastEventServiceImpl eventService;
@@ -112,6 +121,30 @@ public class UtkastEventServiceImplTest {
     }
 
     @Test
+    public void testGenerateEventsForUtkastWithArende() {
+
+        Utkast utkast = getUtkast();
+        utkast.setSignatur(new Signatur());
+        Arende arende = getArende(utkast.getIntygsId());
+
+        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(utkastService.getOptionalDraft(anyString(), anyString(), anyBoolean())).thenReturn(Optional.of(utkast));
+        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID, INTYG_TYP);
+
+        assertFalse(result.isEmpty());
+        assertEquals(3, result.size());
+        assertEquals(EventKod.SKAPAT, result.get(0).getEventKod());
+        assertEquals(EventKod.KFSIGN, result.get(1).getEventKod());
+        assertEquals(EventKod.NYFRFM, result.get(2).getEventKod());
+        verify(utkastService).getOptionalDraft(INTYG_ID, INTYG_TYP, true);
+        verifyNoInteractions(intygstjanst);
+    }
+
+
+    @Test
     public void testGenerateEventsForIntyg() {
 
         IntygContentHolder intyg = getIntygContentHolder();
@@ -127,6 +160,29 @@ public class UtkastEventServiceImplTest {
         assertEquals(2, result.size());
         assertEquals(EventKod.SIGNAT, result.get(0).getEventKod());
         assertEquals(EventKod.SKICKAT, result.get(1).getEventKod());
+        verify(intygstjanst).fetchIntygData(INTYG_ID, INTYG_TYP, false);
+    }
+
+    @Test
+    public void testGenerateEventsForIntygWithArende() {
+
+        IntygContentHolder intyg = getIntygContentHolder();
+        Arende arende = getArende(intyg.getUtlatande().getId());
+
+        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(utkastService.getOptionalDraft(anyString(), anyString(), anyBoolean())).thenReturn(Optional.empty());
+        when(intygstjanst.fetchIntygData(INTYG_ID, INTYG_TYP, false)).thenReturn(intyg);
+        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+
+        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID, INTYG_TYP);
+
+        assertFalse(result.isEmpty());
+        assertEquals(3, result.size());
+        assertEquals(EventKod.SIGNAT, result.get(0).getEventKod());
+        assertEquals(EventKod.SKICKAT, result.get(1).getEventKod());
+        assertEquals(EventKod.NYFRFM, result.get(2).getEventKod());
         verify(intygstjanst).fetchIntygData(INTYG_ID, INTYG_TYP, false);
     }
 
@@ -179,6 +235,18 @@ public class UtkastEventServiceImplTest {
         utkast.setSkapad(LocalDateTime.parse("2020-01-01T10:00:00"));
 
         return utkast;
+    }
+
+    private Arende getArende(String utkastId) {
+
+        Arende arende = new Arende();
+        arende.setIntygsId(utkastId);
+        arende.setIntygTyp(INTYG_TYP);
+        arende.setAmne(ArendeAmne.KOMPLT);
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        arende.setTimestamp(LocalDateTime.now());
+
+        return arende;
     }
 
     private IntygContentHolder getIntygContentHolder() {

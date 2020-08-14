@@ -33,6 +33,8 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -124,13 +126,11 @@ public class UtkastEventServiceImpl implements UtkastEventService {
                 UtkastEvent savedEvent = save(utkastId, skapadAv, kod, utkast.getSkapad(), relationAsMeddelande);
                 events.add(savedEvent);
             } else {
-                // SKAPAT
                 UtkastEvent savedEvent = save(utkastId, skapadAv, EventKod.SKAPAT, utkast.getSkapad());
                 events.add(savedEvent);
             }
         }
 
-        // SIGNERAT, MAKULERAT
         if (utkast.getStatus() == UtkastStatus.DRAFT_COMPLETE) {
             UtkastEvent savedEvent = save(utkastId, WEBCERT_ANVANDARE, EventKod.KFSIGN, utkast.getKlartForSigneringDatum());
             events.add(savedEvent);
@@ -144,22 +144,21 @@ public class UtkastEventServiceImpl implements UtkastEventService {
             }
         }
 
-        // SKICKAT TILL
         if (utkast.getSkickadTillMottagareDatum() != null) {
             UtkastEvent savedEvent = save(utkastId, WEBCERT_ANVANDARE, EventKod.SKICKAT, utkast.getSkickadTillMottagareDatum(),
                 "Mottagare: " + utkast.getSkickadTillMottagare());
             events.add(savedEvent);
         }
 
+        events.addAll(createEventsFromArende(utkast.getIntygsId()));
+
         return events;
     }
-
 
     private List<UtkastEvent> createEventsForIntyg(String intygsId, IntygContentHolder intyg) {
         List<UtkastEvent> events = new ArrayList<>();
         GrundData grundData = intyg.getUtlatande().getGrundData();
 
-        // SKAPAT /
         if (intyg.getCreated() != null) {
             if (intyg.getRelations() != null && intyg.getRelations().getParent() != null) {
                 WebcertCertificateRelation parent = intyg.getRelations().getParent();
@@ -175,7 +174,6 @@ public class UtkastEventServiceImpl implements UtkastEventService {
             }
         }
 
-        // INTYG SIGNERAT
         if (grundData.getSigneringsdatum() != null) {
             String signeratAv = grundData.getSkapadAv().getPersonId();
             EventKod kod = EventKod.SIGNAT;
@@ -183,7 +181,6 @@ public class UtkastEventServiceImpl implements UtkastEventService {
             events.add(savedEvent);
         }
 
-        // INTYG SKICKAT
         if (!CollectionUtils.isEmpty(intyg.getStatuses())) {
             for (Status status : intyg.getStatuses()) {
                 if (status.getType().name().equals("SENT") && status.getTimestamp() != null) {
@@ -194,6 +191,32 @@ public class UtkastEventServiceImpl implements UtkastEventService {
             }
         }
 
+        events.addAll(createEventsFromArende(intygsId));
+
+        return events;
+    }
+
+    private List<UtkastEvent> createEventsFromArende(String id) {
+
+        List<Arende> arenden = arendeService.getArendenInternal(id);
+        List<UtkastEvent> events = new ArrayList<>();
+        if (!arenden.isEmpty()) {
+
+            for (Arende arende : arenden) {
+                if (arende.getStatus() == se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION) {
+                    if (arende.getAmne() == ArendeAmne.KOMPLT) {
+                        String skickatAv = arende.getSkickatAv() != null ? arende.getSkickatAv() : OKAND_ANVANDARE;
+                        events
+                            .add(save(id, skickatAv, EventKod.NYFRFM, arende.getTimestamp(), "Komplettering"));
+                    }
+                    if (arende.getAmne() == ArendeAmne.PAMINN) {
+                        String skickatAv = arende.getSkickatAv() != null ? arende.getSkickatAv() : OKAND_ANVANDARE;
+                        events
+                            .add(save(id, skickatAv, EventKod.NYFRFM, arende.getTimestamp(), "Påminnelse"));
+                    }
+                }
+            }
+        }
         return events;
     }
 
