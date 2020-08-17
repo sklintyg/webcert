@@ -189,7 +189,7 @@ public class DssSignatureService {
 
     private String formatIdField(String id) {
         var idStr = id.replaceAll("[^a-zA-Z\\d:]", "");
-        return idStr.substring(0, Math.min(idStr.length(), 11)).toLowerCase();
+        return idStr.substring(0, Math.min(idStr.length(), 12)).toLowerCase();
     }
 
     private InputDocuments createInputDocuments(SignaturBiljett sb) {
