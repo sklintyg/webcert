@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.event;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +38,7 @@ import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
 import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -54,6 +54,9 @@ public class UtkastEventServiceImpl implements UtkastEventService {
 
     @Autowired
     UtkastEventRepository utkastEventRepository;
+
+    @Autowired
+    UtkastRepository utkastRepository;
 
     @Autowired
     UtkastService utkastService;
@@ -87,26 +90,26 @@ public class UtkastEventServiceImpl implements UtkastEventService {
 
 
     @Override
-    public List<UtkastEvent> getUtkastEvents(String intygsId, String intygsTyp) {
+    public List<UtkastEvent> getUtkastEvents(String intygsId) {
 
         List<UtkastEvent> events = utkastEventRepository.findByIntygsId(intygsId);
         if (events.isEmpty()) {
-            events = addEventsForUtkastIntyg(intygsId, intygsTyp);
+            events = addEventsForUtkastIntyg(intygsId);
         }
         return events;
     }
 
-    private List<UtkastEvent> addEventsForUtkastIntyg(String intygsId, String intygsTyp) {
+    private List<UtkastEvent> addEventsForUtkastIntyg(String intygsId) {
         List<UtkastEvent> events = new ArrayList<>();
-        Optional<Utkast> utkast = utkastService.getOptionalDraft(intygsId, intygsTyp, true);
+        Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
 
-        if (utkast.isPresent()) {
-            events = createEventsForUtkast(utkast.get());
+        if (utkast != null) {
+            events = createEventsForUtkast(utkast);
             return events;
         }
 
         if (events.isEmpty()) {
-            IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygsTyp, false);
+            IntygContentHolder intygContentHolder = intygService.fetchIntygDataForInternalUse(intygsId, true);
             events = createEventsForIntyg(intygsId, intygContentHolder);
             return events;
         }

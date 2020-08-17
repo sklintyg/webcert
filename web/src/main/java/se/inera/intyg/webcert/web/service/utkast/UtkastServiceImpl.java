@@ -445,23 +445,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Utkast> getOptionalDraft(String intygId, String intygType, boolean createPdlLogEvent) {
-        Utkast utkast = getIntygAsDraft(intygId, intygType);
-
-        if (utkast != null && createPdlLogEvent) {
-            // Log read to PDL
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
-            logService.logReadIntyg(logRequest);
-
-            // Log read to monitoring log
-            monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
-        }
-
-        return Optional.ofNullable(utkast);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Utkast getDraft(String intygId, String intygType) {
         return getDraft(intygId, intygType, true);
     }

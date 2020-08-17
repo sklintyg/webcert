@@ -32,6 +32,6 @@ public interface UtkastEventService {
 
     void createUtkastEventFromCopyUtkast(Utkast utkast, String user, EventKod eventKod, String originalIntygsId);
 
-    List<UtkastEvent> getUtkastEvents(String intygsId, String intygsTyp);
+    List<UtkastEvent> getUtkastEvents(String intygsId);
 
 }

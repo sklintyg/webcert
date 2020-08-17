@@ -65,7 +65,6 @@ public class IntygApiControllerTest {
 
     private static final String ENHET_ID = "ABC123";
     private static final String INTYG_ID = "intygId";
-    private static final String INTYG_TYP = "intygTyp";
 
     private static final List<String> ENHET_IDS = Arrays.asList("ABC123", "DEF456");
     private static final List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
@@ -171,9 +170,9 @@ public class IntygApiControllerTest {
     @Test
     public void testNoIntygEvents() {
 
-        when(utkastEventService.getUtkastEvents(anyString(), anyString())).thenReturn(Collections.<UtkastEvent>emptyList());
+        when(utkastEventService.getUtkastEvents(anyString())).thenReturn(Collections.<UtkastEvent>emptyList());
 
-        Response response = intygCtrl.getEventsForIntyg(INTYG_TYP, INTYG_ID);
+        Response response = intygCtrl.getEventsForIntyg(INTYG_ID);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -184,9 +183,9 @@ public class IntygApiControllerTest {
         UtkastEvent event = new UtkastEvent();
         List<UtkastEvent> eventList = Arrays.asList(event);
 
-        when(utkastEventService.getUtkastEvents(anyString(), anyString())).thenReturn(eventList);
+        when(utkastEventService.getUtkastEvents(anyString())).thenReturn(eventList);
 
-        Response response = intygCtrl.getEventsForIntyg(INTYG_TYP, INTYG_ID);
+        Response response = intygCtrl.getEventsForIntyg(INTYG_ID);
 
         List<UtkastEvent> responseList = (List<UtkastEvent>) response.getEntity();
 
