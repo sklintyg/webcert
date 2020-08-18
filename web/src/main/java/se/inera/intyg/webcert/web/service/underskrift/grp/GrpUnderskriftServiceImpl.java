@@ -83,7 +83,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod) {
+        SignMethod signMethod, String ticketId) {
         String hash = createHash(intygJson);
 
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);

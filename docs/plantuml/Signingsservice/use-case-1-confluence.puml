@@ -1,0 +1,94 @@
+@startuml
+!include style.puml
+
+title Signature by Signing Service
+
+actor "Signatory with browser" as user
+participant "Webcert" as wc
+participant "Signature Service" as sign
+participant "Inera Identity Provider" as idp
+participant "Intygstjänsten" as it
+
+
+activate user
+activate wc
+
+wc -> user: Show what to be signed
+user -> wc: Agree to sign
+wc -> wc: Prepare Signature
+activate wc #SteelBlue
+note right of wc
+    - Hash Document (with unique Webcert transform)
+    - Create Signature Request (for XML)
+    - Sign Signature Request (with SITHS function-certificate)
+end note
+wc -> wc: Prepared Signature Request
+deactivate wc
+wc -> user: XHTML form with Signature Request
+deactivate wc
+
+user -> sign: HTTP POST Signature Request
+activate sign
+
+sign -> user: XHTML form with SAML Request
+deactivate sign
+
+user -> idp: POST SAML Request
+activate idp
+note right of idp
+    The Signing service acts as
+    the SP towards the IdP on
+    the behalf of Webcert
+end note
+note left of idp
+    Authenticate user
+    with NLS
+end note
+idp -> user: XHTML form with SAML Response
+deactivate idp
+
+user -> sign: POST SAML Response
+activate sign
+note right of sign
+    - Verify SAML Response
+    - Create keypair
+    - Issue certificate
+    - Create Signature
+    - Delete private key
+end note
+sign -> user: XHTML form with Sign Response
+deactivate sign
+
+user -> wc: POST Sign Response
+activate wc
+wc -> wc: Complete Signature
+activate wc #SteelBlue
+note right of wc
+    - Validate Sign Response
+    - Complete e-Signature
+end note
+wc -> wc: Complete Signature Response
+deactivate wc
+wc -> it: RegisterCertificate
+deactivate wc
+
+alt Successful signature
+  wc -> user: HTTP redirect\nto Signed Certificate
+  activate wc
+  user -> wc: GET Signed Certificate
+  wc -> user: Show Signed Certificate
+  deactivate wc
+else Failure
+
+  wc -> user: HTTP redirect\nto Edit Certificate
+  activate wc
+  user -> wc: GET Edit Certificate
+  wc -> user: Show Edit Certificate\nwith error message
+  deactivate wc
+end
+
+deactivate user
+
+
+
+@enduml
