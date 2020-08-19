@@ -111,6 +111,7 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
 
         List<AdditionType> additions = arendeList.stream()
             .filter(arende -> arende.getIntygsId().equals(intygId.getExtension()))
+            .filter(arende -> !arende.getAmne().equals(ArendeAmne.PAMINN))
             .map(this::mapArende)
             .collect(Collectors.toList());
 
