@@ -72,7 +72,10 @@ public class DssSignatureService {
     private final se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory objectFactorySaml;
 
     @Value("${dss.client.metadata.host.url}")
-    private String dssClientHostUrl;
+    private String dssClientEntityHostUrl;
+
+    @Value("${dss.client.response.host.url}")
+    private String dssClientResponseHostUrl;
 
     @Value("${dss.service.clientid}")
     private String customerId;
@@ -228,7 +231,7 @@ public class DssSignatureService {
         var signRequester = objectFactorySaml.createNameIDType();
         signRequester.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
         signRequester.setValue(
-            dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
+            dssClientEntityHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
         signRequestExtensionType.setSignRequester(signRequester);
 
         var signService = objectFactorySaml.createNameIDType();
@@ -336,7 +339,8 @@ public class DssSignatureService {
 
         var audienceRestrictionType = objectFactorySaml.createAudienceRestrictionType();
         audienceRestrictionType.getAudience()
-            .add(dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH);
+            .add(dssClientResponseHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH
+                + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH);
 
         conditionsType.getConditionOrAudienceRestrictionOrOneTimeUse().add(audienceRestrictionType);
         return conditionsType;
@@ -431,7 +435,8 @@ public class DssSignatureService {
             var intygTypeVersion = utkast.getIntygTypeVersion();
 
             //#/lisjp/1.1/edit/86beec75-b790-42cd-9fb9-3c9585e1bbed/
-            return String.format("%s/#/%s/%s/edit/%s/?error&ticket=%s", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId, ticketId);
+            return String
+                .format("%s/#/%s/%s/edit/%s/?error&ticket=%s", dssClientResponseHostUrl, intygsTyp, intygTypeVersion, intygsId, ticketId);
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Can't find certificate to return to!");
         }
@@ -446,7 +451,7 @@ public class DssSignatureService {
             var intygTypeVersion = utkast.getIntygTypeVersion();
 
             //#/intyg/lisjp/1.1/4dfd56f4-7321-4dda-a35a-8df6fa942a8a/?signed
-            return String.format("%s/#/intyg/%s/%s/%s/?signed", dssClientHostUrl, intygsTyp, intygTypeVersion, intygsId);
+            return String.format("%s/#/intyg/%s/%s/%s/?signed", dssClientResponseHostUrl, intygsTyp, intygTypeVersion, intygsId);
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Can't find certificate to return to!");
         }

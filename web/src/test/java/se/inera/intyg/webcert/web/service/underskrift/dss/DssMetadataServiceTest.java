@@ -112,7 +112,9 @@ public class DssMetadataServiceTest {
         ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
-        ReflectionTestUtils.setField(service, "dssClientHostUrl", "https://wc.localtest.me");
+        ReflectionTestUtils.setField(service, "dssClientEntityHostUrl", "https://wc.localtest.me");
+        ReflectionTestUtils.setField(service, "dssClientResponseHostUrl", "https://other.se");
+//        ReflectionTestUtils.setField(service, "dssClientResponseHostUrl", "https://wc.localtest.me");
 
         ReflectionTestUtils.setField(service, "organizationName", "Inera AB");
         ReflectionTestUtils.setField(service, "organizationDisplayName", "Webcert");
