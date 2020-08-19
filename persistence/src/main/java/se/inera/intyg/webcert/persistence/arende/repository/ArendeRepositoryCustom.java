@@ -70,6 +70,18 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**
      * Should return a list of {@link Arende} entities in the repository related to the
+     * list of specified certificate identifiers.
+     *
+     * @param intygsIds The certificate identifiers we are interested of
+     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     * an empty list.
+     */
+    @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList)")
+    List<Arende> findByIntygsIds(
+        @Param("idList") List<String> intygsIds);
+
+    /**
+     * Should return a list of {@link Arende} entities in the repository related to the
      * list of specified certificate identifiers and a specific type.
      *
      * @param intygsIds The certificate identifiers we are interested of

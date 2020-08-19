@@ -21,7 +21,7 @@ node {
 
     stage('owasp') {
         try {
-            shgradle "--refresh-dependencies clean dependencyCheckAggregate ${versionFlags}"
+            shgradle11 "--refresh-dependencies clean dependencyCheckAggregate ${versionFlags}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports', \
                 reportFiles: 'dependency-check-report.html', reportName: 'OWASP dependency-check'
@@ -30,7 +30,7 @@ node {
 
     stage('sonarqube') {
         try {
-            shgradle "build -P codeQuality jacocoTestReport sonarqube ${versionFlags}"
+            shgradle11 "build -P codeQuality jacocoTestReport sonarqube ${versionFlags}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/jacoco/test/html', \
             reportFiles: 'index.html', reportName: 'Code coverage'

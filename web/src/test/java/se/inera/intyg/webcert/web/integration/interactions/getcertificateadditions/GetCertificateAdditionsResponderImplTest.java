@@ -36,6 +36,7 @@ import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
@@ -57,7 +58,7 @@ public class GetCertificateAdditionsResponderImplTest {
 
     @Test
     public void whenGettingKompletteringarSuccessfully() {
-        when(arendeService.getKompletteringar(INTYG_IDS)).thenReturn(mockKompetteringar());
+        when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(mockKompetteringar());
 
         GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
         assertEquals(3, additions.getAdditions().size());
@@ -68,7 +69,7 @@ public class GetCertificateAdditionsResponderImplTest {
 
     @Test
     public void whenThereAreNoKompletteringar() {
-        when(arendeService.getKompletteringar(INTYG_IDS)).thenReturn(new ArrayList<>());
+        when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(new ArrayList<>());
 
         GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
         assertEquals(3, additions.getAdditions().size());
@@ -113,6 +114,7 @@ public class GetCertificateAdditionsResponderImplTest {
             arende.setStatus(Status.PENDING_INTERNAL_ACTION);
             arende.setTimestamp(LocalDateTime.now());
             arende.setIntygsId(INTYG_IDS.get(i));
+            arende.setAmne(ArendeAmne.KOMPLT);
 
             arenden.add(arende);
         }
