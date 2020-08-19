@@ -50,7 +50,7 @@ const handleGetCertificate : Middleware<Dispatch> = ({ dispatch }: MiddlewareAPI
     return;
   }
 
-  dispatch(showSpinner());
+  dispatch(showSpinner("Laddar..."));
 
   dispatch(apiCallBegan({
       url: "/api/certificate",
@@ -94,7 +94,7 @@ const handleSignCertificate : Middleware<Dispatch> = ({ dispatch, getState }: Mi
     }
   }
 
-  dispatch(showSpinner());
+  dispatch(showSpinner("Signerar..."));
 
   dispatch(apiCallBegan({
     url: "/api/certificate",

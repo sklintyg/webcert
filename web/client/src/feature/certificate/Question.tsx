@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useSelector} from "react-redux";
-import {getQuestion, ICertificateContent, ICertificateContentConfig} from "../../store/certificate/certificateSlice";
 import UeRadio from "./UeRadio";
 import UeTextArea from "./UeTextArea";
 import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@material-ui/core";
@@ -8,6 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {makeStyles} from "@material-ui/core/styles";
 import UvText from "./UvText";
 import {CertificateDataConfig, CertificateDataElement} from "../../store/domain/certificate";
+import {getQuestion} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {

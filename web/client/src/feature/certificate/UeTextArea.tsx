@@ -1,9 +1,8 @@
 import * as React from 'react';
-import {editCertificateNew} from "../../store/certificate/certificateSlice";
 import {useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
-import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
+import {TextareaAutosize, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {CertificateDataElement, CertificateTextValue} from "../../store/domain/certificate";
 import {getShowValidationErrors} from "../../store/selectors/certificate";

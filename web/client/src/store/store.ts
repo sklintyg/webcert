@@ -1,9 +1,7 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import reducer from "./reducers";
 import {useDispatch} from "react-redux";
 import api from "./middleware/api";
-import frontendValidator from "./middleware/frontendValidator";
-import backendValidator from "./middleware/backendValidator";
 import {certificateMiddleware} from "./middleware/certificate";
 
 const store = configureStore({
@@ -13,7 +11,6 @@ const store = configureStore({
       .prepend(
         // correctly typed middlewares can just be used
         api,
-        frontendValidator,
         ...certificateMiddleware,
         // ,
         // you can also manually type middlewares manually

@@ -1,12 +1,11 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {getError} from "../../store/certificate/certificateSlice";
 import Category from "./Category";
 import Question from "./Question";
 import {makeStyles} from "@material-ui/core/styles";
 import {CertificateFooter} from "./CertificateFooter";
 import CertificateValidation from "./CertificateValidation";
-import {getCertificateDataElements, getIsLoading, getIsSigning} from "../../store/selectors/certificate";
+import {getCertificateDataElements, getIsShowSpinner, getSpinnerText} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,19 +23,14 @@ type Props = {};
 
 const Certificate: React.FC<Props> = () => {
   const certificateStructure = useSelector(getCertificateDataElements);
-  const loading = useSelector(getIsLoading);
-  const signing = useSelector(getIsSigning);
-  const error = useSelector(getError);
+  const showSpinner = useSelector(getIsShowSpinner);
+  const spinnerText = useSelector(getSpinnerText);
 
   const styles = useStyles();
 
   console.log("certificate");
 
-  if (loading) return <h1>Laddar utkastet...</h1>;
-
-  if (signing) return <h1>Signerar utkastet...</h1>;
-
-  if (error) return <h1>{error}</h1>
+  if (showSpinner) return <h1>{spinnerText}</h1>;
 
   return (
     <div className={styles.root}>

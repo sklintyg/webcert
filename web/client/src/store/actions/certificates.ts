@@ -65,7 +65,7 @@ export const validateCertificate = createAction<Certificate>(VALIDATE_CERTIFICAT
 
 export const validateCertificateInFrontEnd = createAction<CertificateDataElement>(VALIDATE_CERTIFICATE_IN_FRONTEND);
 
-export const showSpinner = createAction(SHOW_CERTIFICATE_LOADING_SPINNER);
+export const showSpinner = createAction<string>(SHOW_CERTIFICATE_LOADING_SPINNER);
 
 export const hideSpinner = createAction(HIDE_CERTIFICATE_LOADING_SPINNER);
 

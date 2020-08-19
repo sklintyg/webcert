@@ -1,9 +1,9 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {getQuestion} from "../../store/certificate/certificateSlice";
 import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {makeStyles} from "@material-ui/core/styles";
+import {getQuestion} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {

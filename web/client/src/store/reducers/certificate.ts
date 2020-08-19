@@ -12,12 +12,14 @@ import {
 interface CertificateState {
   certificate?: Certificate;
   spinner: boolean;
+  spinnerText: string;
   validationInProgress: boolean;
   showValidationErrors: boolean;
 }
 
 const initialState: CertificateState = {
   spinner: false,
+  spinnerText: "",
   validationInProgress: false,
   showValidationErrors: false,
 };
@@ -50,11 +52,13 @@ const certificateReducer = createReducer(initialState, builder =>
 
       state.certificate.data[action.payload.id] = action.payload;
     })
-    .addCase(showSpinner, (state => {
+    .addCase(showSpinner, (state, action) => {
       state.spinner = true;
-    }))
+      state.spinnerText = action.payload;
+    })
     .addCase(hideSpinner, (state => {
       state.spinner = false;
+      state.spinnerText = "";
     }))
     .addCase(validateCertificateStarted, (state => {
       state.validationInProgress = true;

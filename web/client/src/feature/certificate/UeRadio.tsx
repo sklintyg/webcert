@@ -1,10 +1,9 @@
 import * as React from 'react';
-import {editCertificate, editCertificateNew, ICertificateContent, showValidationError} from "../../store/certificate/certificateSlice";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {Radio, FormControlLabel, Typography} from '@material-ui/core';
 import {makeStyles} from "@material-ui/core/styles";
 import {useAppDispatch} from "../../store/store";
-import {CertificateBooleanValue, CertificateDataElement, CertificateTextValue} from "../../store/domain/certificate";
+import {CertificateBooleanValue, CertificateDataElement} from "../../store/domain/certificate";
 import {updateCertificateDataElement} from "../../store/actions/certificates";
 import {getShowValidationErrors} from "../../store/selectors/certificate";
 

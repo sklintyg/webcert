@@ -3,15 +3,17 @@ import {createSelector} from "@reduxjs/toolkit";
 import {Certificate, CertificateData} from "../domain/certificate";
 
 
-export const getIsLoading = (state: RootState) => state.ui.uiCertificate.spinner;
+export const getIsShowSpinner = (state: RootState) => state.ui.uiCertificate.spinner;
 
-export const getIsSigning = (state: RootState) => state.ui.uiCertificate.spinner;
+export const getSpinnerText = (state: RootState) => state.ui.uiCertificate.spinnerText;
 
 export const getIsValidating = (state: RootState) => state.ui.uiCertificate.validationInProgress;
 
 export const getShowValidationErrors = (state: RootState) => state.ui.uiCertificate.showValidationErrors;
 
 export const getCertificate = (state: RootState): Certificate => state.ui.uiCertificate.certificate!;
+
+export const getQuestion = (id: string) => (state: RootState) => state.ui.uiCertificate.certificate!.data[id];
 
 export const getCertificateMetaData = (state: RootState) => {
   const { certificate } = state.ui.uiCertificate;
