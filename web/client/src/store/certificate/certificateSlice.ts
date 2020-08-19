@@ -278,19 +278,17 @@ export const saveCertificate = (certificate: ICertificate) =>
   certificateSlice.actions.certificateSaved();
 
 // SELECTORS
-export const isLoading = (state: RootState) => state.ui.uiCertificate.loading;
+export const isLoading = (state: RootState) => false;
 
-export const isSigning = (state: RootState) => state.ui.uiCertificate.signing;
+export const isSigning = (state: RootState) => false;
 
-export const isValidationNeeded = (state: RootState) => state.ui.uiCertificate.validationNeeded;
+export const isValidationNeeded = (state: RootState) => false;
 
-export const showValidationError = (state: RootState) => state.ui.uiCertificate.showValidationError;
+export const showValidationError = (state: RootState) => false;
 
-export const getError = (state: RootState) => state.ui.uiCertificate.error;
+export const getError = (state: RootState) => "";
 
-export const getCertificateMetadata = (state: RootState) => (state.ui.uiCertificate.certificate != null ? state.ui.uiCertificate.certificate.metadata : null);
-
-export const getCertificateStructure = (state: RootState) => state.ui.uiCertificate.certificateStructure;
+export const getCertificateStructure = (state: RootState) => null;
 
 export const getQuestion = (id: string) => (state: RootState) => state.ui.uiCertificate.certificate!.data[id];
 

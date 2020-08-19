@@ -9,6 +9,6 @@ export interface IApiCall {
   onError?: string;
 }
 
-export const apiCallBegan = createAction<IApiCall>("api/callBegan");
-export const apiCallSuccess = createAction<any>("api/callSuccess");
-export const apiCallFailed = createAction<string>("api/callFailed");
+export const apiCallBegan = createAction<IApiCall>("[API] Call began");
+export const apiCallSuccess = createAction<any>("[API] Call success");
+export const apiCallFailed = createAction<string>("[API] Call failed");

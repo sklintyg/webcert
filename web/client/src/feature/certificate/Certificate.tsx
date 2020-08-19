@@ -1,11 +1,12 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {getCertificateStructure, getError, isLoading, isSigning} from "../../store/certificate/certificateSlice";
+import {getError} from "../../store/certificate/certificateSlice";
 import Category from "./Category";
 import Question from "./Question";
 import {makeStyles} from "@material-ui/core/styles";
 import {CertificateFooter} from "./CertificateFooter";
 import CertificateValidation from "./CertificateValidation";
+import {getCertificateDataElements, getIsLoading, getIsSigning} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 type Props = {};
 
 const Certificate: React.FC<Props> = () => {
-  const certificateStructure = useSelector(getCertificateStructure);
-  const loading = useSelector(isLoading);
-  const signing = useSelector(isSigning);
+  const certificateStructure = useSelector(getCertificateDataElements);
+  const loading = useSelector(getIsLoading);
+  const signing = useSelector(getIsSigning);
   const error = useSelector(getError);
 
   const styles = useStyles();

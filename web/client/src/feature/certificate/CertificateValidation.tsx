@@ -1,15 +1,7 @@
-// @flow
 import * as React from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {makeStyles} from "@material-ui/core/styles";
-import {
-  getCertificate,
-  isValidationNeeded,
-  showValidationError,
-  validateCertificate,
-  validateCertificateNew
-} from "../../store/certificate/certificateSlice";
-import {useCallback} from "react";
+import {getShowValidationErrors} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,18 +21,9 @@ type Props = {
 };
 
 const CertificateValidation: React.FC = props => {
-  const isShowValidationError = useSelector(showValidationError);
-  const validationNeeded = useSelector(isValidationNeeded);
-
-  const dispatch = useDispatch();
+  const isShowValidationError = useSelector(getShowValidationErrors);
 
   const styles = useStyles();
-
-  const dispatcher = useCallback((action) => dispatch(action), [dispatch]);
-
-  if (validationNeeded) {
-    dispatcher(validateCertificateNew());
-  }
 
   return null;
 }

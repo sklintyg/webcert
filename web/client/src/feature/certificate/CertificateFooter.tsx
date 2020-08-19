@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getCertificateMetadata, signCertificate} from "../../store/certificate/certificateSlice";
-import {Button, Grid, Typography} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {useCallback} from "react";
+import {CertificateStatus} from "../../store/domain/certificate";
+import {getCertificateMetaData, getIsValidating} from "../../store/selectors/certificate";
+import {signCertificate} from "../../store/actions/certificates";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,20 +24,23 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
 
 };
+
 export const CertificateFooter: React.FC = props => {
-  const certificateMetadata = useSelector(getCertificateMetadata);
+  const certificateMetadata = useSelector(getCertificateMetaData);
+  const isValidating = useSelector(getIsValidating);
 
   const dispatch = useDispatch();
 
-  const dispatcher = useCallback((action) => dispatch(action), [dispatch]);
-
   const styles = useStyles();
+
+  if (!certificateMetadata) return null;
 
   return (
     <div className={styles.root}>
-      {!certificateMetadata!.signed && <Button className={styles.signButton} variant="contained" onClick={() => {
-        dispatcher(signCertificate(certificateMetadata!.certificateId))
-      }}>Signera och skicka</Button>}
+      {certificateMetadata.status === CertificateStatus.UNSIGNED &&
+        <Button className={styles.signButton} disabled={isValidating} variant="contained" onClick={() => {
+          dispatch(signCertificate())
+        }}>Signera och skicka</Button>}
     </div>
   );
 };

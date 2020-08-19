@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import certificateReducer from "./certificate/certificateSlice";
+import certificate from "./reducers/certificate";
 
 export default combineReducers({
-  uiCertificate: certificateReducer,
+  uiCertificate: certificate,
 });

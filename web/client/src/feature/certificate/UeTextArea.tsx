@@ -1,10 +1,13 @@
 import * as React from 'react';
-import {editCertificateNew, ICertificateContent, showValidationError} from "../../store/certificate/certificateSlice";
-import {useCallback, useRef, useState, Fragment} from "react";
+import {editCertificateNew} from "../../store/certificate/certificateSlice";
+import {useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
 import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import {CertificateDataElement, CertificateTextValue} from "../../store/domain/certificate";
+import {getShowValidationErrors} from "../../store/selectors/certificate";
+import {updateCertificateDataElement} from "../../store/actions/certificates";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,27 +28,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  question: ICertificateContent
+  question: CertificateDataElement
 };
 
 const UeTextArea: React.FC<Props> = ({question}) => {
-  const isShowValidationError = useSelector(showValidationError);
-  const [text, setText] = useState(question.data[question.config.prop] || "");
+  const textValue = getTextValue(question);
+  const isShowValidationError = useSelector(getShowValidationErrors);
+  const [text, setText] = useState(textValue != null ? textValue.text : "");
   const dispatch = useDispatch();
 
   const styles = useStyles();
 
-  const dispatcher = useCallback((action) => dispatch(action), [dispatch]);
-
   const dispatchEditDraft = useRef(
     _.debounce((value: string) => {
-      const data = {
-        type: question.data.type,
-        [question.config.prop]: value
-      }
-      dispatcher(editCertificateNew(question.id, data));
+      const updatedValue = getUpdatedValue(question, value);
+      console.log('updatedValue', updatedValue);
+      dispatch(updateCertificateDataElement(updatedValue));
     }, 1000)
   ).current;
+
+  if (!textValue) {
+    return <div className={styles.root}>Value not supported!</div>;
+  }
 
   const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = event => {
     setText(event.currentTarget.value);
@@ -55,10 +59,25 @@ const UeTextArea: React.FC<Props> = ({question}) => {
 
   return (
     <div className={styles.root}>
-        <TextareaAutosize className={styles.textarea} rows={4} name={question.config.prop} value={text} onChange={e => handleChange(e)} />
-        {isShowValidationError && question.validationError.length > 0 && question.validationError.map(validationError => <Typography variant="body1" color="error">{validationError.text}</Typography>)}
+      <TextareaAutosize className={styles.textarea} rows={4} name={question.config.prop} value={text} onChange={e => handleChange(e)} />
+      {isShowValidationError && question.validationErrors && question.validationErrors.length > 0 && question.validationErrors.map(validationError => <Typography variant="body1" color="error">{validationError.text}</Typography>)}
     </div>
   );
 };
 
+function getTextValue(question: CertificateDataElement): CertificateTextValue | null {
+  if (question.value.type !== "TEXT") {
+    return null;
+  }
+  return question.value as CertificateTextValue;
+}
+
+function getUpdatedValue(question: CertificateDataElement, text: string) : CertificateDataElement {
+  const updatedQuestion: CertificateDataElement = { ...question };
+  updatedQuestion.value = { ...updatedQuestion.value };
+  (updatedQuestion.value as CertificateTextValue).text = text;
+  return updatedQuestion;
+}
+
+// {isShowValidationError && question.validationError.length > 0 && question.validationError.map(validationError => <Typography variant="body1" color="error">{validationError.text}</Typography>)}
 export default UeTextArea;

@@ -2,10 +2,7 @@ import * as actions from "../api";
 import { Middleware, MiddlewareAPI, Dispatch } from "redux";
 import demoDraft from "../certificate/bed26d3e-7112-4f08-98bf-01be40e26c80.json";
 import demoDraft2 from "../certificate/bed26d3e-7112-4f08-98bf-01be40e26c90.json";
-import {
-  ICertificate,
-  IValidationError,
-} from "../certificate/certificateSlice";
+import {Certificate, CertificateBooleanValue, CertificateTextValue, ValidationError} from "../domain/certificate";
 
 const api: Middleware = ({ getState, dispatch }: MiddlewareAPI) => (next: Dispatch) => async action => {
   if (action.type !== actions.apiCallBegan.type) return next(action);
@@ -19,7 +16,7 @@ const api: Middleware = ({ getState, dispatch }: MiddlewareAPI) => (next: Dispat
   try {
     // MWW: Here we would make the api call. For now just simulate a async call.
     const response = simulateApiCall(url, method, data);
-    await stall(500);
+    await stall(2000);
 
     // General
     dispatch(actions.apiCallSuccess(response.data));
@@ -49,8 +46,8 @@ const simulateApiCall = (url: string, method: string, data: any) => {
         throw new Error("No certificate with this id: " + data.id);
     }
   } else if (method === "post") {
-    const certificate: ICertificate = data;
-    const validationError: IValidationError[] = [];
+    const certificate: Certificate = data;
+    const validationError: ValidationError[] = [];
     let category: string = "";
     for (let questionId in certificate.data) {
       const dataProp = certificate.data[questionId].config.prop;
@@ -59,9 +56,10 @@ const simulateApiCall = (url: string, method: string, data: any) => {
       category = question.config.component === 'category' ? questionId : category;
 
       if (question.visible && question.validation && question.validation.required) {
-        switch (question.data.type) {
+        switch (question.value.type) {
           case "BOOLEAN":
-            if (!question.data[dataProp] || question.data[dataProp] === 'EMPTY') {
+            const booleanValue: CertificateBooleanValue = question.value as CertificateBooleanValue;
+            if (booleanValue.selected === undefined || booleanValue.selected === null) {
               validationError.push({
                 id: questionId,
                 category: getCategory(certificate, question.parent),
@@ -72,7 +70,8 @@ const simulateApiCall = (url: string, method: string, data: any) => {
             }
             break;
           case "TEXT":
-            if (!question.data[dataProp]) {
+            const textValue: CertificateTextValue = question.value as CertificateTextValue;
+            if (!textValue.text) {
               validationError.push({
                 id: questionId,
                 category: getCategory(certificate, question.parent),
@@ -83,15 +82,6 @@ const simulateApiCall = (url: string, method: string, data: any) => {
             }
             break;
           default:
-            if (!question.data[dataProp]) {
-              validationError.push({
-                id: questionId,
-                category: getCategory(certificate, question.parent),
-                field: dataProp,
-                type: "EMPTY",
-                text: "Ange ett svar."
-              });
-            }
             break;
         }
       }
@@ -101,7 +91,7 @@ const simulateApiCall = (url: string, method: string, data: any) => {
   else return {};
 };
 
-function getCategory(certificate: ICertificate, parent: string): string {
+function getCategory(certificate: Certificate, parent: string): string {
   if (parent) {
     const newParent = certificate.data[parent].parent;
     if (newParent) {

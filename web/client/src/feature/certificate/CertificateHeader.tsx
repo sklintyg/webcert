@@ -1,9 +1,8 @@
-// @flow
 import * as React from 'react';
 import {useSelector} from "react-redux";
-import {getCertificateMetadata} from "../../store/certificate/certificateSlice";
-import {AppBar, Grid, Toolbar, Typography} from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import {getCertificateMetaData} from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,16 +21,20 @@ type Props = {
 
 };
 export const CertificateHeader: React.FC = props => {
-  const certificateMetadata = useSelector(getCertificateMetadata);
+  const certificateMetadata = useSelector(getCertificateMetaData);
 
   const styles = useStyles();
+
+  if (!certificateMetadata) {
+    return null;
+  }
 
   return (
     <Grid container className={styles.root}>
       <Grid item xs={"auto"} sm={2}/>
       <Grid item xs={12} sm={8}>
         <Typography variant="h5" className={styles.heading}>
-          {certificateMetadata && certificateMetadata.certificateName}
+          {certificateMetadata.certificateName}
         </Typography>
       </Grid>
       <Grid item xs={"auto"} sm={2}/>

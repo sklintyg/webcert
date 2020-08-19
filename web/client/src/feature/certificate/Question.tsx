@@ -7,6 +7,7 @@ import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@materi
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {makeStyles} from "@material-ui/core/styles";
 import UvText from "./UvText";
+import {CertificateDataConfig, CertificateDataElement} from "../../store/domain/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,7 +76,7 @@ const Question: React.FC<Props> = ({ id }) => {
     </React.Fragment>
   );
 
-  function getQuestionComponent(config: ICertificateContentConfig, mandatory: boolean, readOnly: boolean) {
+  function getQuestionComponent(config: CertificateDataConfig, mandatory: boolean, readOnly: boolean) {
     if (!readOnly && config.description) {
       return (
         <Accordion className={styles.accordion}>
@@ -99,14 +100,14 @@ const Question: React.FC<Props> = ({ id }) => {
     return <Typography variant="subtitle1">{question.config.text}</Typography>;
   }
 
-  function getUnifiedEditComponent(question: ICertificateContent) {
+  function getUnifiedEditComponent(question: CertificateDataElement) {
     if (question.config.component === "ue-radio") return <UeRadio key={question.id} question={question} />;
     if (question.config.component === "ue-textarea")
       return <UeTextArea key={question.id} question={question} />;
     return <div>Cannot find a component for: {question.config.component}</div>;
   };
 
-  function getUnifiedViewComponent(question: ICertificateContent) {
+  function getUnifiedViewComponent(question: CertificateDataElement) {
     return <UvText question={question} />;
   };
 };

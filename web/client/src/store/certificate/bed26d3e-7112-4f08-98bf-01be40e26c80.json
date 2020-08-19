@@ -3,7 +3,7 @@
     "certificateCode": "af00213",
     "certificateId": "bed26d3e-7112-4f08-98bf-01be40e26c80",
     "certificateName": "Arbetsförmedlingens medicinska utlåtande",
-    "signed": false
+    "status": "UNSIGNED"
   },
   "data": {
     "funktionsnedsattning": {
@@ -31,9 +31,12 @@
         "component": "ue-radio",
         "prop": "harFunktionsnedsattning"
       },
-      "data": {
+      "value": {
         "type": "BOOLEAN",
-        "harFunktionsnedsattning": "EMPTY"
+        "harFunktionsnedsattning": "EMPTY",
+        "selected": null,
+        "selectedText": "Ja",
+        "unselectedText": "Nej"
       },
       "validation": {
         "required": true,
@@ -54,9 +57,11 @@
         "component": "ue-textarea",
         "prop": "funktionsnedsattning"
       },
-      "data": {
+      "value": {
         "type": "TEXT",
-        "funktionsnedsattning": null
+        "funktionsnedsattning": null,
+        "text": "",
+        "limit": 50
       },
       "validation": {
         "required": true,
@@ -93,9 +98,12 @@
         "component": "ue-radio",
         "prop": "harAktivitetsbegransning"
       },
-      "data": {
+      "value": {
         "type": "BOOLEAN",
-        "harAktivitetsbegransning": "EMPTY"
+        "harAktivitetsbegransning": "EMPTY",
+        "selected": null,
+        "selectedText": "Ja",
+        "unselectedText": "Nej"
       },
       "validation": {
         "required": true,
@@ -117,9 +125,11 @@
         "component": "ue-textarea",
         "prop": "aktivitetsbegransning"
       },
-      "data": {
+      "value": {
         "type": "TEXT",
-        "aktivitetsbegransning": null
+        "aktivitetsbegransning": null,
+        "text": "",
+        "limit": 50
       },
       "validation": {
         "required": true,
@@ -156,9 +166,12 @@
         "component": "ue-radio",
         "prop": "harUtredningBehandling"
       },
-      "data": {
+      "value": {
         "type": "BOOLEAN",
-        "harUtredningBehandling": "EMPTY"
+        "harUtredningBehandling": "EMPTY",
+        "selected": null,
+        "selectedText": "Ja",
+        "unselectedText": "Nej"
       },
       "validation": {
         "required": true,
@@ -179,9 +192,11 @@
         "component": "ue-textarea",
         "prop": "utredningBehandling"
       },
-      "data": {
+      "value": {
         "type": "TEXT",
-        "utredningBehandling": null
+        "utredningBehandling": null,
+        "text": "",
+        "limit": 50
       },
       "validation": {
         "required": true,
@@ -218,9 +233,12 @@
         "component": "ue-radio",
         "prop": "harArbetetsPaverkan"
       },
-      "data": {
+      "value": {
         "type": "BOOLEAN",
-        "harArbetetsPaverkan": "EMPTY"
+        "harArbetetsPaverkan": "EMPTY",
+        "selected": null,
+        "selectedText": "Ja",
+        "unselectedText": "Nej"
       },
       "validation": {
         "required": true,
@@ -241,9 +259,11 @@
         "component": "ue-textarea",
         "prop": "arbetetsPaverkan"
       },
-      "data": {
+      "value": {
         "type": "TEXT",
-        "arbetetsPaverkan": null
+        "arbetetsPaverkan": null,
+        "text": "",
+        "limit": 50
       },
       "validation": {
         "required": true,
@@ -280,9 +300,11 @@
         "component": "ue-textarea",
         "prop": "ovrigt"
       },
-      "data": {
+      "value": {
         "type": "TEXT",
-        "ovrigt": null
+        "ovrigt": null,
+        "text": "",
+        "limit": 50
       },
       "validation": {
         "required": false
