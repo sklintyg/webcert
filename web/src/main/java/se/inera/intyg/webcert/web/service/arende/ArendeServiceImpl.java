@@ -234,7 +234,9 @@ public class ArendeServiceImpl implements ArendeService {
 
         if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
             notificationService.sendNotificationForQuestionReceived(saved);
-            certificateEventService.createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYFRFM);
+            String description = saved.getAmne() != null ? saved.getAmne().getDescription() : EventCode.NYFRFM.getDescription();
+            certificateEventService
+                .createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYFRFM, description);
         } else {
             notificationService.sendNotificationForAnswerRecieved(saved);
             certificateEventService.createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYSVFM);

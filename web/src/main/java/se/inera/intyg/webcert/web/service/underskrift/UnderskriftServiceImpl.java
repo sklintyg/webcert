@@ -218,7 +218,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         notificationService.sendNotificationForDraftSigned(utkast);
 
         certificateEventService.createCertificateEvent(utkast.getIntygsId(), user.getHsaId(), EventCode.SIGNAT,
-            String.format("Intygstyp: %s", utkast.getIntygsTyp()));
+            String.format("Certificate type: %s", utkast.getIntygsTyp()));
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
 

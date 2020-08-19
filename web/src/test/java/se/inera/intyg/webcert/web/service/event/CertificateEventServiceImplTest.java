@@ -62,7 +62,6 @@ import se.inera.intyg.webcert.web.event.CertificateEventServiceImpl;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateEventServiceImplTest {
@@ -81,9 +80,6 @@ public class CertificateEventServiceImplTest {
 
     @Mock
     private IntygService intygService;
-
-    @Mock
-    private UtkastService utkastService;
 
     @Mock
     private ArendeService arendeService;

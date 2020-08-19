@@ -42,7 +42,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 
 @Service
@@ -57,9 +56,6 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
     @Autowired
     UtkastRepository utkastRepository;
-
-    @Autowired
-    UtkastService utkastService;
 
     @Autowired
     IntygService intygService;
@@ -139,7 +135,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
             events.add(savedEvent);
         } else if (certificate.getStatus() == UtkastStatus.SIGNED) {
             Signatur signature = certificate.getSignatur();
-            CertificateEvent savedEvent = save(certificateId, signature.getSigneradAv(), EventCode.SIGNAT, signature.getSigneringsDatum());
+            CertificateEvent savedEvent = save(certificateId, signature.getSigneradAv(), EventCode.SIGNAT, signature.getSigneringsDatum(),
+                "Certificate type: " + certificate.getIntygsTyp());
             events.add(savedEvent);
             if (certificate.getAterkalladDatum() != null) {
                 savedEvent = save(certificateId, WEBCERT_USER, EventCode.MAKULERAT, certificate.getAterkalladDatum());
@@ -180,8 +177,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
         if (grundData.getSigneringsdatum() != null) {
             String signedBy = grundData.getSkapadAv().getPersonId();
-            EventCode code = EventCode.SIGNAT;
-            CertificateEvent savedEvent = save(certificateId, signedBy, code, grundData.getSigneringsdatum(), code.getDescription());
+            CertificateEvent savedEvent = save(certificateId, signedBy, EventCode.SIGNAT, grundData.getSigneringsdatum(),
+                certificate.getUtlatande().getTyp());
             events.add(savedEvent);
         }
 

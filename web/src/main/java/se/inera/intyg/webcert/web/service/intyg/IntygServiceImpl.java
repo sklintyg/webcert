@@ -507,7 +507,8 @@ public class IntygServiceImpl implements IntygService {
 
         monitoringService.logIntygSent(intygsId, utlatande.getTyp(), recipient);
 
-        certificateEventService.createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT);
+        certificateEventService
+            .createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT, "Recipient: " + recipient);
 
         // send PDL log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
