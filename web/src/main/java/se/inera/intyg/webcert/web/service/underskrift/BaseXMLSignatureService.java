@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import javax.xml.bind.JAXBElement;
@@ -154,7 +155,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         TransformAndDigestResponse transformAndDigestResponse = prepareSignatureService
             .transformAndGenerateDigest(utkastXml, biljett.getIntygsId());
 
-        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest()));
+        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

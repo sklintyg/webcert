@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.ByteArrayInputStream;
@@ -199,7 +218,7 @@ public class DssSignatureService {
         var signTaskDataType = objectFactoryCsig.createSignTaskDataType();
         signTaskDataType.setSigType("XML");
         signTaskDataType.setSignTaskId(generateUUID());
-        signTaskDataType.setToBeSignedBytes(sb.getHash().getBytes());
+        signTaskDataType.setToBeSignedBytes(sb.getHash().getBytes(StandardCharsets.UTF_8));
 
         var tasks = objectFactoryCsig.createSignTasksType();
         tasks.getSignTaskData().add(signTaskDataType);
@@ -423,7 +442,8 @@ public class DssSignatureService {
 
     private SignResponse unMarshallSignResponse(String eIdSignResponse) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(SignResponse.class, SignResponseExtensionType.class, SignTasksType.class);
-        return (SignResponse) context.createUnmarshaller().unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes()));
+        return (SignResponse) context.createUnmarshaller()
+            .unmarshal(new ByteArrayInputStream(eIdSignResponse.getBytes(StandardCharsets.UTF_8)));
     }
 
     public String findReturnErrorUrl(String intygsId, String ticketId) {
