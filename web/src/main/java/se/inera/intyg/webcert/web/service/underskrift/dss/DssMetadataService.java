@@ -82,7 +82,10 @@ public class DssMetadataService {
     private static final String LANG = "sv";
 
     @Value("${dss.client.metadata.host.url}")
-    private String dssClientHostUrl;
+    private String dssClientEntityHostUrl;
+
+    @Value("${dss.client.response.host.url}")
+    private String dssClientResponseHostUrl;
 
     @Value("${dss.service.metadata.resource}")
     private Resource dssServiceMetadataResource;
@@ -218,8 +221,8 @@ public class DssMetadataService {
 
         MetadataGenerator mdg = new MetadataGenerator();
         mdg.setEntityId(
-            dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
-        mdg.setEntityBaseURL(dssClientHostUrl);
+            dssClientEntityHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
+        mdg.setEntityBaseURL(dssClientResponseHostUrl);
         mdg.setRequestSigned(false);
         mdg.setWantAssertionSigned(false);
         mdg.setBindingsHoKSSO(null);
@@ -234,7 +237,8 @@ public class DssMetadataService {
         SPSSODescriptor spssoDescriptor = clientEntityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
         spssoDescriptor.getAssertionConsumerServices()
             .add(createAssertionConsumerService(
-                dssClientHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH));
+                dssClientResponseHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH
+                    + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH));
 
         clientEntityDescriptor.getContactPersons()
             .add(createContactPerson(ContactPersonTypeEnumeration.SUPPORT));

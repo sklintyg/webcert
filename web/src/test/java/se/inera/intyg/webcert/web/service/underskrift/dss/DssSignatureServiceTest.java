@@ -147,7 +147,8 @@ public class DssSignatureServiceTest {
         when(moduleRegistry.getIntygModule(anyString()))
             .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
         ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
         ReflectionTestUtils.setField(dssSignatureService, "applicationId", "App/ID\\With--w€|rd__CH@r$");
         ReflectionTestUtils.setField(dssSignatureService, "idpUrl", "https://idpurl.se/samlv2/idp/metadata");
@@ -224,7 +225,8 @@ public class DssSignatureServiceTest {
         utkastLocal.setIntygsTyp("lisjp");
         utkastLocal.setIntygTypeVersion("1.1");
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
         when(utkastRepository.findById(anyString())).thenReturn(utkastOptional);
         when(utkastOptional.isPresent()).thenReturn(true);
         when(utkastOptional.get()).thenReturn(utkastLocal);
@@ -242,7 +244,8 @@ public class DssSignatureServiceTest {
         utkastLocal.setIntygsTyp("lisjp");
         utkastLocal.setIntygTypeVersion("1.1");
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
         when(utkastRepository.findById(anyString())).thenReturn(utkastOptional);
         when(utkastOptional.isPresent()).thenReturn(true);
         when(utkastOptional.get()).thenReturn(utkastLocal);
