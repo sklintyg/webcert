@@ -17,13 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.event.repository;
+package se.inera.intyg.webcert.web.event;
 
 import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-public interface UtkastEventRepository extends JpaRepository<UtkastEvent, Long> {
+public interface CertificateEventService {
 
-    List<UtkastEvent> findByIntygsId(String intygsId);
+    void createCertificateEvent(String certificateId, String user, EventCode eventCode);
+
+    void createCertificateEvent(String certificateId, String user, EventCode eventCode, String message);
+
+    void createCertificateEventFromCopyUtkast(Utkast certificate, String user, EventCode eventCode, String originalCertificateId);
+
+    List<CertificateEvent> getCertificateEvents(String certificateId);
+
 }

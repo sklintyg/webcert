@@ -45,42 +45,42 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
-import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
+import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.event.UtkastEventServiceImpl;
+import se.inera.intyg.webcert.web.event.CertificateEventServiceImpl;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtkastEventServiceImplTest {
+public class CertificateEventServiceImplTest {
 
-    private static final String INTYG_ID = "1234";
-    private static final String INTYG_TYP = "lisjp";
+    private static final String CERTIFICATE_ID = "1234";
+    private static final String CERTIFICATE_TYPE = "lisjp";
     private static final String HSA_ID = "anvandareHsaId";
-    private static final EventKod EVENT_KOD_SKAPAT = EventKod.SKAPAT;
-    private static final String MEDDELANDE = "Inte köra, bara testa";
+    private static final EventCode EVENT_CODE_SKAPAT = EventCode.SKAPAT;
+    private static final String MESSAGE = "Testing, testing";
 
     @Mock
-    private UtkastEventRepository eventRepository;
+    private CertificateEventRepository eventRepository;
 
     @Mock
     private UtkastRepository utkastRepository;
 
     @Mock
-    private IntygService intygstjanst;
+    private IntygService intygService;
 
     @Mock
     private UtkastService utkastService;
@@ -89,62 +89,62 @@ public class UtkastEventServiceImplTest {
     private ArendeService arendeService;
 
     @InjectMocks
-    private UtkastEventServiceImpl eventService;
+    private CertificateEventServiceImpl eventService;
 
 
     @Test
     public void testGetEvents() {
-        List<UtkastEvent> list = new ArrayList<UtkastEvent>();
-        list.add(getUtkastEvent());
+        List<CertificateEvent> list = new ArrayList<CertificateEvent>();
+        list.add(getCertificateEvent());
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(list);
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(list);
 
-        List<UtkastEvent> eventList = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> eventList = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertEquals(1, eventList.size());
-        verify(eventRepository, times(1)).findByIntygsId(INTYG_ID);
+        verify(eventRepository, times(1)).findByCertificateId(CERTIFICATE_ID);
     }
 
     @Test
     public void testGenerateEventsForUtkast() {
 
-        Utkast utkast = getUtkast();
+        Utkast utkast = getCertificate();
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
-        assertEquals(EventKod.SKAPAT, result.get(0).getEventKod());
-        assertEquals(EventKod.KFSIGN, result.get(1).getEventKod());
-        verify(utkastRepository).findById(INTYG_ID);
-        verifyNoInteractions(intygstjanst);
+        assertEquals(EventCode.SKAPAT, result.get(0).getEventCode());
+        assertEquals(EventCode.KFSIGN, result.get(1).getEventCode());
+        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verifyNoInteractions(intygService);
     }
 
     @Test
     public void testGenerateEventsForUtkastWithArende() {
 
-        Utkast utkast = getUtkast();
+        Utkast utkast = getCertificate();
         utkast.setSignatur(new Signatur());
         Arende arende = getArende(utkast.getIntygsId());
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
         when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
-        assertEquals(EventKod.SKAPAT, result.get(0).getEventKod());
-        assertEquals(EventKod.KFSIGN, result.get(1).getEventKod());
-        assertEquals(EventKod.NYFRFM, result.get(2).getEventKod());
-        verify(utkastRepository).findById(INTYG_ID);
-        verifyNoInteractions(intygstjanst);
+        assertEquals(EventCode.SKAPAT, result.get(0).getEventCode());
+        assertEquals(EventCode.KFSIGN, result.get(1).getEventCode());
+        assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
+        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verifyNoInteractions(intygService);
     }
 
 
@@ -153,19 +153,19 @@ public class UtkastEventServiceImplTest {
 
         IntygContentHolder intyg = getIntygContentHolder();
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(intygstjanst.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
-        assertEquals(EventKod.SIGNAT, result.get(0).getEventKod());
-        assertEquals(EventKod.SKICKAT, result.get(1).getEventKod());
-        verify(utkastRepository).findById(INTYG_ID);
-        verify(intygstjanst).fetchIntygDataForInternalUse(INTYG_ID, true);
+        assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
+        assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
+        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
     }
 
     @Test
@@ -174,21 +174,21 @@ public class UtkastEventServiceImplTest {
         IntygContentHolder intyg = getIntygContentHolder();
         Arende arende = getArende(intyg.getUtlatande().getId());
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(intygstjanst.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
         when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
-        assertEquals(EventKod.SIGNAT, result.get(0).getEventKod());
-        assertEquals(EventKod.SKICKAT, result.get(1).getEventKod());
-        assertEquals(EventKod.NYFRFM, result.get(2).getEventKod());
-        verify(utkastRepository).findById(INTYG_ID);
-        verify(intygstjanst).fetchIntygDataForInternalUse(INTYG_ID, true);
+        assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
+        assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
+        assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
+        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
     }
 
     @Test
@@ -196,45 +196,45 @@ public class UtkastEventServiceImplTest {
 
         IntygContentHolder intyg = getIntygContentHolderGeneratingNoEvents();
 
-        when(eventRepository.findByIntygsId(anyString())).thenReturn(Collections.emptyList());
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(intygstjanst.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
 
-        List<UtkastEvent> result = eventService.getUtkastEvents(INTYG_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
 
         assertTrue(result.isEmpty());
-        verify(utkastRepository).findById(INTYG_ID);
-        verify(intygstjanst).fetchIntygDataForInternalUse(INTYG_ID, true);
+        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
         verify(eventRepository, times(0)).save(any());
     }
 
     @Test
-    public void testSaveUtkastEvent() {
-        UtkastEvent utkastEvent = getUtkastEvent();
-        eventService.createUtkastEvent(utkastEvent.getIntygsId(), HSA_ID, EventKod.SKAPAT, MEDDELANDE);
+    public void testSaveCertificateEvent() {
+        CertificateEvent certificateEvent = getCertificateEvent();
+        eventService.createCertificateEvent(certificateEvent.getCertificateId(), HSA_ID, EventCode.SKAPAT, MESSAGE);
 
-        verify(eventRepository).save(any(UtkastEvent.class));
+        verify(eventRepository).save(any(CertificateEvent.class));
     }
 
-    private UtkastEvent getUtkastEvent() {
-        UtkastEvent utkastEvent = new UtkastEvent();
-        utkastEvent.setIntygsId(INTYG_ID);
-        utkastEvent.setAnvandare(HSA_ID);
-        utkastEvent.setEventKod(EVENT_KOD_SKAPAT);
-        utkastEvent.setMeddelande(MEDDELANDE);
+    private CertificateEvent getCertificateEvent() {
+        CertificateEvent certificateEvent = new CertificateEvent();
+        certificateEvent.setCertificateId(CERTIFICATE_ID);
+        certificateEvent.setUser(HSA_ID);
+        certificateEvent.setEventCode(EVENT_CODE_SKAPAT);
+        certificateEvent.setMessage(MESSAGE);
 
-        return utkastEvent;
+        return certificateEvent;
     }
 
-    public static Utkast getUtkast() {
+    public static Utkast getCertificate() {
 
         VardpersonReferens vp = new VardpersonReferens();
         vp.setHsaId(HSA_ID);
 
         Utkast utkast = new Utkast();
-        utkast.setIntygsId(INTYG_ID);
+        utkast.setIntygsId(CERTIFICATE_ID);
         utkast.setSkapadAv(vp);
-        utkast.setIntygsTyp(INTYG_TYP);
+        utkast.setIntygsTyp(CERTIFICATE_TYPE);
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setKlartForSigneringDatum(LocalDateTime.parse("2020-01-01T10:05:00"));
         utkast.setSkapad(LocalDateTime.parse("2020-01-01T10:00:00"));
@@ -246,7 +246,7 @@ public class UtkastEventServiceImplTest {
 
         Arende arende = new Arende();
         arende.setIntygsId(utkastId);
-        arende.setIntygTyp(INTYG_TYP);
+        arende.setIntygTyp(CERTIFICATE_TYPE);
         arende.setAmne(ArendeAmne.KOMPLT);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setTimestamp(LocalDateTime.now());
@@ -275,7 +275,7 @@ public class UtkastEventServiceImplTest {
 
     private IntygContentHolder getIntygContentHolderGeneratingNoEvents() {
 
-        IntygContentHolder intyg = IntygContentHolder.builder()
+        IntygContentHolder certificate = IntygContentHolder.builder()
             .setContents("<external-json/>")
             .setUtlatande(getUtlatande())
             .setStatuses(null)
@@ -287,9 +287,9 @@ public class UtkastEventServiceImplTest {
             .setTestIntyg(false)
             .build();
 
-        intyg.getUtlatande().getGrundData().setSigneringsdatum(null);
+        certificate.getUtlatande().getGrundData().setSigneringsdatum(null);
 
-        return intyg;
+        return certificate;
     }
 
 

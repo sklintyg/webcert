@@ -48,11 +48,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -90,7 +90,7 @@ public class IntygApiController extends AbstractApiController {
     private UtkastService utkastService;
 
     @Autowired
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -241,20 +241,20 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Compiles a list of events for an Intyg from Webcerts db.
+     * Compiles a list of events for a certificate (intyg) from Webcerts db.
      *
-     * @param intygsId Id of the intyg
-     * @return a Response carrying a list containing all events for Intyg.
+     * @param certificateId Id of the certificate
+     * @return a Response carrying a list containing all events for certificate
      */
     @GET
-    @Path("/{intygsId}/events")
+    @Path("/{certificateId}/events")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getEventsForIntyg(@PathParam("intygsId") String intygsId) {
+    public Response getEventsForCertificate(@PathParam("certificateId") String certificateId) {
 
-        List<UtkastEvent> eventList = utkastEventService.getUtkastEvents(intygsId);
+        List<CertificateEvent> eventList = certificateEventService.getCertificateEvents(certificateId);
         if (eventList.isEmpty()) {
-            LOG.error("No events for utkast/intyg on intyg with id {}", intygsId);
+            LOG.error("No events for certificate with id {}", certificateId);
             return Response.status(Status.BAD_REQUEST).build();
         }
         LOG.debug("Got {} events", eventList.size());

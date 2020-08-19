@@ -29,35 +29,35 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 
 @Entity
-@Table(name = "INTYG_EVENT")
-public class UtkastEvent {
+@Table(name = "CERTIFICATE_EVENT")
+public class CertificateEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "INTYGS_ID")
-    private String intygsId;
+    @Column(name = "CERTIFICATE_ID")
+    private String certificateId;
 
-    @Column(name = "ANVANDARE")
-    private String anvandare;
+    @Column(name = "USER")
+    private String user;
 
-    @Column(name = "EVENT_KOD")
+    @Column(name = "EVENT_CODE")
     @Enumerated(EnumType.STRING)
-    private EventKod eventKod;
+    private EventCode eventCode;
 
     @Column(name = "TIMESTAMP")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime timestamp;
 
-    @Column(name = "MEDDELANDE")
-    private String meddelande;
+    @Column(name = "MESSAGE")
+    private String message;
 
-    public UtkastEvent() {
+    public CertificateEvent() {
     }
 
     public Long getId() {
@@ -68,28 +68,28 @@ public class UtkastEvent {
         this.id = id;
     }
 
-    public String getIntygsId() {
-        return this.intygsId;
+    public String getCertificateId() {
+        return this.certificateId;
     }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
     }
 
-    public String getAnvandare() {
-        return anvandare;
+    public String getUser() {
+        return user;
     }
 
-    public void setAnvandare(String anvandare) {
-        this.anvandare = anvandare;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public EventKod getEventKod() {
-        return eventKod;
+    public EventCode getEventCode() {
+        return eventCode;
     }
 
-    public void setEventKod(EventKod eventKod) {
-        this.eventKod = eventKod;
+    public void setEventCode(EventCode eventCode) {
+        this.eventCode = eventCode;
     }
 
     public LocalDateTime getTimestamp() {
@@ -100,11 +100,11 @@ public class UtkastEvent {
         this.timestamp = timestamp;
     }
 
-    public String getMeddelande() {
-        return meddelande;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMeddelande(String meddelande) {
-        this.meddelande = meddelande;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

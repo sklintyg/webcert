@@ -63,7 +63,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -133,7 +133,7 @@ public class CopyUtkastServiceImplTest {
     private UtkastRepository mockUtkastRepository;
 
     @Mock
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Mock
     private IntygService intygService;

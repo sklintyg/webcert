@@ -51,7 +51,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -82,7 +82,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
@@ -147,7 +147,7 @@ public class IntygServiceImpl implements IntygService {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Autowired
     private IntygModuleFacade moduleFacade;
@@ -507,7 +507,7 @@ public class IntygServiceImpl implements IntygService {
 
         monitoringService.logIntygSent(intygsId, utlatande.getTyp(), recipient);
 
-        utkastEventService.createUtkastEvent(intygsId, webCertUserService.getUser().getHsaId(), EventKod.SKICKAT);
+        certificateEventService.createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT);
 
         // send PDL log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
@@ -1002,7 +1002,7 @@ public class IntygServiceImpl implements IntygService {
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
 
-        utkastEventService.createUtkastEvent(intygsId, webCertUserService.getUser().getHsaId(), EventKod.MAKULERAT, reason);
+        certificateEventService.createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.MAKULERAT, reason);
         checkIfAddEventOnParent(intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
@@ -1021,13 +1021,14 @@ public class IntygServiceImpl implements IntygService {
         return IntygServiceResult.OK;
     }
 
-    private void checkIfAddEventOnParent(String intygsId) {
-        Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(intygsId);
+    private void checkIfAddEventOnParent(String certificateId) {
+        Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(certificateId);
         if (relationsOfChild != null) {
             WebcertCertificateRelation parent = relationsOfChild.getParent();
             if (parent != null && parent.getIntygsId() != null) {
-                utkastEventService.createUtkastEvent(parent.getIntygsId(), webCertUserService.getUser().getHsaId(), EventKod.RELINTYGMAKULE,
-                    "Relaterat intyg " + intygsId + " makulerat");
+                certificateEventService
+                    .createCertificateEvent(parent.getIntygsId(), webCertUserService.getUser().getHsaId(), EventCode.RELINTYGMAKULE,
+                        "Related certificate " + certificateId + " revoked");
             }
         }
     }

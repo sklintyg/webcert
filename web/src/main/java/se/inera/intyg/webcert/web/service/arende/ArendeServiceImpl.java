@@ -41,7 +41,7 @@ import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
@@ -70,7 +70,7 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
@@ -153,7 +153,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
     @Autowired
     private CertificateSenderService certificateSenderService;
     @Autowired
@@ -234,10 +234,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
             notificationService.sendNotificationForQuestionReceived(saved);
-            utkastEventService.createUtkastEvent(arende.getIntygsId(), arende.getSkickatAv(), EventKod.NYFRFM);
+            certificateEventService.createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYFRFM);
         } else {
             notificationService.sendNotificationForAnswerRecieved(saved);
-            utkastEventService.createUtkastEvent(arende.getIntygsId(), arende.getSkickatAv(), EventKod.NYSVFM);
+            certificateEventService.createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYSVFM);
         }
         return saved;
     }
@@ -269,7 +269,7 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
         }
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, EventKod.NYFRFV, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, EventCode.NYFRFV, true);
 
         arendeDraftService.delete(intygId, null);
         return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
@@ -307,7 +307,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, EventKod.HANFRFM, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM, true);
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -338,7 +338,7 @@ public class ArendeServiceImpl implements ArendeService {
                     user.getNamn());
 
                 arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
-                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, EventKod.HANFRFM,
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM,
                     Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
                 allArende.add(saved);
@@ -858,30 +858,31 @@ public class ArendeServiceImpl implements ArendeService {
     private void sendNotificationAndCreateEvent(Arende arende, NotificationEvent event) {
         if (event != null) {
             notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
-            EventKod eventKod = getEventKod(event);
+            EventCode eventKod = getEventKod(event);
             if (eventKod != null) {
-                utkastEventService.createUtkastEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventKod, event.name());
+                certificateEventService
+                    .createCertificateEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventKod, event.name());
             }
         }
     }
 
-    private EventKod getEventKod(NotificationEvent event) {
+    private EventCode getEventKod(NotificationEvent event) {
         switch (event) {
             case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
             case QUESTION_FROM_CARE_HANDLED:
             case QUESTION_FROM_CARE_UNHANDLED:
-                return EventKod.HANFRFV;
+                return EventCode.HANFRFV;
             case NEW_ANSWER_FROM_CARE:
             case QUESTION_FROM_RECIPIENT_HANDLED:
             case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return EventKod.HANFRFM;
+                return EventCode.HANFRFM;
             case NEW_QUESTION_FROM_CARE:
-                return EventKod.NYFRFV;
+                return EventCode.NYFRFV;
             case NEW_QUESTION_FROM_RECIPIENT:
-                return EventKod.NYFRFM;
+                return EventCode.NYFRFM;
             case NEW_ANSWER_FROM_RECIPIENT:
             case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-                return EventKod.NYSVFM;
+                return EventCode.NYSVFM;
         }
         return null;
     }
@@ -924,7 +925,8 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventKod eventKod, boolean sendToRecipient) {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventCode eventCode,
+        boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
             arende.getSvarPaId() != null);

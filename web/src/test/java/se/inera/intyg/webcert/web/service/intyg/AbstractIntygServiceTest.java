@@ -47,7 +47,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -84,7 +84,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected LogService logService;
 
     @Mock
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Mock
     protected LogRequestFactory logRequestFactory;

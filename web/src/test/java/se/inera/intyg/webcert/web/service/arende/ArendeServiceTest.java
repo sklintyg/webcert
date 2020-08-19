@@ -106,7 +106,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
@@ -182,7 +182,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private NotificationService notificationService;
 
     @Mock
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Mock
     private CertificateSenderService certificateSenderService;

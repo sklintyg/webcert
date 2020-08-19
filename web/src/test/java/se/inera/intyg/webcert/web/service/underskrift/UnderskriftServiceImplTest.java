@@ -75,7 +75,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -113,7 +113,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     private UtkastRepository utkastRepository;
 
     @Mock
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Mock
     private UtkastService utkastService;

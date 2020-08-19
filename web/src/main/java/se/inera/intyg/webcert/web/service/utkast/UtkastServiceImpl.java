@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -71,7 +71,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -130,7 +130,7 @@ public class UtkastServiceImpl implements UtkastService {
     private NotificationService notificationService;
 
     @Autowired
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Autowired
     private MonitoringLogService monitoringService;
@@ -199,7 +199,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
         int nrPrefillElements = request.getForifyllnad().isPresent() ? request.getForifyllnad().get().getSvar().size() : 0;
 
-        generateUtkastEvent(savedUtkast, EventKod.SKAPAT);
+        generateCertificateEvent(savedUtkast, EventCode.SKAPAT);
 
         // Notify stakeholders when a draft has been created
         sendNotification(savedUtkast, Event.CREATED);
@@ -331,7 +331,7 @@ public class UtkastServiceImpl implements UtkastService {
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
 
-            generateUtkastEvent(utkast, EventKod.KFSIGN);
+            generateCertificateEvent(utkast, EventCode.KFSIGN);
 
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
         }
@@ -420,7 +420,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
 
-        generateUtkastEvent(utkast, EventKod.RADERAT);
+        generateCertificateEvent(utkast, EventCode.RADERAT);
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
@@ -698,7 +698,8 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
             utkastRepository.save(utkast);
 
-            utkastEventService.createUtkastEvent(utkast.getIntygsId(), "UtkastLockJob", EventKod.LAST, "Utkast locked after 14 days");
+            certificateEventService
+                .createCertificateEvent(utkast.getIntygsId(), "UtkastLockJob", EventCode.LAST, "Draft locked after 14 days");
 
             monitoringService.logUtkastLocked(utkast.getIntygsId(), utkast.getIntygsTyp());
         });
@@ -747,7 +748,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Secondly: notify stakeholders that draft is revoked
         sendNotification(utkast, Event.REVOKED);
-        generateUtkastEvent(utkast, EventKod.MAKULERAT);
+        generateCertificateEvent(utkast, EventCode.MAKULERAT);
 
         // Third: create a log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
@@ -998,9 +999,9 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
-    private void generateUtkastEvent(Utkast utkast, EventKod eventKod) {
-        utkastEventService.createUtkastEvent(
-            utkast.getIntygsId(), webCertUserService.getUser().getHsaId(), eventKod);
+    private void generateCertificateEvent(Utkast certificate, EventCode eventCode) {
+        certificateEventService.createCertificateEvent(
+            certificate.getIntygsId(), webCertUserService.getUser().getHsaId(), eventCode);
     }
 
     private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {

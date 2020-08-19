@@ -31,10 +31,10 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.intyg.common.support.common.enumerations.EventKod;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -58,7 +58,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     private NotificationService notificationService;
 
     @Autowired
-    private UtkastEventService utkastEventService;
+    private CertificateEventService certificateEventService;
 
     @Override
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
@@ -79,8 +79,8 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
         // Notify stakeholders
         sendNotification(processQuestion(fragaSvar));
 
-        utkastEventService.createUtkastEvent(
-            fragaSvar.getIntygsReferens().getIntygsId(), "FK", EventKod.NYFRFM,
+        certificateEventService.createCertificateEvent(
+            fragaSvar.getIntygsReferens().getIntygsId(), "FK", EventCode.NYFRFM,
             String.format("received medical certificate question: %s}", fragaSvar.getFrageText()));
 
         // Set result and send response back to caller

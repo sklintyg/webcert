@@ -44,11 +44,11 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.persistence.event.model.UtkastEvent;
-import se.inera.intyg.webcert.persistence.event.repository.UtkastEventRepository;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
+import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.event.UtkastEventService;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -85,13 +85,13 @@ public class IntygApiControllerTest {
     private IntygService intygService = mock(IntygService.class);
 
     @Mock
-    private UtkastEventService utkastEventService = mock(UtkastEventService.class);
+    private CertificateEventService certificateEventService = mock(CertificateEventService.class);
 
     @Mock
     private UtkastRepository mockUtkastRepository = mock(UtkastRepository.class);
 
     @Mock
-    private UtkastEventRepository utkastEventRepository = mock(UtkastEventRepository.class);
+    private CertificateEventRepository certificateEventRepository = mock(CertificateEventRepository.class);
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
@@ -170,9 +170,9 @@ public class IntygApiControllerTest {
     @Test
     public void testNoIntygEvents() {
 
-        when(utkastEventService.getUtkastEvents(anyString())).thenReturn(Collections.<UtkastEvent>emptyList());
+        when(certificateEventService.getCertificateEvents(anyString())).thenReturn(Collections.<CertificateEvent>emptyList());
 
-        Response response = intygCtrl.getEventsForIntyg(INTYG_ID);
+        Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -180,14 +180,14 @@ public class IntygApiControllerTest {
     @Test
     public void testListIntygEvents() {
 
-        UtkastEvent event = new UtkastEvent();
-        List<UtkastEvent> eventList = Arrays.asList(event);
+        CertificateEvent event = new CertificateEvent();
+        List<CertificateEvent> eventList = Arrays.asList(event);
 
-        when(utkastEventService.getUtkastEvents(anyString())).thenReturn(eventList);
+        when(certificateEventService.getCertificateEvents(anyString())).thenReturn(eventList);
 
-        Response response = intygCtrl.getEventsForIntyg(INTYG_ID);
+        Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
 
-        List<UtkastEvent> responseList = (List<UtkastEvent>) response.getEntity();
+        List<CertificateEvent> responseList = (List<CertificateEvent>) response.getEntity();
 
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         assertNotNull(responseList);
