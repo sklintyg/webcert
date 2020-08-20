@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.event;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -87,8 +89,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
     @Override
     public List<CertificateEvent> getCertificateEvents(String certificateId) {
-
         List<CertificateEvent> events = certificateEventRepository.findByCertificateId(certificateId);
+
         if (events.isEmpty()) {
             events = addEventsForCertificate(certificateId);
         }
@@ -101,34 +103,82 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
         if (certificate != null) {
             events = createEventsFromUtkast(certificate);
+
             return events;
         }
 
         if (events.isEmpty()) {
             IntygContentHolder intygContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
             events = createEventsFromIntygContentHolder(certificateId, intygContentHolder);
+
             return events;
         }
         return events;
     }
 
-
     private List<CertificateEvent> createEventsFromUtkast(Utkast certificate) {
         List<CertificateEvent> events = new ArrayList<>();
-        String certificateId = certificate.getIntygsId();
 
+        createEventFromCreation(certificate).ifPresent(event -> events.add(event));
+        events.addAll(createEventsFromState(certificate));
+        createEventFromSent(certificate).ifPresent(event -> events.add(event));
+        events.addAll(createEventsFromArende(certificate.getIntygsId()));
+
+        return events;
+    }
+
+    private List<CertificateEvent> createEventsFromIntygContentHolder(String certificateId, IntygContentHolder certificate) {
+        List<CertificateEvent> events = new ArrayList<>();
+
+        createEventFromCreation(certificateId, certificate).ifPresent(event -> events.add(event));
+        createEventFromSigned(certificateId, certificate.getUtlatande()).ifPresent(event -> events.add(event));
+        events.addAll(createEventsFromStatuses(certificateId, certificate));
+        events.addAll(createEventsFromArende(certificateId));
+
+        return events;
+    }
+
+    private Optional<CertificateEvent> createEventFromCreation(Utkast certificate) {
         if (certificate.getSkapad() != null) {
             String createdBy = certificate.getSkapadAv() != null ? certificate.getSkapadAv().getHsaId() : UNKNOWN_USER;
+
             if (certificate.getRelationKod() != null && certificate.getRelationIntygsId() != null) {
                 EventCode code = getEventCode(certificate.getRelationKod());
                 String relationAsMessage = getMessageForCertificateEvent(code, certificate.getRelationIntygsId());
-                CertificateEvent savedEvent = save(certificateId, createdBy, code, certificate.getSkapad(), relationAsMessage);
-                events.add(savedEvent);
+                CertificateEvent savedEvent = save(certificate.getIntygsId(), createdBy, code, certificate.getSkapad(), relationAsMessage);
+                return Optional.of(savedEvent);
             } else {
-                CertificateEvent savedEvent = save(certificateId, createdBy, EventCode.SKAPAT, certificate.getSkapad());
-                events.add(savedEvent);
+                CertificateEvent savedEvent = save(certificate.getIntygsId(), createdBy, EventCode.SKAPAT, certificate.getSkapad());
+                return Optional.of(savedEvent);
             }
         }
+        return Optional.empty();
+    }
+
+    private Optional<CertificateEvent> createEventFromCreation(String certificateId, IntygContentHolder certificate) {
+        if (certificate.getCreated() != null) {
+            GrundData grundData = certificate.getUtlatande().getGrundData();
+
+            if (certificate.getRelations() != null && certificate.getRelations().getParent() != null) {
+                WebcertCertificateRelation parent = certificate.getRelations().getParent();
+                EventCode code = getEventCode(parent.getRelationKod());
+                String relation = getMessageForCertificateEvent(code, parent.getIntygsId());
+                CertificateEvent savedEvent = save(certificateId, grundData.getSkapadAv().getPersonId(), code, certificate.getCreated(),
+                    relation);
+                return Optional.of(savedEvent);
+            } else {
+                String skapadAv = grundData.getSkapadAv() != null ? grundData.getSkapadAv().getPersonId() : UNKNOWN_USER;
+                EventCode code = EventCode.SKAPAT;
+                CertificateEvent savedEvent = save(certificateId, skapadAv, code, certificate.getCreated(), code.getDescription());
+                return Optional.of(savedEvent);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private List<CertificateEvent> createEventsFromState(Utkast certificate) {
+        List<CertificateEvent> events = new ArrayList<>();
+        String certificateId = certificate.getIntygsId();
 
         if (certificate.getStatus() == UtkastStatus.DRAFT_COMPLETE) {
             CertificateEvent savedEvent = save(certificateId, WEBCERT_USER, EventCode.KFSIGN, certificate.getKlartForSigneringDatum());
@@ -143,44 +193,34 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 events.add(savedEvent);
             }
         }
-
-        if (certificate.getSkickadTillMottagareDatum() != null) {
-            CertificateEvent savedEvent = save(certificateId, WEBCERT_USER, EventCode.SKICKAT, certificate.getSkickadTillMottagareDatum(),
-                "Recipient: " + certificate.getSkickadTillMottagare());
-            events.add(savedEvent);
-        }
-
-        events.addAll(createEventsFromArende(certificate.getIntygsId()));
-
         return events;
     }
 
-    private List<CertificateEvent> createEventsFromIntygContentHolder(String certificateId, IntygContentHolder certificate) {
-        List<CertificateEvent> events = new ArrayList<>();
-        GrundData grundData = certificate.getUtlatande().getGrundData();
-
-        if (certificate.getCreated() != null) {
-            if (certificate.getRelations() != null && certificate.getRelations().getParent() != null) {
-                WebcertCertificateRelation parent = certificate.getRelations().getParent();
-                EventCode code = getEventCode(parent.getRelationKod());
-                String relation = getMessageForCertificateEvent(code, parent.getIntygsId());
-                CertificateEvent savedEvent = save(certificateId, grundData.getSkapadAv().getPersonId(), code, certificate.getCreated(),
-                    relation);
-                events.add(savedEvent);
-            } else {
-                String skapadAv = grundData.getSkapadAv() != null ? grundData.getSkapadAv().getPersonId() : UNKNOWN_USER;
-                EventCode code = EventCode.SKAPAT;
-                CertificateEvent savedEvent = save(certificateId, skapadAv, code, certificate.getCreated(), code.getDescription());
-                events.add(savedEvent);
-            }
-        }
+    private Optional<CertificateEvent> createEventFromSigned(String certificateId, Utlatande utlatande) {
+        GrundData grundData = utlatande.getGrundData();
 
         if (grundData.getSigneringsdatum() != null) {
             String signedBy = grundData.getSkapadAv().getPersonId();
             CertificateEvent savedEvent = save(certificateId, signedBy, EventCode.SIGNAT, grundData.getSigneringsdatum(),
-                certificate.getUtlatande().getTyp());
-            events.add(savedEvent);
+                utlatande.getTyp());
+            return Optional.of(savedEvent);
         }
+        return Optional.empty();
+    }
+
+
+    private Optional<CertificateEvent> createEventFromSent(Utkast certificate) {
+        if (certificate.getSkickadTillMottagareDatum() != null) {
+            CertificateEvent savedEvent = save(certificate.getIntygsId(), WEBCERT_USER, EventCode.SKICKAT,
+                certificate.getSkickadTillMottagareDatum(),
+                "Recipient: " + certificate.getSkickadTillMottagare());
+            return Optional.of(savedEvent);
+        }
+        return Optional.empty();
+    }
+
+    private List<CertificateEvent> createEventsFromStatuses(String certificateId, IntygContentHolder certificate) {
+        List<CertificateEvent> events = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(certificate.getStatuses())) {
             for (Status status : certificate.getStatuses()) {
@@ -191,16 +231,13 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 }
             }
         }
-
-        events.addAll(createEventsFromArende(certificateId));
-
         return events;
     }
 
-    private List<CertificateEvent> createEventsFromArende(String id) {
-
-        List<Arende> arenden = arendeService.getArendenInternal(id);
+    private List<CertificateEvent> createEventsFromArende(String certificateId) {
+        List<Arende> arenden = arendeService.getArendenInternal(certificateId);
         List<CertificateEvent> events = new ArrayList<>();
+
         if (!arenden.isEmpty()) {
 
             for (Arende arende : arenden) {
@@ -208,12 +245,12 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                     if (arende.getAmne() == ArendeAmne.KOMPLT) {
                         String sentBy = arende.getSkickatAv() != null ? arende.getSkickatAv() : UNKNOWN_USER;
                         events
-                            .add(save(id, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.KOMPLT.getDescription()));
+                            .add(save(certificateId, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.KOMPLT.getDescription()));
                     }
                     if (arende.getAmne() == ArendeAmne.PAMINN) {
                         String sentBy = arende.getSkickatAv() != null ? arende.getSkickatAv() : UNKNOWN_USER;
                         events
-                            .add(save(id, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.PAMINN.getDescription()));
+                            .add(save(certificateId, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.PAMINN.getDescription()));
                     }
                 }
             }
