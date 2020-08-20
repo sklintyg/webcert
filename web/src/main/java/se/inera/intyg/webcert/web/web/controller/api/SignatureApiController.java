@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import com.google.common.base.Strings;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
@@ -147,7 +148,7 @@ public class SignatureApiController extends AbstractApiController {
 
         String signResponseString = "";
         try {
-            signResponseString = new String(Base64.getDecoder().decode(eidSignResponse));
+            signResponseString = new String(Base64.getDecoder().decode(eidSignResponse), StandardCharsets.UTF_8);
         } catch (Exception e) {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),

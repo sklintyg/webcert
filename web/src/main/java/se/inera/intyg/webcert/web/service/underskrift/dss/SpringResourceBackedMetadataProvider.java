@@ -84,6 +84,7 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void destroy() {
         metadataResource = null;
 
@@ -93,6 +94,7 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
     /**
      * {@inheritDoc}
      */
+    @Override
     protected String getMetadataIdentifier() {
         return metadataResource.toString();
     }
@@ -100,6 +102,7 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
     /**
      * {@inheritDoc}
      */
+    @Override
     protected byte[] fetchMetadata() throws MetadataProviderException {
         try {
             DateTime metadataUpdateTime = new DateTime(metadataResource.lastModified());
