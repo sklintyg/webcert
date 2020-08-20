@@ -133,7 +133,7 @@ configurations {
 
 if (project.hasProperty("codeQuality")) {
     license {
-        exclude "**/dss/xsd/**/*.java" // This excludes too many files, but "generatedSource/**/*.java" does not work for some reason.
+        exclude "**/dss/xsd/**/*.java"
     }
 }
 
