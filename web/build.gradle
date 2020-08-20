@@ -131,6 +131,12 @@ configurations {
     xsdgen
 }
 
+if (project.hasProperty("codeQuality")) {
+    license {
+        exclude "**/dss/xsd/**/*.java" // This excludes too many files, but "generatedSource/**/*.java" does not work for some reason.
+    }
+}
+
 ext.xsdDir = file("src/main/resources/schemas/dss")
 ext.generatedJavaDir = file("${buildDir}/generatedSource/java")
 ext.xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
