@@ -24,14 +24,48 @@ import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
+/**
+ * Service to read and add events on certificates.
+ */
 public interface CertificateEventService {
 
+    /**
+     * Creates an event.
+     *
+     * @param certificateId Id of the certificate that an event is registered on
+     * @param user User or system that is triggering the event
+     * @param eventCode Type of event triggered
+     */
     void createCertificateEvent(String certificateId, String user, EventCode eventCode);
 
+    /**
+     * Creates an event.
+     *
+     * @param certificateId Id of the certificate that an event is registered on
+     * @param user User or system that is triggering the event
+     * @param eventCode Type of event triggered
+     * @param message Optional description
+     */
     void createCertificateEvent(String certificateId, String user, EventCode eventCode, String message);
 
+    /**
+     * Creates an event.
+     *
+     * Use when generating an event from the creation of a certificate in a relation.
+     *
+     * @param certificate Certificate that the event will be registered on
+     * @param user User or system that is triggering the event
+     * @param eventCode Type of event triggered
+     * @param originalCertificateId Id of the certificate that has a relation to the certificate event
+     */
     void createCertificateEventFromCopyUtkast(Utkast certificate, String user, EventCode eventCode, String originalCertificateId);
 
+    /**
+     * Returns a list of the events for a certificate.
+     *
+     * @param certificateId Id of the certificate
+     * @return List of events. Empty list if there where no events to find.
+     */
     List<CertificateEvent> getCertificateEvents(String certificateId);
 
 }
