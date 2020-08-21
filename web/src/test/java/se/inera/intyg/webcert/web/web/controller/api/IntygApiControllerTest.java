@@ -173,8 +173,11 @@ public class IntygApiControllerTest {
         when(certificateEventService.getCertificateEvents(anyString())).thenReturn(Collections.<CertificateEvent>emptyList());
 
         Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
+        List<CertificateEvent> responseList = (List<CertificateEvent>) response.getEntity();
 
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(responseList);
+        assertEquals(0, responseList.size());
     }
 
     @Test

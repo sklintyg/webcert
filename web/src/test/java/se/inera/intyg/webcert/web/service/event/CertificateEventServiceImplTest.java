@@ -66,9 +66,10 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateEventServiceImplTest {
 
-    private static final String CERTIFICATE_ID = "1234";
+    private static final String UTKAST_CERTIFICATE_ID = "1234";
+    private static final String INTYG_CERTIFICATE_ID = "5678";
     private static final String CERTIFICATE_TYPE = "lisjp";
-    private static final String HSA_ID = "anvandareHsaId";
+    private static final String HSA_ID = "userHsaId";
     private static final EventCode EVENT_CODE_SKAPAT = EventCode.SKAPAT;
     private static final String MESSAGE = "Testing, testing";
 
@@ -91,14 +92,14 @@ public class CertificateEventServiceImplTest {
     @Test
     public void testGetEvents() {
         List<CertificateEvent> list = new ArrayList<CertificateEvent>();
-        list.add(getCertificateEvent());
+        list.add(getCertificateEvent(UTKAST_CERTIFICATE_ID));
 
         when(eventRepository.findByCertificateId(anyString())).thenReturn(list);
 
-        List<CertificateEvent> eventList = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> eventList = eventService.getCertificateEvents(UTKAST_CERTIFICATE_ID);
 
         assertEquals(1, eventList.size());
-        verify(eventRepository, times(1)).findByCertificateId(CERTIFICATE_ID);
+        verify(eventRepository, times(1)).findByCertificateId(UTKAST_CERTIFICATE_ID);
     }
 
     @Test
@@ -110,13 +111,13 @@ public class CertificateEventServiceImplTest {
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(UTKAST_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
         assertEquals(EventCode.SKAPAT, result.get(0).getEventCode());
         assertEquals(EventCode.KFSIGN, result.get(1).getEventCode());
-        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verify(utkastRepository).findById(UTKAST_CERTIFICATE_ID);
         verifyNoInteractions(intygService);
     }
 
@@ -132,14 +133,14 @@ public class CertificateEventServiceImplTest {
         when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(UTKAST_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
         assertEquals(EventCode.SKAPAT, result.get(0).getEventCode());
         assertEquals(EventCode.KFSIGN, result.get(1).getEventCode());
         assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
-        verify(utkastRepository).findById(CERTIFICATE_ID);
+        verify(utkastRepository).findById(UTKAST_CERTIFICATE_ID);
         verifyNoInteractions(intygService);
     }
 
@@ -154,21 +155,21 @@ public class CertificateEventServiceImplTest {
         when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
         assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
         assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
-        verify(utkastRepository).findById(CERTIFICATE_ID);
-        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
+        verify(utkastRepository).findById(INTYG_CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(INTYG_CERTIFICATE_ID, true);
     }
 
     @Test
     public void testGenerateEventsForIntygWithArende() {
 
         IntygContentHolder intyg = getIntygContentHolder();
-        Arende arende = getArende(intyg.getUtlatande().getId());
+        Arende arende = getArende(INTYG_CERTIFICATE_ID);
 
         when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
@@ -176,19 +177,19 @@ public class CertificateEventServiceImplTest {
         when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
         assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
         assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
         assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
-        verify(utkastRepository).findById(CERTIFICATE_ID);
-        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
+        verify(utkastRepository).findById(INTYG_CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(INTYG_CERTIFICATE_ID, true);
     }
 
     @Test
-    public void testNoEventsCouldBeGenerated() {
+    public void testNoEventsGenerated() {
 
         IntygContentHolder intyg = getIntygContentHolderGeneratingNoEvents();
 
@@ -196,25 +197,25 @@ public class CertificateEventServiceImplTest {
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
 
-        List<CertificateEvent> result = eventService.getCertificateEvents(CERTIFICATE_ID);
+        List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
 
         assertTrue(result.isEmpty());
-        verify(utkastRepository).findById(CERTIFICATE_ID);
-        verify(intygService).fetchIntygDataForInternalUse(CERTIFICATE_ID, true);
+        verify(utkastRepository).findById(INTYG_CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(INTYG_CERTIFICATE_ID, true);
         verify(eventRepository, times(0)).save(any());
     }
 
     @Test
     public void testSaveCertificateEvent() {
-        CertificateEvent certificateEvent = getCertificateEvent();
+        CertificateEvent certificateEvent = getCertificateEvent(UTKAST_CERTIFICATE_ID);
         eventService.createCertificateEvent(certificateEvent.getCertificateId(), HSA_ID, EventCode.SKAPAT, MESSAGE);
 
         verify(eventRepository).save(any(CertificateEvent.class));
     }
 
-    private CertificateEvent getCertificateEvent() {
+    private CertificateEvent getCertificateEvent(String certificateId) {
         CertificateEvent certificateEvent = new CertificateEvent();
-        certificateEvent.setCertificateId(CERTIFICATE_ID);
+        certificateEvent.setCertificateId(certificateId);
         certificateEvent.setUser(HSA_ID);
         certificateEvent.setEventCode(EVENT_CODE_SKAPAT);
         certificateEvent.setMessage(MESSAGE);
@@ -228,7 +229,7 @@ public class CertificateEventServiceImplTest {
         vp.setHsaId(HSA_ID);
 
         Utkast utkast = new Utkast();
-        utkast.setIntygsId(CERTIFICATE_ID);
+        utkast.setIntygsId(UTKAST_CERTIFICATE_ID);
         utkast.setSkapadAv(vp);
         utkast.setIntygsTyp(CERTIFICATE_TYPE);
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
@@ -238,10 +239,10 @@ public class CertificateEventServiceImplTest {
         return utkast;
     }
 
-    private Arende getArende(String utkastId) {
+    private Arende getArende(String id) {
 
         Arende arende = new Arende();
-        arende.setIntygsId(utkastId);
+        arende.setIntygsId(id);
         arende.setIntygTyp(CERTIFICATE_TYPE);
         arende.setAmne(ArendeAmne.KOMPLT);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);

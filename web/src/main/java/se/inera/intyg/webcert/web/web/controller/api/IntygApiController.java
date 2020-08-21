@@ -241,7 +241,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Compiles a list of events for a certificate (intyg) from Webcerts db.
+     * Compiles a list of events for a certificate.
      *
      * @param certificateId Id of the certificate
      * @return a Response carrying a list containing all events for certificate
@@ -253,11 +253,17 @@ public class IntygApiController extends AbstractApiController {
     public Response getEventsForCertificate(@PathParam("certificateId") String certificateId) {
 
         List<CertificateEvent> eventList = certificateEventService.getCertificateEvents(certificateId);
-        if (eventList.isEmpty()) {
-            LOG.error("No events for certificate with id {}", certificateId);
+
+        if (eventList == null) {
+            LOG.error("Could not complete the request for certificate with id {}", certificateId);
             return Response.status(Status.BAD_REQUEST).build();
         }
-        LOG.debug("Got {} events", eventList.size());
+
+        if (eventList.size() > 0) {
+            LOG.debug("Got {} events for certificate with id {}", eventList.size(), certificateId);
+        } else if (eventList.isEmpty()) {
+            LOG.debug("No events for certificate with id {}", certificateId);
+        }
 
         return Response.ok(eventList).build();
     }
