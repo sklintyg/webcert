@@ -71,6 +71,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -154,6 +155,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String ENHET_ID = "enhet";
     private static final String MEDDELANDE_ID = "meddelandeId";
     private static final String PERSON_ID = "191212121212";
+    private static final String SKICKAT_AV = "FKASSA";
 
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).get();
 
@@ -276,6 +278,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testProcessIncomingMessageSendsNotificationForQuestionReceived() throws WebCertServiceException {
         Arende arende = new Arende();
         arende.setIntygsId(INTYG_ID);
+        arende.setSkickatAv(SKICKAT_AV);
 
         Utkast utkast = buildUtkast();
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
@@ -286,6 +289,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(INTYG_ID, res.getIntygsId());
 
         verify(utkastRepository).findById(INTYG_ID);
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.NYFRFM, EventCode.NYFRFM.getDescription());
         verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
         verifyNoInteractions(arendeDraftService);
     }
@@ -299,6 +303,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende svararende = new Arende();
         svararende.setIntygsId(INTYG_ID);
         svararende.setSvarPaId(frageid);
+        svararende.setSkickatAv(SKICKAT_AV);
 
         Utkast utkast = buildUtkast();
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
@@ -311,6 +316,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(arendeRepository).findOneByMeddelandeId(eq(frageid));
         verify(arendeRepository, times(2)).save(any(Arende.class));
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.NYSVFM);
         verify(notificationService).sendNotificationForAnswerRecieved(any(Arende.class));
         verifyNoInteractions(arendeDraftService);
     }
@@ -322,6 +328,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende arende = new Arende();
         arende.setIntygsId(INTYG_ID);
         arende.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
+        arende.setSkickatAv(SKICKAT_AV);
 
         Utkast utkast = buildUtkast();
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
@@ -332,6 +339,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(INTYG_ID, res.getIntygsId());
 
         verify(utkastRepository).findById(INTYG_ID);
+        verify(certificateEventService)
+            .createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.PAMINNELSE);
         verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
         verifyNoInteractions(arendeDraftService);
     }

@@ -232,17 +232,11 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = arendeRepository.save(arende);
 
-        if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
-            notificationService.sendNotificationForQuestionReceived(saved);
-            String description = saved.getAmne() != null ? saved.getAmne().getDescription() : EventCode.NYFRFM.getDescription();
-            certificateEventService
-                .createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYFRFM, description);
-        } else {
-            notificationService.sendNotificationForAnswerRecieved(saved);
-            certificateEventService.createCertificateEvent(arende.getIntygsId(), arende.getSkickatAv(), EventCode.NYSVFM);
-        }
+        sendNotificationAndCreateEventForIncomingMessage(saved);
+
         return saved;
     }
+
 
     @Override
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
@@ -866,15 +860,37 @@ public class ArendeServiceImpl implements ArendeService {
     private void sendNotificationAndCreateEvent(Arende arende, NotificationEvent event) {
         if (event != null) {
             notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
-            EventCode eventKod = getEventKod(event);
-            if (eventKod != null) {
+            EventCode eventCode = getEventCode(event);
+            if (eventCode != null) {
                 certificateEventService
-                    .createCertificateEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventKod, event.name());
+                    .createCertificateEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventCode, event.name());
             }
         }
     }
 
-    private EventCode getEventKod(NotificationEvent event) {
+
+    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved) {
+        String certificateId = saved.getIntygsId();
+        String sentBy = saved.getSkickatAv();
+
+        if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
+            notificationService.sendNotificationForQuestionReceived(saved);
+
+            if (saved.getPaminnelseMeddelandeId() != null) {
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.PAMINNELSE);
+            } else if (saved.getAmne() == ArendeAmne.KOMPLT) {
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.KOMPLBEGARAN);
+            } else {
+                String message = saved.getAmne() != null ? saved.getAmne().getDescription() : EventCode.NYFRFM.getDescription();
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYFRFM, message);
+            }
+        } else {
+            notificationService.sendNotificationForAnswerRecieved(saved);
+            certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYSVFM);
+        }
+    }
+
+    private EventCode getEventCode(NotificationEvent event) {
         switch (event) {
             case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
             case QUESTION_FROM_CARE_HANDLED:
