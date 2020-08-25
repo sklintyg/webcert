@@ -235,28 +235,35 @@ public class CertificateEventServiceImpl implements CertificateEventService {
     }
 
     private List<CertificateEvent> createEventsFromArende(String certificateId) {
-        List<Arende> arenden = arendeService.getArendenInternal(certificateId);
+        List<Arende> messages = arendeService.getArendenInternal(certificateId);
         List<CertificateEvent> events = new ArrayList<>();
 
-        if (!arenden.isEmpty()) {
+        if (!messages.isEmpty()) {
 
-            for (Arende arende : arenden) {
-                if (arende.getStatus() == se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION) {
-                    if (arende.getAmne() == ArendeAmne.KOMPLT) {
-                        String sentBy = arende.getSkickatAv() != null ? arende.getSkickatAv() : UNKNOWN_USER;
-                        events
-                            .add(save(certificateId, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.KOMPLT.getDescription()));
-                    }
-                    if (arende.getAmne() == ArendeAmne.PAMINN) {
-                        String sentBy = arende.getSkickatAv() != null ? arende.getSkickatAv() : UNKNOWN_USER;
-                        events
-                            .add(save(certificateId, sentBy, EventCode.NYFRFM, arende.getTimestamp(), ArendeAmne.PAMINN.getDescription()));
+            for (Arende message : messages) {
+                String sentBy = message.getSkickatAv() != null ? message.getSkickatAv() : UNKNOWN_USER;
+                if (message.getSvarPaId() != null || message.getSvarPaReferens() != null) {
+                    events.add(save(certificateId, sentBy, EventCode.NYSVFM, message.getTimestamp(),
+                        getTitleForMessage(message, EventCode.NYSVFM)));
+                } else {
+                    if (message.getPaminnelseMeddelandeId() != null) {
+                        events.add(save(certificateId, sentBy, EventCode.PAMINNELSE, message.getTimestamp()));
+                    } else if (message.getAmne() == ArendeAmne.KOMPLT) {
+                        events.add(save(certificateId, sentBy, EventCode.KOMPLBEGARAN, message.getTimestamp()));
+                    } else {
+                        events.add(save(certificateId, sentBy, EventCode.NYFRFM, message.getTimestamp(),
+                            getTitleForMessage(message, EventCode.NYFRFM)));
                     }
                 }
             }
         }
         return events;
     }
+
+    private String getTitleForMessage(Arende message, EventCode code) {
+        return message.getAmne() != null ? message.getAmne().getDescription() : code.getDescription();
+    }
+
 
     private CertificateEvent save(String certificateId, String user, EventCode eventCode, LocalDateTime eventTimestamp) {
         return save(certificateId, user, eventCode, eventTimestamp, eventCode.getDescription());

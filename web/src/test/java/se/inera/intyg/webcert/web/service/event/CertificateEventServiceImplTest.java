@@ -53,7 +53,6 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
-import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -139,7 +138,7 @@ public class CertificateEventServiceImplTest {
         assertEquals(3, result.size());
         assertEquals(EventCode.SKAPAT, result.get(0).getEventCode());
         assertEquals(EventCode.KFSIGN, result.get(1).getEventCode());
-        assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
+        assertEquals(EventCode.KOMPLBEGARAN, result.get(2).getEventCode());
         verify(utkastRepository).findById(UTKAST_CERTIFICATE_ID);
         verifyNoInteractions(intygService);
     }
@@ -183,7 +182,7 @@ public class CertificateEventServiceImplTest {
         assertEquals(3, result.size());
         assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
         assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
-        assertEquals(EventCode.NYFRFM, result.get(2).getEventCode());
+        assertEquals(EventCode.KOMPLBEGARAN, result.get(2).getEventCode());
         verify(utkastRepository).findById(INTYG_CERTIFICATE_ID);
         verify(intygService).fetchIntygDataForInternalUse(INTYG_CERTIFICATE_ID, true);
     }
@@ -245,7 +244,6 @@ public class CertificateEventServiceImplTest {
         arende.setIntygsId(id);
         arende.setIntygTyp(CERTIFICATE_TYPE);
         arende.setAmne(ArendeAmne.KOMPLT);
-        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setTimestamp(LocalDateTime.now());
 
         return arende;
