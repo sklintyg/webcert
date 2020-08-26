@@ -265,6 +265,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
+        logService.logCreateMessage(webcertUserService.getUser(), saved);
+
         arendeDraftService.delete(intygId, null);
         return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
     }
@@ -302,6 +304,8 @@ public class ArendeServiceImpl implements ArendeService {
             webcertUserService.getUser().getNamn());
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
+
+        logService.logCreateMessage(webcertUserService.getUser(), saved);
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -416,6 +420,8 @@ public class ArendeServiceImpl implements ArendeService {
         Arende openedArende = arendeRepository.save(arende);
 
         sendNotification(openedArende, notificationEvent);
+
+        logService.logCreateMessage(webcertUserService.getUser(), openedArende);
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
             arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -662,6 +668,7 @@ public class ArendeServiceImpl implements ArendeService {
             return null;
         } else {
             Arende closedArende = closeArendeAsHandled(arende);
+            logService.logCreateMessage(webcertUserService.getUser(), closedArende);
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,
