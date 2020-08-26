@@ -9,6 +9,8 @@ export const getSpinnerText = (state: RootState) => state.ui.uiCertificate.spinn
 
 export const getIsValidating = (state: RootState) => state.ui.uiCertificate.validationInProgress;
 
+export const getIsValidForSigning = (state: RootState) => state.ui.uiCertificate.isValidForSigning;
+
 export const getShowValidationErrors = (state: RootState) => state.ui.uiCertificate.showValidationErrors;
 
 export const getCertificate = (state: RootState): Certificate => state.ui.uiCertificate.certificate!;

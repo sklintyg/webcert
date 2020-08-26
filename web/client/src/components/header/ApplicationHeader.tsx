@@ -1,39 +1,48 @@
 import * as React from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {AppBar, Grid, Typography} from "@material-ui/core";
+import {AppBar, Toolbar, Box, Typography, Container, Link} from "@material-ui/core";
+import PersonIcon from '@material-ui/icons/Person';
+import ApartmentIcon from '@material-ui/icons/Apartment';
+import WebcertTitle from "./WebcertTitle";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: '#3D4260',
-    height: '80px',
-  },
-  appbar: {
-    backgroundColor: '#3D4260',
-    height: '80px',
-  },
-  title: {
-    marginTop: "20px",
-    marginLeft: "10px",
-  },
-}));
+type ApplicationHeaderProps = {
 
-type Props = {};
+};
 
-export const ApplicationHeader: React.FC<Props> = props => {
-
-  const styles = useStyles();
-
+export const ApplicationHeader: React.FC<ApplicationHeaderProps> = (props) => {
   return (
-    <AppBar position={"static"} className={styles.appbar}>
-      <Grid container className={styles.root}>
-        <Grid item xs={"auto"} sm={2}/>
-        <Grid item xs={12} sm={8}>
-        <Typography variant="h4" className={styles.title}>
-          Webcert
-        </Typography>
-        </Grid>
-        <Grid item xs={"auto"} sm={2}/>
-      </Grid>
+    <AppBar position={"static"}>
+      <Container>
+        <Toolbar disableGutters={true}>
+          <WebcertTitle/>
+          <Box marginLeft={5} display="flex" flexDirection="row" alignItems="center">
+            <Box clone marginRight={"10px"}>
+              <PersonIcon/>
+            </Box>
+            <Typography  variant={"body1"}>
+              <Box fontWeight="fontWeightBold" marginRight="5px">
+                Arnold Johansson
+              </Box>
+            </Typography>
+            <Typography variant={"body1"}>- Läkare</Typography>
+          </Box>
+          <Box marginLeft={5} display="flex" flexDirection="row" alignItems="center" flexGrow={1}>
+            <Box clone marginRight={"10px"}>
+              <ApartmentIcon/>
+            </Box>
+            <Typography  variant={"body1"}>
+              <Box fontWeight="fontWeightBold" marginRight="5px">
+                Region Jämtland Härjedalen
+              </Box>
+            </Typography>
+            <Typography variant={"body1"}>- Frösö Hälsocentral</Typography>
+          </Box>
+          <Typography>
+            <Link href="#" color={"inherit"}>
+              Om Webcert
+            </Link>
+          </Typography>
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 };

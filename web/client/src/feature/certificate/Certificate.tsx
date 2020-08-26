@@ -2,22 +2,17 @@ import React from "react";
 import {useSelector} from "react-redux";
 import Category from "./Category";
 import Question from "./Question";
-import {makeStyles} from "@material-ui/core/styles";
+import {styled} from "@material-ui/core/styles";
 import {CertificateFooter} from "./CertificateFooter";
 import CertificateValidation from "./CertificateValidation";
 import {getCertificateDataElements, getIsShowSpinner, getSpinnerText} from "../../store/selectors/certificate";
+import {Box, Container, CircularProgress, Backdrop} from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: "d7d7dd",
-  },
-  heading: {
-  },
-  paper: {
-    padding: "1px 10px 10px 10px",
-    backgroundColor: "#d7d7dd",
-  }
-}));
+const RootBox = styled(Box)({
+  padding: "1px 10px 10px 10px",
+  backgroundColor: "#d7d7dd",
+  margin: "0 auto",
+});
 
 type Props = {};
 
@@ -26,26 +21,28 @@ const Certificate: React.FC<Props> = () => {
   const showSpinner = useSelector(getIsShowSpinner);
   const spinnerText = useSelector(getSpinnerText);
 
-  const styles = useStyles();
-
   console.log("certificate");
 
-  if (showSpinner) return <h1>{spinnerText}</h1>;
+  if (showSpinner) return (
+    <Backdrop open={showSpinner}>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <CircularProgress />
+        <h1>{spinnerText}</h1>
+      </Box>
+    </Backdrop>);
 
   return (
-    <div className={styles.root}>
-      <div className={styles.paper}>
-        {certificateStructure && certificateStructure.map((data) => {
-          if (data.component === "category") {
-            return <Category key={data.id} id={data.id} />
-          } else {
-            return <Question key={data.id} id={data.id} />
-          }
-        })}
-        <CertificateValidation />
-        <CertificateFooter/>
-      </div>
-    </div>
+    <RootBox>
+      {certificateStructure && certificateStructure.map((data) => {
+        if (data.component === "category") {
+          return <Category key={data.id} id={data.id} />
+        } else {
+          return <Question key={data.id} id={data.id} />
+        }
+      })}
+      <CertificateValidation />
+      <CertificateFooter />
+    </RootBox>
   );
 }
 

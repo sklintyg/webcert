@@ -15,6 +15,7 @@ interface CertificateState {
   spinnerText: string;
   validationInProgress: boolean;
   showValidationErrors: boolean;
+  isValidForSigning: boolean;
 }
 
 const initialState: CertificateState = {
@@ -22,6 +23,7 @@ const initialState: CertificateState = {
   spinnerText: "",
   validationInProgress: false,
   showValidationErrors: false,
+  isValidForSigning: false,
 };
 
 const certificateReducer = createReducer(initialState, builder =>
@@ -80,6 +82,7 @@ const certificateReducer = createReducer(initialState, builder =>
           }
         }
       }
+      state.isValidForSigning = action.payload.length === 0;
     }))
     .addCase(showValidationErrors, (state => {
       state.showValidationErrors = true;

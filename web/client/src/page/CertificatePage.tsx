@@ -2,10 +2,11 @@ import React from 'react';
 import {useParams} from 'react-router-dom';
 import {useDispatch} from "react-redux";
 import Certificate from "../feature/certificate/Certificate";
-import {Grid} from "@material-ui/core";
 import {ApplicationHeader} from "../components/header/ApplicationHeader";
 import {CertificateHeader} from "../feature/certificate/CertificateHeader";
 import {getCertificate} from "../store/actions/certificates";
+import { Container, Grid, Box } from '@material-ui/core';
+import CertificateSidePanel from "../feature/certificate/CertificateSidePanel";
 
 type Props = {};
 
@@ -15,24 +16,25 @@ const CertificatePage: React.FC<Props> = () => {
 
   console.log("CertificatePage", id);
 
-  if (id) dispatch(getCertificate(id));
+  if (id) {
+    dispatch(getCertificate(id));
+  }
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <ApplicationHeader/>
-      </Grid>
-      <Grid item>
-        <CertificateHeader/>
-      </Grid>
-      <Grid item container>
-        <Grid item xs={"auto"} sm={2}/>
-        <Grid item xs={12} sm={8}>
-          <Certificate />
+    <Box>
+      <ApplicationHeader />
+      <CertificateHeader />
+      <Container>
+        <Grid container>
+          <Grid item sm={8}>
+            <Certificate />
+          </Grid>
+          <Grid container item sm={4}>
+            <CertificateSidePanel />
+          </Grid>
         </Grid>
-        <Grid item xs={"auto"} sm={2}></Grid>
-      </Grid>
-    </Grid>
+      </Container>
+    </Box>
   );
 };
 
