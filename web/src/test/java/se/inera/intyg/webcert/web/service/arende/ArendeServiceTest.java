@@ -41,7 +41,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
@@ -77,7 +76,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -517,6 +515,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, null);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -529,6 +528,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -553,6 +553,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -576,6 +577,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -622,6 +624,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -648,6 +651,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -675,6 +679,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, svarPaMeddelandeId);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -685,6 +690,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -696,6 +702,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -713,6 +720,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -731,6 +739,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -850,6 +859,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(FIXED_TIME_INSTANT,
             updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.CLOSED, updatedQuestion.getStatus());
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -917,6 +927,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -936,6 +947,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -948,6 +960,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verifyNoInteractions(notificationService);
         verify(fragaSvarService).closeQuestionAsHandled(1L);
         verifyNoInteractions(arendeDraftService);
+        verifyNoInteractions(logService);
     }
 
     @Test
@@ -964,6 +977,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -984,6 +998,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -993,6 +1008,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         } finally {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
+            verifyNoInteractions(logService);
         }
     }
 
@@ -1008,6 +1024,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         setupMockForAccessService(ActionLinkType.BESVARA_KOMPLETTERING);
         service.openArendeAsUnhandled(MEDDELANDE_ID);
         verifyNoMoreInteractions(notificationService);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -1024,6 +1041,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_INTERNAL_ACTION, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -1042,6 +1060,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.ANSWERED, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -1056,6 +1075,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_EXTERNAL_ACTION, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
+        verify(logService, times(1)).logCreateMessage(any(), any());
     }
 
     @Test
@@ -1607,6 +1627,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(FIXED_TIME_INSTANT, arendeCaptor.getAllValues().get(1).getSenasteHandelse()
             .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(notificationService, times(2)).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
+        verifyNoInteractions(logService);
     }
 
     @Test
@@ -1620,6 +1641,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).findByIntygsId(intygId);
         verify(arendeRepository, never()).save(any(Arende.class));
         verifyNoInteractions(notificationService);
+        verifyNoInteractions(logService);
     }
 
     @Test
