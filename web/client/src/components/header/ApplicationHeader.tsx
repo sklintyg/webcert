@@ -18,10 +18,8 @@ export const ApplicationHeader: React.FC<ApplicationHeaderProps> = (props) => {
             <Box clone marginRight={"10px"}>
               <PersonIcon/>
             </Box>
-            <Typography  variant={"body1"}>
-              <Box fontWeight="fontWeightBold" marginRight="5px">
+            <Typography variant={"body1"} style={{fontWeight: "bold", marginRight: "5px"}}>
                 Arnold Johansson
-              </Box>
             </Typography>
             <Typography variant={"body1"}>- Läkare</Typography>
           </Box>
@@ -29,10 +27,8 @@ export const ApplicationHeader: React.FC<ApplicationHeaderProps> = (props) => {
             <Box clone marginRight={"10px"}>
               <ApartmentIcon/>
             </Box>
-            <Typography  variant={"body1"}>
-              <Box fontWeight="fontWeightBold" marginRight="5px">
+            <Typography variant={"body1"} style={{fontWeight:"bold", marginRight:"5px"}}>
                 Region Jämtland Härjedalen
-              </Box>
             </Typography>
             <Typography variant={"body1"}>- Frösö Hälsocentral</Typography>
           </Box>
