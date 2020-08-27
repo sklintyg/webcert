@@ -58,10 +58,10 @@ export const CertificateHeader: React.FC = props => {
           <Divider />
           <Box display="flex">
             <Box flexGrow="1">
-              <Typography variant={"h5"}>
+              <Typography variant={"h5"} style={{marginTop: "10px"}}>
                 {certificateMetadata.certificateName}
               </Typography>
-              <Typography component={"div"} variant="h6">
+              <Typography component={"div"} variant="h6" style={{marginBottom: "10px"}}>
                 <Box fontWeight="fontWeightBold">
                   Tolvan Tolvansson - 19121212-1212
                 </Box>

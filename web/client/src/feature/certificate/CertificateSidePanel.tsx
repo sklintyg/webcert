@@ -12,7 +12,7 @@ const CertificateSidePanel: React.FC<CertificateSidePanelProp> = (props) => {
   if (showSpinner) return null;
 
   return (
-    <Box display="flex" flexDirection="column" height="100%" margin="5px">
+    <Box display="flex" flexDirection="column" height="100%" margin="0px 5px 0px 5px">
       <Paper style={{ flexGrow: 1 }}>
         <Tabs value={0} indicatorColor="primary" textColor="primary">
           <Tab label="Om intyget" />
