@@ -9,9 +9,11 @@ import {getCertificateDataElements, getIsShowSpinner, getSpinnerText} from "../.
 import {Box, Container, CircularProgress, Backdrop} from "@material-ui/core";
 
 const RootBox = styled(Box)({
-  padding: "1px 10px 10px 10px",
+  padding: "0px 10px 0px 10px",
   backgroundColor: "#d7d7dd",
   margin: "0 auto",
+  overflowY: "auto",
+  height: "100%",
 });
 
 type Props = {};

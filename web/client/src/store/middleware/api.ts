@@ -16,7 +16,7 @@ const api: Middleware = ({ getState, dispatch }: MiddlewareAPI) => (next: Dispat
   try {
     // MWW: Here we would make the api call. For now just simulate a async call.
     const response = simulateApiCall(url, method, data);
-    await stall(2000);
+    await stall(1000);
 
     // General
     dispatch(actions.apiCallSuccess(response.data));

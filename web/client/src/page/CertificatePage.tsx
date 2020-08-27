@@ -21,15 +21,15 @@ const CertificatePage: React.FC<Props> = () => {
   }
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" height="100vh">
       <ApplicationHeader />
       <CertificateHeader />
-      <Container>
-        <Grid container>
-          <Grid item sm={8}>
+      <Container style={{ height: "calc(100vh - 180px)"}}>
+        <Grid container style={{height: "100%"}}>
+          <Grid item sm={8} style={{overflowY: "auto", height: "100%"}}>
             <Certificate />
           </Grid>
-          <Grid container item sm={4}>
+          <Grid container item sm={4} style={{overflowY: "hidden", height: "100%"}}>
             <CertificateSidePanel />
           </Grid>
         </Grid>

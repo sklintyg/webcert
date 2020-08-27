@@ -44,7 +44,7 @@ export const CertificateHeader: React.FC = props => {
               </Box>
               <Box flexGrow="1">
                 <Typography variant="body2">
-                  {certificateMetadata.status === CertificateStatus.UNSIGNED ? "Utkast sparad" : "Intyget är tillgängligt för patienten"}
+                  {certificateMetadata.status === CertificateStatus.UNSIGNED ? "Utkastet är sparat" : "Intyget är tillgängligt för patienten"}
                 </Typography>
               </Box>
               </>)
