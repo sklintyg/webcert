@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +94,19 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
         if (events.isEmpty()) {
             events = addEventsForCertificate(certificateId);
+        } else {
+            IntygContentHolder intygContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
+
+            if (intygContentHolder != null) {
+                LocalDateTime latestTimestamp = events.stream()
+                    .map(CertificateEvent::getTimestamp)
+                    .max(LocalDateTime::compareTo)
+                    .get();
+                List<CertificateEvent> eventsFromArende = createEventsFromArende(certificateId, latestTimestamp);
+                events.addAll(eventsFromArende);
+            }
         }
+
         return events;
     }
 
@@ -103,15 +116,11 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
         if (certificate != null) {
             events = createEventsFromUtkast(certificate);
-
-            return events;
         }
 
         if (events.isEmpty()) {
             IntygContentHolder intygContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
             events = createEventsFromIntygContentHolder(certificateId, intygContentHolder);
-
-            return events;
         }
         return events;
     }
@@ -235,8 +244,19 @@ public class CertificateEventServiceImpl implements CertificateEventService {
     }
 
     private List<CertificateEvent> createEventsFromArende(String certificateId) {
-        List<Arende> messages = arendeService.getArendenInternal(certificateId);
+        return createEventsFromArende(certificateId, null);
+    }
+
+    public List<CertificateEvent> createEventsFromArende(String certificateId, LocalDateTime afterTimestamp) {
         List<CertificateEvent> events = new ArrayList<>();
+        List<Arende> messages = new ArrayList<>();
+
+        if (afterTimestamp != null) {
+            messages = arendeService.getArendenInternal(certificateId).stream().filter(m -> m.getTimestamp().isAfter(afterTimestamp))
+                .collect(Collectors.toList());
+        } else {
+            messages = arendeService.getArendenInternal(certificateId);
+        }
 
         if (!messages.isEmpty()) {
 
@@ -257,6 +277,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 }
             }
         }
+
         return events;
     }
 

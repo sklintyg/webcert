@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.event;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -100,6 +101,76 @@ public class CertificateEventServiceImplTest {
         assertEquals(1, eventList.size());
         verify(eventRepository, times(1)).findByCertificateId(UTKAST_CERTIFICATE_ID);
     }
+
+
+    @Test
+    public void testGetEventsWithAdditionalMessages() {
+        LocalDateTime earlierEventTimestamp = LocalDateTime.parse("2018-01-01T00:00:00");
+        LocalDateTime latestEventTimestamp = LocalDateTime.parse("2019-01-01T00:00:00");
+        LocalDateTime newMessageTimestamp = LocalDateTime.parse("2020-01-01T00:00:00");
+
+        CertificateEvent ce1 = getCertificateEvent(UTKAST_CERTIFICATE_ID);
+        ce1.setTimestamp(earlierEventTimestamp);
+        ce1.setEventCode(EventCode.NYFRFM);
+
+        CertificateEvent ce2 = getCertificateEvent(UTKAST_CERTIFICATE_ID);
+        ce2.setTimestamp(latestEventTimestamp);
+        ce2.setEventCode(EventCode.KOMPLBEGARAN);
+
+        List<CertificateEvent> events = new ArrayList<>();
+        events.add(ce1);
+        events.add(ce2);
+
+        Arende ce1Arende = new Arende();
+        ce1Arende.setIntygsId(UTKAST_CERTIFICATE_ID);
+        ce1Arende.setAmne(ArendeAmne.KOMPLT);
+        ce1Arende.setTimestamp(latestEventTimestamp);
+        Arende newArende = new Arende();
+        newArende.setIntygsId(UTKAST_CERTIFICATE_ID);
+        newArende.setAmne(ArendeAmne.PAMINN);
+        newArende.setPaminnelseMeddelandeId("1");
+        newArende.setTimestamp(newMessageTimestamp);
+
+        IntygContentHolder intyg = getIntygContentHolder();
+
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(events);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(ce1Arende, newArende));
+        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        List<CertificateEvent> eventList = eventService.getCertificateEvents(UTKAST_CERTIFICATE_ID);
+
+        verify(eventRepository).findByCertificateId(UTKAST_CERTIFICATE_ID);
+        verify(intygService).fetchIntygDataForInternalUse(UTKAST_CERTIFICATE_ID, true);
+        assertEquals(3, eventList.size());
+        assertEquals(EventCode.NYFRFM, eventList.get(0).getEventCode());
+        assertEquals(earlierEventTimestamp, eventList.get(0).getTimestamp());
+        assertEquals(EventCode.KOMPLBEGARAN, eventList.get(1).getEventCode());
+        assertEquals(latestEventTimestamp, eventList.get(1).getTimestamp());
+        assertEquals(EventCode.PAMINNELSE, eventList.get(2).getEventCode());
+        assertEquals(newMessageTimestamp, eventList.get(2).getTimestamp());
+    }
+
+    @Test
+    public void testCreateEventsFromArende() {
+        LocalDateTime latestEventTimestamp = LocalDateTime.parse("2020-06-01T00:00:00");
+        LocalDateTime before = LocalDateTime.parse("2020-01-01T00:00:00");
+        LocalDateTime after = LocalDateTime.parse("2020-08-01T00:00:00");
+        Arende arendeBefore = getArende(UTKAST_CERTIFICATE_ID);
+        arendeBefore.setTimestamp(before);
+        Arende arendeAfter = getArende(UTKAST_CERTIFICATE_ID);
+        arendeAfter.setTimestamp(after);
+
+        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arendeBefore, arendeAfter));
+        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        List<CertificateEvent> result = eventService.createEventsFromArende(INTYG_CERTIFICATE_ID, latestEventTimestamp);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(after, result.get(0).getTimestamp());
+    }
+
 
     @Test
     public void testGenerateEventsForUtkast() {
