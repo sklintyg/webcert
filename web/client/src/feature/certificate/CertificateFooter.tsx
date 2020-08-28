@@ -9,6 +9,8 @@ import {signCertificate} from "../../store/actions/certificates";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: '##fff',
+    display: "flex",
+    alignItems: "center"
   },
   heading: {
     marginTop: "20px",
@@ -18,7 +20,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#4c7b67',
     borderColor: '#4c7b67',
     color: '#fff',
-    marginBottom: "10px",
+  },
+  idText: {
+    marginLeft: "auto",
+    fontSize: theme.typography.fontSize
   }
 }));
 
@@ -42,6 +47,7 @@ export const CertificateFooter: React.FC = props => {
         <Button className={styles.signButton} disabled={isValidating} variant="contained" onClick={() => {
           dispatch(signCertificate())
         }}>Signera och skicka</Button>}
+        <p className={styles.idText}>Intygs-ID: {certificateMetadata.certificateId}</p>
     </div>
   );
 };

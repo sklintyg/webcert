@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   heading: {
     fontWeight: "bold",
+    fontSize: "18px"
   },
 }));
 
@@ -53,7 +54,7 @@ const Category: React.FC<Props> = ({id}) => {
           </Typography>
         </AccordionDetails>
       </Accordion>}
-      {!category.config.description && <Typography className={styles.heading} variant="h5">{category.config.text}</Typography>}
+      {!category.config.description && <Typography className={styles.heading} variant="h3">{category.config.text}</Typography>}
     </div>
   )
 }
