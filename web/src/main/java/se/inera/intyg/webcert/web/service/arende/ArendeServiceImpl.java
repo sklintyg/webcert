@@ -868,6 +868,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (event != null) {
             notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
             EventCode eventCode = getEventCode(event);
+
             if (eventCode != null) {
                 certificateEventService
                     .createCertificateEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventCode, event.name());

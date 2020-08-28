@@ -201,6 +201,10 @@ public class UtkastServiceImpl implements UtkastService {
 
         generateCertificateEvent(savedUtkast, EventCode.SKAPAT);
 
+        if (UtkastStatus.DRAFT_COMPLETE == savedUtkast.getStatus()) {
+            generateCertificateEvent(savedUtkast, EventCode.KFSIGN);
+        }
+
         // Notify stakeholders when a draft has been created
         sendNotification(savedUtkast, Event.CREATED);
 

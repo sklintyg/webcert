@@ -960,6 +960,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, webcertUserService.getUser().getHsaId(), EventCode.HANFRFM,
+            NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
         verify(logService, times(1)).logCreateMessage(any(), any());
@@ -993,6 +995,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, webcertUserService.getUser().getHsaId(), EventCode.HANFRFV,
+            NotificationEvent.QUESTION_FROM_CARE_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
         verify(logService, times(1)).logCreateMessage(any(), any());
@@ -1015,6 +1019,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, webcertUserService.getUser().getHsaId(), EventCode.HANFRFV,
+            NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
         verify(logService, times(1)).logCreateMessage(any(), any());

@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -54,10 +55,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -259,6 +262,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertFalse(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
 
     @Test
@@ -270,6 +275,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
 
     @Test
@@ -281,6 +288,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_COMPLETE);
+
+        InOrder inOrder = inOrder(certificateEventService);
+        inOrder.verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
+        inOrder.verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.KFSIGN));
     }
 
     private CreateNewDraftRequest setupForifyllnadUtkast(ValidationStatus status) throws IOException, ModuleNotFoundException, ModuleException {
