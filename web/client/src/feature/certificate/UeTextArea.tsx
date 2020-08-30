@@ -1,16 +1,15 @@
 import * as React from 'react';
-import {useRef, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
-import {TextareaAutosize, Typography} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {CertificateDataElement, CertificateTextValue} from "../../store/domain/certificate";
-import {getShowValidationErrors} from "../../store/selectors/certificate";
-import {updateCertificateDataElement} from "../../store/actions/certificates";
+import { TextareaAutosize, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { CertificateDataElement, CertificateTextValue } from "../../store/domain/certificate";
+import { getShowValidationErrors } from "../../store/selectors/certificate";
+import { updateCertificateDataElement } from "../../store/actions/certificates";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
     paddingLeft: "28px",
     paddingBottom: "15px",
     marginBottom: "15px",
@@ -30,7 +29,7 @@ type Props = {
   question: CertificateDataElement
 };
 
-const UeTextArea: React.FC<Props> = ({question}) => {
+const UeTextArea: React.FC<Props> = ({ question }) => {
   const textValue = getTextValue(question);
   const isShowValidationError = useSelector(getShowValidationErrors);
   const [text, setText] = useState(textValue != null ? textValue.text : "");
@@ -71,7 +70,7 @@ function getTextValue(question: CertificateDataElement): CertificateTextValue | 
   return question.value as CertificateTextValue;
 }
 
-function getUpdatedValue(question: CertificateDataElement, text: string) : CertificateDataElement {
+function getUpdatedValue(question: CertificateDataElement, text: string): CertificateDataElement {
   const updatedQuestion: CertificateDataElement = { ...question };
   updatedQuestion.value = { ...updatedQuestion.value };
   (updatedQuestion.value as CertificateTextValue).text = text;

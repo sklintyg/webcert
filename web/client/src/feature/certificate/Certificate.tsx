@@ -1,12 +1,12 @@
 import React from "react";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import Category from "./Category";
 import Question from "./Question";
-import {styled} from "@material-ui/core/styles";
-import {CertificateFooter} from "./CertificateFooter";
+import { styled } from "@material-ui/core/styles";
+import { CertificateFooter } from "./CertificateFooter";
 import CertificateValidation from "./CertificateValidation";
-import {getCertificateDataElements, getIsShowSpinner, getSpinnerText} from "../../store/selectors/certificate";
-import {Box, Container, CircularProgress, Backdrop} from "@material-ui/core";
+import { getCertificateDataElements, getIsShowSpinner, getSpinnerText } from "../../store/selectors/certificate";
+import { Box, CircularProgress, Backdrop } from "@material-ui/core";
 
 const RootBox = styled(Box)({
   padding: "0px 10px 0px 10px",

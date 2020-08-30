@@ -1,17 +1,17 @@
 import * as React from 'react';
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import UeRadio from "./UeRadio";
 import UeTextArea from "./UeTextArea";
-import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Paper } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import UvText from "./UvText";
-import {CertificateDataConfig, CertificateDataElement} from "../../store/domain/certificate";
-import {getQuestion} from "../../store/selectors/certificate";
+import { CertificateDataConfig, CertificateDataElement } from "../../store/domain/certificate";
+import { getQuestion } from "../../store/selectors/certificate";
+import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
     padding: "0px 28px",
   },
   accordion: {
@@ -24,13 +24,15 @@ const useStyles = makeStyles((theme) => ({
     margin: '0px 0px',
   },
   accordionDetails: {
-    background: '#e9eaed',
+    background: grey[300],
+    marginBottom: "1rem"
   },
   heading: {
     fontWeight: "bold",
   },
   details: {
     padding: "15px 15px 0",
+    color: "black"
   },
   mandatoryIcon: {
     marginLeft: "-16px",
@@ -69,10 +71,12 @@ const Question: React.FC<Props> = ({ id }) => {
 
   return (
     <React.Fragment>
-      <div className={styles.root}>
-        {getQuestionComponent(question.config, question.mandatory, question.readOnly)}
-      </div>
-      {question.readOnly ? getUnifiedViewComponent(question) : getUnifiedEditComponent(question)}
+      <Paper>
+        <div className={styles.root}>
+          {getQuestionComponent(question.config, question.mandatory, question.readOnly)}
+        </div>
+        {question.readOnly ? getUnifiedViewComponent(question) : getUnifiedEditComponent(question)}
+      </Paper>
     </React.Fragment>
   );
 

@@ -1,15 +1,14 @@
 import * as React from 'react';
-import {useSelector} from "react-redux";
-import {Radio, FormControlLabel, Typography} from '@material-ui/core';
-import {makeStyles} from "@material-ui/core/styles";
-import {useAppDispatch} from "../../store/store";
-import {CertificateBooleanValue, CertificateDataElement} from "../../store/domain/certificate";
-import {updateCertificateDataElement} from "../../store/actions/certificates";
-import {getShowValidationErrors} from "../../store/selectors/certificate";
+import { useSelector } from "react-redux";
+import { Radio, FormControlLabel, Typography } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core/styles";
+import { useAppDispatch } from "../../store/store";
+import { CertificateBooleanValue, CertificateDataElement } from "../../store/domain/certificate";
+import { updateCertificateDataElement } from "../../store/actions/certificates";
+import { getShowValidationErrors } from "../../store/selectors/certificate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
     paddingLeft: "28px",
     paddingBottom: "15px",
     // marginBottom: "15px",
@@ -25,7 +24,7 @@ type Props = {
   question: CertificateDataElement
 };
 
-const UeRadio: React.FC<Props> = ({question}) => {
+const UeRadio: React.FC<Props> = ({ question }) => {
   const booleanValue = getBooleanValue(question);
   const isShowValidationError = useSelector(getShowValidationErrors);
   const dispatch = useAppDispatch();
@@ -69,7 +68,7 @@ function getBooleanValue(question: CertificateDataElement): CertificateBooleanVa
   return question.value as CertificateBooleanValue;
 }
 
-function getUpdatedValue(question: CertificateDataElement, selected: boolean) : CertificateDataElement {
+function getUpdatedValue(question: CertificateDataElement, selected: boolean): CertificateDataElement {
   const updatedQuestion: CertificateDataElement = { ...question };
   updatedQuestion.value = { ...updatedQuestion.value };
   (updatedQuestion.value as CertificateBooleanValue).selected = selected;

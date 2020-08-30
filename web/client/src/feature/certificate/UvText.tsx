@@ -1,11 +1,12 @@
 import * as React from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   CertificateBooleanValue,
   CertificateDataElement,
   CertificateDataValueType,
   CertificateTextValue
 } from "../../store/domain/certificate";
+import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: "8px",
   },
   uvtext: {
-    backgroundColor: "#e9eaed",
+    background: grey[300],
     padding: "8px 14px",
     display: "inline-block",
     borderRadius: "4px",
@@ -30,7 +31,7 @@ type Props = {
   question: CertificateDataElement
 }
 
-const UvText: React.FC<Props> = ({question}) => {
+const UvText: React.FC<Props> = ({ question }) => {
   const styles = useStyles();
 
   let displayText = "Ej angivet";

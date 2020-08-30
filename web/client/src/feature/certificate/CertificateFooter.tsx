@@ -1,14 +1,13 @@
 import * as React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {Button} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {CertificateStatus} from "../../store/domain/certificate";
-import {getCertificateMetaData, getIsValidating} from "../../store/selectors/certificate";
-import {signCertificate} from "../../store/actions/certificates";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { CertificateStatus } from "../../store/domain/certificate";
+import { getCertificateMetaData, getIsValidating } from "../../store/selectors/certificate";
+import { signCertificate } from "../../store/actions/certificates";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: '##fff',
     display: "flex",
     alignItems: "center"
   },
@@ -23,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
   },
   idText: {
     marginLeft: "auto",
-    fontSize: theme.typography.fontSize
+    fontSize: theme.typography.fontSize,
+    color: "black"
   }
 }));
 
@@ -47,7 +47,7 @@ export const CertificateFooter: React.FC = props => {
         <Button className={styles.signButton} disabled={isValidating} variant="contained" onClick={() => {
           dispatch(signCertificate())
         }}>Signera och skicka</Button>}
-        <p className={styles.idText}>Intygs-ID: {certificateMetadata.certificateId}</p>
+      <p className={styles.idText}>Intygs-ID: {certificateMetadata.certificateId}</p>
     </div>
   );
 };
