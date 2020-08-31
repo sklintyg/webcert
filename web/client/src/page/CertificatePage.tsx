@@ -38,7 +38,7 @@ const CertificatePage: React.FC<Props> = (props: Props) => {
             <Grid item sm={8} style={{ overflowY: "auto", height: "100%" }}>
               <Certificate />
             </Grid>
-            <Grid container item sm={4}>
+            <Grid container item sm={4} style={{height: "100%"}}>
               <CertificateSidePanel />
             </Grid>
           </Grid>
