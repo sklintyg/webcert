@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +44,11 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
+import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -59,6 +64,7 @@ public class IntygApiControllerTest {
     private static final Personnummer PNR = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String ENHET_ID = "ABC123";
+    private static final String INTYG_ID = "intygId";
 
     private static final List<String> ENHET_IDS = Arrays.asList("ABC123", "DEF456");
     private static final List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
@@ -79,7 +85,13 @@ public class IntygApiControllerTest {
     private IntygService intygService = mock(IntygService.class);
 
     @Mock
+    private CertificateEventService certificateEventService = mock(CertificateEventService.class);
+
+    @Mock
     private UtkastRepository mockUtkastRepository = mock(UtkastRepository.class);
+
+    @Mock
+    private CertificateEventRepository certificateEventRepository = mock(CertificateEventRepository.class);
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
@@ -153,6 +165,37 @@ public class IntygApiControllerTest {
         assertNotNull(res);
         assertEquals(2, res.size());
         assertEquals("true", response.getHeaderString("offline_mode"));
+    }
+
+    @Test
+    public void testNoIntygEvents() {
+
+        when(certificateEventService.getCertificateEvents(anyString())).thenReturn(Collections.<CertificateEvent>emptyList());
+
+        Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
+        List<CertificateEvent> responseList = (List<CertificateEvent>) response.getEntity();
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(responseList);
+        assertEquals(0, responseList.size());
+    }
+
+    @Test
+    public void testListIntygEvents() {
+
+        CertificateEvent event = new CertificateEvent();
+        List<CertificateEvent> eventList = Arrays.asList(event);
+
+        when(certificateEventService.getCertificateEvents(anyString())).thenReturn(eventList);
+
+        Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
+
+        List<CertificateEvent> responseList = (List<CertificateEvent>) response.getEntity();
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(responseList);
+        assertEquals(1, responseList.size());
+        assertEquals(event, responseList.get(0));
     }
 
 }

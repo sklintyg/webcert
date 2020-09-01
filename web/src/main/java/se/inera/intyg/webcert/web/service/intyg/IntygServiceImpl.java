@@ -51,6 +51,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -81,6 +82,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
@@ -143,6 +145,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private CertificateEventService certificateEventService;
 
     @Autowired
     private IntygModuleFacade moduleFacade;
@@ -502,6 +507,9 @@ public class IntygServiceImpl implements IntygService {
 
         monitoringService.logIntygSent(intygsId, utlatande.getTyp(), recipient);
 
+        certificateEventService
+            .createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT, "Recipient: " + recipient);
+
         // send PDL log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
         logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
@@ -650,7 +658,7 @@ public class IntygServiceImpl implements IntygService {
 
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
-        for (var certificateId: notificationCertificateIdHash.keySet()) {
+        for (var certificateId : notificationCertificateIdHash.keySet()) {
             final var notifications = notificationCertificateIdHash.get(certificateId);
 
             IntygWithNotificationsResponse response = null;
@@ -689,7 +697,7 @@ public class IntygServiceImpl implements IntygService {
 
     private HashMap<String, List<Handelse>> getNotificationCertificateIdHash(List<Handelse> allNotifications) {
         final var notificationCertificateIdHash = new HashMap<String, List<Handelse>>();
-        for (var notification: allNotifications) {
+        for (var notification : allNotifications) {
             final var certificateId = notification.getIntygsId();
             if (!notificationCertificateIdHash.containsKey(certificateId)) {
                 notificationCertificateIdHash.put(certificateId, new ArrayList<>());
@@ -703,7 +711,7 @@ public class IntygServiceImpl implements IntygService {
     private HashMap<String, Utkast> getDraftMap(Set<String> certificateIds) {
         final var draftList = utkastRepository.findAllById(certificateIds);
         final var draftMap = new HashMap<String, Utkast>(draftList.size());
-        for (var draft: draftList) {
+        for (var draft : draftList) {
             draftMap.put(draft.getIntygsId(), draft);
         }
         return draftMap;
@@ -995,6 +1003,9 @@ public class IntygServiceImpl implements IntygService {
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
 
+        certificateEventService.createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.MAKULERAT, reason);
+        checkIfAddEventOnParent(intygsId);
+
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
         arendeService.closeAllNonClosedQuestions(intygsId);
@@ -1009,6 +1020,18 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithRevokedDate(intygsId);
 
         return IntygServiceResult.OK;
+    }
+
+    private void checkIfAddEventOnParent(String certificateId) {
+        Relations relationsOfChild = intygRelationHelper.getRelationsForIntyg(certificateId);
+        if (relationsOfChild != null) {
+            WebcertCertificateRelation parent = relationsOfChild.getParent();
+            if (parent != null && parent.getIntygsId() != null) {
+                certificateEventService
+                    .createCertificateEvent(parent.getIntygsId(), webCertUserService.getUser().getHsaId(), EventCode.RELINTYGMAKULE,
+                        "Related certificate " + certificateId + " revoked");
+            }
+        }
     }
 
     private void handleComplementedParent(String intygsId) {

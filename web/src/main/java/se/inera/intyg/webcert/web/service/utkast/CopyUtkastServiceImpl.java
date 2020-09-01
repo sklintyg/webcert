@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -45,6 +46,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -117,6 +119,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private NotificationService notificationService;
 
     @Autowired
+    private CertificateEventService certificateEventService;
+
+    @Autowired
     private LogService logService;
 
     @Autowired
@@ -187,7 +192,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOMPLETTERAR, originalIntygId);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -242,7 +247,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.FORLANGER, originalIntygId);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -290,7 +295,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.ERSATTER, originalIntygId);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -352,7 +357,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             UtkastBuilderResponse builderResponse = buildUtkastFromSignedTemplateBuilderResponse(templateRequest, patientDetails,
                 true, coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
 
             monitoringService.logUtkastCreatedTemplateManual(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
                 savedUtkast.getSkapadAv().getHsaId(), savedUtkast.getEnhetsId(), originalIntygId, templateRequest.getOriginalIntygTyp());
@@ -407,7 +412,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             UtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
@@ -481,7 +486,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utkast saveAndNotify(UtkastBuilderResponse builderResponse, WebCertUser user) {
+    private Utkast saveAndNotify(UtkastBuilderResponse builderResponse, WebCertUser user, EventCode eventCode,
+        String originalCertificateId) {
         builderResponse.getUtkast().setSkapad(LocalDateTime.now());
 
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkast());
@@ -490,6 +496,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
         }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
+
+        certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
 
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 

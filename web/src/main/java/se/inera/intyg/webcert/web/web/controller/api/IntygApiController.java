@@ -50,9 +50,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -90,6 +92,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private UtkastService utkastService;
+
+    @Autowired
+    private CertificateEventService certificateEventService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -240,6 +245,34 @@ public class IntygApiController extends AbstractApiController {
         return Personnummer.createPersonnummer(pnr)
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                 String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
+    }
+
+    /**
+     * Compiles a list of events for a certificate.
+     *
+     * @param certificateId Id of the certificate
+     * @return a Response carrying a list containing all events for certificate
+     */
+    @GET
+    @Path("/{certificateId}/events")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getEventsForCertificate(@PathParam("certificateId") String certificateId) {
+
+        List<CertificateEvent> eventList = certificateEventService.getCertificateEvents(certificateId);
+
+        if (eventList == null) {
+            LOG.error("Could not complete the request for certificate with id {}", certificateId);
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
+        if (eventList.size() > 0) {
+            LOG.debug("Got {} events for certificate with id {}", eventList.size(), certificateId);
+        } else if (eventList.isEmpty()) {
+            LOG.debug("No events for certificate with id {}", certificateId);
+        }
+
+        return Response.ok(eventList).build();
     }
 
     @GET

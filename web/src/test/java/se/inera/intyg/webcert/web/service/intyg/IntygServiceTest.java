@@ -37,8 +37,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +79,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -108,6 +109,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -183,6 +185,9 @@ public class IntygServiceTest {
 
     @Mock
     private UtkastRepository utkastRepository;
+
+    @Mock
+    private CertificateEventService certificateEventService;
 
     @Mock
     private LogService logservice;
@@ -288,6 +293,7 @@ public class IntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webcertUser);
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
+        when(webcertUser.getHsaId()).thenReturn((HSA_ID));
         when(webcertUser.getParameters())
             .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
@@ -1061,6 +1067,9 @@ public class IntygServiceTest {
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);
+        verify(certificateEventService, times(1))
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKICKAT), anyString());
+
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(utkastRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
@@ -1115,6 +1124,8 @@ public class IntygServiceTest {
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKICKAT), anyString());
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(utkastRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
