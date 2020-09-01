@@ -153,9 +153,10 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     /**
      * Log that the test certificate has been erased.
+     *
      * @param certificateId Id of the certificate.
-     * @param careUnit  Care unit from which the certificate was issued from
-     * @param createdUser   User that issued the certificate
+     * @param careUnit Care unit from which the certificate was issued from
+     * @param createdUser User that issued the certificate
      */
     void logTestCertificateErased(String certificateId, String careUnit, String createdUser);
 
@@ -168,4 +169,14 @@ public interface MonitoringLogService extends AuthenticationLogger {
      * @param messageType   Type of message.
      */
     void logMessageImported(String certificateId, String messageId, String caregiverId, String careUnitId, String messageType);
+
+    // Signature service
+    void logSignResponseReceived(String transactionId);
+
+    void logSignResponseInvalid(String transactionId, String intygsId, String s);
+
+    void logSignRequestCreated(String transactionId, String intygsId);
+
+    void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor, String resultMinor,
+        String resultMessage);
 }

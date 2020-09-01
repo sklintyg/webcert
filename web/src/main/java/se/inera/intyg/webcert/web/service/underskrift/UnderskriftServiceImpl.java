@@ -50,7 +50,6 @@ import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftServic
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -99,16 +98,14 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private RedisTicketTracker redisTicketTracker;
 
     @Autowired
-    private NiasUnderskriftService niasUnderskriftService;
-
-    @Autowired
     private DraftAccessService draftAccessService;
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Override
-    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
+        String ticketId) {
         WebCertUser user = webCertUserService.getUser();
 
         // Check if Utkast is eligible for signing right now, if so get it.
@@ -122,15 +119,14 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         switch (user.getAuthenticationMethod()) {
             case SITHS:
             case NET_ID:
-            case EFOS:
             case FAKE:
                 signaturBiljett = xmlUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
                 break;
         }
 
@@ -138,10 +134,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
 
-        // Finally, for GRP and NIAS, we need to kick off the Collect pollers.
-        if (signaturBiljett.getSignMethod() == SignMethod.NETID_ACCESS) {
-            niasUnderskriftService.startNiasCollectPoller(user.getHsaId(), signaturBiljett);
-        }
         if (signaturBiljett.getSignMethod() == SignMethod.GRP) {
             grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), signaturBiljett);
         }
@@ -166,7 +158,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     /**
      * Called either when:
      * - the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML
-     * - the NIAS collect returns with a COMPLETE response.
      */
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
@@ -177,7 +168,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         if (signaturBiljett == null) {
             String errMsg = "No SignaturBiljett found for ticketId '{}' when finalizing signature. "
                 + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
-            LOG.error(errMsg);
+            LOG.error(errMsg, biljettId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, errMsg);
         }
 
@@ -222,8 +213,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
 
-        // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
-        // request context and thus we need to supply the user instance manually.
+        // Note that we explictly supplies the WebCertUser here.
         logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
         // Sends intyg to Intygstjänsten.

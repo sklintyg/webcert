@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xmlns:xs="http://www.w3.org/2000/10/XMLSchema-instance"
+    xs:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+    jaxb:version="2.0">
+  <jaxb:bindings schemaLocation="xmldsig-core-schema.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.xmldsig" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="xenc-schema.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.xenc" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="saml-schema-assertion-2.0.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.samlassertion.v2" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="oasis-sstc-saml-schema-protocol-1.1.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.samlassertion.v1" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="oasis-dss-core-schema-v1.0-os.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.dsscore" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="EidCentralSigDssExt-1.1.xsd">
+    <jaxb:schemaBindings>
+      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.dssext" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+<!--  <jaxb:bindings schemaLocation="xml.xsd">-->
+<!--    <jaxb:schemaBindings>-->
+<!--      <jaxb:package name="se.inera.intyg.webcert.dss.xsd.xml" />-->
+<!--    </jaxb:schemaBindings>-->
+<!--  </jaxb:bindings>-->
+</jaxb:bindings>

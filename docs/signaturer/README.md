@@ -5,15 +5,10 @@ Från Webcert 6.1 så har signeringarna i Webcert gjorts om från grunden. Vi f�
 ### Signeringsmetoder
 - NetiD-plugin
     - SITHS-kort
-    - EFOS-kort
     - Telia e-legitimation
 - Global Relaying Protocol (CGI)
     - BankID
     - Mobilt BankID
-- NetiD Access Server (NIAS)
-    - EFOS-kort
-    - SITHS-kort
-    - Telia e-leg?
 
 ### Signaturtyper
 - XML Digital Signature

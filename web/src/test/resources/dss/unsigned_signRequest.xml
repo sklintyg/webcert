@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright (C) 2020 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ns2:SignRequest RequestID="10b18f91-69c7-403c-8eb7-4dcb09a0a564" Profile="http://id.elegnamnden.se/csig/1.1/dss-ext/profile" xmlns="http://www.w3.org/2000/09/xmldsig#" xmlns:ns6="http://id.elegnamnden.se/csig/1.1/dss-ext/ns" xmlns:ns5="http://www.w3.org/2001/04/xmlenc#" xmlns:ns2="urn:oasis:names:tc:dss:1.0:core:schema" xmlns:ns4="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns3="urn:oasis:names:tc:SAML:1.0:assertion">
+  <ns2:OptionalInputs>
+    <ns6:SignRequestExtension>
+      <ns6:RequestTime>2020-06-05T15:21:03.081+02:00</ns6:RequestTime>
+      <ns4:Conditions NotBefore="2020-06-05T15:19:03.081+02:00" NotOnOrAfter="2020-06-05T15:26:03.081+02:00">
+        <ns4:AudienceRestriction>
+          <ns4:Audience>https://wc.localtest.me:9088/api/signature/signservice/v1/response</ns4:Audience>
+        </ns4:AudienceRestriction>
+      </ns4:Conditions>
+      <ns6:Signer>
+        <ns4:Attribute Name="urn:oid:1.2.752.29.4.13">
+          <ns4:AttributeValue xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        </ns4:Attribute>
+      </ns6:Signer>
+      <ns6:IdentityProvider Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://idpurl.se/samlv2/idp/metadata</ns6:IdentityProvider>
+      <ns6:SignRequester Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://wc.localtest.me:9088/api/signature/signservice/v1/metadata</ns6:SignRequester>
+      <ns6:SignService Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111</ns6:SignService>
+      <ns6:RequestedSignatureAlgorithm>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</ns6:RequestedSignatureAlgorithm>
+      <ns6:CertRequestProperties CertType="PKC">
+        <ns4:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</ns4:AuthnContextClassRef>
+        <ns6:RequestedCertAttributes>
+          <ns6:RequestedCertAttribute CertAttributeRef="2.5.4.42" FriendlyName="givenName" Required="true">
+            <ns6:SamlAttributeName>urn:oid:2.5.4.42</ns6:SamlAttributeName>
+          </ns6:RequestedCertAttribute>
+          <ns6:RequestedCertAttribute CertAttributeRef="2.5.4.4" FriendlyName="sn" Required="true">
+            <ns6:SamlAttributeName>urn:oid:2.5.4.4</ns6:SamlAttributeName>
+          </ns6:RequestedCertAttribute>
+          <ns6:RequestedCertAttribute CertAttributeRef="2.5.4.5" FriendlyName="serialNumber" Required="false">
+            <ns6:SamlAttributeName>urn:oid:1.2.752.29.4.13</ns6:SamlAttributeName>
+          </ns6:RequestedCertAttribute>
+          <ns6:RequestedCertAttribute CertAttributeRef="2.5.4.3" FriendlyName="commonName" Required="false">
+            <ns6:SamlAttributeName>urn:oid:2.16.840.1.113730.3.1.241</ns6:SamlAttributeName>
+          </ns6:RequestedCertAttribute>
+          <ns6:RequestedCertAttribute CertAttributeRef="2.16.840.1.113730.3.1.241" FriendlyName="displayName" Required="false">
+            <ns6:SamlAttributeName>urn:oid:2.16.840.1.113730.3.1.241</ns6:SamlAttributeName>
+          </ns6:RequestedCertAttribute>
+        </ns6:RequestedCertAttributes>
+      </ns6:CertRequestProperties>
+      <ns6:SignMessage MustShow="true" MimeType="text">
+        <ns6:Message>SMOkcm1lZCBza3JpdmVyIGphZyB1bmRlciBpbnR5Z3NUeXAgdXRmw6RyZGF0IGbDtnIgMTkxMjEyMTItMTIxMjxicj48YnI+SW50eWdzLWlkOiBpbnR5Z3NJZA==</ns6:Message>
+      </ns6:SignMessage>
+    </ns6:SignRequestExtension>
+  </ns2:OptionalInputs>
+  <ns2:InputDocuments>
+    <ns2:Other>
+      <ns6:SignTasks>
+        <ns6:SignTaskData SignTaskId="02c6f7cf-c699-468d-aee9-b2bc7c17108b" SigType="XML">
+          <ns6:ToBeSignedBytes>SEFTSA==</ns6:ToBeSignedBytes>
+        </ns6:SignTaskData>
+      </ns6:SignTasks>
+    </ns2:Other>
+  </ns2:InputDocuments>
+</ns2:SignRequest>

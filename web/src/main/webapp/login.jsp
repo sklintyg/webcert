@@ -28,7 +28,7 @@
     <wc-alert-message alert-severity="warning" ng-show="showELegWarning">
       <p>Har du Telia e-legitimation?</p>
       <p>Webbläsarna Chrome och Edge stödjer inte den metod som Telia e-legitimation använder för att skapa signaturer. För att kunna signera intyg i Webcert måste du därför välja en annan webbläsare.</p>
-      <p>Rekommenderad webbläsare är Internet Explorer 11 eller efterföljande versioner.</p>
+      <p>För dig med Telia e-legitimation är rekommenderad webbläsare Internet Explorer 11 eller efterföljande versioner.</p>
     </wc-alert-message>
   </div>
   <div class="row">
