@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -51,6 +53,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -101,6 +105,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private CertificateAccessService accessService;
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
@@ -243,6 +250,39 @@ public class IntygApiController extends AbstractApiController {
 
         return Response.ok(intygService.getIntygTypeInfo(intygsId)).build();
 
+    }
+
+    @GET
+    @Path("/allowToApprovedReceivers/{intygsId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getAllowToApprovedReceivers(@PathParam("intygsId") String intygsId) {
+
+        var utkast = utkastRepository.findById(intygsId).orElse(null);
+
+        if (utkast != null) {
+            var vardenhet = getVardenhet(utkast);
+
+            var params = AccessEvaluationParameters
+                .create(utkast.getIntygsTyp(), vardenhet, utkast.getPatientPersonnummer(), utkast.isTestIntyg());
+
+            var accessResult = accessService.allowToApproveReceivers(params);
+
+            return Response.ok(accessResult.isAllowed()).build();
+        } else {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Could not find certificate!");
+        }
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 
 }

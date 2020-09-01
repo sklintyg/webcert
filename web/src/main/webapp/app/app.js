@@ -251,11 +251,11 @@
   });
 
   // Inject language resources
-  app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService',
-    'moduleConfig',
-    function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages,
-        MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
+  app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', '$stateParams', 'common.messageService',
+    'common.moduleService', 'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
+    'idpConnectivityService', 'moduleConfig',
+    function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, $stateParams, messageService, moduleService,
+             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
@@ -379,8 +379,8 @@
         MonitoringLogService.browserInfo($window.innerWidth, $window.innerHeight, getNetIdVersion());
       }
 
-      $window.onbeforeunload = function() {
-        if (user && user.origin === 'DJUPINTEGRATION') {
+      $window.onbeforeunload = function(event) {
+        if (user && user.origin === 'DJUPINTEGRATION' && $stateParams && !$stateParams.signServiceSubmit) {
           $.get('/api/anvandare/logout');
         }
       };

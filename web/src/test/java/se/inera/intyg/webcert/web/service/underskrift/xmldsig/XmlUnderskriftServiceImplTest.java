@@ -34,6 +34,7 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createVardperson;
 
 import java.nio.charset.Charset;
+import java.util.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
@@ -118,9 +120,10 @@ public class XmlUnderskriftServiceImplTest {
     @Test
     public void testSigneringsBiljettMedDigest() {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(buildIntygXMLSignature());
+        when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString())).thenReturn(buildIntygXMLSignature());
 
-        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE);
+        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE,
+            TICKET_ID);
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }
@@ -133,7 +136,11 @@ public class XmlUnderskriftServiceImplTest {
 
         when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(UnderskriftTestUtil.buildIntygXMLSignature());
+        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+            .thenReturn(new TransformAndDigestResponse(null,
+                Base64.getEncoder().encode(
+                    UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
+                        .getDigestValue())));
         when(utkastRepository.save(any(Utkast.class)))
             .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
                 ENHET_ID, PERSON_ID));
@@ -182,7 +189,11 @@ public class XmlUnderskriftServiceImplTest {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
         when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(UnderskriftTestUtil.buildIntygXMLSignature());
+        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+            .thenReturn(new TransformAndDigestResponse(null,
+                Base64.getEncoder().encode(
+                    UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
+                        .getDigestValue())));
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),

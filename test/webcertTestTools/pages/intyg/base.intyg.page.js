@@ -325,7 +325,11 @@ var BaseIntyg = JClass._extend({
     return browser.wait(until.presenceOf(that.certficate), 15000).then(function() {
       //15sec är timeout
 
-      return browser.wait(until.visibilityOf(that.certficate), 15000);
+      return browser.wait(until.visibilityOf(that.certficate), 15000).then(function(){
+        // We need this extra sleep since individual elements within the certificate element
+        // might not be visible yet due to show/hide evaluations.
+        return browser.sleep(2000);
+      });
     }).catch(function(e) {
       //Debug
       browser.getCurrentUrl().then(function(url) {

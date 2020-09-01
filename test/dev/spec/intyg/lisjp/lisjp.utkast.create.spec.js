@@ -85,7 +85,7 @@ describe('Create and Sign lisjp utkast', function() {
       // upplysningar ännu.
       // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
       IntygPage.waitUntilIntygInIT(utkastId);
-      browser.refresh();
+      IntygPage.get(utkastId);
 
       IntygPage.whenCertificateLoaded().then(function() {
         IntygPage.verify(data);
@@ -182,7 +182,7 @@ describe('Create and Sign lisjp utkast', function() {
       // upplysningar ännu.
       // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
       IntygPage.waitUntilIntygInIT(utkastId);
-      browser.refresh();
+      IntygPage.get(utkastId);
     });
 
     it('Verifiera intyg', function() {

@@ -98,7 +98,7 @@ describe('Create and Sign luse utkast', function() {
     // upplysningar ännu.
     // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
     IntygPage.waitUntilIntygInIT(utkastId);
-    browser.refresh();
+    IntygPage.get(utkastId);
   });
 
   it('Verifiera intyg', function() {
