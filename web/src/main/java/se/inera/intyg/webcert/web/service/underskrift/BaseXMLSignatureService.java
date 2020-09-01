@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import javax.xml.bind.JAXBElement;
@@ -31,6 +32,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
+import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -96,7 +98,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
             utkastXml);
 
-        // Only store if we received a certificate. Note - if cert comes from NIAS, it's been encoded as Base64 already.
+        // Only store if we received a certificate.
         if (x509certificate != null && !x509certificate.isEmpty()) {
 
             // Due to a bug with SAXON and the JDK DSIG validator, do NOT check references.
@@ -121,13 +123,9 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         switch (signMethod) {
             case NETID_PLUGIN:
             case FAKE:
-                // Don't decode RAW signatures from the NetiD plugin.
+            case SIGN_SERVICE:
+                // Don't decode RAW signatures from the NetiD plugin, or Sign Service.
                 svt.setValue(rawSignature);
-                break;
-
-            case NETID_ACCESS:
-                // From NetiD Access Server, we must decode from Base64 to binary.
-                svt.setValue(Base64.getDecoder().decode(rawSignature));
                 break;
 
             case GRP:
@@ -153,11 +151,11 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // Note: Determine whether we should use the payload json here or the utkast.getModel.
         String utkastXml = utkastModelToXMLConverter.utkastToXml(payloadJson, utkast.getIntygsTyp());
 
-        // Use the JSON->XML converted XML and perform a _new_ prepare on it so we can compare digests.
-        IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(utkastXml, biljett.getIntygsId());
+        // Use the JSON->XML converted XML and perform a _new_ digest on it so we can compare digests.
+        TransformAndDigestResponse transformAndDigestResponse = prepareSignatureService
+            .transformAndGenerateDigest(utkastXml, biljett.getIntygsId());
 
-        checkDigests(utkast, signingXmlHash, Base64.getEncoder()
-            .encodeToString(intygSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue()));
+        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

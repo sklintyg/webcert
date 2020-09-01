@@ -261,7 +261,6 @@ Open _&lt;env>/configmap-vars.yaml_ and replace example `<value>` with expected 
 	WEBCERT_HOST_URL: "<url>"
 	INTYGSTJANST_BASE_URL: "http://intygstjanst:8080/inera-certificate"
 	FMB_ENDPOINT_URL: "https://api.socialstyrelsen.se/fmb"
-	NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx"
 	NTJP_BASE_URL: "https://esb.ntjp.se/vp"
 	SRS_BASE_URL: "deprecated"
 	PRIVATEPRACTITIONER_BASE_URL: "<url>"

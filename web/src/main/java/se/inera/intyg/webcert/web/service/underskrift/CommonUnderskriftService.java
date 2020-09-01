@@ -26,7 +26,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public interface CommonUnderskriftService {
 
     SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod);
+        SignMethod signMethod, String ticketId);
 
     SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
         WebCertUser user);
