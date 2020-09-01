@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.event;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -150,27 +149,6 @@ public class CertificateEventServiceImplTest {
         assertEquals(EventCode.PAMINNELSE, eventList.get(2).getEventCode());
         assertEquals(newMessageTimestamp, eventList.get(2).getTimestamp());
     }
-
-    @Test
-    public void testCreateEventsFromArende() {
-        LocalDateTime latestEventTimestamp = LocalDateTime.parse("2020-06-01T00:00:00");
-        LocalDateTime before = LocalDateTime.parse("2020-01-01T00:00:00");
-        LocalDateTime after = LocalDateTime.parse("2020-08-01T00:00:00");
-        Arende arendeBefore = getArende(UTKAST_CERTIFICATE_ID);
-        arendeBefore.setTimestamp(before);
-        Arende arendeAfter = getArende(UTKAST_CERTIFICATE_ID);
-        arendeAfter.setTimestamp(after);
-
-        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arendeBefore, arendeAfter));
-        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
-
-        List<CertificateEvent> result = eventService.createEventsFromArende(INTYG_CERTIFICATE_ID, latestEventTimestamp);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(after, result.get(0).getTimestamp());
-    }
-
 
     @Test
     public void testGenerateEventsForUtkast() {

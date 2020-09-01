@@ -247,7 +247,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         return createEventsFromArende(certificateId, null);
     }
 
-    public List<CertificateEvent> createEventsFromArende(String certificateId, LocalDateTime afterTimestamp) {
+    private List<CertificateEvent> createEventsFromArende(String certificateId, LocalDateTime afterTimestamp) {
         List<CertificateEvent> events = new ArrayList<>();
         List<Arende> messages = new ArrayList<>();
 
