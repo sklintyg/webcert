@@ -249,7 +249,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
     private List<CertificateEvent> createEventsFromArende(String certificateId, LocalDateTime afterTimestamp) {
         List<CertificateEvent> events = new ArrayList<>();
-        List<Arende> messages = new ArrayList<>();
+        List<Arende> messages;
 
         if (afterTimestamp != null) {
             messages = arendeService.getArendenInternal(certificateId).stream().filter(m -> m.getTimestamp().isAfter(afterTimestamp))
@@ -325,6 +325,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 return "Renews " + originalId;
             case SKAPATFRAN:
                 return "Created from " + originalId;
+            default:
         }
         return null;
     }
