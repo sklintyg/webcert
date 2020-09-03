@@ -1004,8 +1004,9 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private void generateCertificateEvent(Utkast certificate, EventCode eventCode) {
+        String user = certificate.getSkapadAv().getHsaId();
         certificateEventService.createCertificateEvent(
-            certificate.getIntygsId(), webCertUserService.getUser().getHsaId(), eventCode);
+            certificate.getIntygsId(), user, eventCode);
     }
 
     private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {
