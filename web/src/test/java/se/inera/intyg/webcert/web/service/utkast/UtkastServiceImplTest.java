@@ -253,9 +253,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusIncomplete() throws IOException, ModuleNotFoundException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
-
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(REFERENS);
         setupReferensMocks();
@@ -268,9 +265,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusPrefilledIncomplete() throws ModuleNotFoundException, IOException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
-
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.INVALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
@@ -281,9 +275,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDraftStatusPrefilledComplete() throws ModuleNotFoundException, IOException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
-
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.VALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
@@ -313,9 +304,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testReferensGetsPersistedWhenSupplied() throws ModuleNotFoundException, IOException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
-
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(REFERENS);
 
@@ -329,9 +317,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testEmptyReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
-
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens("");
 
@@ -344,8 +329,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testNullReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
-        WebCertUser user = createUser();
-        when(userService.getUser()).thenReturn(user);
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(null);
 
@@ -358,9 +341,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
-        WebCertUser user = createUser();
-
-        when(userService.getUser()).thenReturn(user);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
@@ -379,8 +359,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDeleteDraftWrongVersion() {
-        WebCertUser user = createUser();
-
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         try {
