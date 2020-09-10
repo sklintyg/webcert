@@ -158,12 +158,20 @@ public class UtkastCandidateServiceImpl {
             && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
     }
 
-    /*
-     * Användare ska få träff på intyg på inloggad enhet eller på
-     * eventuell underenhet till den enhet man är inloggad på.
-     */
     private boolean filterOnUnit(Utkast candidate) {
-        return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
+
+        switch (candidate.getIntygsTyp()) {
+            // Include db candidate if issued on currently selected care giver.
+            case "db" :
+                return getUser().getValdVardgivare().getId().equals(candidate.getVardgivarId());
+
+            // Include ag7804 candidates issued on currently selected unit or one of its subunits.
+            case "lisjp" :
+                return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
+
+            default :
+                return false;
+        }
     }
 
     private WebCertUser getUser() {
