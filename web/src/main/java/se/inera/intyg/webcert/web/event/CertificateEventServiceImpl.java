@@ -74,7 +74,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
     @Override
     public void createCertificateEvent(String certificateId, String user, EventCode eventCode, String message) {
-        if (message.isEmpty()) {
+        if (message == null || message.isEmpty()) {
             save(certificateId, user, eventCode, LocalDateTime.now(), eventCode.getDescription());
         } else {
             save(certificateId, user, eventCode, LocalDateTime.now(), message);
