@@ -75,17 +75,14 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
     private final DiagnosService diagnosService;
     private final FmbSjukfallService sjukfallService;
-    private final AuthorityAsserter authorityAsserter;
 
     public FmbDiagnosInformationServiceImpl(
         final DiagnosService diagnosService,
         final FmbSjukfallService sjukfallService,
-        final AuthorityAsserter authorityAsserter,
         final DiagnosInformationRepository repository) {
         super(repository);
         this.diagnosService = diagnosService;
         this.sjukfallService = sjukfallService;
-        this.authorityAsserter = authorityAsserter;
         this.repository = repository;
     }
 
@@ -103,8 +100,6 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
         final List<Period> periods = maximalSjukskrivningstidRequest.getPeriods();
         final Icd10KoderRequest icd10Koder = maximalSjukskrivningstidRequest.getIcd10Koder();
-
-        authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         final int total = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer, periods);
         final Collection<String> validIcd10Codes = getValidIcd10Codes(icd10Koder.getIcd10Codes());
