@@ -104,7 +104,7 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final List<Period> periods = maximalSjukskrivningstidRequest.getPeriods();
         final Icd10KoderRequest icd10Koder = maximalSjukskrivningstidRequest.getIcd10Koder();
 
-        authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+        authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         final int total = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer, periods);
         final Collection<String> validIcd10Codes = getValidIcd10Codes(icd10Koder.getIcd10Codes());
