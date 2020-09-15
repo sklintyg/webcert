@@ -92,8 +92,8 @@ function skapaIntygWebcert(fx, status) {
                         "Öron-, näs- och halssjukdomar"
                      ],
                      "vardenhet":{
-                        "enhetsid":"TSTNMT2321000156-1077",
-                        "enhetsnamn":"Alfaenheten",
+                        "enhetsid":vårdenhet.id,
+                        "enhetsnamn":vårdenhet.namn,
                         "postadress":"NMT gata 2",
                         "postnummer":"12345",
                         "postort":"Testhult",
@@ -101,7 +101,7 @@ function skapaIntygWebcert(fx, status) {
                         "epost":"enhet2@webcert.invalid.se",
                         "vardgivare":{
                            "vardgivarid":vårdenhet.vårdgivareId,
-                           "vardgivarnamn":vårdenhet.vårgivareNamn
+                           "vardgivarnamn":vårdenhet.vårdgivareNamn
                         },
                         "arbetsplatsKod":"1234567890"
                      },
@@ -902,7 +902,7 @@ function skickaRegisterLisjp(fx) {
                                     <ns5:root>1.2.752.129.2.1.4.1</ns5:root>\
                                     <ns5:extension>' +  vårdenhet.vårdgivareId +'</ns5:extension>\
                                 </ns3:vardgivare-id>\
-                                <ns3:vardgivarnamn>VG_TestAutomation</ns3:vardgivarnamn>\
+                                <ns3:vardgivarnamn>' +  vårdenhet.vårdgivareNamn +'</ns3:vardgivarnamn>\
                             </ns3:vardgivare>\
                         </ns3:enhet>\
                     </ns3:skapadAv>\
