@@ -42,7 +42,7 @@ pipeline {
 
     // Denna variabel måste börja på "CYPRESS" och därefter heta exakt samma som parametern i
     // cypress.json eftersom den då skrivs över
-    CYPRESS_intygMockBaseUrl = "https://intyg-validatemock.nordicmedtest.se"
+    CYPRESS_intygMockBaseUrl = "https://nmt-vs-tintyg.intyg.nordicmedtest.se"
 
   }
 
