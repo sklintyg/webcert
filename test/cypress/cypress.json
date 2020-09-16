@@ -1,7 +1,7 @@
 {
   "baseUrl": "https://webcert-devtest.intyg.nordicmedtest.se/",
   "env": {
-    "intygMockBaseUrl": "http://nmt-vs-tintyg.intyg.nordicmedtest.se/",
+    "intygMockBaseUrl": "http://nmt-vs-tintyg.intyg.nordicmedtest.se",
     "intygTjanstUrl": "https://intygstjanst-devtest.intyg.nordicmedtest.se",
     "logSenderTimeout": 45000,
     "RETRIES": 2
