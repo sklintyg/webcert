@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -50,6 +52,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -68,6 +71,9 @@ public class ReceiveAnswerResponderImplTest {
     @Mock
     private NotificationService mockNotificationService;
 
+    @Mock
+    private CertificateEventService certificateEventService;
+
     @InjectMocks
     private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
@@ -84,6 +90,8 @@ public class ReceiveAnswerResponderImplTest {
 
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYSVFM), anyString());
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());

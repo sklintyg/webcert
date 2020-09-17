@@ -28,13 +28,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -54,10 +55,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -89,6 +92,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -147,6 +151,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private IntygService intygService;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private CertificateEventService certificateEventService;
     @Mock
     private MonitoringLogService monitoringService;
     @Mock
@@ -253,6 +259,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertFalse(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
 
     @Test
@@ -261,6 +269,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
 
     @Test
@@ -269,6 +279,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
         assertTrue(res.getStatus() == UtkastStatus.DRAFT_COMPLETE);
+
+        InOrder inOrder = inOrder(certificateEventService);
+        inOrder.verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
+        inOrder.verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.KFSIGN));
     }
 
     private CreateNewDraftRequest setupForifyllnadUtkast(ValidationStatus status) throws IOException, ModuleNotFoundException, ModuleException {
@@ -325,8 +341,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
-        WebCertUser user = createUser();
-
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
@@ -345,8 +359,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDeleteDraftWrongVersion() {
-        WebCertUser user = createUser();
-
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         try {

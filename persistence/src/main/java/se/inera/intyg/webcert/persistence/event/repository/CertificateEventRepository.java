@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.nias.factory;
 
-import se.inera.intyg.webcert.web.service.underskrift.nias.NiasCollectPoller;
+package se.inera.intyg.webcert.persistence.event.repository;
 
-/**
- * Created by eriklupander on 2015-08-25.
- */
-public interface NiasCollectPollerFactory {
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 
-    NiasCollectPoller getInstance();
+public interface CertificateEventRepository extends JpaRepository<CertificateEvent, Long> {
+
+    List<CertificateEvent> findByCertificateId(String certificateId);
 }

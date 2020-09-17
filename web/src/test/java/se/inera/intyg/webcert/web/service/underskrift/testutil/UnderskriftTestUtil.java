@@ -87,7 +87,7 @@ public class UnderskriftTestUtil {
     }
 
     public static SignaturBiljett createSignaturBiljett(SignaturStatus status) {
-        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SignMethod.NETID_ACCESS)
+        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SignMethod.NETID_PLUGIN)
             .withIntygsId(INTYG_ID)
             .withVersion(VERSION)
             .withStatus(status)

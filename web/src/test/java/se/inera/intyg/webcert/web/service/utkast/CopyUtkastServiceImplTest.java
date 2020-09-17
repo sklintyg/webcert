@@ -38,14 +38,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -65,6 +64,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -132,6 +132,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
+
+    @Mock
+    private CertificateEventService certificateEventService;
 
     @Mock
     private IntygService intygService;
@@ -270,6 +273,7 @@ public class CopyUtkastServiceImplTest {
             verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
             // Assert no pdl logging
             verifyNoInteractions(logService);
+            verifyNoInteractions(certificateEventService);
             throw e;
         }
     }
@@ -337,6 +341,8 @@ public class CopyUtkastServiceImplTest {
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(logService).logCreateIntyg(any(LogRequest.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.ERSATTER, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
@@ -370,6 +376,8 @@ public class CopyUtkastServiceImplTest {
             any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.ERSATTER, INTYG_ID);
         verify(userService).getUser();
         verify(logService).logCreateIntyg(any(LogRequest.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
@@ -404,6 +412,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOMPLETTERAR, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
@@ -442,6 +452,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
@@ -470,6 +482,7 @@ public class CopyUtkastServiceImplTest {
             verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
             // Assert no pdl logging
             verifyNoInteractions(logService);
+            verifyNoInteractions(certificateEventService);
             throw e;
         }
     }
@@ -510,6 +523,8 @@ public class CopyUtkastServiceImplTest {
             eq(true));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, true);
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
@@ -553,6 +568,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
             anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 
@@ -598,9 +615,10 @@ public class CopyUtkastServiceImplTest {
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
             anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
-
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
 
@@ -636,6 +654,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.SKAPATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE_2, false);
     }
 
@@ -674,6 +694,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(certificateEventService)
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.SKAPATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 

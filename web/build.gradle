@@ -95,19 +95,17 @@ task restAssuredTest(type: Test) {
 gretty {
     servletContainer = 'tomcat9'
     contextPath = '/'
-
     integrationTestTask = null
     scanInterval = 0
     httpEnabled = true
-    httpsEnabled = true
-    sslKeyStorePath = file("../devops/dev/certifikat/localhost.p12")
-    sslKeyStorePassword = 'password'
+    httpsEnabled = false
     httpPort = 9088
-    httpsPort = 19088
     debugPort = 5007
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
+    serverConfigFile = 'tomcat-gretty.xml'
+
 
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
@@ -119,8 +117,7 @@ gretty {
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-dev.xml",
                "-DuseMinifiedJavaScript=${minified}",
-               "-Djetty.port=${httpPort}",
-               "-Djetty.https.port=${httpsPort}"]
+               "-Djetty.port=${httpPort}"]
 
     extraResourceBase webappOutputDir
 }
@@ -130,7 +127,50 @@ configurations {
     runtime {
         exclude group: 'xalan', module: 'xalan'
     }
+
+    xsdgen
 }
+
+if (project.hasProperty("codeQuality")) {
+    license {
+        exclude "**/dss/xsd/**/*.java"
+    }
+}
+
+ext.xsdDir = file("src/main/resources/schemas/dss")
+ext.generatedJavaDir = file("${buildDir}/generatedSource/java")
+ext.xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
+
+sourceSets.main.java {
+    srcDir generatedJavaDir
+}
+
+idea {
+    module {
+        generatedSourceDirs.add(generatedJavaDir)
+    }
+}
+
+task xsd2Java() {
+    doLast {
+        mkdir generatedJavaDir.path
+        ant.taskdef(
+                name: 'xjc',
+                classname: 'com.sun.tools.xjc.XJCTask',
+                classpath: configurations.xsdgen.asPath
+        )
+        ant.xjc(
+                destdir: generatedJavaDir.path,
+                binding: xsdBindings,
+                fork: true) {
+            schema(dir: xsdDir.path, includes: "**/*.xsd")
+            produces(dir: generatedJavaDir.path, includes: "**/*")
+            jvmarg(value: '-Djavax.xml.accessExternalDTD=file')
+        }
+    }
+}
+
+compileJava.dependsOn(xsd2Java)
 
 dependencies {
     compile project(':fmb-integration')
@@ -149,7 +189,6 @@ dependencies {
     compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
-    compile "se.inera.intyg.infra:nias-stub:${infraVersion}"
     compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
     compile "se.inera.intyg.infra:monitoring:${infraVersion}"
@@ -179,7 +218,6 @@ dependencies {
     compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
-    compile "com.secmaker.netid.nias:netid-access-server-schemas:1.0.1"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
@@ -200,6 +238,8 @@ dependencies {
     compile("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") {
         exclude(module: "jsr311-api")
     }
+
+    compile "org.springframework.ws:spring-xml"
 
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
@@ -237,4 +277,6 @@ dependencies {
 
     gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
+
+    xsdgen "org.glassfish.jaxb:jaxb-xjc-jdk9:${jaxbXjcVersion}"
 }

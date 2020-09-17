@@ -43,7 +43,6 @@ import com.google.common.primitives.Ints;
 import io.vavr.Tuple2;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.fmb.model.TidEnhet;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -55,7 +54,6 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
-import se.inera.intyg.webcert.web.service.auth.AuthorityAsserter;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -75,17 +73,14 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
     private final DiagnosService diagnosService;
     private final FmbSjukfallService sjukfallService;
-    private final AuthorityAsserter authorityAsserter;
 
     public FmbDiagnosInformationServiceImpl(
         final DiagnosService diagnosService,
         final FmbSjukfallService sjukfallService,
-        final AuthorityAsserter authorityAsserter,
         final DiagnosInformationRepository repository) {
         super(repository);
         this.diagnosService = diagnosService;
         this.sjukfallService = sjukfallService;
-        this.authorityAsserter = authorityAsserter;
         this.repository = repository;
     }
 
@@ -103,8 +98,6 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
         final List<Period> periods = maximalSjukskrivningstidRequest.getPeriods();
         final Icd10KoderRequest icd10Koder = maximalSjukskrivningstidRequest.getIcd10Koder();
-
-        authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
         final int total = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer, periods);
         final Collection<String> validIcd10Codes = getValidIcd10Codes(icd10Koder.getIcd10Codes());

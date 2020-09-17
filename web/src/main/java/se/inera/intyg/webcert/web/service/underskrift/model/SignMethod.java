@@ -19,5 +19,5 @@
 package se.inera.intyg.webcert.web.service.underskrift.model;
 
 public enum SignMethod {
-    FAKE, NETID_PLUGIN, NETID_ACCESS, GRP
+    FAKE, NETID_PLUGIN, GRP, SIGN_SERVICE
 }
