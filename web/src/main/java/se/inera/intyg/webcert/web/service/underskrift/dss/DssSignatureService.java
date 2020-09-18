@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignResponse;
 import se.inera.intyg.webcert.dss.xsd.dssext.CertRequestPropertiesType;
 import se.inera.intyg.webcert.dss.xsd.dssext.MappedAttributeType;
+import se.inera.intyg.webcert.dss.xsd.dssext.RequestedAttributesType;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignMessageType;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignResponseExtensionType;
@@ -303,28 +304,21 @@ public class DssSignatureService {
 
         var requestedAttributesType = objectFactoryCsig.createRequestedAttributesType();
 
-        MappedAttributeType attributeGivenName = getMappedAttributeType("2.5.4.42", "givenName", true, "urn:oid:2.5.4.42");
-        requestedAttributesType.getRequestedCertAttribute().add(attributeGivenName);
-
-        MappedAttributeType attributeSn = getMappedAttributeType("2.5.4.4", "sn", true, "urn:oid:2.5.4.4");
-        requestedAttributesType.getRequestedCertAttribute().add(attributeSn);
-
-        MappedAttributeType attributeSerialNumber = getMappedAttributeType("2.5.4.5", "serialNumber", false, "urn:oid:1.2.752.29.4.13");
-        requestedAttributesType.getRequestedCertAttribute().add(attributeSerialNumber);
-
-        MappedAttributeType attributeCommonName = getMappedAttributeType("2.5.4.3", "commonName", false,
-            "urn:oid:2.16.840.1.113730.3.1.241");
-        requestedAttributesType.getRequestedCertAttribute().add(attributeCommonName);
-
-        MappedAttributeType attributeDisplayName = getMappedAttributeType("2.16.840.1.113730.3.1.241", "displayName", false,
-            "urn:oid:2.16.840.1.113730.3.1.241");
-        requestedAttributesType.getRequestedCertAttribute().add(attributeDisplayName);
+        addMappedAttribute(requestedAttributesType, "2.5.4.42", "givenName", true, "urn:credential:givenName");
+        addMappedAttribute(requestedAttributesType, "2.5.4.4", "sn", true, "urn:credential:surname");
+        addMappedAttribute(requestedAttributesType, "2.5.4.5", "serialNumber", true, "urn:credential:personalIdentityNumber");
+        addMappedAttribute(requestedAttributesType, "2.5.4.3", "commonName", false, "urn:credential:displayName");
 
         certRequestPropertiesType.setRequestedCertAttributes(requestedAttributesType);
         return certRequestPropertiesType;
     }
 
-    private MappedAttributeType getMappedAttributeType(String ref, String name, boolean req, String attribute) {
+    private void addMappedAttribute(RequestedAttributesType requestedAttributesType, String ref, String name, boolean req,
+        String attribute) {
+        requestedAttributesType.getRequestedCertAttribute().add(createMappedAttributeType(ref, name, req, attribute));
+    }
+
+    private MappedAttributeType createMappedAttributeType(String ref, String name, boolean req, String attribute) {
         var mappedAttributeType = objectFactoryCsig.createMappedAttributeType();
         mappedAttributeType.setCertAttributeRef(ref);
         mappedAttributeType.setFriendlyName(name);
@@ -339,7 +333,7 @@ public class DssSignatureService {
         var user = userService.getUser();
 
         var attributeType = objectFactorySaml.createAttributeType();
-        attributeType.setName("urn:oid:1.2.752.29.4.13");
+        attributeType.setName("urn:credential:personalIdentityNumber");
         attributeType.getAttributeValue().add(user.getHsaId());
 
         var attributeStatementType = objectFactorySaml.createAttributeStatementType();
