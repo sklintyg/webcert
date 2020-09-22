@@ -53,6 +53,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.CertificateEventConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
@@ -64,6 +65,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CertificateEventDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
@@ -113,6 +115,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private CertificateAccessService accessService;
+
+    @Autowired
+    private CertificateEventConverter certificateEventConverter;
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
@@ -272,7 +277,12 @@ public class IntygApiController extends AbstractApiController {
             LOG.debug("No events for certificate with id {}", certificateId);
         }
 
-        return Response.ok(eventList).build();
+        List<CertificateEventDTO> eventDTOS = eventList
+            .stream()
+            .map(event -> certificateEventConverter.convertToCertificateEventDTO(event))
+            .collect(Collectors.toList());
+
+        return Response.ok(eventDTOS).build();
     }
 
     @GET
