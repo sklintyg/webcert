@@ -373,6 +373,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             patient.setPostadress(personSvar.getPerson().getPostadress());
             patient.setPostnummer(personSvar.getPerson().getPostnummer());
             patient.setPostort(personSvar.getPerson().getPostort());
+            patient.setAddressDetailsSourcePU(patient.isCompleteAddressProvided());
             return true;
         }
         return false;
