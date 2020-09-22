@@ -284,8 +284,9 @@ export function signera() {
 
     // Välj intygsmottagare
     // TODO: Ger en utökad timeout då modalen i perioder inte hinner laddas. Detta bör ses över
-    cy.get('#approve-receiver-SKANDIA-radio-no', {timeout: 20000}).check();
-    cy.get('#save-approval-settings-btn').click();
+    //OBS! Bortkommenterade rader eftersom det endast finns en mottagare av intyget
+    //cy.get('#approve-receiver-SKANDIA-radio-no', {timeout: 20000}).check();
+    //cy.get('#save-approval-settings-btn').click();
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
