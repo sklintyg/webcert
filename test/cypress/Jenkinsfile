@@ -52,7 +52,7 @@ pipeline {
 
       // Denna image innehåller allt som krävs för att köra Cypress i Linux med videoinspelning etc.
       image 'cypress/base:10'
-      label 'docker-slave'
+      label 'docker'
     }
   }
 
