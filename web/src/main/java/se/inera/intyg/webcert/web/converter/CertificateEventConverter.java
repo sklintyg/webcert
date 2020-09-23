@@ -43,6 +43,7 @@ public class CertificateEventConverter {
         if (event.getEventCode() == EventCode.ERSATTER
             || event.getEventCode() == EventCode.FORLANGER
             || event.getEventCode() == EventCode.SKAPATFRAN
+            || event.getEventCode() == EventCode.KOPIERATFRAN
             || event.getEventCode() == EventCode.KOMPLETTERAR) {
             Optional<ExtendedEventMessage> dataForExtendedMessage = getDataForExtendedMessage(event);
             dataForExtendedMessage.ifPresent(message -> eventDto.setExtendedMessage(message));

@@ -695,7 +695,7 @@ public class CopyUtkastServiceImplTest {
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(certificateEventService)
-            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.SKAPATFRAN, INTYG_ID);
+            .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOPIERATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
