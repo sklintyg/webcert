@@ -57,6 +57,7 @@ public final class AccessServiceEvaluation {
 
     private WebCertUser user;
     private String certificateType;
+    private String certificateId;
     private List<String> privileges = new ArrayList<>();
     private List<String> features = new ArrayList<>();
     private Vardenhet careUnit;
@@ -167,6 +168,17 @@ public final class AccessServiceEvaluation {
         if (addFeature) {
             this.features.add(feature);
         }
+        return this;
+    }
+
+    /**
+     * Set certificate id. If called more than once, the old values will be overridden.
+     *
+     * @param certificateId Certificate id for current certificate.
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation certificateId(@NotNull String certificateId) {
+        this.certificateId = certificateId;
         return this;
     }
 
@@ -391,7 +403,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkUnique && !accessResult.isPresent()) {
-            accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate);
+            accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate, certificateId);
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
@@ -543,7 +555,7 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isUniqueUtkastRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer,
-        boolean onlyCertificate) {
+        boolean onlyCertificate, String certificateId) {
         if (isAnyUniqueFeatureEnabled(intygsTyp, user)) {
             final Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService
                 .checkIfPersonHasExistingIntyg(personnummer, user);
@@ -557,10 +569,10 @@ public final class AccessServiceEvaluation {
                         createMessage("Already exists drafts for this patient")));
                 }
             } else {
-                if (intygExists != null) {
+                if (intygExists != null && !utkastService.isDraftCreatedFromReplacement(certificateId)) {
                     if (isUniqueFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(
-                            AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
+                                AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
                                 createMessage("Already exists certificates for this patient")));
                     }
 
