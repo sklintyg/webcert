@@ -276,7 +276,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         final AccessResult accessResult = draftAccessService.allowToSignDraft(
             utkast.getIntygsTyp(),
             getVardenhet(utkast),
-            utkast.getPatientPersonnummer());
+            utkast.getPatientPersonnummer(),
+            utkast.getIntygsId());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

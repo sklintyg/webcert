@@ -74,7 +74,7 @@ public interface DraftAccessService {
      * @param patient The patient which the certificate belongs to.
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
+    AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient, String certificateId);
 
     /**
      * Check if the user is allowed to print a draft.
