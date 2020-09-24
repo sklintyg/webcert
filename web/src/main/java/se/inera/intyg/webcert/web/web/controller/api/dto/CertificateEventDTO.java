@@ -39,12 +39,6 @@ public class CertificateEventDTO {
         this.timestamp = event.getTimestamp();
         this.message = event.getMessage();
     }
-/*
-    public CertificateEventDTO(CertificateEvent event, ExtendedEventMessage extendedMessage) {
-        this(event);
-        this.extendedMessage = extendedMessage;
-    }
- */
 
     public String getCertificateId() {
         return certificateId;

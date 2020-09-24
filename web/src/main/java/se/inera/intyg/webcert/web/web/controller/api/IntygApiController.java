@@ -277,12 +277,12 @@ public class IntygApiController extends AbstractApiController {
             LOG.debug("No events for certificate with id {}", certificateId);
         }
 
-        List<CertificateEventDTO> eventDTOS = eventList
+        List<CertificateEventDTO> eventDTOList = eventList
             .stream()
             .map(event -> certificateEventConverter.convertToCertificateEventDTO(event))
             .collect(Collectors.toList());
 
-        return Response.ok(eventDTOS).build();
+        return Response.ok(eventDTOList).build();
     }
 
     @GET
