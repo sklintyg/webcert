@@ -246,6 +246,12 @@ public class IntygServiceImpl implements IntygService {
         return fetchIntygData(certificateId, null, includeRelations, false, false, false);
     }
 
+    @Override
+    public IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging,
+        boolean validateAccess) {
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging, validateAccess);
+    }
+
 
     /**
      * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.

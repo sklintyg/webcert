@@ -34,9 +34,14 @@ public final class UtkastCandidateMetaData {
     private String enhetName;
 
     private LocalDateTime intygCreated;
+    private String vardenhetName;
+    private Boolean sameVardenhet;
 
+
+    @SuppressWarnings("CheckStyle")
     private UtkastCandidateMetaData(String intygId, String intygType, String intygTypeVersion,
-        String signedByHsaId, String enhetHsaId, String enhetName, LocalDateTime intygCreated) {
+        String signedByHsaId, String enhetHsaId, String enhetName, LocalDateTime intygCreated,
+        String vardenhetName, Boolean sameVardenhet) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.intygTypeVersion = intygTypeVersion;
@@ -44,6 +49,8 @@ public final class UtkastCandidateMetaData {
         this.enhetHsaId = enhetHsaId;
         this.enhetName = enhetName;
         this.intygCreated = intygCreated;
+        this.vardenhetName = vardenhetName;
+        this.sameVardenhet = sameVardenhet;
     }
 
     public String getIntygId() {
@@ -74,6 +81,14 @@ public final class UtkastCandidateMetaData {
         return intygCreated;
     }
 
+    public String getVardenhetName() {
+        return vardenhetName;
+    }
+
+    public Boolean getSameVardenhet() {
+        return sameVardenhet;
+    }
+
     public static class Builder {
         public String intygId;
         public String intygType;
@@ -82,6 +97,8 @@ public final class UtkastCandidateMetaData {
         public String enhetHsaId;
         public String enhetName;
         public LocalDateTime intygCreated;
+        public String vardenhetName;
+        public Boolean sameVardenhet;
 
         public Builder with(
             Consumer<Builder> builderFunction) {
@@ -91,7 +108,7 @@ public final class UtkastCandidateMetaData {
 
         public UtkastCandidateMetaData create() {
             return new UtkastCandidateMetaData(intygId, intygType, intygTypeVersion,
-                signedByHsaId, enhetHsaId, enhetName, intygCreated);
+                signedByHsaId, enhetHsaId, enhetName, intygCreated, vardenhetName, sameVardenhet);
         }
     }
 

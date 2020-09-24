@@ -16,9 +16,13 @@
                           alert-severity="info"
                           alert-message-id="{{::model.notSentInfoMessageKey}}"></wc-alert-message>
 
-        <p>
-          <span dynamic-label key="{{bodyText}}"></span>
+        <p ng-if="bodyTextId != undefined">
+          <span  dynamic-label key="{{bodyTextId}}"></span>
         </p>
+        <p ng-if="bodyText != undefined">
+          <span ng-bind-html="bodyText"></span>
+        </p>
+
       </div>
     </wc-bottom-fadeout>
     <div class="modal-footer">
