@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -48,6 +49,7 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.CertificateEventConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -55,6 +57,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CertificateEventDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
@@ -101,6 +104,9 @@ public class IntygApiControllerTest {
 
     @Mock
     private LogService logService;
+
+    @Mock
+    private CertificateEventConverter eventConverter;
 
     @InjectMocks
     private IntygApiController intygCtrl = new IntygApiController();
@@ -184,18 +190,25 @@ public class IntygApiControllerTest {
     public void testListIntygEvents() {
 
         CertificateEvent event = new CertificateEvent();
-        List<CertificateEvent> eventList = Arrays.asList(event);
+        CertificateEvent eventWithExtendedMessage = new CertificateEvent();
+        eventWithExtendedMessage.setEventCode(EventCode.ERSATTER);
+        CertificateEventDTO dto = new CertificateEventDTO(event);
+        CertificateEventDTO dtoExtended = new CertificateEventDTO(eventWithExtendedMessage);
+        List<CertificateEvent> eventList = Arrays.asList(event, eventWithExtendedMessage);
 
         when(certificateEventService.getCertificateEvents(anyString())).thenReturn(eventList);
+        when(eventConverter.convertToCertificateEventDTO(event)).thenReturn(dto);
+        when(eventConverter.convertToCertificateEventDTO(eventWithExtendedMessage)).thenReturn(dtoExtended);
 
         Response response = intygCtrl.getEventsForCertificate(INTYG_ID);
 
-        List<CertificateEvent> responseList = (List<CertificateEvent>) response.getEntity();
+        List<CertificateEventDTO> responseList = (List<CertificateEventDTO>) response.getEntity();
+        System.out.println(Arrays.toString(responseList.toArray()));
 
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         assertNotNull(responseList);
-        assertEquals(1, responseList.size());
-        assertEquals(event, responseList.get(0));
+        assertEquals(2, responseList.size());
+        assertEquals(dto, responseList.get(0));
     }
 
 }
