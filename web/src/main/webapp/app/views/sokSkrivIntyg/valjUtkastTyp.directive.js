@@ -163,6 +163,13 @@ angular.module('webcert').directive('wcValjUtkastTyp',
             scope.getText = function(key) {
               return dynamicLabelService.getProperty(key);
             };
+
+            scope.getDifferentUnitWarningText = function(id, unitName, isDraft) {
+              if(isDraft) {
+                return messageService.getProperty(id + '.warn.previousdraft.samevg.differentenhet', { enhetName: unitName});
+              }
+              return messageService.getProperty(id + '.warn.previouscertificate.samevg.differentenhet', { enhetName: unitName});
+            };
           }
         };
       }]

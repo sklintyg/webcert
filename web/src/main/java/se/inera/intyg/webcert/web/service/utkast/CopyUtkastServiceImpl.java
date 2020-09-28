@@ -412,7 +412,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             UtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOPIERATFRAN, originalIntygId);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);

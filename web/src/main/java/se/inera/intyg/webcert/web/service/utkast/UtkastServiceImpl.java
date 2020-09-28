@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -738,6 +739,11 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         revokeUtkast(utkast, reason, revokeMessage);
+    }
+
+    @Override public boolean isDraftCreatedFromReplacement(String certificateId) {
+       return utkastRepository.findParentRelation(certificateId).stream()
+           .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
     }
 
     /**

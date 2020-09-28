@@ -460,7 +460,7 @@ public class PatientDetailsResolverTest {
     // - Dödsorsaksintyg - //
 
     /**
-     * DOI - Integration. DB finns, PU finns. Namn och adress från DB-intyget, avliden/sekr från PU.
+     * DOI - Integration. DB finns, PU finns. Namn från DB-intyget, adress och avliden/sekr från PU.
      */
     @Test
     public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuOk() throws ModuleNotFoundException, IOException, ModuleException {
@@ -481,9 +481,9 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_FNAMN, patient.getFornamn());
         assertEquals(DB_MNAMN, patient.getMellannamn());
         assertEquals(DB_ENAMN, patient.getEfternamn());
-        assertEquals(DB_POST_ADDR, patient.getPostadress());
-        assertEquals(DB_POST_NR, patient.getPostnummer());
-        assertEquals(DB_POST_ORT, patient.getPostort());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
         assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }

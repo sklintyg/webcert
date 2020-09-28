@@ -310,7 +310,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
             case FRLANG:
                 return EventCode.FORLANGER;
             case KOPIA:
-                return EventCode.SKAPATFRAN;
+                return EventCode.KOPIERATFRAN;
         }
         return null;
     }
@@ -325,6 +325,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 return "Renews " + originalId;
             case SKAPATFRAN:
                 return "Created from " + originalId;
+            case KOPIERATFRAN:
+                return "Copied from " + originalId;
             default:
         }
         return null;
