@@ -218,8 +218,8 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     /**
-     * @see UtkastService#updateDraftFromCandidate(String, String, String, String)
      * @return {@link SaveDraftResponse}
+     * @see UtkastService#updateDraftFromCandidate(String, String, String, String)
      */
     @Override
     public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType) {
@@ -231,8 +231,8 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     /**
-     * @see UtkastService#updateDraftFromCandidate(String, String, Utkast)
      * @return {@link SaveDraftResponse}
+     * @see UtkastService#updateDraftFromCandidate(String, String, Utkast)
      */
     @Override
     public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, Utkast toUtkast) {
@@ -433,6 +433,13 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Get a list of drafts
         return utkastRepository.filterIntyg(filter, intygsTyper);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Utkast getDraft(String intygId) {
+        final String intygType = utkastRepository.getIntygsTyp(intygId);
+        return getDraft(intygId, intygType);
     }
 
     @Override
@@ -813,7 +820,7 @@ public class UtkastServiceImpl implements UtkastService {
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new DraftValidationMessage(
                 validationMsg.getCategory(), validationMsg.getField(), validationMsg.getType(),
-                validationMsg.getMessage(), validationMsg.getDynamicKey()));
+                validationMsg.getMessage(), validationMsg.getDynamicKey(), validationMsg.getQuestionId()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());

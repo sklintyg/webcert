@@ -109,6 +109,9 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u.status from Utkast u WHERE u.intygsId = :intygsId")
     UtkastStatus getIntygsStatus(@Param("intygsId") String intygsId);
 
+    @Query("SELECT u.intygsTyp from Utkast u WHERE u.intygsId = :intygsId")
+    String getIntygsTyp(@Param("intygsId") String intygsId);
+
     /**
      * Return the HSA-ID for the Enhet on which the Utkast was created.
      */
