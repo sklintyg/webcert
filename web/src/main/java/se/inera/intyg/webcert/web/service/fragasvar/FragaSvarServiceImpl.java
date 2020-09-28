@@ -49,6 +49,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -75,6 +76,7 @@ import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -134,6 +136,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private NotificationService notificationService;
     @Autowired
     private MonitoringLogService monitoringService;
+    @Autowired
+    private CertificateEventService certificateEventService;
     @Autowired
     private UtkastRepository utkastRepository;
     @Autowired
@@ -423,6 +427,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);
 
+        certificateEventService.createCertificateEvent(intygId, user.getHsaId(), EventCode.NYFRFV, amne.name());
+
         arendeDraftService.delete(intygId, null);
 
         return saved;
@@ -492,6 +498,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
+        EventCode eventCode = determineEventCode(fragaSvar);
 
         if (!Strings.isNullOrEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
@@ -505,6 +512,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         FragaSvar openedFragaSvar = fragaSvarRepository.save(fragaSvar);
         sendNotification(openedFragaSvar, notificationEvent);
+        certificateEventService
+            .createCertificateEvent(fragaSvar.getIntygsReferens().getIntygsId(), webCertUserService.getUser().getHsaId(), eventCode,
+                notificationEvent.name());
 
         return openedFragaSvar;
     }
@@ -586,10 +596,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private FragaSvar closeQuestionAsHandled(FragaSvar fragaSvar) {
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
+        EventCode eventCode = determineEventCode(fragaSvar);
 
         fragaSvar.setStatus(Status.CLOSED);
         FragaSvar closedFragaSvar = fragaSvarRepository.save(fragaSvar);
         sendNotification(closedFragaSvar, notificationEvent);
+        certificateEventService
+            .createCertificateEvent(fragaSvar.getIntygsReferens().getIntygsId(), webCertUserService.getUser().getHsaId(), eventCode,
+                notificationEvent.name());
 
         if (!fragaSvar.getFrageStallare().equals(FrageStallare.WEBCERT.getKod())) {
             arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
@@ -625,6 +639,31 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         return null;
     }
+
+    private EventCode determineEventCode(FragaSvar fragaSvar) {
+
+        FrageStallare frageStallare = FrageStallare.getByKod(fragaSvar.getFrageStallare());
+        Status fragaSvarStatus = fragaSvar.getStatus();
+
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+            if (Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
+                return EventCode.HANFRFM;
+            } else if (Status.CLOSED.equals(fragaSvarStatus)) {
+                return EventCode.NYFRFM;
+            }
+        }
+
+        if (FrageStallare.WEBCERT.equals(frageStallare)) {
+            if (Status.CLOSED.equals(fragaSvarStatus) && !Strings.isNullOrEmpty(fragaSvar.getSvarsText())) {
+                return EventCode.NYSVFM;
+            } else {
+                return EventCode.HANFRFV;
+            }
+        }
+
+        return null;
+    }
+
 
     private boolean isCertificateSentToFK(List<se.inera.intyg.common.support.model.Status> statuses) {
         if (statuses != null) {
@@ -708,6 +747,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Notify stakeholders
         sendNotification(fragaSvar, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
+        certificateEventService
+            .createCertificateEvent(fragaSvar.getIntygsReferens().getIntygsId(), webCertUserService.getUser().getHsaId(),
+                EventCode.HANFRFM, NotificationEvent.NEW_ANSWER_FROM_CARE.name());
     }
 
     private String getEnhetsId(FragaSvar fragaSvar) {

@@ -32,11 +32,15 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MoreCollectors;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,11 +54,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
-
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,12 +69,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MoreCollectors;
-
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -83,6 +79,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -107,6 +104,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -128,6 +126,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     private static final String INTYG_ID = "<intygsId>";
     private static final String PATIENT_ID = "19121212-1212";
+    private static final String HSA_ID = "testuser";
 
     private static final Personnummer PNR = Personnummer.createPersonnummer(PATIENT_ID).orElse(null);
 
@@ -148,6 +147,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private WebCertUserService webCertUserService;
     @Mock
     private NotificationService notificationServiceMock;
+    @Mock
+    private CertificateEventService certificateEventService;
     @Mock
     private Logger loggerMock;
     @Mock
@@ -395,6 +396,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(createUser().getValdVardenhet().getId(),
             capture.getValue().getVardperson().getEnhetsId());
 
+        verify(certificateEventService).createCertificateEvent(INTYG_ID, HSA_ID, EventCode.NYFRFV, Amne.OVRIGT.name());
         verify(arendeDraftService).delete(INTYG_ID, null);
     }
 
@@ -416,6 +418,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -427,6 +430,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -438,6 +442,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -461,6 +466,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
 
@@ -483,6 +489,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -511,6 +518,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
                 fraga.getFrageText());
         } finally {
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -553,13 +561,15 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepositoryMock).findById(1L);
-        verify(webCertUserService).getUser();
+        verify(webCertUserService, times(2)).getUser();
         verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(false));
         verify(fragasvarRepositoryMock).save(fragaSvar);
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
             any(SendMedicalCertificateAnswerType.class));
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(monitoringServiceMock).logAnswerSent(anyString(), any(Long.class), anyString(), anyString(), any(Amne.class));
+        verify(certificateEventService)
+            .createCertificateEvent(INTYG_ID, HSA_ID, EventCode.HANFRFM, NotificationEvent.NEW_ANSWER_FROM_CARE.name());
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());
@@ -660,6 +670,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(sendQuestionToFKClientMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(fragasvarRepositoryMock);
         }
     }
@@ -683,6 +694,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(sendQuestionToFKClientMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verify(fragasvarRepositoryMock, times(0)).save(any(FragaSvar.class));
         }
     }
@@ -760,6 +772,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             service.saveSvar(1L, "svarsText");
         } finally {
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -784,6 +797,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             service.saveSvar(1L, "svarsText");
         } finally {
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -800,6 +814,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -824,6 +839,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -838,6 +854,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
             verifyNoInteractions(arendeDraftService);
         }
     }
@@ -849,6 +866,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verifyNoInteractions(fragasvarRepositoryMock);
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -859,6 +877,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -870,12 +889,15 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
 
     }
 
     @Test
     public void testCloseQuestionToFKAsHandledOK() {
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setFrageStallare(FrageStallare.WEBCERT.getKod());
         fragaSvar.setFrageText("Fråga till FK");
@@ -888,6 +910,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.HANFRFV), anyString());
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.CLOSED, fsCapture.getValue().getStatus());
@@ -905,10 +929,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.HANFRFM), anyString());
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
 
@@ -928,10 +955,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.HANFRFV), anyString());
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
 
@@ -947,6 +977,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -960,12 +991,15 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        verify(certificateEventService).createCertificateEvent(anyString(), anyString(), eq(EventCode.NYFRFM),
+            eq(NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED.name()));
         assertEquals(Status.PENDING_INTERNAL_ACTION, capture.getValue().getStatus());
     }
 
@@ -979,12 +1013,15 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        verify(certificateEventService).createCertificateEvent(anyString(), anyString(), eq(EventCode.HANFRFV),
+            eq(NotificationEvent.QUESTION_FROM_CARE_UNHANDLED.name()));
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
     }
 
@@ -999,12 +1036,15 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
         verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        verify(certificateEventService).createCertificateEvent(anyString(), anyString(), eq(EventCode.NYSVFM),
+            eq(NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED.name()));
         assertEquals(Status.ANSWERED, capture.getValue().getStatus());
     }
 
@@ -1016,6 +1056,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -1034,6 +1075,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         } finally {
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyNoInteractions(notificationServiceMock);
+            verifyNoInteractions(certificateEventService);
         }
     }
 
@@ -1138,12 +1180,23 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId))
             .thenReturn(Arrays.asList(fragaSvarFromWc, fragaSvarFromFk, fragaSvarAlreadyClosed));
         when(fragasvarRepositoryMock.save(any(FragaSvar.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.closeAllNonClosedQuestions(intygId);
 
         verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId(intygId);
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
+
+        ArgumentCaptor<EventCode> eventCaptor = ArgumentCaptor.forClass(EventCode.class);
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(certificateEventService, times(2))
+            .createCertificateEvent(anyString(), anyString(), eventCaptor.capture(), messageCaptor.capture());
+        assertEquals(EventCode.HANFRFV, eventCaptor.getAllValues().get(0));
+        assertEquals(NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED.name(), messageCaptor.getAllValues().get(0));
+        assertEquals(EventCode.HANFRFM, eventCaptor.getAllValues().get(1));
+        assertEquals(NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED.name(), messageCaptor.getAllValues().get(1));
+
         ArgumentCaptor<FragaSvar> fragaSvarCaptor = ArgumentCaptor.forClass(FragaSvar.class);
         verify(fragasvarRepositoryMock, times(2)).save(fragaSvarCaptor.capture());
         assertEquals(Status.CLOSED, fragaSvarCaptor.getAllValues().get(0).getStatus());
@@ -1173,6 +1226,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             .thenReturn(Arrays.asList(fragaSvar1, fragaSvar2, fragaSvar3, fragaSvar4));
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenAnswer(invocation -> invocation.getArguments()[0]);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         service.closeCompletionsAsHandled(intygId);
 
@@ -1183,6 +1237,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(fragaSvar3.getInternReferens(), fsCapture.getAllValues().get(1).getInternReferens());
         assertEquals(Status.CLOSED, fsCapture.getAllValues().get(1).getStatus());
         verify(notificationServiceMock, times(2)).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
+        verify(certificateEventService, times(2)).createCertificateEvent(anyString(), anyString(), eq(EventCode.HANFRFM),
+            eq(NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED.name()));
         verify(arendeDraftService, times(2)).delete(eq(INTYG_ID), anyString());
         verifyNoMoreInteractions(arendeDraftService);
     }
@@ -1197,6 +1253,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId(intygId);
         verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
+        verifyNoInteractions(certificateEventService);
         verifyNoInteractions(notificationServiceMock);
         verifyNoInteractions(arendeDraftService);
     }
@@ -1211,7 +1268,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setOrigin("NORMAL");
-        user.setHsaId("testuser");
+        user.setHsaId(HSA_ID);
         user.setNamn("test userman");
 
         Feature feature = new Feature();

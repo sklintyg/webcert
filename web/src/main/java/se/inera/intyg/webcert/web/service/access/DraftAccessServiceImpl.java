@@ -117,12 +117,13 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+    public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient, String certificateId) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
+            .certificateId(certificateId)
             .checkPatientDeceased(true)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)

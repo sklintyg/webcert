@@ -121,4 +121,11 @@ public interface UtkastService {
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
 
     void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason);
+
+    /**
+     * Check if draft has been created through the replacement function.
+     * @param certificateId
+     * @return true or false value if draft has been created through a replacement of another certificate.
+     */
+    boolean isDraftCreatedFromReplacement(String certificateId);
 }

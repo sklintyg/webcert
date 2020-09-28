@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -258,6 +259,14 @@ public class LogServiceImpl implements LogService {
             .build();
     }
 
+    @Override
+    public void logCreateMessage(WebCertUser user, Arende message) {
+
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, message.getPatientPersonId());
+        send(logMessagePopulator.populateLogMessage(
+            IntygCreateMessage.build(message.getIntygsId()), logRequest, getLogUser(user)), logRequest.isTestIntyg());
+    }
+
     private void send(PdlLogMessage logMsg, boolean isTestIntyg) {
         if (isTestIntyg) {
             LOGGER.info("Can not log {} of Intyg '{}' since it is a test intyg or related to patient with testIndicator",
@@ -289,7 +298,7 @@ public class LogServiceImpl implements LogService {
 
         private final PdlLogMessage logMsg;
 
-        private ObjectMapper objectMapper = new CustomObjectMapper();
+        private final ObjectMapper objectMapper = new CustomObjectMapper();
 
         private MC(PdlLogMessage log) {
             this.logMsg = log;

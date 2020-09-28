@@ -37,6 +37,7 @@ public class WebCertUser extends IntygUser {
 
     private Map<String, String> anvandarPreference = new HashMap<>();
     private IntegrationParameters parameters;
+    private boolean useSigningService = false;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -100,6 +101,14 @@ public class WebCertUser extends IntygUser {
 
     public void setParameters(IntegrationParameters parameters) {
         this.parameters = parameters;
+    }
+
+    public boolean isUseSigningService() {
+        return useSigningService;
+    }
+
+    public void setUseSigningService(boolean useSigningService) {
+        this.useSigningService = useSigningService;
     }
 
     @JsonIgnore

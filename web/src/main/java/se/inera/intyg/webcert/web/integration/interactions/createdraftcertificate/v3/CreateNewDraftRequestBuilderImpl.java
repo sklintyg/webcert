@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.common.enumerations.PatientInfo;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -59,7 +60,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
         Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
 
-        final Patient patient = TransportConverterUtil.getPatient(intyg.getPatient(), true);
+        final Patient patient = TransportConverterUtil.getPatient(intyg.getPatient(), PatientInfo.EXTENDED);
         patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
 
         return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,

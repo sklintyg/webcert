@@ -1,0 +1,45 @@
+@startuml
+!pragma teoz true
+'hide footbox
+'skinparam lifelineStrategy nosolid
+skinparam sequence {
+	MessageAlign left
+	ArrowColor Black
+	LifeLineBorderColor Blue
+	LifeLineBackgroundColor #A9DCDF
+
+	ParticipantBorderColor Blue
+	ParticipantBackgroundColor #A9DCDF
+	ParticipantFontStyle Normal
+	ParticipantFontSize 12
+	ParticipantFontColor Black
+
+	ActorBorderColor Blue
+	ActorBackgroundColor #A9DCDF
+	ActorFontStyle Normal
+	ActorFontSize 12
+	ActorFontColor Black
+
+}
+
+skinparam note {
+  BorderColor Black
+  BackgroundColor White
+}
+
+skinparam usecase {
+
+	BorderColor Blue
+	BackgroundColor #A9DCDF
+	FontStyle Bold
+	FontSize 14
+	FontColor Black
+
+	ActorBorderColor Blue
+	ActorBackgroundColor #A9DCDF
+	ActorFontStyle Bold
+	ActorFontSize 14
+	ActorFontColor Black
+
+}
+@enduml

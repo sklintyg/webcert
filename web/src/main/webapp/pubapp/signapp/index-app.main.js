@@ -65,45 +65,26 @@ angular.module('rhsIndexApp')
 
   $scope.isNetID = false;
   $scope.isBankID = false;
-  $scope.isNias = false;
 
   $scope.ongoingSignatures = [];
   $scope.ongoingGrpSignatures = [];
 
   $scope.pollHandle = null;
   $scope.grpPollHandle = null;
-  $scope.niasPollHandle = null;
 
   $scope.signingStarted = false;
 
   function cleanup() {
     clearInterval($scope.pollHandle);
     clearInterval($scope.grpPollHandle);
-    clearInterval($scope.niasPollHandle);
     $scope.isNetID = false;
     $scope.isBankID = false;
-    $scope.isNias = false;
     $scope.ticketId = null;
     $scope.pollHandle = null;
     $scope.grpPollHandle = null;
-    $scope.niasPollHandle = null;
     $scope.q = {};
     $scope.signingStarted = false;
   }
-
-  $scope.loadOngoingNiasSignatures = function() {
-    $http({
-      method: 'GET',
-      url: '/services/nias-api/statuses/'
-    })
-    .then(function successCallback(response) {
-      // Populate table
-      $scope.ongoingSignatures = response.data;
-    }, function errorCallback(response) {
-      console.log('Error during NIAS load of ongoing signatures. Msg: ' +
-          JSON.stringify(response.data));
-    });
-  };
 
   $scope.loadOngoingGrpSignatures = function() {
     $http({
@@ -114,118 +95,12 @@ angular.module('rhsIndexApp')
       // Populate table
       $scope.ongoingGrpSignatures = response.data;
     }, function errorCallback(response) {
-      console.log('Error during NIAS load of ongoing signatures. Msg: ' +
+      console.log('Error during GRP load of ongoing signatures. Msg: ' +
           JSON.stringify(response.data));
     });
   };
 
-  // - START NetiD Access Server sign (nias)
-
-  $scope.setNiasSigneringState = function(orderRef, state) {
-    // Här måste vi använda ett testbarhets-API för att låtsas vara klara med NIAS-signeringen.
-    if (!isDefined(orderRef)) {
-      alert('Wait until there is an orderRef!');
-      return;
-    }
-    $http.put('/services/nias-api/status/' + orderRef, state, {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }).then(
-        function(response) {
-          // Success
-          console.log("NIAS state set successful: " + JSON.stringify(response));
-
-        },
-        function(response) {
-          // Failure
-          console.log("NIAS state set NOT successful: " + JSON.stringify(response));
-          cleanup();
-        }
-    )
-  };
-
-  // $scope.startNiasSign = function() {
-  //
-  //     if (!isDefined($scope.utkast)) {
-  //         alert('No utkast selected');
-  //         return;
-  //     }
-  //     clearInterval($scope.pollHandle);
-  //     clearInterval($scope.grpPollHandle);
-  //     clearInterval($scope.niasPollHandle);
-  //
-  //     $scope.isBankID = false;
-  //     $scope.isNetID = false;
-  //     $scope.isNias = true;
-  //
-  //     // First, do the ugly hack of specifiying a PERSONNUMMER on the user context just to get BankID or NIAS signing to work... for now.
-  //     $http.put('/testability/user/personid', $scope.personId, null).then(
-  //         function(response) {
-  //             console.log('PersonID setting on User returned ' + response.data);
-  //             // success callback
-  //             $scope.signingStarted = true;
-  //
-  //             // Then issue NIAS sign to server and start polling backend.
-  //             $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +
-  //                 $scope.utkast.version + '/nias/signeraserver', null, null)
-  //                 .then(
-  //                     function(response) {
-  //                         // success callback
-  //                         console.log(JSON.stringify(response));
-  //                         $scope.ticketId = response.data.id;
-  //                         $scope.newVersion = response.data.version;
-  //                         $scope.statusMessage = response.data.status;
-  //
-  //                         // Got ticket id. Start poller and activate Confirm / Cancel buttons
-  //                         $scope.pollHandle = setInterval(function() {
-  //                             $http({
-  //                                 method: 'GET',
-  //                                 url: '/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.ticketId +
-  //                                 '/signeringsstatus'
-  //                             })
-  //                                 .then(function successCallback(response) {
-  //                                     console.log(JSON.stringify(response.data));
-  //                                     $scope.statusMessage = response.data.status;
-  //                                     if (response.data.status === 'SIGNERAD') {
-  //                                         alert('Signering slutförd!');
-  //                                         cleanup();
-  //                                     }
-  //                                 }, function errorCallback(response) {
-  //                                     console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-  //                                     clearInterval($scope.pollHandle);
-  //                                 });
-  //                         }, 3000);
-  //
-  //                         // Load all ongoing signatures, filter out those for other personnummer
-  //                         $scope.niasPollHandle = setInterval(function() {
-  //                             $http({
-  //                                 method: 'GET',
-  //                                 url: '/services/nias-api/statuses/'
-  //                             })
-  //                                 .then(function successCallback(response) {
-  //                                     // Populate table
-  //                                     $scope.ongoingSignatures = response.data;
-  //                                 }, function errorCallback(response) {
-  //                                     console.log('Error during NIAS load of ongoing signatures. Msg: ' +
-  //                                         JSON.stringify(response.data));
-  //                                 });
-  //                         }, 3000);
-  //
-  //                     },
-  //                     function(response) {
-  //                         // failure callback
-  //                         alert('Failure: ' + JSON.stringify(response));
-  //                     }
-  //                 );
-  //         },
-  //         function(response) {
-  //             // error callback
-  //             alert('Error setting personId on session: ' + response.data);
-  //         });
-  // };
-
-  $scope.signeraAvbrytGrp = function(transactionId) {
+   $scope.signeraAvbrytGrp = function(transactionId) {
     $http.put('/services/grp-api/cancel/' + transactionId, null, null).then(
         function(response) {
           // Success callback
@@ -278,93 +153,9 @@ angular.module('rhsIndexApp')
     )
   };
 
-  // $scope.startBankIDSign = function() {
-  //     // /{intygsTyp}/{intygsId}/{version}/grp/signeraserver
-  //     if (!isDefined($scope.utkast)) {
-  //         alert('No utkast selected');
-  //         return;
-  //     }
-  //     clearInterval($scope.pollHandle);
-  //     clearInterval($scope.grpPollHandle);
-  //     clearInterval($scope.niasPollHandle);
-  //
-  //     $scope.isBankID = true;
-  //     $scope.isNetID = false;
-  //     $scope.isNias = false;
-  //
-  //     $http.put('/testability/user/personid', $scope.personId, null).then(
-  //         function(response) {
-  //             console.log('PersonID setting on User returned ' + response.data);
-  //             // success callback
-  //             // Then issue GRP sign to server and start polling backend.
-  //             $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +
-  //                 $scope.utkast.version + '/grp/signeraserver', null, null)
-  //                 .then(
-  //                     function(response) {
-  //                         // success callback
-  //                         console.log(JSON.stringify(response));
-  //                         $scope.ticketId = response.data.id;
-  //                         $scope.newVersion = response.data.version;
-  //                         $scope.statusMessage = response.data.status;
-  //
-  //                         $http.get('/services/grp-api/orderref/' + $scope.ticketId,  null, null).then(
-  //                             function(response) {
-  //                                 // Success
-  //                                 $scope.orderRef = response.data;
-  //                                 console.log('Set orderRef: ' + $scope.orderRef);
-  //                             },
-  //                             function(response) {
-  //                                 // Error
-  //                             }
-  //                         )
-  //
-  //                         // Got ticket id. Start poller and activate Confirm / Cancel buttons
-  //                         $scope.pollHandle = setInterval(function() {
-  //                             $http({
-  //                                 method: 'GET',
-  //                                 url: '/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.ticketId +
-  //                                 '/signeringsstatus'
-  //                             })
-  //                                 .then(function successCallback(response) {
-  //                                     console.log(JSON.stringify(response.data));
-  //                                     $scope.statusMessage = response.data.status;
-  //                                 }, function errorCallback(response) {
-  //                                     console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-  //                                     clearInterval($scope.pollHandle);
-  //                                 });
-  //                         }, 3000);
-  //
-  //                         $scope.grpPollHandle = setInterval(function() {
-  //                             $http({
-  //                                 method: 'GET',
-  //                                 url: '/services/grp-api/status/' + $scope.ticketId
-  //                             })
-  //                                 .then(function successCallback(response) {
-  //                                     console.log(JSON.stringify(response.data));
-  //                                     $scope.grpStatusMessage = response.data.status;
-  //                                 }, function errorCallback(response) {
-  //                                     console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-  //                                     clearInterval($scope.grpPollHandle);
-  //                                 });
-  //                         }, 3000);
-  //                     },
-  //                     function(response) {
-  //                         // failure callback
-  //                         alert('Failure: ' + JSON.stringify(response));
-  //                     }
-  //                 );
-  //         },
-  //         function(response) {
-  //             // error callback
-  //             alert('Error setting personId on session: ' + response.data);
-  //         });
-  // };
-
-  $scope.signeraAvbryt = function() {
+    $scope.signeraAvbryt = function() {
     cleanup();
   };
-
-  // NiasCollectPollerImpl
 
   $scope.openForm = function(intyg) {
     $scope.q.intygsId = intyg.intygsId;
@@ -391,9 +182,6 @@ angular.module('rhsIndexApp')
   };
 
   $scope.loadUnits();
-  setInterval(function() {
-    $scope.loadOngoingNiasSignatures();
-  }, 3000);
   setInterval(function() {
     $scope.loadOngoingGrpSignatures();
   }, 3000);

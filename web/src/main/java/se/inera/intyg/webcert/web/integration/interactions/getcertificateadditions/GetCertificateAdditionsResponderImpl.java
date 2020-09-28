@@ -111,6 +111,7 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
 
         List<AdditionType> additions = arendeList.stream()
             .filter(arende -> arende.getIntygsId().equals(intygId.getExtension()))
+            .filter(arende -> !arende.getAmne().equals(ArendeAmne.PAMINN))
             .map(this::mapArende)
             .collect(Collectors.toList());
 
@@ -125,7 +126,7 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
         AdditionType additionType = new AdditionType();
         additionType.setId(String.valueOf(arende.getId()));
         additionType.setSkapad(arende.getTimestamp());
-        additionType.setStatus(mapStatus(arende.getStatus()));
+        additionType.setStatus(mapStatus(arende.getStatus(), arende.getSvarPaId()));
         additionType.setAmne(mapAmne(arende.getAmne()));
 
         return additionType;
@@ -135,10 +136,13 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
         return AmneType.valueOf(amne.name());
     }
 
-    private StatusType mapStatus(Status status) {
+    private StatusType mapStatus(Status status, String svarPaId) {
+        boolean isAnswerFromExternal = status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
+        if (isAnswerFromExternal) {
+            return StatusType.BESVARAD;
+        }
         switch (status) {
             case CLOSED:
-            case ANSWERED:
             case PENDING_EXTERNAL_ACTION:
                 return StatusType.BESVARAD;
             default:

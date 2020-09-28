@@ -43,14 +43,20 @@
 
                 <div ng-if="intygTypeModel.previousIntygWarnings[type.id] && !intygTypeModel.previousUtkastWarnings[type.id]">
                   <wc-alert-message alert-id="intyg-previousintyg-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
-                    <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
+                    <div ng-switch-when="true" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameEnhet">
+                      <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
+                      <span ng-switch-when="false" ng-bind-html="getDifferentUnitWarningText(type.id, intygTypeModel.previousIntygWarnings[type.id].enhetName, false)"></span>
+                    </div>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.differentvg"></span>
                   </wc-alert-message>
                 </div>
 
                 <div ng-if="intygTypeModel.previousUtkastWarnings[type.id]">
                   <wc-alert-message alert-id="intyg-previousutkast-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameVardgivare">
-                    <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previousdraft.samevg"></span>
+                    <div ng-switch-when="true" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameEnhet">
+                      <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previousdraft.samevg"></span>
+                      <span ng-switch-when="false" ng-bind-html="getDifferentUnitWarningText(type.id, intygTypeModel.previousUtkastWarnings[type.id].enhetName, true)"></span>
+                    </div>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.differentvg"></span>
                   </wc-alert-message>
                 </div>

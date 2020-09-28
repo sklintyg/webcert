@@ -41,6 +41,7 @@ import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
@@ -69,6 +70,7 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
@@ -151,6 +153,8 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
+    private CertificateEventService certificateEventService;
+    @Autowired
     private CertificateSenderService certificateSenderService;
     @Autowired
     private ArendeDraftService arendeDraftService;
@@ -228,13 +232,11 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = arendeRepository.save(arende);
 
-        if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
-            notificationService.sendNotificationForQuestionReceived(saved);
-        } else {
-            notificationService.sendNotificationForAnswerRecieved(saved);
-        }
+        sendNotificationAndCreateEventForIncomingMessage(saved);
+
         return saved;
     }
+
 
     @Override
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
@@ -263,7 +265,9 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
         }
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, EventCode.NYFRFV, true);
+
+        logService.logCreateMessage(webcertUserService.getUser(), saved);
 
         arendeDraftService.delete(intygId, null);
         return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
@@ -301,7 +305,9 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM, true);
+
+        logService.logCreateMessage(webcertUserService.getUser(), saved);
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -332,7 +338,7 @@ public class ArendeServiceImpl implements ArendeService {
                     user.getNamn());
 
                 arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
-                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM,
                     Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
                 allArende.add(saved);
@@ -415,7 +421,9 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende openedArende = arendeRepository.save(arende);
 
-        sendNotification(openedArende, notificationEvent);
+        sendNotificationAndCreateEvent(openedArende, notificationEvent);
+
+        logService.logCreateMessage(webcertUserService.getUser(), openedArende);
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
             arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -662,6 +670,7 @@ public class ArendeServiceImpl implements ArendeService {
             return null;
         } else {
             Arende closedArende = closeArendeAsHandled(arende);
+            logService.logCreateMessage(webcertUserService.getUser(), closedArende);
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,
@@ -855,10 +864,59 @@ public class ArendeServiceImpl implements ArendeService {
         return null;
     }
 
-    private void sendNotification(Arende arende, NotificationEvent event) {
+    private void sendNotificationAndCreateEvent(Arende arende, NotificationEvent event) {
         if (event != null) {
             notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
+            EventCode eventCode = getEventCode(event);
+
+            if (eventCode != null) {
+                certificateEventService
+                    .createCertificateEvent(arende.getIntygsId(), webcertUserService.getUser().getHsaId(), eventCode, event.name());
+            }
         }
+    }
+
+
+    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved) {
+        String certificateId = saved.getIntygsId();
+        String sentBy = saved.getSkickatAv();
+
+        if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
+            notificationService.sendNotificationForQuestionReceived(saved);
+
+            if (saved.getPaminnelseMeddelandeId() != null) {
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.PAMINNELSE);
+            } else if (saved.getAmne() == ArendeAmne.KOMPLT) {
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.KOMPLBEGARAN);
+            } else {
+                String message = saved.getAmne() != null ? saved.getAmne().getDescription() : EventCode.NYFRFM.getDescription();
+                certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYFRFM, message);
+            }
+        } else {
+            notificationService.sendNotificationForAnswerRecieved(saved);
+            certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYSVFM);
+        }
+    }
+
+    private EventCode getEventCode(NotificationEvent event) {
+        switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+            case QUESTION_FROM_CARE_HANDLED:
+            case QUESTION_FROM_CARE_UNHANDLED:
+                return EventCode.HANFRFV;
+            case NEW_ANSWER_FROM_CARE:
+            case QUESTION_FROM_RECIPIENT_HANDLED:
+            case QUESTION_FROM_RECIPIENT_UNHANDLED:
+                return EventCode.HANFRFM;
+            case NEW_QUESTION_FROM_CARE:
+                return EventCode.NYFRFV;
+            case NEW_QUESTION_FROM_RECIPIENT:
+                return EventCode.NYFRFM;
+            case NEW_ANSWER_FROM_RECIPIENT:
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+                return EventCode.NYSVFM;
+        }
+        return null;
     }
 
     private Arende lookupArende(String meddelandeId) {
@@ -894,11 +952,13 @@ public class ArendeServiceImpl implements ArendeService {
                     + " is blacklisted.");
         } else if (certificate.isRevoked()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
-                "Certificate " + certificate.getUtlatande().getId()  + " is revoked.");
+                "Certificate " + certificate.getUtlatande().getId() + " is revoked.");
         }
     }
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
+
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventCode eventCode,
+        boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
             arende.getSvarPaId() != null);
@@ -916,7 +976,7 @@ public class ArendeServiceImpl implements ArendeService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
             }
 
-            sendNotification(saved, notificationEvent);
+            sendNotificationAndCreateEvent(saved, notificationEvent);
         }
 
         return saved;
@@ -953,7 +1013,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende closedArende = arendeRepository.save(arendeToClose);
 
         arendeDraftService.delete(closedArende.getIntygsId(), closedArende.getMeddelandeId());
-        sendNotification(closedArende, notificationEvent);
+        sendNotificationAndCreateEvent(closedArende, notificationEvent);
 
         return closedArende;
     }
@@ -968,7 +1028,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende reopenedArende = arendeRepository.save(arende);
 
         NotificationEvent notificationEvent = determineReopenedNotificationEvent(reopenedArende);
-        sendNotification(reopenedArende, notificationEvent);
+        sendNotificationAndCreateEvent(reopenedArende, notificationEvent);
 
     }
 

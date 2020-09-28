@@ -342,7 +342,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToSignUtkastNoConditions(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastNoConditions(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastNoConditions(AccessResult actualValue);
@@ -351,7 +351,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToSignUtkastOnDeceasedPatient(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnDeceasedPatient(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -360,7 +360,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToSignUtkastOnInactiveUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnInactiveUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnInactiveUnit(AccessResult actualValue);
@@ -369,7 +369,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToSignUtkastOnRenewFalse(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnRenewFalse(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnRenewFalse(AccessResult actualValue);
@@ -378,7 +378,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -387,7 +387,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -396,7 +396,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -405,7 +405,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -414,7 +414,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -423,7 +423,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToSignUtkastNoConditionsDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToSignUtkastNoConditionsDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastNoConditionsDifferentUnit(AccessResult actualValue);

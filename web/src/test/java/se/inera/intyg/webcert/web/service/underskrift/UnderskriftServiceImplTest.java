@@ -24,9 +24,9 @@ import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus.SIGNERAD;
@@ -54,6 +54,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -75,6 +76,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -86,7 +88,6 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceI
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -112,6 +113,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     private UtkastRepository utkastRepository;
 
     @Mock
+    private CertificateEventService certificateEventService;
+
+    @Mock
     private UtkastService utkastService;
 
     @Mock
@@ -134,9 +138,6 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Mock
     private RedisTicketTracker redisTicketTracker;
-
-    @Mock
-    private NiasUnderskriftService niasUnderskriftService;
 
     @Mock
     private DraftAccessService draftAccessService;
@@ -188,20 +189,19 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
+            anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_ACCESS);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
-
-        verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -209,7 +209,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -217,7 +217,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test
@@ -230,7 +230,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
+            anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
@@ -244,15 +245,15 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
-        verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastAlreadySigned() {
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
-            ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test
@@ -285,6 +286,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         SignaturBiljett sb = testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
         assertNotNull(sb);
         assertEquals(SIGNERAD, sb.getStatus());
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
     }
 
     @Test
@@ -301,6 +304,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         SignaturBiljett sb = testee.grpSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8));
         assertNotNull(sb);
         assertEquals(SIGNERAD, sb.getStatus());
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
     }
 
     private WebCertUser createWebCertUser(boolean doctor) {
@@ -319,7 +324,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         user.setVardgivare(Collections.singletonList(vardgivare));
         user.setValdVardenhet(vardenhet);
         user.setValdVardgivare(vardgivare);
-        user.setAuthenticationMethod(AuthenticationMethod.EFOS);
+        user.setAuthenticationMethod(AuthenticationMethod.SITHS);
+        user.setPersonId(hoSPerson.getPersonId());
 
         return user;
     }

@@ -25,9 +25,6 @@ public enum SignaturStatus {
     SIGNERAD,
     NO_CLIENT,
     OKAND,
-
-    // These two are primarily used for NetiD Access signings gone wrong. We map various error-ish response codes
-    // from NIAS collect poll to these two.
     AVBRUTEN,
     ERROR
 }

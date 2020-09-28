@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertif
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -42,6 +44,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -50,6 +53,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -71,6 +75,9 @@ public class ReceiveQuestionResponderImplTest {
     @Mock
     private NotificationService mockNotificationService;
 
+    @Mock
+    private CertificateEventService certificateEventService;
+
     @InjectMocks
     private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
@@ -84,6 +91,8 @@ public class ReceiveQuestionResponderImplTest {
 
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
+        verify(certificateEventService)
+            .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYFRFM), anyString());
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
