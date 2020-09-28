@@ -105,20 +105,9 @@ public class UtkastCandidateServiceImpl {
             if (candidate.isPresent()) {
                 Utkast utkast = candidate.get();
 
-                String candidateVardenhetName;
-                Boolean sameVardenhet;
-
-                // When draft is of type doi and candidate certificate is of type db, include in metadata info about
-                // the name of the care unit at which the candidate was issued.
-                if ("doi".equals(intygType) && "db".equals(utkast.getIntygsTyp())) {
-                    String userVardenhet = hsaOrganizationsService.getParentUnit(getUser().getValdVardenhet().getId());
-                    String candidateVardenhetId = hsaOrganizationsService.getParentUnit(utkast.getEnhetsId());
-                    sameVardenhet = userVardenhet.equalsIgnoreCase(candidateVardenhetId);
-                    candidateVardenhetName = hsaOrganizationsService.getVardenhet(candidateVardenhetId).getNamn();
-                } else {
-                    candidateVardenhetName = null;
-                    sameVardenhet = null;
-                }
+                // True if the enhet or vardenhet of the currently logged in user is same vardenhet or a subunit
+                // of the vardenhet where the candidate certificate was issued.
+                boolean sameVardenhet = webCertUserService.isUserAllowedAccessToUnit(utkast.getEnhetsId());
 
                 metaData = new UtkastCandidateMetaData.Builder()
                     .with(builder -> {
@@ -129,7 +118,6 @@ public class UtkastCandidateServiceImpl {
                         builder.signedByHsaId = utkast.getSkapadAv().getHsaId();
                         builder.enhetHsaId = utkast.getEnhetsId();
                         builder.enhetName = utkast.getEnhetsNamn();
-                        builder.vardenhetName = candidateVardenhetName;
                         builder.sameVardenhet = sameVardenhet;
                     })
                     .create();
