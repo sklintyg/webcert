@@ -256,10 +256,8 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         try {
-            // When updating doi with data from db for prefill, access to candidate db has already been validated
-            boolean validateAccess = !("doi".equals(toIntygsType) && "db".equals(fromIntygType));
             Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType,
-                false, true, validateAccess);
+                false, true);
 
             String draftVersion = to.getIntygTypeVersion();
             if (draftVersion == null) {

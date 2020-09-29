@@ -1147,7 +1147,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.save(utkast)).thenReturn(savedUtkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(createUser());
-        when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, false, true, true)).thenReturn(utlatande);
+        when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, false, true)).thenReturn(utlatande);
         when(moduleApi.getMapper()).thenReturn(Optional.of(mapper));
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 

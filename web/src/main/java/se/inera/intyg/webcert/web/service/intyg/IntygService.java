@@ -99,8 +99,7 @@ public interface IntygService {
      * @param pdlLogging If the call should be logged.
      * @return IntygContentHolder.
      */
-    IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging,
-        boolean validateAccess);
+    IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging);
 
     /**
      * Returns all certificates for the given patient within all the given units.

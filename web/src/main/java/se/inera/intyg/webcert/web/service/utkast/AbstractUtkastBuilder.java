@@ -142,7 +142,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
-        utkastRepository.save(utkast);
+        // utkastRepository.save(utkast);
 
         builderResponse.setUtkast(utkast);
 
