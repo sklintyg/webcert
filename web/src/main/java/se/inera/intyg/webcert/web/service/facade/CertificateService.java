@@ -12,4 +12,6 @@ public interface CertificateService {
     ValidationErrorDTO[] validate(CertificateDTO certificate);
 
     CertificateDTO signCertificate(CertificateDTO certificate);
+
+    void deleteCertificate(String certificateId, long version);
 }

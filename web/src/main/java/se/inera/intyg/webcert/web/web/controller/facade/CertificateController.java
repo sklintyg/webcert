@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -71,5 +72,16 @@ public class CertificateController {
         LOG.debug("Signing certificate with id: {}", certificate.getMetadata().getCertificateId());
         final CertificateDTO certificateDTO = certificateService.signCertificate(certificate);
         return Response.ok(certificateDTO).build();
+    }
+
+    @DELETE
+    @Path("/{certificateId}/{version}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response deleteCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @PathParam("version") @NotNull long version) {
+        LOG.debug("Deleting certificate with id: {} and version: {}", certificateId, version);
+        certificateService.deleteCertificate(certificateId, version);
+        return Response.ok().build();
     }
 }

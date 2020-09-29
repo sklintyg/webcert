@@ -110,6 +110,11 @@ public class CertificateServiceImpl implements CertificateService {
         return getCertificate(certificateId);
     }
 
+    @Override
+    public void deleteCertificate(String certificateId, long version) {
+        utkastService.deleteUnsignedDraft(certificateId, version);
+    }
+
     private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
