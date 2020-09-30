@@ -1,6 +1,6 @@
 pluginManagement {
     repositories {
-        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/public/" }
+        maven { url "https://nexus.drift.inera.se/repository/it-public/" }
         gradlePluginPortal()
     }
 }
