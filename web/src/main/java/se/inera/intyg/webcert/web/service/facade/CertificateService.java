@@ -14,4 +14,6 @@ public interface CertificateService {
     CertificateDTO signCertificate(CertificateDTO certificate);
 
     void deleteCertificate(String certificateId, long version);
+
+    void revokeCertificate(String certificateId, String reason, String message);
 }

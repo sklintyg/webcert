@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateStatusDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -28,14 +30,17 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final IntygModuleRegistry moduleRegistry;
 
+    private final IntygService intygService;
+
     private final ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
     public CertificateServiceImpl(UtkastService utkastService, UnderskriftService underskriftService, IntygModuleRegistry moduleRegistry,
-        ResourceLinkHelper resourceLinkHelper) {
+        IntygService intygService, ResourceLinkHelper resourceLinkHelper) {
         this.utkastService = utkastService;
         this.underskriftService = underskriftService;
         this.moduleRegistry = moduleRegistry;
+        this.intygService = intygService;
         this.resourceLinkHelper = resourceLinkHelper;
     }
 
@@ -46,6 +51,16 @@ public class CertificateServiceImpl implements CertificateService {
             final var moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
             final var certificateDTO = moduleApi.getCertificateDTOFromJson(certificate.getModel());
             certificateDTO.getMetadata().setVersion(certificate.getVersion());
+            if (certificate.getAterkalladDatum() != null) {
+                certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.INVALIDATED);
+            }
+            if (certificateDTO.getMetadata().getPatient().getFullName() == null) {
+                certificateDTO.getMetadata().getPatient().setFirstName(certificate.getPatientFornamn());
+                certificateDTO.getMetadata().getPatient().setLastName(certificate.getPatientEfternamn());
+                certificateDTO.getMetadata().getPatient().setFullName(
+                    certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn()
+                );
+            }
             return certificateDTO;
         } catch (Exception ex) {
             LOG.error("Cannot convert certificate!", ex);
@@ -113,6 +128,12 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public void deleteCertificate(String certificateId, long version) {
         utkastService.deleteUnsignedDraft(certificateId, version);
+    }
+
+    @Override
+    public void revokeCertificate(String certificateId, String reason, String message) {
+        final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
+        intygService.revokeIntyg(certificateId, certificateType, reason, message);
     }
 
     private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {

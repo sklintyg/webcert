@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.CertificateService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateDTO;
 
 @Path("/certificate")
 public class CertificateController {
@@ -82,6 +83,18 @@ public class CertificateController {
         @PathParam("version") @NotNull long version) {
         LOG.debug("Deleting certificate with id: {} and version: {}", certificateId, version);
         certificateService.deleteCertificate(certificateId, version);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{certificateId}/revoke")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response revokeCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull RevokeCertificateDTO revokeCertificate) {
+        LOG.debug("Revoking certificate with id: {} and reason: {} and message: {}", certificateId, revokeCertificate.getReason(),
+            revokeCertificate.getMessage());
+        certificateService.revokeCertificate(certificateId, revokeCertificate.getReason(), revokeCertificate.getMessage());
         return Response.ok().build();
     }
 }
