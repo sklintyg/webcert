@@ -300,30 +300,6 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
             .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
-    @Test
-    public void testCreateTsBasDraftForSekretessmarkeradPatient() {
-
-        given().cookie("ROUTEID", ".1")
-            .get(SEKRETESS_TESTABILITY_API + "191212121212/sekretessmarkerad?value=true")
-            .then()
-            .statusCode(200);
-
-        given().cookie("ROUTEID", ".1")
-            .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
-            .when()
-            .post(CREATE_DRAFT_CERTIFICATE_V3_0)
-            .then()
-            .statusCode(200)
-            .rootPath(BASE)
-            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-            .body("result.errorId", is("APPLICATION_ERROR"));
-
-        given().cookie("ROUTEID", ".1")
-            .get(SEKRETESS_TESTABILITY_API + "191212121212/sekretessmarkerad?value=false")
-            .then()
-            .statusCode(200);
-    }
-
     // String Template Data object
     private static final class IntygsData {
 

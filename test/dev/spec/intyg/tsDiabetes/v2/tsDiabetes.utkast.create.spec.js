@@ -26,7 +26,7 @@ var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v2.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v2.intyg;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-describe('Create and Sign ts-diabetes v2 utkast', function() {
+xdescribe('Create and Sign ts-diabetes v2 utkast', function() {
 
   var utkastId = null,
       data = null;
