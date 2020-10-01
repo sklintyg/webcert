@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -301,6 +302,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testCreateTsBasDraftForSekretessmarkeradPatient() {
 
         given().cookie("ROUTEID", ".1")
