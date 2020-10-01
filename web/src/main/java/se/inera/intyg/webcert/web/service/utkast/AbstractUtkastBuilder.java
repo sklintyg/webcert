@@ -142,8 +142,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
-        // utkastRepository.save(utkast);
-
         builderResponse.setUtkast(utkast);
 
         return builderResponse;
@@ -252,6 +250,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         if (addRelation && relation != null) {
             enrichWithRelation(utkast, relation);
+        }
+
+        // If source and target certificate types are different, the current copy action is for prefilling of a draft,
+        // and version should be set to 1 (instead of 0) to suppress the option to prefill the draft once more.
+        boolean isPrefillRequest = !utkastTyp.equals(copyRequest.getOriginalIntygTyp());
+        if (isPrefillRequest) {
+            utkast.setVersion(1);
         }
 
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
