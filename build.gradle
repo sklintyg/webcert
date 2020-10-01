@@ -1,5 +1,5 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "3.1.2" apply false
+    id "se.inera.intyg.plugin.common" version "3.1.3" apply false
     id "org.gretty" version "3.0.1" apply false
     id "com.moowork.node" version "1.3.1" apply false
     id "io.spring.dependency-management" version "1.0.9.RELEASE" apply false
@@ -60,7 +60,7 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/public/" }
+        maven { url "https://nexus.drift.inera.se/repository/it-public/" }
         jcenter {
             content {
                 // this repository contains everything BUT artifacts with group starting with "se.inera"
@@ -119,8 +119,8 @@ allprojects {
     uploadArchives.enabled = false
 
     uploadArchives.repositories.mavenDeployer {
-        repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
-            authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+        repository(url: "https://nexus.drift.inera.se/repository/maven-releases/") {
+            authentication(userName: System.properties['ineraNexusUsername'], password: System.properties['ineraNexusPassword'])
         }
     }
 

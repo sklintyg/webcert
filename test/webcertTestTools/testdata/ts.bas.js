@@ -33,7 +33,7 @@ module.exports = {
       "id": intygsID,
       "typ": "Transportstyrelsens läkarintyg högre körkortsbehörighet",
       "korkortstyper": ["C1", "CE", "DE", "C1E", "D", "C", "Taxi", "D1E"],
-      "identitetStyrktGenom": "Försäkran enligt 18 kap. 4§",
+      "identitetStyrktGenom": "Försäkran enligt 18 kap 4 §",
       "allmant": {
         "year": 1981,
         "behandling": {
