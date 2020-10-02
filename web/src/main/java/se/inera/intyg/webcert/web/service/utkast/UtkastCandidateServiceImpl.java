@@ -34,7 +34,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -55,9 +54,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 public class UtkastCandidateServiceImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastCandidateServiceImpl.class);
-
-    @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
 
     @Autowired
     private DraftAccessService draftAccessService;
