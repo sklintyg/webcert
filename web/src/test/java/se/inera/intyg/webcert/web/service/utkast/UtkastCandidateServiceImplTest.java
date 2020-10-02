@@ -646,6 +646,8 @@ public class UtkastCandidateServiceImplTest {
         String intygTypeVersion = "1.0";
         String intygType = "doi";
 
+        when(webCertUser.getValdVardgivare()).thenReturn(createSelectableVardenhet("same-care-giver-hsaid"));
+
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
@@ -704,7 +706,7 @@ public class UtkastCandidateServiceImplTest {
             .thenReturn(candidates);
         assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false).isPresent());
 
-        // Incompatible majorversion
+        // Incompatible major version
         candidates = Collections.singletonList(
             createDbCandidate(UtkastStatus.SIGNED,
             "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
@@ -716,6 +718,79 @@ public class UtkastCandidateServiceImplTest {
 
         // No PDL-logging shall be invoked
         verify(logService, times(0)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
+    }
+
+    @Test
+    public void getDbCandidateMetaDataWhenMatchingCriterias() {
+        String intygIdCandidate = "correct-candidate-intygid";
+        String intygTypeCandidate = "db";
+        String intygTypeVersion = "1.0";
+        String intygType = "doi";
+
+        when(webCertUser.getValdVardgivare()).thenReturn(createSelectableVardenhet("same-care-giver-hsaid"));
+        when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("same-care-unit-hsaid"));
+        when(webCertUser.getHsaId()).thenReturn("correct-user-hsaid");
+
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
+
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", -1));
+        when(doiModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
+
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
+        Set<String> validIntygType = new HashSet<>();
+        validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+
+        // Run tests as Läkare
+        when(webCertUser.isLakare()).thenReturn(true);
+
+        // Signed by the current user on the same care unit
+        List<Utkast> candidates = Collections.singletonList(
+            createDbCandidate(UtkastStatus.SIGNED,
+                "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
+                intygIdCandidate, intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid")
+        );
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false).isPresent());
+
+        // Signed by other user on the same care unit
+        candidates = Collections.singletonList(
+            createDbCandidate(UtkastStatus.SIGNED,
+                "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
+                intygIdCandidate, intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid")
+        );
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false).isPresent());
+
+        // Signed by other user on other care unit
+        candidates = Collections.singletonList(
+            createDbCandidate(UtkastStatus.SIGNED,
+                "other-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
+                intygIdCandidate, intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid")
+        );
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false).isPresent());
+
+        // Run tests as Vårdadministratör
+        when(webCertUser.isLakare()).thenReturn(false);
+
+        // Signed by 'läkare' on the same care unit
+        candidates = Collections.singletonList(
+            createDbCandidate(UtkastStatus.SIGNED,
+                "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
+                intygIdCandidate, intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid")
+        );
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false).isPresent());
+
+        // PDL-logging shall be invoked
+        verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
     }
 
     // CHECKSTYLE:OFF ParameterNumber
