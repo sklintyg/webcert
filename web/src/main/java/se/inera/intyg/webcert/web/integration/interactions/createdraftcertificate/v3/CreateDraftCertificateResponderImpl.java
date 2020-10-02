@@ -154,7 +154,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                 + " kan inte utfärdas för patienter med skyddade personuppgifter", ErrorIdType.APPLICATION_ERROR);
         }
 
-        Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
+        Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
+                utkastService.checkIfPersonHasExistingIntyg(personnummer, user, null);
         Optional<WebCertServiceErrorCodeEnum> utkastUnique = AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp,
             intygstypToPreviousIntyg);
         Optional<WebCertServiceErrorCodeEnum> intygUnique = AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp,

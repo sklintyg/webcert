@@ -183,7 +183,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -209,7 +209,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -235,7 +235,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();

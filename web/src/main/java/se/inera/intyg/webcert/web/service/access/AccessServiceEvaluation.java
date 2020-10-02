@@ -558,7 +558,7 @@ public final class AccessServiceEvaluation {
         boolean onlyCertificate, String certificateId) {
         if (isAnyUniqueFeatureEnabled(intygsTyp, user)) {
             final Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService
-                .checkIfPersonHasExistingIntyg(personnummer, user);
+                .checkIfPersonHasExistingIntyg(personnummer, user, null);
 
             final PreviousIntyg utkastExists = intygstypToStringToBoolean.get(DRAFT).get(intygsTyp);
             final PreviousIntyg intygExists = intygstypToStringToBoolean.get(CERTIFICATE).get(intygsTyp);
