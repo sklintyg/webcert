@@ -277,7 +277,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
 
         assertAllowToRenewOnSameCareProviderWhenSameVGExists(
             accessService.allowToRenew(accessEvaluationParameters));
@@ -298,7 +298,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
 
         assertAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists(
             accessService.allowToRenew(accessEvaluationParameters));
@@ -319,7 +319,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
 
         assertAllowToRenewOnSameCareProviderWhenIntygExists(
             accessService.allowToRenew(accessEvaluationParameters));

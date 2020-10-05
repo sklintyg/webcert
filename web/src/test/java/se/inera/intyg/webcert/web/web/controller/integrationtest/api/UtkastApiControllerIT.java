@@ -272,8 +272,9 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         spec()
             .pathParams("personnummer", "191212121212")
+            .pathParams("currentDraftId", "id")
             .expect().statusCode(200)
-            .when().get("api/utkast/previousIntyg/{personnummer}")
+            .when().get("api/utkast/previousIntyg/{personnummer}/{currentDraftId}")
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-previousIntyg.json"));
     }
 }

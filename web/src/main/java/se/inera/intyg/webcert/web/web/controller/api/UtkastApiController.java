@@ -211,13 +211,14 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("/previousIntyg/{personnummer}")
+    @Path("/previousIntyg/{personnummer}/{currentDraftId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
+    public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer,
+                                                   @PathParam("currentDraftId") String currentDraftId) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
             .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
-                getWebCertUserService().getUser());
+                getWebCertUserService().getUser(), currentDraftId);
         return Response.ok(res).build();
     }
 
