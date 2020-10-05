@@ -247,7 +247,8 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging) {
+    public IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling,
+        boolean pdlLogging) {
         return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging, false);
     }
 

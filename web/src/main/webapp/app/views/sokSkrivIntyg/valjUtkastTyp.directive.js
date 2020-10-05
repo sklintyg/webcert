@@ -61,12 +61,21 @@ angular.module('webcert').directive('wcValjUtkastTyp',
               // Display info dialog if draft is of type doi but no db has been issued within the same vardgivare.
               if (intygType === 'doi') {
                 var dbExistsOnSameVardgivare = false;
+                var dbExistsOnCurrentUnit = false;
+                var intygList = ViewState.intygListUnhandled;
+
+                for (var i = 0; i < intygList.length; i++) {
+                  if (intygList[i].intygType === 'db' && intygList[i].status === 'SENT') {
+                    dbExistsOnCurrentUnit = true;
+                  }
+                }
+
                 var dbExists = scope.intygTypeModel.previousIntygWarnings.db;
                 if (dbExists && dbExists.sameVardgivare) {
                   dbExistsOnSameVardgivare = true;
                 }
 
-                if (!dbExistsOnSameVardgivare) {
+                if (!dbExistsOnSameVardgivare && !dbExistsOnCurrentUnit) {
                   DialogService.showDialog({
                     dialogId: 'doi-info-dialog',
                     titleText: 'doi.label.titleText',
