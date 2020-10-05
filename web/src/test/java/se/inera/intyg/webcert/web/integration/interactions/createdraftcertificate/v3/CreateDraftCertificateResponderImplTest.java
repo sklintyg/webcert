@@ -113,7 +113,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         super.setup();
         when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
         when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
-        when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+        when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
             "utkast", ImmutableMap.of(),
             "intyg", ImmutableMap.of()));
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);

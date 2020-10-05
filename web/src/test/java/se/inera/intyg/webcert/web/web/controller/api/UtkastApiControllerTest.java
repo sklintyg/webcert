@@ -148,7 +148,7 @@ public class UtkastApiControllerTest {
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
         hasPreviousIntyg.put("luse", PreviousIntyg.of(true, false, "Enhet", "intygsId", null));
         hasPrevious.put("intyg", hasPreviousIntyg);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any(), any())).thenReturn(hasPrevious);
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
 
         // Return hsaId as name
@@ -439,7 +439,7 @@ public class UtkastApiControllerTest {
         utkast4.setStatus(UtkastStatus.SIGNED);
         utkast4.setAterkalladDatum(LocalDateTime.of(2017, 1, 1, 1, 1));
 
-        Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
+        Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer(), null);
 
         assertNotNull(response);
         Map<String, Map<String, PreviousIntyg>> responseBody = (Map<String, Map<String, PreviousIntyg>>) response.readEntity(HashMap.class);

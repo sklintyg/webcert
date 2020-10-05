@@ -71,7 +71,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     dialogId: 'doi-info-dialog',
                     titleText: 'doi.label.titleText',
                     bodyText: 'doi.label.bodyText',
-                    templateUrl: '/app/partials/doiInfo.dialog.html',
+                    templateUrl: '/app/partials/uniqueInfo.dialog.html',
 
                     button1click: function(modalInstance) {
                       scope.createDraft(intygType);

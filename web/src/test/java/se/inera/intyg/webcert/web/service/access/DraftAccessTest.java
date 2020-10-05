@@ -92,7 +92,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -115,7 +115,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -138,7 +138,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();

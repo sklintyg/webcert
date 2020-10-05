@@ -176,7 +176,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .updateBeforeSigning(anyString(), any(), any(LocalDateTime.class)))
             .thenReturn("json");
 
-        when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+        when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
             "utkast", ImmutableMap.of(),
             "intyg", ImmutableMap.of()));
 
@@ -234,7 +234,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+        when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
             "utkast", ImmutableMap.of(),
             "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, "name", "id", ogIntygSkapad))));
 

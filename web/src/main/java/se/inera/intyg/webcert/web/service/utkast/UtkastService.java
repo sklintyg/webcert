@@ -107,8 +107,11 @@ public interface UtkastService {
      *
      * @param personnummer the personnummer of the patient to check for existing intyg
      * @param user the intended creator of the certificate or the logged in user
+     * @param currentDraftId id of current draft if one exists
      */
-    Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
+    Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer,
+                                                                          IntygUser user,
+                                                                          String currentDraftId);
 
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
 
