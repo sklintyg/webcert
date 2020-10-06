@@ -34,9 +34,13 @@ public final class UtkastCandidateMetaData {
     private String enhetName;
 
     private LocalDateTime intygCreated;
+    private Boolean sameVardenhet;
 
+
+    @SuppressWarnings("CheckStyle")
     private UtkastCandidateMetaData(String intygId, String intygType, String intygTypeVersion,
-        String signedByHsaId, String enhetHsaId, String enhetName, LocalDateTime intygCreated) {
+        String signedByHsaId, String enhetHsaId, String enhetName, LocalDateTime intygCreated,
+        Boolean sameVardenhet) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.intygTypeVersion = intygTypeVersion;
@@ -44,6 +48,7 @@ public final class UtkastCandidateMetaData {
         this.enhetHsaId = enhetHsaId;
         this.enhetName = enhetName;
         this.intygCreated = intygCreated;
+        this.sameVardenhet = sameVardenhet;
     }
 
     public String getIntygId() {
@@ -74,6 +79,10 @@ public final class UtkastCandidateMetaData {
         return intygCreated;
     }
 
+    public Boolean getSameVardenhet() {
+        return sameVardenhet;
+    }
+
     public static class Builder {
         public String intygId;
         public String intygType;
@@ -82,6 +91,7 @@ public final class UtkastCandidateMetaData {
         public String enhetHsaId;
         public String enhetName;
         public LocalDateTime intygCreated;
+        public Boolean sameVardenhet;
 
         public Builder with(
             Consumer<Builder> builderFunction) {
@@ -91,7 +101,7 @@ public final class UtkastCandidateMetaData {
 
         public UtkastCandidateMetaData create() {
             return new UtkastCandidateMetaData(intygId, intygType, intygTypeVersion,
-                signedByHsaId, enhetHsaId, enhetName, intygCreated);
+                signedByHsaId, enhetHsaId, enhetName, intygCreated, sameVardenhet);
         }
     }
 

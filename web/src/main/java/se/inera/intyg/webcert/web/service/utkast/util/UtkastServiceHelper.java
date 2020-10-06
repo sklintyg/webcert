@@ -48,7 +48,11 @@ public final class UtkastServiceHelper {
     public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning) {
         IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling, pdlLoggning);
         return signedIntygHolder.getUtlatande();
+    }
 
+    public Utlatande getUtlatandeForCandidateFromIT(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning) {
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygDataforCandidate(intygId, intygsTyp, coherentJournaling, pdlLoggning);
+        return signedIntygHolder.getUtlatande();
     }
 
     public Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
