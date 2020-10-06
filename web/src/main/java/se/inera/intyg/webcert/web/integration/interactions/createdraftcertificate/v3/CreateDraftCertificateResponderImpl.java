@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import com.google.common.base.Joiner;
-import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,9 @@ import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftCreationResponse;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -60,6 +61,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @SchemaValidation
@@ -154,31 +156,23 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                 + " kan inte utfärdas för patienter med skyddade personuppgifter", ErrorIdType.APPLICATION_ERROR);
         }
 
+        ModuleApi moduleApi = null;
+        try {
+            moduleApi = moduleRegistry.getModuleApi(intygsTyp, latestIntygTypeVersion);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Could not get module api", e);
+            return createErrorResponse("Internal error. Could not get module api.", ErrorIdType.APPLICATION_ERROR);
+        }
+
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
                 utkastService.checkIfPersonHasExistingIntyg(personnummer, user, null);
-        Optional<WebCertServiceErrorCodeEnum> utkastUnique = AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp,
-            intygstypToPreviousIntyg);
-        Optional<WebCertServiceErrorCodeEnum> intygUnique = AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp,
-            intygstypToPreviousIntyg, LocalDateTime.now());
-        WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
+        ValidateDraftCreationResponse validateDraftCreationResponse =
+                AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, intygsTyp, intygstypToPreviousIntyg,
+                        moduleApi);
 
-        if (uniqueErrorCode != null) {
-            String uniqueErrorString;
-            switch (uniqueErrorCode) {
-                case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
-                    uniqueErrorString = "Draft of this type must be unique within caregiver.";
-                    break;
-                case INTYG_FROM_SAME_VARDGIVARE_EXISTS:
-                    uniqueErrorString = "Certificates of this type must be unique within this caregiver.";
-                    break;
-                case INTYG_FROM_OTHER_VARDGIVARE_EXISTS:
-                    uniqueErrorString = "Certificates of this type must be globally unique.";
-                    break;
-                default:
-                    uniqueErrorString = "Unexpected error occurred.";
-                    break;
-            }
-            return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
+        if (validateDraftCreationResponse != null
+                && validateDraftCreationResponse.getResultCode() == ResultCodeType.ERROR) {
+            return createErrorResponse(validateDraftCreationResponse.getMessage(), ErrorIdType.APPLICATION_ERROR);
         }
 
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {
@@ -191,10 +185,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             }
         }
 
-        // Standard draft creation
         Utkast utkast = createNewDraft(utkastsParams, latestIntygTypeVersion, user);
 
-        return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
+        return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId, validateDraftCreationResponse);
     }
 
     private Utkast createNewDraft(Intyg utkastRequest, String latestIntygTypeVersion, IntygUser user) {
@@ -211,9 +204,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         return utkastService.createNewDraft(draftRequest);
     }
 
-    /**
-     * The response sent back to caller when an error is raised.
-     */
     private CreateDraftCertificateResponseType createErrorResponse(String errorMsg, ErrorIdType errorType) {
         ResultType result = ResultTypeUtil.errorResult(errorType, errorMsg);
 
@@ -222,9 +212,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         return response;
     }
 
-    /**
-     * Builds a specific MIU error response.
-     */
     private CreateDraftCertificateResponseType createMIUErrorResponse(Intyg utkastType) {
 
         String invokingUserHsaId = utkastType.getSkapadAv().getPersonalId().getExtension();
@@ -237,29 +224,27 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 
-    /**
-     * Builds a specific validation error response.
-     */
     private CreateDraftCertificateResponseType createValidationErrorResponse(ResultValidator resultsValidator) {
         String errMsgs = resultsValidator.getErrorMessagesAsString();
         LOG.warn("Intyg did not validate correctly: {}", errMsgs);
         return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
     }
 
-    /**
-     * Builds a specific application error response.
-     */
     private CreateDraftCertificateResponseType createApplicationErrorResponse(ResultValidator resultsValidator) {
         String errMsgs = resultsValidator.getErrorMessagesAsString();
         LOG.warn("Intyg did not pass APPLICATION_ERROR check correctly: {}", errMsgs);
         return createErrorResponse(errMsgs, ErrorIdType.APPLICATION_ERROR);
     }
 
-    /**
-     * The response sent back to caller when creating a certificate draft succeeded.
-     */
-    private CreateDraftCertificateResponseType createSuccessResponse(String nyttUtkastsId, String invokingUnitHsaId) {
-        ResultType result = ResultTypeUtil.okResult();
+    private CreateDraftCertificateResponseType createSuccessResponse(String nyttUtkastsId, String invokingUnitHsaId,
+                                                                     ValidateDraftCreationResponse validateDraftCreationResponse) {
+        ResultType result = null;
+        if (validateDraftCreationResponse != null
+                && validateDraftCreationResponse.getResultCode() == ResultCodeType.INFO) {
+            result = ResultTypeUtil.infoResult(validateDraftCreationResponse.getMessage());
+        } else {
+            result = ResultTypeUtil.okResult();
+        }
 
         IntygId intygId = new IntygId();
         intygId.setRoot(invokingUnitHsaId);
