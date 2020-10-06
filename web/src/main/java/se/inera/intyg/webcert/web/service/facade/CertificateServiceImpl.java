@@ -10,13 +10,19 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateStatusDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
+import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @Service
@@ -32,15 +38,22 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final IntygService intygService;
 
+    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+
+    private final CopyUtkastService copyUtkastService;
+
     private final ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
     public CertificateServiceImpl(UtkastService utkastService, UnderskriftService underskriftService, IntygModuleRegistry moduleRegistry,
-        IntygService intygService, ResourceLinkHelper resourceLinkHelper) {
+        IntygService intygService, CopyUtkastServiceHelper copyUtkastServiceHelper,
+        CopyUtkastService copyUtkastService, ResourceLinkHelper resourceLinkHelper) {
         this.utkastService = utkastService;
         this.underskriftService = underskriftService;
         this.moduleRegistry = moduleRegistry;
         this.intygService = intygService;
+        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+        this.copyUtkastService = copyUtkastService;
         this.resourceLinkHelper = resourceLinkHelper;
     }
 
@@ -134,6 +147,18 @@ public class CertificateServiceImpl implements CertificateService {
     public void revokeCertificate(String certificateId, String reason, String message) {
         final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
         intygService.revokeIntyg(certificateId, certificateType, reason, message);
+    }
+
+    @Override
+    public String replaceCertificate(String certificateId, String certificateType, String patientId) {
+        final var copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(Personnummer.createPersonnummer(patientId).get());
+
+        CreateReplacementCopyRequest serviceRequest = copyUtkastServiceHelper
+            .createReplacementCopyRequest(certificateId, certificateType, copyIntygRequest);
+        CreateReplacementCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
+
+        return serviceResponse.getNewDraftIntygId();
     }
 
     private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {

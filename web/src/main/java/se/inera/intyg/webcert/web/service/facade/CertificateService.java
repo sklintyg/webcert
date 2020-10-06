@@ -16,4 +16,6 @@ public interface CertificateService {
     void deleteCertificate(String certificateId, long version);
 
     void revokeCertificate(String certificateId, String reason, String message);
+
+    String replaceCertificate(String certificateId, String certificateType, String patientId);
 }
