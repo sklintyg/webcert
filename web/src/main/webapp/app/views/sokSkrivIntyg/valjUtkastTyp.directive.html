@@ -45,7 +45,7 @@
                   <wc-alert-message alert-id="intyg-previousintyg-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
                     <div ng-switch-when="true" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameEnhet">
                       <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
-                      <span ng-switch-when="false" ng-bind-html="getDifferentUnitWarningText(type.id, intygTypeModel.previousIntygWarnings[type.id].enhetName, false)"></span>
+                      <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg.differentenhet"></span>
                     </div>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.differentvg"></span>
                   </wc-alert-message>
@@ -55,7 +55,7 @@
                   <wc-alert-message alert-id="intyg-previousutkast-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameVardgivare">
                     <div ng-switch-when="true" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameEnhet">
                       <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previousdraft.samevg"></span>
-                      <span ng-switch-when="false" ng-bind-html="getDifferentUnitWarningText(type.id, intygTypeModel.previousUtkastWarnings[type.id].enhetName, true)"></span>
+                      <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.samevg.differentenhet"></span>
                     </div>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.differentvg"></span>
                   </wc-alert-message>
