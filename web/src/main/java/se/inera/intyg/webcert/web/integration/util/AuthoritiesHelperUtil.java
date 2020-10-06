@@ -37,6 +37,8 @@ public final class AuthoritiesHelperUtil {
     private static final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
     private static final String DRAFT = "utkast";
     private static final String CERTIFICATE = "intyg";
+
+    // CHECKSTYLE:OFF LineLength
     public static final String DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS = "Det finns ett utkast på %s för detta personnummer. Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
     public static final String DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS = "Det finns ett utkast på %s för detta personnummer på annan vårdenhet. Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
     public static final String DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS = "Det finns ett utkast på %1$s för detta personnummer hos annan vårdgivare. Senast skapade %1$s är det som gäller. Om du fortsätter och lämnar in %1$set så blir det därför detta %1$s som gäller.";
@@ -44,6 +46,7 @@ public final class AuthoritiesHelperUtil {
     public static final String CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS = "Det finns ett signerat %1$s för detta personnummer på annan vårdenhet. Du kan inte skapa ett nytt %1$s men kan däremot välja att ersätta det befintliga %1$set.";
     public static final String CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS = "Det finns ett signerat %1$s för detta personnummer hos annan vårdgivare. Det är inte möjligt att skapa ett nytt %1$s.";
     public static final String CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE = "Det finns ett signerat %1$s för detta personnummer hos annan vårdgivare. Senast skapade %1$s är det som gäller. Om du fortsätter och lämnar in %1$set så blir det därför detta %1$s som gäller.";
+    // CHECKSTYLE:ON LineLength
 
     private AuthoritiesHelperUtil() {
     }
