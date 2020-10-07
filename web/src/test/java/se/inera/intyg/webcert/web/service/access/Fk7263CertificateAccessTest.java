@@ -22,10 +22,8 @@ package se.inera.intyg.webcert.web.service.access;
 import static junit.framework.TestCase.assertEquals;
 
 import java.util.Arrays;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.Fk7263AccessServiceTestData;
@@ -35,8 +33,8 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { Fk7263EntryPoint.MODULE_ID, new Fk7263AccessServiceTestData() }
+        return Arrays.asList(new Object[][]{
+            {Fk7263EntryPoint.MODULE_ID, new Fk7263AccessServiceTestData()}
         });
     }
 
@@ -306,7 +304,7 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintNoConditionsDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
