@@ -304,7 +304,7 @@ public class FkCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintNoConditionsDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
