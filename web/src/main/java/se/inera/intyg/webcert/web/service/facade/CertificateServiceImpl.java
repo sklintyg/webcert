@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationTypeDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationsDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateStatusDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
@@ -42,18 +46,21 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final CopyUtkastService copyUtkastService;
 
+    private final CertificateRelationService certificateRelationService;
+
     private final ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
     public CertificateServiceImpl(UtkastService utkastService, UnderskriftService underskriftService, IntygModuleRegistry moduleRegistry,
         IntygService intygService, CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, ResourceLinkHelper resourceLinkHelper) {
+        CopyUtkastService copyUtkastService, CertificateRelationService certificateRelationService, ResourceLinkHelper resourceLinkHelper) {
         this.utkastService = utkastService;
         this.underskriftService = underskriftService;
         this.moduleRegistry = moduleRegistry;
         this.intygService = intygService;
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
+        this.certificateRelationService = certificateRelationService;
         this.resourceLinkHelper = resourceLinkHelper;
     }
 
@@ -74,6 +81,52 @@ public class CertificateServiceImpl implements CertificateService {
                     certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn()
                 );
             }
+
+            final var certificateRelations = new CertificateRelationsDTO();
+            certificateDTO.getMetadata().setRelations(certificateRelations);
+
+            final var relations = certificateRelationService.getRelations(certificateDTO.getMetadata().getCertificateId());
+            final var parentRelation = relations.getParent();
+            if (parentRelation != null) {
+                final CertificateRelationDTO parentCertificate = new CertificateRelationDTO();
+                parentCertificate.setCertificateId(parentRelation.getIntygsId());
+                parentCertificate.setCreated(parentRelation.getSkapad());
+                if (parentRelation.isMakulerat()) {
+                    parentCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                } else {
+                    switch (parentRelation.getStatus()) {
+                        case SIGNED:
+                            parentCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        default:
+                            parentCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
+                    }
+                }
+                parentCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                certificateRelations.setParent(parentCertificate);
+            }
+            final var replacedByIntyg = relations.getLatestChildRelations().getReplacedByIntyg();
+            final var replacedByUtkast = relations.getLatestChildRelations().getReplacedByUtkast();
+            final var replacedBy = replacedByIntyg != null ? replacedByIntyg : replacedByUtkast;
+            if (replacedBy != null) {
+                final CertificateRelationDTO childCertificate = new CertificateRelationDTO();
+                childCertificate.setCertificateId(replacedBy.getIntygsId());
+                childCertificate.setCreated(replacedBy.getSkapad());
+                if (replacedBy.isMakulerat()) {
+                    childCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                } else {
+                    switch (replacedBy.getStatus()) {
+                        case SIGNED:
+                            childCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        default:
+                            childCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
+                    }
+                }
+                childCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
+            }
+
             return certificateDTO;
         } catch (Exception ex) {
             LOG.error("Cannot convert certificate!", ex);
