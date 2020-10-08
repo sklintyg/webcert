@@ -179,4 +179,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor, String resultMinor,
         String resultMessage);
+
+    void logSuccessfulCertificateEventLoaderBatch(List<String> certificateIdList, Integer batchSize);
+
+    void logFailedCertificateEventLoaderBatch(List<String> failedCertificates, Integer batchSize);
 }

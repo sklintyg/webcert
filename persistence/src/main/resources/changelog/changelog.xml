@@ -1319,4 +1319,31 @@
     </createIndex>
   </changeSet>
 
+
+  <changeSet id="66" author="mj">
+    <createTable tableName="CERTIFICATE_EVENT_FAILED_LOAD">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="CERTIFICATE_ID" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TIMESTAMP" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="EXCEPTION" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+        columnName="ID" incrementBy="1" startWith="1"
+        tableName="CERTIFICATE_EVENT_FAILED_LOAD"/>
+
+    <createIndex indexName="IDX_CERTIFICATE_EVENT_FAILED_LOAD_CERTIFICATE_ID"
+        tableName="CERTIFICATE_EVENT_FAILED_LOAD" unique="false">
+      <column name="CERTIFICATE_ID"/>
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>

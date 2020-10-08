@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -151,4 +152,10 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore AND u.skapad >= :createdAfter")
     List<String> findTestCertificatesByCreatedBeforeAndAfter(@Param("createdAfter") LocalDateTime createdAfter,
         @Param("createdBefore") LocalDateTime createdBefore);
+
+    /**
+     * Returns the ids of certificates without events.
+     */
+    @Query("SELECT u.intygsId from Utkast u WHERE u.intygsId NOT IN (SELECT ce.certificateId FROM CertificateEvent ce WHERE ce.certificateId = u.intygsId )")
+    List<String> findCertificatesWithoutEvents(Pageable pageable);
 }
