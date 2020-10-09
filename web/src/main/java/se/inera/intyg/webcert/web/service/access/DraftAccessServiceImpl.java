@@ -73,7 +73,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     public AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
             .checkPatientSecrecy()
