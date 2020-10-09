@@ -57,6 +57,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientSecrecy()
