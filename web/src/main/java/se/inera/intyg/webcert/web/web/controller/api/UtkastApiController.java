@@ -301,6 +301,8 @@ public class UtkastApiController extends AbstractApiController {
 
         listIntygEntries.stream().forEach(lie -> markTestIndicator(lie, testIndicatorStatusMap));
 
+        listIntygEntries.forEach(this::markAvliden);
+
         final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
         intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
         intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
@@ -406,6 +408,12 @@ public class UtkastApiController extends AbstractApiController {
     private void markTestIndicator(ListIntygEntry lie, Map<Personnummer, Boolean> testIndicatorStatusMap) {
         if (testIndicatorStatusMap.get(lie.getPatientId())) {
             lie.setTestIntyg(true);
+        }
+    }
+
+    private void markAvliden(ListIntygEntry listIntygEntry) {
+        if (patientDetailsResolver.isAvliden(listIntygEntry.getPatientId())) {
+            listIntygEntry.setAvliden(true);
         }
     }
 }
