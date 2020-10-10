@@ -42,4 +42,15 @@ public final class UtkastUtil {
         return vardenhet;
     }
 
+    public static Vardenhet getCareUnit(String vardgivarId, String enhetsId) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(vardgivarId);
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(enhetsId);
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
+    }
+
 }

@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
@@ -64,6 +65,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -301,7 +303,7 @@ public class UtkastApiController extends AbstractApiController {
 
         listIntygEntries.stream().forEach(lie -> markTestIndicator(lie, testIndicatorStatusMap));
 
-        listIntygEntries.forEach(this::markAvliden);
+        listIntygEntries.forEach(this::markForwardingAllowed);
 
         final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
         intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
@@ -411,9 +413,12 @@ public class UtkastApiController extends AbstractApiController {
         }
     }
 
-    private void markAvliden(ListIntygEntry listIntygEntry) {
-        if (patientDetailsResolver.isAvliden(listIntygEntry.getPatientId())) {
-            listIntygEntry.setAvliden(true);
-        }
+    private void markForwardingAllowed(ListIntygEntry listIntygEntry) {
+        String certificateType = listIntygEntry.getIntygType();
+        Personnummer patientId = listIntygEntry.getPatientId();
+        Vardenhet careUnit = UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId());
+        boolean forwardingAllowed = draftAccessService.allowToForwardDraft(certificateType, careUnit, patientId).isAllowed();
+
+        listIntygEntry.setForwardingAllowed(forwardingAllowed);
     }
 }
