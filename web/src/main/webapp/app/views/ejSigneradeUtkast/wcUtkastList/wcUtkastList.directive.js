@@ -34,7 +34,7 @@ angular.module('webcert').directive('wcUtkastList',
           templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
           controller: function($scope) {
 
-            $scope.showVidarebefordras = function(links) {
+            $scope.showVidarebefordra = function(links) {
               return ResourceLinkService.isLinkTypeExists(links, 'VIDAREBEFORDRA_UTKAST');
             };
 
