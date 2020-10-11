@@ -70,8 +70,6 @@ public class ListIntygEntry {
 
     private boolean isTestIntyg = false;
 
-    private boolean forwardingAllowed;
-
 
     public String getIntygId() {
         return intygId;
@@ -231,14 +229,6 @@ public class ListIntygEntry {
 
     public void setTestIntyg(boolean isTestIntyg) {
         this.isTestIntyg = isTestIntyg;
-    }
-
-    public boolean isForwardingAllowed() {
-        return forwardingAllowed;
-    }
-
-    public void setForwardingAllowed(boolean forwardAllowed) {
-        this.forwardingAllowed = forwardAllowed;
     }
 
     @Override

@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').directive('wcUtkastList',
-    ['common.UtkastNotifyService', 'common.moduleService', 'common.IntygHelper', 'common.authorityService',
-      function(utkastNotifyService, moduleService, IntygHelper, authorityService) {
+    ['common.UtkastNotifyService', 'common.moduleService', 'common.IntygHelper', 'common.authorityService', 'common.ResourceLinkService',
+      function(utkastNotifyService, moduleService, IntygHelper, authorityService, ResourceLinkService) {
         'use strict';
 
         return {
@@ -34,12 +34,8 @@ angular.module('webcert').directive('wcUtkastList',
           templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
           controller: function($scope) {
 
-            $scope.showVidarebefordra = function(intyg) {
-              var options = {
-                authority: 'VIDAREBEFORDRA_UTKAST',
-                intygstyp: intyg.intygType
-              };
-              return authorityService.isAuthorityActive(options);
+            $scope.showVidarebefordras = function(links) {
+              return ResourceLinkService.isLinkTypeExists(links, 'VIDAREBEFORDRA_UTKAST');
             };
 
             $scope.getTypeName = function(intygsType) {

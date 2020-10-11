@@ -72,6 +72,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -417,8 +419,10 @@ public class UtkastApiController extends AbstractApiController {
         String certificateType = listIntygEntry.getIntygType();
         Personnummer patientId = listIntygEntry.getPatientId();
         Vardenhet careUnit = UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId());
-        boolean forwardingAllowed = draftAccessService.allowToForwardDraft(certificateType, careUnit, patientId).isAllowed();
+        boolean isForwardingAllowed = draftAccessService.allowToForwardDraft(certificateType, careUnit, patientId).isAllowed();
 
-        listIntygEntry.setForwardingAllowed(forwardingAllowed);
+        if (isForwardingAllowed) {
+            listIntygEntry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));
+        }
     }
 }
