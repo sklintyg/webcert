@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.CertificateService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateDTO;
@@ -112,5 +114,15 @@ public class CertificateController {
         final var newCertificateId = certificateService
             .replaceCertificate(certificateId, replaceCertificate.getCertificateType(), replaceCertificate.getPatientId());
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @GET
+    @Path("/{certificateId}/events")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getCertificateEvents(@PathParam("certificateId") @NotNull String certificateId) {
+        LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
+        final CertificateEventDTO[] certificateEvents = certificateService.getCertificateEvents(certificateId);
+        return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
     }
 }

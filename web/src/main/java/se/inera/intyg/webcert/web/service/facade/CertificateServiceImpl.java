@@ -1,20 +1,27 @@
 package se.inera.intyg.webcert.web.service.facade;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventTypeDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationTypeDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelationsDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateStatusDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
@@ -48,12 +55,15 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRelationService certificateRelationService;
 
+    private final CertificateEventService certificateEventService;
+
     private final ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
     public CertificateServiceImpl(UtkastService utkastService, UnderskriftService underskriftService, IntygModuleRegistry moduleRegistry,
         IntygService intygService, CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, CertificateRelationService certificateRelationService, ResourceLinkHelper resourceLinkHelper) {
+        CopyUtkastService copyUtkastService, CertificateRelationService certificateRelationService,
+        CertificateEventService certificateEventService, ResourceLinkHelper resourceLinkHelper) {
         this.utkastService = utkastService;
         this.underskriftService = underskriftService;
         this.moduleRegistry = moduleRegistry;
@@ -61,6 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
         this.certificateRelationService = certificateRelationService;
+        this.certificateEventService = certificateEventService;
         this.resourceLinkHelper = resourceLinkHelper;
     }
 
@@ -70,6 +81,7 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
             final var certificateDTO = moduleApi.getCertificateDTOFromJson(certificate.getModel());
+            certificateDTO.getMetadata().setCreated(certificate.getSkapad());
             certificateDTO.getMetadata().setVersion(certificate.getVersion());
             if (certificate.getAterkalladDatum() != null) {
                 certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.INVALIDATED);
@@ -214,13 +226,109 @@ public class CertificateServiceImpl implements CertificateService {
         return serviceResponse.getNewDraftIntygId();
     }
 
+    @Override
+    public CertificateEventDTO[] getCertificateEvents(String certificateId) {
+        final var certificateEventList = certificateEventService.getCertificateEvents(certificateId);
+
+        final var relations = certificateRelationService.getRelations(certificateId);
+
+        final List<CertificateEventDTO> certificateEventDTOList = new ArrayList<>();
+        for (CertificateEvent certificateEvent : certificateEventList) {
+            if (certificateEvent.getEventCode() == EventCode.RELINTYGMAKULE) {
+                continue;
+            }
+
+            final var certificateEventDTO = new CertificateEventDTO();
+            certificateEventDTO.setCertificateId(certificateEvent.getCertificateId());
+            certificateEventDTO.setTimestamp(certificateEvent.getTimestamp());
+            CertificateEventTypeDTO mappedEventCode;
+            switch (certificateEvent.getEventCode()) {
+                case SKAPAT:
+                    mappedEventCode = CertificateEventTypeDTO.CREATED;
+                    break;
+                case SIGNAT:
+                    mappedEventCode = CertificateEventTypeDTO.SIGNED;
+                    break;
+                case SKICKAT:
+                    mappedEventCode = CertificateEventTypeDTO.SENT;
+                    break;
+                case MAKULERAT:
+                    mappedEventCode = CertificateEventTypeDTO.REVOKED;
+                    break;
+                case ERSATTER:
+                    mappedEventCode = CertificateEventTypeDTO.REPLACES;
+                    final var parentRelation = relations.getParent();
+                    if (parentRelation != null) {
+                        certificateEventDTO.setRelatedCertificateId(parentRelation.getIntygsId());
+                        if (parentRelation.isMakulerat()) {
+                            certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.INVALIDATED);
+                        } else {
+                            switch (parentRelation.getStatus()) {
+                                case SIGNED:
+                                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
+                                    break;
+                                default:
+                                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    mappedEventCode = CertificateEventTypeDTO.CREATED;
+            }
+            certificateEventDTO.setType(mappedEventCode);
+            certificateEventDTOList.add(certificateEventDTO);
+
+            if (certificateEventDTO.getType() == CertificateEventTypeDTO.SIGNED) {
+                final var availableForPatient = new CertificateEventDTO();
+                availableForPatient.setType(CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
+                availableForPatient.setTimestamp(certificateEventDTO.getTimestamp());
+                availableForPatient.setCertificateId(certificateEventDTO.getCertificateId());
+                certificateEventDTOList.add(availableForPatient);
+            }
+        }
+
+        final var replacedByIntyg = relations.getLatestChildRelations().getReplacedByIntyg();
+        final var replacedByUtkast = relations.getLatestChildRelations().getReplacedByUtkast();
+        final var replacedBy = replacedByIntyg != null ? replacedByIntyg : replacedByUtkast;
+        if (replacedBy != null) {
+            final var replaced = new CertificateEventDTO();
+            replaced.setCertificateId(certificateId);
+            replaced.setType(CertificateEventTypeDTO.REPLACED);
+            replaced.setTimestamp(replacedBy.getSkapad());
+            replaced.setRelatedCertificateId(replacedBy.getIntygsId());
+            if (replacedBy.isMakulerat()) {
+                replaced.setRelatedCertificateStatus(CertificateStatusDTO.INVALIDATED);
+            } else {
+                switch (replacedBy.getStatus()) {
+                    case SIGNED:
+                        replaced.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
+                        break;
+                    default:
+                        replaced.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
+                }
+            }
+
+            certificateEventDTOList.add(replaced);
+        }
+
+        certificateEventDTOList.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+
+        return certificateEventDTOList.toArray(new CertificateEventDTO[certificateEventDTOList.size()]);
+    }
+
     private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
         validationError.setField(validationMessage.getField());
-        validationError.setText("Välj ett alternativ.");
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
+        // TODO: We need a way to give correct message to the user. Or should frontend adjust based on component?
+        if (validationError.getField().contains("har")) {
+            validationError.setText("Välj ett alternativ.");
+        } else {
+            validationError.setText("Ange ett svar.");
+        }
         return validationError;
     }
 }
