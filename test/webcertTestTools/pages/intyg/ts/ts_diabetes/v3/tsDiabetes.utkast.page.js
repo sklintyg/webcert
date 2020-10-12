@@ -60,21 +60,9 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         yes: element(by.id('hypoglykemier-nedsattHjarnfunktionYes')),
         no: element(by.id('hypoglykemier-nedsattHjarnfunktionNo'))
       },
-      c: {
-        yes: element(by.id('hypoglykemier-forstarRiskerYes')),
-        no: element(by.id('hypoglykemier-forstarRiskerNo'))
-      },
-      d: {
-        yes: element(by.id('hypoglykemier-fortrogenMedSymptomYes')),
-        no: element(by.id('hypoglykemier-fortrogenMedSymptomNo'))
-      },
       e: {
-        yes: element(by.id('hypoglykemier-saknarFormagaVarningsteckenYes')),
-        no: element(by.id('hypoglykemier-saknarFormagaVarningsteckenNo'))
-      },
-      f: {
-        yes: element(by.id('hypoglykemier-kunskapLampligaAtgarderYes')),
-        no: element(by.id('hypoglykemier-kunskapLampligaAtgarderNo'))
+        yes: element(by.id('hypoglykemier-formagaVarningsteckenYes')),
+        no: element(by.id('hypoglykemier-formagaVarningsteckenNo'))
       },
       g: {
         yes: element(by.id('hypoglykemier-egenkontrollBlodsockerYes')),
@@ -101,10 +89,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
       a: {
         yes: element(by.id('synfunktion-misstankeOgonsjukdomYes')),
         no: element(by.id('synfunktion-misstankeOgonsjukdomNo'))
-      },
-      b: {
-        yes: element(by.id('synfunktion-ogonbottenFotoSaknasYes')),
-        no: element(by.id('synfunktion-ogonbottenFotoSaknasNo'))
       },
       styrkor: {
         houk: element(by.id('synfunktion-hoger-utanKorrektion')),
@@ -148,7 +132,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
       } else if (typ === 'Tabletter') {
         promisesArr.push(behandlingForm.tabletter.typeKeys(protractor.Key.SPACE));
         var suffix = allmant.behandling.riskForHypoglykemi.toLowerCase() === 'ja' ? 'Yes' : 'No';
-        promisesArr.push(element(by.id('allmant-behandling-tablettRiskHypoglykemi' + suffix)).click());
+        promisesArr.push(element(by.id('allmant-behandling-riskHypoglykemi' + suffix)).click());
       } else if (typ === 'Insulin') {
         promisesArr.push(behandlingForm.insulin.typeKeys(protractor.Key.SPACE));
         if (allmant.behandling.insulinYear) {
@@ -168,7 +152,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
   fillInHypoglykemier: function(hypoglykemierObj) {
     var promisesArr = [];
-    'abcdefghij'.split('').forEach(function(char) {
+    'abeghij'.split('').forEach(function(char) {
       if (typeof hypoglykemierObj[char] !== 'undefined') {
         var answer = hypoglykemierObj[char].toLowerCase() === 'ja' ? 'yes' : 'no';
         promisesArr.push(this.hypoglykemier[char][answer].click());
@@ -199,7 +183,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
     var promiseList = [];
 
     // first check basic radio buttons
-    ['a', 'b'].forEach(function(prop) {
+    ['a'].forEach(function(prop) {
       if (typeof synValues[prop] !== 'undefined') {
         var synElement = synValues[prop].toLowerCase() === 'ja' ? this.syn[prop].yes : this.syn[prop].no;
         promiseList.push(synElement.typeKeys(protractor.Key.SPACE));

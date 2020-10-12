@@ -880,7 +880,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser(), null);
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
@@ -908,7 +908,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser(), null);
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
@@ -936,7 +936,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser(), null);
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
@@ -962,7 +962,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser(), null);
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
@@ -987,7 +987,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser(), null);
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
@@ -1147,7 +1147,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.save(utkast)).thenReturn(savedUtkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(createUser());
-        when(utkastServiceHelper.getUtlatandeFromIT(fromIntygId, fromIntygType, false, true)).thenReturn(utlatande);
+        when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, false, true)).thenReturn(utlatande);
         when(moduleApi.getMapper()).thenReturn(Optional.of(mapper));
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 

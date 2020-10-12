@@ -2,7 +2,7 @@ import se.inera.webcert.performance.Dependencies.gatlingPluginVersion
 
 pluginManagement {
   repositories {
-    maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+    maven("https://nexus.drift.inera.se/repository/maven-releases/")
     gradlePluginPortal()
     jcenter()
   }

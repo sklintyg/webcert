@@ -53,7 +53,7 @@ public class CertificateEventConverter {
 
     private Optional<ExtendedEventMessage> getDataForExtendedMessage(CertificateEvent event) {
         IntygContentHolder currentCertificate = intygService.fetchIntygDataForInternalUse(event.getCertificateId(), true);
-        if (currentCertificate != null) {
+        if (currentCertificate != null && currentCertificate.getRelations() != null) {
             WebcertCertificateRelation parent = currentCertificate.getRelations().getParent();
 
             if (parent != null) {

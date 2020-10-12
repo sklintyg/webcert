@@ -37,10 +37,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
     this.hypoglykemier = {
       a: element(by.id('hypoglykemier-sjukdomenUnderKontroll')),
       b: element(by.id('hypoglykemier-nedsattHjarnfunktion')),
-      c: element(by.id('hypoglykemier-forstarRisker')),
-      d: element(by.id('hypoglykemier-fortrogenMedSymptom')),
-      e: element(by.id('hypoglykemier-saknarFormagaVarningstecken')),
-      f: element(by.id('hypoglykemier-kunskapLampligaAtgarder')),
+      e: element(by.id('hypoglykemier-formagaVarningstecken')),
       g: element(by.id('hypoglykemier-egenkontrollBlodsocker')),
       h: element(by.id('hypoglykemier-aterkommandeSenasteAret')),
       i: element(by.id('hypoglykemier-aterkommandeSenasteKvartalet')),
@@ -51,7 +48,6 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
     };
 
     this.synIntygA = element(by.id('synfunktion-misstankeOgonsjukdom'));
-    this.synIntygB = element(by.id('synfunktion-ogonbottenFotoSaknas'));
     this.synStyrkor = {
       houk: element(by.id('synfunktion-row0-col1')),
       homk: element(by.id('synfunktion-row0-col2')),
@@ -109,7 +105,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
     var hypoglykemierMandatory = (behandling.typer.indexOf('Insulin') > -1 ||
         (behandling.typer.indexOf('Tabletter') > -1 && behandling.riskForHypoglykemi === 'Ja'));
 
-    'abcdefghij'.split('').forEach(function(char) {
+    'abeghij'.split('').forEach(function(char) {
       var expectedYesNo = hypoglykemierMandatory ? hypoglykemier[char] : ejAngivet;
       expect(this.hypoglykemier[char].getText()).toBe(expectedYesNo);
       if (['h', 'i', 'j'].indexOf(char) > -1) {
@@ -121,7 +117,6 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
   },
   verifieraSynfunktion: function(synfunktion) {
     expect(this.synIntygA.getText()).toBe(synfunktion.a);
-    expect(this.synIntygB.getText()).toBe(synfunktion.b);
 
     Object.keys(synfunktion.styrkor).forEach(function(key) {
       expect(this.synStyrkor[key].getText()).toBe(this.dotToComma(synfunktion.styrkor[key]));

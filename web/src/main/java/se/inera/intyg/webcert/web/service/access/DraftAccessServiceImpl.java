@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -74,7 +73,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     public AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
             .checkPatientSecrecy()
@@ -146,7 +145,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
-            .checkUnit(false, false)
+            .checkUnit(false, true)
             .evaluate();
     }
 

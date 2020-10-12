@@ -58,23 +58,29 @@ angular.module('webcert').directive('wcValjUtkastTyp',
 
             scope.checkType = function(intygType) {
 
-              //Om utkastet är av typ DOI så ska en informationsdialog visas om ett Dödsbevis inte finns eller inte är skickat
+              // Display info dialog if draft is of type doi but no db has been issued within the same vardgivare.
               if (intygType === 'doi') {
+                var dbExistsOnSameVardgivare = false;
+                var dbExistsOnCurrentUnit = false;
                 var intygList = ViewState.intygListUnhandled;
-                var dbExists = false;
 
                 for (var i = 0; i < intygList.length; i++) {
                   if (intygList[i].intygType === 'db' && intygList[i].status === 'SENT') {
-                    dbExists = true;
+                    dbExistsOnCurrentUnit = true;
                   }
-
                 }
-                if (!dbExists) {
+
+                var dbExists = scope.intygTypeModel.previousIntygWarnings.db;
+                if (dbExists && dbExists.sameVardgivare) {
+                  dbExistsOnSameVardgivare = true;
+                }
+
+                if (!dbExistsOnSameVardgivare && !dbExistsOnCurrentUnit) {
                   DialogService.showDialog({
                     dialogId: 'doi-info-dialog',
                     titleText: 'doi.label.titleText',
                     bodyText: 'doi.label.bodyText',
-                    templateUrl: '/app/partials/doiInfo.dialog.html',
+                    templateUrl: '/app/partials/uniqueInfo.dialog.html',
 
                     button1click: function(modalInstance) {
                       scope.createDraft(intygType);
@@ -167,12 +173,6 @@ angular.module('webcert').directive('wcValjUtkastTyp',
               return dynamicLabelService.getProperty(key);
             };
 
-            scope.getDifferentUnitWarningText = function(id, unitName, isDraft) {
-              if(isDraft) {
-                return messageService.getProperty(id + '.warn.previousdraft.samevg.differentenhet', { enhetName: unitName});
-              }
-              return messageService.getProperty(id + '.warn.previouscertificate.samevg.differentenhet', { enhetName: unitName});
-            };
           }
         };
       }]

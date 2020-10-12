@@ -256,7 +256,8 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         try {
-            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeFromIT(fromIntygId, fromIntygType, false, true);
+            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType,
+                false, true);
 
             String draftVersion = to.getIntygTypeVersion();
             if (draftVersion == null) {
@@ -343,7 +344,9 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer, final IntygUser user) {
+    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
+                                                                                 final IntygUser user,
+                                                                                 final String currentDraftId) {
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
             authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
@@ -367,7 +370,9 @@ public class UtkastServiceImpl implements UtkastService {
                     Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
-            .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED)
+            .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
+                    && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
+                    && !utkast.getIntygsId().equals(currentDraftId))
             .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
             .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                 Collectors.mapping(utkast -> PreviousIntyg.of(

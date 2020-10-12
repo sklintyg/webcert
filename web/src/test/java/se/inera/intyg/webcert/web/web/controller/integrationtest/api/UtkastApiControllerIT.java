@@ -45,19 +45,6 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetTsBasUtkast() {
         JsonPath model = testCreateUtkast("ts-bas");
-        // INTYG-4086 - do NOT store name or address for FK intyg in DB
-        assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
-        assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
-    }
-
-    @Test
-    public void testGetTsDiabetesUtkast() {
-        JsonPath model = testCreateUtkast("ts-diabetes");
-        // INTYG-4086 - do NOT store name or address for FK intyg in DB
-        // ts-diabetes v3 does not have patient in grundData
-        //assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
-        //assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
-        assertEquals("2.8", model.getString("textVersion"));
     }
 
     @Test
@@ -285,8 +272,9 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         spec()
             .pathParams("personnummer", "191212121212")
+            .pathParams("currentDraftId", "id")
             .expect().statusCode(200)
-            .when().get("api/utkast/previousIntyg/{personnummer}")
+            .when().get("api/utkast/previousIntyg/{personnummer}/{currentDraftId}")
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-previousIntyg.json"));
     }
 }

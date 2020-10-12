@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -47,8 +46,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Autowired
     public CertificateAccessServiceImpl(final WebCertUserService webCertUserService,
-            final PatientDetailsResolver patientDetailsResolver,
-            final UtkastService utkastService) {
+        final PatientDetailsResolver patientDetailsResolver,
+        final UtkastService utkastService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
@@ -58,6 +57,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientSecrecy()
@@ -109,7 +109,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
-            .checkUnit(false, false)
+            .checkUnit(false, true)
             .evaluate();
     }
 
@@ -179,7 +179,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Override
     public AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters,
-            boolean newCertificate) {
+        boolean newCertificate) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
@@ -254,18 +254,18 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     @Override
     public AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD)
-                .careUnit(accessEvaluationParameters.getUnit())
-                .patient(accessEvaluationParameters.getPatient())
-                .checkPatientDeceased(true)
-                .checkPatientTestIndicator()
-                .checkTestCertificate(accessEvaluationParameters.isTestCertificate())
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .checkPatientSecrecy()
-                .checkUnit(false, false)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+            .privilege(AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(true)
+            .checkPatientTestIndicator()
+            .checkTestCertificate(accessEvaluationParameters.isTestCertificate())
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {

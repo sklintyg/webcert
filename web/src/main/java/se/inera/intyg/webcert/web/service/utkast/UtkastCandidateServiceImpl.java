@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
@@ -100,6 +101,11 @@ public class UtkastCandidateServiceImpl {
 
             if (candidate.isPresent()) {
                 Utkast utkast = candidate.get();
+
+                // True if the enhet or vardenhet of the currently logged in user is same vardenhet or a subunit
+                // of the vardenhet where the candidate certificate was issued.
+                boolean sameVardenhet = webCertUserService.isUserAllowedAccessToUnit(utkast.getEnhetsId());
+
                 metaData = new UtkastCandidateMetaData.Builder()
                     .with(builder -> {
                         builder.intygId = utkast.getIntygsId();
@@ -108,6 +114,8 @@ public class UtkastCandidateServiceImpl {
                         builder.intygCreated = utkast.getSkapad();
                         builder.signedByHsaId = utkast.getSkapadAv().getHsaId();
                         builder.enhetHsaId = utkast.getEnhetsId();
+                        builder.enhetName = utkast.getEnhetsNamn();
+                        builder.sameVardenhet = sameVardenhet;
                     })
                     .create();
 
@@ -140,6 +148,18 @@ public class UtkastCandidateServiceImpl {
             patient.getPersonId().getPersonnummerWithDash(),
             validIntygType);
 
+        switch (copyFromCriteria.getIntygType()) {
+            case "lisjp":
+                return filterLisjpCandidates(candidates, copyFromCriteria);
+            case "db":
+                return filterDbCandidates(candidates, copyFromCriteria);
+            default:
+                return Optional.empty();
+        }
+    }
+
+    private Optional<Utkast> filterLisjpCandidates(List<Utkast> candidates, GetCopyFromCriteria copyFromCriteria) {
+
         LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.getMaxAgeDays());
 
         // This is the candidate to present
@@ -148,9 +168,26 @@ public class UtkastCandidateServiceImpl {
             .filter(candidate -> candidate.getAterkalladDatum() == null)
             .filter(candidate -> candidate.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
             .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
-            .filter(candidate -> filterOnUnit(candidate))
+            .filter(candidate -> webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId()))
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
             .findFirst();
+    }
+
+    private Optional<Utkast> filterDbCandidates(List<Utkast> candidates, GetCopyFromCriteria copyFromCriteria) {
+
+        return candidates.stream()
+            .filter(candidate -> candidate.getStatus() == UtkastStatus.SIGNED)
+            .filter(candidate -> candidate.getAterkalladDatum() == null)
+            .filter(candidate -> filterDbOnReplaced(candidate, candidates))
+            .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
+            .filter(candidate -> candidate.getIntygsTyp().equals(copyFromCriteria.getIntygType()))
+            .filter(candidate -> getUser().getValdVardgivare().getId().equals(candidate.getVardgivarId()))
+            .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
+            .findFirst();
+    }
+
+    private WebCertUser getUser() {
+        return webCertUserService.getUser();
     }
 
     private boolean filterOnMajorVersion(String intygTypeVersion, String intygTypeMajorVersion) {
@@ -158,16 +195,13 @@ public class UtkastCandidateServiceImpl {
             && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
     }
 
-    /*
-     * Användare ska få träff på intyg på inloggad enhet eller på
-     * eventuell underenhet till den enhet man är inloggad på.
-     */
-    private boolean filterOnUnit(Utkast candidate) {
-        return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
+    private boolean filterDbOnReplaced(Utkast candidateForChecking, List<Utkast> candidates) {
+        for (Utkast candidate : candidates) {
+            if (candidateForChecking.getIntygsId().equals(candidate.getRelationIntygsId())
+                && candidate.getRelationKod().equals(RelationKod.ERSATT)) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    private WebCertUser getUser() {
-        return webCertUserService.getUser();
-    }
-
 }

@@ -75,7 +75,7 @@ abstract public class AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -98,7 +98,7 @@ abstract public class AccessTest {
         doReturn(false)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -121,7 +121,7 @@ abstract public class AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -144,7 +144,7 @@ abstract public class AccessTest {
         doReturn(false)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -167,7 +167,7 @@ abstract public class AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -190,7 +190,7 @@ abstract public class AccessTest {
         doReturn(false)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -213,7 +213,7 @@ abstract public class AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -236,7 +236,7 @@ abstract public class AccessTest {
         doReturn(false)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -259,7 +259,7 @@ abstract public class AccessTest {
         doReturn(true)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -282,7 +282,7 @@ abstract public class AccessTest {
         doReturn(false)
             .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();

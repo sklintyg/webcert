@@ -30,10 +30,6 @@ public enum WebCertServiceErrorCodeEnum {
 
     COMPLEMENT_INTYG_EXISTS,            // Due to existence of complement intyg, operation is not allowed.
 
-    UTKAST_FROM_SAME_VARDGIVARE_EXISTS, // Due to existence of (unsigned) utkast, operation is not allowed.
-    INTYG_FROM_OTHER_VARDGIVARE_EXISTS, // Due to existence of signed intyg, operation is not allowed.
-    INTYG_FROM_SAME_VARDGIVARE_EXISTS,  // Due to existence of signed intyg, operation is not allowed.
-
     INTYG_CREATED_AFTER_EXISTS,
 
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
