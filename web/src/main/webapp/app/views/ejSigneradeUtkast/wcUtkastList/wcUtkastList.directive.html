@@ -37,7 +37,7 @@
       <td class="unbreakable">
         <button ng-attr-id="vidarebefordraBtn-{{intyg.intygId}}" type="button" class="btn btn-primary"
                 ng-click="openMailDialog(intyg);openMaildialogTooltip=false;" intygstyp="{{::intyg.intygType}}"
-                ng-if="intyg.status != 'DRAFT_LOCKED' && showVidarebefordra(intyg)"
+                ng-if="intyg.status != 'DRAFT_LOCKED' && showVidarebefordra(intyg.links)"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
                 popover-is-open="openMaildialogTooltip"
                  popover-placement="top" popover-popup-delay="300"
@@ -103,7 +103,7 @@
       <div class="col-xs-12">
         <button type="button" class="btn btn-primary"
                 ng-click="openMailDialog(intyg)" intygstyp="{{::intyg.intygType}}"
-                ng-if="intyg.status != 'DRAFT_LOCKED' && showVidarebefordra(intyg)"
+                ng-if="intyg.status != 'DRAFT_LOCKED' && showVidarebefordra(intyg.links)"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
                  popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">

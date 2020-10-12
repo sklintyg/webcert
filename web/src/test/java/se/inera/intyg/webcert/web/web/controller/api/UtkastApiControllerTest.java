@@ -74,6 +74,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -283,6 +284,8 @@ public class UtkastApiControllerTest {
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
 
+        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
+
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
         assertEquals(2, queryIntygResponse.getTotalCount());
@@ -310,6 +313,7 @@ public class UtkastApiControllerTest {
         nameByHsaid.put("lakareid2", "c");
         nameByHsaid.put("lakareid3", "a");
         Mockito.doReturn(nameByHsaid).when(utkastControllerSpy).getNamesByHsaIds(any());
+        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
 
         //When
         final Response response = utkastControllerSpy.filterDraftsForUnit(filterParameters);
@@ -336,6 +340,8 @@ public class UtkastApiControllerTest {
         final QueryIntygParameter filterParameters = buildQueryIntygParameter();
         filterParameters.setOrderAscending(false);
         filterParameters.setOrderBy("patientPersonnummer");
+
+        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
 
         //When
         final Response response = utkastController.filterDraftsForUnit(filterParameters);
@@ -367,6 +373,8 @@ public class UtkastApiControllerTest {
                 buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdNotFound, nameNotFound)),
                 utkast2));
 
+        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
+
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
         assertEquals(2, queryIntygResponse.getTotalCount());
@@ -395,6 +403,7 @@ public class UtkastApiControllerTest {
 
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
+        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);

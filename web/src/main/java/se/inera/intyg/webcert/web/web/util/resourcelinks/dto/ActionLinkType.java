@@ -56,6 +56,11 @@ public enum ActionLinkType {
     KOPIERA_UTKAST,
 
     /**
+     * Forward draft.
+     */
+    VIDAREBEFORDRA_UTKAST,
+
+    /**
      * Renew certificate.
      */
     FORNYA_INTYG,
