@@ -23,71 +23,29 @@
   <jmxConfigurator />
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <markers>Monitoring, HSA</markers>
+      <markers>Monitoring</markers>
       <onMatch>DENY</onMatch>
       <onMismatch>ACCEPT</onMismatch>
     </filter>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
+        <param name="Pattern" value="%date{ISO8601} [%thread] %highlight(%-5level) %logger{10} [%user %session] - %msg%n" />
       </layout>
     </encoder>
   </appender>
 
-  <!--Daily rolling file appender -->
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <markers>Monitoring, HSA</markers>
-      <onMatch>DENY</onMatch>
-      <onMismatch>ACCEPT</onMismatch>
-    </filter>
-    <file>${catalina.base}/logs/webcert.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log
-      </fileNamePattern>
-    </rollingPolicy>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
-      </layout>
-    </encoder>
-  </appender>
-
-  <!--Daily rolling file appender for logging HSA faults -->
-  <appender name="HSA" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <marker>HSA</marker>
+      <markers>Monitoring</markers>
       <onMatch>ACCEPT</onMatch>
       <onMismatch>DENY</onMismatch>
     </filter>
-    <file>${catalina.base}/logs/webcert-hsa.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${catalina.base}/logs/webcert-hsa.%d{yyyy-MM-dd}.log
-      </fileNamePattern>
-    </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} %-5level %logger{10} %session - %msg%n" />
-      </layout>
-    </encoder>
-  </appender>
-
-  <!--Daily rolling file appender for logging monitoring events -->
-  <appender name="MONITORING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <marker>Monitoring</marker>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
-    </filter>
-    <file>${catalina.base}/logs/webcert-monitoring.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${catalina.base}/logs/webcert-monitoring.%d{yyyy-MM-dd}.log
-      </fileNamePattern>
-    </rollingPolicy>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} %session %user %selectedCareUnit %origin %role - %msg%n" />
+        <param name="Pattern" value="%date{ISO8601} [%thread] %highlight(%-5level) %boldGreen(%logger{10}) [%user %session] - %msg%n" />
       </layout>
     </encoder>
   </appender>
@@ -135,8 +93,6 @@
   <root>
     <level value="error" />
     <appender-ref ref="STDOUT" />
-    <appender-ref ref="FILE" />
-    <appender-ref ref="HSA" />
     <appender-ref ref="MONITORING" />
   </root>
 </configuration>
