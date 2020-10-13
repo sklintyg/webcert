@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Strings;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -160,13 +159,10 @@ public class UtkastCandidateServiceImpl {
 
     private Optional<Utkast> filterLisjpCandidates(List<Utkast> candidates, GetCopyFromCriteria copyFromCriteria) {
 
-        LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.getMaxAgeDays());
-
         // This is the candidate to present
         return candidates.stream()
             .filter(candidate -> candidate.getStatus() == UtkastStatus.SIGNED)
             .filter(candidate -> candidate.getAterkalladDatum() == null)
-            .filter(candidate -> candidate.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
             .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
             .filter(candidate -> webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId()))
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
