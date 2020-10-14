@@ -58,6 +58,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ReceiverApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SessionStatusController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.UserController" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />
