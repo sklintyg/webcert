@@ -105,9 +105,6 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, true)
             .evaluate();

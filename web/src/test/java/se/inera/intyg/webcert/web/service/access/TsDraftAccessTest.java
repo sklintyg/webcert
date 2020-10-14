@@ -320,17 +320,17 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
