@@ -20,5 +20,5 @@ package se.inera.intyg.webcert.web.event;
 
 public interface CertificateEventLoaderService {
 
-    void run();
+    void loadIds();
 }

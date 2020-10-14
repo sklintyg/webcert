@@ -18,19 +18,25 @@
  */
 package se.inera.intyg.webcert.web.event;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import se.inera.intyg.webcert.persistence.event.model.CertificateEventFailedLoad;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
@@ -39,9 +45,7 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateEventLoaderServiceImpl.class);
     private static final String JOB_NAME = "CertificateEventLoader.run";
-
-    @Autowired
-    CertificateEventService service;
+    private static final int NR_OF_BATCHES = 32;
 
     @Autowired
     MonitoringLogService monitoringLogService;
@@ -50,43 +54,54 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
     UtkastRepository utkastRepository;
 
     @Autowired
-    CertificateEventFailedLoadRepository failedLoadRepository;
+    @Qualifier("jmsCertificateEventLoaderTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Value("${certificateeventloader.batchsize:10000}")
     private Integer batchSize;
 
+    @Value("${certificateeventloader.queue}")
+    private String internalCertificateEventsLoaderQueue;
+
+
     @Override
     @Scheduled(cron = "${certificateeventloader.cron:-}")
     @SchedulerLock(name = JOB_NAME)
-    public void run() {
-        LOG.info("Starting certificate event loader run with batch size: " + batchSize);
-        var certificateIdList = getIdsForCertificatesWithoutEvents();
-        List<String> failedCertificates = new ArrayList<>();
+    public void loadIds() {
+        if (countPendingMessages() == 0) {
+            LOG.info("No IDs on queue: Starting certificate event loader run with batch size: " + batchSize + " and splitting into "
+                + NR_OF_BATCHES + " batches.");
+            var certificateIdList = getIdsForCertificatesWithoutEvents();
 
-        certificateIdList.forEach(id -> {
-            try {
-                service.getCertificateEvents(id);
-            } catch (Exception e) {
-                addToFailedCertificatesTable(id, e);
-                failedCertificates.add(id);
-            }
-        });
-
-        if (failedCertificates.size() < certificateIdList.size()) {
-            monitoringLogService.logSuccessfulCertificateEventLoaderBatch(certificateIdList, batchSize);
-        }
-
-        if (failedCertificates.size() > 0) {
-            monitoringLogService.logFailedCertificateEventLoaderBatch(failedCertificates, batchSize);
+            chunked(certificateIdList.stream(), certificateIdList.size() / NR_OF_BATCHES).forEach(this::putIdsOnQueue);
         }
     }
 
-    private void addToFailedCertificatesTable(String id, Exception e) {
-        var certificateEventFailedLoad = new CertificateEventFailedLoad();
-        certificateEventFailedLoad.setCertificateId(id);
-        certificateEventFailedLoad.setException(e.toString());
-        certificateEventFailedLoad.setTimestamp(LocalDateTime.now());
-        failedLoadRepository.save(new CertificateEventFailedLoad());
+    private static <T> Stream<List<T>> chunked(Stream<T> stream, int chunkSize) {
+        AtomicInteger index = new AtomicInteger(0);
+
+        return stream.collect(Collectors.groupingBy(x -> index.getAndIncrement() / chunkSize))
+            .entrySet().stream()
+            .sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue);
+    }
+
+    private int countPendingMessages() {
+        Integer totalPendingMessages = this.jmsTemplate
+            .browse(internalCertificateEventsLoaderQueue, (session, browser) -> Collections.list(browser.getEnumeration()).size());
+
+        return totalPendingMessages == null ? 0 : totalPendingMessages;
+    }
+
+    private void putIdsOnQueue(List<String> idList) {
+        send(session -> session.createObjectMessage((ArrayList<String>) idList));
+    }
+
+    private void send(final MessageCreator messageCreator) {
+        try {
+            jmsTemplate.send(internalCertificateEventsLoaderQueue, messageCreator);
+        } catch (JmsException e) {
+            LOG.error("Failure sending ids to certificate event loader queue.", e);
+        }
     }
 
     private List<String> getIdsForCertificatesWithoutEvents() {
