@@ -1331,7 +1331,7 @@
       <column name="TIMESTAMP" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="EXCEPTION" type="varchar(255)">
+      <column name="EXCEPTION" type="CLOB">
         <constraints nullable="true"/>
       </column>
     </createTable>
@@ -1344,6 +1344,12 @@
         tableName="CERTIFICATE_EVENT_FAILED_LOAD" unique="false">
       <column name="CERTIFICATE_ID"/>
     </createIndex>
+
+    <createTable tableName="CERTIFICATE_EVENT_PROCESSED">
+      <column name="CERTIFICATE_ID" type="varchar(64)">
+        <constraints  primaryKey="true" unique="true" nullable="false"/>
+      </column>
+    </createTable>
   </changeSet>
 
 </databaseChangeLog>

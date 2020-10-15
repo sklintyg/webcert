@@ -6,7 +6,6 @@ import java.util.List;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,8 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventFailedLoad;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
+import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
 public class CertificateEventLoaderConsumer implements MessageListener {
@@ -26,24 +25,20 @@ public class CertificateEventLoaderConsumer implements MessageListener {
     CertificateEventService service;
 
     @Autowired
-    MonitoringLogService monitoringLogService;
-
-    @Autowired
     UtkastRepository utkastRepository;
 
     @Autowired
     CertificateEventFailedLoadRepository failedLoadRepository;
 
-//    @Autowired
-//    @Qualifier("jmsCertificateEventLoaderTemplate")
-//    private JmsTemplate jmsTemplate;
+    @Autowired
+    CertificateEventProcessedRepository processedRepository;
 
 
     @Override
-    @JmsListener(destination = "${certificateeventloader.queue}")
+    @JmsListener(destination = "${certificateevent.loader.queueName}")
     public void onMessage(Message message) {
         try {
-            if (message instanceof TextMessage) {
+            if (message instanceof ObjectMessage) {
                 ObjectMessage objMessage = (ObjectMessage) message;
                 var list = (ArrayList) objMessage.getObject();
                 processIds(list);
@@ -59,6 +54,7 @@ public class CertificateEventLoaderConsumer implements MessageListener {
         certificateIdList.forEach(id -> {
             try {
                 service.getCertificateEvents(id);
+                processedRepository.deleteByCertificateId(id);
             } catch (Exception e) {
                 addToFailedCertificatesTable(id, e);
                 failedCertificates.add(id);
@@ -66,11 +62,13 @@ public class CertificateEventLoaderConsumer implements MessageListener {
         });
 
         if (failedCertificates.size() < certificateIdList.size()) {
-            monitoringLogService.logSuccessfulCertificateEventLoaderBatch(certificateIdList, certificateIdList.size());
+            LOG.info("Certificate Event Loader successfully finished processing {} certificates out of batch with size {}",
+                (certificateIdList.size() - failedCertificates.size()), certificateIdList.size());
         }
 
         if (failedCertificates.size() > 0) {
-            monitoringLogService.logFailedCertificateEventLoaderBatch(failedCertificates, certificateIdList.size());
+            LOG.warn("Certificate Event Loader failed during processing of {} certificates out of batch with size {}. These failed: {}",
+                failedCertificates.size(), certificateIdList.size(), String.join(", ", failedCertificates));
         }
     }
 
@@ -79,6 +77,6 @@ public class CertificateEventLoaderConsumer implements MessageListener {
         certificateEventFailedLoad.setCertificateId(id);
         certificateEventFailedLoad.setException(e.toString());
         certificateEventFailedLoad.setTimestamp(LocalDateTime.now());
-        failedLoadRepository.save(new CertificateEventFailedLoad());
+        failedLoadRepository.save(certificateEventFailedLoad);
     }
 }

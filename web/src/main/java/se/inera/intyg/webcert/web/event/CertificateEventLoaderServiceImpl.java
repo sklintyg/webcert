@@ -31,15 +31,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.persistence.event.model.CertificateEventProcessed;
+import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
+@Service
 @EnableScheduling
 public class CertificateEventLoaderServiceImpl implements CertificateEventLoaderService {
 
@@ -54,13 +57,16 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
     UtkastRepository utkastRepository;
 
     @Autowired
+    CertificateEventProcessedRepository processedRepository;
+
+    @Autowired
     @Qualifier("jmsCertificateEventLoaderTemplate")
     private JmsTemplate jmsTemplate;
 
     @Value("${certificateeventloader.batchsize:10000}")
     private Integer batchSize;
 
-    @Value("${certificateeventloader.queue}")
+    @Value("${certificateevent.loader.queueName}")
     private String internalCertificateEventsLoaderQueue;
 
 
@@ -73,7 +79,10 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
                 + NR_OF_BATCHES + " batches.");
             var certificateIdList = getIdsForCertificatesWithoutEvents();
 
-            chunked(certificateIdList.stream(), certificateIdList.size() / NR_OF_BATCHES).forEach(this::putIdsOnQueue);
+            if (certificateIdList.size() > 0) {
+                var size = certificateIdList.size() < NR_OF_BATCHES ? NR_OF_BATCHES : (certificateIdList.size() / NR_OF_BATCHES);
+                chunked(certificateIdList.stream(), size).forEach(this::putIdsOnQueue);
+            }
         }
     }
 
@@ -93,18 +102,29 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
     }
 
     private void putIdsOnQueue(List<String> idList) {
-        send(session -> session.createObjectMessage((ArrayList<String>) idList));
+        var success = send(session -> session.createObjectMessage((ArrayList<String>) idList));
+        if (success) {
+            idList.forEach(this::addToProcessed);
+        }
     }
 
-    private void send(final MessageCreator messageCreator) {
+    private void addToProcessed(String id) {
+        CertificateEventProcessed processed = new CertificateEventProcessed();
+        processed.setCertificateId(id);
+        processedRepository.save(processed);
+    }
+
+    private boolean send(final MessageCreator messageCreator) {
         try {
             jmsTemplate.send(internalCertificateEventsLoaderQueue, messageCreator);
+            return true;
         } catch (JmsException e) {
             LOG.error("Failure sending ids to certificate event loader queue.", e);
+            return false;
         }
     }
 
     private List<String> getIdsForCertificatesWithoutEvents() {
-        return utkastRepository.findCertificatesWithoutEvents(PageRequest.of(0, batchSize));
+        return utkastRepository.findCertificatesWithoutEvents(batchSize);
     }
 }

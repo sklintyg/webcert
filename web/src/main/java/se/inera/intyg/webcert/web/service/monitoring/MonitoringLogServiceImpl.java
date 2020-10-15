@@ -430,16 +430,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED, transactionId, intygsId, resultMajor, resultMinor, resultMessage);
     }
 
-    @Override
-    public void logSuccessfulCertificateEventLoaderBatch(List<String> certificateIdList, Integer batchSize) {
-//TODO
-    }
-
-    @Override
-    public void logFailedCertificateEventLoaderBatch(List<String> failedCertificates, Integer batchSize) {
-//TODO
-    }
-
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();

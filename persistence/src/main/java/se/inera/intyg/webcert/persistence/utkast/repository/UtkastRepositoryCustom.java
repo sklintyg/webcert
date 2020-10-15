@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -154,8 +153,16 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
         @Param("createdBefore") LocalDateTime createdBefore);
 
     /**
-     * Returns the ids of certificates without events.
+     * Returns the ids of certificates without events that are not being processed.
      */
-    @Query("SELECT u.intygsId from Utkast u WHERE u.intygsId NOT IN (SELECT ce.certificateId FROM CertificateEvent ce WHERE ce.certificateId = u.intygsId )")
-    List<String> findCertificatesWithoutEvents(Pageable pageable);
+    @Query(value = "SELECT u.INTYGS_ID FROM INTYG u "
+        + "WHERE u.INTYGS_ID NOT IN ("
+        + "SELECT ce.CERTIFICATE_ID FROM CERTIFICATE_EVENT ce WHERE ce.CERTIFICATE_ID = u.INTYGS_ID "
+        + "UNION ALL "
+        + "SELECT cep.CERTIFICATE_ID FROM CERTIFICATE_EVENT_PROCESSED cep WHERE cep.CERTIFICATE_ID = u.INTYGS_ID "
+        + "UNION ALL "
+        + "SELECT cel.CERTIFICATE_ID FROM CERTIFICATE_EVENT_FAILED_LOAD cel WHERE cel.CERTIFICATE_ID = u.INTYGS_ID ) "
+        + "LIMIT :batchSize",
+        nativeQuery = true)
+    List<String> findCertificatesWithoutEvents(@Param("batchSize") Integer batchSize);
 }
