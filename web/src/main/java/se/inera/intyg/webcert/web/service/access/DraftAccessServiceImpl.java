@@ -117,6 +117,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
+            .checkPatientTestIndicator(true)
             .checkPatientDeceased(true)
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
