@@ -24,6 +24,8 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEventProcessed;
 
 public interface CertificateEventProcessedRepository extends JpaRepository<CertificateEventProcessed, Long> {
 
+    CertificateEventProcessed findByCertificateId(String id);
+
     @Transactional
     void deleteByCertificateId(String id);
 }

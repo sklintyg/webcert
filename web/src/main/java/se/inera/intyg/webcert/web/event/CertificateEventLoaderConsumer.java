@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventFailedLoad;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
@@ -40,7 +41,7 @@ public class CertificateEventLoaderConsumer implements MessageListener {
         try {
             if (message instanceof ObjectMessage) {
                 ObjectMessage objMessage = (ObjectMessage) message;
-                var list = (ArrayList) objMessage.getObject();
+                var list = (ArrayList<String>) objMessage.getObject();
                 processIds(list);
             }
         } catch (Exception e) {
@@ -53,11 +54,12 @@ public class CertificateEventLoaderConsumer implements MessageListener {
 
         certificateIdList.forEach(id -> {
             try {
-                service.getCertificateEvents(id);
-                processedRepository.deleteByCertificateId(id);
+                var byCertificateId = processedRepository.findByCertificateId(id);
+                if (byCertificateId != null) {
+                    processId(id);
+                }
             } catch (Exception e) {
-                addToFailedCertificatesTable(id, e);
-                failedCertificates.add(id);
+                processFailedId(id, e, failedCertificates);
             }
         });
 
@@ -70,6 +72,19 @@ public class CertificateEventLoaderConsumer implements MessageListener {
             LOG.warn("Certificate Event Loader failed during processing of {} certificates out of batch with size {}. These failed: {}",
                 failedCertificates.size(), certificateIdList.size(), String.join(", ", failedCertificates));
         }
+    }
+
+    @Transactional
+    public void processFailedId(String id, Exception e, List<String> failedCertificates) {
+        addToFailedCertificatesTable(id, e);
+        processedRepository.deleteByCertificateId(id);
+        failedCertificates.add(id);
+    }
+
+    @Transactional
+    public void processId(String id) {
+        service.getCertificateEvents(id);
+        processedRepository.deleteByCertificateId(id);
     }
 
     private void addToFailedCertificatesTable(String id, Exception e) {

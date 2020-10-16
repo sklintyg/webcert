@@ -37,6 +37,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventProcessed;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -101,7 +102,8 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
         return totalPendingMessages == null ? 0 : totalPendingMessages;
     }
 
-    private void putIdsOnQueue(List<String> idList) {
+    @Transactional
+    public void putIdsOnQueue(List<String> idList) {
         var success = send(session -> session.createObjectMessage((ArrayList<String>) idList));
         if (success) {
             idList.forEach(this::addToProcessed);
