@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -41,9 +40,10 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to create utkast.
+     *
      * @param intygsTyp Type of utkast to validate
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
@@ -54,8 +54,9 @@ public final class DraftAccessServiceHelper {
      *
      * If access is denied a {@link se.inera.intyg.webcert.common.service.exception.WebCertServiceException} is thrown
      * containing the reason for denying.
+     *
      * @param intygsTyp Type of utkast to validate
-     * @param personnummer  Person number of patient
+     * @param personnummer Person number of patient
      */
     public void validateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         final AccessResult accessResult = evaluateAllowToCreateUtkast(intygsTyp, personnummer);
@@ -69,9 +70,10 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to read utkast.
-     * @param utkast    Utkast to validate
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToReadUtkast(Utkast utkast, Personnummer personnummer) {
         return evaluateAllowToReadUtkast(utkast, personnummer).isAllowed();
@@ -84,7 +86,7 @@ public final class DraftAccessServiceHelper {
      * containing the reason for denying.
      *
      * @param utkast Utkast to validate
-     * @param personnummer  Person number of patient
+     * @param personnummer Person number of patient
      */
     public void validateAllowToReadUtkast(Utkast utkast, Personnummer personnummer) {
         final AccessResult accessResult = evaluateAllowToReadUtkast(utkast, personnummer);
@@ -101,8 +103,9 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to edit utkast.
-     * @param utkast    Utkast to validate
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToEditUtkast(Utkast utkast) {
         return evaluateAllowToEditUtkast(utkast).isAllowed();
@@ -110,10 +113,11 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to edit utkast.
-     * @param intygsTyp    Type of draft
-     * @param vardenhet    Care unit of draft
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param intygsTyp Type of draft
+     * @param vardenhet Care unit of draft
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToEditUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         return draftAccessService.allowToEditDraft(intygsTyp, vardenhet, personnummer).isAllowed();
@@ -141,8 +145,9 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to delete utkast.
-     * @param utkast    Utkast to validate
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToDeleteUtkast(Utkast utkast) {
         return evaluateAllowToDeleteUtkast(utkast).isAllowed();
@@ -150,10 +155,11 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to delete utkast.
-     * @param intygsTyp    Type of draft
-     * @param vardenhet    Care unit of draft
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param intygsTyp Type of draft
+     * @param vardenhet Care unit of draft
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToDeleteUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         return draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet, personnummer).isAllowed();
@@ -182,8 +188,9 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to print utkast.
-     * @param utkast    Utkast to validate
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToPrintUtkast(Utkast utkast) {
         return evaluateAllowToPrintUtkast(utkast).isAllowed();
@@ -191,10 +198,11 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to print utkast.
-     * @param intygsTyp    Type of draft
-     * @param vardenhet    Care unit of draft
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param intygsTyp Type of draft
+     * @param vardenhet Care unit of draft
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToPrintUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         return draftAccessService.allowToPrintDraft(intygsTyp, vardenhet, personnummer).isAllowed();
@@ -224,8 +232,9 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to forward utkast.
-     * @param utkast    Utkast to validate
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToForwardUtkast(Utkast utkast) {
         return evaluateAllowToForwardUtkast(utkast).isAllowed();
@@ -233,10 +242,11 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to forward utkast.
-     * @param intygsTyp    Type of draft
-     * @param vardenhet    Care unit of draft
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param intygsTyp Type of draft
+     * @param vardenhet Care unit of draft
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToForwardUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         return draftAccessService.allowToForwardDraft(intygsTyp, vardenhet, personnummer).isAllowed();
@@ -265,8 +275,9 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to copy from utkast.
-     * @param utkast    Utkast to validate
-     * @return  true if allowed. false if denied.
+     *
+     * @param utkast Utkast to validate
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToCopyFromCandidate(Utkast utkast) {
         return evaluateAllowToCopyFromCandidate(utkast).isAllowed();
@@ -274,9 +285,10 @@ public final class DraftAccessServiceHelper {
 
     /**
      * Check if logged in user is allowed to copy from utkast.
-     * @param intygsTyp    Type of draft
-     * @param personnummer  Person number of patient
-     * @return  true if allowed. false if denied.
+     *
+     * @param intygsTyp Type of draft
+     * @param personnummer Person number of patient
+     * @return true if allowed. false if denied.
      */
     public boolean isAllowedToCopyFromCandidate(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         return draftAccessService.allowToCopyFromCandidate(intygsTyp, personnummer).isAllowed();
@@ -300,5 +312,40 @@ public final class DraftAccessServiceHelper {
         return draftAccessService.allowToCopyFromCandidate(
             utkast.getIntygsTyp(),
             utkast.getPatientPersonnummer());
+    }
+
+    /**
+     * Check if logged in user is allowed to sign utkast.
+     *
+     * @param intygsTyp Type of draft
+     * @param vardenhet Care unit of draft
+     * @param personnummer Person number of patient
+     * @param certificateId Id of draft
+     * @return true if allowed. false if denied.
+     */
+    public boolean isAllowToSign(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, String certificateId) {
+        return draftAccessService.allowToSignDraft(intygsTyp, vardenhet, personnummer, certificateId).isAllowed();
+    }
+
+    /**
+     * Validate if logged in user has access to sign utkast.
+     *
+     * If access is denied a {@link se.inera.intyg.webcert.common.service.exception.WebCertServiceException} is thrown
+     * containing the reason for denying.
+     *
+     * @param utkast Utkast to validate
+     */
+    public void validateAllowToSign(Utkast utkast) {
+        final AccessResult accessResult = evaluateAllowToSign(utkast);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private AccessResult evaluateAllowToSign(Utkast utkast) {
+        return draftAccessService.allowToSignDraft(
+            utkast.getIntygsTyp(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.getIntygsId());
     }
 }

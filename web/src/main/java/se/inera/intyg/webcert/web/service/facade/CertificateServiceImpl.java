@@ -139,6 +139,8 @@ public class CertificateServiceImpl implements CertificateService {
                 certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
             }
 
+            resourceLinkHelper.decorateCertificateWithValidActionLinks(certificateDTO);
+
             return certificateDTO;
         } catch (Exception ex) {
             LOG.error("Cannot convert certificate!", ex);
@@ -209,9 +211,10 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public void revokeCertificate(String certificateId, String reason, String message) {
+    public CertificateDTO revokeCertificate(String certificateId, String reason, String message) {
         final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
         intygService.revokeIntyg(certificateId, certificateType, reason, message);
+        return getCertificate(certificateId);
     }
 
     @Override

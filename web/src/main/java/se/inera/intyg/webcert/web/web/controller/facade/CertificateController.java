@@ -45,7 +45,9 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getCertificate(@PathParam("certificateId") @NotNull String certificateId) {
-        LOG.debug("Getting certificate with id: '{}'", certificateId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Getting certificate with id: '{}'", certificateId);
+        }
         final CertificateDTO certificateDTO = certificateService.getCertificate(certificateId);
         return Response.ok(certificateDTO).build();
     }
@@ -56,7 +58,9 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response saveCertificate(@RequestBody @NotNull CertificateDTO certificate) {
-        LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        }
         final long version = certificateService.saveCertificate(certificate);
         return Response.ok(SaveCertificateResponseDTO.create(version)).build();
     }
@@ -66,7 +70,9 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response validateCertificate(@RequestBody @NotNull CertificateDTO certificate) {
-        LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        }
         final var validationErrors = certificateService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
     }
@@ -76,7 +82,9 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response signCertificate(@RequestBody @NotNull CertificateDTO certificate) {
-        LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+        }
         final CertificateDTO certificateDTO = certificateService.signCertificate(certificate);
         return Response.ok(certificateDTO).build();
     }
@@ -87,7 +95,9 @@ public class CertificateController {
     @PrometheusTimeMethod
     public Response deleteCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @PathParam("version") @NotNull long version) {
-        LOG.debug("Deleting certificate with id: '{}' and version: '{}'", certificateId, version);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting certificate with id: '{}' and version: '{}'", certificateId, version);
+        }
         certificateService.deleteCertificate(certificateId, version);
         return Response.ok().build();
     }
@@ -98,10 +108,13 @@ public class CertificateController {
     @PrometheusTimeMethod
     public Response revokeCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull RevokeCertificateDTO revokeCertificate) {
-        LOG.debug("Revoking certificate with id: '{}' and reason: '{}' and message: '{}'", certificateId, revokeCertificate.getReason(),
-            revokeCertificate.getMessage());
-        certificateService.revokeCertificate(certificateId, revokeCertificate.getReason(), revokeCertificate.getMessage());
-        return Response.ok().build();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Revoking certificate with id: '{}' and reason: '{}' and message: '{}'", certificateId, revokeCertificate.getReason(),
+                revokeCertificate.getMessage());
+        }
+        final CertificateDTO certificateDTO = certificateService
+            .revokeCertificate(certificateId, revokeCertificate.getReason(), revokeCertificate.getMessage());
+        return Response.ok(certificateDTO).build();
     }
 
     @POST
@@ -110,7 +123,9 @@ public class CertificateController {
     @PrometheusTimeMethod
     public Response replaceCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull ReplaceCertificateRequestDTO replaceCertificate) {
-        LOG.debug("Replacing certificate with id: '{}'", certificateId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Replacing certificate with id: '{}'", certificateId);
+        }
         final var newCertificateId = certificateService
             .replaceCertificate(certificateId, replaceCertificate.getCertificateType(), replaceCertificate.getPatientId());
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
@@ -121,7 +136,9 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getCertificateEvents(@PathParam("certificateId") @NotNull String certificateId) {
-        LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
+        }
         final CertificateEventDTO[] certificateEvents = certificateService.getCertificateEvents(certificateId);
         return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
     }

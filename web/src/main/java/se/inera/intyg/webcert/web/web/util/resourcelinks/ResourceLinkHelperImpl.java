@@ -21,13 +21,14 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
@@ -199,6 +200,81 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
                 arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
             }
         }
+    }
+
+    @Override
+    public void decorateCertificateWithValidActionLinks(CertificateDTO certificate) {
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
+        vardenhet.setVardgivare(new Vardgivare());
+        vardenhet.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
+
+        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
+            certificate.getMetadata().getCertificateType(), vardenhet,
+            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId()).get(),
+            certificate.getMetadata().isTestCertificate());
+
+        switch (certificate.getMetadata().getCertificateStatus()) {
+            case UNSIGNED:
+                decorateUnsignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
+                break;
+            case SIGNED:
+                decorateSignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
+                break;
+            default:
+                certificate.setLinks(new ResourceLinkDTO[0]);
+        }
+    }
+
+    private void decorateUnsignedCertificateWithValidActionLinks(CertificateDTO certificate,
+        AccessEvaluationParameters accessEvaluationParameters) {
+        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+        if (draftAccessServiceHelper.isAllowedToEditUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient())) {
+            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.EDIT_CERTIFICATE, "Ändra", "Ändrar intygsutkast", true));
+        }
+        if (draftAccessServiceHelper.isAllowedToPrintUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient())) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
+        }
+        if (draftAccessServiceHelper.isAllowedToDeleteUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient())) {
+            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.REMOVE_CERTIFICATE, "Radera", "Raderar intygsutkast", true));
+        }
+        if (draftAccessServiceHelper.isAllowToSign(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient(), certificate.getMetadata().getCertificateId())) {
+            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera", "Signerar intygsutkast", true));
+        }
+        if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
+            resourceLinks
+                .add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "Skicka", "Skickar intyget", true));
+        }
+        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[resourceLinks.size()]));
+    }
+
+    private void decorateSignedCertificateWithValidActionLinks(CertificateDTO certificate,
+        AccessEvaluationParameters accessEvaluationParameters) {
+        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+        if (certificateAccessService.allowToPrint(accessEvaluationParameters, false).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intyget för utskrift.", true));
+        }
+        if (certificateAccessService.allowToReplace(accessEvaluationParameters).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Ersätt", "Ersätter intyget", true));
+        }
+        if (certificateAccessService.allowToInvalidate(accessEvaluationParameters).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Makulerar intyget", true));
+        }
+        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[resourceLinks.size()]));
+    }
+
+    private void decorateLockedCertificateWithValidActionLinks(CertificateDTO certificate,
+        AccessEvaluationParameters accessEvaluationParameters) {
+        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[resourceLinks.size()]));
     }
 
     private List<ActionLink> getActionLinksForQuestions(AccessEvaluationParameters accessEvaluationParameters) {
