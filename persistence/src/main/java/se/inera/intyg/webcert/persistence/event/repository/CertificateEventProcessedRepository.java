@@ -19,13 +19,8 @@
 package se.inera.intyg.webcert.persistence.event.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventProcessed;
 
-public interface CertificateEventProcessedRepository extends JpaRepository<CertificateEventProcessed, Long> {
+public interface CertificateEventProcessedRepository extends JpaRepository<CertificateEventProcessed, String> {
 
-    CertificateEventProcessed findByCertificateId(String id);
-
-    @Transactional
-    void deleteByCertificateId(String id);
 }

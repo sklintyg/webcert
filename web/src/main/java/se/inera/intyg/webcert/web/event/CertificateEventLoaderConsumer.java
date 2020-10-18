@@ -54,8 +54,8 @@ public class CertificateEventLoaderConsumer implements MessageListener {
 
         certificateIdList.forEach(id -> {
             try {
-                var byCertificateId = processedRepository.findByCertificateId(id);
-                if (byCertificateId != null) {
+                var byCertificateId = processedRepository.findById(id);
+                if (byCertificateId.isPresent()) {
                     processId(id);
                 }
             } catch (Exception e) {
@@ -77,14 +77,14 @@ public class CertificateEventLoaderConsumer implements MessageListener {
     @Transactional
     public void processFailedId(String id, Exception e, List<String> failedCertificates) {
         addToFailedCertificatesTable(id, e);
-        processedRepository.deleteByCertificateId(id);
+        processedRepository.deleteById(id);
         failedCertificates.add(id);
     }
 
     @Transactional
     public void processId(String id) {
         service.getCertificateEvents(id);
-        processedRepository.deleteByCertificateId(id);
+        processedRepository.deleteById(id);
     }
 
     private void addToFailedCertificatesTable(String id, Exception e) {
