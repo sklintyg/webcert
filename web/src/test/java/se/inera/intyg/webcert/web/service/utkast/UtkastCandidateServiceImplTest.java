@@ -52,7 +52,6 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.pu.services.PUService;
@@ -108,7 +107,7 @@ public class UtkastCandidateServiceImplTest {
     private UtkastCandidateServiceImpl utkastCandidateService;
 
     @Before
-    public void setup()  {
+    public void setup() {
         webCertUser = mock(WebCertUser.class);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
 
@@ -135,7 +134,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", 10));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
@@ -223,7 +222,7 @@ public class UtkastCandidateServiceImplTest {
             thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
                 "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", 10));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
@@ -245,7 +244,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", 10));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
@@ -284,17 +283,6 @@ public class UtkastCandidateServiceImplTest {
             createCandidate(UtkastStatus.SIGNED,
                 "correct-ve-hsaid", LocalDateTime.now(),
                 "intygId", intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
-
-        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
-            .thenReturn(candidates);
-
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, patient, false).isPresent());
-
-        // To old
-        candidates = Arrays.asList(
-            createCandidate(UtkastStatus.SIGNED,
-                "correct-ve-hsaid", null,
-                "intygId", intygTypeCandidate, intygTypeVersion, LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -345,7 +333,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", 10));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
@@ -404,7 +392,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        Optional<UtkastCandidateMetaData> metaData = utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, patient, false);
+        Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
+            .getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, patient, false);
 
         assertTrue(metaData.isPresent());
         assertEquals(metaData.get().getIntygId(), "expected-intygsid");
@@ -427,7 +416,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", 10));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
@@ -525,7 +514,6 @@ public class UtkastCandidateServiceImplTest {
     // CHECKSTYLE:ON ParameterNumber
 
 
-
     private Patient createPatient(String fornamn, String efternamn, Personnummer personnummer) {
         Patient patient = new Patient();
         patient.setFornamn("Lilltolvan");
@@ -588,7 +576,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", -1));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(doiModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
@@ -630,7 +618,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        Optional<UtkastCandidateMetaData> metaData = utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false);
+        Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
+            .getCandidateMetaData(doiModuleApiV1Mock, intygType, patient, false);
 
         assertTrue(metaData.isPresent());
         assertEquals(metaData.get().getIntygId(), "certificate-id-8");
@@ -651,7 +640,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", -1));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(doiModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
@@ -709,8 +698,8 @@ public class UtkastCandidateServiceImplTest {
         // Incompatible major version
         candidates = Collections.singletonList(
             createDbCandidate(UtkastStatus.SIGNED,
-            "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
-            "intygId", intygTypeCandidate, "99.0", LocalDateTime.now(), "correct-user-hsaid")
+                "same-care-unit-hsaid", "same-care-giver-hsaid", null, null, null,
+                "intygId", intygTypeCandidate, "99.0", LocalDateTime.now(), "correct-user-hsaid")
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -734,7 +723,7 @@ public class UtkastCandidateServiceImplTest {
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
-        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1", -1));
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(doiModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
