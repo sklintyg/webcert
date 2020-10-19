@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.persistence.event.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventProcessed;
 
-public interface CertificateEventProcessedRepository extends JpaRepository<CertificateEventProcessed, String> {
+public interface CertificateEventProcessedRepository extends JpaRepository<CertificateEventProcessed, String>,
+    CertificateEventProcessedRepositoryCustom {
 
 }
