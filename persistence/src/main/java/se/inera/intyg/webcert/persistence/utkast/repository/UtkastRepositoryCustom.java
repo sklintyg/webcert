@@ -151,4 +151,18 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u.intygsId from Utkast u WHERE u.isTestIntyg = true AND u.skapad <= :createdBefore AND u.skapad >= :createdAfter")
     List<String> findTestCertificatesByCreatedBeforeAndAfter(@Param("createdAfter") LocalDateTime createdAfter,
         @Param("createdBefore") LocalDateTime createdBefore);
+
+    /**
+     * Returns the ids of certificates without events that are not being processed.
+     */
+    @Query(value = "SELECT u.INTYGS_ID FROM INTYG u "
+        + "WHERE u.INTYGS_ID NOT IN ("
+        + "SELECT ce.CERTIFICATE_ID FROM CERTIFICATE_EVENT ce WHERE ce.CERTIFICATE_ID = u.INTYGS_ID "
+        + "UNION ALL "
+        + "SELECT cep.CERTIFICATE_ID FROM CERTIFICATE_EVENT_PROCESSED cep WHERE cep.CERTIFICATE_ID = u.INTYGS_ID "
+        + "UNION ALL "
+        + "SELECT cel.CERTIFICATE_ID FROM CERTIFICATE_EVENT_FAILED_LOAD cel WHERE cel.CERTIFICATE_ID = u.INTYGS_ID ) "
+        + "LIMIT :batchSize",
+        nativeQuery = true)
+    List<String> findCertificatesWithoutEvents(@Param("batchSize") Integer batchSize);
 }
