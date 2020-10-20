@@ -78,7 +78,7 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
             LOG.info("No IDs on queue: Starting certificate event loader run with batch size: " + batchSize + " and splitting into "
                 + NR_OF_BATCHES + " batches.");
             var certificateIdList = getIdsForCertificatesWithoutEvents();
-
+            LOG.debug("Putting ids on queue: " + String.join(",", certificateIdList));
             if (certificateIdList.size() > 0) {
                 var size = certificateIdList.size() < NR_OF_BATCHES ? NR_OF_BATCHES : (certificateIdList.size() / NR_OF_BATCHES);
                 chunked(certificateIdList.stream(), size).forEach(this::putIdsOnQueue);
@@ -107,6 +107,7 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
         if (success) {
             processedRepository.saveBatch(idList);
         }
+        LOG.debug("Put ids on queue: " + String.join(",", idList) + " : " + success);
     }
 
     private boolean send(final MessageCreator messageCreator) {
