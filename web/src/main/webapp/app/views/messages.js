@@ -26,9 +26,12 @@ angular.module('webcert').constant('webcert.messages', {
     'dashboard.unanswered.title': 'Ej hanterade ärenden',
     'dashboard.unanswered.subtitle': 'Nedan visas alla ej hanterade ärenden, så som kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.',
 
-'dashboard.unsigned.title': 'Ej signerade utkast',
+    'dashboard.unsigned.title': 'Ej signerade utkast',
     'dashboard.unsigned.subtitle': 'Nedan visas alla ej signerade utkast för den enhet du är inloggad på.',
     'dashboard.about.title': 'Om Webcert',
+
+      'dashboard.signed-certificates.title': 'Signerade intyg',
+      'dashboard.signed-certificates.subtitle': 'Nedan visas alla dina signerade intyg för den enhet du är inloggad på.',
 
     //labels
     'label.default-intyg-type': 'Välj typ av intyg',
@@ -58,6 +61,7 @@ angular.module('webcert').constant('webcert.messages', {
     //info messages
     'info.nounsignedintygfound': '<strong>Inga ej signerade intyg hittades.</strong>',
     'info.nounsigned.intyg.for.unit': 'Det finns inga ej signerade utkast för den enhet du är inloggad på.',
+    'info.nosigned.intyg.for.unit': 'Det finns inga signerade intyg för den enhet du är inloggad på.',
     'info.nounansweredintygfound': '<strong>Inga intyg med ohanterade frågor hittades.</strong>',
     'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
     'info.loadingintyg': '<strong>Laddar intyg...</strong>',
@@ -117,6 +121,16 @@ angular.module('webcert').constant('webcert.messages', {
     'th.help.draft-patient': 'Patientens personnummer.',
     'th.label.draft-saved-by': 'Sparat av',
     'th.help.draft-saved-by': 'Person som senast sparade utkastet.',
+
+    //Signed certificates
+    'th.label.signed-certificate-type': 'Typ av intyg',
+    'th.help.signed-certificate-type': 'Intygstyp',
+    'th.label.signed-certificate-status': 'Status',
+    'th.help.signed-certificate-status': 'Visar intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren</li><li>Ej skickat= intyget är signerad med inte skickat, intyget kan öppnas och skickas.</li>',
+    'th.label.signed-certificate-signed-date': 'Signerad',
+    'th.help.signed-certificate-signed-date': 'Datum och klockslag då intyget signerades',
+    'th.label.signed-certificate-patient': 'Patient',
+    'th.help.signed-certificate-patient': 'Patientens personnummer.',
 
     //Fraga/Svar
     'arende.measure.svarfranvarden': 'Svara',
