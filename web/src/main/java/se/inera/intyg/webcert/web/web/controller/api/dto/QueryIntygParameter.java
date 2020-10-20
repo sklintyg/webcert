@@ -37,11 +37,19 @@ public class QueryIntygParameter {
 
     private LocalDateTime savedTo;
 
+    private LocalDateTime signedFrom;
+
+    private LocalDateTime signedTo;
+
     private String orderBy;
 
     private Boolean orderAscending;
 
     private String patientId;
+
+    private String hsaId;
+
+    private String unitId;
 
     public String getPatientId() {
         return patientId;
@@ -107,6 +115,22 @@ public class QueryIntygParameter {
         this.savedTo = savedTo;
     }
 
+    public LocalDateTime getSignedFrom() {
+        return signedFrom;
+    }
+
+    public void setSignedFrom(LocalDateTime signedFrom) {
+        this.signedFrom = signedFrom;
+    }
+
+    public LocalDateTime getSignedTo() {
+        return signedTo;
+    }
+
+    public void setSignedTo(LocalDateTime signedTo) {
+        this.signedTo = signedTo;
+    }
+
     public String getOrderBy() {
         return orderBy;
     }
@@ -122,4 +146,21 @@ public class QueryIntygParameter {
     public void setOrderAscending(Boolean orderAscending) {
         this.orderAscending = orderAscending;
     }
+
+    public String getHsaId() {
+        return hsaId;
+    }
+
+    public void setHsaId(String hsaId) {
+        this.hsaId = hsaId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
+
+    public String getUnitId() {
+        return unitId;
+    }
+
 }
