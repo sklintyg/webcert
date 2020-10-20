@@ -103,9 +103,10 @@ public class CertificateEventLoaderServiceImpl implements CertificateEventLoader
 
     @Transactional
     public void putIdsOnQueue(List<String> idList) {
+        processedRepository.saveBatch(idList);
         var success = send(session -> session.createObjectMessage((ArrayList<String>) idList));
-        if (success) {
-            processedRepository.saveBatch(idList);
+        if (!success) {
+            throw new RuntimeException("Could not send message to queue");
         }
         LOG.debug("Put ids on queue: " + String.join(",", idList) + " : " + success);
     }
