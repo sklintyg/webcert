@@ -246,6 +246,14 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient(), certificate.getMetadata().getCertificateId())) {
             resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera", "Signerar intygsutkast", true));
         }
+        if (draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient())) {
+            resourceLinks.add(
+                ResourceLinkDTO
+                    .create(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, "Vidarebefodra utkast",
+                        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
+                        true));
+        }
         if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
             resourceLinks
                 .add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "Skicka", "Skickar intyget", true));
