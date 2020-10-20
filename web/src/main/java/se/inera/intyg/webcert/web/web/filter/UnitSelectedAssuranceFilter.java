@@ -45,12 +45,13 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
     private WebCertUserService userService;
 
     private String ignoredUrls;
+
     private List<String> ignoredUrlsList;
 
     @Override
     protected void initFilterBean() throws ServletException {
         if (ignoredUrls == null) {
-            LOG.warn("No ignored Urls are configured!");
+            LOG.warn("No ignored urls are configured!");
         } else {
             ignoredUrlsList = Arrays.asList(ignoredUrls.split(","));
             LOG.info("Configured ignored urls as:" + ignoredUrlsList.stream().map(Object::toString).collect(Collectors.joining(", ")));
@@ -60,23 +61,25 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-        LOG.error("User accessed " + request.getRequestURI() + " but has not selected a vardEnhet");
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         WebCertUser user = getUser();
-        boolean shouldNotFilterIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
-        LOG.debug("shouldNotFilter " + request.getRequestURI() + " = " + shouldNotFilterIf);
-        return shouldNotFilterIf;
+        boolean continueRequestIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
+
+        LOG.debug("continueRequestIf " + request.getRequestURI() + " = " + continueRequestIf);
+
+        if (continueRequestIf) {
+            filterChain.doFilter(request, response);
+        } else {
+            LOG.error("User accessed " + request.getRequestURI() + " but has not selected a care unit");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     private boolean isIgnoredUrl(HttpServletRequest request) {
         String url = request.getRequestURI();
-        boolean shouldIgnore = ignoredUrlsList.stream().filter(s -> url.contains(s)).count() > 0;
-        LOG.debug("shouldIgnore " + url + " = " + shouldIgnore);
-        return shouldIgnore;
+        boolean continueRequestIf = ignoredUrlsList.stream().filter(s -> url.contains(s)).count() > 0;
+        LOG.debug("continueRequestIf " + url + " = " + continueRequestIf);
+        return continueRequestIf;
     }
 
     public String getIgnoredUrls() {
