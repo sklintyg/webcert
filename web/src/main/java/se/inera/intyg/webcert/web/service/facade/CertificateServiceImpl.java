@@ -78,74 +78,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public CertificateDTO getCertificate(String certificateId) {
         final Utkast certificate = utkastService.getDraft(certificateId);
-        try {
-            final var moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
-            final var certificateDTO = moduleApi.getCertificateDTOFromJson(certificate.getModel());
-            certificateDTO.getMetadata().setCreated(certificate.getSkapad());
-            certificateDTO.getMetadata().setVersion(certificate.getVersion());
-            if (certificate.getAterkalladDatum() != null) {
-                certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.INVALIDATED);
-            }
-            if (certificateDTO.getMetadata().getPatient().getFullName() == null) {
-                certificateDTO.getMetadata().getPatient().setFirstName(certificate.getPatientFornamn());
-                certificateDTO.getMetadata().getPatient().setLastName(certificate.getPatientEfternamn());
-                certificateDTO.getMetadata().getPatient().setFullName(
-                    certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn()
-                );
-            }
-
-            final var certificateRelations = new CertificateRelationsDTO();
-            certificateDTO.getMetadata().setRelations(certificateRelations);
-
-            final var relations = certificateRelationService.getRelations(certificateDTO.getMetadata().getCertificateId());
-            final var parentRelation = relations.getParent();
-            if (parentRelation != null) {
-                final CertificateRelationDTO parentCertificate = new CertificateRelationDTO();
-                parentCertificate.setCertificateId(parentRelation.getIntygsId());
-                parentCertificate.setCreated(parentRelation.getSkapad());
-                if (parentRelation.isMakulerat()) {
-                    parentCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
-                } else {
-                    switch (parentRelation.getStatus()) {
-                        case SIGNED:
-                            parentCertificate.setStatus(CertificateStatusDTO.SIGNED);
-                            break;
-                        default:
-                            parentCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
-                    }
-                }
-                parentCertificate.setType(CertificateRelationTypeDTO.REPLACED);
-                certificateRelations.setParent(parentCertificate);
-            }
-            final var replacedByIntyg = relations.getLatestChildRelations().getReplacedByIntyg();
-            final var replacedByUtkast = relations.getLatestChildRelations().getReplacedByUtkast();
-            final var replacedBy = replacedByIntyg != null ? replacedByIntyg : replacedByUtkast;
-            if (replacedBy != null) {
-                final CertificateRelationDTO childCertificate = new CertificateRelationDTO();
-                childCertificate.setCertificateId(replacedBy.getIntygsId());
-                childCertificate.setCreated(replacedBy.getSkapad());
-                if (replacedBy.isMakulerat()) {
-                    childCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
-                } else {
-                    switch (replacedBy.getStatus()) {
-                        case SIGNED:
-                            childCertificate.setStatus(CertificateStatusDTO.SIGNED);
-                            break;
-                        default:
-                            childCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
-                    }
-                }
-                childCertificate.setType(CertificateRelationTypeDTO.REPLACED);
-                certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
-            }
-
-            resourceLinkHelper.decorateCertificateWithValidActionLinks(certificateDTO);
-
-            return certificateDTO;
-        } catch (Exception ex) {
-            LOG.error("Cannot convert certificate!", ex);
-            throw new RuntimeException(ex);
-        }
+        return convertToCertificate(certificate);
     }
 
     @Override
@@ -318,6 +251,85 @@ public class CertificateServiceImpl implements CertificateService {
         certificateEventDTOList.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
         return certificateEventDTOList.toArray(new CertificateEventDTO[certificateEventDTOList.size()]);
+    }
+
+    @Override
+    public CertificateDTO forwardCertificate(String certificateId, long version, boolean forwarded) {
+        final var certificate = utkastService.setNotifiedOnDraft(certificateId, version, forwarded);
+        return convertToCertificate(certificate);
+    }
+
+    private CertificateDTO convertToCertificate(Utkast certificate) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
+            final var certificateDTO = moduleApi.getCertificateDTOFromJson(certificate.getModel());
+            certificateDTO.getMetadata().setCreated(certificate.getSkapad());
+            certificateDTO.getMetadata().setVersion(certificate.getVersion());
+            certificateDTO.getMetadata().setForwarded(certificate.getVidarebefordrad());
+
+            if (certificate.getAterkalladDatum() != null) {
+                certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.INVALIDATED);
+            }
+            if (certificateDTO.getMetadata().getPatient().getFullName() == null) {
+                certificateDTO.getMetadata().getPatient().setFirstName(certificate.getPatientFornamn());
+                certificateDTO.getMetadata().getPatient().setLastName(certificate.getPatientEfternamn());
+                certificateDTO.getMetadata().getPatient().setFullName(
+                    certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn()
+                );
+            }
+
+            final var certificateRelations = new CertificateRelationsDTO();
+            certificateDTO.getMetadata().setRelations(certificateRelations);
+
+            final var relations = certificateRelationService.getRelations(certificateDTO.getMetadata().getCertificateId());
+            final var parentRelation = relations.getParent();
+            if (parentRelation != null) {
+                final CertificateRelationDTO parentCertificate = new CertificateRelationDTO();
+                parentCertificate.setCertificateId(parentRelation.getIntygsId());
+                parentCertificate.setCreated(parentRelation.getSkapad());
+                if (parentRelation.isMakulerat()) {
+                    parentCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                } else {
+                    switch (parentRelation.getStatus()) {
+                        case SIGNED:
+                            parentCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        default:
+                            parentCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
+                    }
+                }
+                parentCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                certificateRelations.setParent(parentCertificate);
+            }
+            final var replacedByIntyg = relations.getLatestChildRelations().getReplacedByIntyg();
+            final var replacedByUtkast = relations.getLatestChildRelations().getReplacedByUtkast();
+            final var replacedBy = replacedByIntyg != null ? replacedByIntyg : replacedByUtkast;
+            if (replacedBy != null) {
+                final CertificateRelationDTO childCertificate = new CertificateRelationDTO();
+                childCertificate.setCertificateId(replacedBy.getIntygsId());
+                childCertificate.setCreated(replacedBy.getSkapad());
+                if (replacedBy.isMakulerat()) {
+                    childCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                } else {
+                    switch (replacedBy.getStatus()) {
+                        case SIGNED:
+                            childCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        default:
+                            childCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
+                    }
+                }
+                childCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
+            }
+
+            resourceLinkHelper.decorateCertificateWithValidActionLinks(certificateDTO);
+
+            return certificateDTO;
+        } catch (Exception ex) {
+            LOG.error("Cannot convert certificate!", ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {

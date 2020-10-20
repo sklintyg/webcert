@@ -20,9 +20,10 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.CertificateService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
@@ -107,7 +108,7 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response revokeCertificate(@PathParam("certificateId") @NotNull String certificateId,
-        @RequestBody @NotNull RevokeCertificateDTO revokeCertificate) {
+        @RequestBody @NotNull RevokeCertificateRequestDTO revokeCertificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Revoking certificate with id: '{}' and reason: '{}' and message: '{}'", certificateId, revokeCertificate.getReason(),
                 revokeCertificate.getMessage());
@@ -129,6 +130,21 @@ public class CertificateController {
         final var newCertificateId = certificateService
             .replaceCertificate(certificateId, replaceCertificate.getCertificateType(), replaceCertificate.getPatientId());
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/{version}/forward")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response forwardCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @PathParam("version") @NotNull long version, @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Forward certificate with id: '{}' and version: '{}' and forwarded: '{}'", certificateId, version,
+                forwardCertificate.isForwarded());
+        }
+        final CertificateDTO certificateDTO = certificateService
+            .forwardCertificate(certificateId, version, forwardCertificate.isForwarded());
+        return Response.ok(certificateDTO).build();
     }
 
     @GET

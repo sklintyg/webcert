@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public class RevokeCertificateDTO {
+public class RevokeCertificateRequestDTO {
 
     private String message;
     private String reason;
