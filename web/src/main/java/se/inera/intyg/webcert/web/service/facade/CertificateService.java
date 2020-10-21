@@ -20,6 +20,8 @@ public interface CertificateService {
 
     String replaceCertificate(String certificateId, String certificateType, String patientId);
 
+    String copyCertificate(String certificateId, String certificateType, String patientId);
+
     CertificateEventDTO[] getCertificateEvents(String certificateId);
 
     CertificateDTO forwardCertificate(String certificateId, long version, boolean forwarded);

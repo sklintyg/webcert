@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
@@ -19,6 +20,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateRelat
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateStatusDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
@@ -30,6 +32,8 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
@@ -145,8 +149,14 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public CertificateDTO revokeCertificate(String certificateId, String reason, String message) {
-        final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
-        intygService.revokeIntyg(certificateId, certificateType, reason, message);
+        final var certificate = getCertificate(certificateId);
+
+        if (certificate.getMetadata().getCertificateStatus() == CertificateStatusDTO.LOCKED) {
+            utkastService.revokeLockedDraft(certificateId, certificate.getMetadata().getCertificateType(), reason, message);
+        } else {
+            intygService.revokeIntyg(certificateId, certificate.getMetadata().getCertificateType(), reason, message);
+        }
+
         return getCertificate(certificateId);
     }
 
@@ -158,6 +168,18 @@ public class CertificateServiceImpl implements CertificateService {
         CreateReplacementCopyRequest serviceRequest = copyUtkastServiceHelper
             .createReplacementCopyRequest(certificateId, certificateType, copyIntygRequest);
         CreateReplacementCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
+
+        return serviceResponse.getNewDraftIntygId();
+    }
+
+    @Override
+    public String copyCertificate(String certificateId, String certificateType, String patientId) {
+        final var copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(Personnummer.createPersonnummer(patientId).get());
+
+        CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper
+            .createUtkastFromUtkast(certificateId, certificateType, copyIntygRequest);
+        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastCopy(serviceRequest);
 
         return serviceResponse.getNewDraftIntygId();
     }
@@ -182,6 +204,9 @@ public class CertificateServiceImpl implements CertificateService {
                 case SKAPAT:
                     mappedEventCode = CertificateEventTypeDTO.CREATED;
                     break;
+                case LAST:
+                    mappedEventCode = CertificateEventTypeDTO.LOCKED;
+                    break;
                 case SIGNAT:
                     mappedEventCode = CertificateEventTypeDTO.SIGNED;
                     break;
@@ -193,21 +218,11 @@ public class CertificateServiceImpl implements CertificateService {
                     break;
                 case ERSATTER:
                     mappedEventCode = CertificateEventTypeDTO.REPLACES;
-                    final var parentRelation = relations.getParent();
-                    if (parentRelation != null) {
-                        certificateEventDTO.setRelatedCertificateId(parentRelation.getIntygsId());
-                        if (parentRelation.isMakulerat()) {
-                            certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.INVALIDATED);
-                        } else {
-                            switch (parentRelation.getStatus()) {
-                                case SIGNED:
-                                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
-                                    break;
-                                default:
-                                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
-                            }
-                        }
-                    }
+                    decorateCertificateEventWithParentInfo(certificateEventDTO, relations.getParent());
+                    break;
+                case KOPIERATFRAN:
+                    mappedEventCode = CertificateEventTypeDTO.COPIED_FROM;
+                    decorateCertificateEventWithParentInfo(certificateEventDTO, relations.getParent());
                     break;
                 default:
                     mappedEventCode = CertificateEventTypeDTO.CREATED;
@@ -234,11 +249,18 @@ public class CertificateServiceImpl implements CertificateService {
             replaced.setTimestamp(replacedBy.getSkapad());
             replaced.setRelatedCertificateId(replacedBy.getIntygsId());
             if (replacedBy.isMakulerat()) {
-                replaced.setRelatedCertificateStatus(CertificateStatusDTO.INVALIDATED);
+                if (replacedBy.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                    replaced.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                } else {
+                    replaced.setRelatedCertificateStatus(CertificateStatusDTO.REVOKED);
+                }
             } else {
                 switch (replacedBy.getStatus()) {
                     case SIGNED:
                         replaced.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
+                        break;
+                    case DRAFT_LOCKED:
+                        replaced.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED);
                         break;
                     default:
                         replaced.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
@@ -248,9 +270,63 @@ public class CertificateServiceImpl implements CertificateService {
             certificateEventDTOList.add(replaced);
         }
 
+        final var copiedBy = relations.getLatestChildRelations().getUtkastCopy();
+        if (copiedBy != null) {
+            final var copied = new CertificateEventDTO();
+            copied.setCertificateId(certificateId);
+            copied.setType(CertificateEventTypeDTO.COPIED_BY);
+            copied.setTimestamp(copiedBy.getSkapad());
+            copied.setRelatedCertificateId(copiedBy.getIntygsId());
+            if (copiedBy.isMakulerat()) {
+                if (copiedBy.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                    copied.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                } else {
+                    copied.setRelatedCertificateStatus(CertificateStatusDTO.REVOKED);
+                }
+            } else {
+                switch (copiedBy.getStatus()) {
+                    case SIGNED:
+                        copied.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
+                        break;
+                    case DRAFT_LOCKED:
+                        copied.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED);
+                        break;
+                    default:
+                        copied.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
+                }
+            }
+
+            certificateEventDTOList.add(copied);
+        }
+
         certificateEventDTOList.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
         return certificateEventDTOList.toArray(new CertificateEventDTO[certificateEventDTOList.size()]);
+    }
+
+    private void decorateCertificateEventWithParentInfo(CertificateEventDTO certificateEventDTO,
+        WebcertCertificateRelation parentRelation) {
+        if (parentRelation != null) {
+            certificateEventDTO.setRelatedCertificateId(parentRelation.getIntygsId());
+            if (parentRelation.isMakulerat()) {
+                if (parentRelation.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                } else {
+                    certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.REVOKED);
+                }
+            } else {
+                switch (parentRelation.getStatus()) {
+                    case SIGNED:
+                        certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.SIGNED);
+                        break;
+                    case DRAFT_LOCKED:
+                        certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.LOCKED);
+                        break;
+                    default:
+                        certificateEventDTO.setRelatedCertificateStatus(CertificateStatusDTO.UNSIGNED);
+                }
+            }
+        }
     }
 
     @Override
@@ -268,8 +344,24 @@ public class CertificateServiceImpl implements CertificateService {
             certificateDTO.getMetadata().setForwarded(certificate.getVidarebefordrad());
 
             if (certificate.getAterkalladDatum() != null) {
-                certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.INVALIDATED);
+                if (certificate.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                    certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                } else {
+                    certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.REVOKED);
+                }
+            } else {
+                switch (certificate.getStatus()) {
+                    case SIGNED:
+                        certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.SIGNED);
+                        break;
+                    case DRAFT_LOCKED:
+                        certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.LOCKED);
+                        break;
+                    default:
+                        certificateDTO.getMetadata().setCertificateStatus(CertificateStatusDTO.UNSIGNED);
+                }
             }
+
             if (certificateDTO.getMetadata().getPatient().getFullName() == null) {
                 certificateDTO.getMetadata().getPatient().setFirstName(certificate.getPatientFornamn());
                 certificateDTO.getMetadata().getPatient().setLastName(certificate.getPatientEfternamn());
@@ -288,17 +380,32 @@ public class CertificateServiceImpl implements CertificateService {
                 parentCertificate.setCertificateId(parentRelation.getIntygsId());
                 parentCertificate.setCreated(parentRelation.getSkapad());
                 if (parentRelation.isMakulerat()) {
-                    parentCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                    if (parentRelation.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                        parentCertificate.setStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                    } else {
+                        parentCertificate.setStatus(CertificateStatusDTO.REVOKED);
+                    }
                 } else {
                     switch (parentRelation.getStatus()) {
                         case SIGNED:
                             parentCertificate.setStatus(CertificateStatusDTO.SIGNED);
                             break;
+                        case DRAFT_LOCKED:
+                            parentCertificate.setStatus(CertificateStatusDTO.LOCKED);
+                            break;
                         default:
                             parentCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
                     }
                 }
-                parentCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                switch (parentRelation.getRelationKod()) {
+                    case ERSATT:
+                        parentCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                        break;
+                    case KOPIA:
+                        parentCertificate.setType(CertificateRelationTypeDTO.COPIED);
+                        break;
+                }
+
                 certificateRelations.setParent(parentCertificate);
             }
             final var replacedByIntyg = relations.getLatestChildRelations().getReplacedByIntyg();
@@ -309,17 +416,51 @@ public class CertificateServiceImpl implements CertificateService {
                 childCertificate.setCertificateId(replacedBy.getIntygsId());
                 childCertificate.setCreated(replacedBy.getSkapad());
                 if (replacedBy.isMakulerat()) {
-                    childCertificate.setStatus(CertificateStatusDTO.INVALIDATED);
+                    if (replacedBy.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                        childCertificate.setStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                    } else {
+                        childCertificate.setStatus(CertificateStatusDTO.REVOKED);
+                    }
                 } else {
                     switch (replacedBy.getStatus()) {
                         case SIGNED:
                             childCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        case DRAFT_LOCKED:
+                            childCertificate.setStatus(CertificateStatusDTO.LOCKED);
                             break;
                         default:
                             childCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
                     }
                 }
                 childCertificate.setType(CertificateRelationTypeDTO.REPLACED);
+                certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
+            }
+
+            final var copiedBy = relations.getLatestChildRelations().getUtkastCopy();
+            if (copiedBy != null) {
+                final CertificateRelationDTO childCertificate = new CertificateRelationDTO();
+                childCertificate.setCertificateId(copiedBy.getIntygsId());
+                childCertificate.setCreated(copiedBy.getSkapad());
+                if (copiedBy.isMakulerat()) {
+                    if (copiedBy.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+                        childCertificate.setStatus(CertificateStatusDTO.LOCKED_REVOKED);
+                    } else {
+                        childCertificate.setStatus(CertificateStatusDTO.REVOKED);
+                    }
+                } else {
+                    switch (copiedBy.getStatus()) {
+                        case SIGNED:
+                            childCertificate.setStatus(CertificateStatusDTO.SIGNED);
+                            break;
+                        case DRAFT_LOCKED:
+                            childCertificate.setStatus(CertificateStatusDTO.LOCKED);
+                            break;
+                        default:
+                            childCertificate.setStatus(CertificateStatusDTO.UNSIGNED);
+                    }
+                }
+                childCertificate.setType(CertificateRelationTypeDTO.COPIED);
                 certificateRelations.setChildren(new CertificateRelationDTO[]{childCertificate});
             }
 

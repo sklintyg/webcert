@@ -221,6 +221,9 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             case SIGNED:
                 decorateSignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
                 break;
+            case LOCKED:
+                decorateLockedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
+                break;
             default:
                 certificate.setLinks(new ResourceLinkDTO[0]);
         }
@@ -282,6 +285,25 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     private void decorateLockedCertificateWithValidActionLinks(CertificateDTO certificate,
         AccessEvaluationParameters accessEvaluationParameters) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[resourceLinks.size()]));
+        if (lockedDraftAccessService.allowToPrint(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient()).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
+        }
+        if (lockedDraftAccessService.allowedToCopyLockedUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient()).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO
+                    .create(ResourceLinkTypeDTO.COPY_CERTIFICATE, "Kopiera",
+                        "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.", true));
+        }
+        if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(accessEvaluationParameters.getCertificateType(),
+            accessEvaluationParameters.getUnit(), accessEvaluationParameters.getPatient()).isAllowed()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera",
+                    "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.", true));
+        }
         certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[resourceLinks.size()]));
     }
 

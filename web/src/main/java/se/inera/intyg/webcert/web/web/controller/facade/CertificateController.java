@@ -20,6 +20,8 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.CertificateService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
@@ -130,6 +132,20 @@ public class CertificateController {
         final var newCertificateId = certificateService
             .replaceCertificate(certificateId, replaceCertificate.getCertificateType(), replaceCertificate.getPatientId());
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/copy")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response copyCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull CopyCertificateRequestDTO copyCertificate) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Copy certificate with id: '{}'", certificateId);
+        }
+        final var newCertificateId = certificateService
+            .copyCertificate(certificateId, copyCertificate.getCertificateType(), copyCertificate.getPatientId());
+        return Response.ok(CopyCertificateResponseDTO.create(newCertificateId)).build();
     }
 
     @POST
