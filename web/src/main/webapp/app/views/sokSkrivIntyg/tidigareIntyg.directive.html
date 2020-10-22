@@ -50,7 +50,7 @@
                                           alert-message-id="{{viewState.inlineErrorMessageKey}}"
                                           alert-severity="danger"></wc-alert-message>
                         <div class="rounded-table-wrapper full-width">
-                            <table class="table table-striped wc-table-striped"
+                            <table class="table table-striped wc-table-striped hidden-xs hidden-sm"
                                    ng-class="{'filter-no-result' : viewState.currentList.length===0}">
                                 <thead>
                                 <tr>
@@ -132,6 +132,66 @@
                                 </tr>
                                 </tbody>
                             </table>
+
+                            <!-- tablet pivoted table layout -->
+                            <div class="visible-xs visible-sm tablet-list">
+                                <div class="certificate-list" ng-repeat="intyg in viewState.currentList | orderBy: 'lastUpdatedSigned' : !orderAscending">
+
+                                    <div class="row">
+                                        <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.intyg-type"></span></div>
+                                        <div class="col-xs-8 col-sm-9">{{intyg.intygTypeName}}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.status"></span></div>
+                                        <div class="col-xs-8 col-sm-9"><span dynamic-label key="intyg.status.{{intyg.extendedStatus}}"></span></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.saved-date"></span></div>
+                                        <div class="col-xs-8 col-sm-9">{{intyg.lastUpdatedSigned | date:'short'}}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.saved-signed-by"></span></div>
+                                        <div class="col-xs-8 col-sm-9">{{intyg.updatedSignedBy}}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button type="button"
+                                                    wc-authority="FORNYA_INTYG"
+                                                    feature="FORNYA_INTYG"
+                                                    intygstyp="{{intyg.intygType}}"
+                                                    id="fornyaBtnTabletList-{{intyg.intygId}}"
+                                                    class="btn btn-primary"
+                                                    ng-if="isRenewalAllowed(intyg) && !patientModel.avliden"
+                                                    ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
+                                                    uib-popover="{{ resolveTooltipText(intyg) }}"
+                                                    popover-popup-delay="300"
+                                                    popover-append-to-body="true"
+                                                    popover-placement="auto top"
+                                                    popover-is-open="fornyaIntygBtnPopOver">
+                                                <i class="material-icons md-18">autorenew</i>
+                                                {{messageService.getProperty('common.fornya')}}
+                                            </button>
+
+                                            <button type="button"
+                                                    id="showBtnTabletList-{{intyg.intygId}}"
+                                                    class="btn btn-primary"
+                                                    ng-click="openIntygBtnPopOver=false;openIntyg(intyg)"
+                                                    uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
+                                                    popover-is-open="openIntygBtnPopOver"
+                                                    popover-popup-delay="300"
+                                                    popover-append-to-body="true"
+                                                    popover-placement="auto top">
+                                                <i class="icon-wc-ikon-19"></i>
+                                                {{messageService.getProperty('common.open')}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <span class="{{viewState.unsigned}}"></span>
