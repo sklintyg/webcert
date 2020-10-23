@@ -49,7 +49,7 @@ public class QueryIntygParameter {
 
     private String hsaId;
 
-    private String unitId;
+    private String[] unitIds;
 
     public String getPatientId() {
         return patientId;
@@ -155,12 +155,12 @@ public class QueryIntygParameter {
         this.hsaId = hsaId;
     }
 
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
+    public void setUnitIds(String[] unitIds) {
+        this.unitIds = unitIds;
     }
 
-    public String getUnitId() {
-        return unitId;
+    public String[] getUnitIds() {
+        return unitIds;
     }
 
 }
