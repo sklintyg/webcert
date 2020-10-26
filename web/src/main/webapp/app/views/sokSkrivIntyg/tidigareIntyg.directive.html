@@ -135,7 +135,7 @@
 
                             <!-- tablet pivoted table layout -->
                             <div class="visible-xs visible-sm tablet-list">
-                                <div class="certificate-list" ng-repeat="intyg in viewState.currentList | orderBy: 'lastUpdatedSigned' : !orderAscending">
+                                <div class="certificate-list" ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending">
 
                                     <div class="row">
                                         <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.intyg-type"></span></div>
