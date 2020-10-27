@@ -289,17 +289,17 @@ public class FkCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override

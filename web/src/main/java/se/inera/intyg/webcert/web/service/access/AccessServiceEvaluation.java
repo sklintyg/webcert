@@ -76,6 +76,7 @@ public final class AccessServiceEvaluation {
     private boolean allowRenewForSameUnit;
     private boolean allowInactiveForSameUnit;
     private boolean allowDeceasedForSameUnit;
+    private boolean allowTestIndicatorForSameUnit;
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
 
@@ -242,10 +243,13 @@ public final class AccessServiceEvaluation {
 
     /**
      * Consider if patient has testIndicator flag when evaluating.
+     *
+     * @param allowForSameUnit Allow handling (if all other criterias are met) when user is on the same unit.
      * @return AccessServiceEvaluation
      */
-    public AccessServiceEvaluation checkPatientTestIndicator() {
+    public AccessServiceEvaluation checkPatientTestIndicator(boolean allowForSameUnit) {
         this.checkPatientTestIndicator = true;
+        this.allowTestIndicatorForSameUnit = allowForSameUnit;
         return this;
     }
 
@@ -263,7 +267,7 @@ public final class AccessServiceEvaluation {
     /**
      * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
      *
-     * @param allowForSameUnit Allow handling (if all other criterias are met) when use ris on the same unit.
+     * @param allowForSameUnit Allow handling (if all other criterias are met) when user is on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkInactiveCareUnit(boolean allowForSameUnit) {
@@ -379,7 +383,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkPatientTestIndicator && !accessResult.isPresent()) {
-            accessResult = isPatientTestIndicated(patient);
+            accessResult = isPatientTestIndicated(patient, careUnit.getEnhetsid(), allowTestIndicatorForSameUnit);
         }
 
         if (checkTestCertificate && !accessResult.isPresent()) {
@@ -463,9 +467,12 @@ public final class AccessServiceEvaluation {
         return Optional.empty();
     }
 
-    private Optional<AccessResult> isPatientTestIndicated(Personnummer patient) {
-        if (patientDetailsResolver.isTestIndicator(patient)) {
-            return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT, createMessage("Patient has Test Indicator")));
+    private Optional<AccessResult> isPatientTestIndicated(Personnummer patient, String unitId,
+                                                          boolean allowForSameUnit) {
+        if (patientDetailsResolver.isTestIndicator(patient)
+                && (isUserLoggedInOnDifferentUnit(unitId) || !allowForSameUnit)) {
+                return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT,
+                        createMessage("Patient has Test Indicator")));
         }
         return Optional.empty();
     }

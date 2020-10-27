@@ -21,10 +21,23 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
+import se.inera.intyg.common.af00251.support.AF00251EntryPoint;
+import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
+import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
+import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -104,6 +117,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
+            .checkPatientTestIndicator(true)
             .checkPatientDeceased(true)
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
@@ -140,10 +154,23 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
-            .checkPatientDeceased(true)
+            .checkPatientDeceased(false)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
+            .excludeCertificateTypesForDeceased(
+                DoiModuleEntryPoint.MODULE_ID,
+                LisjpEntryPoint.MODULE_ID,
+                Fk7263EntryPoint.MODULE_ID,
+                LuaefsEntryPoint.MODULE_ID,
+                LuaenaEntryPoint.MODULE_ID,
+                LuseEntryPoint.MODULE_ID,
+                Af00213EntryPoint.MODULE_ID,
+                AF00251EntryPoint.MODULE_ID,
+                Ag114EntryPoint.MODULE_ID,
+                Ag7804EntryPoint.MODULE_ID,
+                TsBasEntryPoint.MODULE_ID,
+                TsDiabetesEntryPoint.MODULE_ID,
+                Tstrk1009EntryPoint.MODULE_ID,
+                TsTrk1062EntryPoint.MODULE_ID)
             .checkPatientSecrecy()
             .checkUnit(false, true)
             .evaluate();

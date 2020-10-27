@@ -33,7 +33,7 @@ import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 
 @Configuration
 @EnableTransactionManagement
-@Import({MonitoringConfiguration.class, JmsConfig.class, CacheConfig.class/*, JobConfig.class*/})
+@Import({MonitoringConfiguration.class, JmsConfig.class, CacheConfig.class, JobConfig.class})
 @DependsOn("dbUpdate")
 public class AppConfig implements TransactionManagementConfigurer {
 

@@ -20,7 +20,9 @@
 package se.inera.intyg.webcert.web.integration;
 
 import java.util.List;
+import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.infra.message.dto.MessageFromIT;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 /**
  * Service to use when calling Intygstjanstens internal Rest APIs.
@@ -30,7 +32,14 @@ public interface ITIntegrationService {
     /**
      * Get all messages for a certificate.
      * @param certificateId Id of certificate
-     * @return  List of messages. If no messages exists for the certificate, then list will be empty.
+     * @return List of messages. If no messages exists for the certificate, then list will be empty.
      */
     List<MessageFromIT> findMessagesByCertificateId(String certificateId);
+
+    /**
+     * Get all signed certificates for a specific doctor.
+     * @param queryParam Filter query including parameters to filter certificates.
+     * @return response including a list of certificates and the total amount of certificates.
+     */
+    CertificateListResponse getCertificatesForDoctor(QueryIntygParameter queryParam);
 }

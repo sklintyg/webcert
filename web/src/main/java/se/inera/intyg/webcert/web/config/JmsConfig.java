@@ -61,6 +61,9 @@ public class JmsConfig {
     @Value("${notification.aggregation.queueName}")
     private String notificationAggregationQueueName;
 
+    @Value("${certificateevent.loader.queueName}")
+    private String certificateEventLoaderQueueName;
+
     @Bean
     public JmsListenerContainerFactory jmsListenerContainerFactory(JmsTransactionManager jmsTransactionManager) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -111,6 +114,11 @@ public class JmsConfig {
     @Bean
     public JmsTemplate jmsCertificateSenderTemplate(ConnectionFactory jmsConnectionFactory) {
         return template(jmsConnectionFactory, certificateSenderQueueName);
+    }
+
+    @Bean
+    public JmsTemplate jmsCertificateEventLoaderTemplate(ConnectionFactory jmsConnectionFactory) {
+        return template(jmsConnectionFactory, certificateEventLoaderQueueName);
     }
 
 
