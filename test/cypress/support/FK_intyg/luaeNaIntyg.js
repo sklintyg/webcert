@@ -231,3 +231,9 @@ export function fornyaLuaeNa() {
         }
     });
 }
+export function skapaAdmFragaLuaeNa(){
+    fk.skapaAdmFraga();
+}
+export function hanteraFragaLuaeNa(){
+    fk.hanteraFraga();
+}

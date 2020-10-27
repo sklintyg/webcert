@@ -226,3 +226,9 @@ export function fornyaLuse() {
         }
     });
 }
+export function skapaAdmFragaLuse(){
+    fk.skapaAdmFraga();
+}
+export function hanteraFragaLuse(){
+    fk.hanteraFraga();
+}

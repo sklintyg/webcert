@@ -152,3 +152,9 @@ export function fornyaLuaeFs() {
         }
     });
 }
+export function skapaAdmFragaLuaeFs(){
+    fk.skapaAdmFraga();
+}
+export function hanteraFragaLuaeFs(){
+    fk.hanteraFraga();
+}
