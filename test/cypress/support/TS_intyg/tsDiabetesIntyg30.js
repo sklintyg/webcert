@@ -1,5 +1,5 @@
 // Intyget är uppdelat på samma sätt som det är uppdelat när det fylls i genom WebCert
-
+//TSTRK1031 3.0 TS Diabetes
 // Datumen är inte specifika för något testfall
 export {besökÖnskadUrl, loggaUtLoggaIn} from '../FK_intyg/fk_helpers';
 
@@ -13,22 +13,22 @@ export function sektionIntygetAvser(intygetAvser) {
         // man kör lokalt
 
         var körkortsTyper = {
-            "AM": '#intygAvser\\.kategorier-AM',
-            "A1": '#intygAvser\\.kategorier-A1',
-            "A2": '#intygAvser\\.kategorier-A2',
-            "A": '#intygAvser\\.kategorier-A',
-            "B": '#intygAvser\\.kategorier-B',
-            "BE": '#intygAvser\\.kategorier-BE',
-            "Traktor": '#intygAvser\\.kategorier-TRAKTOR',
-            "C1": '#intygAvser\\.kategorier-C1',
-            "C1E": '#intygAvser\\.kategorier-C1E',
-            "C": '#intygAvser\\.kategorier-C',
-            "CE": '#intygAvser\\.kategorier-CE',
-            "D1": '#intygAvser\\.kategorier-D1',
-            "D1E": '#intygAvser\\.kategorier-D1E',
-            "D": '#intygAvser\\.kategorier-D',
-            "DE": '#intygAvser\\.kategorier-DE',
-            "Taxi": '#intygAvser\\.kategorier-TAXI'
+            "AM": '#intygAvser\\.kategorier-IAV11',
+            "A1": '#intygAvser\\.kategorier-IAV12',
+            "A2": '#intygAvser\\.kategorier-IAV13',
+            "A": '#intygAvser\\.kategorier-IAV14',
+            "B": '#intygAvser\\.kategorier-IAV15',
+            "BE": '#intygAvser\\.kategorier-IAV16',
+            "Traktor": '#intygAvser\\.kategorier-IAV17',
+            "C1": '#intygAvser\\.kategorier-IAV18',
+            "C1E": '#intygAvser\\.kategorier-IAV19',
+            "C": '#intygAvser\\.kategorier-IAV3',
+            "CE": '#intygAvser\\.kategorier-IAV4',
+            "D1": '#intygAvser\\.kategorier-IAV5',
+            "D1E": '#intygAvser\\.kategorier-IAV6',
+            "D": '#intygAvser\\.kategorier-IAV7',
+            "DE": '#intygAvser\\.kategorier-IAV8',
+            "Taxi": '#intygAvser\\.kategorier-IAV9'
         };
 
         for (var key in intygetAvser) {
@@ -44,12 +44,12 @@ export function sektionIdentitet(identitet) {
     if (identitet) {
 
         var indentifieringsTyper = {
-            "IDkort": '#identitetStyrktGenom\\.typ-ID_KORT',
-            "FöretagskortTjänstekort": '#identitetStyrktGenom\\.typ-FORETAG_ELLER_TJANSTEKORT',
-            "Körkort": '#identitetStyrktGenom\\.typ-KORKORT',
-            "PersonligKännedom": '#identitetStyrktGenom\\.typ-PERS_KANNEDOM',
-            "Försäkran": '#identitetStyrktGenom\\.typ-FORSAKRAN_KAP18',
-            "Pass": '#identitetStyrktGenom\\.typ-PASS'
+            "IDkort": '#identitetStyrktGenom\\.typ-IDK1',
+            "FöretagskortTjänstekort": '#identitetStyrktGenom\\.typ-IDK2',
+            "Körkort": '#identitetStyrktGenom\\.typ-IDK3',
+            "PersonligKännedom": '#identitetStyrktGenom\\.typ-IDK4',
+            "Försäkran": '#identitetStyrktGenom\\.typ-IDK5',
+            "Pass": '#identitetStyrktGenom\\.typ-IDK6'
         }
 
         for (var key in identitet) {
@@ -183,11 +183,11 @@ export function sektionSynfunktioner(synfunktioner) {
     } else {
         cy.get('#synfunktion-misstankeOgonsjukdomNo').check();
     }
-    if (synfunktioner.ögonbottenfoto) {
+  /*  if (synfunktioner.ögonbottenfoto) {
         cy.get('#synfunktion-ogonbottenFotoSaknasYes').check();
     } else {
         cy.get('#synfunktion-ogonbottenFotoSaknasNo').check();
-    }
+    }*/
     
     var ögaText = [synfunktioner.synskärpa.högerÖga.utanKorrektion.ja, synfunktioner.synskärpa.högerÖga.medKorrektion.ja, 
         synfunktioner.synskärpa.vänsterÖga.utanKorrektion.ja, synfunktioner.synskärpa.vänsterÖga.medKorrektion.ja,
@@ -227,26 +227,26 @@ export function sektionÖvrigt(övrigt) {
 export function sektionBedömning(bedömning) {
 
     var bedömingAlternativ = {
-        "AM": '#bedomning\\.uppfyllerBehorighetskrav-AM',
-        "A1": '#bedomning\\.uppfyllerBehorighetskrav-A1',
-        "A2": '#bedomning\\.uppfyllerBehorighetskrav-A2',
-        "A": '#bedomning\\.uppfyllerBehorighetskrav-A',
-        "B": '#bedomning\\.uppfyllerBehorighetskrav-B',
-        "BE": '#bedomning\\.uppfyllerBehorighetskrav-BE',
-        "Traktor": '#bedomning\\.uppfyllerBehorighetskrav-TRAKTOR',
-        "C1": '#bedomning\\.uppfyllerBehorighetskrav-C1',
-        "C1E": '#bedomning\\.uppfyllerBehorighetskrav-C1E',
-        "C": '#bedomning\\.uppfyllerBehorighetskrav-C',
-        "CE": '#bedomning\\.uppfyllerBehorighetskrav-CE',
-        "D1": '#bedomning\\.uppfyllerBehorighetskrav-D1',
-        "D1E": '#bedomning\\.uppfyllerBehorighetskrav-D1E',
-        "D": '#bedomning\\.uppfyllerBehorighetskrav-D',
-        "DE": '#bedomning\\.uppfyllerBehorighetskrav-DE',
-        "Taxi": '#bedomning\\.uppfyllerBehorighetskrav-TAXI'
+        "AM": '#bedomning\\.uppfyllerBehorighetskrav-VAR12',
+        "A1": '#bedomning\\.uppfyllerBehorighetskrav-VAR13',
+        "A2": '#bedomning\\.uppfyllerBehorighetskrav-VAR14',
+        "A": '#bedomning\\.uppfyllerBehorighetskrav-VAR15',
+        "B": '#bedomning\\.uppfyllerBehorighetskrav-VAR16',
+        "BE": '#bedomning\\.uppfyllerBehorighetskrav-VAR17',
+        "Traktor": '#bedomning\\.uppfyllerBehorighetskrav-VAR18',
+        "C1": '#bedomning\\.uppfyllerBehorighetskrav-VAR1',
+        "C1E": '#bedomning\\.uppfyllerBehorighetskrav-VAR2',
+        "C": '#bedomning\\.uppfyllerBehorighetskrav-VAR3',
+        "CE": '#bedomning\\.uppfyllerBehorighetskrav-VAR4',
+        "D1": '#bedomning\\.uppfyllerBehorighetskrav-VAR5',
+        "D1E": '#bedomning\\.uppfyllerBehorighetskrav-VAR6',
+        "D": '#bedomning\\.uppfyllerBehorighetskrav-VAR7',
+        "DE": '#bedomning\\.uppfyllerBehorighetskrav-VAR8',
+        "Taxi": '#bedomning\\.uppfyllerBehorighetskrav-VAR9'
     };
 
     if (bedömning.kanInteTaStällning) {
-        cy.get('#bedomning\\.uppfyllerBehorighetskrav-KANINTETASTALLNING').check();
+        cy.get('#bedomning\\.uppfyllerBehorighetskrav-VAR11').check();
     } else {
         for (var key in bedömning.kanTaStällning) {
             if (bedömning.kanTaStällning[key]) {

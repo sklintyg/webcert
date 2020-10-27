@@ -106,7 +106,7 @@ ts = {
     },
 
     "bedömning": {
-        "kanInteTaStällning": true,
+        "kanInteTaStällning": false,
         "kanTaStällning": {
             "AM": true,
             "A1": true,

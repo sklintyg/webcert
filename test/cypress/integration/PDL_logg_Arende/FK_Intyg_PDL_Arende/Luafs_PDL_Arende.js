@@ -12,7 +12,7 @@ function luaeFsPdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, v
         veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
 };
 
-describe('LUAE-FS-intyg Ärende PDL-loggning', function () {
+describe('LUAE-FS-intyg PDL-loggning Ärende', function () {
     
     before(function() {
         cy.fixture('FK_intyg/minLuaeFsData').as('intygsdata');

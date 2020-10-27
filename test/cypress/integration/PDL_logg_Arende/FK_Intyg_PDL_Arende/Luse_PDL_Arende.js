@@ -12,7 +12,7 @@ function lusePdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgN
         veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
 };
 
-describe('LUSE-intyg', function () {
+describe('LUSE-intyg PDL loggning Ärende', function () {
 
     before(function() {
         cy.fixture('FK_intyg/minLuseData').as('intygsdata');
@@ -31,7 +31,7 @@ describe('LUSE-intyg', function () {
         });
     });
 
-    it('skapar en minimalt ifylld LUSE', function () {
+    it('skapar en minimalt ifylld LUSE Signerar skickar och skapar fråga till FK', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         // Gå till intyget, redigera det, signera och skicka till FK
