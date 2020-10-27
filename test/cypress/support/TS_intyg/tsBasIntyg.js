@@ -14,16 +14,16 @@ export function sektionIntygetAvser(intygetAvser) {
         // man kör lokalt
 
         var körkortsTyper = {
-            "C1": '#intygAvser\\.korkortstyp-C1',
-            "C1E": '#intygAvser\\.korkortstyp-C1E',
-            "C": '#intygAvser\\.korkortstyp-C',
-            "CE": '#intygAvser\\.korkortstyp-CE',
-            "D1": '#intygAvser\\.korkortstyp-D1',
-            "D1E": '#intygAvser\\.korkortstyp-D1E',
-            "D": '#intygAvser\\.korkortstyp-D',
-            "DE": '#intygAvser\\.korkortstyp-DE',
-            "Taxi": '#intygAvser\\.korkortstyp-TAXI',
-            "Annat": '#intygAvser\\.korkortstyp-ANNAT'
+            "C1": '#intygAvser\\.korkortstyp-IAV1',
+            "C1E": '#intygAvser\\.korkortstyp-IAV2',
+            "C": '#intygAvser\\.korkortstyp-IAV3',
+            "CE": '#intygAvser\\.korkortstyp-IAV4',
+            "D1": '#intygAvser\\.korkortstyp-IAV5',
+            "D1E": '#intygAvser\\.korkortstyp-IAV6',
+            "D": '#intygAvser\\.korkortstyp-IAV7',
+            "DE": '#intygAvser\\.korkortstyp-IAV8',
+            "Taxi": '#intygAvser\\.korkortstyp-IAV9',
+            "Annat": '#intygAvser\\.korkortstyp-IAV10'
         };
 
         for (var key in intygetAvser) {
@@ -39,12 +39,12 @@ export function sektionIdentitet(identitet) {
     if (identitet) {
 
         var indentifieringsTyper = {
-            "IDkort": '#vardkontakt\\.idkontroll-ID_KORT',
-            "FöretagskortTjänstekort": '#vardkontakt\\.idkontroll-FORETAG_ELLER_TJANSTEKORT',
-            "Körkort": '#vardkontakt\\.idkontroll-KORKORT',
-            "PersonligKännedom": '#vardkontakt\\.idkontroll-PERS_KANNEDOM',
-            "Försäkran": '#vardkontakt\\.idkontroll-FORSAKRAN_KAP18',
-            "Pass": '#vardkontakt\\.idkontroll-PASS'
+            "IDkort": '#vardkontakt\\.idkontroll-IDK1',
+            "FöretagskortTjänstekort": '#vardkontakt\\.idkontroll-IDK2',
+            "Körkort": '#vardkontakt\\.idkontroll-IDK3',
+            "PersonligKännedom": '#vardkontakt\\.idkontroll-IDK4',
+            "Försäkran": '#vardkontakt\\.idkontroll-IDK5',
+            "Pass": '#vardkontakt\\.idkontroll-IDK6'
         }
 
         for (var key in identitet) {
@@ -358,20 +358,20 @@ export function sektionÖvrigKommentar(övrigKommentar) {
 export function sektionBedömning(bedömning) {
 
     var bedömingAlternativ = {
-        "C1": "#bedomning\\.korkortstyp-C1",
-        "C1E": "#bedomning\\.korkortstyp-C1E",
-        "C": "#bedomning\\.korkortstyp-C",
-        "CE": "#bedomning\\.korkortstyp-CE",
-        "D1": "#bedomning\\.korkortstyp-D1",
-        "D1E": "#bedomning\\.korkortstyp-D1E",
-        "D": "#bedomning\\.korkortstyp-D",
-        "DE": "#bedomning\\.korkortstyp-DE",
-        "Taxi": "#bedomning\\.korkortstyp-TAXI",
-        "Annat": "#bedomning\\.korkortstyp-ANNAT"
+        "C1": "#bedomning\\.korkortstyp-VAR1",
+        "C1E": "#bedomning\\.korkortstyp-VAR2",
+        "C": "#bedomning\\.korkortstyp-VAR3",
+        "CE": "#bedomning\\.korkortstyp-VAR4",
+        "D1": "#bedomning\\.korkortstyp-VAR5",
+        "D1E": "#bedomning\\.korkortstyp-VAR6",
+        "D": "#bedomning\\.korkortstyp-VAR7",
+        "DE": "#bedomning\\.korkortstyp-VAR8",
+        "Taxi": "#bedomning\\.korkortstyp-VAR9",
+        "Annat": "#bedomning\\.korkortstyp-VAR10"
     };
 
     if (bedömning.kanInteTaStällning) {
-        cy.get('#bedomning\\.korkortstyp-KAN_INTE_TA_STALLNING').check();
+        cy.get('#bedomning\\.korkortstyp-VAR11').check();
     } else {
         for (var key in bedömning.kanTaStällning) {
             if (bedömning.kanTaStällning[key]) {
