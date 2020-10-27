@@ -148,3 +148,18 @@ export function komplettera() {
     cy.get('#ta-bort-utkast').click();
     cy.get('#confirm-draft-delete-button').click();
 }
+export function skapaAdmFraga(){
+    cy.contains("Intyget är skickat till Försäkringskassan");
+    cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
+    cy.contains("Utkastet sparas").should('not.exist');
+    cy.get('#arende-filter-administrativafragor').click();
+    cy.get('#new-question-topic-selected-item-label').click();
+    cy.get('#new-question-topic-AVSTMN').click();
+    
+    cy.get('#arendeNewModelText').type("SKAPAR ADM FRÅGA").type('{enter}');
+    cy.get('#sendArendeBtn').click();
+    
+}
+export function hanteraFraga(){
+    cy.get('.checkbox-inline').click();     
+}

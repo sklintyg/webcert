@@ -2,7 +2,6 @@
 /// <reference types="Cypress" />
 import * as intyg from '../../../support/FK_intyg/lisjpIntyg'
 import * as pdl from '../../../support/pdl_helpers'
-//import * as agIntyg from '../../../support/SKR_intyg/AG7804intyg'
 
 // LISJP = Läkarintyg för sjukpenning, FK 7804
 
@@ -28,30 +27,26 @@ describe('PDL loggning för Ärendehantering av LISJP-intyg', function () {
         }); 
     });
     
-   
-
     beforeEach(function() {
         pdlEventArray = [];
         
     });
 
-    it('Skickar fråga på ett intyg', function () {
-        // Signerar intyget och populerar pdl-arrayen med förväntade loggposter "Signera" och "Läsa"
+    it('Skickar fråga och hanterar den på ett LISJP-intyg', function () {
+        // Signerar intyget och populerar pdl-arrayen med förväntade loggposter "Läsa"
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal1, this.vårdenhet);
         const önskadUrl1 = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id;
         intyg.besökÖnskadUrl(önskadUrl1, this.vårdpersonal1, this.vårdenhet, this.utkastId);
         cy.wait(1000);
-        //pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.skickaTillFk();
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.FKASSA, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // Introducerar en wait då skrivUt går så fort att man riskerar att få samma timestamp som för "skicka"
+        intyg.skapaAdmFragaLisjp();
+        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        intyg.hanteraFragaLisjp();
+        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         cy.wait(1500);
-        
-
-       
-
         cy.verifieraPdlLoggar(pdlEventArray);
     });
 

@@ -379,3 +379,9 @@ export function verifieraDiagnosUnderStatistik(diagnoskod) {
 export function kompletteraLisjp(){
     fk.komplettera();
 }
+export function skapaAdmFragaLisjp(){
+    fk.skapaAdmFraga();
+}
+export function hanteraFragaLisjp(){
+    fk.hanteraFraga();
+}
