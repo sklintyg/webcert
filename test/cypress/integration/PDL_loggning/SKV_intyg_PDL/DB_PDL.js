@@ -135,7 +135,7 @@ describe('Dödsbevis-intyg', function () {
             intyg.skrivUt("fullständigt", intygID_2, "db");
             pdlEventArray.push(DbPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         });
-
+       
         // Raderar intygsutkast
         intyg.raderaUtkast();
         cy.get('@intygsID_2').then((intygID_2)=> {

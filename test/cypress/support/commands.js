@@ -302,7 +302,9 @@ function skapaUtkast(fx, intygstyp) {
             var resultCodeStartIdx = body.indexOf(resultCodeStart);
             var resultCodeEndIdx = body.indexOf(resultCodeEnd);
             var resultCode = body.substring(resultCodeStartIdx + resultCodeStart.length, resultCodeEndIdx);
-            expect(resultCode).to.equal("OK");
+            //expect(1).to.be.oneOf([1, 2, 3]);
+            expect(resultCode).to.be.oneOf(["OK","INFO"]);
+           // expect(resultCode).to.equal("OK");
             cy.log(resultCode);
 
             // Lokalisera intygs-id:t i response body och returnera värdet.

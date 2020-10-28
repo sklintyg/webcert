@@ -128,14 +128,15 @@ export function signeraOchSkicka() {
     const click = $el => { return $el.click() }
 
     // Parent() p.g.a. att ett element täcker knappen
-    cy.get('#signera-utkast-button').parent().should('be.visible')
+  /*  cy.get('#signera-utkast-button').parent().should('be.visible')
 
     cy.get('#signera-utkast-button')
     .pipe(click, {timeout: 60000}) // ToDo: Lång timeout (problem endast på Jenkins, överlastad slav?)
     .should($el => {
         expect($el.parent()).to.not.be.visible;
-    })
-
+    })*/
+    cy.get('#signera-utkast-button').click();
+        
     cy.contains("Intyget är skickat till Skatteverket");
 }
 
