@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
 import java.util.Arrays;
@@ -74,37 +72,29 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
                 + "Must contain an authenticationAssertion");
         }
 
-        String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
+        var originalAuthnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
             .getAuthnContextClassRef().getAuthnContextClassRef();
-        if (authnContextClassRef == null || authnContextClassRef.trim().length() == 0) {
-            throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
-                + "AuthenticationContextClassRef was null or empty. Should be one of:\n"
-                + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
-                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
-                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
-        }
 
-        switch (authnContextClassRef) {
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT:
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
-                return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
-            case HTTP_ID_SAMBI_SE_LOA_LOA3:
+        // Prevent nullpointer from underlying List implementation in the following if statements.
+        var authnContextClassRef = originalAuthnContextClassRef == null ? "" : originalAuthnContextClassRef;
+
+        if (ELEG_AUTHN_CLASSES.contains(authnContextClassRef)) {
+            return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
+
+        } else if (SITHS_AUTHN_CLASSES.contains(authnContextClassRef)) {
+            return webcertUserDetailsService.loadUserBySAML(samlCredential);
+
+        } else if (URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED.equals(authnContextClassRef)) {
+            if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
                 return webcertUserDetailsService.loadUserBySAML(samlCredential);
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
-                if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
-                    return webcertUserDetailsService.loadUserBySAML(samlCredential);
-                }
-                throw new IllegalArgumentException(
-                    "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
-            default:
-                throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
-                    + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
-        }
+            }
+            throw new IllegalArgumentException(
+                "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
 
+        } else {
+            throw new IllegalArgumentException("AuthorizationContextClassRef was " + originalAuthnContextClassRef + ", expected one of: "
+                + SITHS_AUTHN_CLASSES.toString() + " or "
+                + ELEG_AUTHN_CLASSES.toString());
+        }
     }
 }
