@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.intyg.common.util.logging.LogMarkers;
+import se.inera.intyg.infra.monitoring.logging.LogMarkers;
 
 public final class PatientValidator {
 
