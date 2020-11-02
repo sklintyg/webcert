@@ -4,7 +4,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 
-public interface CertificateService {
+public interface CertificateFacadeService {
 
     CertificateDTO getCertificate(String certificateId);
 

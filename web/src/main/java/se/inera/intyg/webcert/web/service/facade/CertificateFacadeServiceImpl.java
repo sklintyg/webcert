@@ -41,9 +41,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @Service
-public class CertificateServiceImpl implements CertificateService {
+public class CertificateFacadeServiceImpl implements CertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateFacadeServiceImpl.class);
 
     private final UtkastService utkastService;
 
@@ -64,7 +64,8 @@ public class CertificateServiceImpl implements CertificateService {
     private final ResourceLinkHelper resourceLinkHelper;
 
     @Autowired
-    public CertificateServiceImpl(UtkastService utkastService, UnderskriftService underskriftService, IntygModuleRegistry moduleRegistry,
+    public CertificateFacadeServiceImpl(UtkastService utkastService, UnderskriftService underskriftService,
+        IntygModuleRegistry moduleRegistry,
         IntygService intygService, CopyUtkastServiceHelper copyUtkastServiceHelper,
         CopyUtkastService copyUtkastService, CertificateRelationService certificateRelationService,
         CertificateEventService certificateEventService, ResourceLinkHelper resourceLinkHelper) {
