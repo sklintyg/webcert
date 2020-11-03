@@ -67,4 +67,36 @@ wc-enhet-arenden-filter {
   .btn {
     min-height: 38px;
   }
+
+  .tablet-list {
+    margin: 0 15px;
+
+    .qa-tablet-list {
+      display: table;
+      width: 100%;
+      border: 1px solid transparent;
+      &:hover {
+        border: 1px solid $wc-color-21;
+      }
+
+      .row > div:first-child {
+        @extend %wc-typo-06;
+        color: $wc-color-19;
+      }
+    }
+
+    > .qa-tablet-list:nth-of-type(even) {
+      background-color: $wc-color-20;
+    }
+
+    > .qa-tablet-list:nth-of-type(odd) {
+      background-color: $wc-color-00;
+    }
+
+    .row {
+      margin: 15px 0;
+    }
+
+    margin-bottom: 20px;
+  }
 }
