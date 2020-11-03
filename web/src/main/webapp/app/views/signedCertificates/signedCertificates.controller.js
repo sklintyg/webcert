@@ -22,9 +22,9 @@
  */
 angular.module('webcert').controller('webcert.SignedCertificatesCtrl',
     ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.User', 'webcert.SignedCertificatesFilterModel',
-      'webcert.SignedCertificatesListModel', 'webcert.SignedCertificatesProxy', 'common.UserModel',
+      'webcert.SignedCertificatesListModel', 'webcert.SignedCertificatesProxy', 'common.UserModel', 'common.featureService',
       function($log, $scope, $timeout, $rootScope, $window, User, SignedCertificatesFilterModel, SignedCertificatesListModel,
-                SignedCertificatesProxy, UserModel) {
+                SignedCertificatesProxy, UserModel, featureService) {
         'use strict';
 
         $scope.orderByProperty = function(property, ascending) {
@@ -87,7 +87,8 @@ angular.module('webcert').controller('webcert.SignedCertificatesCtrl',
           });
         }
 
-        if(!UserModel.user.isLakareOrPrivat || UserModel.isDjupintegration()) {
+        if(!UserModel.user.isLakareOrPrivat || UserModel.isDjupintegration() ||
+            featureService.isFeatureActive(featureService.features.SIGNED_CERTIFICATES_LIST)) {
           $window.location.href = '/error.jsp?reason=auth-exception';
         } else {
           $scope.init();
