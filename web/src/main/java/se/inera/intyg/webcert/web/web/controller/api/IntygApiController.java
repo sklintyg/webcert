@@ -127,6 +127,7 @@ public class IntygApiController extends AbstractApiController {
 
     /**
      * Retrieves a list of all signed certificates for a doctor on the current logged in unit.
+     *
      * @param queryParam Filter query including filters that user has chosen or default filters.
      * @return Response including list of all signed certificates for doctor and total number of certificates retrieved.
      */
@@ -138,7 +139,9 @@ public class IntygApiController extends AbstractApiController {
         LOG.debug("Fetching all signed intyg for doctor '{}' on unit '{}' from IT", user.getHsaId(), user.getValdVardenhet().getId());
 
         queryParam.setHsaId(user.getHsaId());
-        queryParam.setUnitId(user.getValdVardenhet().getId());
+        final var unitIds = getEnhetIdsForCurrentUser();
+        queryParam.setUnitIds(unitIds.toArray(new String[unitIds.size()]));
+
         final var certificateResponse = certificateService.listCertificatesForDoctor(queryParam);
         return Response.ok().entity(certificateResponse).build();
     }
@@ -218,7 +221,7 @@ public class IntygApiController extends AbstractApiController {
         }
 
         // PDL Logging
-        logService.logListIntyg(user,  personNummer.getPersonnummerWithDash());
+        logService.logListIntyg(user, personNummer.getPersonnummerWithDash());
 
         return responseBuilder.build();
     }

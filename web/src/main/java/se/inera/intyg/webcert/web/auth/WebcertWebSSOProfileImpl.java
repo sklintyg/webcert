@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
+
+import java.util.Collections;
 import org.opensaml.common.SAMLException;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
@@ -25,7 +28,6 @@ import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
  * Created by eriklupander on 2016-05-09.
@@ -54,10 +56,9 @@ public class WebcertWebSSOProfileImpl extends org.springframework.security.saml.
         AuthnRequest authnRequest = super.getAuthnRequest(context, options, assertionConsumer, bindingService);
 
         // Only specify attributeConsumingServiceIndex for SITHS-based authentications.
-        if (options.getAuthnContexts().contains(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3)) {
+        if (!Collections.disjoint(options.getAuthnContexts(), SITHS_AUTHN_CLASSES)) {
             authnRequest.setAttributeConsumingServiceIndex(1);
         }
-
         return authnRequest;
     }
 }

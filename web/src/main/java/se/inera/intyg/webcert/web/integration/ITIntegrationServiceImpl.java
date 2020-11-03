@@ -74,7 +74,7 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
         CertificateListRequest requestObject = new CertificateListRequest();
         requestObject.setHsaId(queryParam.getHsaId());
         requestObject.setCivicRegistrationNumber(queryParam.getPatientId());
-        requestObject.setUnitId(queryParam.getUnitId());
+        requestObject.setUnitIds(queryParam.getUnitIds());
         requestObject.setToDate(queryParam.getSignedTo());
         requestObject.setFromDate(queryParam.getSignedFrom());
         requestObject.setOrderBy(queryParam.getOrderBy());
