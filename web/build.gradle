@@ -198,6 +198,7 @@ dependencies {
     compile "se.inera.intyg.infra:intyginfo:${infraVersion}"
     compile "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
     compile "se.inera.intyg.infra:testcertificate:${infraVersion}"
+    compile "se.inera.intyg.infra:certificate:${infraVersion}"
     compile "se.inera.intyg.infra:message:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"

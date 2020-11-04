@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
+
 import java.util.Date;
 import org.opensaml.saml2.core.AuthnStatement;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLCredential;
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
  * This customized AuthenticationProvider provides custom logic for setting the expiration date of the SAML
@@ -70,7 +71,8 @@ public class WebcertAuthenticationProvider extends SAMLAuthenticationProvider {
         if (statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef() == null) {
             return false;
         }
-        return statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef()
-            .equals(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3);
+
+        var authnContextClassRef = statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+        return SITHS_AUTHN_CLASSES.contains(authnContextClassRef);
     }
 }

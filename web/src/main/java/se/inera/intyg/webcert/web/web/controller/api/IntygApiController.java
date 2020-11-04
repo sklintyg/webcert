@@ -31,6 +31,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -58,6 +59,7 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.certificate.CertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -68,6 +70,7 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CertificateEventDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
@@ -118,6 +121,30 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private CertificateEventConverter certificateEventConverter;
+
+    @Autowired
+    private CertificateService certificateService;
+
+    /**
+     * Retrieves a list of all signed certificates for a doctor on the current logged in unit.
+     *
+     * @param queryParam Filter query including filters that user has chosen or default filters.
+     * @return Response including list of all signed certificates for doctor and total number of certificates retrieved.
+     */
+    @GET
+    @Path("/doctor/")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getSignedCertificatesForDoctor(@QueryParam("") QueryIntygParameter queryParam) {
+        WebCertUser user = getWebCertUserService().getUser();
+        LOG.debug("Fetching all signed intyg for doctor '{}' on unit '{}' from IT", user.getHsaId(), user.getValdVardenhet().getId());
+
+        queryParam.setHsaId(user.getHsaId());
+        final var unitIds = getEnhetIdsForCurrentUser();
+        queryParam.setUnitIds(unitIds.toArray(new String[unitIds.size()]));
+
+        final var certificateResponse = certificateService.listCertificatesForDoctor(queryParam);
+        return Response.ok().entity(certificateResponse).build();
+    }
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
@@ -194,7 +221,7 @@ public class IntygApiController extends AbstractApiController {
         }
 
         // PDL Logging
-        logService.logListIntyg(user,  personNummer.getPersonnummerWithDash());
+        logService.logListIntyg(user, personNummer.getPersonnummerWithDash());
 
         return responseBuilder.build();
     }

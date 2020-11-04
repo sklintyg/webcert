@@ -89,7 +89,7 @@
               </wc-alert-message>
               <jsp:include page="login.jsp" />
             </c:when>
-            
+
             <c:when test="${param.reason eq 'denied'}">
               <h1><spring:message code="error.noauth.title" /></h1>
               <wc-alert-message alert-id="noAuth" alert-severity="warning">
@@ -166,6 +166,12 @@
               <h1><spring:message code="error.pu-problem.title" /></h1>
               <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.pu-problem.text" />
+              </wc-alert-message>
+            </c:when>
+            <c:when test="${param.reason eq 'dss-problem'}">
+              <h1><spring:message code="error.dss-problem.title" /></h1>
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
+                <spring:message code="error.dss-problem.text"/>
               </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'sekretessapproval.needed'}">

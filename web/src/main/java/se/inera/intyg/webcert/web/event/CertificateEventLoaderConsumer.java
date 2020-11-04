@@ -72,6 +72,7 @@ public class CertificateEventLoaderConsumer implements MessageListener {
 
         certificateIdList.forEach(id -> {
             try {
+                LOG.debug("Processing " + id);
                 var byCertificateId = processedRepository.findById(id);
                 if (byCertificateId.isPresent()) {
                     processId(id);
@@ -103,6 +104,7 @@ public class CertificateEventLoaderConsumer implements MessageListener {
     public void processId(String id) {
         service.getCertificateEvents(id);
         processedRepository.deleteById(id);
+        LOG.debug("Finished processing " + id);
     }
 
     private void addToFailedCertificatesTable(String id, Exception e) {

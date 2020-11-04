@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.infra.certificate.dto.CertificateListRequest;
+import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.infra.message.dto.MessageFromIT;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Service
 public class ITIntegrationServiceImpl implements ITIntegrationService {
@@ -58,5 +62,27 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
             }
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public CertificateListResponse getCertificatesForDoctor(QueryIntygParameter queryParam, Set<String> types) {
+        final String url = intygstjanstenUrl + "/internalapi/certificatelist/certificates/doctor";
+        CertificateListRequest requestObject = getCertificateListRequest(queryParam, types);
+        return restTemplate.postForObject(url, requestObject, CertificateListResponse.class);
+    }
+
+    private CertificateListRequest getCertificateListRequest(QueryIntygParameter queryParam, Set<String> types) {
+        CertificateListRequest requestObject = new CertificateListRequest();
+        requestObject.setHsaId(queryParam.getHsaId());
+        requestObject.setCivicRegistrationNumber(queryParam.getPatientId());
+        requestObject.setUnitIds(queryParam.getUnitIds());
+        requestObject.setToDate(queryParam.getSignedTo());
+        requestObject.setFromDate(queryParam.getSignedFrom());
+        requestObject.setOrderBy(queryParam.getOrderBy());
+        requestObject.setOrderAscending(queryParam.getOrderAscending());
+        requestObject.setStartFrom(queryParam.getStartFrom());
+        requestObject.setPageSize(queryParam.getPageSize());
+        requestObject.setTypes(types);
+        return requestObject;
     }
 }

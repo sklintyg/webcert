@@ -107,6 +107,14 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         controller: 'webcert.EjSigneradeUtkastCtrl'
       }
     }
+  }).state('webcert.signed-certificates', {
+    url: '/signed-certificates',
+    views: {
+      'content@': {
+        templateUrl: '/app/views/signedCertificates/signedCertificates.html',
+        controller: 'webcert.SignedCertificatesCtrl'
+      }
+    }
   }).state('webcert.intyg', {
     data: {defaultActive: 'index', backState: 'webcert.create-choose-certtype-index'},
     views: {

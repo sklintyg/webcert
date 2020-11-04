@@ -469,8 +469,7 @@
           <property name="authnContexts">
             <list>
               <!-- Important: In the custom WebcertSAMLEntryPoint we mutate these for the authnRequests due to SSO problems -->
-              <value>http://id.sambi.se/loa/loa3</value>
-              <value>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</value>
+              <value>DUMMYVALUE</value>
             </list>
           </property>
         </bean>
