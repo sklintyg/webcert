@@ -51,6 +51,7 @@ angular.module('webcert').constant('webcert.messages', {
 
     'label.qaonlywarning': 'Du har valt att lämna frågor och svar',
     'label.qaonlywarning.body': '<p>Observera att intyg ska utfärdas via journalsystemet och inte via Webcert.</p><p>Information i Webcert som inte är frågor och svar kan inte visas i journalsystemet.</p>',
+    'label.signed-certificates.signingdate.help': 'Av prestanda skäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.',
 
     // validation messages
     'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet åååå-mm-dd.',
@@ -126,9 +127,9 @@ angular.module('webcert').constant('webcert.messages', {
     'th.label.signed-certificate-type': 'Typ av intyg',
     'th.help.signed-certificate-type': 'Intygstyp',
     'th.label.signed-certificate-status': 'Status',
-    'th.help.signed-certificate-status': 'Visar intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren</li><li>Ej skickat= intyget är signerad med inte skickat, intyget kan öppnas och skickas.</li>',
+    'th.help.signed-certificate-status': 'Visar signerade intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren.</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li>',
     'th.label.signed-certificate-signed-date': 'Signerad',
-    'th.help.signed-certificate-signed-date': 'Datum och klockslag då intyget signerades',
+    'th.help.signed-certificate-signed-date': 'Datum och klockslag då intyget signerades.',
     'th.label.signed-certificate-patient': 'Patient',
     'th.help.signed-certificate-patient': 'Patientens personnummer.',
 
