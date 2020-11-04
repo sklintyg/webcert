@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.certificate;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
@@ -44,34 +47,38 @@ public class CertificateServiceImpl implements CertificateService {
     private PatientDetailsResolver patientDetailsResolver;
     private LogService logService;
     private WebCertUserService webcertUserService;
+    private AuthoritiesHelper authoritiesHelper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateServiceImpl.class);
 
     @Autowired
     public CertificateServiceImpl(ITIntegrationService itIntegrationService, PatientDetailsResolver patientDetailsResolver,
-        WebCertUserService webCertUserService, LogService logService) {
+        WebCertUserService webCertUserService, LogService logService, AuthoritiesHelper authoritiesHelper) {
         this.itIntegrationService = itIntegrationService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.webcertUserService = webCertUserService;
         this.logService = logService;
+        this.authoritiesHelper = authoritiesHelper;
     }
 
     @Override
     public CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParam) {
         try {
             final WebCertUser user = webcertUserService.getUser();
-            final var responseFromIT = itIntegrationService.getCertificatesForDoctor(queryParam);
+            Set<String> types = getCertificateTypes();
+            final var responseFromIT = itIntegrationService.getCertificatesForDoctor(queryParam, types);
 
-           responseFromIT.setCertificates(responseFromIT.getCertificates().stream()
+            responseFromIT.setCertificates(responseFromIT.getCertificates().stream()
                 .filter(Objects::nonNull)
-                .map(this::decoratePatientWithFlags).collect(Collectors.toList()));
+                .map(this::decoratePatientWithFlags)
+                .collect(Collectors.toList())
+            );
 
             responseFromIT.getCertificates().stream().map(CertificateListEntry::getCivicRegistrationNumber).distinct()
                 .forEach(patientId -> {
                     logService.logListIntyg(user, getCivicRegistrationNumber(patientId).get().getPersonnummerWithDash());
                 });
-
-           return responseFromIT;
+            return responseFromIT;
         } catch (Exception ex) {
             LOGGER.error("Could not get list of signed certificates for unit from IT", ex);
             CertificateListResponse certificateListResponse = new CertificateListResponse();
@@ -94,8 +101,13 @@ public class CertificateServiceImpl implements CertificateService {
         return certificate;
     }
 
+    private Set<String> getCertificateTypes() {
+        return authoritiesHelper.getIntygstyperForPrivilege(webcertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    }
+
     private Optional<Personnummer> getCivicRegistrationNumber(String civicRegistrationNumber) {
         return Personnummer.createPersonnummer(civicRegistrationNumber);
     }
 
 }
+

@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,13 +65,13 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
     }
 
     @Override
-    public CertificateListResponse getCertificatesForDoctor(QueryIntygParameter queryParam) {
+    public CertificateListResponse getCertificatesForDoctor(QueryIntygParameter queryParam, Set<String> types) {
         final String url = intygstjanstenUrl + "/internalapi/certificatelist/certificates/doctor";
-        CertificateListRequest requestObject = getCertificateListRequest(queryParam);
+        CertificateListRequest requestObject = getCertificateListRequest(queryParam, types);
         return restTemplate.postForObject(url, requestObject, CertificateListResponse.class);
     }
 
-    private CertificateListRequest getCertificateListRequest(QueryIntygParameter queryParam) {
+    private CertificateListRequest getCertificateListRequest(QueryIntygParameter queryParam, Set<String> types) {
         CertificateListRequest requestObject = new CertificateListRequest();
         requestObject.setHsaId(queryParam.getHsaId());
         requestObject.setCivicRegistrationNumber(queryParam.getPatientId());
@@ -81,6 +82,7 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
         requestObject.setOrderAscending(queryParam.getOrderAscending());
         requestObject.setStartFrom(queryParam.getStartFrom());
         requestObject.setPageSize(queryParam.getPageSize());
+        requestObject.setTypes(types);
         return requestObject;
     }
 }
