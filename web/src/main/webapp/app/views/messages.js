@@ -31,7 +31,7 @@ angular.module('webcert').constant('webcert.messages', {
     'dashboard.about.title': 'Om Webcert',
 
       'dashboard.signed-certificates.title': 'Signerade intyg',
-      'dashboard.signed-certificates.subtitle': 'Nedan visas alla dina signerade intyg för den enhet du är inloggad på.',
+      'dashboard.signed-certificates.subtitle': 'Nedan visas dina signerade intyg för den enhet du är inloggad på.',
 
     //labels
     'label.default-intyg-type': 'Välj typ av intyg',
@@ -62,7 +62,7 @@ angular.module('webcert').constant('webcert.messages', {
     //info messages
     'info.nounsignedintygfound': '<strong>Inga ej signerade intyg hittades.</strong>',
     'info.nounsigned.intyg.for.unit': 'Det finns inga ej signerade utkast för den enhet du är inloggad på.',
-    'info.nosigned.intyg.for.unit': 'Det finns inga signerade intyg för den enhet du är inloggad på.',
+    'info.nosigned.intyg.for.unit': 'Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.',
     'info.nounansweredintygfound': '<strong>Inga intyg med ohanterade frågor hittades.</strong>',
     'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
     'info.loadingintyg': '<strong>Laddar intyg...</strong>',
