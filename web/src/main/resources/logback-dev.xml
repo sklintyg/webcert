@@ -24,7 +24,6 @@
 
   <include resource="logback-dev-base.xml" />
 
-
   <logger name="com.fasterxml.jackson" level="off" />
 
   <logger name="liquibase" level="info" />
@@ -51,7 +50,6 @@
 
   <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
   <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
-
 
   <root level="WARN">
     <appender-ref ref="CONSOLE"/>
