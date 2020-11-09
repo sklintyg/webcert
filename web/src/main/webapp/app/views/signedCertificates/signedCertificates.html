@@ -41,7 +41,7 @@
       </wc-alert-message>
 
       <wc-list-dropdown   class="col-md-3 form-group"
-                          ng-show="showDropDown()"
+                          ng-if="showDropDown()"
                           list-model="listModel"
                           filter-model="filterModel">
       </wc-list-dropdown>
@@ -53,15 +53,15 @@
                                    class="row">
       </wc-signed-certificates-list>
       <div>
-        <wc-list-number-of-hits ng-if="listModel.totalCount > 0 && viewLoaded" id="showing-nr-hits" class="col-md-6" list-model="listModel">
+        <wc-list-number-of-hits ng-if="showNumberOfHits()" id="showing-nr-hits" class="col-md-6" list-model="listModel">
         </wc-list-number-of-hits>
 
         <wc-list-page-numbers class="col-md-6"
-                              ng-show="listModel.totalCount > 0 && viewLoaded && (listModel.pagesList.length > 1
-                              || listModel.chosenPageList > 1) && !listModel.gettingPage"
+                              ng-show="showPageNumbers()"
                               list-model="listModel"
                               filter-model="filterModel">
         </wc-list-page-numbers>
       </div>
     </div>
 </div>
+
