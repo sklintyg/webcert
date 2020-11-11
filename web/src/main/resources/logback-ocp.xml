@@ -24,27 +24,31 @@
 
     <include resource="logback-ocp-base.xml"/>
 
-    <appender name="HSA" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
-            <marker>HSA</marker>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${TIMESTAMP} [hsa,${SESSION},${TRACE}] ${LINE}</pattern>
-        </encoder>
-    </appender>
+    <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="off" />
 
+    <logger name="se.inera.intyg.common" level="info" />
+    <logger name="se.inera.intyg.infra.integration" level="info" />
+    <logger name="se.inera.intyg.intygstyper" level="info" />
+    <logger name="se.inera.intyg.webcert.web.auth" level="info" />
+    <logger name="se.inera.intyg.webcert" level="info" />
+    <logger name="se.inera.webcert.notifications" level="info" />
+
+    <logger name="org.apache.cxf" level="off" />
+
+    <logger name="com.fasterxml.jackson" level="off" />
+
+    <logger name="org.springframework.transaction" level="info" />
 
     <!-- Log service for monitoring and audit information -->
-    <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="INFO">
+    <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info">
         <appender-ref ref="MONITORING" />
     </logger>
 
+    <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
+    <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
 
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="HSA"/>
     </root>
 
 </configuration>

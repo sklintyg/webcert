@@ -36,7 +36,7 @@
 
     <!-- Listener for external logback configuration file -->
     <listener>
-        <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
+        <listener-class>se.inera.intyg.infra.monitoring.logging.LogbackConfiguratorContextListener</listener-class>
     </listener>
 
     <!-- Start spring context -->

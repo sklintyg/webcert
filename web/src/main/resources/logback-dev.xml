@@ -18,81 +18,44 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<configuration scan="true" scanPeriod="30 seconds">
+<configuration>
 
-  <jmxConfigurator />
+  <property name="APP_NAME" value="${APP_NAME:-webcert}"/>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <withJansi>true</withJansi>
-    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <markers>Monitoring</markers>
-      <onMatch>DENY</onMatch>
-      <onMismatch>ACCEPT</onMismatch>
-    </filter>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} [%thread] %highlight(%-5level) %logger{10} [%user %session] - %msg%n" />
-      </layout>
-    </encoder>
-  </appender>
-
-  <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
-    <withJansi>true</withJansi>
-    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
-      <markers>Monitoring</markers>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
-    </filter>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} [%thread] %highlight(%-5level) %boldGreen(%logger{10}) [%user %session] - %msg%n" />
-      </layout>
-    </encoder>
-  </appender>
-
-  <logger name="org.springframework" level="error" />
-
-  <logger name="org.hibernate" level="info" />
-  <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="on" />
-
-  <logger name="org.apache.cxf.services" level="error" />
-
-  <logger name="se.inera.intyg.webcert.web" level="debug" />
-
-  <logger name="se.inera.intyg.webcert.web.auth" level="info" />
-
-  <logger name="se.inera.intyg.webcert" level="info" />
-
-  <logger name="se.inera.intyg.common" level="info" />
-
-  <logger name="org.apache.camel" level="error" />
-
-  <logger name="org.apache.cxf" level="off" />
+  <include resource="logback-dev-base.xml" />
 
   <logger name="com.fasterxml.jackson" level="off" />
 
+  <logger name="liquibase" level="info" />
+
+  <logger name="org.apache.cxf" level="off" />
+  <logger name="org.apache.cxf.services" level="error" />
+  <logger name="org.apache.camel" level="error" />
+
+  <logger name="org.hibernate" level="info" />
+  <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="off" />
+
+  <logger name="org.springframework" level="error" />
+  <logger name="org.springframework.beans.factory.xml" level="debug" />
+  <logger name="org.springframework.security.saml.log.SAMLDefaultLogger" level="info" />
   <logger name="org.springframework.transaction" level="info" />
 
-  <logger name="se.inera.webcert.notifications" level="info" />
-
+  <logger name="se.inera.intyg.common" level="info" />
   <logger name="se.inera.intyg.infra" level="info" />
-
-  <!-- Logger from saml info -->
-  <logger name="org.springframework.security.saml.log.SAMLDefaultLogger" level="info" />
-
-  <!-- Log service for monitoring and audit information -->
+  <logger name="se.inera.intyg.webcert" level="info" />
+  <logger name="se.inera.intyg.webcert.web" level="debug" />
+  <logger name="se.inera.intyg.webcert.web.auth" level="info" />
   <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info" />
+  <logger name="se.inera.webcert.notifications" level="info" />
 
   <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
   <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
 
-  <logger name="liquibase" level="info" />
-
-  <logger name="org.springframework.beans.factory.xml" level="debug" />
-
-  <root>
-    <level value="error" />
-    <appender-ref ref="STDOUT" />
-    <appender-ref ref="MONITORING" />
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="MONITORING"/>
+    <appender-ref ref="VALIDATION"/>
   </root>
+
 </configuration>
+
