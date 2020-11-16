@@ -66,6 +66,8 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
@@ -97,6 +99,9 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -563,18 +568,20 @@ public class NotificationServiceImpl implements NotificationService {
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
         ArendeAmne amne, LocalDate sistaDatumForSvar, String hanteratAv) {
 
-        Handelse handelse = new Handelse();
-        handelse.setCode(notificationMessage.getHandelse());
-        handelse.setEnhetsId(enhetsId);
-        handelse.setIntygsId(notificationMessage.getIntygsId());
-        handelse.setPersonnummer(personnummer);
-        handelse.setTimestamp(notificationMessage.getHandelseTid());
-        handelse.setVardgivarId(vardgivarId);
-        handelse.setAmne(amne);
-        handelse.setSistaDatumForSvar(sistaDatumForSvar);
-        handelse.setHanteratAv(hanteratAv);
+        if (!isWebcertMessagingUsed()) {
+            Handelse handelse = new Handelse();
+            handelse.setCode(notificationMessage.getHandelse());
+            handelse.setEnhetsId(enhetsId);
+            handelse.setIntygsId(notificationMessage.getIntygsId());
+            handelse.setPersonnummer(personnummer);
+            handelse.setTimestamp(notificationMessage.getHandelseTid());
+            handelse.setVardgivarId(vardgivarId);
+            handelse.setAmne(amne);
+            handelse.setSistaDatumForSvar(sistaDatumForSvar);
+            handelse.setHanteratAv(hanteratAv);
 
-        handelseRepo.save(handelse);
+            handelseRepo.save(handelse);
+        }
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
@@ -640,6 +647,10 @@ public class NotificationServiceImpl implements NotificationService {
                 + "' couldn't be sent to " + mailNotification.getCareUnitId()
                 + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
         }
+    }
+
+    private boolean isWebcertMessagingUsed() {
+        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
     }
 
     private static final class NotificationMessageCreator implements MessageCreator {
