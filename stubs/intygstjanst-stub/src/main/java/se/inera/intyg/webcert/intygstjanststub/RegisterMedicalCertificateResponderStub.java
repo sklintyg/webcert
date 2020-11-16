@@ -68,6 +68,7 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
         certificate.setSignedDate(source.getLakarutlatande().getSigneringsdatum());
         certificate.setCareUnitId(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsnamn());
+        certificate.setSigningDoctorId(source.getLakarutlatande().getSkapadAvHosPersonal().getPersonalId().getExtension());
         certificate.setSigningDoctorName(source.getLakarutlatande().getSkapadAvHosPersonal().getFullstandigtNamn());
         certificate.setAdditionalInfo(source.getLakarutlatande().getKommentar());
         certificate.setCareGiverId(
