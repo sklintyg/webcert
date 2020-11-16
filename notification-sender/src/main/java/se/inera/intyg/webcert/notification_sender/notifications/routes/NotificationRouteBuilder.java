@@ -54,6 +54,9 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     @Value("${receiveNotificationRequestEndpointUri}")
     private String notificationQueue;
 
+    @Value("${notificationPostProcessingEndpointUri}")
+    private String notificationPostProcessingQueue;
+
     @Value("${notificationSender.batchTimeout}")
     private Long batchAggregationTimeout = DEFAULT_TIMEOUT;
 
@@ -127,6 +130,11 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .transacted("txTemplate")
             .unmarshal(jaxbMessageDataFormatV3)
             .to("bean:notificationWSClientV3");
+
+        from(notificationPostProcessingQueue).routeId("notificationPostProcessing")
+            .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .to("bean:notificationPostProcessor");
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
             .log(LoggingLevel.ERROR, LOG,
