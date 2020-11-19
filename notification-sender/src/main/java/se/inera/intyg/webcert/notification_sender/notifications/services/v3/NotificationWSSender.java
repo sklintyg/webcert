@@ -55,13 +55,12 @@ public class NotificationWSSender {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static final String STATUS_UPDATE_RESULT_TEMP_FAIL = "TEMP_FAIL";
-    private static final String STATUS_UPDATE_RESULT_PERM_FAIL = "PERM_FAIL";
-    private static final String STATUS_UPDATE_RESULT_INFO = "INFO";
-    private static final String STATUS_UPDATE_RESULT_OK = "OK";
+    private static final String NOTIFICATION_RESULT_RESEND = "RESEND";
+    private static final String NOTIFICATION_RESULT_FAILURE = "FAILURE";
+    private static final String NOTIFICATION_RESULT_INFO = "INFO";
+    private static final String NOTIFICATION_RESULT_SUCCESS = "SUCCESS";
     private static final String MARSHALLING_ERROR = "Marshalling Error";
     private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
-    private static final String STATUS_UPDATE_FOR_CARE_RESULT = "statusUpdateForCareResult";
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
@@ -84,17 +83,17 @@ public class NotificationWSSender {
             LOG.debug("Sending status update: {} with request: {}", messageInfo, request);
             ResultType resultType = sendStatusUpdateToCare(logicalAddress, request);
             statusUpdateResult = handleResult(resultType);
-            if (statusUpdateResult.equals(STATUS_UPDATE_RESULT_INFO)) {
+            if (statusUpdateResult.equals(NOTIFICATION_RESULT_INFO)) {
                 LOG.info("{} message: {}", messageInfo, resultType.getResultText());
-                statusUpdateResult = STATUS_UPDATE_RESULT_OK;
+                statusUpdateResult = NOTIFICATION_RESULT_SUCCESS;
             }
             requestAsJson = requestToJson(request);
         } catch (TemporaryException tex) {
             LOG.warn("Temporary exception occurred during status update for care {} with error message: {}", messageInfo, tex);
-            statusUpdateResult = STATUS_UPDATE_RESULT_TEMP_FAIL;
+            statusUpdateResult = NOTIFICATION_RESULT_RESEND;
         } catch (PermanentException pex) {
             LOG.error("Permanent exception occurred during status update for care {} with error message: {}", messageInfo, pex);
-            statusUpdateResult = STATUS_UPDATE_RESULT_PERM_FAIL;
+            statusUpdateResult = NOTIFICATION_RESULT_FAILURE;
         }
 
         final String finalStatusUpdateResult = statusUpdateResult;
@@ -102,8 +101,9 @@ public class NotificationWSSender {
                 message.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, logicalAddress);
                 message.setStringProperty(NotificationRouteHeaders.USER_ID, userId);
                 message.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, correlationId);
+                message.setStringProperty(NotificationRouteHeaders.NOTIFICATION_RESULT, finalStatusUpdateResult);
                 message.setLongProperty(Constants.JMS_TIMESTAMP, messageTimestamp);
-                message.setStringProperty(STATUS_UPDATE_FOR_CARE_RESULT, finalStatusUpdateResult);
+
                 return message;
             }
         );
@@ -126,9 +126,9 @@ public class NotificationWSSender {
             case ERROR:
                 return handleError(result);
             case INFO:
-                return STATUS_UPDATE_RESULT_INFO;
+                return NOTIFICATION_RESULT_INFO;
             default:
-                return STATUS_UPDATE_RESULT_OK;
+                return NOTIFICATION_RESULT_SUCCESS;
         }
     }
 

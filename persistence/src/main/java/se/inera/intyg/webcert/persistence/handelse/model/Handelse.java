@@ -72,6 +72,9 @@ public class Handelse {
     @Column(name = "HANTERAT_AV")
     private String hanteratAv;
 
+    @Column(name = "DELIVERY_STATUS")
+    private String deliveryStatus;
+
     public Handelse() {
     }
 
@@ -153,5 +156,13 @@ public class Handelse {
 
     public void setHanteratAv(String hanteratAv) {
         this.hanteratAv = hanteratAv;
+    }
+
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
     }
 }
