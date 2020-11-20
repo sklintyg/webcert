@@ -87,7 +87,7 @@ public class NotificationWSSender {
                 LOG.info("{} message: {}", messageInfo, resultType.getResultText());
                 statusUpdateResult = NOTIFICATION_RESULT_SUCCESS;
             }
-            requestAsJson = requestToJson(request);
+            requestAsJson = requestToJson(request); // SKA ALLTID FÅS MED
         } catch (TemporaryException tex) {
             LOG.warn("Temporary exception occurred during status update for care {} with error message: {}", messageInfo, tex);
             statusUpdateResult = NOTIFICATION_RESULT_RESEND;
@@ -106,7 +106,7 @@ public class NotificationWSSender {
 
                 return message;
             }
-        );
+        ); // FINALLY BLOCK som typ ej får misslyckas FÖR ANNAT ÄN JMS EXCEPTION
     }
 
     private ResultType sendStatusUpdateToCare(String logicalAddress, CertificateStatusUpdateForCareType request)

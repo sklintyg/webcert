@@ -73,6 +73,14 @@ public class NotificationResend {
         this.eventId = eventId;
     }
 
+    public String getResendStrategy() {
+        return resendStrategy;
+    }
+
+    public void setResendStrategy(String resendStrategy) {
+        this.resendStrategy = resendStrategy;
+    }
+
     public LocalDateTime getResendTime() {
         return resendTime;
     }
