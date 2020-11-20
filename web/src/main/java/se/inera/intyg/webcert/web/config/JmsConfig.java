@@ -115,7 +115,7 @@ public class JmsConfig {
     }
 
     @Bean
-    public JmsTemplate jmsNotificationPostProcessing(ConnectionFactory jmsConnectionFactory) {
+    public JmsTemplate jmsTemplateNotificationPostProcessing(ConnectionFactory jmsConnectionFactory) {
         return template(jmsConnectionFactory, notificationPostProcessingQueueName);
     }
 

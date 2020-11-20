@@ -1352,4 +1352,36 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="67" author="mh">
+    <createTable tableName="NOTIFICATION_RESEND">
+      <column name="CORRELATION_ID" type="varchar(255)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="HANDELSE_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RESEND_STRATEGY" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RESEND_TIME" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RESEND_ATTEMPTS" type="int">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="NOTIFICATION_RESEND_HANDELSE_ID_INTYG_FK"
+        baseColumnNames="HANDELSE_ID" baseTableName="NOTIFICATION_RESEND"
+        referencedColumnNames="ID" referencedTableName="HANDELSE"/>
+  </changeSet>
+
+  <changeSet id="68" author="mh">
+    <addColumn tableName="HANDELSE">
+      <column name="DELIVERY_STATUS" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>
