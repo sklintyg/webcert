@@ -88,9 +88,9 @@ var DbUtkast = BaseSkvUtkast._extend({
     this.yttreUndersokning = {
       container: element(by.id('form_undersokningYttre')),
       ja: element(by.id('undersokningYttre-SVAR_JA')),
-      nejUndersokningSkaGoras: element(by.id('undersokningYttre-DETALJER_UNDERSOKNING.UNDERSOKNING_SKA_GORAS')),
+      nejUndersokningSkaGoras: element(by.id('undersokningYttre-DETALJER_UNDERSOKNING-UNDERSOKNING_SKA_GORAS')),
       nejUndersokningGjortKortFore: {
-        checkbox: element(by.id('undersokningYttre-DETALJER_UNDERSOKNING.UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
+        checkbox: element(by.id('undersokningYttre-DETALJER_UNDERSOKNING-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
         datePicker: element(by.id('datepicker_undersokningDatum'))
       }
     };
