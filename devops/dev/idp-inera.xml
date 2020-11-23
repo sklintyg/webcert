@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_c48066f0280359f51c0257e3aece795578b8a988" entityID="https://idp.ineradev.org:443/saml" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_eb380f33e53e979db04cb91170ba4a06a8f6d884" entityID="https://idp.ineradev.org:443/saml" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
   <md:Extensions>
     <mdattr:EntityAttributes>
       <saml2:Attribute Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
@@ -60,6 +60,15 @@
     <saml2:Attribute FriendlyName="x509IssuerName" Name="http://www.w3.org/2000/09/xmldsig#x509IssuerName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
     <saml2:Attribute FriendlyName="x509SubjectName" Name="http://www.w3.org/2000/09/xmldsig#x509SubjectName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
     <saml2:Attribute FriendlyName="levelOfAssurance" Name="urn:sambi:names:attribute:levelOfAssurance" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="pharmacyIdentifier" Name="http://sambi.se/attributes/1/pharmacyIdentifier" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialGivenName" Name="urn:credential:givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialSurname" Name="urn:credential:surname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialPersonalIdentityNumber" Name="urn:credential:personalIdentityNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialDisplayName" Name="urn:credential:displayName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialOrganizationName" Name="urn:credential:organizationName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="credentialCertificatePolicies" Name="urn:credential:certificatePolicies" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="allCommissions" Name="urn:allCommissions" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
+    <saml2:Attribute FriendlyName="allEmployeeHsaIds" Name="urn:allEmployeeHsaIds" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>
   </md:IDPSSODescriptor>
   <md:Organization>
     <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Inera AB</md:OrganizationName>

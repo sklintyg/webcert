@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="e0f35487-24b8-4468-99b1-77f395c1aa91" activeEnvironment="Default" name="CreateDraftCertificateV3_3" resourceRoot="${projectDir}" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="ddeb4146-efc4-42e9-9108-c212a53f45be" wsaVersion="NONE" name="CreateDraftCertificateResponderBinding" type="wsdl" bindingName="{urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificate:3:rivtabp21}CreateDraftCertificateResponderBinding" soapVersion="1_1" anonymous="optional" definition="../../../../../schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl"><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-	license agreements. See the NOTICE file distributed with this work for additional 
-	information regarding copyright ownership. Sveriges Kommuner och Landsting 
-	licenses this file to you under the Apache License, Version 2.0 (the "License"); 
-	you may not use this file except in compliance with the License. You may 
-	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+<con:soapui-project id="e0f35487-24b8-4468-99b1-77f395c1aa91" activeEnvironment="Default" name="CreateDraftCertificateV3_3" resourceRoot="${projectDir}" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="ddeb4146-efc4-42e9-9108-c212a53f45be" wsaVersion="NONE" name="CreateDraftCertificateResponderBinding" type="wsdl" bindingName="{urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificate:3:rivtabp21}CreateDraftCertificateResponderBinding" soapVersion="1_1" anonymous="optional" definition="../../../../../schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl"><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateInteraction_3.3_RIVTABP21.wsdl</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor
+	license agreements. See the NOTICE file distributed with this work for additional
+	information regarding copyright ownership. Sveriges Kommuner och Landsting
+	licenses this file to you under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 	the specific language governing permissions and limitations under the License.-->
 <wsdl:definitions name="CreateDraftCertificateInteraction" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificate:3:rivtabp21" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tjsr="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificate:3:rivtabp21" xmlns:itr="urn:riv:itintegration:registry:1">
   <wsdl:documentation>Tjänsteinteraktionens namn: CreateDraftCertificateInteraction
@@ -966,11 +966,11 @@ in the FAQ [2].
   <xs:element name="forifyllnad" type="tns:Forifyllnad"/>
 </xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/itintegration_registry_1.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:itintegration:registry:1" elementFormDefault="qualified" version="1.0" xmlns="urn:riv:itintegration:registry:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
-    <xs:documentation>Beskrivning: 	Typdefinition för logisk adress som skall användas i tjänstekontrakten 
+    <xs:documentation>Beskrivning: 	Typdefinition för logisk adress som skall användas i tjänstekontrakten
 							från och med RIV-TA Basic Profile 2.1
-			
+
 			Revisionshistorik:
-			
+
 			Datum:			2011-05-04
 			Beskrivning:	Initial version
 			Författare:		marcus.krantz@callistaenterprise.se</xs:documentation>
@@ -979,12 +979,12 @@ in the FAQ [2].
   <xs:simpleType name="LogicalAddressType">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://tempuri.org</con:endpoint></con:endpoints><con:operation id="6ccceb74-b07d-4438-a1d0-b721efc1d1f3" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3:CreateDraftCertificate" name="CreateDraftCertificate" bindingOperationName="CreateDraftCertificate" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f8a8f00e-b1b0-41e5-93aa-91444cec6e5e" name="lisjp-all-but-smittskydd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/create-draft-certificate/v3.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
-xmlns:urn="urn:riv:itintegration:registry:1" 
-xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" 
-xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" 
-xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3" 
-xmlns:urn4="urn:riv:clinicalprocess:healthcond:certificate:3.2" 
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://tempuri.org</con:endpoint></con:endpoints><con:operation id="6ccceb74-b07d-4438-a1d0-b721efc1d1f3" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3:CreateDraftCertificate" name="CreateDraftCertificate" bindingOperationName="CreateDraftCertificate" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f8a8f00e-b1b0-41e5-93aa-91444cec6e5e" name="lisjp-all-but-smittskydd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8020/services/create-draft-certificate/v3.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:urn="urn:riv:itintegration:registry:1"
+xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"
+xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"
+xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3"
+xmlns:urn4="urn:riv:clinicalprocess:healthcond:certificate:3.2"
 xmlns:urn5="urn:riv:clinicalprocess:healthcond:certificate:3.3">
    <soapenv:Header>
       <urn:LogicalAddress></urn:LogicalAddress>
