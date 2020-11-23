@@ -50,7 +50,7 @@ iteration som skall författa och signera ett intyg.
 ### Välj målmiljö
 Ett alternativ är att öppna build.gradle och redigera certificate.baseUrl i ext-blocket
 
-- "http://localhost:9088"
+- "http://localhost:8020"
 
 Alternativt kan man ange -Dcertificate.baseUrl=....... på kommandoraden.
 
