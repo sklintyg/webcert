@@ -9,7 +9,7 @@
   "barn": true,
   "explosivImplantat": true,
   "explosivAvlagsnat": true,
-  "undersokningYttre": "UNDERSOKNING_GJORT_KORT_FORE_DODEN",
+  "undersokningYttre": "DETALJER_UNDERSOKNING.UNDERSOKNING_GJORT_KORT_FORE_DODEN",
   "undersokningDatum": "2016-12-31",
   "polisanmalan": true,
   "textVersion": "1.0",

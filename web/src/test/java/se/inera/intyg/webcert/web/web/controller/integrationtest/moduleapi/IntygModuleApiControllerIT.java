@@ -550,7 +550,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         content.put("barn", "true");
         content.put("explosivImplantat", "true");
         content.put("explosivAvlagsnat", "true");
-        content.put("undersokningYttre", "UNDERSOKNING_GJORT_KORT_FORE_DODEN");
+        content.put("undersokningYttre", "DETALJER_UNDERSOKNING.UNDERSOKNING_GJORT_KORT_FORE_DODEN");
         content.put("undersokningDatum", "2016-12-31");
         content.put("polisanmalan", "true");
         content.put("avstangningSmittskydd", true);
