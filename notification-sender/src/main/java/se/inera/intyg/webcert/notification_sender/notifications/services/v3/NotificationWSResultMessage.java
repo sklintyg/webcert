@@ -24,22 +24,22 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class NotificationWSResultMessage {
 
-    private CertificateStatusUpdateForCareType request;
     private String certificateId;
     private String logicalAddress;
     private String userId;
     private String correlationId;
     private long messageTimestamp;
-    private ResultType result;
+    private ResultType resultType;
     private Exception exception;
+    private CertificateStatusUpdateForCareType statusUpdate;
 
-    public CertificateStatusUpdateForCareType getRequest() {
-        return request;
+    public CertificateStatusUpdateForCareType getStatusUpdate() {
+        return statusUpdate;
     }
 
-    public void setRequest(
-        CertificateStatusUpdateForCareType request) {
-        this.request = request;
+    public void setStatusUpdate(
+        CertificateStatusUpdateForCareType statusUpdate) {
+        this.statusUpdate = statusUpdate;
     }
 
     public String getCertificateId() {
@@ -82,12 +82,12 @@ public class NotificationWSResultMessage {
         this.messageTimestamp = messageTimestamp;
     }
 
-    public ResultType getResult() {
-        return result;
+    public ResultType getResultType() {
+        return resultType;
     }
 
-    public void setResult(ResultType result) {
-        this.result = result;
+    public void setResultType(ResultType resultType) {
+        this.resultType = resultType;
     }
 
     public Exception getException() {

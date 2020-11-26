@@ -53,22 +53,22 @@ public class NotificationWSSender {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
+    public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
         @Header(NotificationRouteHeaders.USER_ID) String userId,
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
         @Header(Constants.JMS_TIMESTAMP) long messageTimestamp) {
 
-        request.setHanteratAv(userHsaId(userId));
+        statusUpdate.setHanteratAv(userHsaId(userId));
 
-        final NotificationWSResultMessage resultMessage = createResultMessage(request, certificateId, logicalAddress, userId, correlationId,
-            messageTimestamp);
+        final NotificationWSResultMessage resultMessage = createResultMessage(statusUpdate, certificateId, logicalAddress, userId,
+            correlationId, messageTimestamp);
 
         try {
-            LOG.debug("Sending status update to care: {} with request: {}", resultMessage, request);
-            ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
-            resultMessage.setResult(resultType);
+            LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
+            ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
+            resultMessage.setResultType(resultType);
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
             resultMessage.setException(e);
@@ -98,12 +98,12 @@ public class NotificationWSSender {
         }
     }
 
-    private NotificationWSResultMessage createResultMessage(CertificateStatusUpdateForCareType request, String certificateId,
+    private NotificationWSResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String certificateId,
         String logicalAddress,
         String userId, String correlationId, long messageTimestamp) {
 
         final NotificationWSResultMessage message = new NotificationWSResultMessage();
-        message.setRequest(request);
+        message.setStatusUpdate(statusUpdate);
         message.setCertificateId(certificateId);
         message.setCorrelationId(correlationId);
         message.setLogicalAddress(logicalAddress);

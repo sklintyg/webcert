@@ -64,7 +64,7 @@ public class NotificationPostProcessor {
 
         NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
         deliveryStatus = NotificationResultEnum.RESEND;
-        CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusMessage();
+        CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
         Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
         String correlationId = notificationResult.getCorrelationId();
 
