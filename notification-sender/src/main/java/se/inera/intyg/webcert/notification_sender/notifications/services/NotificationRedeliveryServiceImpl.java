@@ -79,7 +79,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         if (existingRedelivery == null) {
             persistEvent(event);
         } else {
-            updateCurrentEvent(existingRedelivery, deliveryStatus);
+            updateExistingEvent(existingRedelivery, deliveryStatus);
             deleteNotificationRedelivery(existingRedelivery);
         }
     }
@@ -95,7 +95,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             Handelse persistedEvent = persistEvent(event);
             createNotificationRedelivery(persistedEvent, redeliveryStrategy, correlationId, statusUpdate);
         } else {
-            updateCurrentEvent(existingRedelivery, deliveryStatus);
+            updateExistingEvent(existingRedelivery, deliveryStatus);
             updateNotificationRedelivery(existingRedelivery, redeliveryStrategy);
         }
     }
@@ -104,11 +104,11 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         return handelseRepo.save(event);
     }
 
-    private void updateCurrentEvent(NotificationRedelivery currentRedelivery, NotificationResultEnum deliveryStatus) {
-        Handelse currentEvent = handelseRepo.findById(currentRedelivery.getEventId()).orElse(null);
-        if (currentEvent != null) {
-            currentEvent.setDeliveryStatus(deliveryStatus.toString());
-            handelseRepo.save(currentEvent);
+    private void updateExistingEvent(NotificationRedelivery existingRedelivery, NotificationResultEnum deliveryStatus) {
+        Handelse existingEvent = handelseRepo.findById(existingRedelivery.getEventId()).orElse(null);
+        if (existingEvent != null) {
+            existingEvent.setDeliveryStatus(deliveryStatus.toString());
+            handelseRepo.save(existingEvent);
         }
     }
 
@@ -124,18 +124,18 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         notificationRedeliveryRepository.save(newRedelivery);
     }
 
-    private void updateNotificationRedelivery(NotificationRedelivery currentRedelivery, NotificationRedeliveryStrategy strategy) {
-        final int attemptedRedeliveries = currentRedelivery.getAttemptedRedeliveries() + 1;
+    private void updateNotificationRedelivery(NotificationRedelivery existingRedelivery, NotificationRedeliveryStrategy strategy) {
+        final int attemptedRedeliveries = existingRedelivery.getAttemptedRedeliveries() + 1;
         final int maxRedeliveries = strategy.getMaxRedeliveries();
 
         if (attemptedRedeliveries < maxRedeliveries) {
-            currentRedelivery.setAttemptedRedeliveries(attemptedRedeliveries);
-            currentRedelivery.setRedeliveryTime(LocalDateTime.now().plus(strategy.getNextTimeValue(attemptedRedeliveries),
+            existingRedelivery.setAttemptedRedeliveries(attemptedRedeliveries);
+            existingRedelivery.setRedeliveryTime(LocalDateTime.now().plus(strategy.getNextTimeValue(attemptedRedeliveries),
                 strategy.getNextTimeUnit(attemptedRedeliveries)));
-            notificationRedeliveryRepository.save(currentRedelivery);
+            notificationRedeliveryRepository.save(existingRedelivery);
         } else {
-            updateCurrentEvent(currentRedelivery, NotificationResultEnum.FAILURE);
-            notificationRedeliveryRepository.delete(currentRedelivery);
+            updateExistingEvent(existingRedelivery, NotificationResultEnum.FAILURE);
+            notificationRedeliveryRepository.delete(existingRedelivery);
         }
     }
 
