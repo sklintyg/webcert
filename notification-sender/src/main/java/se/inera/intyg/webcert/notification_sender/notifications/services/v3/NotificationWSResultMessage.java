@@ -24,15 +24,23 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class NotificationWSResultMessage {
 
+    private CertificateStatusUpdateForCareType request;
     private String certificateId;
-    private String correlationId;
     private String logicalAddress;
     private String userId;
-    private ResultType resultType;
+    private String correlationId;
+    private long messageTimestamp;
+    private ResultType result;
     private Exception exception;
-    private CertificateStatusUpdateForCareType statusMessage;
 
-    public NotificationWSResultMessage() { }
+    public CertificateStatusUpdateForCareType getRequest() {
+        return request;
+    }
+
+    public void setRequest(
+        CertificateStatusUpdateForCareType request) {
+        this.request = request;
+    }
 
     public String getCertificateId() {
         return certificateId;
@@ -40,14 +48,6 @@ public class NotificationWSResultMessage {
 
     public void setCertificateId(String certificateId) {
         this.certificateId = certificateId;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
     }
 
     public String getLogicalAddress() {
@@ -66,12 +66,28 @@ public class NotificationWSResultMessage {
         this.userId = userId;
     }
 
-    public ResultType getResultType() {
-        return resultType;
+    public String getCorrelationId() {
+        return correlationId;
     }
 
-    public void setResultType(ResultType resultType) {
-        this.resultType = resultType;
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public long getMessageTimestamp() {
+        return messageTimestamp;
+    }
+
+    public void setMessageTimestamp(long messageTimestamp) {
+        this.messageTimestamp = messageTimestamp;
+    }
+
+    public ResultType getResult() {
+        return result;
+    }
+
+    public void setResult(ResultType result) {
+        this.result = result;
     }
 
     public Exception getException() {
@@ -82,16 +98,11 @@ public class NotificationWSResultMessage {
         this.exception = exception;
     }
 
-    public CertificateStatusUpdateForCareType getStatusMessage() {
-        return statusMessage;
-    }
-
-    public void setStatusMessage(CertificateStatusUpdateForCareType statusMessage) {
-        this.statusMessage = statusMessage;
-    }
-
     @Override
     public String toString() {
-        return String.format("[logicalAddress: %s, intygId: %s, correlationId: %s]", logicalAddress, certificateId, correlationId);
+        return String
+            .format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.logicalAddress, this.certificateId,
+                this.correlationId);
     }
+
 }

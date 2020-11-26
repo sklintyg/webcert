@@ -23,9 +23,7 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
-import javax.jms.JMSException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +31,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.webcert.common.Constants;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class NotificationWSSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSSender.class);
+
+    @Autowired
+    @Qualifier("jmsTemplateNotificationPostProcessing")
+    private JmsTemplate jmsTemplateNotificationPostProcessing;
 
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
@@ -49,61 +53,74 @@ public class NotificationWSSender {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    @Qualifier("jmsTemplateNotificationPostProcessing")
-    private JmsTemplate jmsTemplateNotificationPostProcessing;
-
-    public void sendStatusUpdate(CertificateStatusUpdateForCareType statusMessage,
+    public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
+        @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
         @Header(NotificationRouteHeaders.USER_ID) String userId,
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
-        @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
-        @Header(Constants.JMS_TIMESTAMP) long messageTimestamp) throws JMSException {
+        @Header(Constants.JMS_TIMESTAMP) long messageTimestamp) {
 
-        statusMessage.setHanteratAv(getUserHsaId(userId));
+        request.setHanteratAv(userHsaId(userId));
 
-        NotificationWSResultMessage notificationWSMessage = new NotificationWSResultMessage();
-        notificationWSMessage.setCorrelationId(correlationId);
-        notificationWSMessage.setLogicalAddress(logicalAddress);
-        notificationWSMessage.setUserId(userId);
-        notificationWSMessage.setStatusMessage(statusMessage);
-        notificationWSMessage.setCertificateId(certificateId);
+        final NotificationWSResultMessage resultMessage = createResultMessage(request, certificateId, logicalAddress, userId, correlationId,
+            messageTimestamp);
 
         try {
-            LOG.debug("Sending status update to care: {}", notificationWSMessage);
-            ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusMessage).getResult();
-            notificationWSMessage.setResultType(resultType);
+            LOG.debug("Sending status update to care: {} with request: {}", resultMessage, request);
+            ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
+            resultMessage.setResult(resultType);
         } catch (Exception e) {
-            notificationWSMessage.setException(e);
-        }
-
-        JsonProcessingException jsonProcessingException = null;
-        String notificationWSMessageJson = "";
-        try {
-            notificationWSMessageJson = objectMapper.writeValueAsString(notificationWSMessage);
-        } catch (JsonProcessingException e) {
-            jsonProcessingException = e;
+            LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
+            resultMessage.setException(e);
         } finally {
-            LOG.debug("Sending notification message for postprocessing: {}", notificationWSMessage);
-            final JsonProcessingException jsonProcessingExceptionFinal = jsonProcessingException;
-            jmsTemplateNotificationPostProcessing.convertAndSend(notificationWSMessageJson, jmsMessage -> {
-                if (jsonProcessingExceptionFinal != null) {
-                    jmsMessage.setObjectProperty(NotificationRouteHeaders.JSON_EXCEPTION, ImmutableMap.of(
-                        NotificationRouteHeaders.JSON_EXCEPTION, jsonProcessingExceptionFinal));
-                }
-                return jmsMessage;
-            });
+            postProcessSendResult(resultMessage);
         }
     }
 
-    HsaId getUserHsaId(String userId) {
+    private void postProcessSendResult(NotificationWSResultMessage resultMessage) {
+
+        final String notificationMessageAsJson = messageToJson(resultMessage);
+
+        try {
+            LOG.debug("Sending status update for postprocessing with result message: {}", resultMessage);
+            jmsTemplateNotificationPostProcessing.send(session -> session.createTextMessage(notificationMessageAsJson));
+        } catch (Exception e) {
+            LOG.error("Runtime exception occurred when sending {} to postprocessing with error message: {}", resultMessage, e);
+        }
+    }
+
+    private String messageToJson(NotificationWSResultMessage notificationMessage) {
+        try {
+            return objectMapper.writeValueAsString(notificationMessage);
+        } catch (JsonProcessingException e) {
+            LOG.error("Problem occured when trying to create and marshall NotificationWSResultMessage.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
+    }
+
+    private NotificationWSResultMessage createResultMessage(CertificateStatusUpdateForCareType request, String certificateId,
+        String logicalAddress,
+        String userId, String correlationId, long messageTimestamp) {
+
+        final NotificationWSResultMessage message = new NotificationWSResultMessage();
+        message.setRequest(request);
+        message.setCertificateId(certificateId);
+        message.setCorrelationId(correlationId);
+        message.setLogicalAddress(logicalAddress);
+        message.setUserId(userId);
+        message.setMessageTimestamp(messageTimestamp);
+
+        return message;
+    }
+
+    private HsaId userHsaId(String userId) {
         if (Objects.nonNull(userId)) {
+            LOG.debug("Set hanteratAv to '{}'", userId);
             final HsaId hsaId = new HsaId();
             hsaId.setExtension(userId);
             hsaId.setRoot(HSA_ID_OID);
             return hsaId;
-        } else {
-            return null;
         }
+        return null;
     }
 }
