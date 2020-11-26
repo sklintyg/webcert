@@ -148,11 +148,6 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .transacted("txTemplate")
             .to("bean:notificationPostProcessor");
 
-        from(notificationPostProcessingQueue).routeId("notificationPostProcessing")
-            .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
-            .transacted("txTemplate")
-            .to("bean:notificationPostProcessor");
-
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
             .log(LoggingLevel.ERROR, LOG,
                 simple("Permanent exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}"

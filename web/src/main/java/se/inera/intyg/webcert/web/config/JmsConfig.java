@@ -120,6 +120,11 @@ public class JmsConfig {
     }
 
     @Bean
+    public JmsTemplate jmsTemplateNotificationWSSender(ConnectionFactory jmsConnectionFactory) {
+        return template(jmsConnectionFactory, notificationWSQueueName);
+    }
+
+    @Bean
     public JmsTemplate jmsCertificateSenderTemplate(ConnectionFactory jmsConnectionFactory) {
         return template(jmsConnectionFactory, certificateSenderQueueName);
     }

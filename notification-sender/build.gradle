@@ -33,6 +33,8 @@ dependencies {
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
     compile "org.apache.activemq:activemq-camel"
 
+    compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+
     testCompile project(':notification-stub')
 
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")

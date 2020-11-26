@@ -1353,26 +1353,29 @@
   </changeSet>
 
   <changeSet id="67" author="mh">
-    <createTable tableName="NOTIFICATION_RESEND">
+    <createTable tableName="NOTIFICATION_REDELIVERY">
       <column name="CORRELATION_ID" type="varchar(255)">
         <constraints primaryKey="true" nullable="false"/>
       </column>
       <column name="HANDELSE_ID" type="bigint">
         <constraints nullable="false"/>
       </column>
-      <column name="RESEND_STRATEGY" type="varchar(255)">
+      <column name="MESSAGE" type="varchar(8192)">
         <constraints nullable="false"/>
       </column>
-      <column name="RESEND_TIME" type="datetime">
+      <column name="REDELIVERY_STRATEGY" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="RESEND_ATTEMPTS" type="int">
+      <column name="REDELIVERY_TIME" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ATTEMPTED_REDELIVERIES" type="int">
         <constraints nullable="false"/>
       </column>
     </createTable>
 
-    <addForeignKeyConstraint constraintName="NOTIFICATION_RESEND_HANDELSE_ID_INTYG_FK"
-        baseColumnNames="HANDELSE_ID" baseTableName="NOTIFICATION_RESEND"
+    <addForeignKeyConstraint constraintName="NOTIFICATION_REDELIVERY_HANDELSE_ID_INTYG_FK"
+        baseColumnNames="HANDELSE_ID" baseTableName="NOTIFICATION_REDELIVERY"
         referencedColumnNames="ID" referencedTableName="HANDELSE"/>
   </changeSet>
 

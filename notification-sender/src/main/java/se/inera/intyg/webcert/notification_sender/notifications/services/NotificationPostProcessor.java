@@ -21,21 +21,22 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import org.apache.camel.Exchange;
+import java.util.Objects;
+import javax.xml.ws.soap.SOAPFaultException;
+import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationResend;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationResendRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class NotificationPostProcessor {
 
@@ -45,91 +46,94 @@ public class NotificationPostProcessor {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private HandelseRepository handelseRepo;
+    private NotificationRedeliveryService notificationRedeliveryService;
 
-    @Autowired
-    private NotificationResendRepository notificationResendRepository;
+    public enum NotificationResultEnum { SUCCESS, RESEND, FAILURE }
 
-    private static final String NOTIFICATION_RESULT_RESEND = "RESEND";
-    private static final String NOTIFICATION_RESULT_FAILURE = "FAILURE";
-    private static final String NOTIFICATION_RESULT_SUCCESS = "SUCCESS";
+    NotificationWSResultMessage notificationWSMessage;
 
-    public void process(Exchange exchange) {
-
-        String notificationResult = exchange.getMessage().getHeader(NotificationRouteHeaders.NOTIFICATION_RESULT, String.class);
-        String correlationId = exchange.getMessage().getHeader(NotificationRouteHeaders.CORRELATION_ID, String.class);
-        String timestamp = exchange.getMessage().getHeader(Constants.JMS_TIMESTAMP, String.class);
-        String certificateId = exchange.getMessage().getHeader(NotificationRouteHeaders.INTYGS_ID, String.class);
-        String eventType = exchange.getMessage().getHeader(NotificationRouteHeaders.HANDELSE, String.class);
-        String messageJson = exchange.getMessage().getBody(String.class);
-
-        // TODO Throughout, check what error handling is needed, add logging and monitorlogging
+    public void process(Message message) {
         try {
-            NotificationResend existingResendRecord = notificationResendRepository.findByCorrelationId(correlationId).orElse(null);
-            CertificateStatusUpdateForCareType message = notificationMessageFromJson(messageJson, certificateId, eventType, timestamp);
-            Handelse event = createEvent(message, notificationResult);
-            handleNotificationResult(event, existingResendRecord, notificationResult, correlationId);
-        } catch (Exception e) {
-            LOG.error("Notification postprocessing failed: {}", e.getMessage());
-        }
-    }
-
-    private void handleNotificationResult(Handelse event, NotificationResend existingResendRecord, String notificationResult,
-        String correlationId) {
-
-        if (existingResendRecord == null) {
-            Handelse persistedEvent = handelseRepo.save(event);
-
-            if (notificationResult.equals(NOTIFICATION_RESULT_RESEND)) {
-                NotificationResend newResendRecord = new NotificationResend(correlationId, persistedEvent.getId(), "STANDARD",
-                    LocalDateTime.now().plusMinutes(1), 0);
-                notificationResendRepository.save(newResendRecord);
-            }
-        } else {
-            updateExistingEvent(existingResendRecord, notificationResult);
-
-            if (notificationResult.equals(NOTIFICATION_RESULT_RESEND)) {
-                NotificationResend updatedResendRecord = updateExistingResendRecord(existingResendRecord);
-                notificationResendRepository.save(updatedResendRecord);
-            } else {
-                notificationResendRepository.delete(existingResendRecord);
-            }
-        }
-    }
-
-    private Boolean updateExistingEvent(NotificationResend existingResendRecord, String deliveryStatus) {
-        Handelse eventToUpdate = handelseRepo.findById(existingResendRecord.getEventId()).orElse(null);
-        if (eventToUpdate != null) {
-            eventToUpdate.setDeliveryStatus(deliveryStatus);
-            handelseRepo.save(eventToUpdate);
-            return true;
-        }
-        return false;
-    }
-
-    private NotificationResend updateExistingResendRecord(NotificationResend existingResendRecord) {
-        // TODO Improve by using a NotificationResendStrategy for determining resend times and max redeliveries etc.
-        int nextResendAttempt = existingResendRecord.getResendAttempts() + 1;
-        existingResendRecord.setResendAttempts(nextResendAttempt);
-        existingResendRecord.setResendTime(LocalDateTime.now().plusMinutes(nextResendAttempt * 2));
-        return existingResendRecord;
-    }
-
-    private CertificateStatusUpdateForCareType notificationMessageFromJson(String message, String certificateId,
-        String eventType, String timestamp) {
-        try {
-            return objectMapper.readValue(message, CertificateStatusUpdateForCareType.class);
+            notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
+                NotificationWSResultMessage.class);
+            processNotificationResult(notificationWSMessage);
         } catch (JsonProcessingException e) {
-            LOG.error("Exception occurred when extracting notification json message for certificate id {}, event {} and timestamp {} "
-                + "with error message: {}",
-                certificateId, eventType, timestamp, e.getMessage());
-            return null;
+            LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
+                notificationWSMessage, e);
         }
     }
 
-    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdateMessage, String notificationResult) {
+    private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
+        NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
+        deliveryStatus = NotificationResultEnum.RESEND; // FOR TESTING SPECIFIC STATUS
+        CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
+        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
+        String correlationId = notificationResult.getCorrelationId();
+
+        switch (deliveryStatus) {
+            case SUCCESS :
+                notificationRedeliveryService.handleNotificationSuccess(correlationId, event, deliveryStatus);
+                break;
+            case RESEND :
+                notificationRedeliveryService.handleNotificationResend(correlationId, event, deliveryStatus, statusUpdateMessage);
+                break;
+            case FAILURE :
+                notificationRedeliveryService.handleNotificationFailure(correlationId, event, deliveryStatus);
+        }
+    }
+
+    private NotificationResultEnum extractDeliveryStatusFromResult(NotificationWSResultMessage notificationResult) {
+        Exception exception = notificationResult.getException();
+        ResultType resultType = notificationResult.getResultType();
+        if (Objects.nonNull(exception)) {
+            return getDeliveryStatusOnException(exception, notificationResult);
+        } else {
+            return getDeliveryStatusOnResultType(resultType, notificationResult);
+        }
+    }
+
+    private NotificationResultEnum getDeliveryStatusOnException(Exception exception, NotificationWSResultMessage message) {
+        final String msg = exception.getMessage();
+        if (exception instanceof SOAPFaultException && Objects.nonNull(msg) && (msg.contains("Marshalling Error")
+            || msg.contains("Unmarshalling Error"))) {
+            LOG.error("Failure sending status update to care for {}, {}", message, exception.getStackTrace());
+            return NotificationResultEnum.FAILURE;
+        } else {
+            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", message, exception.getStackTrace());
+            return NotificationResultEnum.RESEND;
+        }
+    }
+
+    private NotificationResultEnum getDeliveryStatusOnResultType(ResultType resultType, NotificationWSResultMessage notificationResult) {
+        ResultCodeType resultCode = resultType.getResultCode();
+        if (ResultCodeType.ERROR == resultCode) {
+            return getDeliveryStatusOnError(resultType, notificationResult);
+        }
+        if (ResultCodeType.INFO == resultCode) {
+            LOG.info("Received info message from care for status update {}, info received: {}", notificationResult,
+                resultType.getResultText());
+        }
+        return NotificationResultEnum.SUCCESS;
+    }
+
+    private NotificationResultEnum getDeliveryStatusOnError(ResultType resultType, NotificationWSResultMessage message) {
+        ErrorIdType errorId = resultType.getErrorId();
+        String errorText = resultType.getResultText();
+        if (errorId == ErrorIdType.TECHNICAL_ERROR) {
+            LOG.warn("{} returned from care for status update {}, Error message: {}, Attempting redelivery...", errorId, message,
+                errorText);
+            return NotificationResultEnum.RESEND;
+        } else {
+            LOG.error("{} returned from care for status update {}, Error message: {}", errorId, message, errorText);
+            return NotificationResultEnum.FAILURE;
+        }
+    }
+
+    private Handelse extractEventFromStatusUpdate(CertificateStatusUpdateForCareType statusUpdateMessage,
+        NotificationResultEnum deliveryStatus) {
         Amneskod topicCode = statusUpdateMessage.getHandelse().getAmne();
+        HsaId userId = statusUpdateMessage.getHanteratAv();
 
         Handelse event = new Handelse();
         event.setCode(HandelsekodEnum.fromValue(statusUpdateMessage.getHandelse().getHandelsekod().getCode()));
@@ -140,8 +144,8 @@ public class NotificationPostProcessor {
         event.setVardgivarId(statusUpdateMessage.getIntyg().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
         event.setAmne(topicCode != null ? ArendeAmne.valueOf(topicCode.getCode()) : null);
         event.setSistaDatumForSvar(statusUpdateMessage.getHandelse().getSistaDatumForSvar());
-        event.setHanteratAv(statusUpdateMessage.getHanteratAv().getExtension());
-        event.setDeliveryStatus(notificationResult);
+        event.setHanteratAv(userId != null ? userId.getExtension() : null);
+        event.setDeliveryStatus(deliveryStatus.toString());
 
         return event;
     }
