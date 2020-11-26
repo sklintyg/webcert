@@ -50,20 +50,23 @@ public class NotificationPostProcessor {
 
     public enum NotificationResultEnum { SUCCESS, RESEND, FAILURE }
 
+    NotificationWSResultMessage notificationWSMessage;
+
     public void process(Message message) {
         try {
-            NotificationWSResultMessage notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
+            notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
                 NotificationWSResultMessage.class);
             processNotificationResult(notificationWSMessage);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
+                notificationWSMessage, e);
         }
     }
 
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
-        deliveryStatus = NotificationResultEnum.RESEND;
+        deliveryStatus = NotificationResultEnum.RESEND; // FOR TESTING SPECIFIC STATUS
         CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
         Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
         String correlationId = notificationResult.getCorrelationId();
@@ -90,6 +93,18 @@ public class NotificationPostProcessor {
         }
     }
 
+    private NotificationResultEnum getDeliveryStatusOnException(Exception exception, NotificationWSResultMessage message) {
+        final String msg = exception.getMessage();
+        if (exception instanceof SOAPFaultException && Objects.nonNull(msg) && (msg.contains("Marshalling Error")
+            || msg.contains("Unmarshalling Error"))) {
+            LOG.error("Failure sending status update to care for {}, {}", message, exception.getStackTrace());
+            return NotificationResultEnum.FAILURE;
+        } else {
+            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", message, exception.getStackTrace());
+            return NotificationResultEnum.RESEND;
+        }
+    }
+
     private NotificationResultEnum getDeliveryStatusOnResultType(ResultType resultType, NotificationWSResultMessage notificationResult) {
         ResultCodeType resultCode = resultType.getResultCode();
         if (ResultCodeType.ERROR == resultCode) {
@@ -112,18 +127,6 @@ public class NotificationPostProcessor {
         } else {
             LOG.error("{} returned from care for status update {}, Error message: {}", errorId, message, errorText);
             return NotificationResultEnum.FAILURE;
-        }
-    }
-
-    private NotificationResultEnum getDeliveryStatusOnException(Exception exception, NotificationWSResultMessage message) {
-        final String msg = exception.getMessage();
-        if (exception instanceof SOAPFaultException && Objects.nonNull(msg) && (msg.contains("Marshalling Error")
-            || msg.contains("Unmarshalling Error"))) {
-            LOG.error("Failure sending status update to care for {}, {}", message, exception.getStackTrace());
-            return NotificationResultEnum.FAILURE;
-        } else {
-            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", message, exception.getStackTrace());
-            return NotificationResultEnum.RESEND;
         }
     }
 

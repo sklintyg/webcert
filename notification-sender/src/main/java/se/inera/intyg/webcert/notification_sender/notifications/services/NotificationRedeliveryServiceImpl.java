@@ -72,6 +72,18 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     }
 
 
+    private void executeSuccessAndFailure(String correlationId, Handelse event, NotificationResultEnum deliveryStatus) {
+
+        NotificationRedelivery existingRedelivery = getExistingRedelivery(correlationId);
+
+        if (existingRedelivery == null) {
+            persistEvent(event);
+        } else {
+            updateCurrentEvent(existingRedelivery, deliveryStatus);
+            deleteNotificationRedelivery(existingRedelivery);
+        }
+    }
+
     private void executeResend(String correlationId, Handelse event, CertificateStatusUpdateForCareType statusUpdate,
         NotificationResultEnum deliveryStatus) {
 
@@ -86,27 +98,6 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             updateCurrentEvent(existingRedelivery, deliveryStatus);
             updateNotificationRedelivery(existingRedelivery, redeliveryStrategy);
         }
-
-    }
-
-    private void executeSuccessAndFailure(String correlationId, Handelse event, NotificationResultEnum deliveryStatus) {
-
-        NotificationRedelivery existingRedelivery = getExistingRedelivery(correlationId);
-
-        if (existingRedelivery == null) {
-            persistEvent(event);
-        } else {
-            updateCurrentEvent(existingRedelivery, deliveryStatus);
-            deleteNotificationRedelivery(existingRedelivery);
-        }
-    }
-
-    private void deleteNotificationRedelivery(NotificationRedelivery record) {
-        notificationRedeliveryRepository.delete(record);
-    }
-
-    private NotificationRedelivery getExistingRedelivery(String correlationId) {
-        return notificationRedeliveryRepository.findByCorrelationId(correlationId).orElse(null);
     }
 
     private Handelse persistEvent(Handelse event) {
@@ -119,6 +110,10 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             currentEvent.setDeliveryStatus(deliveryStatus.toString());
             handelseRepo.save(currentEvent);
         }
+    }
+
+    private NotificationRedelivery getExistingRedelivery(String correlationId) {
+        return notificationRedeliveryRepository.findByCorrelationId(correlationId).orElse(null);
     }
 
     private void createNotificationRedelivery(Handelse persistedEvent, NotificationRedeliveryStrategy strategy, String correlationId,
@@ -142,6 +137,10 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             updateCurrentEvent(currentRedelivery, NotificationResultEnum.FAILURE);
             notificationRedeliveryRepository.delete(currentRedelivery);
         }
+    }
+
+    private void deleteNotificationRedelivery(NotificationRedelivery record) {
+        notificationRedeliveryRepository.delete(record);
     }
 
     private String marshalStatusMessage(CertificateStatusUpdateForCareType statusMessage) {

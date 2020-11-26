@@ -25,7 +25,6 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 public interface NotificationRedeliveryService {
 
-
     void handleNotificationSuccess(String correlationId, Handelse event, NotificationResultEnum deliveryStatus);
 
 
