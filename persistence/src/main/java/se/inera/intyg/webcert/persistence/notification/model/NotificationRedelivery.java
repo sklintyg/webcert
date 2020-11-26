@@ -27,8 +27,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "NOTIFICATION_RESEND")
-public class NotificationResend {
+@Table(name = "NOTIFICATION_REDELIVERY")
+public class NotificationRedelivery {
 
     @Id
     @Column(name = "CORRELATION_ID")
@@ -37,24 +37,29 @@ public class NotificationResend {
     @Column(name = "HANDELSE_ID")
     private Long eventId;
 
-    @Column(name = "RESEND_STRATEGY")
-    private String resendStrategy;
+    @Column(name = "MESSAGE")
+    private String message;
 
-    @Column(name = "RESEND_TIME")
+    @Column(name = "REDELIVERY_STRATEGY")
+    private String redeliveryStrategy;
+
+    @Column(name = "REDELIVERY_TIME")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime resendTime;
+    private LocalDateTime redeliveryTime;
 
-    @Column(name = "RESEND_ATTEMPTS")
-    private int resendAttempts;
+    @Column(name = "ATTEMPTED_REDELIVERIES")
+    private int attemptedRedeliveries;
 
-    public NotificationResend() { }
+    public NotificationRedelivery() { }
 
-    public NotificationResend(String correlationId, Long eventId, String resendStrategy, LocalDateTime resendTime, int resendAttempts) {
+    public NotificationRedelivery(String correlationId, Long eventId, String message, String redeliveryStrategy,
+        LocalDateTime redeliveryTime, int attemptedRedeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
-        this.resendStrategy = resendStrategy;
-        this.resendTime = resendTime;
-        this.resendAttempts = resendAttempts;
+        this.message = message;
+        this.redeliveryStrategy = redeliveryStrategy;
+        this.redeliveryTime = redeliveryTime;
+        this.attemptedRedeliveries = attemptedRedeliveries;
     }
 
     public String getCorrelationId() {
@@ -73,27 +78,35 @@ public class NotificationResend {
         this.eventId = eventId;
     }
 
-    public String getResendStrategy() {
-        return resendStrategy;
+    public String getMessage() {
+        return message;
     }
 
-    public void setResendStrategy(String resendStrategy) {
-        this.resendStrategy = resendStrategy;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public LocalDateTime getResendTime() {
-        return resendTime;
+    public String getRedeliveryStrategy() {
+        return redeliveryStrategy;
     }
 
-    public void setResendTime(LocalDateTime resendTime) {
-        this.resendTime = resendTime;
+    public void setRedeliveryStrategy(String redeliveryStrategy) {
+        this.redeliveryStrategy = redeliveryStrategy;
     }
 
-    public int getResendAttempts() {
-        return resendAttempts;
+    public LocalDateTime getRedeliveryTime() {
+        return redeliveryTime;
     }
 
-    public void setResendAttempts(int resendAttempts) {
-        this.resendAttempts = resendAttempts;
+    public void setRedeliveryTime(LocalDateTime redeliveryTime) {
+        this.redeliveryTime = redeliveryTime;
+    }
+
+    public int getAttemptedRedeliveries() {
+        return attemptedRedeliveries;
+    }
+
+    public void setAttemptedRedeliveries(int attemptedRedeliveries) {
+        this.attemptedRedeliveries = attemptedRedeliveries;
     }
 }

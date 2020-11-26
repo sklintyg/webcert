@@ -16,21 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public final class NotificationRouteHeaders {
+package se.inera.intyg.webcert.persistence.notification.repository;
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String INTYGS_TYP = "intygsTyp";
-    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
-    public static final String CORRELATION_ID = "correlationId";
-    public static final String JSON_EXCEPTION = "jsonProcessingException";
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
-    private NotificationRouteHeaders() {
-    }
+public interface NotificationRedeliveryRepository extends JpaRepository<NotificationRedelivery, String> {
 
+    Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
+
+    List<NotificationRedelivery> findByEventId(Long handelseId);
+
+    List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
+
+    List<NotificationRedelivery> findByAttemptedRedeliveries(int attemptedRedeliveries);
 }

@@ -17,21 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.notification.repository;
+package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.repository.CrudRepository;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationResend;
+import org.springframework.stereotype.Service;
 
-public interface NotificationResendRepository extends CrudRepository<NotificationResend, String> {
 
-    Optional<NotificationResend> findByCorrelationId(String correlationId);
+@Service
+public class NotificationRedeliveryStrategyFactory {
 
-    List<NotificationResend> findByEventId(Long handelseId);
+    public enum NotificationRedeliveryStrategyEnum { STANDARD }
 
-    List<NotificationResend> findByResendTimeLessThan(LocalDateTime currentTime);
+    public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
-    List<NotificationResend> findByResendAttempts(int resendAttempts);
+        switch (notificationResendStrategy) {
+            case STANDARD :
+                return new NotificationRedeliveryStrategyStandard();
+            default:
+                return new NotificationRedeliveryStrategyStandard();
+        }
+    }
 }

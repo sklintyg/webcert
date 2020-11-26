@@ -16,21 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public final class NotificationRouteHeaders {
+package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String INTYGS_TYP = "intygsTyp";
-    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
-    public static final String CORRELATION_ID = "correlationId";
-    public static final String JSON_EXCEPTION = "jsonProcessingException";
+import java.time.temporal.ChronoUnit;
 
-    private NotificationRouteHeaders() {
-    }
+public interface NotificationRedeliveryStrategy {
 
+    String getName();
+
+    int getMaxRedeliveries();
+
+    ChronoUnit getNextTimeUnit(int attemptedRedeliveries);
+
+    int getNextTimeValue(int attemptedRedeliveries);
 }
