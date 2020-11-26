@@ -29,10 +29,13 @@ import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -44,6 +47,9 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 public class NotificationRouteBuilder extends SpringRouteBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
+
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
     private static final long DEFAULT_TIMEOUT = 60000L;
     private static final int DEFAULT_MAXREDELIVERIES = 5;
@@ -129,7 +135,18 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
             .transacted("txTemplate")
             .unmarshal(jaxbMessageDataFormatV3)
-            .to("bean:notificationWSClientV3");
+            .choice()
+            .when(isWebcertMessagingUsed())
+            .to("bean:notificationWSSender")
+            .otherwise()
+            .to("bean:notificationWSClientV3")
+            .end();
+
+
+        from(notificationPostProcessingQueue).routeId("notificationPostProcessing")
+            .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .to("bean:notificationPostProcessor");
 
         from(notificationPostProcessingQueue).routeId("notificationPostProcessing")
             .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
@@ -205,6 +222,12 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         return isTimeToDiscard(maximumRedeliveries);
     }
 
+    private Predicate isWebcertMessagingUsed() {
+        return PredicateBuilder.constant(
+            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)
+        );
+    }
+
     // CHECKSTYLE:OFF LineLength
     private JaxbDataFormat initializeJaxbMessageDataFormatV3() throws JAXBException {
         // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
@@ -219,5 +242,4 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         return jaxbMessageDataFormatV3;
     }
     // CHECKSTYLE:ON LineLength
-
 }

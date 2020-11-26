@@ -19,6 +19,7 @@ compileJava.dependsOn copyResources
 
 dependencies {
     compile project(':webcert-common')
+    compile project(':webcert-persistence')
 
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
