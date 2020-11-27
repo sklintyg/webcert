@@ -87,27 +87,29 @@ test {
 
 task restAssuredTest(type: Test) {
     outputs.upToDateWhen { false }
-    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:9088/"
-    systemProperty "integration.tests.actuatorUrl", System.properties['actuatorUrl'] ?: "http://localhost:9088/"
+    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8020/"
+    systemProperty "integration.tests.actuatorUrl", System.properties['actuatorUrl'] ?: "http://localhost:8120/"
     include '**/*IT*'
 }
 
 gretty {
+    def instance = System.properties['instance'] ?: '0'
+    def minified = System.properties['useMinifiedJavaScript'] ?: false
+    def useHttpPort = 8020 + (instance as Integer)
+    def useInternalHttpPort = 8120 + (instance as Integer)
+
     servletContainer = 'tomcat9'
     contextPath = '/'
     integrationTestTask = null
     scanInterval = 0
-    httpEnabled = true
-    httpsEnabled = false
-    httpPort = 9088
-    debugPort = 5007
+    debugPort = 8820 + (instance as Integer)
+    portPropertiesFileName = "gretty_ports_${instance}.properties"
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
-    serverConfigFile = 'tomcat-gretty.xml'
+    serverConfigFile = "tomcat-gretty-${instance}.xml"
 
 
-    def minified = System.properties['useMinifiedJavaScript'] ?: false
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
@@ -117,7 +119,8 @@ gretty {
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-dev.xml",
                "-DuseMinifiedJavaScript=${minified}",
-               "-Djetty.port=${httpPort}"]
+               "-Ddev.http.port=${useHttpPort}",
+               "-Ddev.http.port.internal=${useInternalHttpPort}"]
 
     extraResourceBase webappOutputDir
 }

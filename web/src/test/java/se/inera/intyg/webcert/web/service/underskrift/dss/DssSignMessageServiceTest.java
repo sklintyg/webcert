@@ -70,7 +70,7 @@ public class DssSignMessageServiceTest {
 
         DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
-            "http://localhost:9088/api/signature/signservice/v1/metadata");
+            "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
         dssMetadataService.initDssMetadata();
@@ -113,7 +113,7 @@ public class DssSignMessageServiceTest {
     public void validateSignResponseSignature_valid() {
         DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
-            "http://localhost:9088/api/signature/signservice/v1/metadata");
+            "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
         dssMetadataService.initDssMetadata();
@@ -131,7 +131,7 @@ public class DssSignMessageServiceTest {
     public void validateSignResponseSignature_invalid() {
         DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
-            "http://localhost:9088/api/signature/signservice/v1/metadata");
+            "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
         dssMetadataService.initDssMetadata();
@@ -149,7 +149,7 @@ public class DssSignMessageServiceTest {
     public void validateSignResponseSignature_certMissingInKeyStore() {
         DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
-            "http://localhost:9088/api/signature/signservice/v1/metadata");
+            "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(dssMetadataService, "keystorePassword", "password");
         dssMetadataService.initDssMetadata();
