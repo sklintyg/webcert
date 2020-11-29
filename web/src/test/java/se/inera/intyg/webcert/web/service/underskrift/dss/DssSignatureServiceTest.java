@@ -166,8 +166,8 @@ public class DssSignatureServiceTest {
         when(moduleRegistry.getIntygModule(anyString()))
             .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
         ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
         ReflectionTestUtils.setField(dssSignatureService, "applicationId", "App/ID\\With--w€|rd__CH@r$");
         ReflectionTestUtils.setField(dssSignatureService, "idpUrl", "https://idpurl.se/samlv2/idp/metadata");
@@ -244,15 +244,15 @@ public class DssSignatureServiceTest {
         utkastLocal.setIntygsTyp("lisjp");
         utkastLocal.setIntygTypeVersion("1.1");
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
         when(utkastRepository.findById(anyString())).thenReturn(utkastOptional);
         when(utkastOptional.isPresent()).thenReturn(true);
         when(utkastOptional.get()).thenReturn(utkastLocal);
 
         String returnUrl = dssSignatureService.findReturnUrl(intygsId);
 
-        assertEquals(String.format("https://wc.localtest.me:9088/#/intyg/lisjp/1.1/%s/?signed", intygsId), returnUrl);
+        assertEquals(String.format("https://wc.localtest.me:8020/#/intyg/lisjp/1.1/%s/?signed", intygsId), returnUrl);
 
     }
 
@@ -263,15 +263,15 @@ public class DssSignatureServiceTest {
         utkastLocal.setIntygsTyp("lisjp");
         utkastLocal.setIntygTypeVersion("1.1");
 
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:9088");
-        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:9088");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
+        ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
         when(utkastRepository.findById(anyString())).thenReturn(utkastOptional);
         when(utkastOptional.isPresent()).thenReturn(true);
         when(utkastOptional.get()).thenReturn(utkastLocal);
 
         String returnUrl = dssSignatureService.findReturnErrorUrl(intygsId, "123");
 
-        assertEquals(String.format("https://wc.localtest.me:9088/#/lisjp/1.1/edit/%s/?error&ticket=123", intygsId), returnUrl);
+        assertEquals(String.format("https://wc.localtest.me:8020/#/lisjp/1.1/edit/%s/?error&ticket=123", intygsId), returnUrl);
 
     }
 

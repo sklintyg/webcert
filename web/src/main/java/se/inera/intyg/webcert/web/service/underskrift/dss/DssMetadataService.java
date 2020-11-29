@@ -309,7 +309,7 @@ public class DssMetadataService {
                 var keyDescriptors = spSSODescriptor.getKeyDescriptors();
                 if (keyDescriptors != null) {
                     for (var keyDescriptor : keyDescriptors) {
-                        if (UsageType.SIGNING.equals(keyDescriptor.getUse())) {
+                        if (UsageType.SIGNING.equals(keyDescriptor.getUse()) || UsageType.UNSPECIFIED.equals(keyDescriptor.getUse())) {
                             var keyInfo = keyDescriptor.getKeyInfo();
                             if (keyInfo != null) {
                                 var x509Datas = keyInfo.getX509Datas();

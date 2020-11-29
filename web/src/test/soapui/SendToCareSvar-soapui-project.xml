@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="e553c109-7283-4081-909c-a51b4575d22f" activeEnvironment="Default" name="testSendToCare" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="7c8ab4d6-1b35-4bde-a072-2125e5787ce7" wsaVersion="NONE" name="SendMessageToCareResponderBinding" type="wsdl" bindingName="{urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21}SendMessageToCareResponderBinding" soapVersion="1_1" anonymous="optional" definition="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl"><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-	license agreements. See the NOTICE file distributed with this work for additional 
-	information regarding copyright ownership. Sveriges Kommuner och Landsting 
-	licenses this file to you under the Apache License, Version 2.0 (the "License"); 
-	you may not use this file except in compliance with the License. You may 
-	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+<con:soapui-project id="e553c109-7283-4081-909c-a51b4575d22f" activeEnvironment="Default" name="testSendToCare" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="7c8ab4d6-1b35-4bde-a072-2125e5787ce7" wsaVersion="NONE" name="SendMessageToCareResponderBinding" type="wsdl" bindingName="{urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21}SendMessageToCareResponderBinding" soapVersion="1_1" anonymous="optional" definition="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl"><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor
+	license agreements. See the NOTICE file distributed with this work for additional
+	information regarding copyright ownership. Sveriges Kommuner och Landsting
+	licenses this file to you under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 	the specific language governing permissions and limitations under the License.-->
 <wsdl:definitions name="SendMessageToCareInteraction" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tjsr="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21" xmlns:itr="urn:riv:itintegration:registry:1">
   <wsdl:documentation>Tjänsteinteraktionens namn: SendMessageToCareInteraction
@@ -637,11 +637,11 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
 <xs:schema targetNamespace="urn:riv:itintegration:registry:1" elementFormDefault="qualified" version="1.0" xmlns="urn:riv:itintegration:registry:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
-    <xs:documentation>Beskrivning: 	Typdefinition för logisk adress som skall användas i tjänstekontrakten 
+    <xs:documentation>Beskrivning: 	Typdefinition för logisk adress som skall användas i tjänstekontrakten
 							från och med RIV-TA Basic Profile 2.1
-			
+
 			Revisionshistorik:
-			
+
 			Datum:			2011-05-04
 			Beskrivning:	Initial version
 			Författare:		marcus.krantz@callistaenterprise.se</xs:documentation>
@@ -650,7 +650,7 @@
   <xs:simpleType name="LogicalAddressType">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://tempuri.org</con:endpoint></con:endpoints><con:operation id="437d5f79-1438-4ec8-87e7-363f2ac79af9" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" name="SendMessageToCare" bindingOperationName="SendMessageToCare" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f2eca3c6-55a6-4d3c-9649-7bc4b650c641" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/send-message-to-care/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://tempuri.org</con:endpoint></con:endpoints><con:operation id="437d5f79-1438-4ec8-87e7-363f2ac79af9" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" name="SendMessageToCare" bindingOperationName="SendMessageToCare" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f2eca3c6-55a6-4d3c-9649-7bc4b650c641" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8020/services/send-message-to-care/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
    <soapenv:Header>
       <urn:LogicalAddress>fk</urn:LogicalAddress>
    </soapenv:Header>
