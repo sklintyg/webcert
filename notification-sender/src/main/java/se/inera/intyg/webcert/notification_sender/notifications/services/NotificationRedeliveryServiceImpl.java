@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor.NotificationResultEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategy;
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory;
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;

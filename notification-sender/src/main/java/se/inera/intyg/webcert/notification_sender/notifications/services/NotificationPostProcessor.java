@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -47,8 +48,6 @@ public class NotificationPostProcessor {
 
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
-
-    public enum NotificationResultEnum { SUCCESS, RESEND, FAILURE }
 
     NotificationWSResultMessage notificationWSMessage;
 
