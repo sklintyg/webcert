@@ -370,7 +370,7 @@
       <wsdl:output message="ns1:ReceiveMedicalCertificateQuestionResponse" name="ReceiveMedicalCertificateQuestionResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://test.webcert.intygstjanster.se/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation id="ba305ff8-ac64-4167-a606-8174b43082d3" isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="fdc38c5f-ebac-4327-9178-66c30a92aaca" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://test.webcert.intygstjanster.se/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation id="ba305ff8-ac64-4167-a606-8174b43082d3" isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="fdc38c5f-ebac-4327-9178-66c30a92aaca" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8020/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
    <soapenv:Header>
       <add:To>WC12323234</add:To>
    </soapenv:Header>
@@ -400,7 +400,7 @@
                </urn1:hosPersonal>
                <!--You may enter ANY elements at this point-->
             </urn:adressVard>
-                    
+
             <urn:lakarutlatande>
                <urn1:lakarutlatande-id>6a7f4d81-34f7-4a1f-a655-df58dfabb211</urn1:lakarutlatande-id>
                <urn1:signeringsTidpunkt>2016-04-09T21:00:00.000</urn1:signeringsTidpunkt>

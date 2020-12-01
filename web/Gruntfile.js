@@ -368,7 +368,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: 9089,
+          port: 8920,
           base: 'src/main/webapp',
           hostname: '*',
           middleware: function(connect/*, options*/) {
@@ -446,7 +446,7 @@ module.exports = function(grunt) {
           {
             context: '/',
             host: 'localhost',
-            port: 9088
+            port: 8020
           }
         ]
 

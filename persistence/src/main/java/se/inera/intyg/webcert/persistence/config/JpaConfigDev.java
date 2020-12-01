@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@Profile("dev")
+@Profile("h2")
 @ComponentScan(BASE_PACKAGES)
 @EnableJpaRepositories(basePackages = BASE_PACKAGES)
 public class JpaConfigDev extends JpaConfigBase {

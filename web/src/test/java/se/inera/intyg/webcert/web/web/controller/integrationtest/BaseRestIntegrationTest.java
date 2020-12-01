@@ -109,7 +109,7 @@ public abstract class BaseRestIntegrationTest {
      */
     @Before
     public void setupBase() throws FileNotFoundException {
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:9088");
+        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
         LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.config = RestAssured.config()
             .logConfig(logconfig)
@@ -223,7 +223,8 @@ public abstract class BaseRestIntegrationTest {
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
-        assertEquals(formatPersonnummer(utkastRequest.getPatientPersonnummer().getPersonnummer()), model.getString("grundData.patient.personId"));
+        assertEquals(formatPersonnummer(utkastRequest.getPatientPersonnummer().getPersonnummer()),
+            model.getString("grundData.patient.personId"));
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);
