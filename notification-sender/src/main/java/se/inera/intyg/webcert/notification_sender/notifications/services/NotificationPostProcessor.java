@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -42,6 +43,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 public class NotificationPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessor.class);
+
+    @Autowired
+    private MonitoringLogService monitoringLog;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -71,13 +75,19 @@ public class NotificationPostProcessor {
         String correlationId = notificationResult.getCorrelationId();
 
         switch (deliveryStatus) {
-            case SUCCESS :
+            case SUCCESS:
+                monitoringLog.logStatusUpdateForCareStatusOk(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationSuccess(correlationId, event, deliveryStatus);
                 break;
-            case RESEND :
+            case RESEND:
+                monitoringLog.logStatusUpdateForCareStatusResend(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationResend(correlationId, event, deliveryStatus, statusUpdateMessage);
                 break;
-            case FAILURE :
+            case FAILURE:
+                monitoringLog.logStatusUpdateForCareStatusFailure(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationFailure(correlationId, event, deliveryStatus);
         }
     }
