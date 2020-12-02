@@ -5,7 +5,7 @@ import scalaj.http.{Http, HttpOptions, HttpResponse}
 import scala.io.Source.fromFile
 
 object Utils {
-  val baseUrl = System.getProperty("baseUrl", "http://localhost:9088" )
+  val baseUrl = System.getProperty("baseUrl", "http://localhost:8020" )
 
   def injectPersonsIntoPU(file : String, column : Int) = {
     val bufferedSource = fromFile("src/gatling/resources/data/" + file)

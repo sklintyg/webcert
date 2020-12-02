@@ -1,33 +1,3 @@
-# Protractor
-
-## För att köra end-to-end tester i chrome (protractor) mha gradle:
-
-##### 1) Kör igång IT
-```sh
-intygstjanst>./gradlew appRun
-```
-
-##### 2) Kör igång Webcert
-```sh
-webcert>./gradlew appRun
-```
-
-##### 3) Kör igång grunt server (förutsätter att du installerat grunt globalt med npm)
-```sh
-webcert/web>grunt serve
-```
-
-##### 4) Starta upp testerna headless, Chrome används som default och behöver då vara installerat.
-```sh
-webcert>./gradlew protractorTests
-```
-
-## Kör specifika tester, exkludera tester
-
-Protractor använder internt ett testramverk som heter Jasmine vilket används även för våra unittester i angularjs. För att köra ett enskilt test standalone så kan man direkt i testet (.spec.js-filen) byta ut `describe` mot `fdescribe`. På samma sätt kan man exkludera enskilda tester genom att byta ut `describe` mot `xdescribe`.
-
-Undvik att någonsin pusha en commit med `fdescribe` då det leder till att automatiska byggen på Jenkins endast utför testet med `fdescribe` och skippar alla andra tester.
-
 # Development för webcert-testtools
 
 ## För att slippa ändra version på webcert-testtools och köra npm install vid varje ändring så behöver följande kommandon köras:
