@@ -56,23 +56,28 @@ public class NotificationPostProcessor {
     NotificationWSResultMessage notificationWSMessage;
 
     public void process(Message message) {
-        try {
-            notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
-                NotificationWSResultMessage.class);
-            processNotificationResult(notificationWSMessage);
-        } catch (JsonProcessingException e) {
-            LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
-                notificationWSMessage, e);
-        }
+
+         try {
+             notificationWSMessage = objectMapper.readValue(message.getBody(String.class), NotificationWSResultMessage.class);
+                 processNotificationResult(notificationWSMessage);
+         } catch (JsonProcessingException e) {
+             LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
+                 notificationWSMessage, e);
+         }
     }
 
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
-        deliveryStatus = NotificationResultEnum.RESEND; // FOR TESTING SPECIFIC STATUS
         CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
-        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
         String correlationId = notificationResult.getCorrelationId();
+
+        // ONLY FOR TEST
+        // if (notificationRedeliveryService.getExistingRedelivery(correlationId) == null) {
+        //    deliveryStatus = NotificationResultEnum.RESEND;
+        //}
+
+        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
 
         switch (deliveryStatus) {
             case SUCCESS:
