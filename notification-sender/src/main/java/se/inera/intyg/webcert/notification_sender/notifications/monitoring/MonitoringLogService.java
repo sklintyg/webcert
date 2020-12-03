@@ -16,23 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public final class NotificationRouteHeaders {
+package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String INTYGS_TYP = "intygsTyp";
-    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
-    public static final String CORRELATION_ID = "correlationId";
+public interface MonitoringLogService {
 
-    private NotificationRouteHeaders() {
-    }
+    void logStatusUpdateForCareStatusOk(String hanType, String unitId, String certificateId);
 
-    public enum NotificationResultEnum {
-        SUCCESS, RESEND, FAILURE
-    }
+    void logStatusUpdateForCareStatusResend(String hanType, String unitId, String certificateId);
+
+    void logStatusUpdateForCareStatusFailure(String hanType, String unitId, String certificateId);
+
 }

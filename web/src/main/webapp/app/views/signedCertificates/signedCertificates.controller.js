@@ -93,7 +93,7 @@ angular.module('webcert').controller('webcert.SignedCertificatesCtrl',
         }
 
         if(!UserModel.user.isLakareOrPrivat || UserModel.isDjupintegration() ||
-            featureService.isFeatureActive(featureService.features.SIGNED_CERTIFICATES_LIST)) {
+            !featureService.isFeatureActive(featureService.features.SIGNED_CERTIFICATES_LIST)) {
           $window.location.href = '/error.jsp?reason=auth-exception';
         } else {
           $scope.init();

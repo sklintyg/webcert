@@ -142,9 +142,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .to("bean:notificationWSClientV3")
             .end();
 
-
         from(notificationPostProcessingQueue).routeId("notificationPostProcessing")
-            .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
             .transacted("txTemplate")
             .to("bean:notificationPostProcessor");
 

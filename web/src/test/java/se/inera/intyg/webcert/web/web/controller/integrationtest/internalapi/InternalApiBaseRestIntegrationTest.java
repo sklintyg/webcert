@@ -32,10 +32,11 @@ public abstract class InternalApiBaseRestIntegrationTest extends BaseRestIntegra
     /**
      * Common setup for all tests
      */
+    @Override
     @Before
     public void setupBase() throws FileNotFoundException {
         super.setupBase();
-        RestAssured.baseURI = System.getProperty("integration.tests.actuatorUrl", "http://localhost:9088");
+        RestAssured.baseURI = System.getProperty("integration.tests.actuatorUrl", "http://localhost:8081");
     }
 
 }

@@ -25,7 +25,7 @@
       <ns6:RequestTime>2020-06-05T15:21:03.081+02:00</ns6:RequestTime>
       <ns4:Conditions NotBefore="2020-06-05T15:19:03.081+02:00" NotOnOrAfter="2020-06-05T15:26:03.081+02:00">
         <ns4:AudienceRestriction>
-          <ns4:Audience>https://wc.localtest.me:9088/api/signature/signservice/v1/response</ns4:Audience>
+          <ns4:Audience>https://wc.localtest.me:8020/api/signature/signservice/v1/response</ns4:Audience>
         </ns4:AudienceRestriction>
       </ns4:Conditions>
       <ns6:Signer>
@@ -36,7 +36,7 @@
       <ns6:IdentityProvider Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://idpurl.se/samlv2/idp/metadata
       </ns6:IdentityProvider>
       <ns6:SignRequester Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
-        https://wc.localtest.me:9088/api/signature/signservice/v1/metadata
+        https://wc.localtest.me:8020/api/signature/signservice/v1/metadata
       </ns6:SignRequester>
       <ns6:SignService Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
         https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111

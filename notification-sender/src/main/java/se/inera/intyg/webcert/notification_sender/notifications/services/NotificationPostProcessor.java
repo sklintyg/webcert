@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -43,42 +45,54 @@ public class NotificationPostProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessor.class);
 
     @Autowired
+    private MonitoringLogService monitoringLog;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
 
-    public enum NotificationResultEnum { SUCCESS, RESEND, FAILURE }
-
     NotificationWSResultMessage notificationWSMessage;
 
     public void process(Message message) {
-        try {
-            notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
-                NotificationWSResultMessage.class);
-            processNotificationResult(notificationWSMessage);
-        } catch (JsonProcessingException e) {
-            LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
-                notificationWSMessage, e);
-        }
+
+         try {
+             notificationWSMessage = objectMapper.readValue(message.getBody(String.class), NotificationWSResultMessage.class);
+                 processNotificationResult(notificationWSMessage);
+         } catch (JsonProcessingException e) {
+             LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
+                 notificationWSMessage, e);
+         }
     }
 
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
-        deliveryStatus = NotificationResultEnum.RESEND; // FOR TESTING SPECIFIC STATUS
         CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
-        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
         String correlationId = notificationResult.getCorrelationId();
 
+        // ONLY FOR TEST
+        // if (notificationRedeliveryService.getExistingRedelivery(correlationId) == null) {
+        //    deliveryStatus = NotificationResultEnum.RESEND;
+        //}
+
+        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
+
         switch (deliveryStatus) {
-            case SUCCESS :
+            case SUCCESS:
+                monitoringLog.logStatusUpdateForCareStatusOk(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationSuccess(correlationId, event, deliveryStatus);
                 break;
-            case RESEND :
+            case RESEND:
+                monitoringLog.logStatusUpdateForCareStatusResend(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationResend(correlationId, event, deliveryStatus, statusUpdateMessage);
                 break;
-            case FAILURE :
+            case FAILURE:
+                monitoringLog.logStatusUpdateForCareStatusFailure(statusUpdateMessage.getHandelse().toString(),
+                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
                 notificationRedeliveryService.handleNotificationFailure(correlationId, event, deliveryStatus);
         }
     }
