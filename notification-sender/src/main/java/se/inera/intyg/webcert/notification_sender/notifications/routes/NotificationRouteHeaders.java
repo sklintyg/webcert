@@ -33,4 +33,7 @@ public final class NotificationRouteHeaders {
     private NotificationRouteHeaders() {
     }
 
+    public enum NotificationResultEnum {
+        SUCCESS, RESEND, FAILURE
+    }
 }

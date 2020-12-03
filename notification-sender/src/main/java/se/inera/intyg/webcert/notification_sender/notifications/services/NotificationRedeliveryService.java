@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor.NotificationResultEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
@@ -30,7 +30,6 @@ public interface NotificationRedeliveryService {
 
     void handleNotificationResend(String correlationId, Handelse event, NotificationResultEnum deliveryStatus,
         CertificateStatusUpdateForCareType statusUpdate);
-
 
     void handleNotificationFailure(String correlationId, Handelse event, NotificationResultEnum deliveryStatus);
 }
