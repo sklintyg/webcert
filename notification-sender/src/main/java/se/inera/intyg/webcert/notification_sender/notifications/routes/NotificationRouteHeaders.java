@@ -28,7 +28,6 @@ public final class NotificationRouteHeaders {
     public static final String VERSION = "version";
     public static final String USER_ID = "userId";
     public static final String CORRELATION_ID = "correlationId";
-    public static final String JSON_EXCEPTION = "jsonProcessingException";
 
     private NotificationRouteHeaders() {
     }

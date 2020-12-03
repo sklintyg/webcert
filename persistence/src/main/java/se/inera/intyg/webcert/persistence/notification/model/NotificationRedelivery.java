@@ -38,7 +38,7 @@ public class NotificationRedelivery {
     private Long eventId;
 
     @Column(name = "MESSAGE")
-    private String message;
+    private byte[] message;
 
     @Column(name = "REDELIVERY_STRATEGY")
     private String redeliveryStrategy;
@@ -52,7 +52,7 @@ public class NotificationRedelivery {
 
     public NotificationRedelivery() { }
 
-    public NotificationRedelivery(String correlationId, Long eventId, String message, String redeliveryStrategy,
+    public NotificationRedelivery(String correlationId, Long eventId, byte[] message, String redeliveryStrategy,
         LocalDateTime redeliveryTime, int attemptedRedeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
@@ -78,11 +78,11 @@ public class NotificationRedelivery {
         this.eventId = eventId;
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(byte[] message) {
         this.message = message;
     }
 

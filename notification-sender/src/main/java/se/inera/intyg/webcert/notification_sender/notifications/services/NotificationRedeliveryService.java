@@ -27,7 +27,6 @@ public interface NotificationRedeliveryService {
 
     void handleNotificationSuccess(String correlationId, Handelse event, NotificationResultEnum deliveryStatus);
 
-
     void handleNotificationResend(String correlationId, Handelse event, NotificationResultEnum deliveryStatus,
         CertificateStatusUpdateForCareType statusUpdate);
 
