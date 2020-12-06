@@ -29,11 +29,10 @@ The following configuration properties can be removed:
 
 ### 1.4 Configuration of reference data
 
-The main update is activation of the new reference data concept (master data for shared configurations). Refdata is provided as a JAR file and configured with the `REFDATA_URL` and `RESOURCES_FOLDER` parameters. Normally the default value of `RESOURCES_FOLDER` should be set to  `classpath:`. Three configuration updates is required in order to activate the new refdata:
+The main update is activation of the new reference data concept (master data for shared configurations). Refdata is provided as a JAR file and configured with the `REFDATA_URL` parameter. Two configuration updates is required in order to activate the new refdata:
 
 1. Parameter `REFDATA_URL` shall be set to the actual location of the refdata JAR artefact.
-2. Parameter `RESOURCES_FOLDER` or `-Dresources.folder=...` in `secret-env.sh` shall be set to `classpath:`. Though, it's recommended to remove this parameter from `secret-env.sh`. 
-3. The old `resources.zip` must be removed in order to enable the `REFDATA_URL` setting. 
+2. The old `resources.zip` must be removed in order to enable the `REFDATA_URL` setting. 
 
 Latest builds of refdata can be downloaded from the Inera Nexus server. 
 
@@ -230,7 +229,6 @@ Open _&lt;env>/configmap-vars.yaml_ and replace example `<value>` with expected 
 	JOB_UTKASTLOCK_CRON: "0 0 2 * * ?"
 	JOB_UTKASTLOCK_LOCKED_AFTER_DAY: "14"
 	SPRING_PROFILES_ACTIVE: "prod,caching-enabled,redis-sentinel"
-	CONFIG_DIR: "${config.folder}"
 	LOGBACK_FILE: "/opt/$APP_NAME/config/logback-ocp.xml"
 	REDIS_HOST: "<hostname1[;hostname2;...]>"
 	REDIS_PORT: "<port1[;port2;...]>"
@@ -281,12 +279,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace example `<value>` with expected 
 	IDP_OIDC_JWKS_URL: "https://idp.ineratest.org/oidc/jwks.json"
 	IDP_OIDC_JWKS_SKEW: 30
    
-Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.
-
-Note 2: Parameters shall follow the Java naming convention when used as in the value field, e.g. the path to certificates indicated by the `CERTIFICATE_FOLDER` property and the truststore file might be defined like:
- 
-	NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
-    
+Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.    
         
 The _&lt;env>/config/recipients.json_ file might require an update.
     
