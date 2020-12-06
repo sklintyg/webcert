@@ -30,7 +30,7 @@
 >
 
   <context:annotation-config/>
-  <context:property-placeholder location="classpath:default.properties"
+  <context:property-placeholder location="classpath:application.properties, file:${dev.config.file:-}"
       order="2"
       ignore-unresolvable="true"
       ignore-resource-not-found="true"/>
@@ -39,11 +39,6 @@
     <bean id="notificationStoreV3" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl"/>
 
     <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean"/>
-
-    <context:property-placeholder location="file:${config.file}"
-        order="1"
-        ignore-unresolvable="true"
-        ignore-resource-not-found="true"/>
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub">

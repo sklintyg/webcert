@@ -33,7 +33,7 @@
 
   <context:annotation-config />
 
-  <context:property-placeholder location="classpath:default.properties"
+  <context:property-placeholder location="classpath:application.properties"
     order="2" ignore-resource-not-found="false" />
 
   <jaxrs:server address="/">
