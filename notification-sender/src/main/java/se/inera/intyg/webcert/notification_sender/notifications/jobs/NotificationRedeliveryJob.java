@@ -25,6 +25,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -32,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -43,7 +47,7 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryDTO;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -53,7 +57,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-@Component
+// @Component
 public class NotificationRedeliveryJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
@@ -76,60 +80,92 @@ public class NotificationRedeliveryJob {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
-   @Autowired
+    @Autowired
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
-    private static final String LOCAL_PART = "CertificateStatusUpdateForCare";
-    private static final String NAMESPACE_URL = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+    @Value("${notification.redelivery.xml.local.part}")
+    private String xmlLocalPart;
 
-    @Scheduled(cron = "${job.notification.resend.cron}")
-    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+    @Value("${notification.redelivery.xml.namespace.url}")
+    private String xmlNamespaceUrl;
+
+    // @Scheduled(cron = "${job.notification.redelivery.cron}")
+    // @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void run() {
         LOG.info("Running job for notificaition redelivery...");
 
         List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepository.findByRedeliveryTimeLessThan(LocalDateTime.now());
         redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getRedeliveryTime));
 
-        for (NotificationRedelivery notification : redeliveryList) {
-            Handelse event = handelseRepository.findById(notification.getEventId()).orElse(null);
+        for (NotificationRedelivery redelivery : redeliveryList) {
 
             try {
-                NotificationRedeliveryDTO redeliveryDTO = objectMapper.readValue(notification.getMessage(), NotificationRedeliveryDTO.class);
+                Handelse event = handelseRepository.findById(redelivery.getEventId()).orElseThrow();
 
-                CertificateStatusUpdateForCareType statusUpdate = redeliveryDTO.get();
+                NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
+                    NotificationRedeliveryMessage.class);
 
-                if (redeliveryDTO.isCertificate()) {
-                    Intyg certificate = getCertificate(redeliveryDTO.getCertId(), redeliveryDTO.getCertType());
-                    certificate.setPatient(redeliveryDTO.getPatient());
-                    statusUpdate.setIntyg(certificate);
-                }
+                CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.get();
+                setCertificateOnStatusUpdateIfRequired(statusUpdate, redeliveryMessage);
 
-                QName qName = new QName(NAMESPACE_URL, LOCAL_PART);
-                JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
-                    new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
-                String statusUpdateXml = XmlMarshallerHelper.marshal(jaxbElement);
+                String statusUpdateXml = marshal(statusUpdate);
 
-                jmsTemplate.convertAndSend(statusUpdateXml.getBytes(), message -> {
-                    message.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, notification.getCorrelationId());
-                    message.setStringProperty(NotificationRouteHeaders.INTYGS_ID, redeliveryDTO.getCertId());
-                    message.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, event.getEnhetsId());
-                    message.setStringProperty(NotificationRouteHeaders.USER_ID, redeliveryDTO.getHandler().getExtension());
-                    message.setLongProperty(Constants.JMS_TIMESTAMP, Instant.now().getEpochSecond());
-                    return message;
-                });
+                LOG.info("Notification redelivery job (re)sending status update for care [notificationId: {}, event: {}, logicalAddress: {}"
+                    + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
+
+                jmsTemplate.convertAndSend(statusUpdateXml.getBytes(), jmsMessage -> setJmsMessageHeaders(jmsMessage, redelivery, event));
+
+            } catch (NoSuchElementException e) {
+                LOG.error(getLogInfoString(redelivery) + ". Could not find a corresponding event in table Handelse.", e);
             } catch (IOException | ModuleException | ModuleNotFoundException e) {
-                e.printStackTrace();
+                LOG.error(getLogInfoString(redelivery) + ". Error setting a certificate on status update object.", e);
+            } catch (Exception e) {
+                LOG.error(getLogInfoString(redelivery) + ". An exception occurred.", e);
             }
         }
     }
 
-    private Intyg getCertificate(String certificateId, String certificateType) throws IOException, ModuleException,
-        ModuleNotFoundException {
+    private void setCertificateOnStatusUpdateIfRequired(CertificateStatusUpdateForCareType statusUpdate,
+        NotificationRedeliveryMessage redeliveryMessage) throws ModuleNotFoundException, IOException, ModuleException {
+        if (redeliveryMessage.isForSignedCertificate()) {
 
-        Utkast draft = draftRepository.findByIntygsIdAndIntygsTyp(certificateId, certificateType);
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
-        Utlatande utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
-        return moduleApi.getIntygFromUtlatande(utlatande);
+            // TODO Perhaps move redelivery service etc to web module
+            Utkast draft = draftRepository.findByIntygsIdAndIntygsTyp(redeliveryMessage.getCertId(), redeliveryMessage.getCertType());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
+            Utlatande utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
+
+            Intyg certificate = moduleApi.getIntygFromUtlatande(utlatande);
+            certificate.setPatient(redeliveryMessage.getPatient());
+            statusUpdate.setIntyg(certificate);
+        }
+    }
+
+    private String marshal(CertificateStatusUpdateForCareType statusUpdate) {
+        QName qName = new QName(xmlNamespaceUrl, xmlLocalPart);
+        JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
+            new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
+
+        return XmlMarshallerHelper.marshal(jaxbElement);
+    }
+
+    private Message setJmsMessageHeaders(Message jmsMessage, NotificationRedelivery redelivery, Handelse event) {
+        try {
+            jmsMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, redelivery.getCorrelationId());
+            jmsMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, event.getIntygsId());
+            jmsMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, event.getEnhetsId());
+            jmsMessage.setStringProperty(NotificationRouteHeaders.USER_ID, event.getHanteratAv());
+            jmsMessage.setLongProperty(Constants.JMS_TIMESTAMP, Instant.now().getEpochSecond());
+            return jmsMessage;
+        } catch (JMSException e) {
+            throw new RuntimeException(String.format("Failure resending message [notificationId: %s, event: %s, "
+                + "logicalAddress: %s, correlationId: %s]. Error building the JMS message for redelivery.", event.getId(), event.getCode(),
+                event.getEnhetsId(), redelivery.getCorrelationId()), e);
+        }
+    }
+
+    private String getLogInfoString(NotificationRedelivery redelivery) {
+        return String.format("Failure resending message [notificationId: %s, correlationId: %s]", redelivery.getEventId(),
+            redelivery.getCorrelationId());
     }
 }

@@ -19,15 +19,18 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
+
 import com.google.common.collect.ImmutableList;
 import java.time.temporal.ChronoUnit;
 import org.springframework.data.util.Pair;
+import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
 
 
 public class NotificationRedeliveryStrategyStandard implements NotificationRedeliveryStrategy {
 
-    private static final String STRATEGY_NAME = "STANDARD";
-    private static final int MAX_REDELIVERIES = 5;
+    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = STANDARD;
+    private static final int MAX_REDELIVERIES = 3;
     private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEME = ImmutableList.of(
         Pair.of(ChronoUnit.MINUTES, 1),
         Pair.of(ChronoUnit.MINUTES, 1),
@@ -44,7 +47,7 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
     public NotificationRedeliveryStrategyStandard() { }
 
     @Override
-    public String getName() {
+    public NotificationRedeliveryStrategyEnum getName() {
         return STRATEGY_NAME;
     }
 

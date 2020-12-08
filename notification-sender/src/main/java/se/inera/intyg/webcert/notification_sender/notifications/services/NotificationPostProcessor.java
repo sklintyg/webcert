@@ -72,27 +72,24 @@ public class NotificationPostProcessor {
         CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
         String correlationId = notificationResult.getCorrelationId();
 
-        // ONLY FOR TEST
-        // if (notificationRedeliveryService.getExistingRedelivery(correlationId) == null) {
-        //    deliveryStatus = NotificationResultEnum.RESEND;
-        //}
+
+        // TODO Remove this line, used only for testing.
+        deliveryStatus = NotificationResultEnum.RESEND;
+
 
         Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
 
         switch (deliveryStatus) {
             case SUCCESS:
-                monitoringLog.logStatusUpdateForCareStatusOk(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                monitoringLog.logStatusUpdateForCareStatusOk(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationSuccess(correlationId, event, deliveryStatus);
                 break;
             case RESEND:
-                monitoringLog.logStatusUpdateForCareStatusResend(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                monitoringLog.logStatusUpdateForCareStatusResend(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationResend(correlationId, event, deliveryStatus, statusUpdateMessage);
                 break;
             case FAILURE:
-                monitoringLog.logStatusUpdateForCareStatusFailure(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                 monitoringLog.logStatusUpdateForCareStatusFailure(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationFailure(correlationId, event, deliveryStatus);
         }
     }
