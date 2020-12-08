@@ -20,24 +20,23 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import java.util.List;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public interface NotificationRedeliveryService {
 
-    void handleNotificationSuccess(String correlationId, Handelse event, NotificationResultEnum deliveryStatus);
+    void handleNotificationSuccess(NotificationWSResultMessage resultMessage, Handelse event);
 
-    void handleNotificationResend(String correlationId, Handelse event, NotificationResultEnum deliveryStatus,
-        CertificateStatusUpdateForCareType statusUpdate);
+    //void handleNotificationResend(NotificationRedelivery notificationRedelivery);
 
-    void handleNotificationFailure(String correlationId, Handelse event, NotificationResultEnum deliveryStatus);
+    void handleNotificationResend(NotificationWSResultMessage resultMessage, Handelse event);
 
-    void handleNotificationResend(NotificationRedelivery notificationRedelivery);
+    void handleNotificationFailure(NotificationWSResultMessage resultMessage, Handelse event);
 
     List<NotificationRedelivery> getRedeliveriesForResend();
 
     Handelse getEventById(Long id);
 
+    Handelse setNotificationFailure(Long eventId);
 }

@@ -33,6 +33,7 @@ import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -53,6 +54,9 @@ public class NotificationWSSender {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MonitoringLogService monitoringLog;
+
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
@@ -64,7 +68,7 @@ public class NotificationWSSender {
 
         final NotificationWSResultMessage resultMessage = createResultMessage(statusUpdate, certificateId, logicalAddress, userId,
             correlationId, messageTimestamp);
-
+        final String handledBy = (statusUpdate.getHanteratAv() == null) ? null : statusUpdate.getHanteratAv().getExtension();
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
             ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
@@ -83,6 +87,7 @@ public class NotificationWSSender {
 
         try {
             LOG.debug("Sending status update for postprocessing with result message: {}", resultMessage);
+
             jmsTemplateNotificationPostProcessing.send(session -> session.createTextMessage(notificationMessageAsJson));
         } catch (Exception e) {
             LOG.error("Runtime exception occurred when sending {} to postprocessing with error message: {}", resultMessage, e);

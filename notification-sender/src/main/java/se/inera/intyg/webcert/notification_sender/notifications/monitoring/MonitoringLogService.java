@@ -19,12 +19,32 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
+import java.time.LocalDateTime;
+
 public interface MonitoringLogService {
 
-    void logStatusUpdateForCareStatusOk(String hanType, String unitId, String certificateId);
+    void logStatusUpdateForCareStatusSuccess(
+        String hanType,
+        String unitId,
+        String certificateId,
+        String correlationId);
+    
+    void logStatusUpdateForCareStatusResend(
+        String hanType,
+        String unitId,
+        String certificateId,
+        String correlationId,
+        String errorCode,
+        String message,
+        int sendAttempt,
+        LocalDateTime nextAttempt);
 
-    void logStatusUpdateForCareStatusResend(String hanType, String unitId, String certificateId);
-
-    void logStatusUpdateForCareStatusFailure(String hanType, String unitId, String certificateId);
-
+    void logStatusUpdateForCareStatusFailure(
+        String hanType,
+        String unitId,
+        String certificateId,
+        String correlationId,
+        String errorCode,
+        String message,
+        int sendAttempt);
 }
