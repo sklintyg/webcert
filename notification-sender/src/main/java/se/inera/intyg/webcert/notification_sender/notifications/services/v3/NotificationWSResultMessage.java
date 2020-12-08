@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
@@ -32,6 +33,13 @@ public class NotificationWSResultMessage {
     private ResultType resultType;
     private Exception exception;
     private CertificateStatusUpdateForCareType statusUpdate;
+
+    // these fields - or separate "resenditem"?
+    //private boolean hasBeenSentBefore; if true - should expect values to be not null
+    private NotificationResultEnum deliveryStatus; // default null
+    //private int resendingAttempt; // default null
+    //private LocalDateTime nextAttempt; // default null
+    //private Handelse event;
 
     public CertificateStatusUpdateForCareType getStatusUpdate() {
         return statusUpdate;
@@ -97,6 +105,42 @@ public class NotificationWSResultMessage {
     public void setException(Exception exception) {
         this.exception = exception;
     }
+
+    public NotificationResultEnum getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public void setDeliveryStatus(
+        NotificationResultEnum deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    /*
+    public int getResendingAttempt() {
+        return resendingAttempt;
+    }
+
+    public void setResendingAttempt(int resendingAttempt) {
+        this.resendingAttempt = resendingAttempt;
+    }
+
+    public LocalDateTime getNextAttempt() {
+        return nextAttempt;
+    }
+
+    public void setNextAttempt(LocalDateTime nextAttempt) {
+        this.nextAttempt = nextAttempt;
+    }
+
+    public Handelse getEvent() {
+        return event;
+    }
+
+    public void setEvent(Handelse event) {
+        this.event = event;
+    }
+
+     */
 
     @Override
     public String toString() {

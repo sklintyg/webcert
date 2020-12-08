@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
 
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,18 +36,22 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
 
     @Override
-    public void logStatusUpdateForCareStatusOk(String hanType, String unitId, String certificateId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_OK, hanType, unitId, certificateId);
+    public void logStatusUpdateForCareStatusSuccess(String hanType, String unitId, String certificateId, String correlationId) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, hanType, unitId, certificateId, correlationId);
     }
 
     @Override
-    public void logStatusUpdateForCareStatusResend(String hanType, String unitId, String certificateId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, hanType, unitId, certificateId);
+    public void logStatusUpdateForCareStatusResend(String hanType, String unitId, String certificateId, String correlationId,
+        String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, hanType, unitId, certificateId, correlationId, errorCode, message,
+            sendAttempt, nextAttempt);
     }
 
     @Override
-    public void logStatusUpdateForCareStatusFailure(String hanType, String unitId, String certificateId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, hanType, unitId, certificateId);
+    public void logStatusUpdateForCareStatusFailure(String hanType, String unitId, String certificateId, String correlationId,
+        String errorCode, String message, int sendAttempt) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, hanType, unitId, certificateId, correlationId, errorCode, message,
+            sendAttempt);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -57,12 +62,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         LOG.info(LogMarkers.MONITORING, logMsg.toString(), logMsgArgs);
     }
 
-    private enum MonitoringEvent {
 
-        STATUS_UPDATE_RESULT_OK("Status update for care message '{}' successfully delivered to unit '{}' for '{}'"),
-        STATUS_UPDATE_RESULT_RESEND("Status update for care message '{}' failed deliver to unit '{}' for '{}'. Will resend."),
+    private enum MonitoringEvent {
+        STATUS_UPDATE_RESULT_SUCCESS("Status update for care message '{}' successfully delivered to unit '{}' for '{}', correlationId: {}"),
+        STATUS_UPDATE_RESULT_RESEND(
+            "Status update for care message '{}' failed deliver to unit '{}' for '{}', correlationId: {}, errorCode: {}, message: {}, resendingAttempts: {} nextAttempt: {}. Will resend."),
         STATUS_UPDATE_RESULT_FAILURE(
-            "Status update for care message '{}' failed deliver to unit '{}' for '{}'. Will not attempt to redeliver.");
+            "Status update for care message '{}' failed deliver to unit '{}' for '{}', correlationId: {}, errorCode: {}, message: {}, resendingAttempts: {}. Will not attempt to redeliver.");
 
         private final String message;
 

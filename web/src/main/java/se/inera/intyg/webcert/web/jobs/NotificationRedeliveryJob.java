@@ -122,16 +122,16 @@ public class NotificationRedeliveryJob {
 
             } catch (NoSuchElementException e) {
                 LOG.error(getLogInfoString(redelivery) + ". Could not find a corresponding event in table Handelse.", e);
-                notificationRedeliveryService.handleNotificationResend(redelivery);
+               // notificationRedeliveryService.handleNotificationResend(redelivery);
             } catch (IOException | ModuleException | ModuleNotFoundException e) {
                 LOG.error(getLogInfoString(redelivery) + ". Error setting a certificate on status update object.", e);
-                notificationRedeliveryService.handleNotificationResend(redelivery);
+                // notificationRedeliveryService.handleNotificationResend(redelivery);
             } catch (WebCertServiceException e) {
                 LOG.error(e.getMessage(), e);
-                notificationRedeliveryService.handleNotificationResend(redelivery);
+                // notificationRedeliveryService.handleNotificationResend(redelivery);
             } catch (Exception e) {
                 LOG.error(getLogInfoString(redelivery) + ". An exception occurred.", e);
-                notificationRedeliveryService.handleNotificationResend(redelivery);
+                // notificationRedeliveryService.handleNotificationResend(redelivery);
             }
         }
     }
