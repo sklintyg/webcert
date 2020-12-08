@@ -1360,7 +1360,7 @@
       <column name="HANDELSE_ID" type="bigint">
         <constraints nullable="false"/>
       </column>
-      <column name="MESSAGE" type="varchar(8192)">
+      <column name="MESSAGE" type="blob">
         <constraints nullable="false"/>
       </column>
       <column name="REDELIVERY_STRATEGY" type="varchar(255)">

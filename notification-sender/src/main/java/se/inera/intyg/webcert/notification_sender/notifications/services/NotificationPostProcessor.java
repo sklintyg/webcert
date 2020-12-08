@@ -56,9 +56,9 @@ public class NotificationPostProcessor {
     NotificationWSResultMessage notificationWSMessage;
 
     public void process(Message message) {
+
         try {
-            notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
-                NotificationWSResultMessage.class);
+            notificationWSMessage = objectMapper.readValue(message.getBody(String.class), NotificationWSResultMessage.class);
             processNotificationResult(notificationWSMessage);
         } catch (JsonProcessingException e) {
             LOG.error("Failure mapping incoming json to NotificationWSResultMessage for status update to care {}, {}",
@@ -69,25 +69,25 @@ public class NotificationPostProcessor {
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationResultEnum deliveryStatus = extractDeliveryStatusFromResult(notificationResult);
-        deliveryStatus = NotificationResultEnum.RESEND; // FOR TESTING SPECIFIC STATUS
         CertificateStatusUpdateForCareType statusUpdateMessage = notificationResult.getStatusUpdate();
-        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
         String correlationId = notificationResult.getCorrelationId();
+
+        // TODO Remove this line, used only for testing.
+        deliveryStatus = NotificationResultEnum.RESEND;
+
+        Handelse event = extractEventFromStatusUpdate(statusUpdateMessage, deliveryStatus);
 
         switch (deliveryStatus) {
             case SUCCESS:
-                monitoringLog.logStatusUpdateForCareStatusOk(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                monitoringLog.logStatusUpdateForCareStatusOk(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationSuccess(correlationId, event, deliveryStatus);
                 break;
             case RESEND:
-                monitoringLog.logStatusUpdateForCareStatusResend(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                monitoringLog.logStatusUpdateForCareStatusResend(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationResend(correlationId, event, deliveryStatus, statusUpdateMessage);
                 break;
             case FAILURE:
-                monitoringLog.logStatusUpdateForCareStatusFailure(statusUpdateMessage.getHandelse().toString(),
-                    statusUpdateMessage.getHanteratAv().toString(), statusUpdateMessage.getIntyg().getIntygsId().toString());
+                monitoringLog.logStatusUpdateForCareStatusFailure(event.getCode().value(), event.getEnhetsId(), event.getIntygsId());
                 notificationRedeliveryService.handleNotificationFailure(correlationId, event, deliveryStatus);
         }
     }
