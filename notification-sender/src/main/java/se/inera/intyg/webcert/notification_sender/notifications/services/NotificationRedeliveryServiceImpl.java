@@ -19,9 +19,13 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +35,18 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategy;
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory;
 import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryDTO;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
+
 @Service
 public class NotificationRedeliveryServiceImpl implements NotificationRedeliveryService {
 
+    // TODO Perhaps move redelivery service etc to web module
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryServiceImpl.class);
 
     @Autowired
@@ -55,9 +61,15 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     @Autowired
     private NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
 
+
     @Override
     public void handleNotificationSuccess(String correlationId, Handelse event, NotificationResultEnum deliveryStatus) {
         executeSuccessAndFailure(correlationId, event, deliveryStatus);
+    }
+
+    @Override
+    public void handleNotificationResend(NotificationRedelivery notificationRedelivery) {
+        executeResend(notificationRedelivery);
     }
 
     @Override
@@ -69,6 +81,18 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     @Override
     public void handleNotificationFailure(String correlationId, Handelse event, NotificationResultEnum deliveryStatus) {
         executeSuccessAndFailure(correlationId, event, deliveryStatus);
+    }
+
+    @Override
+    public List<NotificationRedelivery> getRedeliveriesForResend() {
+        List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepository.findByRedeliveryTimeLessThan(LocalDateTime.now());
+        redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
+        return redeliveryList;
+    }
+
+    @Override
+    public Handelse getEventById(Long id) {
+        return handelseRepo.findById(id).orElseThrow();
     }
 
     @Transactional
@@ -85,19 +109,24 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     }
 
     @Transactional
+    protected void executeResend(NotificationRedelivery redelivery) {
+        NotificationRedeliveryStrategy strategy = getRedeliveryStrategy(redelivery);
+        updateNotificationRedelivery(redelivery, strategy);
+    }
+
+    @Transactional
     protected void executeResend(String correlationId, Handelse event, CertificateStatusUpdateForCareType statusUpdate,
         NotificationResultEnum deliveryStatus) {
 
-        NotificationRedeliveryStrategy redeliveryStrategy =
-            notificationRedeliveryStrategyFactory.getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
         NotificationRedelivery existingRedelivery = getExistingRedelivery(correlationId);
 
         if (existingRedelivery == null) {
             Handelse persistedEvent = persistEvent(event);
+            NotificationRedeliveryStrategy redeliveryStrategy = notificationRedeliveryStrategyFactory.getResendStrategy(STANDARD);
             createNotificationRedelivery(persistedEvent, redeliveryStrategy, correlationId, statusUpdate);
         } else {
             updateExistingEvent(existingRedelivery, deliveryStatus);
-            updateNotificationRedelivery(existingRedelivery, redeliveryStrategy);
+            updateNotificationRedelivery(existingRedelivery, getRedeliveryStrategy(existingRedelivery));
         }
     }
 
@@ -120,7 +149,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     private void createNotificationRedelivery(Handelse persistedEvent, NotificationRedeliveryStrategy strategy, String correlationId,
         CertificateStatusUpdateForCareType message) {
         NotificationRedelivery newRedelivery =
-            new NotificationRedelivery(correlationId, persistedEvent.getId(), prepMessageForStorage(message), strategy.getName(),
+            new NotificationRedelivery(correlationId, persistedEvent.getId(), prepMessageForStorage(message), strategy.getName().toString(),
             LocalDateTime.now().plus(strategy.getNextTimeValue(0), strategy.getNextTimeUnit(0)), 0);
         notificationRedeliveryRepository.save(newRedelivery);
     }
@@ -131,13 +160,18 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
         if (attemptedRedeliveries < maxRedeliveries) {
             existingRedelivery.setAttemptedRedeliveries(attemptedRedeliveries);
-            existingRedelivery.setRedeliveryTime(LocalDateTime.now().plus(strategy.getNextTimeValue(attemptedRedeliveries),
-                strategy.getNextTimeUnit(attemptedRedeliveries)));
+            existingRedelivery.setRedeliveryTime(existingRedelivery.getRedeliveryTime()
+                .plus(strategy.getNextTimeValue(attemptedRedeliveries), strategy.getNextTimeUnit(attemptedRedeliveries)));
             notificationRedeliveryRepository.save(existingRedelivery);
         } else {
             updateExistingEvent(existingRedelivery, NotificationResultEnum.FAILURE);
             notificationRedeliveryRepository.delete(existingRedelivery);
         }
+    }
+
+    private NotificationRedeliveryStrategy getRedeliveryStrategy(NotificationRedelivery redelivery) {
+        return notificationRedeliveryStrategyFactory
+            .getResendStrategy(NotificationRedeliveryStrategyEnum.valueOf(redelivery.getRedeliveryStrategy()));
     }
 
     private void deleteNotificationRedelivery(NotificationRedelivery record) {
@@ -146,16 +180,15 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
     private byte[] prepMessageForStorage(CertificateStatusUpdateForCareType statusMessage) {
 
-        NotificationRedeliveryDTO redeliveryDTO = new NotificationRedeliveryDTO().set(statusMessage);
-        byte[] redeliveryDTOJson = null;
+        NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage().set(statusMessage);
+        byte[] redeliveryMessageBytes = null;
         try {
-            redeliveryDTOJson = objectMapper.writeValueAsBytes(redeliveryDTO);
+            redeliveryMessageBytes = objectMapper.writeValueAsBytes(redeliveryMessage);
         } catch (JsonProcessingException e) {
             LOG.error("Failure creating notification redelivery storage type [certificatId: {}, event: {}, timestamp: {}]",
                 statusMessage.getIntyg().getIntygsId(), statusMessage.getHandelse().getHandelsekod().getCode(),
                 statusMessage.getHandelse().getTidpunkt());
         }
-        return redeliveryDTOJson;
+        return redeliveryMessageBytes;
     }
 }
-
