@@ -69,7 +69,7 @@ public class NotificationPostProcessor {
             updatedNotificationResult.getDeliveryStatus());
 
         // TOGGLE ON TESTING/DEMO
-        updatedNotificationResult = preparingForDemo(updatedNotificationResult);
+        //updatedNotificationResult = preparingForDemo(updatedNotificationResult);
         // #################################################################
 
         switch (updatedNotificationResult.getDeliveryStatus()) {
@@ -87,6 +87,10 @@ public class NotificationPostProcessor {
 
     private NotificationWSResultMessage preparingForDemo(NotificationWSResultMessage demoMessage) {
         demoMessage.setDeliveryStatus(NotificationResultEnum.RESEND);
+        ResultType resultType = new ResultType();
+        resultType.setErrorId(ErrorIdType.VALIDATION_ERROR);
+        resultType.setResultText("Fel, fel FEL!");
+        demoMessage.setResultType(resultType);
         return demoMessage;
     }
 
