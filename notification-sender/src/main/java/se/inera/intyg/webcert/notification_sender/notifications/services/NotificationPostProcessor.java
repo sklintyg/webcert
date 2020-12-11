@@ -65,12 +65,12 @@ public class NotificationPostProcessor {
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationWSResultMessage updatedNotificationResult = extractDeliveryStatusFromResult(notificationResult);
-        Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
-            updatedNotificationResult.getDeliveryStatus());
 
         // TOGGLE ON TESTING/DEMO
-        //updatedNotificationResult = preparingForDemo(updatedNotificationResult);
+        updatedNotificationResult = preparingForDemo(updatedNotificationResult);
         // #################################################################
+        Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
+            updatedNotificationResult.getDeliveryStatus());
 
         switch (updatedNotificationResult.getDeliveryStatus()) {
             case SUCCESS:
