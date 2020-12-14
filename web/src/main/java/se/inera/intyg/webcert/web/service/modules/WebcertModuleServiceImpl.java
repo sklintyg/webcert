@@ -70,6 +70,11 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
     }
 
     @Override
+    public boolean validateDiagnosisCodeFormat(String code) {
+        return diagnosService.validateDiagnosisCodeFormat(code);
+    }
+
+    @Override
     public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
         DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
         List<Diagnos> diagnoser = response.getDiagnoser();

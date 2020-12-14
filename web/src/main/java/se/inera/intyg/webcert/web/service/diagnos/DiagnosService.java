@@ -70,4 +70,12 @@ public interface DiagnosService {
      * @return true if the code fragment is syntactically correct.
      */
     boolean validateDiagnosisCode(String codeFragment, String codeSystem);
+
+    /**
+     * Validates that the diagnosis code has a valid format.
+     *
+     * @param code The code to be validated.
+     * @return true if the code is valid.
+     */
+    boolean validateDiagnosisCodeFormat(String code);
 }

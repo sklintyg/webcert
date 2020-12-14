@@ -320,4 +320,10 @@ public class DiagnosServiceImplTest {
             assertTrue(result);
         }
     }
+
+    @Test
+    public void testValidateDiagnosisCodeFormat() {
+        assertTrue(service.validateDiagnosisCodeFormat("U071"));
+        assertFalse(service.validateDiagnosisCodeFormat("U07.1"));
+    }
 }
