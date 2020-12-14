@@ -33,13 +33,7 @@ public class NotificationWSResultMessage {
     private ResultType resultType;
     private Exception exception;
     private CertificateStatusUpdateForCareType statusUpdate;
-
-    // these fields - or separate "resenditem"?
-    //private boolean hasBeenSentBefore; if true - should expect values to be not null
-    private NotificationResultEnum deliveryStatus; // default null
-    //private int resendingAttempt; // default null
-    //private LocalDateTime nextAttempt; // default null
-    //private Handelse event;
+    private NotificationResultEnum deliveryStatus;
 
     public CertificateStatusUpdateForCareType getStatusUpdate() {
         return statusUpdate;
@@ -114,33 +108,6 @@ public class NotificationWSResultMessage {
         NotificationResultEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }
-
-    /*
-    public int getResendingAttempt() {
-        return resendingAttempt;
-    }
-
-    public void setResendingAttempt(int resendingAttempt) {
-        this.resendingAttempt = resendingAttempt;
-    }
-
-    public LocalDateTime getNextAttempt() {
-        return nextAttempt;
-    }
-
-    public void setNextAttempt(LocalDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-    }
-
-    public Handelse getEvent() {
-        return event;
-    }
-
-    public void setEvent(Handelse event) {
-        this.event = event;
-    }
-
-     */
 
     @Override
     public String toString() {

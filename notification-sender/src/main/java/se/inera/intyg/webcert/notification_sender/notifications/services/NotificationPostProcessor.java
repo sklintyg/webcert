@@ -65,12 +65,13 @@ public class NotificationPostProcessor {
     private void processNotificationResult(NotificationWSResultMessage notificationResult) {
 
         NotificationWSResultMessage updatedNotificationResult = extractDeliveryStatusFromResult(notificationResult);
-        Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
-            updatedNotificationResult.getDeliveryStatus());
 
         // TOGGLE ON TESTING/DEMO
         updatedNotificationResult = preparingForDemo(updatedNotificationResult);
         // #################################################################
+
+        Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
+            updatedNotificationResult.getDeliveryStatus());
 
         switch (updatedNotificationResult.getDeliveryStatus()) {
             case SUCCESS:
@@ -87,6 +88,11 @@ public class NotificationPostProcessor {
 
     private NotificationWSResultMessage preparingForDemo(NotificationWSResultMessage demoMessage) {
         demoMessage.setDeliveryStatus(NotificationResultEnum.RESEND);
+        ResultType resultType = new ResultType();
+        resultType.setErrorId(ErrorIdType.VALIDATION_ERROR);
+        resultType.setResultText("Fel, fel FEL!");
+        demoMessage.setResultType(resultType);
+
         return demoMessage;
     }
 
