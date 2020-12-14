@@ -69,6 +69,7 @@ public class NotificationPostProcessor {
         // TOGGLE ON TESTING/DEMO
         updatedNotificationResult = preparingForDemo(updatedNotificationResult);
         // #################################################################
+
         Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
             updatedNotificationResult.getDeliveryStatus());
 
@@ -91,6 +92,7 @@ public class NotificationPostProcessor {
         resultType.setErrorId(ErrorIdType.VALIDATION_ERROR);
         resultType.setResultText("Fel, fel FEL!");
         demoMessage.setResultType(resultType);
+
         return demoMessage;
     }
 
