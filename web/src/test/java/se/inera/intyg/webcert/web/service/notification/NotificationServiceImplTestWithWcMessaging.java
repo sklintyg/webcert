@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
@@ -79,7 +80,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -93,11 +93,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-/**
- * Created by Magnus Ekstrand on 03/12/14.
- */
 @RunWith(MockitoJUnitRunner.class)
-public class NotificationServiceImplTest {
+
+public class NotificationServiceImplTestWithWcMessaging {
 
     private static final String INTYG_TYP_FK = "fk7263";
     private static final String INTYG_ID = "1234";
@@ -169,7 +167,7 @@ public class NotificationServiceImplTest {
 
         when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
         when(referensService.getReferensForIntygsId(any(String.class))).thenReturn(USER_REFERENCE);
-        when(featuresHelper.isFeatureActive(any(String.class))).thenReturn(false);
+        when(featuresHelper.isFeatureActive(any(String.class))).thenReturn(true);
     }
 
     private void setupMocks(SchemaVersion schemaVersion) {
@@ -233,7 +231,8 @@ public class NotificationServiceImplTest {
             or(isNull(), any(Amneskod.class)),
             or(isNull(), any(LocalDate.class)));
 
-        verify(handelseRepository).save(any(Handelse.class));
+        //verify(handelseRepository).save(any(Handelse.class));
+        verifyNoInteractions(handelseRepository);
     }
 
     @Test
@@ -971,8 +970,10 @@ public class NotificationServiceImplTest {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
-        verify(handelseRepository).save(any(Handelse.class));
+        // verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
+        // verify(handelseRepository).save(any(Handelse.class));
+        verifyNoInteractions(mockMonitoringLogService);
+        verifyNoInteractions(handelseRepository);
     }
 
     private void verifySuccessfulInvocationsForCertificate(HandelsekodEnum kod) throws Exception {
@@ -1003,8 +1004,10 @@ public class NotificationServiceImplTest {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
-        verify(handelseRepository).save(any(Handelse.class));
+        // verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
+        // verify(handelseRepository).save(any(Handelse.class));
+        verifyNoInteractions(mockMonitoringLogService);
+        verifyNoInteractions(handelseRepository);
     }
 
     private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
