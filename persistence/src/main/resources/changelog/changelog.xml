@@ -1382,7 +1382,7 @@
   <changeSet id="68" author="mh">
     <addColumn tableName="HANDELSE">
       <column name="DELIVERY_STATUS" type="varchar(255)">
-        <constraints nullable="true"/>
+        <constraints nullable="true"/> <!-- Set to true until functionality of new amq solution has been confirmed -->
       </column>
     </addColumn>
   </changeSet>

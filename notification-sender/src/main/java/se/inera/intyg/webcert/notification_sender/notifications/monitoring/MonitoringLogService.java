@@ -25,9 +25,14 @@ public interface MonitoringLogService {
 
     void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId, String unitId);
 
+    //CHECKSTYLE:OFF ParameterNumber
     void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId, String correlationId,
         String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt);
+    //CHECKSTYLE:ON ParameterNumber
 
+    //CHECKSTYLE:OFF ParameterNumber
     void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId, String correlationId,
         String errorCode, String message, int sendAttempt);
+    //CHECKSTYLE:ON ParameterNumber
+
 }

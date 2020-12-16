@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -51,8 +52,9 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.notification_sender.notifications.conditional.NotificationRedeliveryJobConditional;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -63,6 +65,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Component
+@Conditional(value = NotificationRedeliveryJobConditional.class)
 public class NotificationRedeliveryJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
@@ -75,8 +78,8 @@ public class NotificationRedeliveryJob {
     private final UtkastService draftService;
 
     private static final String JOB_NAME = "NotificationRedeliveryJob.run";
-    private static final String LOCK_AT_MOST = "PT2M";
-    private static final String LOCK_AT_LEAST = "PT1M";
+    private static final String LOCK_AT_MOST = "PT59S";
+    private static final String LOCK_AT_LEAST = "PT55S";
 
     @Value("${notification.redelivery.xml.local.part}")
     private String xmlLocalPart;
@@ -100,38 +103,43 @@ public class NotificationRedeliveryJob {
     public void run() {
         LOG.info("Running notification redelivery job...");
 
-        final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getRedeliveriesForResend();
+        final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
 
         for (NotificationRedelivery redelivery : redeliveryList) {
 
             try {
                 final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
 
-                final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
-                    NotificationRedeliveryMessage.class);
+                if (notificationRedeliveryService.isRedundantRedelivery(event, redelivery)) {
+                    notificationRedeliveryService.abortRedundantRedelivery(event, redelivery);
+                } else {
+                    final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
+                        NotificationRedeliveryMessage.class);
 
-                final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.get();
-                setCertificateIfRequired(statusUpdate, redeliveryMessage);
+                    final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.get();
+                    setCertificateIfRequired(statusUpdate, redeliveryMessage);
 
-                final String statusUpdateXml = marshal(statusUpdate);
+                    final String statusUpdateXml = marshal(statusUpdate);
 
-                LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
-                    + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
+                    LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
+                        + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
 
-                jmsTemplate.convertAndSend(statusUpdateXml.getBytes(), jmsMessage -> setJmsMessageHeaders(jmsMessage, redelivery, event));
+                    jmsTemplate
+                        .convertAndSend(statusUpdateXml.getBytes(), jmsMessage -> setJmsMessageHeaders(jmsMessage, redelivery, event));
+                }
 
             } catch (NoSuchElementException e) {
-                LOG.error(getLogInfoString(redelivery) + ". Could not find a corresponding event in table Handelse.", e);
-               // notificationRedeliveryService.handleNotificationResend(redelivery);
+                LOG.error(getLogInfoString(redelivery) + "Could not find a corresponding event in table Handelse.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             } catch (IOException | ModuleException | ModuleNotFoundException e) {
-                LOG.error(getLogInfoString(redelivery) + ". Error setting a certificate on status update object.", e);
-                // notificationRedeliveryService.handleNotificationResend(redelivery);
+                LOG.error(getLogInfoString(redelivery) + "Error setting a certificate on status update object.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             } catch (WebCertServiceException e) {
                 LOG.error(e.getMessage(), e);
-                // notificationRedeliveryService.handleNotificationResend(redelivery);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             } catch (Exception e) {
-                LOG.error(getLogInfoString(redelivery) + ". An exception occurred.", e);
-                // notificationRedeliveryService.handleNotificationResend(redelivery);
+                LOG.error(getLogInfoString(redelivery) + "An exception occurred.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             }
         }
     }
@@ -205,7 +213,7 @@ public class NotificationRedeliveryJob {
     }
 
     private String getLogInfoString(NotificationRedelivery redelivery) {
-        return String.format("Failure resending message [notificationId: %s, correlationId: %s]", redelivery.getEventId(),
+        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
             redelivery.getCorrelationId());
     }
 }
