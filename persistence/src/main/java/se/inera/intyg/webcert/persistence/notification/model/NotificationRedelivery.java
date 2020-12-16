@@ -43,6 +43,7 @@ public class NotificationRedelivery {
     @Column(name = "REDELIVERY_STRATEGY")
     private String redeliveryStrategy;
 
+    // Jadira?
     @Column(name = "REDELIVERY_TIME")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime redeliveryTime;

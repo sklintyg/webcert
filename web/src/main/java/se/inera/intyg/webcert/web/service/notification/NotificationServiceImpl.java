@@ -603,9 +603,14 @@ public class NotificationServiceImpl implements NotificationService {
             throw e;
         }
 
-        LOGGER.debug("Notification sent: {}", notificationMessage);
-        monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+        if (isWebcertMessagingUsed()) {
+            LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
+        } else {
+            LOGGER.debug("Notification sent: {}", notificationMessage);
+            monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+        }
     }
+
 
     private String currentUserId() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
