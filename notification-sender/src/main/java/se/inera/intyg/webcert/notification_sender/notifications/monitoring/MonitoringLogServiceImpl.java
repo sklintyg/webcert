@@ -41,20 +41,20 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, eventId, eventType, unitId, certificateId, correlationId);
     }
 
-    @Override
+    @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId,
         String correlationId, String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
         logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
             sendAttempt, nextAttempt);
-    }
+    } //CHECKSTYLE:ON ParameterNumber
 
-    @Override
+    @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId,
         String correlationId,
         String errorCode, String message, int sendAttempt) {
         logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
             sendAttempt);
-    }
+    } //CHECKSTYLE:ON ParameterNumber
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
