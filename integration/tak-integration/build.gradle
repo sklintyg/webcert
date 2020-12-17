@@ -2,7 +2,7 @@ dependencies {
   compile project(':webcert-common')
 
   compile "org.springframework:spring-web"
-  compile "se.inera.intyg.infra:hsa-integration:${infraVersion}"
+  compile "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
   compile "org.apache.httpcomponents:httpclient"
 
   testCompile "org.springframework:spring-test"

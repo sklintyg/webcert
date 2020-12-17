@@ -19,18 +19,10 @@
 package se.inera.intyg.webcert.web.converter;
 
 import com.google.common.base.Strings;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -42,6 +34,11 @@ import se.inera.intyg.webcert.web.converter.util.FragestallareConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
+
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ArendeConverter {
 
@@ -72,7 +69,7 @@ public final class ArendeConverter {
         return res;
     }
 
-    public static void decorateArendeFromUtkast(Arende arende, Utkast utkast, LocalDateTime now, HsaEmployeeService hsaEmployeeService) {
+    public static void decorateArendeFromUtkast(Arende arende, Utkast utkast, LocalDateTime now, HsatkEmployeeService hsaEmployeeService) {
         arende.setTimestamp(now);
         arende.setSenasteHandelse(now);
         arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
@@ -108,7 +105,7 @@ public final class ArendeConverter {
     }
 
     public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
-        String vardaktorNamn, HsaEmployeeService hsaEmployeeService) {
+                                                String vardaktorNamn, HsatkEmployeeService hsaEmployeeService) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
         arende.setAmne(amne);
@@ -129,17 +126,19 @@ public final class ArendeConverter {
     /**
      * Creates a message ({@link Arende}) with metadata from the certificate. This method can be used when there is no {@link Utkast}
      * available, but the {@link Utlatande} is.
-     * @param subject  Subject of the message
-     * @param header    Header of the message
-     * @param messageText   The actual message
-     * @param certificate   Certificate that the message is related to
-     * @param timestamp Timestamp of the message
+     *
+     * @param subject            Subject of the message
+     * @param header             Header of the message
+     * @param messageText        The actual message
+     * @param certificate        Certificate that the message is related to
+     * @param timestamp          Timestamp of the message
      * @param nameOfCareGiver    Name of the care giver
-     * @param hsaEmployeeService    {@link HsaEmployeeService} implementation to use
-     * @return  The created message
+     * @param hsaEmployeeService {@link HsatkEmployeeService} implementation to use
+     * @return The created message
      */
     public static Arende createMessageFromCertificate(ArendeAmne subject, String header, String messageText, Utlatande certificate,
-        LocalDateTime timestamp, String nameOfCareGiver, HsaEmployeeService hsaEmployeeService) {
+                                                      LocalDateTime timestamp, String nameOfCareGiver,
+                                                      HsatkEmployeeService hsaEmployeeService) {
         final var message = new Arende();
         message.setStatus(Status.PENDING_EXTERNAL_ACTION);
         message.setAmne(subject);
@@ -197,35 +196,35 @@ public final class ArendeConverter {
 
     // If we already have the signer's name in the information in the certificate we use this. This information could be
     // either in skapadAv or senastSparadAv. If neither of those matches the signer of the certificate we ask HSA.
-    private static String getSignedByName(Utkast utkast, HsaEmployeeService hsaEmployeeService) {
+    private static String getSignedByName(Utkast utkast, HsatkEmployeeService hsaEmployeeService) {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
         } else if (utkast.getSenastSparadAv() != null
-            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             return getNameByHsaId(utkast.getSignatur().getSigneradAv(), hsaEmployeeService);
         }
     }
 
-    private static String getNameByHsaId(String hsaId, HsaEmployeeService hsaEmployeeService) {
+    private static String getNameByHsaId(String hsaId, HsatkEmployeeService hsaEmployeeService) {
         try {
             return hsaEmployeeService.getEmployee(hsaId, null)
-                .stream()
-                .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
-                .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
-                    ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                    : pit.getMiddleAndSurName())
-                .findFirst()
-                .orElseThrow(
-                    () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+                    .stream()
+                    .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
+                    .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
+                            ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                            : pit.getMiddleAndSurName())
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
         } catch (WebServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                 "Could not communicate with HSA. Cause: " + e.getMessage());
         }
     }
 
-    public static Map<String, String> getNamesByHsaIds(Collection<String> hsaIds, HsaEmployeeService hsaEmployeeService) {
+    public static Map<String, String> getNamesByHsaIds(Collection<String> hsaIds, HsatkEmployeeService hsaEmployeeService) {
         Map<String, String> hsaIdNameMap = new HashMap<>();
 
         hsaIds.forEach(hsaId -> {
@@ -237,7 +236,7 @@ public final class ArendeConverter {
         return hsaIdNameMap;
     }
 
-    private static Optional<String> getNameByHsaIdNullIfNotFound(String hsaId, HsaEmployeeService hsaEmployeeService) {
+    private static Optional<String> getNameByHsaIdNullIfNotFound(String hsaId, HsatkEmployeeService hsaEmployeeService) {
         try {
             return Optional.of(getNameByHsaId(hsaId, hsaEmployeeService));
         } catch (Exception e) {

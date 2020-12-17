@@ -18,14 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
-import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.integration.hsatk.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -45,6 +37,15 @@ import se.inera.intyg.webcert.integration.tak.consumer.TakConsumer;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
 
 @Service
 @EnableScheduling

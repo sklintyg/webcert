@@ -18,46 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.Lists;
-
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.security.common.model.*;
 import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
 import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
 import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
@@ -68,15 +40,18 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Arbetsformaga;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Befattningar;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Enhet;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Formaga;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.HosPersonal;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FmbSjukfallServiceImplTest {
@@ -402,7 +377,7 @@ public class FmbSjukfallServiceImplTest {
         vardenhet.getMottagningar().add(mottagning);
         user.setValdVardenhet(vardenhet);
 
-        se.inera.intyg.infra.integration.hsa.model.Vardgivare vardgivare = new se.inera.intyg.infra.integration.hsa.model.Vardgivare();
+        se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare vardgivare = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
         vardgivare.setId("vg1");
         vardgivare.getVardenheter().add(vardenhet);
         user.setVardgivare(Arrays.asList(vardgivare));

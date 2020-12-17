@@ -18,7 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
-import static org.mockito.Mockito.when;
+import org.mockito.Mock;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,17 +32,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.mockito.Mock;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-09-27.

@@ -18,58 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -78,17 +32,12 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserDetails;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.*;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -129,15 +78,24 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import javax.xml.ws.WebServiceException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -205,7 +163,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private CertificateAccessService certificateAccessService;
 
     @Mock
-    private HsaEmployeeService hsaEmployeeService;
+    private HsatkEmployeeService hsaEmployeeService;
 
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
@@ -1130,7 +1088,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         List<Lakare> res = service.listSignedByForUnits(null);
 
-        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[0])).collect(Collectors.toList()), res);
+        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
 
         verify(webcertUserService).getUser();
         verify(arendeRepository).findSigneratAvByEnhet(selectedUnits);
@@ -1177,7 +1135,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         List<Lakare> res = service.listSignedByForUnits(selectedUnit.get(0));
 
-        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[0])).collect(Collectors.toList()), res);
+        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
 
         verify(arendeRepository).findSigneratAvByEnhet(selectedUnit);
     }

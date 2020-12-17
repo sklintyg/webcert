@@ -18,11 +18,13 @@
  */
 package se.inera.intyg.webcert.web.auth.fake;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.io.Serializable;
-import java.util.List;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -36,15 +38,21 @@ public class FakeCredentials implements Serializable, FakeCredential {
 
     private String hsaId;
     private Boolean sekretessMarkerad;
+    @JsonAlias("givenName")
     private String forNamn;
+    @JsonAlias("middleAndSurname")
     private String efterNamn;
     private String enhetId;
     private String befattningsKod;
+    @JsonAlias("personalPrescriptionCode")
     private String forskrivarKod;
     private String origin = UserOriginType.NORMAL.name();
     private String authenticationMethod = "";
 
+    @JsonAlias("healthCareProfessionalLicence")
     private List<String> legitimeradeYrkesgrupper;
+
+    private List<PaTitle> paTitle;
 
     public FakeCredentials() {
         // Needed for deserialization
@@ -59,10 +67,14 @@ public class FakeCredentials implements Serializable, FakeCredential {
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
         this.legitimeradeYrkesgrupper = builder.legitimeradeYrkesgrupper;
+        this.paTitle = builder.paTitle;
         this.sekretessMarkerad = builder.sekretessMarkerad;
     }
 
     public String getBefattningsKod() {
+        if (paTitle != null && !paTitle.isEmpty()) {
+            return paTitle.stream().findFirst().get().titleCode;
+        }
         return befattningsKod;
     }
 
@@ -131,11 +143,32 @@ public class FakeCredentials implements Serializable, FakeCredential {
     @Override
     public String toString() {
         return "FakeCredentials{"
-            + "hsaId='" + hsaId + '\''
-            + ", fornamn='" + forNamn + '\''
-            + ", efternamn='" + efterNamn + '\''
-            + ", lakare='" + isLakare() + '\''
-            + '}';
+                + "hsaId='" + hsaId + '\''
+                + ", fornamn='" + forNamn + '\''
+                + ", efternamn='" + efterNamn + '\''
+                + ", lakare='" + isLakare() + '\''
+                + '}';
+    }
+
+    public static class PaTitle {
+        private String titleCode;
+        private String titleName;
+
+        public void setTitleCode(String titleCode) {
+            this.titleCode = titleCode;
+        }
+
+        public String getTitleCode() {
+            return titleCode;
+        }
+
+        public void setTitleName(String titleName) {
+            this.titleName = titleName;
+        }
+
+        public String getTitleName() {
+            return titleName;
+        }
     }
 
     public static class FakeCredentialsBuilder {
@@ -150,6 +183,7 @@ public class FakeCredentials implements Serializable, FakeCredential {
         private Boolean sekretessMarkerad;
         private String authenticationMethod;
         private List<String> legitimeradeYrkesgrupper;
+        private List<PaTitle> paTitle;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
@@ -183,6 +217,11 @@ public class FakeCredentials implements Serializable, FakeCredential {
 
         public FakeCredentialsBuilder legitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
             this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
+            return this;
+        }
+
+        public FakeCredentialsBuilder paTitle(List<PaTitle> paTitle) {
+            this.paTitle = paTitle;
             return this;
         }
 

@@ -21,10 +21,6 @@ package se.inera.intyg.webcert.web.service.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,25 +30,21 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygListsMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygPredictionMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
+import se.inera.intyg.webcert.common.service.log.template.*;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.

@@ -9,4 +9,7 @@ dependencies {
     compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
 
     compile "org.springframework.security:spring-security-config"
+
+    compile "commons-io:commons-io:${commonsIoVersion}"
+
 }

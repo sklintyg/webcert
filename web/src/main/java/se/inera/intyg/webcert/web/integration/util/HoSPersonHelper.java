@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.webcert.web.integration.util;
 
-import java.util.Optional;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+
+import java.util.Optional;
 
 /**
  * Helper for finding various HSA organization entities based on hsaId from a User's Vardgivare -> Vardenhet ->
@@ -38,12 +39,12 @@ public final class HoSPersonHelper {
     }
 
     public static Optional<AbstractVardenhet> findVardenhetEllerMottagning(IntygUser user, String enhetsId) {
-        for (se.inera.intyg.infra.integration.hsa.model.Vardgivare vg : user.getVardgivare()) {
-            for (se.inera.intyg.infra.integration.hsa.model.Vardenhet ve : vg.getVardenheter()) {
+        for (Vardgivare vg : user.getVardgivare()) {
+            for (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet ve : vg.getVardenheter()) {
                 if (enhetsId.equalsIgnoreCase(ve.getId())) {
                     return Optional.of(ve);
                 }
-                for (se.inera.intyg.infra.integration.hsa.model.Mottagning m : ve.getMottagningar()) {
+                for (Mottagning m : ve.getMottagningar()) {
                     if (enhetsId.equalsIgnoreCase(m.getId())) {
                         return Optional.of(m);
                     }
@@ -63,9 +64,9 @@ public final class HoSPersonHelper {
     }
 
     public static Optional<Vardgivare> findVardgivareForMottagning(IntygUser user, String mottagningsId) {
-        for (se.inera.intyg.infra.integration.hsa.model.Vardgivare vg : user.getVardgivare()) {
-            for (se.inera.intyg.infra.integration.hsa.model.Vardenhet ve : vg.getVardenheter()) {
-                for (se.inera.intyg.infra.integration.hsa.model.Mottagning m : ve.getMottagningar()) {
+        for (Vardgivare vg : user.getVardgivare()) {
+            for (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet ve : vg.getVardenheter()) {
+                for (Mottagning m : ve.getMottagningar()) {
                     if (mottagningsId.equalsIgnoreCase(m.getId())) {
                         return Optional.of(vg);
                     }
@@ -78,14 +79,14 @@ public final class HoSPersonHelper {
     public static Vardenhet createVardenhetFromIntygUser(String enhetId, IntygUser user) {
 
         AbstractVardenhet enhet = HoSPersonHelper.findVardenhetEllerMottagning(user, enhetId)
-            .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
+                .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
 
-        if (enhet instanceof se.inera.intyg.infra.integration.hsa.model.Vardenhet) {
-            se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet =
-                (se.inera.intyg.infra.integration.hsa.model.Vardenhet) enhet;
-            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
-                .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
-                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
+        if (enhet instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) {
+            se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet hsaVardenhet =
+                    (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) enhet;
+            Vardgivare hsaVardgivare = HoSPersonHelper
+                    .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
+                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());
@@ -106,9 +107,9 @@ public final class HoSPersonHelper {
         }
         if (enhet instanceof Mottagning) {
             Mottagning m = (Mottagning) enhet;
-            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
-                .findVardgivareForMottagning(user, m.getId())
-                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
+            Vardgivare hsaVardgivare = HoSPersonHelper
+                    .findVardgivareForMottagning(user, m.getId())
+                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(m.getNamn());

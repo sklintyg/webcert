@@ -2,7 +2,10 @@ dependencies {
     compile project(":webcert-common")
     // compile "net.openhft:chronicle-map:3.13.0"
     compile "org.apache.commons:commons-lang3"
-    
+    compile "org.springframework.data:spring-data-redis"
+    compile "it.ozimov:embedded-redis:0.7.2"
+
+
     testCompile "javax.servlet:javax.servlet-api"
     testCompile "org.springframework:spring-test"
     testCompile "org.hamcrest:hamcrest"
