@@ -1369,7 +1369,7 @@
       <column name="REDELIVERY_TIME" type="datetime">
         <constraints nullable="false"/>
       </column>
-      <column name="ATTEMPTED_REDELIVERIES" type="int">
+      <column name="ATTEMPTED_DELIVERIES" type="int">
         <constraints nullable="false"/>
       </column>
     </createTable>

@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -52,7 +51,6 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.conditional.NotificationRedeliveryJobConditional;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -65,7 +63,6 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Component
-@Conditional(value = NotificationRedeliveryJobConditional.class)
 public class NotificationRedeliveryJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
@@ -98,7 +95,7 @@ public class NotificationRedeliveryJob {
         this.jmsTemplate = jmsTemplate;
     }
 
-    @Scheduled(cron = "${job.notification.redelivery.cron}")
+    @Scheduled(cron = "${job.notification.redelivery.cron:-}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void run() {
         LOG.info("Running notification redelivery job...");
@@ -106,11 +103,15 @@ public class NotificationRedeliveryJob {
         final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
 
         for (NotificationRedelivery redelivery : redeliveryList) {
+            // TODO Handle cases where there is is no message attached to the redelivery (triggered by manual resend)
+            // Can perhaps use the full flow from notification service(?)
 
+            // TODO Investigate the perceived behaviour where ts certificates appear to never be found in
+            // the webcert database. When does this happen and why?
             try {
                 final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
 
-                if (notificationRedeliveryService.isRedundantRedelivery(event, redelivery)) {
+                if (notificationRedeliveryService.isRedundantRedelivery(event)) {
                     notificationRedeliveryService.abortRedundantRedelivery(event, redelivery);
                 } else {
                     final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
@@ -128,7 +129,8 @@ public class NotificationRedeliveryJob {
                         .convertAndSend(statusUpdateXml.getBytes(), jmsMessage -> setJmsMessageHeaders(jmsMessage, redelivery, event));
                 }
 
-            } catch (NoSuchElementException e) {
+            // TODO Sort out these exception with regard to resend or fail, calls to service for execution
+            } catch (NoSuchElementException e) { //when no handelse exists
                 LOG.error(getLogInfoString(redelivery) + "Could not find a corresponding event in table Handelse.", e);
                 //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             } catch (IOException | ModuleException | ModuleNotFoundException e) {
@@ -198,7 +200,7 @@ public class NotificationRedeliveryJob {
     }
 
     private Message setJmsMessageHeaders(Message jmsMessage, NotificationRedelivery redelivery, Handelse event) {
-        try {
+         try {
             jmsMessage.setStringProperty(CORRELATION_ID, redelivery.getCorrelationId());
             jmsMessage.setStringProperty(INTYGS_ID, event.getIntygsId());
             jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());

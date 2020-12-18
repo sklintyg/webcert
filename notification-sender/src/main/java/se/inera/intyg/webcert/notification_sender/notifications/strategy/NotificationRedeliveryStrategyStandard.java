@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
+package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
+import static se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
 
 import com.google.common.collect.ImmutableList;
 import java.time.temporal.ChronoUnit;
 import org.springframework.data.util.Pair;
-import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
 
 
 public class NotificationRedeliveryStrategyStandard implements NotificationRedeliveryStrategy {
@@ -57,8 +57,11 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
     }
 
     @Override
-    public ChronoUnit getNextTimeUnit(int attemptedRedeliveries) {
-        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEME.size()) {
+    public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
+
+        int attemptedRedeliveries = attemptedDeliveries - 1;
+
+        if (attemptedRedeliveries - 1 < NOTIFICATION_REDELIVERY_SCHEME.size()) {
             return NOTIFICATION_REDELIVERY_SCHEME.get(attemptedRedeliveries).getFirst();
         } else {
             return NOTIFICATION_REDELIVERY_SCHEME.get(NOTIFICATION_REDELIVERY_SCHEME.size() - 1).getFirst();
@@ -66,7 +69,10 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
     }
 
     @Override
-    public int getNextTimeValue(int attemptedRedeliveries) {
+    public int getNextTimeValue(int attemptedDeliveries) {
+
+        int attemptedRedeliveries = attemptedDeliveries - 1;
+
         if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEME.size()) {
             return NOTIFICATION_REDELIVERY_SCHEME.get(attemptedRedeliveries).getSecond();
         } else {

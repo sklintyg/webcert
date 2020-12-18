@@ -48,19 +48,19 @@ public class NotificationRedelivery {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime redeliveryTime;
 
-    @Column(name = "ATTEMPTED_REDELIVERIES")
-    private int attemptedRedeliveries;
+    @Column(name = "ATTEMPTED_DELIVERIES")
+    private int attemptedDeliveries;
 
     public NotificationRedelivery() { }
 
     public NotificationRedelivery(String correlationId, Long eventId, byte[] message, String redeliveryStrategy,
-        LocalDateTime redeliveryTime, int attemptedRedeliveries) {
+        LocalDateTime redeliveryTime, int attemptedDeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
         this.message = message;
         this.redeliveryStrategy = redeliveryStrategy;
         this.redeliveryTime = redeliveryTime;
-        this.attemptedRedeliveries = attemptedRedeliveries;
+        this.attemptedDeliveries = attemptedDeliveries;
     }
 
     public String getCorrelationId() {
@@ -103,11 +103,11 @@ public class NotificationRedelivery {
         this.redeliveryTime = redeliveryTime;
     }
 
-    public int getAttemptedRedeliveries() {
-        return attemptedRedeliveries;
+    public int getAttemptedDeliveries() {
+        return attemptedDeliveries;
     }
 
-    public void setAttemptedRedeliveries(int attemptedRedeliveries) {
-        this.attemptedRedeliveries = attemptedRedeliveries;
+    public void setAttemptedDeliveries(int attemptedRedeliveries) {
+        this.attemptedDeliveries = attemptedRedeliveries;
     }
 }
