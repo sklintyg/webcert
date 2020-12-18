@@ -51,12 +51,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 public class NotificationTestHelper {
 
     private static final String PERSNR = "191212121212";
-    private static final String CERTIFICATE_ID = "testCertificateId";
-    private static final String LOGICAL_ADDRESS = "testLogicalAddress";
-    private static final String USER_ID = "testUser";
-    private static final String CORRELATION_ID = "testCorrelationId";
-    private static final String EVENT = "testSKAPAT";
-    private static final long TIMESTAMP = Instant.now().toEpochMilli();
+
 
     private NotificationTestHelper() {
     }
