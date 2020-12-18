@@ -36,23 +36,25 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
 
     @Override
-    public void logStatusUpdateForCareStatusSuccess(String hanType, String unitId, String certificateId, String correlationId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, hanType, unitId, certificateId, correlationId);
+    public void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId,
+        String unitId) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, eventId, eventType, unitId, certificateId, correlationId);
     }
 
-    @Override
-    public void logStatusUpdateForCareStatusResend(String hanType, String unitId, String certificateId, String correlationId,
-        String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, hanType, unitId, certificateId, correlationId, errorCode, message,
+    @Override //CHECKSTYLE:OFF ParameterNumber
+    public void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId,
+        String correlationId, String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
             sendAttempt, nextAttempt);
-    }
+    } //CHECKSTYLE:ON ParameterNumber
 
-    @Override
-    public void logStatusUpdateForCareStatusFailure(String hanType, String unitId, String certificateId, String correlationId,
+    @Override //CHECKSTYLE:OFF ParameterNumber
+    public void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId,
+        String correlationId,
         String errorCode, String message, int sendAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, hanType, unitId, certificateId, correlationId, errorCode, message,
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
             sendAttempt);
-    }
+    } //CHECKSTYLE:ON ParameterNumber
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
@@ -64,11 +66,12 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
 
     private enum MonitoringEvent {
-        STATUS_UPDATE_RESULT_SUCCESS("Status update for care message '{}' successfully delivered to unit '{}' for '{}', correlationId: {}"),
+        STATUS_UPDATE_RESULT_SUCCESS(
+            "Status update for care message eventId: '{}' with event: '{}' successfully delivered to unit '{}' for certificateId: '{}', correlationId: '{}'"),
         STATUS_UPDATE_RESULT_RESEND(
-            "Status update for care message '{}' failed deliver to unit '{}' for '{}', correlationId: {}, errorCode: {}, message: {}, resendingAttempts: {} nextAttempt: {}. Will resend."),
+            "Status update for care message eventId: '{}' with event: '{}' failed deliver to unit '{}' for certificateId: '{}', correlationId: '{}', errorCode: '{}', message: '{}', sendAttempt: '{}' nextAttempt: '{}'. Will resend."),
         STATUS_UPDATE_RESULT_FAILURE(
-            "Status update for care message '{}' failed deliver to unit '{}' for '{}', correlationId: {}, errorCode: {}, message: {}, resendingAttempts: {}. Will not attempt to redeliver.");
+            "Status update for care message eventId: '{}' with event: '{}' failed deliver to unit '{}' for certificateId: '{}', correlationId: '{}', errorCode: '{}', message: '{}', sendAttempt: '{}'. Will not attempt to resend.");
 
         private final String message;
 

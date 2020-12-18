@@ -23,28 +23,16 @@ import java.time.LocalDateTime;
 
 public interface MonitoringLogService {
 
-    void logStatusUpdateForCareStatusSuccess(
-        String hanType,
-        String unitId,
-        String certificateId,
-        String correlationId);
-    
-    void logStatusUpdateForCareStatusResend(
-        String hanType,
-        String unitId,
-        String certificateId,
-        String correlationId,
-        String errorCode,
-        String message,
-        int sendAttempt,
-        LocalDateTime nextAttempt);
+    void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId, String unitId);
 
-    void logStatusUpdateForCareStatusFailure(
-        String hanType,
-        String unitId,
-        String certificateId,
-        String correlationId,
-        String errorCode,
-        String message,
-        int sendAttempt);
+    //CHECKSTYLE:OFF ParameterNumber
+    void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId, String correlationId,
+        String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt);
+    //CHECKSTYLE:ON ParameterNumber
+
+    //CHECKSTYLE:OFF ParameterNumber
+    void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId, String correlationId,
+        String errorCode, String message, int sendAttempt);
+    //CHECKSTYLE:ON ParameterNumber
+
 }

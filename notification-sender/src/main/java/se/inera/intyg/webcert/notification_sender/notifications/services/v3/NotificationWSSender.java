@@ -24,6 +24,7 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Objects;
+import javax.jms.TextMessage;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +34,15 @@ import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoTransporter;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-public class NotificationWSSender {
+public class NotificationWSSender <T extends Exception> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSSender.class);
 
@@ -53,9 +55,6 @@ public class NotificationWSSender {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private MonitoringLogService monitoringLog;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
@@ -75,7 +74,7 @@ public class NotificationWSSender {
             resultMessage.setResultType(resultType);
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
-            resultMessage.setException(e);
+            resultMessage.setExceptionInfoTransporter(new ExceptionInfoTransporter(e));
         } finally {
             postProcessSendResult(resultMessage);
         }
@@ -88,7 +87,15 @@ public class NotificationWSSender {
         try {
             LOG.debug("Sending status update for postprocessing with result message: {}", resultMessage);
 
-            jmsTemplateNotificationPostProcessing.send(session -> session.createTextMessage(notificationMessageAsJson));
+            jmsTemplateNotificationPostProcessing.send(session -> {
+                TextMessage textMessage = session.createTextMessage(notificationMessageAsJson);
+                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, resultMessage.getCertificateId());
+                textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
+                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, resultMessage.getLogicalAddress());
+                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getStatusUpdate().getHandelse()
+                    .getHandelsekod().getCode());
+                return textMessage;
+            });
         } catch (Exception e) {
             LOG.error("Runtime exception occurred when sending {} to postprocessing with error message: {}", resultMessage, e);
         }
@@ -104,8 +111,7 @@ public class NotificationWSSender {
     }
 
     private NotificationWSResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String certificateId,
-        String logicalAddress,
-        String userId, String correlationId, long messageTimestamp) {
+        String logicalAddress, String userId, String correlationId, long messageTimestamp) {
 
         final NotificationWSResultMessage message = new NotificationWSResultMessage();
         message.setStatusUpdate(statusUpdate);
@@ -114,7 +120,6 @@ public class NotificationWSSender {
         message.setLogicalAddress(logicalAddress);
         message.setUserId(userId);
         message.setMessageTimestamp(messageTimestamp);
-
         return message;
     }
 

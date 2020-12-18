@@ -26,12 +26,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-public class NotificationRedeliveryMessage {
+public class NotificationRedeliveryDTO {
 
     private Intyg cert;
     private String certId;
     private String certType;
-    private String version;
     private Patient patient;
     private Handelse event;
     private Arenden sent;
@@ -39,7 +38,7 @@ public class NotificationRedeliveryMessage {
     private String reference;
     private HsaId handler;
 
-    public NotificationRedeliveryMessage() { }
+    public NotificationRedeliveryDTO() { }
 
     public Intyg getCert() {
         return cert;
@@ -63,14 +62,6 @@ public class NotificationRedeliveryMessage {
 
     public void setCertType(String certType) {
         this.certType = certType;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public Patient getPatient() {
@@ -121,17 +112,16 @@ public class NotificationRedeliveryMessage {
         this.handler = handler;
     }
 
-    public NotificationRedeliveryMessage set(CertificateStatusUpdateForCareType statusUpdate) {
+    public NotificationRedeliveryDTO set(CertificateStatusUpdateForCareType statusUpdate) {
         this.certId = statusUpdate.getIntyg().getIntygsId().getExtension();
-        this.certType = statusUpdate.getIntyg().getTyp().getCode().toLowerCase();
-        this.version = statusUpdate.getIntyg().getVersion();
+        this.certType = statusUpdate.getIntyg().getTyp().getCode();
         this.event = statusUpdate.getHandelse();
         this.sent = statusUpdate.getSkickadeFragor();
         this.received = statusUpdate.getMottagnaFragor();
         this.reference = statusUpdate.getRef();
         this.handler = statusUpdate.getHanteratAv();
 
-        if (!isForSignedCertificate(statusUpdate)) {
+        if (!isCertificate(statusUpdate)) {
             this.cert = statusUpdate.getIntyg();
         } else {
             this.patient = statusUpdate.getIntyg().getPatient();
@@ -147,17 +137,17 @@ public class NotificationRedeliveryMessage {
         statusUpdate.setRef(this.reference);
         statusUpdate.setHanteratAv(this.handler);
 
-        if (!this.isForSignedCertificate()) {
+        if (!this.isCertificate()) {
             statusUpdate.setIntyg(this.cert);
         }
         return statusUpdate;
     }
 
-    public boolean isForSignedCertificate() {
+    public boolean isCertificate() {
         return this.cert == null;
     }
 
-    private boolean isForSignedCertificate(CertificateStatusUpdateForCareType statusUpdate) {
+    private boolean isCertificate(CertificateStatusUpdateForCareType statusUpdate) {
         return statusUpdate.getIntyg().getUnderskrift() != null;
     }
 }

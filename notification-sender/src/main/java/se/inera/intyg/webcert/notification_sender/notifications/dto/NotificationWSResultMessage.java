@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
+package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
 
 public class NotificationWSResultMessage {
 
@@ -31,24 +32,19 @@ public class NotificationWSResultMessage {
     private String correlationId;
     private long messageTimestamp;
     private ResultType resultType;
-    private Exception exception;
+    private ExceptionInfoTransporter exceptionInfoTransporter;
     private CertificateStatusUpdateForCareType statusUpdate;
+    private NotificationDeliveryStatusEnum deliveryStatus;
 
-    // these fields - or separate "resenditem"?
-    //private boolean hasBeenSentBefore; if true - should expect values to be not null
-    private NotificationResultEnum deliveryStatus; // default null
-    //private int resendingAttempt; // default null
-    //private LocalDateTime nextAttempt; // default null
-    //private Handelse event;
 
     public CertificateStatusUpdateForCareType getStatusUpdate() {
         return statusUpdate;
     }
 
-    public void setStatusUpdate(
-        CertificateStatusUpdateForCareType statusUpdate) {
+    public void setStatusUpdate(CertificateStatusUpdateForCareType statusUpdate) {
         this.statusUpdate = statusUpdate;
     }
+
 
     public String getCertificateId() {
         return certificateId;
@@ -98,55 +94,26 @@ public class NotificationWSResultMessage {
         this.resultType = resultType;
     }
 
-    public Exception getException() {
-        return exception;
+    public ExceptionInfoTransporter getExceptionInfoTransporter() {
+        return exceptionInfoTransporter;
     }
 
-    public void setException(Exception exception) {
-        this.exception = exception;
+    public void setExceptionInfoTransporter(ExceptionInfoTransporter exceptionInfoTransporter) {
+        this.exceptionInfoTransporter = exceptionInfoTransporter;
     }
 
-    public NotificationResultEnum getDeliveryStatus() {
+    public NotificationDeliveryStatusEnum getDeliveryStatus() {
         return deliveryStatus;
     }
 
-    public void setDeliveryStatus(
-        NotificationResultEnum deliveryStatus) {
+    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }
 
-    /*
-    public int getResendingAttempt() {
-        return resendingAttempt;
-    }
-
-    public void setResendingAttempt(int resendingAttempt) {
-        this.resendingAttempt = resendingAttempt;
-    }
-
-    public LocalDateTime getNextAttempt() {
-        return nextAttempt;
-    }
-
-    public void setNextAttempt(LocalDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-    }
-
-    public Handelse getEvent() {
-        return event;
-    }
-
-    public void setEvent(Handelse event) {
-        this.event = event;
-    }
-
-     */
-
     @Override
     public String toString() {
-        return String
-            .format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.logicalAddress, this.certificateId,
-                this.correlationId);
+        return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.logicalAddress, this.certificateId,
+            this.correlationId);
     }
 
 }

@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
 @Entity
@@ -73,7 +74,8 @@ public class Handelse {
     private String hanteratAv;
 
     @Column(name = "DELIVERY_STATUS")
-    private String deliveryStatus;
+    @Enumerated(EnumType.STRING)
+    private NotificationDeliveryStatusEnum deliveryStatus;
 
     public Handelse() {
     }
@@ -158,11 +160,11 @@ public class Handelse {
         this.hanteratAv = hanteratAv;
     }
 
-    public String getDeliveryStatus() {
+    public NotificationDeliveryStatusEnum getDeliveryStatus() {
         return deliveryStatus;
     }
 
-    public void setDeliveryStatus(String deliveryStatus) {
+    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }
 }

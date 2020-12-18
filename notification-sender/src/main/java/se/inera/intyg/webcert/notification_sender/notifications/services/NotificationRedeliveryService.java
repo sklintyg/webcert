@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import java.util.List;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
@@ -34,9 +34,13 @@ public interface NotificationRedeliveryService {
 
     void handleNotificationFailure(NotificationWSResultMessage resultMessage, Handelse event);
 
-    List<NotificationRedelivery> getRedeliveriesForResend();
+    List<NotificationRedelivery> getNotificationsForRedelivery();
 
     Handelse getEventById(Long id);
 
     Handelse setNotificationFailure(Long eventId);
+
+    boolean isRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+
+    void abortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
 }
