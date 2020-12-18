@@ -17,23 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
+package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import org.springframework.stereotype.Service;
+import java.time.temporal.ChronoUnit;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
 
+public interface NotificationRedeliveryStrategy {
 
-@Service
-public class NotificationRedeliveryStrategyFactory {
+    NotificationRedeliveryStrategyEnum getName();
 
-    public enum NotificationRedeliveryStrategyEnum { STANDARD }
+    int getMaxRedeliveries();
 
-    public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
+    ChronoUnit getNextTimeUnit(int attemptedRedeliveries);
 
-        switch (notificationResendStrategy) {
-            case STANDARD :
-                return new NotificationRedeliveryStrategyStandard();
-            default:
-                return new NotificationRedeliveryStrategyStandard();
-        }
-    }
+    int getNextTimeValue(int attemptedRedeliveries);
 }

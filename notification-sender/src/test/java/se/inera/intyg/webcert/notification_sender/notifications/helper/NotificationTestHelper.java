@@ -42,6 +42,7 @@ public class NotificationTestHelper {
 
     private static final String PERSNR = "191212121212";
 
+
     private NotificationTestHelper() {
     }
 
@@ -96,5 +97,4 @@ public class NotificationTestHelper {
 
         return patient;
     }
-
 }

@@ -36,14 +36,13 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoTransporter;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-public class NotificationWSSender <T extends Exception> {
+public class NotificationWSSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSSender.class);
 
@@ -68,7 +67,7 @@ public class NotificationWSSender <T extends Exception> {
 
         final NotificationWSResultMessage resultMessage = createResultMessage(statusUpdate, certificateId, logicalAddress, userId,
             correlationId, messageTimestamp);
-        final String handledBy = (statusUpdate.getHanteratAv() == null) ? null : statusUpdate.getHanteratAv().getExtension();
+
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
             ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
@@ -99,6 +98,7 @@ public class NotificationWSSender <T extends Exception> {
             });
         } catch (Exception e) {
             LOG.error("Runtime exception occurred when sending {} to postprocessing with error message: {}", resultMessage, e);
+            // TODO monitorlog this exception
         }
     }
 

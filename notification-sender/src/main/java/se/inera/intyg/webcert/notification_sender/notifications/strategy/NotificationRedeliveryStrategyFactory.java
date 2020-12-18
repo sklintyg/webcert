@@ -17,21 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.notification.repository;
+package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
+import org.springframework.stereotype.Service;
 
-public interface NotificationRedeliveryRepository extends JpaRepository<NotificationRedelivery, String> {
 
-    Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
+@Service
+public class NotificationRedeliveryStrategyFactory {
 
-    List<NotificationRedelivery> findByEventId(Long handelseId);
+    public enum NotificationRedeliveryStrategyEnum { STANDARD }
 
-    List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
+    public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
-    List<NotificationRedelivery> findByAttemptedDeliveries(int attemptedDeliveries);
+        switch (notificationResendStrategy) {
+            case STANDARD :
+                return new NotificationRedeliveryStrategyStandard();
+            default:
+                return new NotificationRedeliveryStrategyStandard();
+        }
+    }
 }

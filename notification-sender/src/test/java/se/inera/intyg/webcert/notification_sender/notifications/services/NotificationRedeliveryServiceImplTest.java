@@ -17,18 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy;
+package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import java.time.temporal.ChronoUnit;
-import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
+public class NotificationRedeliveryServiceImplTest {
 
-public interface NotificationRedeliveryStrategy {
-
-    NotificationRedeliveryStrategyEnum getName();
-
-    int getMaxRedeliveries();
-
-    ChronoUnit getNextTimeUnit(int attemptedRedeliveries);
-
-    int getNextTimeValue(int attemptedRedeliveries);
 }

@@ -80,7 +80,7 @@ public class NotificationPostProcessor {
         NotificationWSResultMessage updatedNotificationResult = extractDeliveryStatusFromResult(notificationResult);
 
         // TOGGLE ON TESTING/DEMO
-        // updatedNotificationResult = preparingForDemo(updatedNotificationResult);
+        updatedNotificationResult = preparingForDemo(updatedNotificationResult);
         // #################################################################
 
         Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),

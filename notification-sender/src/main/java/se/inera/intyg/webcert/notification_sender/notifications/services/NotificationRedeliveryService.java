@@ -26,21 +26,36 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 
 public interface NotificationRedeliveryService {
 
+    /**
+     * Handles database operations and monitor logging upon successful delivery of status update to care.
+     * @param resultMessage Message from caller collecting information necessary for operations.
+     * @param event The event object to persist summarizing info from the status update sent to care.
+     */
     void handleNotificationSuccess(NotificationWSResultMessage resultMessage, Handelse event);
 
-    //void handleNotificationResend(NotificationRedelivery notificationRedelivery);
-
+    /**
+     * Handles database operations and monitor logging for status updates that failed, but have been flagged for redelivery.
+     * @param resultMessage Message from caller collecting information necessary for operations.
+     * @param event The event object to persist summarizing info from the status update sent to care.
+     */
     void handleNotificationResend(NotificationWSResultMessage resultMessage, Handelse event);
 
+    /**
+     * Handles database operations and monitor logging for status updates that failed and will not be redelivered.
+     * @param resultMessage Message from caller collecting information necessary for operations.
+     * @param event The event object to persist summarizing info from the status update sent to care.
+     */
     void handleNotificationFailure(NotificationWSResultMessage resultMessage, Handelse event);
 
+    /**
+     * Collects and returns the redeliveries that, based in their redelivery time, are scheduled for resend.
+     * @return A list of NotificationRedeliveries to be resent.
+     */
     List<NotificationRedelivery> getNotificationsForRedelivery();
 
     Handelse getEventById(Long id);
 
-    Handelse setNotificationFailure(Long eventId);
-
-    boolean isRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+    boolean isRedundantRedelivery(Handelse event);
 
     void abortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
 }
