@@ -37,6 +37,7 @@ public class FakeCredentials implements Serializable, FakeCredential {
     private static final String TANDLAKARE = "Tandläkare";
 
     private String hsaId;
+    @JsonAlias("protectedPerson")
     private Boolean sekretessMarkerad;
     @JsonAlias("givenName")
     private String forNamn;
@@ -73,7 +74,7 @@ public class FakeCredentials implements Serializable, FakeCredential {
 
     public String getBefattningsKod() {
         if (paTitle != null && !paTitle.isEmpty()) {
-            return paTitle.stream().findFirst().get().titleCode;
+            return paTitle.stream().findFirst().get().getTitleCode();
         }
         return befattningsKod;
     }
@@ -121,6 +122,10 @@ public class FakeCredentials implements Serializable, FakeCredential {
 
     public void setAuthenticationMethod(String authenticationMethod) {
         this.authenticationMethod = authenticationMethod;
+    }
+
+    public List<PaTitle> getPaTitle() {
+        return paTitle;
     }
 
     @JsonIgnore
