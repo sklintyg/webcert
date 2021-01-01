@@ -19,31 +19,32 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
+import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
+import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.SUCCESS;
+import static se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.NotificationResultEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategy;
-import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory;
-import se.inera.intyg.webcert.notification_sender.notifications.services.notificationredeliverystrategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationRedeliveryMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategy;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 
@@ -53,33 +54,28 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     // TODO Perhaps move redelivery service etc to web module
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryServiceImpl.class);
 
-    @Autowired
-    private MonitoringLogService monitoringLog;
+    private final MonitoringLogService logService;
+    private final ObjectMapper objectMapper;
+    private final HandelseRepository handelseRepo;
+    private final NotificationRedeliveryRepository notificationRedeliveryRepo;
+    private final NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private HandelseRepository handelseRepo;
-
-    @Autowired
-    private NotificationRedeliveryRepository notificationRedeliveryRepository;
-
-    @Autowired
-    private NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
+    public NotificationRedeliveryServiceImpl(
+        MonitoringLogService logService, ObjectMapper objectMapper, HandelseRepository handelseRepo,
+        NotificationRedeliveryRepository notificationRedeliveryRepo,
+        NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory) {
+        this.logService = logService;
+        this.objectMapper = objectMapper;
+        this.handelseRepo = handelseRepo;
+        this.notificationRedeliveryRepo = notificationRedeliveryRepo;
+        this.notificationRedeliveryStrategyFactory = notificationRedeliveryStrategyFactory;
+    }
 
 
     @Override
     public void handleNotificationSuccess(NotificationWSResultMessage resultMessage, Handelse event) {
-        executeSuccess(resultMessage, event);
+        executeSuccessOrFailure(resultMessage, event);
     }
-
-    /*
-    @Override
-    public void handleNotificationResend(NotificationRedelivery notificationRedelivery) {
-        executeResend(notificationRedelivery);
-    }
-     */
 
     @Override
     public void handleNotificationResend(NotificationWSResultMessage resultMessage, Handelse event) {
@@ -88,14 +84,24 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
     @Override
     public void handleNotificationFailure(NotificationWSResultMessage resultMessage, Handelse event) {
-        executeFailure(resultMessage, event);
+        executeSuccessOrFailure(resultMessage, event);
     }
 
     @Override
-    public List<NotificationRedelivery> getRedeliveriesForResend() {
-        List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepository.findByRedeliveryTimeLessThan(LocalDateTime.now());
+    public List<NotificationRedelivery> getNotificationsForRedelivery() {
+        List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
         redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
         return redeliveryList;
+    }
+
+    @Override
+    public boolean isRedundantRedelivery(Handelse event) {
+        return checkRedundantRedelivery(event);
+    }
+
+    @Override
+    public void abortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery) {
+        doAbortRedundantRedelivery(event, redelivery);
     }
 
     @Override
@@ -103,24 +109,24 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         return handelseRepo.findById(id).orElseThrow();
     }
 
-    @Override
-    public Handelse setNotificationFailure(Long eventId) {
-        Handelse event = handelseRepo.findById(eventId).orElse(null);
 
-        if (event != null) {
-            event.setDeliveryStatus(NotificationResultEnum.FAILURE.name());
-            handelseRepo.save(event);
+    private void executeSuccessOrFailure(NotificationWSResultMessage resultMessage, Handelse event) {
+        NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+        Handelse monitorEvent;
+        if (existingRedelivery == null) {
+            LOG.debug("Persisting notification event {} with delivery status {}", event.getCode().value(),
+                resultMessage.getDeliveryStatus());
+            monitorEvent = persistEvent(event);
+        } else {
+            LOG.debug("Updating persisted notification event {} with delivery status {}", event.getCode().value(),
+                resultMessage.getDeliveryStatus());
+            monitorEvent = updateExistingEvent(existingRedelivery, resultMessage.getDeliveryStatus());
+            deleteNotificationRedelivery(existingRedelivery);
         }
-
-        List<NotificationRedelivery> redeliveries = notificationRedeliveryRepository.findByEventId(eventId);
-        if (!redeliveries.isEmpty()) {
-            deleteNotificationRedelivery(redeliveries.get(0));
-        }
-        return event;
+        monitorLog(monitorEvent, resultMessage, existingRedelivery); // log success or failure
     }
 
-    @Transactional
-    protected void executeResend(NotificationWSResultMessage resultMessage, Handelse event) {
+    private void executeResend(NotificationWSResultMessage resultMessage, Handelse event) {
         NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
         Handelse monitorEvent = null;
         try {
@@ -131,7 +137,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
                 NotificationRedeliveryStrategy redeliveryStrategy = notificationRedeliveryStrategyFactory.getResendStrategy(STANDARD);
                 NotificationRedelivery notificationRedelivery = createNotificationRedelivery(monitorEvent, redeliveryStrategy,
                     resultMessage);
-                monitorLogResend(resultMessage, monitorEvent, notificationRedelivery);
+                monitorLog(monitorEvent, resultMessage, notificationRedelivery); // log resend
             } else {
                 Handelse updatedEvent = updateExistingEvent(existingRedelivery, resultMessage.getDeliveryStatus());
                 LOG.debug("Updating persisted notification with eventId {} with delivery status {}", event.getId(),
@@ -143,134 +149,52 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             LOG.warn("Failure creating redelivery storage message [certificateId: {}, eventType: {}, timestamp: {}]",
                 resultMessage.getCertificateId(), event.getCode(), event.getTimestamp());
             Handelse failedEvent = setNotificationFailure(monitorEvent.getId());
-            monitorLogFailure(resultMessage, failedEvent);
+            monitorLog(failedEvent, resultMessage, null); // log failure
         }
-    }
-
-    private void executeSuccess(NotificationWSResultMessage resultMessage, Handelse event) {
-        NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
-        updateEventFromResultSuccess(existingRedelivery, event, resultMessage);
-    }
-
-    private void executeFailure(NotificationWSResultMessage resultMessage, Handelse event) {
-        NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
-        updateEventFromResultFailure(existingRedelivery, event, resultMessage);
-    }
-
-    private void updateEventFromResultSuccess(NotificationRedelivery existingRedelivery, Handelse event,
-        NotificationWSResultMessage resultMessage) {
-        Handelse monitorEvent;
-        if (existingRedelivery == null) {
-            LOG.debug("Persisting notification event {} with delivery status {}", event.getCode().value(),
-                resultMessage.getDeliveryStatus());
-            monitorEvent = persistEvent(event);
-        } else {
-            LOG.debug("Updating persisted notification event {} with delivery status {}", event.getCode().value(),
-                resultMessage.getDeliveryStatus());
-            monitorEvent = updateExistingEvent(existingRedelivery, resultMessage.getDeliveryStatus());
-            deleteNotificationRedelivery(existingRedelivery);
-        }
-        monitorLogSuccess(resultMessage.getCorrelationId(), monitorEvent);
-    }
-
-    private void updateEventFromResultFailure(NotificationRedelivery existingRedelivery, Handelse event,
-        NotificationWSResultMessage resultMessage) {
-        Handelse monitorEvent;
-        if (existingRedelivery == null) {
-            LOG.debug("Persisting notification event {} with delivery status {}", event.getCode().value(),
-                resultMessage.getDeliveryStatus());
-            monitorEvent = persistEvent(event);
-        } else {
-            LOG.debug("Updating persisted notification event {} with delivery status {}", event.getCode().value(),
-                resultMessage.getDeliveryStatus());
-            monitorEvent = updateExistingEvent(existingRedelivery, resultMessage.getDeliveryStatus());
-            deleteNotificationRedelivery(existingRedelivery);
-        }
-        monitorLogFailure(resultMessage, monitorEvent, existingRedelivery);
-    }
-
-    private void monitorLogSuccess(String correlationId, Handelse event) {
-        monitoringLog.logStatusUpdateForCareStatusSuccess(event.getId(), event.getCode().name(), event.getIntygsId(),
-            correlationId, event.getEnhetsId());
-    }
-
-    private void monitorLogFailure(NotificationWSResultMessage resultMessage, Handelse event) {
-        monitorLogFailure(resultMessage, event, null);
-    }
-
-    private void monitorLogFailure(NotificationWSResultMessage resultMessage, Handelse event, NotificationRedelivery existingRedelivery) {
-        // Have been sent at least once, and resending column starts at 0, i.e. 1+1
-        int sendAttempt = existingRedelivery == null ? 1 : existingRedelivery.getAttemptedRedeliveries() + 2;
-        ResultType resultType = resultMessage.getResultType();
-        ErrorIdType errorId = null;
-        String resultText = null;
-        if (resultType != null) {
-            errorId = resultType.getErrorId();
-            resultText = resultType.getResultText();
-        }
-        monitoringLog.logStatusUpdateForCareStatusFailure(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
-            resultMessage.getCorrelationId(), errorId == null ? null : errorId.value(), resultText, sendAttempt);
-    }
-
-    private void monitorLogResend(NotificationWSResultMessage resultMessage, Handelse event, NotificationRedelivery existingRedelivery) {
-        ResultType resultType = resultMessage.getResultType();
-        ErrorIdType errorId = null;
-        String resultText = null;
-        if (resultType != null) {
-            errorId = resultType.getErrorId();
-            resultText = resultType.getResultText();
-        }
-        monitoringLog.logStatusUpdateForCareStatusResend(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
-            resultMessage.getCorrelationId(),
-            resultType.getErrorId() == null ? null : resultType.getErrorId().value(),
-            resultType == null ? null : resultType.getResultText(), existingRedelivery.getAttemptedRedeliveries() + 1,
-            existingRedelivery.getRedeliveryTime());
     }
 
     private Handelse persistEvent(Handelse event) {
         return handelseRepo.save(event);
     }
 
-    private Handelse updateExistingEvent(NotificationRedelivery existingRedelivery,
-        NotificationResultEnum deliveryStatus) {
+    private Handelse updateExistingEvent(NotificationRedelivery existingRedelivery, NotificationDeliveryStatusEnum deliveryStatus) {
         Handelse event = handelseRepo.findById(existingRedelivery.getEventId()).orElseThrow();
-        event.setDeliveryStatus(deliveryStatus.toString());
+        event.setDeliveryStatus(deliveryStatus);
         return handelseRepo.save(event);
-    }
-
-    private NotificationRedelivery getExistingRedelivery(String correlationId) {
-        return notificationRedeliveryRepository.findByCorrelationId(correlationId).orElse(null);
     }
 
     private NotificationRedelivery createNotificationRedelivery(Handelse event, NotificationRedeliveryStrategy strategy,
         NotificationWSResultMessage resultMessage) throws JsonProcessingException {
-        NotificationRedelivery newRedelivery =
-            new NotificationRedelivery(resultMessage.getCorrelationId(), event.getId(),
-                processMessageForStorage(resultMessage.getStatusUpdate()),
-                strategy.getName().toString(),
-                LocalDateTime.now().plus(strategy.getNextTimeValue(0), strategy.getNextTimeUnit(0)), 0);
+        NotificationRedelivery newRedelivery =  new NotificationRedelivery(resultMessage.getCorrelationId(), event.getId(),
+            processMessageForStorage(resultMessage.getStatusUpdate()), strategy.getName().toString(),
+            LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)), 1);
         LOG.debug("Creating redelivery item correlationId {} for eventId {}", newRedelivery.getCorrelationId(), event.getId());
-        return notificationRedeliveryRepository.save(newRedelivery);
+        return notificationRedeliveryRepo.save(newRedelivery);
     }
 
     private void updateNotificationRedelivery(NotificationRedelivery existingRedelivery,
         NotificationRedeliveryStrategy strategy, NotificationWSResultMessage resultMessage, Handelse event) {
-        final int attemptedRedeliveries = existingRedelivery.getAttemptedRedeliveries() + 1;
+        final int attemptedDeliveries = existingRedelivery.getAttemptedDeliveries() + 1;
         final int maxRedeliveries = strategy.getMaxRedeliveries();
 
-        if (attemptedRedeliveries < maxRedeliveries) {
+        if (attemptedDeliveries - 1 < maxRedeliveries) {
             LOG.debug("Updating redelivery notification for eventId {}", event.getId());
-            existingRedelivery.setAttemptedRedeliveries(attemptedRedeliveries);
+            existingRedelivery.setAttemptedDeliveries(attemptedDeliveries);
             existingRedelivery.setRedeliveryTime(existingRedelivery.getRedeliveryTime()
-                .plus(strategy.getNextTimeValue(attemptedRedeliveries), strategy.getNextTimeUnit(attemptedRedeliveries)));
-            notificationRedeliveryRepository.save(existingRedelivery);
-            monitorLogResend(resultMessage, event, existingRedelivery);
+                .plus(strategy.getNextTimeValue(attemptedDeliveries), strategy.getNextTimeUnit(attemptedDeliveries)));
+            NotificationRedelivery updatedRedelivery = notificationRedeliveryRepo.save(existingRedelivery);
+            monitorLog(event, resultMessage, updatedRedelivery); // log resend
         } else {
             LOG.warn("Setting redelivery failure for eventId {}", event.getId());
-            updateExistingEvent(existingRedelivery, NotificationResultEnum.FAILURE);
-            notificationRedeliveryRepository.delete(existingRedelivery);
-            monitorLogFailure(resultMessage, event, existingRedelivery);
+            Handelse updatedEvent = updateExistingEvent(existingRedelivery, FAILURE);
+            notificationRedeliveryRepo.delete(existingRedelivery);
+            existingRedelivery.setAttemptedDeliveries(attemptedDeliveries);
+            monitorLog(updatedEvent, resultMessage, existingRedelivery); // log failure
         }
+    }
+
+    private NotificationRedelivery getExistingRedelivery(String correlationId) {
+        return notificationRedeliveryRepo.findByCorrelationId(correlationId).orElse(null);
     }
 
     private NotificationRedeliveryStrategy getRedeliveryStrategy(NotificationRedelivery redelivery) {
@@ -279,12 +203,87 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     }
 
     private void deleteNotificationRedelivery(NotificationRedelivery record) {
-        notificationRedeliveryRepository.delete(record);
+        notificationRedeliveryRepo.delete(record);
+    }
+
+    private boolean checkRedundantRedelivery(Handelse event) {
+        long numberOfSignedEvents = 0;
+        if (event.getCode() == HandelsekodEnum.ANDRAT) {
+            String certificateId = event.getIntygsId();
+            List<Handelse> events = handelseRepo.findByIntygsId(certificateId);
+            numberOfSignedEvents = events.stream()
+                .filter(e -> e.getCode() == HandelsekodEnum.SIGNAT && e.getDeliveryStatus() == SUCCESS).count();
+        }
+        return numberOfSignedEvents > 0;
+    }
+
+    private void doAbortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery) {
+        deleteNotificationRedelivery(redelivery);
+        handelseRepo.delete(event);
+        LOG.info("Aborting redelivery attempts of redundant notification [eventId: {}, correlationId: {}, eventCode: {}, "
+                + "certificateId: {}, logicalAddress: {}]. The event has been removed.", event.getId(), redelivery.getCorrelationId(),
+            event.getCode(), event.getIntygsId(), event.getEnhetsId());
+        // TODO investigate new status aborted, monitorlog here.
+    }
+
+    private Handelse setNotificationFailure(Long eventId) {
+        Handelse event = handelseRepo.findById(eventId).orElse(null);
+        List<NotificationRedelivery> redeliveries = notificationRedeliveryRepo.findByEventId(eventId);
+        if (event != null) {
+            event.setDeliveryStatus(FAILURE);
+            handelseRepo.save(event);
+        }
+        if (!redeliveries.isEmpty()) {
+            deleteNotificationRedelivery(redeliveries.get(0));
+        }
+        return event;
+        // TODO Monitorlog here if method keeping this method.
     }
 
     private byte[] processMessageForStorage(CertificateStatusUpdateForCareType statusMessage) throws JsonProcessingException {
         NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage().set(statusMessage);
         return objectMapper.writeValueAsBytes(redeliveryMessage);
+    }
+
+    private void monitorLog(@NonNull Handelse event, NotificationWSResultMessage resultMessage, NotificationRedelivery redelivery) {
+
+        String logicalAddress = event.getEnhetsId();
+        Long eventId = event.getId();
+        String eventType = event.getCode() != null ? event.getCode().name() : null;
+        String certificateId = event.getIntygsId();
+        NotificationDeliveryStatusEnum deliveryStatus = event.getDeliveryStatus();
+
+        String correlationId = null;
+        int currentSendAttempt = 1;
+        LocalDateTime redeliveryTime = null;
+        String errorId = null;
+        String resultText = null;
+
+        if (resultMessage != null) {
+            correlationId = resultMessage.getCorrelationId();
+            ResultType resultType = resultMessage.getResultType();
+            if (resultType != null) {
+                errorId = resultType.getErrorId() != null ? resultType.getErrorId().value() : null;
+                resultText = resultType.getResultText();
+            }
+        }
+        if (redelivery != null) {
+            currentSendAttempt = redelivery.getAttemptedDeliveries();
+            redeliveryTime = redelivery.getRedeliveryTime();
+        }
+
+        switch (deliveryStatus) {
+            case SUCCESS:
+                logService.logStatusUpdateForCareStatusSuccess(eventId, eventType, certificateId, correlationId, logicalAddress);
+                break;
+            case RESEND:
+                logService.logStatusUpdateForCareStatusResend(eventId, eventType, logicalAddress, certificateId, correlationId,
+                    errorId, resultText, currentSendAttempt, redeliveryTime);
+                break;
+            case FAILURE:
+                logService.logStatusUpdateForCareStatusFailure(eventId, eventType, logicalAddress, certificateId, correlationId,
+                    errorId, resultText, currentSendAttempt);
+        }
     }
 }
 

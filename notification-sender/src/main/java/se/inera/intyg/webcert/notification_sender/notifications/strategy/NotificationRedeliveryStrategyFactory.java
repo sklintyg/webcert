@@ -16,19 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public final class NotificationRouteHeaders {
+package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String INTYGS_TYP = "intygsTyp";
-    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
-    public static final String CORRELATION_ID = "correlationId";
+import org.springframework.stereotype.Service;
 
-    private NotificationRouteHeaders() {
+
+@Service
+public class NotificationRedeliveryStrategyFactory {
+
+    public enum NotificationRedeliveryStrategyEnum { STANDARD }
+
+    public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
+
+        switch (notificationResendStrategy) {
+            case STANDARD :
+                return new NotificationRedeliveryStrategyStandard();
+            default:
+                return new NotificationRedeliveryStrategyStandard();
+        }
     }
 }

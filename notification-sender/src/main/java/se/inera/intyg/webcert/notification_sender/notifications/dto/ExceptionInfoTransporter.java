@@ -28,7 +28,7 @@ public class ExceptionInfoTransporter {
 
 
     public ExceptionInfoTransporter() { }
-
+    // TODO Consider removing the stacktrace.
     public ExceptionInfoTransporter(Exception exception) {
         this.exceptionType = exception.getClass().getName();
         this.exceptionMessage = exception.getMessage();

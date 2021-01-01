@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import javax.xml.bind.MarshalException;
+import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
@@ -110,16 +112,17 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusOk() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(OK, null, "", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(OK, null, "", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
-
-        verify(notificationRedeliveryService).handleNotificationSuccess(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationSuccess(isA(NotificationWSResultMessage.class), isA(Handelse.class));
     }
 
     @Test
     public void receiveMessageWithStatusInfo() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(INFO, null, "Informative message", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(INFO, null, "Informative message", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -128,7 +131,8 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusTechnicalError() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(ERROR, TECHNICAL_ERROR, "Technical error message", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, TECHNICAL_ERROR, "Technical error message", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -137,7 +141,8 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusValidationError() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(ERROR, VALIDATION_ERROR, "Validation error message", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, VALIDATION_ERROR, "Validation error message", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -146,7 +151,8 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusApplicationError() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(ERROR, APPLICATION_ERROR, "Application error message", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, APPLICATION_ERROR, "Application error message", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -155,7 +161,8 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusRevoked() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(ERROR, REVOKED, "Revoked error message", null);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, REVOKED, "Revoked error message", null);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -164,8 +171,9 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithException() throws JsonProcessingException {
-        String messageJson = buildWSResultMessage(null, null, "Revoked error message",
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "Revoked error message",
             new ExceptionInfoTransporter(new RuntimeException("testRuntimeException")));
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -176,7 +184,8 @@ public class NotificationPostProcessorTest {
     public void receiveMessageWithSoapFaultExceptionAndMarshallingError() throws JsonProcessingException, SOAPException {
         SOAPFaultException soapFaultException = generateSoapFaultException("Marshalling Error");
         ExceptionInfoTransporter exceptionInfoTransporter = new ExceptionInfoTransporter(soapFaultException);
-        String messageJson = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -187,7 +196,8 @@ public class NotificationPostProcessorTest {
     public void receiveMessageWithSoapFaultExceptionAndUnmarshallingError() throws JsonProcessingException, SOAPException {
         SOAPFaultException soapFaultException = generateSoapFaultException("Unmarshalling Error");
         ExceptionInfoTransporter exceptionInfoTransporter = new ExceptionInfoTransporter(soapFaultException);
-        String messageJson = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
@@ -195,8 +205,8 @@ public class NotificationPostProcessorTest {
     }
 
 
-    private String buildWSResultMessage(ResultCodeType code, ErrorIdType errorId, String resultText,
-        ExceptionInfoTransporter exceptionInfoTransporter) throws JsonProcessingException {
+    private NotificationWSResultMessage buildWSResultMessage(ResultCodeType code, ErrorIdType errorId, String resultText,
+        ExceptionInfoTransporter exceptionInfoTransporter) {
         CertificateStatusUpdateForCareResponseType statusUpdateResponse = buildStatusUpdateResponse(code, errorId, resultText);
         NotificationWSResultMessage wsMessage = new NotificationWSResultMessage();
         wsMessage.setCertificateId(CERTIFICATE_ID);
@@ -208,7 +218,7 @@ public class NotificationPostProcessorTest {
         wsMessage.setStatusUpdate(buildStatusUpdateRequest());
         wsMessage.setExceptionInfoTransporter(exceptionInfoTransporter);
         wsMessage.setResultType(statusUpdateResponse.getResult());
-        return objectMapper.writeValueAsString(wsMessage);
+        return wsMessage;
     }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
@@ -216,7 +226,7 @@ public class NotificationPostProcessorTest {
         res.setIntyg(new Intyg());
         res.getIntyg().setIntygsId(new IntygId());
         res.getIntyg().getIntygsId().setExtension(CERTIFICATE_ID);
-        res.setHandelse(buildEvent());
+        res.setHandelse(buildEventV3());
         res.getIntyg().setPatient(buildPatient());
         res.getIntyg().setSkapadAv(buildHosPersonal());
         return res;
@@ -231,7 +241,7 @@ public class NotificationPostProcessorTest {
         return res;
     }
 
-    private se.riv.clinicalprocess.healthcond.certificate.v3.Handelse buildEvent() {
+    private se.riv.clinicalprocess.healthcond.certificate.v3.Handelse buildEventV3() {
         se.riv.clinicalprocess.healthcond.certificate.v3.Handelse event = new se.riv.clinicalprocess.healthcond.certificate.v3.Handelse();
         event.setHandelsekod(new Handelsekod());
         event.getHandelsekod().setCode(HandelsekodEnum.SKAPAT.name());
@@ -266,8 +276,7 @@ public class NotificationPostProcessorTest {
 
     private SOAPFaultException generateSoapFaultException(String message) throws SOAPException {
         SOAPFactory soapFactory = SOAPFactory.newInstance();
-        SOAPFault soapFault = soapFactory.createFault();
-        soapFault.setFaultString(message);
+        SOAPFault soapFault = soapFactory.createFault(message, new QName(""));
         SOAPFaultException soapFaultException = new SOAPFaultException(soapFault);
         soapFaultException.initCause(new MarshalException(message));
         return soapFaultException;
