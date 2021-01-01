@@ -57,5 +57,7 @@ public interface NotificationRedeliveryService {
 
     boolean isRedundantRedelivery(Handelse event);
 
-    void abortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+    void discardRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+
+    void handleManualNotificationResend(Long eventId);
 }

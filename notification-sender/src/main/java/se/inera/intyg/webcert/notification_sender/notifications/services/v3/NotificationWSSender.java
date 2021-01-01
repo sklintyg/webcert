@@ -63,7 +63,9 @@ public class NotificationWSSender {
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
         @Header(Constants.JMS_TIMESTAMP) long messageTimestamp) {
 
-        statusUpdate.setHanteratAv(userHsaId(userId));
+        if (Objects.nonNull(userId)) {
+            statusUpdate.setHanteratAv(userHsaId(userId));
+        }
 
         final NotificationWSResultMessage resultMessage = createResultMessage(statusUpdate, certificateId, logicalAddress, userId,
             correlationId, messageTimestamp);
@@ -125,13 +127,10 @@ public class NotificationWSSender {
     }
 
     private HsaId userHsaId(String userId) {
-        if (Objects.nonNull(userId)) {
-            LOG.debug("Set hanteratAv to '{}'", userId);
-            final HsaId hsaId = new HsaId();
-            hsaId.setExtension(userId);
-            hsaId.setRoot(HSA_ID_OID);
-            return hsaId;
-        }
-        return null;
+        LOG.debug("Set hanteratAv to '{}'", userId);
+        final HsaId hsaId = new HsaId();
+        hsaId.setExtension(userId);
+        hsaId.setRoot(HSA_ID_OID);
+        return hsaId;
     }
 }

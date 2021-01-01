@@ -19,12 +19,12 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum.STANDARD;
+import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
 import com.google.common.collect.ImmutableList;
 import java.time.temporal.ChronoUnit;
 import org.springframework.data.util.Pair;
-import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 
 public class NotificationRedeliveryStrategyStandard implements NotificationRedeliveryStrategy {

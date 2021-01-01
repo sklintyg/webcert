@@ -22,9 +22,12 @@ package se.inera.intyg.webcert.persistence.notification.model;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 @Entity
 @Table(name = "NOTIFICATION_REDELIVERY")
@@ -41,7 +44,8 @@ public class NotificationRedelivery {
     private byte[] message;
 
     @Column(name = "REDELIVERY_STRATEGY")
-    private String redeliveryStrategy;
+    @Enumerated(EnumType.STRING)
+    private NotificationRedeliveryStrategyEnum redeliveryStrategy;
 
     // Jadira?
     @Column(name = "REDELIVERY_TIME")
@@ -53,7 +57,7 @@ public class NotificationRedelivery {
 
     public NotificationRedelivery() { }
 
-    public NotificationRedelivery(String correlationId, Long eventId, byte[] message, String redeliveryStrategy,
+    public NotificationRedelivery(String correlationId, Long eventId, byte[] message, NotificationRedeliveryStrategyEnum redeliveryStrategy,
         LocalDateTime redeliveryTime, int attemptedDeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
@@ -87,11 +91,11 @@ public class NotificationRedelivery {
         this.message = message;
     }
 
-    public String getRedeliveryStrategy() {
+    public NotificationRedeliveryStrategyEnum getRedeliveryStrategy() {
         return redeliveryStrategy;
     }
 
-    public void setRedeliveryStrategy(String redeliveryStrategy) {
+    public void setRedeliveryStrategy(NotificationRedeliveryStrategyEnum redeliveryStrategy) {
         this.redeliveryStrategy = redeliveryStrategy;
     }
 
@@ -109,5 +113,9 @@ public class NotificationRedelivery {
 
     public void setAttemptedDeliveries(int attemptedRedeliveries) {
         this.attemptedDeliveries = attemptedRedeliveries;
+    }
+
+    public boolean isManualResend() {
+        return this.message == null;
     }
 }
