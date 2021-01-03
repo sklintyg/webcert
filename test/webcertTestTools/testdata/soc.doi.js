@@ -150,11 +150,11 @@ module.exports = {
       id: intygsID,
       typ: "Dödsorsaksintyg",
       deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
-      identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
-      land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0],
+      identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 27)])[0],
+      land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 24)])[0],
       dodsdatum: getDodsdatum(datumSakert),
       dodsPlats: {
-        kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
+        kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 28)])[0],
         boende: shuffle(["Sjukhus", "Ordinärt boende", "Särskilt boende", "Annan/okänd"])[0]
       },
       dodsorsak: getDodsOrsak(),
