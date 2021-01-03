@@ -63,8 +63,8 @@ describe('Create and Sign lisjp utkast', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
       });
       it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
         UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
       });
     });
 
@@ -161,8 +161,8 @@ describe('Create and Sign lisjp utkast', function() {
         UtkastPage.angeSmittskydd(true);
       });
       it('ta bort Smittskydd', function() {
-        UtkastPage.angeSmittskydd(true);
         UtkastPage.enableAutosave();
+        UtkastPage.angeSmittskydd(true);
       });
     });
 

@@ -80,8 +80,8 @@ describe('Create and Sign luse utkast', function() {
       UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
     });
     it('angeKontaktMedFK', function() {
-      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
       UtkastPage.enableAutosave();
+      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
     });
   });
 

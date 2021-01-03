@@ -77,8 +77,8 @@ describe('Create and Sign luae_na utkast', function() {
         UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
       });
       it('angeKontaktMedFK', function() {
-        UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
         UtkastPage.enableAutosave();
+        UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
       });
     });
 

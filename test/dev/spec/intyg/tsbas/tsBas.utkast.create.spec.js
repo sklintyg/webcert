@@ -112,8 +112,8 @@ describe('Create and Sign ts-bas utkast', function() {
       UtkastPage.fillInBedomning(data.bedomning);
     });
     it('fillInSpecialist', function() {
-      UtkastPage.fillInSpecialist(data.specialist);
       UtkastPage.enableAutosave();
+      UtkastPage.fillInSpecialist(data.specialist);
     });
   });
 

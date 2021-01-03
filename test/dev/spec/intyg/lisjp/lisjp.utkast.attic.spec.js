@@ -87,8 +87,8 @@ describe('Lisjp attic tests', function() {
     });
 
     it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
-      LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
       LisjpUtkastPage.enableAutosave();
+      LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
 
       expect(LisjpUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Egentligen inte');
     });

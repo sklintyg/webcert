@@ -68,8 +68,8 @@ describe('Create and Sign db utkast', function() {
       UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
     });
     it('angePolisanmalan', function() {
-      UtkastPage.angePolisanmalan(data.polisanmalan);
       UtkastPage.enableAutosave();
+      UtkastPage.angePolisanmalan(data.polisanmalan);
     });
 
   });

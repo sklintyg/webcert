@@ -66,8 +66,8 @@ describe('Create and Sign an AG7804 utkast', function() {
         UtkastPage.angeOvrigt(data.ovrigt);
       });
       it('angeKontaktMedAg', function() {
-        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
         UtkastPage.enableAutosave();
+        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
       });
     });
 
@@ -154,8 +154,8 @@ describe('Create and Sign an AG7804 utkast', function() {
       });
 
       it('angeKontaktMedAG', function() {
-        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
         UtkastPage.enableAutosave();
+        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
       });
 
     });

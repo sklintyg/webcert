@@ -69,8 +69,8 @@ describe('Create and Sign ag114 utkast', function() {
         UtkastPage.angeBedomning(data.bedomning)
       });
       it('angeOvrigt', function() {
-        UtkastPage.angeOvrigt(data.ovrigt)
         UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigt(data.ovrigt)
       });
     });
 

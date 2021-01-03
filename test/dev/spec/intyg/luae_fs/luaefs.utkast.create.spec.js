@@ -78,8 +78,8 @@ describe('Create and Sign luae_fs utkast', function() {
       UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
     });
     it('Ange tilläggsfrågor', function() {
-      UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
       UtkastPage.enableAutosave();
+      UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
     });
     it('Signera intyget', function() {
       UtkastPage.whenSigneraButtonIsEnabled();

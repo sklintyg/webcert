@@ -70,8 +70,8 @@ xdescribe('Create and Sign ts-diabetes v2 utkast', function() {
       UtkastPage.fillInOvrigKommentar(data);
     });
     it('fillInSpecialist', function() {
-      UtkastPage.fillInSpecialist(data.specialist);
       UtkastPage.enableAutosave();
+      UtkastPage.fillInSpecialist(data.specialist);
     });
   });
 

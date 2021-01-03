@@ -67,8 +67,8 @@ describe('Create and Sign af00213 utkast', function() {
       });
 
       it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
         UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
       });
     });
 

@@ -80,8 +80,8 @@ describe('Create and Sign af00251 utkast', function() {
         UtkastPage.angeBegransningSjukfranvaro(data.begransningSjukfranvaro);
       });
       it('Ange har prognos återgång', function() {
-        UtkastPage.angePrognosAtergang(data.prognosAtergang);
         UtkastPage.enableAutosave();
+        UtkastPage.angePrognosAtergang(data.prognosAtergang);
       });
 
     });

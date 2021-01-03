@@ -72,8 +72,8 @@ describe('Create and Sign doi utkast', function() {
       UtkastPage.angeSkadaForgiftning(data.skadaForgiftning);
     });
     it('angeDodsorsaksuppgifterna', function() {
-      UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
       UtkastPage.enableAutosave();
+      UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
     });
   });
 

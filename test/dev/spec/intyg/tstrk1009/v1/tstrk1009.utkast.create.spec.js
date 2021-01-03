@@ -67,8 +67,8 @@ describe('Create and Sign tstrk1009 v1 utkast', function() {
     });
 
     it('fillInformationOmTsBeslutOnskas ', function() {
-      UtkastPage.fillInformationOmTsBeslutOnskas(data.informationOmTsBeslutOnskas);
       UtkastPage.enableAutosave();
+      UtkastPage.fillInformationOmTsBeslutOnskas(data.informationOmTsBeslutOnskas);
     });
 
   });
