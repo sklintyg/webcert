@@ -89,10 +89,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
-
+      IntygPage.verify(data);
       expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
     });
 
@@ -149,15 +146,15 @@ describe('Create and Sign an AG7804 utkast', function() {
       it('angeAtgarder', function() {
         UtkastPage.angeAtgarder(data.atgarder);
       });
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigt(data.ovrigt);
-      });
 
       it('angeKontaktMedAG', function() {
-        UtkastPage.enableAutosave();
         UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
       });
 
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigt(data.ovrigt);
+      });
     });
 
     it('Signera intyget', function() {
@@ -177,9 +174,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
+      IntygPage.verify(data);
     });
 
     afterAll(function() {
