@@ -21,7 +21,6 @@
 'use strict';
 
 var wcTestTools = require('webcert-testtools');
-var testdataHelper = require('common-testtools').testdataHelper;
 var specHelper = wcTestTools.helpers.spec;
 var UtkastPage = wcTestTools.pages.intyg.ts.trk1009.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.trk1009.intyg;
@@ -63,14 +62,9 @@ describe('Create and Sign tstrk1009 v1 utkast', function() {
     });
 
     it('fillBehorigheter', function() {
+      UtkastPage.enableAutosave();
       UtkastPage.fillBehorigheter(data.intygetAvserBehorigheter);
     });
-
-    it('fillInformationOmTsBeslutOnskas ', function() {
-      UtkastPage.enableAutosave();
-      UtkastPage.fillInformationOmTsBeslutOnskas(data.informationOmTsBeslutOnskas);
-    });
-
   });
 
   it('Signera intyget', function() {
