@@ -61,10 +61,10 @@ describe('Create and Sign lisjp utkast', function() {
       });
       it('angeArbetsformaga', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
-        UtkastPage.enableAutosave();
       });
       it('angeOvrigaUpplysningar', function() {
         UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
+        UtkastPage.enableAutosave();
       });
     });
 
@@ -154,7 +154,6 @@ describe('Create and Sign lisjp utkast', function() {
         UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
       });
       it('angeKontaktMedFK', function() {
-        UtkastPage.enableAutosave();
         UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
       });
 
@@ -163,6 +162,7 @@ describe('Create and Sign lisjp utkast', function() {
       });
       it('ta bort Smittskydd', function() {
         UtkastPage.angeSmittskydd(true);
+        UtkastPage.enableAutosave();
       });
     });
 

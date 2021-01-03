@@ -118,8 +118,8 @@ describe('luae_na attic tests', function() {
     });
 
     it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
+      UtkastPage.enableAutosave();
 
       expect(UtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Kontaktorsak');
     });

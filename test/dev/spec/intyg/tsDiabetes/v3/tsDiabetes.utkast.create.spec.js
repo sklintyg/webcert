@@ -72,8 +72,8 @@ describe('Create and Sign ts-diabetes v3 utkast', function() {
     });
 
     it('fillInOvrigKommentar', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.fillInOvrigKommentar(data);
+      UtkastPage.enableAutosave();
     });
   });
 

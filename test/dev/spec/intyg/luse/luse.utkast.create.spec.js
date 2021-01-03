@@ -74,7 +74,6 @@ describe('Create and Sign luse utkast', function() {
       UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
     });
     it('angeMedicinskaForutsattningar', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angeMedicinskaForutsattningar(data.medicinskaForutsattningar);
     });
     it('angeOvrigaUpplysningar', function() {
@@ -82,6 +81,7 @@ describe('Create and Sign luse utkast', function() {
     });
     it('angeKontaktMedFK', function() {
       UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
+      UtkastPage.enableAutosave();
     });
   });
 

@@ -71,7 +71,6 @@ describe('Create and Sign luae_na utkast', function() {
         UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
       });
       it('angeMedicinskaForutsattningar', function() {
-        UtkastPage.enableAutosave();
         UtkastPage.angeMedicinskaForutsattningar(data.medicinskaForutsattningar);
       });
       it('angeOvrigaUpplysningar', function() {
@@ -79,6 +78,7 @@ describe('Create and Sign luae_na utkast', function() {
       });
       it('angeKontaktMedFK', function() {
         UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
+        UtkastPage.enableAutosave();
       });
     });
 

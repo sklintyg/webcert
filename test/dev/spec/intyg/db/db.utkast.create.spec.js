@@ -65,11 +65,11 @@ describe('Create and Sign db utkast', function() {
       UtkastPage.angeExplosivImplantat(data.explosivImplantat);
     });
     it('angeYttreUndersokning', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
     });
     it('angePolisanmalan', function() {
       UtkastPage.angePolisanmalan(data.polisanmalan);
+      UtkastPage.enableAutosave();
     });
 
   });

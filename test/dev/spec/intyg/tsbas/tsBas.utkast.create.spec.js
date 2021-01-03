@@ -106,7 +106,6 @@ describe('Create and Sign ts-bas utkast', function() {
       UtkastPage.fillInOvrigMedicinering(data);
     });
     it('fillInOvrigKommentar', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.fillInOvrigKommentar(data);
     });
     it('fillInBedomning', function() {
@@ -114,6 +113,7 @@ describe('Create and Sign ts-bas utkast', function() {
     });
     it('fillInSpecialist', function() {
       UtkastPage.fillInSpecialist(data.specialist);
+      UtkastPage.enableAutosave();
     });
   });
 

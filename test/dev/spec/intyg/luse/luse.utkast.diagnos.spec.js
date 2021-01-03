@@ -71,8 +71,8 @@ describe('Luse diagnos tests', function() {
 
   it('should clear diagnoskod if 3-character psykiskdiagnos is entered', function() {
     LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
-    LuseUtkastPage.enableAutosave();
     LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z73', protractor.Key.TAB, protractor.Key.TAB);
+    LuseUtkastPage.enableAutosave();
     expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('');
     expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('');
   });

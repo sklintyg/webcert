@@ -117,8 +117,8 @@ describe('Luse attic tests', function() {
     });
 
     it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
-      LuseUtkastPage.enableAutosave();
       LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
+      LuseUtkastPage.enableAutosave();
 
       expect(LuseUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Kontaktinfo.');
     });
