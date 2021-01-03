@@ -73,8 +73,7 @@ module.exports = {
         text: "Om patienten får en assistent kan man förkorta perioden med några dagar."
       },
       prognosAtergang: {
-        radio: "ATERGA_MED_ANPASSNING",
-        text: "Patienten behöver nya hörlurar för att kunna lyssna på musik effektivare."
+        radio: "ATERGA_UTAN_ANPASSNING"
       }
     };
 

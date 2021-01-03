@@ -62,12 +62,12 @@ describe('Create and Sign an AG7804 utkast', function() {
       it('angeArbetsformaga', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
       });
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigt(data.ovrigt);
-      });
       it('angeKontaktMedAg', function() {
-        UtkastPage.enableAutosave();
         UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
+      });
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigt(data.ovrigt);
       });
     });
 

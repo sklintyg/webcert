@@ -59,9 +59,6 @@ describe('Create and Sign doi utkast', function() {
     it('angeDodsPlats', function() {
       UtkastPage.angeDodsPlats(data.dodsPlats);
     });
-    it('angeBarn', function() {
-      UtkastPage.angeBarn(data.barn);
-    });
     it('angeUtlatandeOmDodsorsak', function() {
       UtkastPage.angeUtlatandeOmDodsorsak(data.dodsorsak);
     });
@@ -72,8 +69,11 @@ describe('Create and Sign doi utkast', function() {
       UtkastPage.angeSkadaForgiftning(data.skadaForgiftning);
     });
     it('angeDodsorsaksuppgifterna', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
+    });
+    it('angeBarn', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.angeBarn(data.barn);
     });
   });
 

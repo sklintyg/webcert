@@ -233,7 +233,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     if (utkast.hjartRisk === 'Ja') {
       promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.cYes, protractor.Key.SPACE)
       .then(function() {
-        return browser.sleep(1000); // Testar att vänta på animering eller nästa tick
+        return browser.sleep(200); // Testar att vänta på animering eller nästa tick
       })
       .then(function() {
         return pageHelpers.moveAndSendKeys(hjartKarlCEl.cText, utkast.hjartRiskBeskrivning);

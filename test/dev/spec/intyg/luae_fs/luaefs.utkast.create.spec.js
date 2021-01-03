@@ -74,13 +74,15 @@ describe('Create and Sign luae_fs utkast', function() {
       UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
     });
 
-    it('angeKontaktMedFK', function() {
-      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
-    });
     it('Ange tilläggsfrågor', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
     });
+
+    it('angeKontaktMedFK', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
+    });
+
     it('Signera intyget', function() {
       UtkastPage.whenSigneraButtonIsEnabled();
 

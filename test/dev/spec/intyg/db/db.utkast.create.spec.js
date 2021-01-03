@@ -58,9 +58,6 @@ describe('Create and Sign db utkast', function() {
     it('angeDodsPlats', function() {
       UtkastPage.angeDodsPlats(data.dodsPlats);
     });
-    it('angeBarn', function() {
-      UtkastPage.angeBarn(data.barn);
-    });
     it('angeExplosivImplantat', function() {
       UtkastPage.angeExplosivImplantat(data.explosivImplantat);
     });
@@ -68,10 +65,12 @@ describe('Create and Sign db utkast', function() {
       UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
     });
     it('angePolisanmalan', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angePolisanmalan(data.polisanmalan);
     });
-
+    it('angeBarn', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.angeBarn(data.barn);
+    });
   });
 
   it('Signera intyget', function() {
