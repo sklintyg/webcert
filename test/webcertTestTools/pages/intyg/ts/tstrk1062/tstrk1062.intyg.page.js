@@ -29,8 +29,7 @@ var Tstrk1062Intyg = TsBaseIntyg._extend({
     this.intygTypeVersion = '1.0';
 
     this.intygetAvser = {
-      am: element(by.id('intygAvser-behorigheter-0')),
-      a1: element(by.id('intygAvser-behorigheter-1'))
+      am: element(by.id('intygAvser-behorigheter-0'))
     };
     this.identitet = {
       svensktKortkort: element(by.id('idKontroll-typ'))
@@ -42,20 +41,13 @@ var Tstrk1062Intyg = TsBaseIntyg._extend({
     };
     this.lakemedelsbehandling = {
       harHaft: element(by.id('lakemedelsbehandling-harHaft')),
-      pagar: element(by.id('lakemedelsbehandling-pagar')),
-      aktuell: element(by.id('lakemedelsbehandling-aktuell')),
-      pagatt: element(by.id('lakemedelsbehandling-pagatt')),
-      effekt: element(by.id('lakemedelsbehandling-effekt')),
-      foljsamhet: element(by.id('lakemedelsbehandling-foljsamhet'))
     };
     this.symptom = {
       bedomningAvSymptom: element(by.id('bedomningAvSymptom')),
       prognosTillstandGod: element(by.id('prognosTillstand-typ'))
     };
-    this.ovrigt = element(by.id('ovrigaKommentarer'));
     this.bedomning = {
-      am: element(by.id('bedomning-uppfyllerBehorighetskrav-0')),
-      a: element(by.id('bedomning-uppfyllerBehorighetskrav-1'))
+      am: element(by.id('bedomning-uppfyllerBehorighetskrav-0'))
     };
   },
   get: function get(intygId) {
@@ -63,22 +55,14 @@ var Tstrk1062Intyg = TsBaseIntyg._extend({
   },
   verify: function(data) {
     expect(this.intygetAvser.am.getText()).toBe(data.intygetAvser.am);
-    expect(this.intygetAvser.a1.getText()).toBe(data.intygetAvser.a1);
     expect(this.identitet.svensktKortkort.getText()).toBe(data.identitet.svensktKortkort);
     expect(this.allmant.diagnosKod.getText()).toBe(data.allmant.diagnosKod);
     expect(this.allmant.diagnosBeskrivning.getText()).toBe(data.allmant.diagnosBeskrivning);
     expect(this.allmant.diagnosAr.getText()).toBe(data.allmant.diagnosAr);
     expect(this.lakemedelsbehandling.harHaft.getText()).toBe(data.lakemedelsbehandling.harHaft);
-    expect(this.lakemedelsbehandling.pagar.getText()).toBe(data.lakemedelsbehandling.pagar);
-    expect(this.lakemedelsbehandling.aktuell.getText()).toBe(data.lakemedelsbehandling.aktuell);
-    expect(this.lakemedelsbehandling.pagatt.getText()).toBe(data.lakemedelsbehandling.pagatt);
-    expect(this.lakemedelsbehandling.effekt.getText()).toBe(data.lakemedelsbehandling.effekt);
-    expect(this.lakemedelsbehandling.foljsamhet.getText()).toBe(data.lakemedelsbehandling.foljsamhet);
     expect(this.symptom.bedomningAvSymptom.getText()).toBe(data.symptom.bedomningAvSymptom);
     expect(this.symptom.prognosTillstandGod.getText()).toBe(data.symptom.prognosTillstandGod);
-    expect(this.ovrigt.getText()).toBe(data.ovrigt);
     expect(this.bedomning.am.getText()).toBe(data.bedomning.am);
-    expect(this.bedomning.a.getText()).toBe(data.bedomning.a);
   }
 });
 

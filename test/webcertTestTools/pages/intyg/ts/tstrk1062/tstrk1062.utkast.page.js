@@ -32,8 +32,7 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
     this.at = element(by.id('edit-tstrk1062'));
 
     this.intygetAvser = {
-      am: element(by.id('intygAvser.behorigheter-IAV11')),
-      a1: element(by.id('intygAvser.behorigheter-IAV12'))
+      am: element(by.id('intygAvser.behorigheter-IAV11'))
     };
     this.identitet = {
       svensktKortkort: element(by.id('idKontroll.typ-KORKORT'))
@@ -44,21 +43,14 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
       diagnosAr: element(by.id('diagnosKodad-0--diagnosArtal'))
     };
     this.lakemedelsbehandling = {
-      harHaftYes: element(by.id('lakemedelsbehandling-harHaftYes')),
-      pagarYes: element(by.id('lakemedelsbehandling-pagarYes')),
-      aktuell: element(by.id('lakemedelsbehandling-aktuell')),
-      pagattYes: element(by.id('lakemedelsbehandling-pagattYes')),
-      effektYes: element(by.id('lakemedelsbehandling-effektYes')),
-      foljsamhetYes: element(by.id('lakemedelsbehandling-foljsamhetYes'))
+      harHaftNo: element(by.id('lakemedelsbehandling-harHaftNo'))
     };
     this.symptom = {
       bedomningAvSymptom: element(by.id('bedomningAvSymptom')),
       prognosTillstandGodJa: element(by.id('prognosTillstand.typ-JA'))
     };
-    this.ovrigt = element(by.id('ovrigaKommentarer'));
     this.bedomning = {
-      am: element(by.id('bedomning.uppfyllerBehorighetskrav-VAR12')),
-      a: element(by.id('bedomning.uppfyllerBehorighetskrav-VAR15'))
+      am: element(by.id('bedomning.uppfyllerBehorighetskrav-VAR12'))
     };
   },
   fillIntygetAvser: function(utkastIntygetAvser) {
@@ -67,10 +59,6 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
     if (utkastIntygetAvser.am === 'AM') {
       promiseArr.push(pageHelpers.moveAndSendKeys(this.intygetAvser.am, protractor.Key.SPACE));
     }
-    if (utkastIntygetAvser.a1 === 'A1') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.intygetAvser.a1, protractor.Key.SPACE));
-    }
-
     return Promise.all(promiseArr);
   },
   fillIdentitet: function(utkastIdentitet) {
@@ -98,21 +86,8 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
   fillLakemedelsbehandling: function(utkastLakemedelsbehandling) {
     var promiseArr = [];
 
-    if (utkastLakemedelsbehandling.harHaft === 'Ja') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.harHaftYes, protractor.Key.SPACE));
-    }
-    if (utkastLakemedelsbehandling.pagar === 'Ja') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagarYes, protractor.Key.SPACE));
-    }
-    promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.aktuell, utkastLakemedelsbehandling.aktuell));
-    if (utkastLakemedelsbehandling.pagatt === 'Ja') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagattYes, protractor.Key.SPACE));
-    }
-    if (utkastLakemedelsbehandling.effekt === 'Ja') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.effektYes, protractor.Key.SPACE));
-    }
-    if (utkastLakemedelsbehandling.foljsamhet === 'Ja') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.foljsamhetYes, protractor.Key.SPACE));
+    if (utkastLakemedelsbehandling.harHaft === 'Nej') {
+      promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.harHaftNo, protractor.Key.SPACE));
     }
 
     return Promise.all(promiseArr);
@@ -127,23 +102,12 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
 
     return Promise.all(promiseArr);
   },
-  fillOvrigt: function(utkastOvrigt) {
-    var promiseArr = [];
-
-    promiseArr.push(pageHelpers.moveAndSendKeys(this.ovrigt, utkastOvrigt));
-
-    return Promise.all(promiseArr);
-  },
   fillBedomning: function(utkastBedomning) {
     var promiseArr = [];
 
     if (utkastBedomning.am === 'AM') {
       promiseArr.push(pageHelpers.moveAndSendKeys(this.bedomning.am, protractor.Key.SPACE));
     }
-    if (utkastBedomning.a === 'A') {
-      promiseArr.push(pageHelpers.moveAndSendKeys(this.bedomning.a, protractor.Key.SPACE));
-    }
-
     return Promise.all(promiseArr);
   }
 });

@@ -29,12 +29,12 @@ var fragasvarFromJsonFactory = require('./../util/fragasvarFromJsonFactory.js');
 var intygGenerator = require('./../util/intygGenerator.util.js');
 
 function createArende(createJson) {
-  // restUtil.login();
+  restUtil.login();
   return restUtil.createArende(createJson);
 }
 
 function createFragasvar(createJson) {
-  // restUtil.login();
+  restUtil.login();
   return restUtil.createFragasvar(createJson);
 }
 
@@ -42,23 +42,23 @@ module.exports = {
 
   // Intyg services
   deleteAllIntyg: function() {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteAllIntyg();
   },
   deleteAllIntygForPatient: function(personnummer) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteAllIntygForPatient(personnummer);
   },
   deleteIntyg: function(id) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteIntyg(id);
   },
   createWebcertIntyg: function(createJson) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.createWebcertIntyg(createJson);
   },
   createEmptyUtkast: function(intygType, intygTypeVersion, utkastId) {
-    // restUtil.login();
+    restUtil.login();
 
     var testData = {
       'contents': intygGenerator.getEmptyUtkastJson(intygType, intygTypeVersion, utkastId),
@@ -69,7 +69,7 @@ module.exports = {
     return restUtil.createWebcertIntyg(testData);
   },
   createUtkast: function(intygType, template) {
-    // restUtil.login();
+    restUtil.login();
 
     var utkastTemplate = template;
     if (typeof template === 'undefined') {
@@ -93,23 +93,23 @@ module.exports = {
   },
 
   deleteAllUtkast: function() {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteAllUtkast();
   },
   deleteAllUtkastForPatient: function(personnummer) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteAllUtkastForPatient(personnummer);
   },
   deleteUtkast: function(id) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteUtkast(id);
   },
   deleteHandelserForUtkast: function(id) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteHandelserForUtkast(id);
   },
   deleteHandelserForPatient: function(id) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteHandelserForPatient(id);
   },
 
@@ -138,11 +138,11 @@ module.exports = {
   },
   deleteAllArenden: function() {
     logger.debug('deleting all arenden');
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteAllArenden();
   },
   deleteArende: function(id) {
-    // restUtil.login();
+    restUtil.login();
     return restUtil.deleteArende(id);
   },
 
@@ -192,7 +192,7 @@ module.exports = {
     if (personId.indexOf('-') > -1) {
       personId = personId.replace('-', '');
     }
-    // restUtil.login();
+    restUtil.login();
     return restUtil.setSekretessmarkering(personId, isSekretessmarkerad);
   },
   createBanners: function(message, prio) {
