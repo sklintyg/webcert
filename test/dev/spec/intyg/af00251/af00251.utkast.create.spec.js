@@ -92,14 +92,6 @@ describe('Create and Sign af00251 utkast', function() {
       expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
-    });
-
     it('Verifiera intyg', function() {
       IntygPage.verify(data);
     });
