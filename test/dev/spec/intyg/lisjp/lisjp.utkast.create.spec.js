@@ -36,7 +36,7 @@ describe('Create and Sign lisjp utkast', function() {
     specHelper.login();
   });
 
-  describe('smittskydd', function() {
+  xdescribe('smittskydd', function() {
     beforeAll(function() {
       ValjIntygPage.get();
       specHelper.createUtkastForPatient('191212121212', 'lisjp');
@@ -56,15 +56,12 @@ describe('Create and Sign lisjp utkast', function() {
       it('angeSmittskydd', function() {
         UtkastPage.angeSmittskydd(data.smittskydd);
       });
-      it('angeDiagnos', function() {
-        UtkastPage.angeDiagnos(data.diagnos);
-      });
       it('angeArbetsformaga', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
       });
-      it('angeOvrigaUpplysningar', function() {
+      it('angeDiagnos', function() {
         UtkastPage.enableAutosave();
-        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
+        UtkastPage.angeDiagnos(data.diagnos);
       });
     });
 
@@ -74,24 +71,10 @@ describe('Create and Sign lisjp utkast', function() {
       UtkastPage.signeraButtonClick();
 
       expect(IntygPage.isAt()).toBeTruthy();
-      expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
-      IntygPage.clickReceiverApprovalOption('FBA', 'yes');
-      IntygPage.closeReceiverApproval(true);
-
     });
 
     it('Verifiera intyg', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
-
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
-
-      expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
+      IntygPage.verify(data);
     });
 
     afterAll(function() {
@@ -132,9 +115,6 @@ describe('Create and Sign lisjp utkast', function() {
       it('angeAktivitetsbegransning', function() {
         UtkastPage.angeAktivitetsbegransning(data.aktivitetsbegransning);
       });
-      it('angeMedicinskBehandling', function() {
-        UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
-      });
       it('angeArbetsformaga', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
       });
@@ -148,21 +128,8 @@ describe('Create and Sign lisjp utkast', function() {
         UtkastPage.angePrognosForArbetsformaga(data.prognosForArbetsformaga);
       });
       it('angeAtgarder', function() {
-        UtkastPage.angeAtgarder(data.atgarder);
-      });
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
-      });
-      it('angeKontaktMedFK', function() {
-        UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
-      });
-
-      it('angeSmittskydd', function() {
-        UtkastPage.angeSmittskydd(true);
-      });
-      it('ta bort Smittskydd', function() {
         UtkastPage.enableAutosave();
-        UtkastPage.angeSmittskydd(true);
+        UtkastPage.angeAtgarder(data.atgarder);
       });
     });
 
@@ -172,35 +139,15 @@ describe('Create and Sign lisjp utkast', function() {
       UtkastPage.signeraButtonClick();
 
       expect(IntygPage.isAt()).toBeTruthy();
-      expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
-      IntygPage.clickReceiverApprovalOption('FBA', 'yes');
-      IntygPage.closeReceiverApproval(true);
-    });
-
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
     });
 
     it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
+      IntygPage.verify(data);
     });
-    it('Verifiera kan öppna Godkänna Mottagare dialog och avbryta', function() {
-      IntygPage.openReceiverApprovalDialog().then(function() {
-        expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
-        IntygPage.closeReceiverApproval(false);
-        expect(IntygPage.getReceiverApprovalDialog().isPresent()).toBeFalsy();
-      });
-    });
+
     afterAll(function() {
       testdataHelper.deleteIntyg(utkastId);
       testdataHelper.deleteUtkast(utkastId);
     });
   });
-
 });
