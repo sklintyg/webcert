@@ -131,9 +131,35 @@ function getDodsOrsakUppgifter() {
 
 module.exports = {
   get: function(intygsID) {
-    if (!intygsID) {
-      intygsID = testdataHelper.generateTestGuid();
-    }
+    intygsID = testdataHelper.generateTestGuid();
+
+    var datumSakert = true
+
+    var obj = {
+      id: intygsID,
+      typ: "Dödsorsaksintyg",
+      deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
+      identitetStyrktGenom: "körkort",
+      dodsdatum: getDodsdatum(datumSakert),
+      dodsPlats: {
+        kommun: "Karlstad",
+        boende: "Sjukhus"
+      },
+      dodsorsak: {
+        a: getDodsOrsakObj(1)
+      },
+      operation: 'Nej',
+      skadaForgiftning: false,
+      dodsorsaksuppgifter: {
+        foreDoden: "Undersökning före döden",
+        efterDoden: false,
+        kliniskObduktion: false,
+        rattsmedicinskObduktion: false,
+        rattsmedicinskBesiktning: false
+      }
+    };
+
+    return obj;
   },
   getRandom: function(intygsID, customFields) {
     if (customFields) {

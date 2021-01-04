@@ -45,7 +45,7 @@ describe('Create and Sign doi utkast', function() {
     specHelper.getUtkastIdFromUrl().then(function(id) {
       utkastId = id;
     });
-    data = wcTestTools.testdata.soc.doi.getRandom(utkastId);
+    data = wcTestTools.testdata.soc.doi.get(utkastId);
 
   });
 
@@ -69,11 +69,8 @@ describe('Create and Sign doi utkast', function() {
       UtkastPage.angeSkadaForgiftning(data.skadaForgiftning);
     });
     it('angeDodsorsaksuppgifterna', function() {
-      UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
-    });
-    it('angeBarn', function() {
       UtkastPage.enableAutosave();
-      UtkastPage.angeBarn(data.barn);
+      UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
     });
   });
 
