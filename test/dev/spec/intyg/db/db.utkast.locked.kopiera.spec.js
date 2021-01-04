@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-describe('DB locked utkast kopiera tests', function() {
+xdescribe('DB locked utkast kopiera tests', function() {
   var intygsTyp = 'db';
 
   var intygId = 'db-locked-utkast-1';
