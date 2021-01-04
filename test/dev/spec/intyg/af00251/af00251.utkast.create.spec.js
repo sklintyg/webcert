@@ -72,7 +72,6 @@ describe('Create and Sign af00251 utkast', function() {
       it('Ange har förhinder', function() {
         UtkastPage.angeHarForhinder(data.harForhinder);
       });
-
       it('Ange har sjukfranvaro', function() {
         UtkastPage.angeSjukfranvaro(data.sjukfranvaro);
       });

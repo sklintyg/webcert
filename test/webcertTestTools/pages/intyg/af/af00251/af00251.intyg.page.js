@@ -74,7 +74,6 @@ var Af00251Intyg = AfBaseIntyg._extend({
   },
   verify: function(data) {
     this.verifieraMinUndersokning(data.minUndersokning);
-    this.verifieraAnnanUndersokning(data.annanUndersokning);
     this.verifieraArbetsmarknadspolitisktProgram(data.arbetsmarknadspolitisktProgram);
     this.verifieraFunktionsnedsattning(data.funktionsNedsattning);
     this.verifieraAktivitetsbegransning(data.aktivitetsBegransning);
