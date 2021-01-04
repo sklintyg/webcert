@@ -64,16 +64,8 @@ describe('Create and Sign ts-diabetes v3 utkast', function() {
     });
 
     it('fillInBedomning', function() {
-      UtkastPage.fillInBedomning(data.bedomning);
-    });
-
-    it('fillInHypoglykemier', function() {
-      UtkastPage.fillInHypoglykemier(data.hypoglykemier);
-    });
-
-    it('fillInOvrigKommentar', function() {
       UtkastPage.enableAutosave();
-      UtkastPage.fillInOvrigKommentar(data);
+      UtkastPage.fillInBedomning(data.bedomning);
     });
   });
 

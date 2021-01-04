@@ -25,7 +25,7 @@ task protractorTests(type: NodeTask, dependsOn: npm_install) {
     def environment = System.properties['protractor.env'] ?: "dev"
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ["default:${environment}", "--headless"]
+    args = ["default:${environment}", ""]
 }
 
 dependencies {

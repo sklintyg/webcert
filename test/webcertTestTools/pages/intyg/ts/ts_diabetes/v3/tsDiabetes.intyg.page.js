@@ -132,8 +132,8 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
       expect(text.split(', ').sort().join(', ')).toBe(dataCopy.sort().join(', '));
     });
 
-    expect(this.borUndersokas.getText()).toBe(bedomning.borUndersokasBeskrivning);
-    expect(this.arLamplig.getText()).toBe(bedomning.lamplig);
+    expect(this.borUndersokas.getText()).toBe(bedomning.borUndersokasBeskrivning ? bedomning.borUndersokasBeskrivning : 'Ej angivet');
+    expect(this.arLamplig.getText()).toBe(bedomning.lamplig ? bedomning.lamplig : 'Ej angivet');
   },
   dotToComma: function(value) {
     return value.replace('.', ',');
@@ -142,10 +142,9 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
     this.verifieraIntygetAvser(data.korkortstyper, testValues.korkortstyper);
     this.verifieraIdKontroll(data.identitetStyrktGenom);
     this.verifieraAllmant(data.allmant);
-    this.verifieraHypoglykemier(data.hypoglykemier, data.allmant.behandling);
     this.verifieraSynfunktion(data.synfunktion);
     this.verifieraBedomning(data.bedomning);
-    expect(this.kommentar.getText()).toBe(data.kommentar);
+    expect(this.kommentar.getText()).toBe(data.kommentar ? bedomning.kommentar : 'Ej angivet');
   }
 });
 
