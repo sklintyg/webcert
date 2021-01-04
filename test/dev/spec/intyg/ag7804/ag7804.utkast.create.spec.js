@@ -36,7 +36,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     specHelper.login();
   });
 
-  describe('smittskydd', function() {
+  xdescribe('smittskydd', function() {
     beforeAll(function() {
       ValjIntygPage.get();
       specHelper.createUtkastForPatient('191212121212', 'ag7804');
