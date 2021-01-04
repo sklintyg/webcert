@@ -72,9 +72,6 @@ describe('Create and Sign ts-bas utkast', function() {
     it('fillInDiabetes', function() {
       UtkastPage.fillInDiabetes(data.diabetes);
     });
-    it('fillInHorselOchBalanssinne', function() {
-      UtkastPage.fillInHorselOchBalanssinne(data.horsel);
-    });
     it('fillInNeurologiskaSjukdomar', function() {
       UtkastPage.fillInNeurologiskaSjukdomar(data);
     });
@@ -105,15 +102,9 @@ describe('Create and Sign ts-bas utkast', function() {
     it('fillInOvrigMedicinering', function() {
       UtkastPage.fillInOvrigMedicinering(data);
     });
-    it('fillInOvrigKommentar', function() {
-      UtkastPage.fillInOvrigKommentar(data);
-    });
     it('fillInBedomning', function() {
-      UtkastPage.fillInBedomning(data.bedomning);
-    });
-    it('fillInSpecialist', function() {
       UtkastPage.enableAutosave();
-      UtkastPage.fillInSpecialist(data.specialist);
+      UtkastPage.fillInBedomning(data.bedomning);
     });
   });
 

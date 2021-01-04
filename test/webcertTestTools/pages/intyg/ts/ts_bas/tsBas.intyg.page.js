@@ -107,15 +107,12 @@ var TsBasIntyg = TsBaseIntyg._extend({
   },
   verifieraHorsel: function(horsel) {
     expect(this.horselBalansbalansrubbningar.getText()).toBe(horsel.yrsel);
-    expect(this.horselSamtal.getText()).toBe(horsel.samtal ? horsel.samtal : 'Ej angivet');
   },
   verifieraRorelseorganensFunktioner: function(rorelseorganensFunktioner) {
     expect(this.funktionsnedsattning.getText()).toBe(rorelseorganensFunktioner.nedsattning);
     if (rorelseorganensFunktioner.nedsattning === 'Ja') {
       expect(this.funktionsnedsattningbeskrivning.getText()).toBe(rorelseorganensFunktioner.nedsattningBeskrivning);
     }
-    expect(this.funktionsnedsRorelseformaga.getText()).toBe(
-        rorelseorganensFunktioner.inUtUrFordon ? rorelseorganensFunktioner.inUtUrFordon : 'Ej angivet');
   },
   verifieraHjartOchKarlsjukdomar: function(data) {
     expect(this.hjartKarlSjukdom.getText()).toBe(data.hjartHjarna);
@@ -182,15 +179,21 @@ var TsBasIntyg = TsBaseIntyg._extend({
     expect(this.nystagmus.getText()).toBe(data.synNystagmus);
 
     expect(this.hogerOgautanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.houk));
-    expect(this.hogerOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.homk));
+    if (data.styrkor.homk) {
+      expect(this.hogerOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.homk));
+    }
     expect(this.hogerOgakontaktlins.getText()).toBe(data.linser.hoger);
 
     expect(this.vansterOgautanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.vouk));
-    expect(this.vansterOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.vomk));
+    if (data.styrkor.vomk) {
+      expect(this.vansterOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.vomk));
+    }
     expect(this.vansterOgakontaktlins.getText()).toBe(data.linser.vanster);
 
     expect(this.binokulartutanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.buk));
-    expect(this.binokulartmedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.bmk));
+    if (data.styrkor.bmk) {
+      expect(this.binokulartmedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.bmk));
+    }
   },
   verifieraBedomning: function(bedomning) {
 
@@ -229,7 +232,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
     expect(this.harSyndrom.getText()).toBe(data.adhdSyndrom);
     this.verifieraSjukvard(data);
     this.verifieraOvrigMedicin(data);
-    expect(this.comment.getText()).toBe(data.kommentar);
+    expect(this.comment.getText()).toBe(data.kommentar ? data.kommentar : 'Ej angivet');
     this.verifieraBedomning(data.bedomning, testValues.korkortstyperHogreBehorighet);
   }
 });
