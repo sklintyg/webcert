@@ -29,7 +29,7 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-describe('Validera makulering av luae_na Intyg', function() {
+xdescribe('Validera makulering av luae_na Intyg', function() {
 
   var intyg = intygFromJsonFactory.defaultLuaena();
   var intygsId = intyg.id;
