@@ -28,7 +28,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-describe('verify luaefs\' print buttons', function() {
+xdescribe('verify luaefs\' print buttons', function() {
 
   var intygId;
 

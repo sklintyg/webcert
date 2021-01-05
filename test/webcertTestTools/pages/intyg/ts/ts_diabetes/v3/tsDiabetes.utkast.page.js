@@ -165,6 +165,10 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
   },
 
   fillInBedomning: function(bedomning) {
+    if (!bedomning.borUndersokasBeskrivning) {
+      return pageHelpers.selectAllCheckBoxes(this.bedomningKorkortsTyperChecks, bedomning.behorigheter)
+    }
+
     return pageHelpers.selectAllCheckBoxes(this.bedomningKorkortsTyperChecks, bedomning.behorigheter).then(function() {
       var lampligPromise, borUndersokasPromise;
 
@@ -191,7 +195,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
     }.bind(this));
 
     // fill in styrkor
-    Object.keys(this.syn.styrkor).forEach(function(key) {
+    Object.keys(synValues.styrkor).forEach(function(key) {
       if (typeof synValues.styrkor[key].toLowerCase() === 'string') {
         promiseList.push(this.syn.styrkor[key].typeKeys(synValues.styrkor[key]));
       }

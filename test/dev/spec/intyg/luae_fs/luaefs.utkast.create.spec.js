@@ -48,12 +48,6 @@ describe('Create and Sign luae_fs utkast', function() {
       data = wcTestTools.testdata.fk.LUAE_FS.get(utkastId);
     });
 
-    it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
-      UtkastPage.signeraButtonClick();
-
-      expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
-    });
-
     it('angeBaseratPa', function() {
       UtkastPage.angeBaseratPa(data.baseratPa);
     });
@@ -62,46 +56,26 @@ describe('Create and Sign luae_fs utkast', function() {
       UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
     });
 
-    it('angeDiagnos', function() {
-      UtkastPage.angeDiagnos(data.diagnos);
-    });
-
     it('angeFunktionsnedsattning', function() {
       UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
     });
 
-    it('angeOvrigaUpplysningar', function() {
-      UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
-    });
-
-    it('angeKontaktMedFK', function() {
-      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
-    });
-    it('Ange tilläggsfrågor', function() {
+    it('angeDiagnos', function() {
       UtkastPage.enableAutosave();
-      UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
+      UtkastPage.angeDiagnos(data.diagnos);
     });
-    it('Signera intyget', function() {
-      UtkastPage.whenSigneraButtonIsEnabled();
+  });
 
-      UtkastPage.signeraButtonClick();
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
 
-      expect(IntygPage.isAt()).toBeTruthy();
-    });
+    UtkastPage.signeraButtonClick();
 
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
-    });
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
 
-    it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
-    });
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
   });
 
   afterAll(function() {

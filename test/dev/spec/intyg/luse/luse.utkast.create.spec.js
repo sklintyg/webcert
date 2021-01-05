@@ -70,18 +70,9 @@ describe('Create and Sign luse utkast', function() {
     it('angeAktivitetsbegransning', function() {
       UtkastPage.angeAktivitetsbegransning(data.aktivitetsbegransning);
     });
-    it('angeMedicinskBehandling', function() {
-      UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
-    });
     it('angeMedicinskaForutsattningar', function() {
       UtkastPage.enableAutosave();
       UtkastPage.angeMedicinskaForutsattningar(data.medicinskaForutsattningar);
-    });
-    it('angeOvrigaUpplysningar', function() {
-      UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
-    });
-    it('angeKontaktMedFK', function() {
-      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
     });
   });
 
@@ -93,18 +84,8 @@ describe('Create and Sign luse utkast', function() {
     expect(IntygPage.isAt()).toBeTruthy();
   });
 
-  it('Wait until intyg in IT', function() {
-    // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-    // upplysningar ännu.
-    // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-    IntygPage.waitUntilIntygInIT(utkastId);
-    IntygPage.get(utkastId);
-  });
-
   it('Verifiera intyg', function() {
-    IntygPage.whenCertificateLoaded().then(function() {
-      IntygPage.verify(data);
-    });
+    IntygPage.verify(data);
   });
 
   afterAll(function() {

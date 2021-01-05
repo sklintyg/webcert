@@ -32,11 +32,7 @@ module.exports = {
         "typ": "ag7804",
         "smittskydd": true,
         "baseratPa": {
-          "minUndersokningAvPatienten": "2017-09-27",
-          "journaluppgifter": "2017-09-27",
-          "telefonkontakt": "2017-09-27",
-          "annat": "2017-09-27",
-          "annatBeskrivning": "tFEöSdJD1yVrIq5D"
+          "minUndersokningAvPatienten": "2017-09-27"
         },
         "diagnos": {
           "onskarFormedlaDiagnos": false
@@ -45,18 +41,6 @@ module.exports = {
           "nedsattMed25": {
             "from": "2017-09-27",
             "tom": "2017-10-02"
-          },
-          "nedsattMed50": {
-            "from": "2017-10-03",
-            "tom": "2017-10-07"
-          },
-          "nedsattMed75": {
-            "from": "2017-10-08",
-            "tom": "2017-10-17"
-          },
-          "nedsattMed100": {
-            "from": "2017-10-18",
-            "tom": "2017-10-27"
           }
         },
         "arbetstidsforlaggning": {
@@ -72,10 +56,6 @@ module.exports = {
       "nuvarandeArbeteBeskrivning": "iÅI3WYZMFe8ÖV5Ox",
       "baseratPa": {
         "minUndersokningAvPatienten": "2017-09-27",
-        "journaluppgifter": "2017-09-27",
-        "telefonkontakt": "2017-09-27",
-        "annat": "2017-09-27",
-        "annatBeskrivning": "klHh4TcWVGHÖQw8K"
       },
       "sysselsattning": {
         "typ": "ARBETSSOKANDE",
@@ -86,8 +66,6 @@ module.exports = {
         "onskarFormedlaDiagnos": true,
         "rows": [{
           "kod": "Z413"
-        }, {
-          "kod": "J22"
         }]
       },
       "medicinskbehandling": {
@@ -100,18 +78,6 @@ module.exports = {
         "nedsattMed25": {
           "from": "2017-09-27",
           "tom": "2017-10-02"
-        },
-        "nedsattMed50": {
-          "from": "2017-10-03",
-          "tom": "2017-10-07"
-        },
-        "nedsattMed75": {
-          "from": "2017-10-08",
-          "tom": "2017-10-17"
-        },
-        "nedsattMed100": {
-          "from": "2017-10-18",
-          "tom": "2017-10-27"
         }
       },
       "arbetstidsforlaggning": {
@@ -122,25 +88,13 @@ module.exports = {
       "resorTillArbete": true,
       "atgarder": [{
         "namn": "Besök på arbetsplatsen",
-        "beskrivning": "Besök på arbetsplatsen-beskrivning",
+        "beskrivning": "",
         "key": "BESOK_ARBETSPLATS"
-      },
-        {
-          "namn": "Arbetsträning",
-          "beskrivning": "Arbetsträning-beskrivning",
-          "key": "ARBETSTRANING"
-        },
-        {
-          "namn": "Kontakt med företagshälsovård",
-          "beskrivning": "Kontakt med företagshälsovård-beskrivning",
-          "key": "KONTAKT_FHV"
-        }
-      ],
+      }],
       "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
       },
-      "kontaktMedAg": true,
-      "anledningTillKontakt": "Vill prata med en läkare",
+      "kontaktMedAg": false,
       "ovrigt": "iÄ0f0cÖ7NY0JEa1Ä"
     };
   }

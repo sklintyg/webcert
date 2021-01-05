@@ -164,9 +164,15 @@ var TsBasUtkast = BaseTsUtkast._extend({
     promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.vanster.utan, utkast.styrkor.vouk));
     promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.binokulart.utan, utkast.styrkor.buk));
 
-    promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.hoger.med, utkast.styrkor.homk));
-    promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.vanster.med, utkast.styrkor.vomk));
-    promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.binokulart.med, utkast.styrkor.bmk));
+    if (utkast.styrkor.homk) {
+      promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.hoger.med, utkast.styrkor.homk));
+    }
+    if (utkast.styrkor.vomk) {
+      promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.vanster.med, utkast.styrkor.vomk));
+    }
+    if (utkast.styrkor.bmk) {
+      promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.binokulart.med, utkast.styrkor.bmk));
+    }
 
     return Promise.all(promiseArr);
   },
@@ -178,15 +184,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     }
   },
   fillInHorselOchBalanssinne: function(horselObj) {
-    var horselBalansEl = this.horselBalans;
-    return this.fillInYrsel(horselObj.yrsel)
-    .then(function() {
-      if (horselObj.samtal === 'Ja') {
-        return pageHelpers.moveAndSendKeys(horselBalansEl.bYes, protractor.Key.SPACE);
-      } else if (horselObj.samtal === 'Nej') {
-        return pageHelpers.moveAndSendKeys(horselBalansEl.bNo, protractor.Key.SPACE);
-      }
-    });
+    return this.fillInYrsel(horselObj.yrsel);
   },
 
   fillInRorelseNedsattning: function(nedsattning, beskrivning) {
@@ -203,17 +201,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     }
   },
   fillInRorelseorganensFunktioner: function(rorelseorganensFunktionerObj) {
-    var nedsattningEl = this.funktionsnedsattning;
-    var inUtUrFordon = rorelseorganensFunktionerObj.inUtUrFordon;
-
-    return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning, rorelseorganensFunktionerObj.nedsattningBeskrivning)
-    .then(function() {
-      if (inUtUrFordon === 'Ja') {
-        return pageHelpers.moveAndSendKeys(nedsattningEl.bYes, protractor.Key.SPACE);
-      } else if (inUtUrFordon === 'Nej') {
-        return pageHelpers.moveAndSendKeys(nedsattningEl.bNo, protractor.Key.SPACE);
-      }
-    });
+    return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning, rorelseorganensFunktionerObj.nedsattningBeskrivning);
   },
 
   fillInHjartOchKarlsjukdomar: function(utkast) {
@@ -233,7 +221,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     if (utkast.hjartRisk === 'Ja') {
       promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.cYes, protractor.Key.SPACE)
       .then(function() {
-        return browser.sleep(1000); // Testar att vänta på animering eller nästa tick
+        return browser.sleep(200); // Testar att vänta på animering eller nästa tick
       })
       .then(function() {
         return pageHelpers.moveAndSendKeys(hjartKarlCEl.cText, utkast.hjartRiskBeskrivning);

@@ -30,7 +30,7 @@ var IntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('verify luse\'s print buttons', function() {
+xdescribe('verify luse\'s print buttons', function() {
 
   var intygsId;
 

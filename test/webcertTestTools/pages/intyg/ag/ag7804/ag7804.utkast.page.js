@@ -307,7 +307,7 @@ var Ag7804Utkast = AgBaseUtkast._extend({
           return prognosEL.select.click();
         }).then(function() {
           // Vänta på att drop-down meny öppnas.
-          return browser.sleep(500);
+          return browser.sleep(200);
         }).then(function() {
           return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
         });

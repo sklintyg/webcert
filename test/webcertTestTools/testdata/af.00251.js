@@ -34,47 +34,25 @@ module.exports = {
         checked: true,
         datum: "2014-01-03"
       },
-      annanUndersokning: {
-        checked: true,
-        datum: "2014-11-19",
-        text: "Annan undersökning"
-      },
       arbetsmarknadspolitisktProgram: {
         text: "Aktiviteters som ingår i programmet",
-        radio: "DELTID",
-        deltidText: 20
+        radio: "HELTID"
       },
       funktionsNedsattning: "Ont i armen.",
       aktivitetsBegransning: "Patienten kan knapp lyfta en kopp kaffe.",
-      harForhinder: true,
+      harForhinder: false,
       sjukfranvaro: [{
-        checked: true,
+        checked: false,
         from: "2014-08-12",
         tom: "2014-08-19",
         niva: 100
-      }, {
-        checked: false,
-        from: "2014-08-20",
-        tom: "2014-08-27",
-        niva: 13
-      }, {
-        checked: false,
-        from: "2014-08-28",
-        tom: "2014-09-04",
-        niva: 94
-      }, {
-        checked: true,
-        from: "2014-09-05",
-        tom: "2014-09-12",
-        niva: 50
       }],
       begransningSjukfranvaro: {
-        value: true,
+        value: false,
         text: "Om patienten får en assistent kan man förkorta perioden med några dagar."
       },
       prognosAtergang: {
-        radio: "ATERGA_MED_ANPASSNING",
-        text: "Patienten behöver nya hörlurar för att kunna lyssna på musik effektivare."
+        radio: "ATERGA_UTAN_ANPASSNING"
       }
     };
 

@@ -32,7 +32,7 @@ module.exports = {
     return {
       "id": intygsID,
       "typ": "Transportstyrelsens läkarintyg högre körkortsbehörighet",
-      "korkortstyper": ["C1", "CE", "DE", "C1E", "D", "C", "Taxi", "D1E"],
+      "korkortstyper": ["C1"],
       "identitetStyrktGenom": "Försäkran enligt 18 kap 4 §",
       "allmant": {
         "year": 1981,
@@ -58,7 +58,7 @@ module.exports = {
       },
       "linser": {
         "vanster": "Nej",
-        "hoger": "Ja"
+        "hoger": "Nej"
       },
       "rorelseorganensFunktioner": {
         "nedsattning": "Nej",
@@ -67,8 +67,7 @@ module.exports = {
       },
       "hjartHjarna": "Nej",
       "hjartSkada": "Ja",
-      "hjartRisk": "Ja",
-      "hjartRiskBeskrivning": "TIA och förmaksflimmer.",
+      "hjartRisk": "Nej",
       "diabetes": {
         "hasDiabetes": "Nej",
         "typ": "Typ 1",
@@ -94,16 +93,11 @@ module.exports = {
       "sjukhusvardAnledning": "eQcIma21cDNrasGÄ",
       "ovrigMedicin": "Nej",
       "ovrigMedicinBeskrivning": "I4b80sdÖ0qwC4ÄML",
-      "kommentar": "Inget att rapportera",
       "styrkor": {
         "houk": "1.1",
-        "homk": "1.3",
         "vouk": "1.6",
-        "vomk": "1.7",
-        "buk": "1.8",
-        "bmk": "1.7"
-      },
-      "specialist": "SkW4Gdzöl6m3pvyJ"
+        "buk": "1.8"
+      }
     };
   },
   getRandom: function(intygsID, patient) {

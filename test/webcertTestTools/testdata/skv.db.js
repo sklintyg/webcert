@@ -67,6 +67,26 @@ module.exports = {
     if (!intygsID) {
       intygsID = testdataHelper.generateTestGuid();
     }
+
+    var datumSakert = true;
+
+    var obj = {
+      id: intygsID,
+      typ: "Dödsbevis",
+      deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
+      identitetStyrktGenom: "körkort",
+      dodsdatum: getDodsdatum(datumSakert),
+      dodsPlats: {
+        kommun: "Karlstad",
+        boende: "Sjukhus"
+      },
+      explosivImplantat: false,
+      yttreUndersokning: {
+        value: "Ja"
+      },
+      polisanmalan: false
+    };
+    return obj;
   },
   getRandom: function(intygsID, patient) {
     if (!intygsID) {

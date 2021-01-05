@@ -20,9 +20,6 @@
 'use strict';
 
 var testdataHelper = require('common-testtools').testdataHelper;
-//var shuffle = testdataHelper.shuffle;
-
-var testValues = require('./testvalues.js').ts;
 
 module.exports = {
   get: function(intygsID) {
@@ -40,8 +37,7 @@ module.exports = {
       'senasteUndersokningsdatum': '2019-01-01',
       'intygetAvserBehorigheter': [
         'Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation'
-      ],
-      informationOmTsBeslutOnskas: true
+      ]
     };
   }
 };

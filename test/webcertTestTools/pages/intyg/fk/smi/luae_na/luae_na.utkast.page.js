@@ -71,6 +71,10 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
   },
 
   angeMedicinskaForutsattningar: function(forutsattningar) {
+    if (!forutsattningar.trotsBegransningar) {
+      return pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid)
+    }
+
     return Promise.all([
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar),

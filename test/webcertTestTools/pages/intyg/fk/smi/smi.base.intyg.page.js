@@ -228,7 +228,10 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
 
   verifieraMedicinskaForutsattningar: function(data) {
     expect(this.medicinskaForutsattningar.utecklasOverTid.getText()).toBe(data.medicinskaForutsattningar.utecklasOverTid);
-    expect(this.medicinskaForutsattningar.trotsBegransningar.getText()).toBe(data.medicinskaForutsattningar.trotsBegransningar);
+
+    if (data.medicinskaForutsattningar.trotsBegransningar) {
+      expect(this.medicinskaForutsattningar.trotsBegransningar.getText()).toBe(data.medicinskaForutsattningar.trotsBegransningar);
+    }
 
     if (data.medicinskaForutsattningar.forslagTillAtgard) {
       expect(this.medicinskaForutsattningar.forslagTillAtgard.getText()).toBe(data.medicinskaForutsattningar.forslagTillAtgard);

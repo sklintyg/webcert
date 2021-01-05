@@ -30,7 +30,7 @@ var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('verify luaena\'s print buttons', function() {
+xdescribe('verify luaena\'s print buttons', function() {
 
   var intygsId;
 

@@ -45,7 +45,7 @@ describe('Create and Sign db utkast', function() {
     specHelper.getUtkastIdFromUrl().then(function(id) {
       utkastId = id;
     });
-    data = wcTestTools.testdata.skv.db.getRandom(utkastId);
+    data = wcTestTools.testdata.skv.db.get(utkastId);
   });
 
   describe('Fyll i intyget', function() {
@@ -58,20 +58,16 @@ describe('Create and Sign db utkast', function() {
     it('angeDodsPlats', function() {
       UtkastPage.angeDodsPlats(data.dodsPlats);
     });
-    it('angeBarn', function() {
-      UtkastPage.angeBarn(data.barn);
-    });
     it('angeExplosivImplantat', function() {
       UtkastPage.angeExplosivImplantat(data.explosivImplantat);
     });
     it('angeYttreUndersokning', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
     });
     it('angePolisanmalan', function() {
+      UtkastPage.enableAutosave();
       UtkastPage.angePolisanmalan(data.polisanmalan);
     });
-
   });
 
   it('Signera intyget', function() {

@@ -45,7 +45,7 @@ describe('Create and Sign af00213 utkast', function() {
       utkastId = id;
     });
 
-    data = wcTestTools.testdata.af.af00213.getRandom(utkastId);
+    data = wcTestTools.testdata.af.af00213.get(utkastId);
   });
 
   describe('Skapa af00213', function() {
@@ -55,20 +55,14 @@ describe('Create and Sign af00213 utkast', function() {
       it('angeFunktionsnedsattning', function() {
         UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
       });
-      it('angeAktivitetsbegransning', function() {
-        UtkastPage.angeAktivitetsbegransning(data.aktivitetsbegransning);
-      });
+
       it('angeUtredningBehandling', function() {
         UtkastPage.angeUtredningBehandling(data.utredningBehandling);
       });
 
       it('angeArbetetsPaverkan', function() {
-        UtkastPage.angeArbetetsPaverkan(data.arbetetsPaverkan);
-      });
-
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
         UtkastPage.enableAutosave();
+        UtkastPage.angeArbetetsPaverkan(data.arbetetsPaverkan);
       });
     });
 
@@ -76,14 +70,6 @@ describe('Create and Sign af00213 utkast', function() {
       UtkastPage.whenSigneraButtonIsEnabled();
       UtkastPage.signeraButtonClick();
       expect(IntygPage.isAt()).toBeTruthy();
-    });
-
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
     });
 
     it('Verifiera intyg', function() {

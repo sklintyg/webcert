@@ -39,6 +39,7 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
     this.verifieraAndraMedicinskaUtredningar(data);
 
     this.verifieraDiagnos(data);
+
     this.verifieraDiagnosBedomning(data);
 
     this.verifieraSjukdomsforlopp(data);

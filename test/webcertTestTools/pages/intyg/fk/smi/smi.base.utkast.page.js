@@ -201,8 +201,13 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
       }
     });
   },
+
   angeFunktionsnedsattning: function(nedsattning) {
     var fn = this.funktionsnedsattning;
+    if (nedsattning.kommunikation === 'Ej angivet') {
+      return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell)
+    }
+
     return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell)
     .then(function() {
       return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);

@@ -80,6 +80,10 @@ var LuseUtkast = BaseSmiUtkast._extend({
     return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
   },
   angeMedicinskaForutsattningar: function(forutsattningar) {
+    if (!forutsattningar.trotsBegransningar) {
+      return pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid)
+    }
+
     return Promise.all([
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar)

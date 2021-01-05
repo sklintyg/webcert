@@ -63,9 +63,6 @@ describe('Create and Sign tstrk1062 utkast', function() {
     it('fillSymptom', function() {
       UtkastPage.fillSymptom(data.symptom);
     });
-    it('fillOvrigt', function() {
-      UtkastPage.fillOvrigt(data.ovrigt);
-    });
     it('fillBedomning', function() {
       UtkastPage.enableAutosave();
       UtkastPage.fillBedomning(data.bedomning);
