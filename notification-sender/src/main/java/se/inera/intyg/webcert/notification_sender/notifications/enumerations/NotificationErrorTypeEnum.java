@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,19 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.common.enumerations;
+package se.inera.intyg.webcert.notification_sender.notifications.enumerations;
 
 import java.util.stream.Stream;
 
-public enum NotificationRedeliveryStrategyEnum {
+public enum NotificationErrorTypeEnum {
 
-    STANDARD("STANDARD", "Notification redelivery strategy standard"),
-    MANUAL("MANUAL", "Notification redelivery strategy manual");
+    TECHNICAL_ERROR("TECHNICAL_ERROR", "Notification error type TECHNICAL_ERROR"),
+    APPLICATION_ERROR("APPLICATION_ERROR", "Notification error type APPLICATION_ERROR"),
+    VALIDATION_ERROR("VALIDATION_ERROR", "Notification error type VALIDATION_ERROR"),
+    REVOKED("REVOKED", "Notification error type REVOKED");
 
     private final String value;
     private final String description;
 
-    NotificationRedeliveryStrategyEnum(String value, String description) {
+    NotificationErrorTypeEnum(String value, String description) {
         this.value = value;
         this.description = description;
     }
@@ -42,7 +44,7 @@ public enum NotificationRedeliveryStrategyEnum {
         return this.description;
     }
 
-    public static NotificationRedeliveryStrategyEnum fromValue(String value) {
+    public static NotificationErrorTypeEnum fromValue(String value) {
         return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
             .orElseThrow(() -> new IllegalArgumentException(value));
     }

@@ -35,6 +35,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_MANUAL_REDELIVERY;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -692,6 +693,7 @@ public class NotificationServiceImpl implements NotificationService {
                 msg.setStringProperty(USER_ID, this.userId);
             }
             msg.setStringProperty(CORRELATION_ID, UUID.randomUUID().toString());
+            msg.setBooleanProperty(IS_MANUAL_REDELIVERY, false);
             return msg;
         }
     }

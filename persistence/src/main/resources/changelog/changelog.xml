@@ -1354,11 +1354,11 @@
 
   <changeSet id="67" author="mh">
     <createTable tableName="NOTIFICATION_REDELIVERY">
-      <column name="CORRELATION_ID" type="varchar(255)">
+      <column name="HANDELSE_ID" type="bigint">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="HANDELSE_ID" type="bigint">
-        <constraints nullable="false"/>
+      <column name="CORRELATION_ID" type="varchar(255)">
+        <constraints nullable="true"/>
       </column>
       <column name="MESSAGE" type="blob">
         <constraints nullable="true"/>
@@ -1367,22 +1367,47 @@
         <constraints nullable="false"/>
       </column>
       <column name="REDELIVERY_TIME" type="datetime">
-        <constraints nullable="false"/>
+        <constraints nullable="true"/>
       </column>
       <column name="ATTEMPTED_DELIVERIES" type="int">
-        <constraints nullable="false"/>
+        <constraints nullable="true"/>
       </column>
     </createTable>
 
     <addForeignKeyConstraint constraintName="NOTIFICATION_REDELIVERY_HANDELSE_ID_INTYG_FK"
         baseColumnNames="HANDELSE_ID" baseTableName="NOTIFICATION_REDELIVERY"
         referencedColumnNames="ID" referencedTableName="HANDELSE"/>
+
+    <createIndex indexName="IDX_NOTIFICATION_REDELIVERY_REDELIVERY_TIME"
+        tableName="NOTIFICATION_REDELIVERY" unique="false">
+      <column name="REDELIVERY_TIME"/>
+    </createIndex>
+
+    <createIndex indexName="IDX_NOTIFICATION_REDELIVERY_CORRELATION_ID"
+        tableName="NOTIFICATION_REDELIVERY" unique="true">
+      <column name="CORRELATION_ID"/>
+    </createIndex>
   </changeSet>
 
   <changeSet id="68" author="mh">
     <addColumn tableName="HANDELSE">
       <column name="DELIVERY_STATUS" type="varchar(255)">
         <constraints nullable="true"/> <!-- Set to true until functionality of new amq solution has been confirmed -->
+      </column>
+    </addColumn>
+    <addColumn tableName="HANDELSE">
+      <column name="CERTIFICATE_TYPE" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="HANDELSE">
+      <column name="CERTIFICATE_VERSION" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="HANDELSE">
+      <column name="CERTIFICATE_ISSUER" type="varchar(255)">
+        <constraints nullable="true"/>
       </column>
     </addColumn>
   </changeSet>

@@ -26,6 +26,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
@@ -34,11 +35,11 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 public class NotificationRedelivery {
 
     @Id
-    @Column(name = "CORRELATION_ID")
-    private String correlationId;
-
     @Column(name = "HANDELSE_ID")
     private Long eventId;
+
+    @Column(name = "CORRELATION_ID", unique = true)
+    private String correlationId;
 
     @Column(name = "MESSAGE")
     private byte[] message;
@@ -53,12 +54,12 @@ public class NotificationRedelivery {
     private LocalDateTime redeliveryTime;
 
     @Column(name = "ATTEMPTED_DELIVERIES")
-    private int attemptedDeliveries;
+    private Integer attemptedDeliveries;
 
     public NotificationRedelivery() { }
 
     public NotificationRedelivery(String correlationId, Long eventId, byte[] message, NotificationRedeliveryStrategyEnum redeliveryStrategy,
-        LocalDateTime redeliveryTime, int attemptedDeliveries) {
+        LocalDateTime redeliveryTime, Integer attemptedDeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
         this.message = message;
@@ -67,20 +68,20 @@ public class NotificationRedelivery {
         this.attemptedDeliveries = attemptedDeliveries;
     }
 
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
-    }
-
     public Long getEventId() {
         return eventId;
     }
 
     public void setEventId(Long eventId) {
         this.eventId = eventId;
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     public byte[] getMessage() {
@@ -107,15 +108,11 @@ public class NotificationRedelivery {
         this.redeliveryTime = redeliveryTime;
     }
 
-    public int getAttemptedDeliveries() {
+    public Integer getAttemptedDeliveries() {
         return attemptedDeliveries;
     }
 
-    public void setAttemptedDeliveries(int attemptedRedeliveries) {
+    public void setAttemptedDeliveries(Integer attemptedRedeliveries) {
         this.attemptedDeliveries = attemptedRedeliveries;
-    }
-
-    public boolean isManualResend() {
-        return this.message == null;
     }
 }

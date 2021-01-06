@@ -40,15 +40,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.common.support.Constants;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationWSSenderTest {
@@ -133,19 +143,57 @@ public class NotificationWSSenderTest {
         CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(response);
-        when(objectMapper.writeValueAsString(any(NotificationWSResultMessage.class))).thenThrow(new JsonProcessingException("") { });
+        when(objectMapper.writeValueAsString(any(NotificationResultMessage.class))).thenThrow(new JsonProcessingException("") { });
         sendStatusUpdate(request);
         verifyNoInteractions(jmsTemplate);
     }
 
     private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
-        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID, TIMESTAMP);
+        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID, false, TIMESTAMP);
      }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
-        CertificateStatusUpdateForCareType request = new CertificateStatusUpdateForCareType();
-        request.setIntyg(NotificationTestHelper.createIntyg("lisjp"));
-        return request;
+        CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();
+        res.setIntyg(new Intyg());
+        res.getIntyg().setIntygsId(new IntygId());
+        res.getIntyg().getIntygsId().setExtension(CERTIFICATE_ID);
+        res.setHandelse(buildEventV3());
+        res.getIntyg().setPatient(buildPatient());
+        res.getIntyg().setSkapadAv(buildHosPersonal());
+        return res;
+    }
+
+    private se.riv.clinicalprocess.healthcond.certificate.v3.Handelse buildEventV3() {
+        se.riv.clinicalprocess.healthcond.certificate.v3.Handelse event = new se.riv.clinicalprocess.healthcond.certificate.v3.Handelse();
+        event.setHandelsekod(new Handelsekod());
+        event.getHandelsekod().setCode(HandelsekodEnum.SKAPAT.name());
+        return event;
+    }
+
+    private Patient buildPatient() {
+        Patient patient = new Patient();
+        patient.setFornamn("fornamn");
+        patient.setEfternamn("efternamn");
+        patient.setPersonId(new PersonId());
+        patient.getPersonId().setExtension("1912121212");
+        return patient;
+    }
+
+    private HosPersonal buildHosPersonal() {
+        Vardgivare careProvider = new Vardgivare();
+        HsaId careProviderHsaId = new HsaId();
+        careProviderHsaId.setExtension("testCareProvider");
+        careProvider.setVardgivareId(careProviderHsaId);
+
+        Enhet unit = new Enhet();
+        HsaId unitHsaId = new HsaId();
+        unitHsaId.setExtension("testUnit");
+        unit.setEnhetsId(unitHsaId);
+        unit.setVardgivare(careProvider);
+
+        HosPersonal hosPersonal = new HosPersonal();
+        hosPersonal.setEnhet(unit);
+        return hosPersonal;
     }
 
     private CertificateStatusUpdateForCareResponseType buildStatusUpdateResponse(ResultCodeType code, ErrorIdType errorId,

@@ -19,32 +19,30 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 
-public class NotificationWSResultMessage {
+public class NotificationResultMessage {
 
+    private Intyg certificate;
     private String certificateId;
     private String logicalAddress;
-    private String userId;
     private String correlationId;
-    private long messageTimestamp;
-    private ResultType resultType;
-    private ExceptionInfoTransporter exceptionInfoTransporter;
-    private CertificateStatusUpdateForCareType statusUpdate;
-    private NotificationDeliveryStatusEnum deliveryStatus;
+    private Handelse event;
+    private Boolean isManualRedelivery;
+    private NotificationResultType resultType;
+    private ExceptionInfoMessage exceptionInfoMessage;
+    private NotificationRedeliveryMessage notificationRedeliveryMessage;
 
-
-    public CertificateStatusUpdateForCareType getStatusUpdate() {
-        return statusUpdate;
+    public Intyg getCertificate() {
+        return certificate;
     }
 
-    public void setStatusUpdate(CertificateStatusUpdateForCareType statusUpdate) {
-        this.statusUpdate = statusUpdate;
+    public void setCertificate(Intyg certificate) {
+        this.certificate = certificate;
     }
-
 
     public String getCertificateId() {
         return certificateId;
@@ -62,14 +60,6 @@ public class NotificationWSResultMessage {
         this.logicalAddress = logicalAddress;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public String getCorrelationId() {
         return correlationId;
     }
@@ -78,38 +68,48 @@ public class NotificationWSResultMessage {
         this.correlationId = correlationId;
     }
 
-    public long getMessageTimestamp() {
-        return messageTimestamp;
+    public Handelse getEvent() {
+        return event;
     }
 
-    public void setMessageTimestamp(long messageTimestamp) {
-        this.messageTimestamp = messageTimestamp;
+    public void setEvent(Handelse event) {
+        this.event = event;
     }
 
-    public ResultType getResultType() {
+    public Boolean getIsManualRedelivery() {
+        return isManualRedelivery;
+    }
+
+    public void setIsManualRedelivery(Boolean manualRedelivery) {
+        isManualRedelivery = manualRedelivery;
+    }
+
+    public NotificationResultType getResultType() {
         return resultType;
     }
 
-    public void setResultType(ResultType resultType) {
+    public void setResultType(NotificationResultType resultType) {
         this.resultType = resultType;
     }
 
-    public ExceptionInfoTransporter getExceptionInfoTransporter() {
-        return exceptionInfoTransporter;
+    public ExceptionInfoMessage getExceptionInfoMessage() {
+        return exceptionInfoMessage;
     }
 
-    public void setExceptionInfoTransporter(ExceptionInfoTransporter exceptionInfoTransporter) {
-        this.exceptionInfoTransporter = exceptionInfoTransporter;
+    public void setExceptionInfoMessage(ExceptionInfoMessage exceptionInfoMessage) {
+        this.exceptionInfoMessage = exceptionInfoMessage;
     }
 
-    public NotificationDeliveryStatusEnum getDeliveryStatus() {
-        return deliveryStatus;
+    public NotificationRedeliveryMessage getNotificationRedeliveryMessage() {
+        return notificationRedeliveryMessage;
     }
 
-    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
+    public void setNotificationRedeliveryMessage(
+        NotificationRedeliveryMessage notificationRedeliveryMessage) {
+        this.notificationRedeliveryMessage = notificationRedeliveryMessage;
     }
 
+    @JsonIgnore
     @Override
     public String toString() {
         return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.logicalAddress, this.certificateId,

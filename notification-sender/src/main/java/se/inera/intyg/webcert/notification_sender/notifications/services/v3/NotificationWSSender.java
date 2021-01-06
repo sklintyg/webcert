@@ -31,14 +31,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoTransporter;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
@@ -61,41 +69,46 @@ public class NotificationWSSender {
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
         @Header(NotificationRouteHeaders.USER_ID) String userId,
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
-        @Header(Constants.JMS_TIMESTAMP) long messageTimestamp) {
+        @Header(NotificationRouteHeaders.IS_MANUAL_REDELIVERY) Boolean isManualRedelivery,
+        @Header(Constants.JMS_TIMESTAMP) Long messageTimestamp) {
 
         if (Objects.nonNull(userId)) {
-            statusUpdate.setHanteratAv(userHsaId(userId));
+            statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
         }
 
-        final NotificationWSResultMessage resultMessage = createResultMessage(statusUpdate, certificateId, logicalAddress, userId,
-            correlationId, messageTimestamp);
+        final NotificationResultMessage resultMessage = new NotificationResultMessage();
+        resultMessage.setCertificateId(certificateId);
+        resultMessage.setCorrelationId(correlationId);
+        resultMessage.setLogicalAddress(logicalAddress);
+        resultMessage.setIsManualRedelivery(isManualRedelivery);
+        resultMessage.setEvent(extractEventFromStatusUpdate(statusUpdate));
+        resultMessage.setNotificationRedeliveryMessage(getRedeliveryMessage(statusUpdate));
 
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
             ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
-            resultMessage.setResultType(resultType);
+            resultMessage.setResultType(NotificationResultType.fromResultTypeV3(resultType));
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
-            resultMessage.setExceptionInfoTransporter(new ExceptionInfoTransporter(e));
+            resultMessage.setExceptionInfoMessage(new ExceptionInfoMessage(e));
         } finally {
             postProcessSendResult(resultMessage);
         }
     }
 
-    private void postProcessSendResult(NotificationWSResultMessage resultMessage) {
+    private void postProcessSendResult(NotificationResultMessage resultMessage) {
 
         final String notificationMessageAsJson = messageToJson(resultMessage);
 
         try {
-            LOG.debug("Sending status update for postprocessing with result message: {}", resultMessage);
+            LOG.debug("Sending notification result message to postprocessor: {}", resultMessage);
 
             jmsTemplateNotificationPostProcessing.send(session -> {
                 TextMessage textMessage = session.createTextMessage(notificationMessageAsJson);
                 textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, resultMessage.getCertificateId());
                 textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
                 textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, resultMessage.getLogicalAddress());
-                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getStatusUpdate().getHandelse()
-                    .getHandelsekod().getCode());
+                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
                 return textMessage;
             });
         } catch (Exception e) {
@@ -104,33 +117,43 @@ public class NotificationWSSender {
         }
     }
 
-    private String messageToJson(NotificationWSResultMessage notificationMessage) {
+    private NotificationRedeliveryMessage getRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
+        final NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage();
+        redeliveryMessage.setCert(statusUpdate.getIntyg());
+        redeliveryMessage.setSent(statusUpdate.getSkickadeFragor() != null
+            ? new CertificateMessages(statusUpdate.getSkickadeFragor()) : null);
+        redeliveryMessage.setReceived(statusUpdate.getMottagnaFragor() != null
+            ? new CertificateMessages(statusUpdate.getMottagnaFragor()) : null);
+        redeliveryMessage.setReference(statusUpdate.getRef());
+        return redeliveryMessage;
+    }
+
+    private String messageToJson(NotificationResultMessage notificationMessage) {
         try {
             return objectMapper.writeValueAsString(notificationMessage);
         } catch (JsonProcessingException e) {
-            LOG.error("Problem occured when trying to create and marshall NotificationWSResultMessage.", e);
+            LOG.error("Exception occured when trying to create and marshall NotificationWSResultMessage.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
     }
 
-    private NotificationWSResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String certificateId,
-        String logicalAddress, String userId, String correlationId, long messageTimestamp) {
+    private Handelse extractEventFromStatusUpdate(CertificateStatusUpdateForCareType statusUpdate) {
+        Amneskod topicCode = statusUpdate.getHandelse().getAmne();
+        HsaId userId = statusUpdate.getHanteratAv();
 
-        final NotificationWSResultMessage message = new NotificationWSResultMessage();
-        message.setStatusUpdate(statusUpdate);
-        message.setCertificateId(certificateId);
-        message.setCorrelationId(correlationId);
-        message.setLogicalAddress(logicalAddress);
-        message.setUserId(userId);
-        message.setMessageTimestamp(messageTimestamp);
-        return message;
-    }
-
-    private HsaId userHsaId(String userId) {
-        LOG.debug("Set hanteratAv to '{}'", userId);
-        final HsaId hsaId = new HsaId();
-        hsaId.setExtension(userId);
-        hsaId.setRoot(HSA_ID_OID);
-        return hsaId;
+        Handelse event = new Handelse();
+        event.setCode(HandelsekodEnum.fromValue(statusUpdate.getHandelse().getHandelsekod().getCode()));
+        event.setEnhetsId(statusUpdate.getIntyg().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        event.setIntygsId(statusUpdate.getIntyg().getIntygsId().getExtension());
+        event.setCertificateType(statusUpdate.getIntyg().getTyp().getCode());
+        event.setCertificateVersion(statusUpdate.getIntyg().getVersion());
+        event.setCertificateIssuer(statusUpdate.getIntyg().getSkapadAv().getPersonalId().getExtension());
+        event.setPersonnummer(statusUpdate.getIntyg().getPatient().getPersonId().getExtension());
+        event.setTimestamp(statusUpdate.getHandelse().getTidpunkt());
+        event.setVardgivarId(statusUpdate.getIntyg().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
+        event.setAmne(topicCode != null ? ArendeAmne.valueOf(topicCode.getCode()) : null);
+        event.setSistaDatumForSvar(statusUpdate.getHandelse().getSistaDatumForSvar());
+        event.setHanteratAv(userId != null ? userId.getExtension() : null);
+        return event;
     }
 }

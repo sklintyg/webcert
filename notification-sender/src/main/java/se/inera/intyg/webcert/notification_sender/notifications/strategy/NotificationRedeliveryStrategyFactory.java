@@ -30,8 +30,8 @@ public class NotificationRedeliveryStrategyFactory {
     public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
         switch (notificationResendStrategy) {
-            case STANDARD :
-                return new NotificationRedeliveryStrategyStandard();
+            case MANUAL:
+                return new NotificationRedeliveryStrategyManual();
             default:
                 return new NotificationRedeliveryStrategyStandard();
         }

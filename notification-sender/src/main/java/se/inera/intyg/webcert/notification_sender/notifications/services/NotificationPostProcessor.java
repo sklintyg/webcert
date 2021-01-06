@@ -19,9 +19,14 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.SUCCESS;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.TECHNICAL_ERROR;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.INFO;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
@@ -34,18 +39,12 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoTransporter;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 
 public class NotificationPostProcessor {
 
@@ -65,9 +64,9 @@ public class NotificationPostProcessor {
     public void process(Message message) {
 
         try {
-            NotificationWSResultMessage notificationWSMessage = objectMapper.readValue(message.getBody(String.class),
-                NotificationWSResultMessage.class);
-            processNotificationResult(notificationWSMessage);
+            NotificationResultMessage resultMessage = objectMapper.readValue(message.getBody(String.class),
+                NotificationResultMessage.class);
+            processNotificationResult(resultMessage);
         } catch (JsonProcessingException e) {
             LOG.error(getLogErrorMessage(message), e);
             // TODO add monitorlog
@@ -75,114 +74,87 @@ public class NotificationPostProcessor {
         }
     }
 
-    private void processNotificationResult(NotificationWSResultMessage notificationResult) {
+    private void processNotificationResult(NotificationResultMessage resultMessage) {
 
-        NotificationWSResultMessage updatedNotificationResult = extractDeliveryStatusFromResult(notificationResult);
+        NotificationDeliveryStatusEnum deliveryStatus = extractDeliveryStatusFromResult(resultMessage);
+        resultMessage.getEvent().setDeliveryStatus(deliveryStatus);
 
-        // TOGGLE ON TESTING/DEMO
-        // updatedNotificationResult = preparingForDemo(updatedNotificationResult);
-        // #################################################################
+        // ONLY FOR TESTING
+         setTestStatus(resultMessage);
+         deliveryStatus = resultMessage.getEvent().getDeliveryStatus();
+         //*****************************************
 
-        Handelse event = extractEventFromStatusUpdate(updatedNotificationResult.getStatusUpdate(),
-            updatedNotificationResult.getDeliveryStatus());
-
-        switch (updatedNotificationResult.getDeliveryStatus()) {
+        switch (deliveryStatus) {
             case SUCCESS:
-                notificationRedeliveryService.handleNotificationSuccess(updatedNotificationResult, event);
+                notificationRedeliveryService.handleNotificationSuccess(resultMessage);
                 break;
             case RESEND:
-                notificationRedeliveryService.handleNotificationResend(updatedNotificationResult, event);
+                notificationRedeliveryService.handleNotificationResend(resultMessage);
                 break;
             case FAILURE:
-                notificationRedeliveryService.handleNotificationFailure(updatedNotificationResult, event);
+                notificationRedeliveryService.handleNotificationFailure(resultMessage);
         }
     }
 
-    private NotificationWSResultMessage preparingForDemo(NotificationWSResultMessage demoMessage) {
+    private void setTestStatus(NotificationResultMessage resultMessage) {
 
-        if (demoMessage.getStatusUpdate().getHandelse().getHandelsekod().getCode().equals("ANDRAT")) {
-            demoMessage.setDeliveryStatus(RESEND);
-            //ResultType resultType = new ResultType();
-            //resultType.setErrorId(ErrorIdType.VALIDATION_ERROR);
-            //resultType.setResultText("Fel, fel FEL!");
-            //demoMessage.setResultType(resultType);
+        if (resultMessage.getEvent().getCode() == ANDRAT || resultMessage.getEvent().getCode() == RADERA) {
+            resultMessage.getEvent().setDeliveryStatus(RESEND);
         }
-        return demoMessage;
     }
 
-    private NotificationWSResultMessage extractDeliveryStatusFromResult(NotificationWSResultMessage notificationResult) {
-        ExceptionInfoTransporter exceptionInfoTransporter = notificationResult.getExceptionInfoTransporter();
+    private NotificationDeliveryStatusEnum extractDeliveryStatusFromResult(NotificationResultMessage notificationResult) {
+        ExceptionInfoMessage exceptionInfoMessage = notificationResult.getExceptionInfoMessage();
 
-        if (Objects.nonNull(exceptionInfoTransporter)) {
-            NotificationDeliveryStatusEnum deliveryStatusOnException = getDeliveryStatusOnException(exceptionInfoTransporter,
-                notificationResult);
-            notificationResult.setDeliveryStatus(deliveryStatusOnException);
+        if (Objects.nonNull(exceptionInfoMessage)) {
+            return getDeliveryStatusOnException(exceptionInfoMessage, notificationResult);
         } else {
-            ResultType resultType = notificationResult.getResultType();
-            NotificationDeliveryStatusEnum deliveryStatusOnResultType = getDeliveryStatusOnResultType(resultType, notificationResult);
-            notificationResult.setDeliveryStatus(deliveryStatusOnResultType);
+            NotificationResultType resultType = notificationResult.getResultType();
+            return getDeliveryStatusOnResultType(resultType, notificationResult);
         }
-        return notificationResult;
     }
 
-    private NotificationDeliveryStatusEnum getDeliveryStatusOnException(ExceptionInfoTransporter exceptionInfoTransporter,
-        NotificationWSResultMessage message) {
-        final String exceptionType = exceptionInfoTransporter.getExceptionType();
-        final String exceptionMessage = exceptionInfoTransporter.getExceptionMessage();
+    private NotificationDeliveryStatusEnum getDeliveryStatusOnException(ExceptionInfoMessage exceptionInfoMessage,
+        NotificationResultMessage resultMessage) {
+        final String exceptionType = exceptionInfoMessage.getExceptionType();
+        final String exceptionMessage = exceptionInfoMessage.getExceptionMessage();
         if (SOAPFAULTEXCEPTION.equals(exceptionType) && Objects.nonNull(exceptionMessage) && (exceptionMessage.contains(MARSHALLING_ERROR)
             || exceptionMessage.contains(UNMARSHALLING_ERROR))) {
-            LOG.error("Failure sending status update to care for {}, {}", message, exceptionInfoTransporter.getStackTrace());
+            LOG.error("Failure sending status update to care for {}, {}", resultMessage, exceptionInfoMessage.getStackTrace());
             return FAILURE;
         } else {
-            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", message,
-                exceptionInfoTransporter.getStackTrace());
+            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", resultMessage,
+                exceptionInfoMessage.getStackTrace());
             return RESEND;
         }
     }
 
-    private NotificationDeliveryStatusEnum getDeliveryStatusOnResultType(ResultType resultType,
-        NotificationWSResultMessage notificationResult) {
-        ResultCodeType resultCode = resultType.getResultCode();
-        if (ResultCodeType.ERROR == resultCode) {
-            return getDeliveryStatusOnError(resultType, notificationResult);
+    private NotificationDeliveryStatusEnum getDeliveryStatusOnResultType(NotificationResultType resultType,
+        NotificationResultMessage resultMessage) {
+        NotificationResultTypeEnum result = resultType.getNotificationResult();
+        if (ERROR == result) {
+            return getDeliveryStatusOnError(resultType, resultMessage);
         }
-        if (ResultCodeType.INFO == resultCode) {
-            LOG.info("Received info message from care for status update {}, info received: {}", notificationResult,
-                resultType.getResultText());
+        if (INFO == result) {
+            LOG.info("Received info message from care for status update {}, info received: {}", resultMessage,
+                resultType.getNotificationResultText());
         }
         return SUCCESS;
     }
 
-    private NotificationDeliveryStatusEnum getDeliveryStatusOnError(ResultType resultType, NotificationWSResultMessage resultMessage) {
-        ErrorIdType errorId = resultType.getErrorId();
-        String errorText = resultType.getResultText();
-        if (errorId == ErrorIdType.TECHNICAL_ERROR) {
-            LOG.warn("{} returned from care for status update {}, Error message: {}, Attempting redelivery...", errorId, resultMessage,
+    private NotificationDeliveryStatusEnum getDeliveryStatusOnError(NotificationResultType resultType,
+        NotificationResultMessage resultMessage) {
+
+        NotificationErrorTypeEnum errorType = resultType.getNotificationErrorType();
+        String errorText = resultType.getNotificationResultText();
+        if (errorType == TECHNICAL_ERROR) {
+            LOG.warn("{} returned from care for status update {}, Error message: {}, Attempting redelivery...", errorType, resultMessage,
                 errorText);
             return RESEND;
         } else {
-            LOG.error("{} returned from care for status update {}, Error message: {}", errorId, resultMessage, errorText);
+            LOG.error("{} returned from care for status update {}, Error message: {}", errorType, resultMessage, errorText);
             return FAILURE;
         }
-    }
-
-    private Handelse extractEventFromStatusUpdate(CertificateStatusUpdateForCareType statusUpdateMessage,
-        NotificationDeliveryStatusEnum deliveryStatus) {
-        Amneskod topicCode = statusUpdateMessage.getHandelse().getAmne();
-        HsaId userId = statusUpdateMessage.getHanteratAv();
-
-        Handelse event = new Handelse();
-        event.setCode(HandelsekodEnum.fromValue(statusUpdateMessage.getHandelse().getHandelsekod().getCode()));
-        event.setEnhetsId(statusUpdateMessage.getIntyg().getSkapadAv().getEnhet().getEnhetsId().getExtension());
-        event.setIntygsId(statusUpdateMessage.getIntyg().getIntygsId().getExtension());
-        event.setPersonnummer(statusUpdateMessage.getIntyg().getPatient().getPersonId().getExtension());
-        event.setTimestamp(statusUpdateMessage.getHandelse().getTidpunkt());
-        event.setVardgivarId(statusUpdateMessage.getIntyg().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
-        event.setAmne(topicCode != null ? ArendeAmne.valueOf(topicCode.getCode()) : null);
-        event.setSistaDatumForSvar(statusUpdateMessage.getHandelse().getSistaDatumForSvar());
-        event.setHanteratAv(userId != null ? userId.getExtension() : null);
-        event.setDeliveryStatus(deliveryStatus);
-        return event;
     }
 
     private String getLogErrorMessage(Message message) {

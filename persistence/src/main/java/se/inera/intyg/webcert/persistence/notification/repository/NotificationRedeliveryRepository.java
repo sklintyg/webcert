@@ -33,5 +33,7 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
 
     List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
 
-    List<NotificationRedelivery> findByAttemptedDeliveries(int attemptedDeliveries);
+    List<NotificationRedelivery> findByRedeliveryTime(LocalDateTime currentTime);
+
+    List<NotificationRedelivery> findByAttemptedDeliveries(Integer attemptedDeliveries);
 }
