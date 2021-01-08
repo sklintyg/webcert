@@ -51,6 +51,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -80,12 +81,14 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
@@ -165,7 +168,8 @@ public class NotificationRedeliveryJob {
                         NotificationRedeliveryMessage.class);
 
                     final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.getStatusUpdateV3();
-                    statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp()));
+                    statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
+                        event.getSistaDatumForSvar()));
                     statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
                     setCertificateIfRequired(statusUpdate, redeliveryMessage);
 
@@ -197,13 +201,14 @@ public class NotificationRedeliveryJob {
     private void setCertificateIfRequired(CertificateStatusUpdateForCareType statusUpdate,
         NotificationRedeliveryMessage redeliveryMessage) throws ModuleNotFoundException, IOException, ModuleException {
 
-        Intyg certificate = null;
-        if (redeliveryMessage.isForSignedCertificate()) {
+        Intyg certificate;
+        if (redeliveryMessage.hasSignedCertificate()) {
             certificate = getCertificateFromWebcert(redeliveryMessage);
             if (certificate == null) {
                 certificate = getCertificateFromIntygstjanst(redeliveryMessage);
             }
             certificate.setPatient(redeliveryMessage.getPatient());
+            NotificationTypeConverter.complementIntyg(certificate);
             statusUpdate.setIntyg(certificate);
         }
     }
@@ -270,7 +275,7 @@ public class NotificationRedeliveryJob {
             if (eventType == HandelsekodEnum.RADERA) {
                 Vardgivare careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
                 Vardenhet careUnit = hsaOrganizationsService.getVardenhet(logicalAddress);
-                PersonInformationType personInfo = hsaPersonService.getHsaPersonInfo(event.getHanteratAv()).get(0);
+                PersonInformationType personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
 
                 Intyg certificate = new Intyg();
                 certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), certificateId, logicalAddress));
@@ -279,10 +284,11 @@ public class NotificationRedeliveryJob {
                 certificate.setPatient(NotificationRedeliveryUtil.getPatient(event.getPersonnummer()));
                 certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(careProvider, careUnit, personInfo));
                 notificationPatientEnricher.enrichWithPatient(certificate);
+                NotificationTypeConverter.complementIntyg(certificate);
 
                 statusUpdate = new CertificateStatusUpdateForCareType();
                 statusUpdate.setIntyg(certificate);
-                statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(eventType, eventTime));
+                statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(eventType, eventTime, event.getAmne(), lastReplyDate));
                 statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(sentQuestions));
                 statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(receivedQuestions));
                 statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));

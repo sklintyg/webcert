@@ -26,14 +26,21 @@ import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
+import com.google.common.base.Strings;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
@@ -48,6 +55,11 @@ import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 public final class NotificationRedeliveryUtil {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryUtil.class);
+
+
+    protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
+
     private NotificationRedeliveryUtil() { }
 
     public static <T extends IIType> T getIIType(T iiType, String extension, String root) {
@@ -60,7 +72,7 @@ public final class NotificationRedeliveryUtil {
         }
     }
 
-    public static Handelse getEventV3(HandelsekodEnum eventType, LocalDateTime eventTime) {
+    public static Handelse getEventV3(HandelsekodEnum eventType, LocalDateTime eventTime, ArendeAmne topic, LocalDate lastDateForReply) {
         Handelsekod eventCodeV3 = new Handelsekod();
         eventCodeV3.setCode(eventType.value());
         eventCodeV3.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
@@ -70,6 +82,12 @@ public final class NotificationRedeliveryUtil {
             new se.riv.clinicalprocess.healthcond.certificate.v3.Handelse();
         eventV3.setHandelsekod(eventCodeV3);
         eventV3.setTidpunkt(eventTime);
+
+        if (HandelsekodEnum.NYFRFM == eventType) {
+            eventV3.setAmne(topic != null ? AmneskodCreator.create(topic.name(), topic.getDescription()) : null);
+            eventV3.setSistaDatumForSvar(lastDateForReply);
+        }
+
         return eventV3;
     }
 
@@ -82,12 +100,13 @@ public final class NotificationRedeliveryUtil {
         Enhet unitV3 = new Enhet();
         unitV3.setEnhetsId(getIIType(new HsaId(), careUnit.getId(), HSA_ID_OID));
         unitV3.setEnhetsnamn(careUnit.getNamn());
-        unitV3.setArbetsplatskod(getIIType(new ArbetsplatsKod(), careUnit.getArbetsplatskod(), ARBETSPLATS_KOD_OID));
+        unitV3.setArbetsplatskod(getIIType(new ArbetsplatsKod(), Strings.nullToEmpty(careUnit.getArbetsplatskod()).trim().isEmpty()
+            ? TEMPORARY_ARBETSPLATSKOD : careUnit.getArbetsplatskod(), ARBETSPLATS_KOD_OID));
         unitV3.setVardgivare(careProviderV3);
         unitV3.setPostadress(careUnit.getPostadress());
         unitV3.setPostnummer(careUnit.getPostnummer());
         unitV3.setPostort(careUnit.getPostort());
-        unitV3.setEpost(careUnit.getEpost());
+        unitV3.setEpost("".equals(careUnit.getEpost()) ? null : careUnit.getEpost());
         unitV3.setTelefonnummer(careUnit.getTelefonnummer());
 
         HosPersonal hosPersonal = new HosPersonal();

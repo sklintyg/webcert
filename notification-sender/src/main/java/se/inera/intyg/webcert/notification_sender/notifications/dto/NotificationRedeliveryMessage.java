@@ -19,16 +19,9 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
@@ -102,7 +95,7 @@ public class NotificationRedeliveryMessage implements Serializable {
 
     @JsonIgnore
     public NotificationRedeliveryMessage setCertificate(Intyg certificate) {
-        if (!isForSignedCertificate(certificate)) {
+        if (!isSignedCertificate(certificate)) {
             this.cert = certificate;
         } else {
             this.patient = certificate.getPatient();
@@ -117,19 +110,19 @@ public class NotificationRedeliveryMessage implements Serializable {
         statusUpdate.setMottagnaFragor(this.received.getArendenV3());
         statusUpdate.setRef(this.reference);
 
-        if (!this.isForSignedCertificate()) {
+        if (!this.hasSignedCertificate()) {
             statusUpdate.setIntyg(this.cert);
         }
         return statusUpdate;
     }
 
     @JsonIgnore
-    public boolean isForSignedCertificate() {
+    public boolean hasSignedCertificate() {
         return this.cert == null;
     }
 
     @JsonIgnore
-    private boolean isForSignedCertificate(Intyg certificate) {
+    private boolean isSignedCertificate(Intyg certificate) {
         return certificate.getUnderskrift() != null;
     }
 }

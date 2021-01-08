@@ -26,23 +26,15 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class NotificationResultMessage {
 
-    private Intyg certificate;
     private String certificateId;
     private String logicalAddress;
     private String correlationId;
     private Handelse event;
+    private Boolean isFailedMessage;
     private Boolean isManualRedelivery;
     private NotificationResultType resultType;
     private ExceptionInfoMessage exceptionInfoMessage;
     private NotificationRedeliveryMessage notificationRedeliveryMessage;
-
-    public Intyg getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(Intyg certificate) {
-        this.certificate = certificate;
-    }
 
     public String getCertificateId() {
         return certificateId;
@@ -76,12 +68,20 @@ public class NotificationResultMessage {
         this.event = event;
     }
 
+    public Boolean getIsFailedMessage() {
+        return isFailedMessage;
+    }
+
+    public void setIsFailedMessage(Boolean isFailedMessage) {
+        this.isFailedMessage = isFailedMessage;
+    }
+
     public Boolean getIsManualRedelivery() {
         return isManualRedelivery;
     }
 
-    public void setIsManualRedelivery(Boolean manualRedelivery) {
-        isManualRedelivery = manualRedelivery;
+    public void setIsManualRedelivery(Boolean isManualRedelivery) {
+        this.isManualRedelivery = isManualRedelivery;
     }
 
     public NotificationResultType getResultType() {

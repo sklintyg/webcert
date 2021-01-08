@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
@@ -32,11 +31,19 @@ public final class NotificationResultType {
 
     public NotificationResultType() { }
 
-    private NotificationResultType(NotificationResultTypeEnum notificationResult, String notificationResultText,
+    public NotificationResultType(NotificationResultTypeEnum notificationResult, String notificationResultText,
         NotificationErrorTypeEnum notificationErrorType) {
         this.notificationResult = notificationResult;
         this.notificationResultText = notificationResultText;
         this.notificationErrorType = notificationErrorType;
+    }
+
+    public NotificationResultType(ResultType resultType) {
+        this.notificationResult =
+            resultType.getResultCode() != null ? NotificationResultTypeEnum.fromValue(resultType.getResultCode().value()) : null;
+        this.notificationErrorType =
+            resultType.getErrorId() != null ? NotificationErrorTypeEnum.fromValue(resultType.getErrorId().value()) : null;
+        this.notificationResultText = resultType.getResultText();
     }
 
     public NotificationResultTypeEnum getNotificationResult() {
@@ -61,15 +68,5 @@ public final class NotificationResultType {
 
     public void setNotificationErrorType(NotificationErrorTypeEnum notificationErrorType) {
         this.notificationErrorType = notificationErrorType;
-    }
-
-    @JsonIgnore
-    public static NotificationResultType fromResultTypeV3(ResultType resultType) {
-        NotificationResultTypeEnum notificationResult =
-            resultType.getResultCode() != null ? NotificationResultTypeEnum.fromValue(resultType.getResultCode().value()) : null;
-        NotificationErrorTypeEnum notificationError =
-            resultType.getErrorId() != null ? NotificationErrorTypeEnum.fromValue(resultType.getErrorId().value()) : null;
-
-        return new NotificationResultType(notificationResult, resultType.getResultText(), notificationError);
     }
 }

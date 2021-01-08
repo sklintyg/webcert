@@ -149,7 +149,7 @@ public class NotificationWSSenderTest {
     }
 
     private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
-        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID, false, TIMESTAMP);
+        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, CORRELATION_ID,false, false, TIMESTAMP);
      }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {

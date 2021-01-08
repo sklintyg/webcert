@@ -218,7 +218,7 @@ public class NotificationPostProcessorTest {
         //resultMessage.setDeliveryStatus(null);
         resultMessage.setNotificationRedeliveryMessage(new NotificationRedeliveryMessage());
         resultMessage.setExceptionInfoMessage(exceptionInfoMessage);
-        resultMessage.setResultType(NotificationResultType.fromResultTypeV3(statusUpdateResponse.getResult()));
+        resultMessage.setResultType(new NotificationResultType(statusUpdateResponse.getResult()));
         return resultMessage;
     }
 

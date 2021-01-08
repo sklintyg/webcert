@@ -40,6 +40,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInf
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -67,27 +69,34 @@ public class NotificationWSSender {
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
-        @Header(NotificationRouteHeaders.USER_ID) String userId,
+        //@Header(NotificationRouteHeaders.USER_ID) String userId,
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
+        @Header(NotificationRouteHeaders.IS_FAILED_MESSAGE) Boolean isFailedMessage,
         @Header(NotificationRouteHeaders.IS_MANUAL_REDELIVERY) Boolean isManualRedelivery,
         @Header(Constants.JMS_TIMESTAMP) Long messageTimestamp) {
 
-        if (Objects.nonNull(userId)) {
-            statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
-        }
+        //if (Objects.nonNull(userId)) {
+        //    statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
+        //}
 
         final NotificationResultMessage resultMessage = new NotificationResultMessage();
         resultMessage.setCertificateId(certificateId);
         resultMessage.setCorrelationId(correlationId);
         resultMessage.setLogicalAddress(logicalAddress);
+        resultMessage.setIsFailedMessage(isFailedMessage);
         resultMessage.setIsManualRedelivery(isManualRedelivery);
         resultMessage.setEvent(extractEventFromStatusUpdate(statusUpdate));
         resultMessage.setNotificationRedeliveryMessage(getRedeliveryMessage(statusUpdate));
 
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
-            ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
-            resultMessage.setResultType(NotificationResultType.fromResultTypeV3(resultType));
+            if (!isFailedMessage) {
+                ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
+                resultMessage.setResultType(new NotificationResultType(resultType));
+            } else {
+                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "Exception occured in"
+                    + " NotificationTransformer", NotificationErrorTypeEnum.WEBCERT_FAILURE));
+            }
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
             resultMessage.setExceptionInfoMessage(new ExceptionInfoMessage(e));

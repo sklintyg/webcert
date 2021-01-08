@@ -26,7 +26,8 @@ public enum NotificationErrorTypeEnum {
     TECHNICAL_ERROR("TECHNICAL_ERROR", "Notification error type TECHNICAL_ERROR"),
     APPLICATION_ERROR("APPLICATION_ERROR", "Notification error type APPLICATION_ERROR"),
     VALIDATION_ERROR("VALIDATION_ERROR", "Notification error type VALIDATION_ERROR"),
-    REVOKED("REVOKED", "Notification error type REVOKED");
+    REVOKED("REVOKED", "Notification error type REVOKED"),
+    WEBCERT_FAILURE("WEBCERT_FAILURE", "Notification error type WEBCERT_FAILURE");
 
     private final String value;
     private final String description;
