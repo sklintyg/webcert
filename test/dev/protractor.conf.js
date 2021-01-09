@@ -35,6 +35,7 @@ var screenshotReporter = new HtmlScreenshotReporter({
   dest: 'reports',
   filename: 'index.html',
   ignoreSkippedSpecs: true,
+  reportOnlyFailedSpecs: false,
   captureOnlyFailedSpecs: true
 });
 
