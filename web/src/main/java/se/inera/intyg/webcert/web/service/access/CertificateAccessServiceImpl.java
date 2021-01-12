@@ -28,6 +28,7 @@ import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -68,6 +69,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToReplace(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
@@ -85,6 +88,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToRenew(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
@@ -180,6 +185,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                newCertificate && getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
