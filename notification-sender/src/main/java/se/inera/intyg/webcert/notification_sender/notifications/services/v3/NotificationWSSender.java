@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
@@ -43,9 +42,12 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
@@ -64,20 +66,22 @@ public class NotificationWSSender {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     @Autowired
+    private NotificationRedeliveryRepository notificationRedeliveryRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
-        //@Header(NotificationRouteHeaders.USER_ID) String userId,
+        @Header(NotificationRouteHeaders.USER_ID) String userId,
         @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
         @Header(NotificationRouteHeaders.IS_FAILED_MESSAGE) Boolean isFailedMessage,
-        @Header(NotificationRouteHeaders.IS_MANUAL_REDELIVERY) Boolean isManualRedelivery,
-        @Header(Constants.JMS_TIMESTAMP) Long messageTimestamp) {
+        @Header(NotificationRouteHeaders.IS_MANUAL_REDELIVERY) Boolean isManualRedelivery) {
 
-        //if (Objects.nonNull(userId)) {
-        //    statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
-        //}
+        if (Objects.nonNull(userId)) {
+            statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
+        }
 
         final NotificationResultMessage resultMessage = new NotificationResultMessage();
         resultMessage.setCertificateId(certificateId);
@@ -86,7 +90,6 @@ public class NotificationWSSender {
         resultMessage.setIsFailedMessage(isFailedMessage);
         resultMessage.setIsManualRedelivery(isManualRedelivery);
         resultMessage.setEvent(extractEventFromStatusUpdate(statusUpdate));
-        resultMessage.setNotificationRedeliveryMessage(getRedeliveryMessage(statusUpdate));
 
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
@@ -94,18 +97,32 @@ public class NotificationWSSender {
                 ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
                 resultMessage.setResultType(new NotificationResultType(resultType));
             } else {
-                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "Exception occured in"
+                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "NullpointerException occured in"
                     + " NotificationTransformer", NotificationErrorTypeEnum.WEBCERT_FAILURE));
             }
+
+            /* **********FOR TEST ONLY
+            NotificationRedelivery n = notificationRedeliveryRepository.findByCorrelationId(resultMessage.getCorrelationId()).orElse(null);
+            if (n == null) {
+                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "",
+                    NotificationErrorTypeEnum.TECHNICAL_ERROR));
+            }
+            // ********FOR TEST ONLY */
+
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
             resultMessage.setExceptionInfoMessage(new ExceptionInfoMessage(e));
         } finally {
-            postProcessSendResult(resultMessage);
+            postProcessSendResult(resultMessage, statusUpdate);
         }
     }
 
-    private void postProcessSendResult(NotificationResultMessage resultMessage) {
+    private void postProcessSendResult(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate) {
+
+        if (resultMessage.getResultType().getNotificationResult() == NotificationResultTypeEnum.ERROR
+            || resultMessage.getExceptionInfoMessage() != null) {
+            resultMessage.setRedeliveryMessageBytes(getRedeliveryMessageBytes(statusUpdate));
+        }
 
         final String notificationMessageAsJson = messageToJson(resultMessage);
 
@@ -126,22 +143,27 @@ public class NotificationWSSender {
         }
     }
 
-    private NotificationRedeliveryMessage getRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
-        final NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage();
-        redeliveryMessage.setCert(statusUpdate.getIntyg());
-        redeliveryMessage.setSent(statusUpdate.getSkickadeFragor() != null
-            ? new CertificateMessages(statusUpdate.getSkickadeFragor()) : null);
-        redeliveryMessage.setReceived(statusUpdate.getMottagnaFragor() != null
-            ? new CertificateMessages(statusUpdate.getMottagnaFragor()) : null);
-        redeliveryMessage.setReference(statusUpdate.getRef());
-        return redeliveryMessage;
+    private byte[] getRedeliveryMessageBytes(CertificateStatusUpdateForCareType statusUpdate) {
+        try {
+            final NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage();
+            redeliveryMessage.set(statusUpdate.getIntyg());
+            redeliveryMessage.setSent(statusUpdate.getSkickadeFragor() != null
+                ? new CertificateMessages(statusUpdate.getSkickadeFragor()) : null);
+            redeliveryMessage.setReceived(statusUpdate.getMottagnaFragor() != null
+                ? new CertificateMessages(statusUpdate.getMottagnaFragor()) : null);
+            redeliveryMessage.setReference(statusUpdate.getRef());
+            return objectMapper.writeValueAsBytes(redeliveryMessage);
+        } catch (JsonProcessingException e) {
+            LOG.error("Exception occured creating and NotificationWSRedeliveryMessage.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
     }
 
     private String messageToJson(NotificationResultMessage notificationMessage) {
         try {
             return objectMapper.writeValueAsString(notificationMessage);
         } catch (JsonProcessingException e) {
-            LOG.error("Exception occured when trying to create and marshall NotificationWSResultMessage.", e);
+            LOG.error("Exception occured creating NotificationWSResultMessage.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
     }

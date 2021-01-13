@@ -117,7 +117,7 @@ public final class NotificationTypeConverter {
     }
 
     public static CertificateStatusUpdateForCareType createFailedStatusUpdate(NotificationMessage notificationMessage,
-        String certificateVersion, String careProviderId, String patientId, String issuerId) {
+        String certificateVersion, String patientId, String issuerId, String careProviderId) {
 
         Vardgivare careProvider = new Vardgivare();
         careProvider.setVardgivareId(NotificationRedeliveryUtil.getIIType(new HsaId(), careProviderId, HSA_ID_OID));

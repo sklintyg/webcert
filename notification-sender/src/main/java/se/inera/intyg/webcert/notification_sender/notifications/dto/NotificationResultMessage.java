@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 
 public class NotificationResultMessage {
@@ -34,7 +33,7 @@ public class NotificationResultMessage {
     private Boolean isManualRedelivery;
     private NotificationResultType resultType;
     private ExceptionInfoMessage exceptionInfoMessage;
-    private NotificationRedeliveryMessage notificationRedeliveryMessage;
+    private byte[] redeliveryMessageBytes;
 
     public String getCertificateId() {
         return certificateId;
@@ -100,14 +99,14 @@ public class NotificationResultMessage {
         this.exceptionInfoMessage = exceptionInfoMessage;
     }
 
-    public NotificationRedeliveryMessage getNotificationRedeliveryMessage() {
-        return notificationRedeliveryMessage;
+    public byte[] getRedeliveryMessageBytes() {
+        return redeliveryMessageBytes;
     }
 
-    public void setNotificationRedeliveryMessage(
-        NotificationRedeliveryMessage notificationRedeliveryMessage) {
-        this.notificationRedeliveryMessage = notificationRedeliveryMessage;
+    public void setRedeliveryMessageBytes(byte[] redeliveryMessageBytes) {
+        this.redeliveryMessageBytes = redeliveryMessageBytes;
     }
+
 
     @JsonIgnore
     @Override

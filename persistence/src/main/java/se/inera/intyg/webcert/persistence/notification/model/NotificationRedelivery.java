@@ -38,7 +38,7 @@ public class NotificationRedelivery {
     @Column(name = "HANDELSE_ID")
     private Long eventId;
 
-    @Column(name = "CORRELATION_ID", unique = true)
+    @Column(name = "CORRELATION_ID")
     private String correlationId;
 
     @Column(name = "MESSAGE")

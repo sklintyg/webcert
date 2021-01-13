@@ -28,8 +28,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 public class NotificationRedeliveryMessage implements Serializable {
 
     private Intyg cert;
-    private String certId;
-    private String certType;
     private Patient patient;
     private CertificateMessages sent;
     private CertificateMessages received;
@@ -51,22 +49,6 @@ public class NotificationRedeliveryMessage implements Serializable {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
-    }
-
-    public String getCertId() {
-        return certId;
-    }
-
-    public void setCertId(String certId) {
-        this.certId = certId;
-    }
-
-    public String getCertType() {
-        return certType;
-    }
-
-    public void setCertType(String certType) {
-        this.certType = certType;
     }
 
     public CertificateMessages getSent() {
@@ -94,8 +76,8 @@ public class NotificationRedeliveryMessage implements Serializable {
     }
 
     @JsonIgnore
-    public NotificationRedeliveryMessage setCertificate(Intyg certificate) {
-        if (!isSignedCertificate(certificate)) {
+    public NotificationRedeliveryMessage set(Intyg certificate) {
+        if (!hasSignature(certificate)) {
             this.cert = certificate;
         } else {
             this.patient = certificate.getPatient();
@@ -104,25 +86,25 @@ public class NotificationRedeliveryMessage implements Serializable {
     }
 
     @JsonIgnore
-    public CertificateStatusUpdateForCareType getStatusUpdateV3() {
+    public CertificateStatusUpdateForCareType getV3() {
         CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
         statusUpdate.setSkickadeFragor(this.sent.getArendenV3());
         statusUpdate.setMottagnaFragor(this.received.getArendenV3());
         statusUpdate.setRef(this.reference);
 
-        if (!this.hasSignedCertificate()) {
+        if (hasCertificate()) {
             statusUpdate.setIntyg(this.cert);
         }
         return statusUpdate;
     }
 
     @JsonIgnore
-    public boolean hasSignedCertificate() {
-        return this.cert == null;
+    public boolean hasCertificate() {
+        return this.cert != null;
     }
 
     @JsonIgnore
-    private boolean isSignedCertificate(Intyg certificate) {
+    private boolean hasSignature(Intyg certificate) {
         return certificate.getUnderskrift() != null;
     }
 }

@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -42,11 +44,13 @@ import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -80,8 +84,6 @@ public class NotificationWSSenderTest {
     private static final String LOGICAL_ADDRESS = "testLogicalAddress";
     private static final String USER_ID = "testUser";
     private static final String CORRELATION_ID = "testCorrelationId";
-    private static final long TIMESTAMP = Instant.now().toEpochMilli();
-
 
     @Test
     public void testSendStatusUpdateOk() {
@@ -149,17 +151,14 @@ public class NotificationWSSenderTest {
     }
 
     private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
-        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, CORRELATION_ID,false, false, TIMESTAMP);
+        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID,false, false);
      }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
         CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();
-        res.setIntyg(new Intyg());
-        res.getIntyg().setIntygsId(new IntygId());
-        res.getIntyg().getIntygsId().setExtension(CERTIFICATE_ID);
-        res.setHandelse(buildEventV3());
-        res.getIntyg().setPatient(buildPatient());
+        res.setIntyg(NotificationTestHelper.createIntyg("AF00213"));
         res.getIntyg().setSkapadAv(buildHosPersonal());
+        res.setHandelse(buildEventV3());
         return res;
     }
 
@@ -192,6 +191,9 @@ public class NotificationWSSenderTest {
         unit.setVardgivare(careProvider);
 
         HosPersonal hosPersonal = new HosPersonal();
+        HsaId createdByHsaId = new HsaId();
+        createdByHsaId.setExtension("createdByHsaId");
+        hosPersonal.setPersonalId(createdByHsaId);
         hosPersonal.setEnhet(unit);
         return hosPersonal;
     }

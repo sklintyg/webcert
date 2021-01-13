@@ -19,13 +19,15 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
+import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.CLIENT;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.DISCARD;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.SUCCESS;
 import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +44,6 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategy;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
@@ -53,13 +54,10 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Service
 public class NotificationRedeliveryServiceImpl implements NotificationRedeliveryService {
 
-    // TODO Perhaps move redelivery service etc to web module
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryServiceImpl.class);
 
     @Autowired
     private MonitoringLogService logService;
-    @Autowired
-    private ObjectMapper objectMapper;
     @Autowired
     private HandelseRepository handelseRepo;
     @Autowired
@@ -90,7 +88,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     @Override
     public List<NotificationRedelivery> getNotificationsForRedelivery() {
         List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
-        redeliveryList.addAll(notificationRedeliveryRepo.findByRedeliveryTime(null));
+        redeliveryList.addAll(notificationRedeliveryRepo.findByCorrelationIdNull());
         redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
         return redeliveryList;
     }
@@ -120,6 +118,14 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         notificationRedeliveryRepo.save(redelivery);
     }
 
+    @Transactional
+    @Override
+    public void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery) {
+        event.setDeliveryStatus(CLIENT);
+        handelseRepo.save(event);
+        deleteNotificationRedelivery(redelivery);
+    }
+
 
     private void executeSuccessOrFailure(NotificationResultMessage resultMessage, Handelse event) {
         NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
@@ -129,7 +135,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
                 event.getDeliveryStatus());
             monitorEvent = persistEvent(event);
         } else if (resultMessage.getIsManualRedelivery()) { // Manually resent notification
-            LOG.info("Updating manually resent notification event {} with delivery status {}", event.getCode().value(),
+            LOG.debug("Updating manually resent notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
             monitorEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
             deleteNotificationRedelivery(existingRedelivery);
@@ -139,39 +145,31 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             monitorEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
             deleteNotificationRedelivery(existingRedelivery);
         }
-        monitorLog(monitorEvent, resultMessage, existingRedelivery); // log success or failure
+        monitorLog(monitorEvent, resultMessage, null); // log success or failure
     }
 
-    //TEST REPLACEMENT
     private void executeResend(NotificationResultMessage resultMessage, Handelse event) {
         NotificationRedelivery existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
-        Handelse monitorEvent = null;
-        try {
-            if (existingRedelivery == null) {
-                monitorEvent = persistEvent(event);
-                LOG.debug("Persisting notification eventId {} with delivery status {}", monitorEvent.getId(),
-                    event.getDeliveryStatus());
-                NotificationRedeliveryStrategy redeliveryStrategy = getRedeliveryStrategy(STANDARD);
-                NotificationRedelivery notificationRedelivery = createNotificationRedelivery(monitorEvent, redeliveryStrategy,
-                    resultMessage);
-                monitorLog(monitorEvent, resultMessage, notificationRedelivery); // log resend
-            } else if (resultMessage.getIsManualRedelivery()) { // Manually resent notification
-                Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
-                LOG.debug("Updating manually resent notification with eventId {} with delivery status {}", event.getId(),
-                    event.getDeliveryStatus());
-                createManualNotificationRedelivery(existingRedelivery, resultMessage, updatedEvent);
-            } else {
-                Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
-                LOG.debug("Updating persisted notification with eventId {} with delivery status {}", event.getId(),
-                    event.getDeliveryStatus());
-                updateNotificationRedelivery(existingRedelivery, getRedeliveryStrategy(existingRedelivery.getRedeliveryStrategy()),
-                    resultMessage, updatedEvent);
-            }
-        } catch (JsonProcessingException e) {
-            LOG.warn("Failure creating redelivery storage message [certificateId: {}, eventType: {}, timestamp: {}]",
-                event.getIntygsId(), event.getCode(), event.getTimestamp());
-            Handelse failedEvent = setNotificationFailure(monitorEvent.getId());
-            monitorLog(failedEvent, resultMessage, null); // log failure
+        Handelse monitorEvent;
+        if (existingRedelivery == null) {
+            monitorEvent = persistEvent(event);
+            LOG.debug("Persisting notification eventId {} with delivery status {}", monitorEvent.getId(),
+                event.getDeliveryStatus());
+            NotificationRedeliveryStrategy redeliveryStrategy = getRedeliveryStrategy(STANDARD);
+            NotificationRedelivery notificationRedelivery = createNotificationRedelivery(monitorEvent, redeliveryStrategy,
+                resultMessage);
+            monitorLog(monitorEvent, resultMessage, notificationRedelivery); // log resend
+        } else if (resultMessage.getIsManualRedelivery()) { // Manually resent notification
+            Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
+            LOG.debug("Updating manually resent notification with eventId {} with delivery status {}", event.getId(),
+                event.getDeliveryStatus());
+            createManualNotificationRedelivery(existingRedelivery, resultMessage, updatedEvent);
+        } else {
+            Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
+            LOG.debug("Updating persisted notification with eventId {} with delivery status {}", event.getId(),
+                event.getDeliveryStatus());
+            updateNotificationRedelivery(existingRedelivery, getRedeliveryStrategy(existingRedelivery.getRedeliveryStrategy()),
+                resultMessage, updatedEvent);
         }
     }
 
@@ -186,18 +184,18 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     }
 
     private NotificationRedelivery createNotificationRedelivery(Handelse event, NotificationRedeliveryStrategy strategy,
-        NotificationResultMessage resultMessage) throws JsonProcessingException {
+        NotificationResultMessage resultMessage) {
         NotificationRedelivery newRedelivery =  new NotificationRedelivery(resultMessage.getCorrelationId(), event.getId(),
-            processMessageForStorage(resultMessage), strategy.getName(),
+            resultMessage.getRedeliveryMessageBytes(), strategy.getName(),
             LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)), 1);
         LOG.debug("Creating redelivery item correlationId {} for eventId {}", newRedelivery.getCorrelationId(), event.getId());
         return notificationRedeliveryRepo.save(newRedelivery);
     }
 
     private void createManualNotificationRedelivery(NotificationRedelivery redelivery,
-        NotificationResultMessage resultMessage, Handelse event) throws JsonProcessingException {
+        NotificationResultMessage resultMessage, Handelse event) {
         NotificationRedeliveryStrategy strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
-        redelivery.setMessage(processMessageForStorage(resultMessage));
+        redelivery.setMessage(resultMessage.getRedeliveryMessageBytes());
         redelivery.setRedeliveryTime(LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)));
         redelivery.setAttemptedDeliveries(1);
         LOG.debug("Creating redelivery item correlationId {} for eventId {}", redelivery.getCorrelationId(), event.getId());
@@ -241,12 +239,13 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
     private boolean checkRedundantRedelivery(Handelse event) {
         long numberOfSignedEvents = 0;
-        if (event.getCode() == HandelsekodEnum.ANDRAT) {
+        HandelsekodEnum code = event.getCode();
+        if (code == ANDRAT || code == SKAPAT) {
             String certificateId = event.getIntygsId();
             List<Handelse> events = handelseRepo.findByIntygsId(certificateId);
             numberOfSignedEvents = events.stream()
-                .filter(e -> (e.getCode() == HandelsekodEnum.SIGNAT && e.getDeliveryStatus() == SUCCESS)
-                    ||  (e.getCode() == HandelsekodEnum.RADERA && e.getDeliveryStatus() == SUCCESS)).count();
+                .filter(e -> (code == ANDRAT && e.getCode() == SIGNAT && e.getDeliveryStatus() == SUCCESS)
+                    ||  (e.getCode() == HandelsekodEnum.RADERA)).count();
         }
         return numberOfSignedEvents > 0;
     }
@@ -258,29 +257,20 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         LOG.info("Aborting redelivery attempts of redundant notification [eventId: {}, correlationId: {}, eventCode: {}, "
                 + "certificateId: {}, logicalAddress: {}]. The event has been removed.", event.getId(), redelivery.getCorrelationId(),
             event.getCode(), event.getIntygsId(), event.getEnhetsId());
-        // TODO investigate new status aborted, monitorlog here.
     }
 
     private Handelse setNotificationFailure(Long eventId) {
         Handelse event = handelseRepo.findById(eventId).orElse(null);
-        List<NotificationRedelivery> redeliveries = notificationRedeliveryRepo.findByEventId(eventId);
+        NotificationRedelivery redelivery = notificationRedeliveryRepo.findByEventId(eventId).orElse(null);
         if (event != null) {
             event.setDeliveryStatus(FAILURE);
             handelseRepo.save(event);
         }
-        if (!redeliveries.isEmpty()) {
-            deleteNotificationRedelivery(redeliveries.get(0));
+        if (redelivery != null) {
+            deleteNotificationRedelivery(redelivery);
         }
         return event;
         // TODO Monitorlog here if method keeping this method.
-    }
-
-    private byte[] processMessageForStorage(NotificationResultMessage resultMessage) throws JsonProcessingException {
-        NotificationRedeliveryMessage redeliveryMessage = resultMessage.getNotificationRedeliveryMessage();
-        redeliveryMessage.setCertId(resultMessage.getCertificateId());
-        redeliveryMessage.setCertType(redeliveryMessage.getCert().getTyp() != null
-            ? redeliveryMessage.getCert().getTyp().getCode().toLowerCase() : null);
-        return objectMapper.writeValueAsBytes(redeliveryMessage);
     }
 
     private void monitorLog(@NonNull Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {

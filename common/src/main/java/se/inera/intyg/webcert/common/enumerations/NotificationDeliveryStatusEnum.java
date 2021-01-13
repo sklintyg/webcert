@@ -26,7 +26,8 @@ public enum NotificationDeliveryStatusEnum {
     SUCCESS("SUCCESS", "Notification delivery status success"),
     RESEND("RESEND", "Notification delivery status resend"),
     FAILURE("FAILURE", "Notification delivery status failure"),
-    DISCARD("DISCARD", "Notification delivery status discard");
+    DISCARD("DISCARD", "Notification delivery status discard"),
+    CLIENT("CLIENT", "Notification delivery status client");
 
     private final String value;
     private final String description;

@@ -28,24 +28,28 @@ public interface NotificationRedeliveryService {
 
     /**
      * Handles database operations and monitor logging upon successful delivery of status update to care.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
      */
     void handleNotificationSuccess(NotificationResultMessage resultMessage);
 
     /**
      * Handles database operations and monitor logging for status updates that failed, but have been flagged for redelivery.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
      */
     void handleNotificationResend(NotificationResultMessage resultMessage);
 
     /**
      * Handles database operations and monitor logging for status updates that failed and will not be redelivered.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
      */
     void handleNotificationFailure(NotificationResultMessage resultMessage);
 
     /**
      * Collects and returns the redeliveries that, based in their redelivery time, are scheduled for resend.
+     *
      * @return A list of NotificationRedeliveries to be resent.
      */
     List<NotificationRedelivery> getNotificationsForRedelivery();
@@ -57,4 +61,6 @@ public interface NotificationRedeliveryService {
     void discardRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
 
     void initiateManualNotification(NotificationRedelivery redelivery, Handelse event);
+
+    void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery);
 }

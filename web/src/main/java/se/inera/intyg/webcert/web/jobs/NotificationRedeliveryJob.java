@@ -23,6 +23,7 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_MANUAL_REDELIVERY;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
@@ -35,7 +36,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -51,7 +51,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -66,6 +65,8 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -81,14 +82,12 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
@@ -128,7 +127,8 @@ public class NotificationRedeliveryJob {
     private HsaOrganizationsService hsaOrganizationsService;
     @Autowired
     private HsaPersonService hsaPersonService;
-
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
     private static final String JOB_NAME = "NotificationRedeliveryJob.run";
     private static final String LOCK_AT_MOST = "PT59S";
@@ -159,25 +159,18 @@ public class NotificationRedeliveryJob {
             try {
                 final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
 
-                if (redelivery.getCorrelationId() == null)  {
-                    createManualNotification(event, redelivery);
-                } else if (notificationRedeliveryService.isRedundantRedelivery(event)) {
+                if (notificationRedeliveryService.isRedundantRedelivery(event))  {
                     notificationRedeliveryService.discardRedundantRedelivery(event, redelivery);
+                } else if (redelivery.getCorrelationId() == null) {
+                    createManualNotification(event, redelivery);
                 } else {
                     final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
                         NotificationRedeliveryMessage.class);
 
-                    final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.getStatusUpdateV3();
-                    statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
-                        event.getSistaDatumForSvar()));
-                    statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
-                    setCertificateIfRequired(statusUpdate, redeliveryMessage);
+                    final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.getV3();
+                    completeStatusUpdate(statusUpdate, redeliveryMessage, event);
 
                     final String statusUpdateXml = marshal(statusUpdate);
-
-                    LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
-                        + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
-
                     sendJmsMessage(statusUpdateXml, event, redelivery, false);
                 }
 
@@ -198,46 +191,51 @@ public class NotificationRedeliveryJob {
         }
     }
 
-    private void setCertificateIfRequired(CertificateStatusUpdateForCareType statusUpdate,
-        NotificationRedeliveryMessage redeliveryMessage) throws ModuleNotFoundException, IOException, ModuleException {
+    private void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
+        Handelse event) throws ModuleNotFoundException, IOException, ModuleException {
 
         Intyg certificate;
-        if (redeliveryMessage.hasSignedCertificate()) {
-            certificate = getCertificateFromWebcert(redeliveryMessage);
+        if (!redeliveryMessage.hasCertificate()) {
+            certificate = getCertificateFromWebcert(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
             if (certificate == null) {
-                certificate = getCertificateFromIntygstjanst(redeliveryMessage);
+                certificate = getCertificateFromIntygstjanst(event.getIntygsId(), event.getCertificateType(),
+                    event.getCertificateVersion());
             }
             certificate.setPatient(redeliveryMessage.getPatient());
             NotificationTypeConverter.complementIntyg(certificate);
             statusUpdate.setIntyg(certificate);
         }
+
+        statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
+        statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
+            event.getSistaDatumForSvar()));
     }
 
-    private Intyg getCertificateFromWebcert(NotificationRedeliveryMessage redeliveryMessage) throws ModuleNotFoundException,
-        ModuleException, IOException {
+    private Intyg getCertificateFromWebcert(String certificateId, String certificateType, String certificateVersion)
+        throws ModuleNotFoundException, ModuleException, IOException {
         try {
-            Utkast draft = draftService.getDraft(redeliveryMessage.getCertId(), redeliveryMessage.getCertType(), false);
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
+            Utkast draft = draftService.getDraft(certificateId, certificateType, false);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
-            LOG.warn("Could not find certificate {} of type {} in webcert's database. Will check intygstjanst...",
-                redeliveryMessage.getCertId(), redeliveryMessage.getCertType(), e);
+            LOG.warn("Could not find certificate {} of type {} in webcert's database. Will check intygstjanst...", certificateId,
+                certificateType, e);
             return null;
         }
     }
 
-    private Intyg getCertificateFromIntygstjanst(NotificationRedeliveryMessage redeliveryMessage) throws ModuleNotFoundException,
-        ModuleException, WebCertServiceException {
+    private Intyg getCertificateFromIntygstjanst(String certificateId, String certificateType, String certificateVersion)
+        throws ModuleNotFoundException, ModuleException, WebCertServiceException {
         try {
-            IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(redeliveryMessage.getCertId(), true);
+            IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
             Utlatande utlatande = certContentHolder.getUtlatande();
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(Objects.requireNonNull(utlatande).getTyp(), utlatande.getTextVersion());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                String.format("Could not find certificate id: %s of type %s in intygstjanst's database", redeliveryMessage.getCertId(),
-                    redeliveryMessage.getCertType()), e);
+                String.format("Could not find certificate id: %s of type %s in intygstjanst's database", certificateId,
+                    certificateType), e);
         }
     }
 
@@ -261,10 +259,11 @@ public class NotificationRedeliveryJob {
 
             CertificateStatusUpdateForCareType statusUpdate;
             String certificateId = event.getIntygsId();
+            String certificateType = event.getCertificateType();
+            String certificateVersion = event.getCertificateVersion();
             LocalDateTime eventTime = event.getTimestamp();
             HandelsekodEnum eventType = event.getCode();
             String logicalAddress = event.getEnhetsId();
-            String certificateType = event.getCertificateType();
             FragorOchSvar qa = FragorOchSvar.getEmpty();
             ArendeCount sentQuestions = ArendeCount.getEmpty();
             ArendeCount receivedQuestions = ArendeCount.getEmpty();
@@ -280,7 +279,7 @@ public class NotificationRedeliveryJob {
                 Intyg certificate = new Intyg();
                 certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), certificateId, logicalAddress));
                 certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(certificateType));
-                certificate.setVersion(event.getCertificateVersion());
+                certificate.setVersion(certificateVersion);
                 certificate.setPatient(NotificationRedeliveryUtil.getPatient(event.getPersonnummer()));
                 certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(careProvider, careUnit, personInfo));
                 notificationPatientEnricher.enrichWithPatient(certificate);
@@ -293,22 +292,17 @@ public class NotificationRedeliveryJob {
                 statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(receivedQuestions));
                 statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
             } else {
-                Intyg certificate;
                 String draftJson;
-                ModuleApi moduleApi;
-                Utlatande utlatande;
                 Utkast draft = draftRepo.findById(certificateId).orElse(null);
                 if (draft != null) {
-                    moduleApi = moduleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
                     draftJson = draft.getModel();
-                    utlatande = moduleApi.getUtlatandeFromJson(draftJson);
                 } else {
                     IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
-                    utlatande = certContentHolder.getUtlatande();
-                    moduleApi = moduleRegistry.getModuleApi(Objects.requireNonNull(utlatande).getTyp(), utlatande.getTextVersion());
                     draftJson = certContentHolder.getContents();
                 }
-                certificate = moduleApi.getIntygFromUtlatande(utlatande);
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
+                Utlatande utlatande = moduleApi.getUtlatandeFromJson(draftJson);
+                Intyg certificate = moduleApi.getIntygFromUtlatande(utlatande);
                 notificationPatientEnricher.enrichWithPatient(certificate);
                 SchemaVersion schemaVersion = sendNotificationStrategy.decideNotificationForIntyg(utlatande)
                     .orElse(SchemaVersion.VERSION_3);
@@ -344,9 +338,15 @@ public class NotificationRedeliveryJob {
                 jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
                 jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
                 jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
+                jmsMessage.setBooleanProperty(IS_FAILED_MESSAGE, false);
                 jmsMessage.setBooleanProperty(IS_MANUAL_REDELIVERY, isManualRedelivery);
                 return jmsMessage;
             });
+
+            if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
+                notificationRedeliveryService.setSentWithV3Client(event, redelivery);
+            }
+
         } catch (JmsException e) {
             throw new RuntimeException(String.format("Failure resending message [notificationId: %s, event: %s, "
                     + "logicalAddress: %s, correlationId: %s]. Exception occurred setting JMs message headers.", event.getId(),

@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.SUCCESS;
@@ -79,11 +77,6 @@ public class NotificationPostProcessor {
         NotificationDeliveryStatusEnum deliveryStatus = extractDeliveryStatusFromResult(resultMessage);
         resultMessage.getEvent().setDeliveryStatus(deliveryStatus);
 
-        // ONLY FOR TESTING
-         setTestStatus(resultMessage);
-         deliveryStatus = resultMessage.getEvent().getDeliveryStatus();
-         //*****************************************
-
         switch (deliveryStatus) {
             case SUCCESS:
                 notificationRedeliveryService.handleNotificationSuccess(resultMessage);
@@ -93,13 +86,6 @@ public class NotificationPostProcessor {
                 break;
             case FAILURE:
                 notificationRedeliveryService.handleNotificationFailure(resultMessage);
-        }
-    }
-
-    private void setTestStatus(NotificationResultMessage resultMessage) {
-
-        if (resultMessage.getEvent().getCode() == ANDRAT || resultMessage.getEvent().getCode() == RADERA) {
-            resultMessage.getEvent().setDeliveryStatus(RESEND);
         }
     }
 
