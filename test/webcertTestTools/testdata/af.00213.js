@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,26 +31,18 @@ module.exports = {
       id: intygsID,
       typ: 'Arbetsförmedlingens medicinska utlåtande',
       funktionsnedsattning: {
-        val: 'Ja',
-        text: 'Typ av funktionsnedsättning'
+        val: 'Nej'
       },
       aktivitetsbegransning: {
-        val: 'Ja',
-        text: 'Typ av aktivitetsbegransning'
       },
       utredningBehandling: {
-        val: 'Ja',
-        text: 'Typ av utredning/behandling'
+        val: 'Nej'
       },
       arbetetsPaverkan: {
-        val: 'Ja',
-        text: 'Vilken påverkan har arbetet?'
+        val: 'Nej'
       },
-      skipparBalte: {
-        val: 'Ja',
-        text: 'Vilken påverkan har arbetet?'
-      },
-      ovrigt: 'Övriga upplysningar'
+      ovrigt: {
+      }
     };
   },
   getRandom: function(intygsID) {

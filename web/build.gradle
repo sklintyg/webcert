@@ -97,6 +97,7 @@ gretty {
     def minified = System.properties['useMinifiedJavaScript'] ?: false
     def useHttpPort = 8020 + (instance as Integer)
     def useInternalHttpPort = 8120 + (instance as Integer)
+    def applicationDir = "${rootProject.projectDir}/devops/dev"
 
     servletContainer = 'tomcat9'
     contextPath = '/'
@@ -107,17 +108,15 @@ gretty {
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
-    serverConfigFile = "tomcat-gretty-${instance}.xml"
-
-
+    serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
-               "-Dconfig.folder=${projectDir}/../devops/dev",
-               "-Dresources.folder=classpath:",
-               "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-               "-Dconfig.file=${projectDir}/webcert-dev.properties",
-               "-Dlogback.file=classpath:logback-dev.xml",
+               "-Dlogback.file=${applicationDir}/config/logback-dev.xml",
+               "-Djava.awt.headless=true",
+               "-Dfile.encoding=UTF-8",
+               "-Dapplication.dir=${applicationDir}",
+               "-Ddev.config.file=${applicationDir}/config/application-dev.properties",
                "-DuseMinifiedJavaScript=${minified}",
                "-Ddev.http.port=${useHttpPort}",
                "-Ddev.http.port.internal=${useInternalHttpPort}"]

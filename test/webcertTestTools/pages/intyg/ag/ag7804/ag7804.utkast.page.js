@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -307,7 +307,7 @@ var Ag7804Utkast = AgBaseUtkast._extend({
           return prognosEL.select.click();
         }).then(function() {
           // Vänta på att drop-down meny öppnas.
-          return browser.sleep(500);
+          return browser.sleep(200);
         }).then(function() {
           return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
         });

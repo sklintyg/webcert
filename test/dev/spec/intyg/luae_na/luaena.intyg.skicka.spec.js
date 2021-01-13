@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('Validera sändning av luae_na Intyg', function() {
+xdescribe('Validera sändning av luae_na Intyg', function() {
 
   var intyg = intygFromJsonFactory.defaultLuaena();
   var intygsId = intyg.id;

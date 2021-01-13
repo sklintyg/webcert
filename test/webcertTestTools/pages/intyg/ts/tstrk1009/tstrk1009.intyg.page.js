@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,7 +23,6 @@
 'use strict';
 
 var TsBaseIntyg = require('../ts.base.intyg.page');
-var testValues = require('../../../../testdata/testvalues.ts.js');
 var _ = require('lodash');
 
 var TsTrk1009Intyg = TsBaseIntyg._extend({
@@ -37,7 +36,6 @@ var TsTrk1009Intyg = TsBaseIntyg._extend({
     this.medicinskaForhallanden = element(by.id('medicinskaForhallanden'));
     this.senasteUndersokningsdatum = element(by.id('senasteUndersokningsdatum'));
     this.intygetAvserBehorigheter = element(by.id('intygetAvserBehorigheter-typer-0'));
-    this.informationOmTsBeslutOnskas = element(by.id('informationOmTsBeslutOnskas'));
   },
   get: function get(intygId) {
     get._super.call(this, intygId);
@@ -49,7 +47,6 @@ var TsTrk1009Intyg = TsBaseIntyg._extend({
     expect(this.medicinskaForhallanden.getText()).toBe(data.medicinskaForhallanden);
     expect(this.senasteUndersokningsdatum.getText()).toBe(data.senasteUndersokningsdatum);
     expect(this.intygetAvserBehorigheter.getText()).toBe(data.intygetAvserBehorigheter[0]);
-    expect(this.informationOmTsBeslutOnskas.getText()).toBe(data.informationOmTsBeslutOnskas ? 'Ja' : 'Nej');
   }
 });
 

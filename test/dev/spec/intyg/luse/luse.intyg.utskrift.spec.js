@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,7 +30,7 @@ var IntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('verify luse\'s print buttons', function() {
+xdescribe('verify luse\'s print buttons', function() {
 
   var intygsId;
 

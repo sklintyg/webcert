@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,9 +72,6 @@ describe('Create and Sign ts-bas utkast', function() {
     it('fillInDiabetes', function() {
       UtkastPage.fillInDiabetes(data.diabetes);
     });
-    it('fillInHorselOchBalanssinne', function() {
-      UtkastPage.fillInHorselOchBalanssinne(data.horsel);
-    });
     it('fillInNeurologiskaSjukdomar', function() {
       UtkastPage.fillInNeurologiskaSjukdomar(data);
     });
@@ -105,15 +102,9 @@ describe('Create and Sign ts-bas utkast', function() {
     it('fillInOvrigMedicinering', function() {
       UtkastPage.fillInOvrigMedicinering(data);
     });
-    it('fillInOvrigKommentar', function() {
-      UtkastPage.enableAutosave();
-      UtkastPage.fillInOvrigKommentar(data);
-    });
     it('fillInBedomning', function() {
+      UtkastPage.enableAutosave();
       UtkastPage.fillInBedomning(data.bedomning);
-    });
-    it('fillInSpecialist', function() {
-      UtkastPage.fillInSpecialist(data.specialist);
     });
   });
 

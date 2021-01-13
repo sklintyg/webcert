@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,9 +62,6 @@ describe('Create and Sign tstrk1062 utkast', function() {
     });
     it('fillSymptom', function() {
       UtkastPage.fillSymptom(data.symptom);
-    });
-    it('fillOvrigt', function() {
-      UtkastPage.fillOvrigt(data.ovrigt);
     });
     it('fillBedomning', function() {
       UtkastPage.enableAutosave();

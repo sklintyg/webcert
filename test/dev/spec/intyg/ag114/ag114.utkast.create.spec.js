@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -59,18 +59,18 @@ describe('Create and Sign ag114 utkast', function() {
       it('angeSysselsattning', function() {
         UtkastPage.angeSysselsattning(data.sysselsattning);
       });
-      it('angeOnskarFormedlaDiagnos', function() {
-        UtkastPage.angeOnskarFormedlaDiagnos(data.onskarFormedlaDiagnos)
-      });
+
       it('angeNedsattArbetsformaga', function() {
         UtkastPage.angeNedsattArbetsformaga(data.nedsattArbetsformaga)
       });
+
       it('angeBedomning', function() {
         UtkastPage.angeBedomning(data.bedomning)
       });
-      it('angeOvrigt', function() {
-        UtkastPage.angeOvrigt(data.ovrigt)
+
+      it('angeOnskarFormedlaDiagnos', function() {
         UtkastPage.enableAutosave();
+        UtkastPage.angeOnskarFormedlaDiagnos(data.onskarFormedlaDiagnos)
       });
     });
 
@@ -78,14 +78,6 @@ describe('Create and Sign ag114 utkast', function() {
       UtkastPage.whenSigneraButtonIsEnabled();
       UtkastPage.signeraButtonClick();
       expect(IntygPage.isAt()).toBeTruthy();
-    });
-
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
     });
 
     it('Verifiera intyg', function() {

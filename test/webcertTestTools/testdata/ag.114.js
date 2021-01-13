@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,32 +31,23 @@ module.exports = {
       id: intygsID,
       typ: 'Arbetsgivarintyg dag 1-14',
       baseratPa: {
-        'minUndersokningAvPatienten': '2017-09-27',
-        'journaluppgifter': '2017-09-27',
-        'telefonkontakt': '2017-09-27',
-        'annat': '2017-09-27',
-        'annatBeskrivning': 'tFEöSdJD1yVrIq5D'
+        'minUndersokningAvPatienten': '2017-09-27'
       },
       sysselsattning: {
         text: 'Beskrivning av nuvarande arbete.'
       },
       onskarFormedlaDiagnos: {
-        no: 'Nej',
-        yes: 'Ja',
-        diagnoser: ['J22', 'J301', 'F110']
+        no: 'Nej'
       },
       nedsattArbetsformaga: {
         text: 'Beskrivning av nedsatt arbetsförmåga.',
-        yes: 'Ja',
         no: 'Nej',
-        formaga: 'Kan utföra lättare uppgifter.'
       },
       bedomning: {
         sjukskrivningsgrad: '71%',
         from: '2018-10-01',
         tom: '2018-10-12'
-      },
-      ovrigt: 'Övriga upplysningar'
+      }
     };
   }
 };

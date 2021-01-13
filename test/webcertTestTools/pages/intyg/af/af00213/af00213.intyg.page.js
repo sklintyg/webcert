@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -86,7 +86,9 @@ var Af00213Intyg = AfBaseIntyg._extend({
     }
   },
   verifieraOvrigt: function(data) {
-    expect(this.ovrigt.getText()).toBe(data.ovrigt);
+    if (data.ovrigt.text !== undefined) {
+      expect(this.ovrigt.getText()).toBe(data.ovrigt);
+    }
   }
 });
 
