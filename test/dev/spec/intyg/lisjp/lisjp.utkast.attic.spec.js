@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,7 +29,7 @@ var LisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Lisjp attic tests', function() {
+xdescribe('Lisjp attic tests', function() {
 
   var intygsId;
 

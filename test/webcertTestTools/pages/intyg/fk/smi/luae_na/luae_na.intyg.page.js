@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,6 +39,7 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
     this.verifieraAndraMedicinskaUtredningar(data);
 
     this.verifieraDiagnos(data);
+
     this.verifieraDiagnosBedomning(data);
 
     this.verifieraSjukdomsforlopp(data);

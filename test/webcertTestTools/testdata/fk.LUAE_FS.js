@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,36 +35,19 @@ module.exports = {
       "typ": "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
       "baseratPa": {
         "minUndersokningAvPatienten": "2017-09-27",
-        "journaluppgifter": "2017-09-27",
-        "anhorigsBeskrivning": "2017-09-27",
-        "annat": "2017-09-27",
-        "annatBeskrivning": "ÄMk9NcgukFxTMaAn",
         "personligKannedom": "2017-09-27"
       },
-      "andraMedicinskaUtredningar": [{
-        "underlag": "Neuropsykiatriskt utlåtande",
-        "datum": "2016-04-09",
-        "infoOmUtredningen": "mÄwwO67piLrbeåID"
-      }],
       "diagnos": {
         "diagnoser": [{
-          "kod": "Z720B",
-          "bakgrund": "gwskchi5p1LmåzHÖ"
+          "kod": "Z720B"
         }]
       },
       "funktionsnedsattning": {
         "debut": "TTIÅhTZFFÄHjLbOk",
         "paverkan": "Ö502ZH0bVTLSåijx"
       },
-      "ovrigt": "åbw0KhHaTjcQgzbÅ",
-      "kontaktMedFk": false,
-      "tillaggsfragor": [{
-        "id": 9001,
-        "svar": "iQ0zn6Yrh7zYSjGI"
-      }, {
-        "id": 9002,
-        "svar": "vZMnfG0Z6jäscuY2"
-      }]
+      "ovrigt": "Ej angivet",
+      "kontaktMedFk": false
     };
   },
   getRandom: function(intygsID) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,9 +20,6 @@
 'use strict';
 
 var testdataHelper = require('common-testtools').testdataHelper;
-//var shuffle = testdataHelper.shuffle;
-
-var testValues = require('./testvalues.js').ts;
 
 module.exports = {
   get: function(intygsID) {
@@ -40,8 +37,7 @@ module.exports = {
       'senasteUndersokningsdatum': '2019-01-01',
       'intygetAvserBehorigheter': [
         'Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation'
-      ],
-      informationOmTsBeslutOnskas: true
+      ]
     };
   }
 };

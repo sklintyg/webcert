@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,7 +72,6 @@ describe('Create and Sign af00251 utkast', function() {
       it('Ange har förhinder', function() {
         UtkastPage.angeHarForhinder(data.harForhinder);
       });
-
       it('Ange har sjukfranvaro', function() {
         UtkastPage.angeSjukfranvaro(data.sjukfranvaro);
       });
@@ -90,14 +89,6 @@ describe('Create and Sign af00251 utkast', function() {
       UtkastPage.whenSigneraButtonIsEnabled();
       UtkastPage.signeraButtonClick();
       expect(IntygPage.isAt()).toBeTruthy();
-    });
-
-    it('Wait until intyg in IT', function() {
-      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-      // upplysningar ännu.
-      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-      IntygPage.waitUntilIntygInIT(utkastId);
-      IntygPage.get(utkastId);
     });
 
     it('Verifiera intyg', function() {

@@ -67,14 +67,15 @@
     <bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser" />
 
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+      <property name="ignoreUnresolvablePlaceholders" value="true"/>
+      <property name="ignoreResourceNotFound" value="true"/>
       <property name="locations">
         <list>
           <!-- Order matters - last value wins -->
-          <value>classpath:default.properties</value>
+          <value>classpath:application.properties</value>
           <value>classpath:version.properties</value>
           <value>classpath:webcert-notification-route-params.properties</value>
-          <value>file:${config.file}</value>
-          <value>file:${credentials.file}</value>
+          <value>file:${dev.config.file:-}</value>
         </list>
       </property>
     </bean>

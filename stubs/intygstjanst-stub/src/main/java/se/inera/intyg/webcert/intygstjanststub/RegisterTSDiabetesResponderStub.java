@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,6 +62,7 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
             LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        certificate.setSigningDoctorId(parameters.getIntyg().getGrundData().getSkapadAv().getPersonId().getExtension());
         certificate.setSigningDoctorName(parameters.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());
         certificate.setAdditionalInfo(parameters.getIntyg().getOvrigKommentar());
         certificate.setCareGiverId(

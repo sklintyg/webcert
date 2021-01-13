@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,7 +29,7 @@ var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Luse diagnos tests', function() {
+xdescribe('Luse diagnos tests', function() {
 
   var intygsId;
 

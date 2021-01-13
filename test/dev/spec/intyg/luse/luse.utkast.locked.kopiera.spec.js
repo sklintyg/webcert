@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-describe('Luse locked utkast kopiera tests', function() {
+xdescribe('Luse locked utkast kopiera tests', function() {
   var intygId = 'luse-locked-utkast-1';
 
   beforeAll(function() {

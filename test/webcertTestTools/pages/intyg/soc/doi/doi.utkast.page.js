@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -160,19 +160,19 @@ var doiUtkast = BaseSocUtkast._extend({
       });
     } else {
       return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
-        return browser.sleep(500);
+        return browser.sleep(200);
       }).then(function() {
         return dodsdatumElm.inteSakert.year.dropDown.click();
 
       }).then(function() {
         //Väntar på drop-down att öppnas
-        return browser.sleep(500);
+        return browser.sleep(200);
       }).then(function() {
         return dodsdatumElm.inteSakert.year.option(dodsdatum.inteSakert.year).click();
       }).then(function() {
         if (dodsdatum.inteSakert.year !== '0000') {
           return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
-            return browser.sleep(500);
+            return browser.sleep(200);
           }).then(function() {
             return dodsdatumElm.inteSakert.month.option(dodsdatum.inteSakert.month).click();
           });
@@ -226,7 +226,7 @@ var doiUtkast = BaseSocUtkast._extend({
           return utlatandeOmDodsorsakElm[sektion].specifikation.dropDown.click();
         }).then(function() {
           //Väntar på drop-down att öppnas
-          return browser.sleep(1000);
+          return browser.sleep(200);
         }).then(function() {
           return utlatandeOmDodsorsakElm[sektion].specifikation.options.getByText(dodsorsak[sektion].tillstandSpec);
         }).then(function(elm) {

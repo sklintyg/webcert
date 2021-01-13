@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-describe('verify luaefs\' print buttons', function() {
+xdescribe('verify luaefs\' print buttons', function() {
 
   var intygId;
 

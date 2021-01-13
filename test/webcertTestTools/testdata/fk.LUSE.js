@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,46 +35,33 @@ module.exports = {
       "typ": "Läkarutlåtande för sjukersättning",
       "baseratPa": {
         "minUndersokningAvPatienten": "2017-09-27",
-        "journaluppgifter": "2017-09-27",
-        "anhorigsBeskrivning": "2017-09-27",
-        "annat": "2017-09-27",
-        "annatBeskrivning": "cGJeWFqWt5OD8lxu",
         "personligKannedom": "2017-09-27"
       },
       "andraMedicinskaUtredningar": false,
       "diagnos": {
         "diagnoser": [{
-          "kod": "D00",
-          "bakgrund": "4cÖ1nPFyåPUE9hjy"
+          "kod": "D00"
         }],
         "narOchVarStalldesDiagnoserna": "hqÖGiCLIpAÄtk4LÅ",
-        "nyBedomning": true,
-        "diagnosForNyBedomning": "pwXDLgigzÖiZs0A0"
+        "nyBedomning": false
       },
       "sjukdomsForlopp": "wT0e1BYOsxb9q2ZI",
       "funktionsnedsattning": {
         "intellektuell": "Intellektuell funktionsnedsättningstext",
-        "kommunikation": "kommunikation funktionsnedsättningstext",
-        "koncentration": "koncentration funktionsnedsättningstext",
-        "psykisk": "psykisk funktionsnedsättningstext",
-        "synHorselTal": "synHorselTal funktionsnedsättningstext",
-        "balansKoordination": "balansKoordination funktionsnedsättningstext",
-        "annan": "annan funktionsnedsättningstext"
+        "kommunikation": 'Ej angivet',
+        "koncentration": 'Ej angivet',
+        "psykisk": 'Ej angivet',
+        "synHorselTal": 'Ej angivet',
+        "balansKoordination": 'Ej angivet',
+        "annan": 'Ej angivet'
       },
       "aktivitetsbegransning": "åGppJÄrFQRXb3g1C",
-      "medicinskbehandling": {
-        "avslutad": "avslutad behandlings-text",
-        "pagaende": "pagaende behandlings-text",
-        "planerad": "planerad behandlings-text",
-        "substansintag": "substansintag behandlings-text"
-      },
+      "medicinskbehandling": {},
       "medicinskaForutsattningar": {
-        "utecklasOverTid": "gxKkxwT2reHis4EÅ",
-        "trotsBegransningar": "bTt2å4cwd3y96nåÅ"
+        "utecklasOverTid": "gxKkxwT2reHis4EÅ"
       },
-      "ovrigt": "roHwZsfIRQVreywÖ",
+      "ovrigt": "Ej angivet",
       "kontaktMedFk": false,
-      "tillaggsfragor": []
     };
   },
   getRandom: function(intygsID) {

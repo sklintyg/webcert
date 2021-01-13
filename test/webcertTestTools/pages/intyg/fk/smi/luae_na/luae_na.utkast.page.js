@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -71,6 +71,10 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
   },
 
   angeMedicinskaForutsattningar: function(forutsattningar) {
+    if (!forutsattningar.trotsBegransningar) {
+      return pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid)
+    }
+
     return Promise.all([
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
       pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar),
