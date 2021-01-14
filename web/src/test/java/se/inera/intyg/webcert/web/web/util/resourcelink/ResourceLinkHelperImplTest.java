@@ -29,13 +29,11 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -266,6 +264,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToPrint(any(), anyBoolean());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReplace(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSend(any());
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateDraftFromSignedTemplate(any());
 
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
@@ -282,6 +281,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.ERSATT_INTYG));
         expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
         expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
+        expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_UTKAST_FRAN_INTYG));
         expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
@@ -334,6 +334,8 @@ public class ResourceLinkHelperImplTest {
             .allowToReplace(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToSend(any());
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToCreateDraftFromSignedTemplate(any());
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToCreateQuestion(any());
