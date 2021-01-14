@@ -439,12 +439,12 @@ public final class AccessServiceEvaluation {
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
     }
 
-    private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockedFeature) {
+    private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockedFeatures) {
         for (String blockFeature : blockFeatures) {
             final var feature = user.getFeatures().get(blockFeature);
-            if (feature != null && feature.getGlobal().booleanValue()) {
+            if (feature != null && feature.getGlobal()) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
-                    createMessage(String.format("Feature {} is active and blocks authorization", blockFeature))));
+                    createMessage(String.format("Feature %s is active and blocks authorization", blockFeature))));
             }
         }
         return Optional.empty();
