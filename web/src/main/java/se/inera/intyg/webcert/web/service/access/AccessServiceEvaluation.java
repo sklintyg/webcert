@@ -399,7 +399,7 @@ public final class AccessServiceEvaluation {
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 
-        if (!blockFeatures.isEmpty()) {
+        if (!blockFeatures.isEmpty() && !accessResult.isPresent()) {
             accessResult = isBlockedRuleValid(user, blockFeatures);
         }
 
