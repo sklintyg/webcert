@@ -96,6 +96,14 @@ public interface CertificateAccessService {
     AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters, boolean newCertificate);
 
     /**
+     * Check if the user is allowed to create a new draft from a signed certificate/template.
+     *
+     * @param accessEvaluationParameters Parameters to use for access evaluation
+     * @return AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters);
+
+    /**
      * Check if the user is allowed to answer a administrative question for a certificate.
      *
      * @param accessEvaluationParameters Parameters to use for access evaluation

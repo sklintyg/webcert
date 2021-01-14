@@ -200,6 +200,24 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
+    public AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(false)
+            .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(false)
+            .checkRenew(false)
+            .checkPatientSecrecy()
+            .checkUnique()
+            .evaluate();
+    }
+
+    @Override
     public AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
