@@ -37,6 +37,7 @@ import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
 import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -78,6 +79,8 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     public AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST)
             .careUnit(careUnit)
