@@ -343,12 +343,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             // We need to validate access logic early and then depend on patient information available.
             Person patientDetails = updatePatientDetails(templateRequest, false);
 
-            draftAccessServiceHelper.validateAllowToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
-
             final Utlatande utlatande = utkastServiceHelper.getUtlatande(templateRequest.getOriginalIntygId(),
                 templateRequest.getOriginalIntygTyp(),
                 false,
                 false);
+
+            certificateAccessServiceHelper.validateAllowCreateDraftFromSignedTemplate(utlatande);
 
             addTestIntygFlagIfNecessaryToCopyRequest(templateRequest, utlatande.getGrundData().isTestIntyg());
 
