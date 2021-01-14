@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -201,7 +202,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Override
     public AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+        return getAccessServiceEvaluation().given(getUser(), getCertificateTypeToCreate(accessEvaluationParameters.getCertificateType()))
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
@@ -215,6 +216,23 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkPatientSecrecy()
             .checkUnique()
             .evaluate();
+    }
+
+    /**
+     * Currently not possible to do this mapping without hardcoding.
+     *
+     * @param sourceCertificateType Certificate type that will be used as template to create a new draft.
+     * @return Certificate type of the new draft that potentially can be created.
+     */
+    private String getCertificateTypeToCreate(String sourceCertificateType) {
+        switch (sourceCertificateType) {
+            case DbModuleEntryPoint.MODULE_ID:
+                return DoiModuleEntryPoint.MODULE_ID;
+            case LisjpEntryPoint.MODULE_ID:
+                return Ag7804EntryPoint.MODULE_ID;
+            default:
+                return sourceCertificateType;
+        }
     }
 
     @Override
