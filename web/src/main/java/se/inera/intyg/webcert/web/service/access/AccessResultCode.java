@@ -88,5 +88,11 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action when certificate is flagged as a test certificate.
      */
-    TEST_CERTIFICATE;
+    TEST_CERTIFICATE,
+
+    /**
+     * No access. Not allowed to perform action because it is blocked.
+     */
+    AUTHORIZATION_BLOCKED;
+
 }
