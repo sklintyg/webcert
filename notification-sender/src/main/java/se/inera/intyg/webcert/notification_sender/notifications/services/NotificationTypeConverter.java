@@ -25,6 +25,7 @@ import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
@@ -117,7 +118,7 @@ public final class NotificationTypeConverter {
     }
 
     public static CertificateStatusUpdateForCareType createFailedStatusUpdate(NotificationMessage notificationMessage,
-        String certificateVersion, String patientId, String issuerId, String careProviderId) {
+        String certificateVersion, String patientId, String issuerId, String careProviderId, ModuleEntryPoint moduleEntryPoint) {
 
         Vardgivare careProvider = new Vardgivare();
         careProvider.setVardgivareId(NotificationRedeliveryUtil.getIIType(new HsaId(), careProviderId, HSA_ID_OID));
@@ -133,7 +134,7 @@ public final class NotificationTypeConverter {
         Intyg certificate = new Intyg();
         certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), notificationMessage.getIntygsId(),
             notificationMessage.getLogiskAdress()));
-        certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(notificationMessage.getIntygsTyp()));
+        certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(moduleEntryPoint));
         certificate.setVersion(certificateVersion);
         certificate.setPatient(NotificationRedeliveryUtil.getPatient(patientId));
         certificate.setSkapadAv(hosPersonal);

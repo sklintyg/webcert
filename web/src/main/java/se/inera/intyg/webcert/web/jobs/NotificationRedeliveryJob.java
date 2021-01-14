@@ -54,6 +54,7 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
@@ -214,8 +215,9 @@ public class NotificationRedeliveryJob {
     private Intyg getCertificateFromWebcert(String certificateId, String certificateType, String certificateVersion)
         throws ModuleNotFoundException, ModuleException, IOException {
         try {
-            Utkast draft = draftService.getDraft(certificateId, certificateType, false);
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
+            Utkast draft = draftService.getDraft(certificateId, moduleRegistry.getModuleIdFromExternalId(certificateType), false);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType),
+                certificateVersion);
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
@@ -230,7 +232,8 @@ public class NotificationRedeliveryJob {
         try {
             IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
             Utlatande utlatande = certContentHolder.getUtlatande();
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType),
+                certificateVersion);
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
@@ -275,10 +278,13 @@ public class NotificationRedeliveryJob {
                 Vardgivare careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
                 Vardenhet careUnit = hsaOrganizationsService.getVardenhet(logicalAddress);
                 PersonInformationType personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
+                String moduleId = moduleRegistry.getModuleIdFromExternalId(certificateType);
+                ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(moduleId);
 
                 Intyg certificate = new Intyg();
                 certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), certificateId, logicalAddress));
-                certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(certificateType));
+                //certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(certificateType));
+                certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(moduleEntryPoint));
                 certificate.setVersion(certificateVersion);
                 certificate.setPatient(NotificationRedeliveryUtil.getPatient(event.getPersonnummer()));
                 certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(careProvider, careUnit, personInfo));
@@ -300,7 +306,8 @@ public class NotificationRedeliveryJob {
                     IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
                     draftJson = certContentHolder.getContents();
                 }
-                ModuleApi moduleApi = moduleRegistry.getModuleApi(certificateType.toLowerCase(), certificateVersion);
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType),
+                    certificateVersion);
                 Utlatande utlatande = moduleApi.getUtlatandeFromJson(draftJson);
                 Intyg certificate = moduleApi.getIntygFromUtlatande(utlatande);
                 notificationPatientEnricher.enrichWithPatient(certificate);

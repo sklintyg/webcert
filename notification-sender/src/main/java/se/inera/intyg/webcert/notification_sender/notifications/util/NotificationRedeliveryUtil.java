@@ -23,6 +23,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.util;
 import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
+import static se.inera.intyg.common.support.Constants.KV_INTYGSTYP_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -116,11 +118,19 @@ public final class NotificationRedeliveryUtil {
         return hosPersonal;
     }
 
+    public static TypAvIntyg getCertificateType(ModuleEntryPoint moduleEntryPoint) {
+        TypAvIntyg certificateTypeV3 = new TypAvIntyg();
+        certificateTypeV3.setCode(moduleEntryPoint.getExternalId());
+        certificateTypeV3.setCodeSystem(KV_INTYGSTYP_CODE_SYSTEM);
+        certificateTypeV3.setDisplayName(moduleEntryPoint.getModuleName());
+        return certificateTypeV3;
+    }
+
     public static TypAvIntyg getCertificateType(String certificateType) {
         TypAvIntyg certificateTypeV3 = new TypAvIntyg();
         KvIntygstyp certificateTypeEnum = KvIntygstyp.valueOf(certificateType.trim().toUpperCase());
         certificateTypeV3.setCode(certificateTypeEnum.getCodeValue());
-        certificateTypeV3.setCodeSystem(certificateTypeEnum.getCodeSystem());
+        certificateTypeV3.setCodeSystem(KV_INTYGSTYP_CODE_SYSTEM);
         certificateTypeV3.setDisplayName(certificateTypeEnum.getDisplayName());
         return certificateTypeV3;
     }

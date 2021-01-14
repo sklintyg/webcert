@@ -105,7 +105,7 @@ public class NotificationWSSender {
             NotificationRedelivery n = notificationRedeliveryRepository.findByCorrelationId(resultMessage.getCorrelationId()).orElse(null);
             if (n == null) {
                 resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "",
-                    NotificationErrorTypeEnum.TECHNICAL_ERROR));
+                    NotificationErrorTypeEnum.VALIDATION_ERROR));
             }
             // ********FOR TEST ONLY */
 

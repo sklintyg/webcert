@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.ISSUER_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
@@ -108,7 +109,9 @@ public class NotificationTransformer {
                         message.getHeader(INTYG_TYPE_VERSION, String.class),
                         message.getHeader(PATIENT_ID, String.class),
                         message.getHeader(ISSUER_ID, String.class),
-                        organizationsService.getVardgivareOfVardenhet(notificationMessage.getLogiskAdress()))
+                        organizationsService.getVardgivareOfVardenhet(notificationMessage.getLogiskAdress()),
+                        moduleRegistry.getModuleEntryPoint(moduleRegistry.getModuleIdFromExternalId(message
+                            .getHeader(INTYGS_TYP, String.class))))
                     );
                 }
             }
