@@ -400,16 +400,7 @@ public final class AccessServiceEvaluation {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 
         if (!blockFeatures.isEmpty()) {
-            for (String blockFeature : blockFeatures) {
-                final var feature = user.getFeatures().get(blockFeature);
-                if (feature.getGlobal().booleanValue()) {
-                    accessResult = Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
-                        createMessage(String.format("Feature {} is active and blocks authorization", blockFeature))
-                        )
-                    );
-                    break;
-                }
-            }
+            accessResult = isBlockedRuleValid(user, blockFeatures);
         }
 
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
@@ -446,6 +437,17 @@ public final class AccessServiceEvaluation {
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockedFeature) {
+        for (String blockFeature : blockFeatures) {
+            final var feature = user.getFeatures().get(blockFeature);
+            if (feature != null && feature.getGlobal().booleanValue()) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
+                    createMessage(String.format("Feature {} is active and blocks authorization", blockFeature))));
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {
