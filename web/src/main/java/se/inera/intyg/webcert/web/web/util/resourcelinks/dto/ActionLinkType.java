@@ -127,5 +127,10 @@ public enum ActionLinkType {
     /**
      * Select receivers of certificates.
      */
-    GODKANNA_MOTTAGARE;
+    GODKANNA_MOTTAGARE,
+
+    /**
+     * Create draft from certificate/template.
+     */
+    SKAPA_UTKAST_FRAN_INTYG;
 }
