@@ -55,9 +55,9 @@ public final class AccessServiceEvaluation {
     private WebCertUser user;
     private String certificateType;
     private String certificateId;
-    private List<String> privileges = new ArrayList<>();
-    private List<String> features = new ArrayList<>();
-    private List<String> blockFeatures = new ArrayList<>();
+    private final List<String> privileges = new ArrayList<>();
+    private final List<String> features = new ArrayList<>();
+    private final List<String> blockFeatures = new ArrayList<>();
     private Vardenhet careUnit;
     private Personnummer patient;
 
@@ -78,12 +78,12 @@ public final class AccessServiceEvaluation {
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
 
-    private List<String> excludeRenewCertificateTypes = new ArrayList<>();
-    private List<String> excludeUnitCertificateTypes = new ArrayList<>();
-    private List<String> excludeDeceasedCertificateTypes = new ArrayList<>();
-    private List<String> excludeInactiveCertificateTypes = new ArrayList<>();
+    private final List<String> excludeRenewCertificateTypes = new ArrayList<>();
+    private final List<String> excludeUnitCertificateTypes = new ArrayList<>();
+    private final List<String> excludeDeceasedCertificateTypes = new ArrayList<>();
+    private final List<String> excludeInactiveCertificateTypes = new ArrayList<>();
 
-    private List<String> invalidDeceasedCertificateTypes = new ArrayList<>();
+    private final List<String> invalidDeceasedCertificateTypes = new ArrayList<>();
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
@@ -399,44 +399,44 @@ public final class AccessServiceEvaluation {
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 
-        if (!blockFeatures.isEmpty() && !accessResult.isPresent()) {
+        if (!blockFeatures.isEmpty() && accessResult.isEmpty()) {
             accessResult = isBlockedRuleValid(user, blockFeatures);
         }
 
-        if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
                 invalidDeceasedCertificateTypes);
         }
 
-        if (checkPatientTestIndicator && !accessResult.isPresent()) {
+        if (checkPatientTestIndicator && accessResult.isEmpty()) {
             accessResult = isPatientTestIndicated(patient, careUnit.getEnhetsid(), allowTestIndicatorForSameUnit);
         }
 
-        if (checkTestCertificate && !accessResult.isPresent()) {
+        if (checkTestCertificate && accessResult.isEmpty()) {
             accessResult = isTestCertificate(isTestCertificate);
         }
 
-        if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isInactiveUnitRuleValid(user, careUnit.getEnhetsid(), allowInactiveForSameUnit);
         }
 
-        if (checkRenew && !excludeRenewCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkRenew && !excludeRenewCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isRenewRuleValid(user, careUnit.getEnhetsid(), allowRenewForSameUnit);
         }
 
-        if (checkPatientSecrecy && !accessResult.isPresent()) {
+        if (checkPatientSecrecy && accessResult.isEmpty()) {
             accessResult = isSekretessRuleValid(certificateType, careUnit.getEnhetsid(), user, patient);
         }
 
-        if (checkUnit && !excludeUnitCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkUnit && !excludeUnitCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isUnitRuleValid(careUnit, user, allowSJF, isReadOnlyOperation);
         }
 
-        if (checkUnique && !accessResult.isPresent()) {
+        if (checkUnique && accessResult.isEmpty()) {
             accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate, certificateId);
         }
 
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return accessResult.orElseGet(AccessResult::noProblem);
     }
 
     private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
@@ -495,7 +495,8 @@ public final class AccessServiceEvaluation {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
 
-            if (enhetsId == null && isAuthorized(intygsTyp, user, Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
+            if (enhetsId == null && isAuthorized(intygsTyp, user,
+                Collections.singletonList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
                 Collections.emptyList()).isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
@@ -550,7 +551,7 @@ public final class AccessServiceEvaluation {
 
         if (SekretessStatus.TRUE.equals(sekretessStatus)) {
             final Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, Collections.emptyList(),
-                Arrays.asList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+                Collections.singletonList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
             if (accessResult.isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
                     createMessage("User missing required privilege or cannot handle sekretessmarkerad patient")));
