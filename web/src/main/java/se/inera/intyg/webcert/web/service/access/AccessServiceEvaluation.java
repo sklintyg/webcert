@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
-
 import javax.validation.constraints.NotNull;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -59,6 +57,7 @@ public final class AccessServiceEvaluation {
     private String certificateId;
     private List<String> privileges = new ArrayList<>();
     private List<String> features = new ArrayList<>();
+    private List<String> blockFeatures = new ArrayList<>();
     private Vardenhet careUnit;
     private Personnummer patient;
 
@@ -167,6 +166,30 @@ public final class AccessServiceEvaluation {
     public AccessServiceEvaluation featureIf(@NotNull String feature, @NotNull boolean addFeature) {
         if (addFeature) {
             this.features.add(feature);
+        }
+        return this;
+    }
+
+    /**
+     * Add a feature to block access if active. This method can be called multiple times.
+     *
+     * @param blockFeature feature to block access
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation blockFeature(@NotNull String blockFeature) {
+        this.blockFeatures.add(blockFeature);
+        return this;
+    }
+
+    /**
+     * Add a feature to block access if activer IF the addBlockFeature is true. This method can be called multiple times.
+     *
+     * @param blockFeature feature to block access
+     * @param addFeature Only add feature if true.
+     */
+    public AccessServiceEvaluation blockFeatureIf(@NotNull String blockFeature, @NotNull boolean addFeature) {
+        if (addFeature) {
+            this.blockFeatures.add(blockFeature);
         }
         return this;
     }
@@ -376,6 +399,10 @@ public final class AccessServiceEvaluation {
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 
+        if (!blockFeatures.isEmpty() && !accessResult.isPresent()) {
+            accessResult = isBlockedRuleValid(user, blockFeatures);
+        }
+
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
                 invalidDeceasedCertificateTypes);
@@ -410,6 +437,17 @@ public final class AccessServiceEvaluation {
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
+        for (String blockFeature : blockFeatures) {
+            final var feature = user.getFeatures().get(blockFeature);
+            if (feature != null && feature.getGlobal()) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
+                    createMessage(String.format("Feature %s is active and blocks authorization", blockFeature))));
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {
