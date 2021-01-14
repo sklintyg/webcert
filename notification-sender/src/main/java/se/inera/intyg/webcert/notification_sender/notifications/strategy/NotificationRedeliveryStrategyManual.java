@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,17 +19,15 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
+import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.MANUAL;
 
 import com.google.common.collect.ImmutableList;
 import java.time.temporal.ChronoUnit;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-
-public class NotificationRedeliveryStrategyStandard implements NotificationRedeliveryStrategy {
-
-    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = STANDARD;
+public class NotificationRedeliveryStrategyManual implements NotificationRedeliveryStrategy {
+    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = MANUAL;
     private static final int MAX_REDELIVERIES = 2;
     private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEME = ImmutableList.of(
         Pair.of(ChronoUnit.MINUTES, 1),
@@ -44,7 +42,7 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
         // Pair.of(ChronoUnit.WEEKS, 1)
     );
 
-    public NotificationRedeliveryStrategyStandard() { }
+    public NotificationRedeliveryStrategyManual() { }
 
     @Override
     public NotificationRedeliveryStrategyEnum getName() {

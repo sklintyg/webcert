@@ -19,25 +19,19 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-public class NotificationRedeliveryMessage {
+public class NotificationRedeliveryMessage implements Serializable {
 
     private Intyg cert;
-    private String certId;
-    private String certType;
-    private String version;
     private Patient patient;
-    private Handelse event;
-    private Arenden sent;
-    private Arenden received;
+    private CertificateMessages sent;
+    private CertificateMessages received;
     private String reference;
-    private HsaId handler;
 
     public NotificationRedeliveryMessage() { }
 
@@ -49,30 +43,6 @@ public class NotificationRedeliveryMessage {
         this.cert = cert;
     }
 
-    public String getCertId() {
-        return certId;
-    }
-
-    public void setCertId(String certId) {
-        this.certId = certId;
-    }
-
-    public String getCertType() {
-        return certType;
-    }
-
-    public void setCertType(String certType) {
-        this.certType = certType;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public Patient getPatient() {
         return patient;
     }
@@ -81,27 +51,19 @@ public class NotificationRedeliveryMessage {
         this.patient = patient;
     }
 
-    public Handelse getEvent() {
-        return event;
-    }
-
-    public void setEvent(Handelse event) {
-        this.event = event;
-    }
-
-    public Arenden getSent() {
+    public CertificateMessages getSent() {
         return sent;
     }
 
-    public void setSent(Arenden sent) {
+    public void setSent(CertificateMessages sent) {
         this.sent = sent;
     }
 
-    public Arenden getReceived() {
+    public CertificateMessages getReceived() {
         return received;
     }
 
-    public void setReceived(Arenden received) {
+    public void setReceived(CertificateMessages received) {
         this.received = received;
     }
 
@@ -113,51 +75,36 @@ public class NotificationRedeliveryMessage {
         this.reference = reference;
     }
 
-    public HsaId getHandler() {
-        return handler;
-    }
-
-    public void setHandler(HsaId handler) {
-        this.handler = handler;
-    }
-
-    public NotificationRedeliveryMessage set(CertificateStatusUpdateForCareType statusUpdate) {
-        this.certId = statusUpdate.getIntyg().getIntygsId().getExtension();
-        this.certType = statusUpdate.getIntyg().getTyp().getCode().toLowerCase();
-        this.version = statusUpdate.getIntyg().getVersion();
-        this.event = statusUpdate.getHandelse();
-        this.sent = statusUpdate.getSkickadeFragor();
-        this.received = statusUpdate.getMottagnaFragor();
-        this.reference = statusUpdate.getRef();
-        this.handler = statusUpdate.getHanteratAv();
-
-        if (!isForSignedCertificate(statusUpdate)) {
-            this.cert = statusUpdate.getIntyg();
+    @JsonIgnore
+    public NotificationRedeliveryMessage set(Intyg certificate) {
+        if (!hasSignature(certificate)) {
+            this.cert = certificate;
         } else {
-            this.patient = statusUpdate.getIntyg().getPatient();
+            this.patient = certificate.getPatient();
         }
         return this;
     }
 
-    public CertificateStatusUpdateForCareType get() {
+    @JsonIgnore
+    public CertificateStatusUpdateForCareType getV3() {
         CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setHandelse(this.event);
-        statusUpdate.setSkickadeFragor(this.sent);
-        statusUpdate.setMottagnaFragor(this.received);
+        statusUpdate.setSkickadeFragor(this.sent.getArendenV3());
+        statusUpdate.setMottagnaFragor(this.received.getArendenV3());
         statusUpdate.setRef(this.reference);
-        statusUpdate.setHanteratAv(this.handler);
 
-        if (!this.isForSignedCertificate()) {
+        if (hasCertificate()) {
             statusUpdate.setIntyg(this.cert);
         }
         return statusUpdate;
     }
 
-    public boolean isForSignedCertificate() {
-        return this.cert == null;
+    @JsonIgnore
+    public boolean hasCertificate() {
+        return this.cert != null;
     }
 
-    private boolean isForSignedCertificate(CertificateStatusUpdateForCareType statusUpdate) {
-        return statusUpdate.getIntyg().getUnderskrift() != null;
+    @JsonIgnore
+    private boolean hasSignature(Intyg certificate) {
+        return certificate.getUnderskrift() != null;
     }
 }

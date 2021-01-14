@@ -22,26 +22,31 @@ package se.inera.intyg.webcert.persistence.notification.model;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Type;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 @Entity
 @Table(name = "NOTIFICATION_REDELIVERY")
 public class NotificationRedelivery {
 
     @Id
-    @Column(name = "CORRELATION_ID")
-    private String correlationId;
-
     @Column(name = "HANDELSE_ID")
     private Long eventId;
+
+    @Column(name = "CORRELATION_ID")
+    private String correlationId;
 
     @Column(name = "MESSAGE")
     private byte[] message;
 
     @Column(name = "REDELIVERY_STRATEGY")
-    private String redeliveryStrategy;
+    @Enumerated(EnumType.STRING)
+    private NotificationRedeliveryStrategyEnum redeliveryStrategy;
 
     // Jadira?
     @Column(name = "REDELIVERY_TIME")
@@ -49,26 +54,18 @@ public class NotificationRedelivery {
     private LocalDateTime redeliveryTime;
 
     @Column(name = "ATTEMPTED_DELIVERIES")
-    private int attemptedDeliveries;
+    private Integer attemptedDeliveries;
 
     public NotificationRedelivery() { }
 
-    public NotificationRedelivery(String correlationId, Long eventId, byte[] message, String redeliveryStrategy,
-        LocalDateTime redeliveryTime, int attemptedDeliveries) {
+    public NotificationRedelivery(String correlationId, Long eventId, byte[] message, NotificationRedeliveryStrategyEnum redeliveryStrategy,
+        LocalDateTime redeliveryTime, Integer attemptedDeliveries) {
         this.correlationId = correlationId;
         this.eventId = eventId;
         this.message = message;
         this.redeliveryStrategy = redeliveryStrategy;
         this.redeliveryTime = redeliveryTime;
         this.attemptedDeliveries = attemptedDeliveries;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
     }
 
     public Long getEventId() {
@@ -79,6 +76,14 @@ public class NotificationRedelivery {
         this.eventId = eventId;
     }
 
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
     public byte[] getMessage() {
         return message;
     }
@@ -87,11 +92,11 @@ public class NotificationRedelivery {
         this.message = message;
     }
 
-    public String getRedeliveryStrategy() {
+    public NotificationRedeliveryStrategyEnum getRedeliveryStrategy() {
         return redeliveryStrategy;
     }
 
-    public void setRedeliveryStrategy(String redeliveryStrategy) {
+    public void setRedeliveryStrategy(NotificationRedeliveryStrategyEnum redeliveryStrategy) {
         this.redeliveryStrategy = redeliveryStrategy;
     }
 
@@ -103,11 +108,11 @@ public class NotificationRedelivery {
         this.redeliveryTime = redeliveryTime;
     }
 
-    public int getAttemptedDeliveries() {
+    public Integer getAttemptedDeliveries() {
         return attemptedDeliveries;
     }
 
-    public void setAttemptedDeliveries(int attemptedRedeliveries) {
+    public void setAttemptedDeliveries(Integer attemptedRedeliveries) {
         this.attemptedDeliveries = attemptedRedeliveries;
     }
 }

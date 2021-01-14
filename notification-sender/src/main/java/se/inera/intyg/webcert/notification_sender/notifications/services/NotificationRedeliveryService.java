@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import java.util.List;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
@@ -28,27 +28,28 @@ public interface NotificationRedeliveryService {
 
     /**
      * Handles database operations and monitor logging upon successful delivery of status update to care.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
-     * @param event The event object to persist summarizing info from the status update sent to care.
      */
-    void handleNotificationSuccess(NotificationWSResultMessage resultMessage, Handelse event);
+    void handleNotificationSuccess(NotificationResultMessage resultMessage);
 
     /**
      * Handles database operations and monitor logging for status updates that failed, but have been flagged for redelivery.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
-     * @param event The event object to persist summarizing info from the status update sent to care.
      */
-    void handleNotificationResend(NotificationWSResultMessage resultMessage, Handelse event);
+    void handleNotificationResend(NotificationResultMessage resultMessage);
 
     /**
      * Handles database operations and monitor logging for status updates that failed and will not be redelivered.
+     *
      * @param resultMessage Message from caller collecting information necessary for operations.
-     * @param event The event object to persist summarizing info from the status update sent to care.
      */
-    void handleNotificationFailure(NotificationWSResultMessage resultMessage, Handelse event);
+    void handleNotificationFailure(NotificationResultMessage resultMessage);
 
     /**
      * Collects and returns the redeliveries that, based in their redelivery time, are scheduled for resend.
+     *
      * @return A list of NotificationRedeliveries to be resent.
      */
     List<NotificationRedelivery> getNotificationsForRedelivery();
@@ -57,5 +58,9 @@ public interface NotificationRedeliveryService {
 
     boolean isRedundantRedelivery(Handelse event);
 
-    void abortRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+    void discardRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+
+    void initiateManualNotification(NotificationRedelivery redelivery, Handelse event);
+
+    void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery);
 }

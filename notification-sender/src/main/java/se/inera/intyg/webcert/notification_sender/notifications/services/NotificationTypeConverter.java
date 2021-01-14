@@ -18,20 +18,27 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 public final class NotificationTypeConverter {
 
@@ -58,7 +65,7 @@ public final class NotificationTypeConverter {
      * It is needed because a utkast might not contain the information needed to meet the requirements of the service
      * contract. And we send not yet signed utkast in CertificateStatusUpdateForCare.
      */
-    private static void complementIntyg(Intyg intyg) {
+    public static void complementIntyg(Intyg intyg) {
         Enhet enhet = intyg.getSkapadAv().getEnhet();
         if (Strings.nullToEmpty(enhet.getArbetsplatskod().getExtension()).trim().isEmpty()) {
             enhet.getArbetsplatskod().setExtension(TEMPORARY_ARBETSPLATSKOD);
@@ -108,5 +115,36 @@ public final class NotificationTypeConverter {
         target.setEjBesvarade(source.getEjBesvarade());
         target.setHanterade(source.getHanterade());
         return target;
+    }
+
+    public static CertificateStatusUpdateForCareType createFailedStatusUpdate(NotificationMessage notificationMessage,
+        String certificateVersion, String patientId, String issuerId, String careProviderId, ModuleEntryPoint moduleEntryPoint) {
+
+        Vardgivare careProvider = new Vardgivare();
+        careProvider.setVardgivareId(NotificationRedeliveryUtil.getIIType(new HsaId(), careProviderId, HSA_ID_OID));
+
+        Enhet unit = new Enhet();
+        unit.setEnhetsId(NotificationRedeliveryUtil.getIIType(new HsaId(), notificationMessage.getLogiskAdress(), HSA_ID_OID));
+        unit.setVardgivare(careProvider);
+
+        HosPersonal hosPersonal = new HosPersonal();
+        hosPersonal.setPersonalId(NotificationRedeliveryUtil.getIIType(new HsaId(), issuerId, HSA_ID_OID));
+        hosPersonal.setEnhet(unit);
+
+        Intyg certificate = new Intyg();
+        certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), notificationMessage.getIntygsId(),
+            notificationMessage.getLogiskAdress()));
+        certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(moduleEntryPoint));
+        certificate.setVersion(certificateVersion);
+        certificate.setPatient(NotificationRedeliveryUtil.getPatient(patientId));
+        certificate.setSkapadAv(hosPersonal);
+
+        CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
+        statusUpdate.setIntyg(certificate);
+        statusUpdate.setRef(notificationMessage.getReference());
+        decorateWithHandelse(statusUpdate, notificationMessage);
+        decorateWithArenden(statusUpdate, notificationMessage);
+
+        return statusUpdate;
     }
 }

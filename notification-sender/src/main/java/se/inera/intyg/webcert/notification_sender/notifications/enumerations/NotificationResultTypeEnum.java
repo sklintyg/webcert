@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,22 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.common.enumerations;
+package se.inera.intyg.webcert.notification_sender.notifications.enumerations;
 
 import java.util.stream.Stream;
 
-public enum NotificationDeliveryStatusEnum {
+public enum NotificationResultTypeEnum {
 
-    SUCCESS("SUCCESS", "Notification delivery status success"),
-    RESEND("RESEND", "Notification delivery status resend"),
-    FAILURE("FAILURE", "Notification delivery status failure"),
-    DISCARD("DISCARD", "Notification delivery status discard"),
-    CLIENT("CLIENT", "Notification delivery status client");
+    OK("OK", "Notification result type OK"),
+    INFO("INFO", "Notification result type INFO"),
+    ERROR("ERROR", "Notification result type ERROR");
 
     private final String value;
     private final String description;
 
-    NotificationDeliveryStatusEnum(String value, String description) {
+    NotificationResultTypeEnum(String value, String description) {
         this.value = value;
         this.description = description;
     }
@@ -45,7 +43,7 @@ public enum NotificationDeliveryStatusEnum {
         return this.description;
     }
 
-    public static NotificationDeliveryStatusEnum fromValue(String value) {
+    public static NotificationResultTypeEnum fromValue(String value) {
         return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
             .orElseThrow(() -> new IllegalArgumentException(value));
     }

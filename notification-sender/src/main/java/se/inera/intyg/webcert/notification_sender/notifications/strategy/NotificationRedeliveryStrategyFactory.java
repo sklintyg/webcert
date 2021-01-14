@@ -20,18 +20,18 @@
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 
 @Service
 public class NotificationRedeliveryStrategyFactory {
 
-    public enum NotificationRedeliveryStrategyEnum { STANDARD }
 
     public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
         switch (notificationResendStrategy) {
-            case STANDARD :
-                return new NotificationRedeliveryStrategyStandard();
+            case MANUAL:
+                return new NotificationRedeliveryStrategyManual();
             default:
                 return new NotificationRedeliveryStrategyStandard();
         }

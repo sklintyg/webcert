@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
 import java.time.temporal.ChronoUnit;
-import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 public interface NotificationRedeliveryStrategy {
 
@@ -28,7 +28,7 @@ public interface NotificationRedeliveryStrategy {
 
     int getMaxRedeliveries();
 
-    ChronoUnit getNextTimeUnit(int attemptedRedeliveries);
+    ChronoUnit getNextTimeUnit(int attemptedDeliveries);
 
-    int getNextTimeValue(int attemptedRedeliveries);
+    int getNextTimeValue(int attemptedDeliveries);
 }

@@ -21,18 +21,15 @@ package se.inera.intyg.webcert.common.enumerations;
 
 import java.util.stream.Stream;
 
-public enum NotificationDeliveryStatusEnum {
+public enum NotificationRedeliveryStrategyEnum {
 
-    SUCCESS("SUCCESS", "Notification delivery status success"),
-    RESEND("RESEND", "Notification delivery status resend"),
-    FAILURE("FAILURE", "Notification delivery status failure"),
-    DISCARD("DISCARD", "Notification delivery status discard"),
-    CLIENT("CLIENT", "Notification delivery status client");
+    STANDARD("STANDARD", "Notification redelivery strategy standard"),
+    MANUAL("MANUAL", "Notification redelivery strategy manual");
 
     private final String value;
     private final String description;
 
-    NotificationDeliveryStatusEnum(String value, String description) {
+    NotificationRedeliveryStrategyEnum(String value, String description) {
         this.value = value;
         this.description = description;
     }
@@ -45,7 +42,7 @@ public enum NotificationDeliveryStatusEnum {
         return this.description;
     }
 
-    public static NotificationDeliveryStatusEnum fromValue(String value) {
+    public static NotificationRedeliveryStrategyEnum fromValue(String value) {
         return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
             .orElseThrow(() -> new IllegalArgumentException(value));
     }

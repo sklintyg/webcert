@@ -18,7 +18,11 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.ISSUER_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.PATIENT_ID;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
@@ -33,6 +37,9 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -46,6 +53,12 @@ public class NotificationTransformer {
 
     @Autowired
     private NotificationPatientEnricher notificationPatientEnricher;
+
+    @Autowired
+    HsaOrganizationsService organizationsService;
+
+    @Autowired
+    FeaturesHelper featuresHelper;
 
     @VisibleForTesting
     void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
@@ -73,14 +86,35 @@ public class NotificationTransformer {
         }
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
-            String intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message, notificationMessage.getUtkast());
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
 
-            Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
-            Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
-            notificationPatientEnricher.enrichWithPatient(intyg);
-            message.setBody(NotificationTypeConverter.convert(notificationMessage,
-                intyg));
+            try {
+                String intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
+                    notificationMessage.getUtkast());
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
+                Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+                Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
+                notificationPatientEnricher.enrichWithPatient(intyg);
+                message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
+            } catch (NullPointerException e) {
+
+                if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
+                    throw e;
+                } else {
+                    LOG.error("Failure sending notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+                        + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
+
+                    message.setHeader(IS_FAILED_MESSAGE, true);
+                    message.setBody(NotificationTypeConverter.createFailedStatusUpdate(
+                        notificationMessage,
+                        message.getHeader(INTYG_TYPE_VERSION, String.class),
+                        message.getHeader(PATIENT_ID, String.class),
+                        message.getHeader(ISSUER_ID, String.class),
+                        organizationsService.getVardgivareOfVardenhet(notificationMessage.getLogiskAdress()),
+                        moduleRegistry.getModuleEntryPoint(moduleRegistry.getModuleIdFromExternalId(message
+                            .getHeader(INTYGS_TYP, String.class))))
+                    );
+                }
+            }
         } else {
             throw new IllegalArgumentException("Unsupported combination of version '" + notificationMessage.getVersion() + "' and type '"
                 + notificationMessage.getIntygsTyp() + "'");
@@ -93,6 +127,8 @@ public class NotificationTransformer {
         if (message.getHeader(INTYG_TYPE_VERSION) != null) {
             return (String) message.getHeader(INTYG_TYPE_VERSION);
         }
-        return moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
+        String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
+        message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
+        return certificateVersion;
     }
 }

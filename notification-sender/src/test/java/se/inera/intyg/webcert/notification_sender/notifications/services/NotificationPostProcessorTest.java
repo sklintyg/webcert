@@ -47,9 +47,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoTransporter;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationWSResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -84,10 +86,8 @@ public class NotificationPostProcessorTest {
 
     private static final String CERTIFICATE_ID = "testCertificateId";
     private static final String LOGICAL_ADDRESS = "testLogicalAddress";
-    private static final String USER_ID = "testUser";
     private static final String CORRELATION_ID = "testCorrelationId";
     private static final String EVENT = "testSKAPAT";
-    private static final long TIMESTAMP = Instant.now().toEpochMilli();
 
     private static final ResultCodeType OK = ResultCodeType.OK;
     private static final ResultCodeType INFO = ResultCodeType.INFO;
@@ -112,124 +112,110 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void receiveMessageWithStatusOk() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(OK, null, "", null);
+        NotificationResultMessage resultMessage = buildResultMessage(OK, null, "", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
-        verify(notificationRedeliveryService).handleNotificationSuccess(isA(NotificationWSResultMessage.class), isA(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationSuccess(isA(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithStatusInfo() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(INFO, null, "Informative message", null);
+        NotificationResultMessage resultMessage = buildResultMessage(INFO, null, "Informative message", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationSuccess(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationSuccess(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithStatusTechnicalError() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, TECHNICAL_ERROR, "Technical error message", null);
+        NotificationResultMessage resultMessage = buildResultMessage(ERROR, TECHNICAL_ERROR, "Technical error message", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationResend(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationResend(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithStatusValidationError() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, VALIDATION_ERROR, "Validation error message", null);
+        NotificationResultMessage resultMessage = buildResultMessage(ERROR, VALIDATION_ERROR, "Validation error message", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithStatusApplicationError() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, APPLICATION_ERROR, "Application error message", null);
+        NotificationResultMessage resultMessage = buildResultMessage(ERROR, APPLICATION_ERROR, "Application error message", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithStatusRevoked() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(ERROR, REVOKED, "Revoked error message", null);
+        NotificationResultMessage resultMessage = buildResultMessage(ERROR, REVOKED, "Revoked error message", null);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithException() throws JsonProcessingException {
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "Revoked error message",
-            new ExceptionInfoTransporter(new RuntimeException("testRuntimeException")));
+        NotificationResultMessage resultMessage = buildResultMessage(null, null, "Revoked error message",
+            new ExceptionInfoMessage(new RuntimeException("testRuntimeException")));
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationResend(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationResend(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithSoapFaultExceptionAndMarshallingError() throws JsonProcessingException, SOAPException {
         SOAPFaultException soapFaultException = generateSoapFaultException("Marshalling Error");
-        ExceptionInfoTransporter exceptionInfoTransporter = new ExceptionInfoTransporter(soapFaultException);
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        ExceptionInfoMessage exceptionInfoMessage = new ExceptionInfoMessage(soapFaultException);
+        NotificationResultMessage resultMessage = buildResultMessage(null, null, "", exceptionInfoMessage);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationResultMessage.class));
     }
 
     @Test
     public void receiveMessageWithSoapFaultExceptionAndUnmarshallingError() throws JsonProcessingException, SOAPException {
         SOAPFaultException soapFaultException = generateSoapFaultException("Unmarshalling Error");
-        ExceptionInfoTransporter exceptionInfoTransporter = new ExceptionInfoTransporter(soapFaultException);
-        NotificationWSResultMessage resultMessage = buildWSResultMessage(null, null, "", exceptionInfoTransporter);
+        ExceptionInfoMessage exceptionInfoMessage = new ExceptionInfoMessage(soapFaultException);
+        NotificationResultMessage resultMessage = buildResultMessage(null, null, "", exceptionInfoMessage);
         String messageJson = objectMapper.writeValueAsString(resultMessage);
         when(message.getBody(String.class)).thenReturn(messageJson);
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationWSResultMessage.class), any(Handelse.class));
+        verify(notificationRedeliveryService).handleNotificationFailure(any(NotificationResultMessage.class));
     }
 
-
-    private NotificationWSResultMessage buildWSResultMessage(ResultCodeType code, ErrorIdType errorId, String resultText,
-        ExceptionInfoTransporter exceptionInfoTransporter) {
+    private NotificationResultMessage buildResultMessage(ResultCodeType code, ErrorIdType errorId, String resultText,
+        ExceptionInfoMessage exceptionInfoMessage) throws JsonProcessingException {
         CertificateStatusUpdateForCareResponseType statusUpdateResponse = buildStatusUpdateResponse(code, errorId, resultText);
-        NotificationWSResultMessage wsMessage = new NotificationWSResultMessage();
-        wsMessage.setCertificateId(CERTIFICATE_ID);
-        wsMessage.setCorrelationId(CORRELATION_ID);
-        wsMessage.setLogicalAddress(LOGICAL_ADDRESS);
-        wsMessage.setMessageTimestamp(TIMESTAMP);
-        wsMessage.setUserId(USER_ID);
-        wsMessage.setDeliveryStatus(null);
-        wsMessage.setStatusUpdate(buildStatusUpdateRequest());
-        wsMessage.setExceptionInfoTransporter(exceptionInfoTransporter);
-        wsMessage.setResultType(statusUpdateResponse.getResult());
-        return wsMessage;
-    }
-
-    private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
-        CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();
-        res.setIntyg(new Intyg());
-        res.getIntyg().setIntygsId(new IntygId());
-        res.getIntyg().getIntygsId().setExtension(CERTIFICATE_ID);
-        res.setHandelse(buildEventV3());
-        res.getIntyg().setPatient(buildPatient());
-        res.getIntyg().setSkapadAv(buildHosPersonal());
-        return res;
+        NotificationResultMessage resultMessage = new NotificationResultMessage();
+        resultMessage.setCertificateId(CERTIFICATE_ID);
+        resultMessage.setCorrelationId(CORRELATION_ID);
+        resultMessage.setLogicalAddress(LOGICAL_ADDRESS);
+        resultMessage.setEvent(new Handelse());
+        resultMessage.setRedeliveryMessageBytes(objectMapper.writeValueAsBytes(new NotificationRedeliveryMessage()));
+        resultMessage.setExceptionInfoMessage(exceptionInfoMessage);
+        resultMessage.setResultType(new NotificationResultType(statusUpdateResponse.getResult()));
+        return resultMessage;
     }
 
     private CertificateStatusUpdateForCareResponseType buildStatusUpdateResponse(ResultCodeType code, ErrorIdType errorId, String resultText) {
@@ -239,39 +225,6 @@ public class NotificationPostProcessorTest {
         res.getResult().setErrorId(errorId);
         res.getResult().setResultText(resultText);
         return res;
-    }
-
-    private se.riv.clinicalprocess.healthcond.certificate.v3.Handelse buildEventV3() {
-        se.riv.clinicalprocess.healthcond.certificate.v3.Handelse event = new se.riv.clinicalprocess.healthcond.certificate.v3.Handelse();
-        event.setHandelsekod(new Handelsekod());
-        event.getHandelsekod().setCode(HandelsekodEnum.SKAPAT.name());
-        return event;
-    }
-
-    private Patient buildPatient() {
-        Patient patient = new Patient();
-        patient.setFornamn("fornamn");
-        patient.setEfternamn("efternamn");
-        patient.setPersonId(new PersonId());
-        patient.getPersonId().setExtension("1912121212");
-        return patient;
-    }
-
-    private HosPersonal buildHosPersonal() {
-        Vardgivare careProvider = new Vardgivare();
-        HsaId careProviderHsaId = new HsaId();
-        careProviderHsaId.setExtension("testCareProvider");
-        careProvider.setVardgivareId(careProviderHsaId);
-
-        Enhet unit = new Enhet();
-        HsaId unitHsaId = new HsaId();
-        unitHsaId.setExtension("testUnit");
-        unit.setEnhetsId(unitHsaId);
-        unit.setVardgivare(careProvider);
-
-        HosPersonal hosPersonal = new HosPersonal();
-        hosPersonal.setEnhet(unit);
-        return hosPersonal;
     }
 
     private SOAPFaultException generateSoapFaultException(String message) throws SOAPException {

@@ -20,16 +20,16 @@
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
 
-public class ExceptionInfoTransporter {
+public class ExceptionInfoMessage {
 
     private String exceptionType;
     private String exceptionMessage;
     private StackTraceElement[] stackTrace;
 
 
-    public ExceptionInfoTransporter() { }
+    public ExceptionInfoMessage() { }
     // TODO Consider removing the stacktrace.
-    public ExceptionInfoTransporter(Exception exception) {
+    public ExceptionInfoMessage(Exception exception) {
         this.exceptionType = exception.getClass().getName();
         this.exceptionMessage = exception.getMessage();
         this.stackTrace = exception.getStackTrace();

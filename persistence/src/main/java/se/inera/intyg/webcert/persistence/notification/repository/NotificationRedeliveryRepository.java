@@ -29,9 +29,13 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
 
     Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
 
-    List<NotificationRedelivery> findByEventId(Long handelseId);
+    List<NotificationRedelivery> findByCorrelationIdNull();
+
+    Optional<NotificationRedelivery> findByEventId(Long handelseId);
 
     List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
 
-    List<NotificationRedelivery> findByAttemptedDeliveries(int attemptedDeliveries);
+    List<NotificationRedelivery> findByRedeliveryTime(LocalDateTime currentTime);
+
+    List<NotificationRedelivery> findByAttemptedDeliveries(Integer attemptedDeliveries);
 }

@@ -82,6 +82,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -108,6 +109,8 @@ public class NotificationServiceImplTest {
     private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
     private static final String ARENDE_ID = "arendeId";
     private static final String VARDGIVAR_ID = "vardgivarId";
+    private static final String SKAPAD_AV_HSA_ID = "skapadAvHsaID";
+    private static final String SKAPAD_AV_FULL_NAME = "Firstname Lastname";
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElse(null);
 
@@ -1025,6 +1028,7 @@ public class NotificationServiceImplTest {
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         utkast.setModel(INTYG_JSON);
         utkast.setPatientPersonnummer(PATIENT_ID);
+        utkast.setSkapadAv(new VardpersonReferens(SKAPAD_AV_HSA_ID, SKAPAD_AV_FULL_NAME));
         return utkast;
     }
 

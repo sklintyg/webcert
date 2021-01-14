@@ -77,6 +77,15 @@ public class Handelse {
     @Enumerated(EnumType.STRING)
     private NotificationDeliveryStatusEnum deliveryStatus;
 
+    @Column(name = "CERTIFICATE_TYPE")
+    private String certificateType;
+
+    @Column(name = "CERTIFICATE_VERSION")
+    private String certificateVersion;
+
+    @Column(name = "CERTIFICATE_ISSUER")
+    private String certificateIssuer;
+
     public Handelse() {
     }
 
@@ -166,5 +175,29 @@ public class Handelse {
 
     public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
+    }
+
+    public String getCertificateType() {
+        return certificateType;
+    }
+
+    public void setCertificateType(String certificateType) {
+        this.certificateType = certificateType;
+    }
+
+    public String getCertificateVersion() {
+        return certificateVersion;
+    }
+
+    public void setCertificateVersion(String certificateVersion) {
+        this.certificateVersion = certificateVersion;
+    }
+
+    public String getCertificateIssuer() {
+        return certificateIssuer;
+    }
+
+    public void setCertificateIssuer(String certificateIssuer) {
+        this.certificateIssuer = certificateIssuer;
     }
 }
