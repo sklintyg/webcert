@@ -75,6 +75,7 @@ public class NotificationPostProcessor {
     private void processNotificationResult(NotificationResultMessage resultMessage) {
 
         NotificationDeliveryStatusEnum deliveryStatus = extractDeliveryStatusFromResult(resultMessage);
+        // TODO: Why changing the event here?
         resultMessage.getEvent().setDeliveryStatus(deliveryStatus);
 
         switch (deliveryStatus) {

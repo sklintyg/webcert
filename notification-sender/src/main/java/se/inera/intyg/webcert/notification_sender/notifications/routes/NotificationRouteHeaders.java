@@ -28,9 +28,11 @@ public final class NotificationRouteHeaders {
     public static final String VERSION = "version";
     public static final String USER_ID = "userId";
     public static final String CORRELATION_ID = "correlationId";
+    // TODO: Can be removed if NotificationTransformer is modified...
     public static final String PATIENT_ID = "patientId";
     public static final String ISSUER_ID = "issuerId";
     public static final String IS_FAILED_MESSAGE = "isFailedMessage";
+    // TODO: Maybe this can be removed? Only use resend strategy.
     public static final String IS_MANUAL_REDELIVERY = "isManualRedelivery";
 
     private NotificationRouteHeaders() {

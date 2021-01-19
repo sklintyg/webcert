@@ -42,11 +42,9 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -119,6 +117,7 @@ public class NotificationWSSender {
 
     private void postProcessSendResult(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate) {
 
+        // TODO: What does this if-statement do?
         if (resultMessage.getResultType().getNotificationResult() == NotificationResultTypeEnum.ERROR
             || resultMessage.getExceptionInfoMessage() != null) {
             resultMessage.setRedeliveryMessageBytes(getRedeliveryMessageBytes(statusUpdate));

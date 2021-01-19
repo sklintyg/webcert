@@ -95,11 +95,14 @@ public class NotificationTransformer {
                 Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
                 notificationPatientEnricher.enrichWithPatient(intyg);
                 message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
-            } catch (NullPointerException e) {
 
+                // TODO: Can catch Exception...
+            } catch (NullPointerException e) {
                 if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
                     throw e;
                 } else {
+                    // TODO: Could this instead be to create a message to put on post-processing and then throw an exception.
+                    // TODO: Extract to method.
                     LOG.error("Failure sending notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
                         + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
 
@@ -109,6 +112,7 @@ public class NotificationTransformer {
                         message.getHeader(INTYG_TYPE_VERSION, String.class),
                         message.getHeader(PATIENT_ID, String.class),
                         message.getHeader(ISSUER_ID, String.class),
+                        // TODO: Could this be done without using OrganizationsService? What happens if this fails?
                         organizationsService.getVardgivareOfVardenhet(notificationMessage.getLogiskAdress()),
                         moduleRegistry.getModuleEntryPoint(moduleRegistry.getModuleIdFromExternalId(message
                             .getHeader(INTYGS_TYP, String.class))))

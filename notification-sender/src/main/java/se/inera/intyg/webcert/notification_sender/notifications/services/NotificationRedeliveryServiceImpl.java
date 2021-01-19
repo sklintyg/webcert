@@ -40,11 +40,11 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategy;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -135,6 +135,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
                 event.getDeliveryStatus());
             monitorEvent = persistEvent(event);
         } else if (resultMessage.getIsManualRedelivery()) { // Manually resent notification
+            // TODO: Could this be Delivery strategy that is manual instead of an attribute that says it is manual?
             LOG.debug("Updating manually resent notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
             monitorEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
@@ -145,6 +146,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             monitorEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
             deleteNotificationRedelivery(existingRedelivery);
         }
+        // TODO: Consider overloading instead of sending null to parameters you don't have.
         monitorLog(monitorEvent, resultMessage, null); // log success or failure
     }
 
