@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.access;
 
 /**
@@ -89,5 +88,11 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action when certificate is flagged as a test certificate.
      */
-    TEST_CERTIFICATE;
+    TEST_CERTIFICATE,
+
+    /**
+     * No access. Not allowed to perform action because it is blocked.
+     */
+    AUTHORIZATION_BLOCKED;
+
 }

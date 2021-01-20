@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,8 +30,7 @@ module.exports = {
       'id': intygsID,
       'typ': 'ADHD',
       'intygetAvser': {
-        'am': 'AM',
-        'a1': 'A1'
+        'am': 'AM'
       },
       'identitet': {
         'svensktKortkort': 'Svenskt körkort'
@@ -43,21 +42,14 @@ module.exports = {
         'diagnosAr': '2019'
       },
       'lakemedelsbehandling': {
-        'harHaft': 'Ja',
-        'pagar': 'Ja',
-        'aktuell': 'Aktuell behandling',
-        'pagatt': 'Ja',
-        'effekt': 'Ja',
-        'foljsamhet': 'Ja'
+        'harHaft': 'Nej'
       },
       'symptom': {
         'bedomningAvSymptom': 'Symptom',
         'prognosTillstandGod': 'Ja'
       },
-      'ovrigt': 'Övrigt',
       'bedomning': {
-        'am': 'AM',
-        'a': 'A'
+        'am': 'AM'
       }
     };
   }

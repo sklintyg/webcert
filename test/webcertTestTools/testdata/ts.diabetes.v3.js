@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,16 +36,13 @@ module.exports = {
     return {
       'id': intygsID,
       'typ': 'Transportstyrelsens läkarintyg diabetes',
-      'korkortstyper': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A'],
+      'korkortstyper': ['A1'],
       'identitetStyrktGenom': 'Svenskt körkort',
       'allmant': {
         'year': 2016,
         'typ': 'Typ 1',
         'behandling': {
-          'typer': ['Insulin', 'Annan behandling', 'Tabletter'],
-          'riskForHypoglykemi': 'Ja',
-          'insulinYear': 2017,
-          'annanBehandlingBeskrivning': 'Hypnos behandling'
+          'typer': ['Endast kost']
         }
       },
       'hypoglykemier': {
@@ -64,16 +61,15 @@ module.exports = {
         'jDatum': twoDaysAgo
       },
       'synfunktion': {
-        'a': 'Ja',
-        'b': 'Nej',
-        'styrkor': testValues.getRandomStyrka()
+        'a': 'Nej',
+        "styrkor": {
+          "houk": "1.1",
+          "vouk": "1.6",
+          "buk": "1.8"
+        }
       },
-      'kommentar': 'wrlTWNKA08ÖePpBB',
-      'specialist': '4YråJOäqkö2YxRRd',
       'bedomning': {
-        'lamplig': 'Ja',
-        'borUndersokasBeskrivning': 'Tjillevippen',
-        'behorigheter': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A']
+        'behorigheter': ['A1']
       }
     };
   }

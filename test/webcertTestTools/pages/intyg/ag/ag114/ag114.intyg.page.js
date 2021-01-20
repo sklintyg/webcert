@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -69,7 +69,7 @@ var Ag114Intyg = AgBaseIntyg._extend({
   },
   verifieraOnskarFormedlaDiagnos: function(data) {
     if (data.onskarFormedlaDiagnos.value !== undefined) {
-      expect(this.onskarFormedlaDiagnos.value.getText()).toBe(data.onskarFormedlaDiagnos.yes);
+      expect(this.onskarFormedlaDiagnos.value.getText()).toBe(data.onskarFormedlaDiagnos.no);
     }
     if (data.onskarFormedlaDiagnos.diagnoser !== undefined) {
       for (var i = 0; i < data.onskarFormedlaDiagnos.diagnoser.length; i++) {
@@ -97,7 +97,7 @@ var Ag114Intyg = AgBaseIntyg._extend({
     }
   },
   verifieraOvrigt: function(data) {
-    expect(this.ovrigt.getText()).toBe(data.ovrigt);
+    expect(this.ovrigt.getText()).toBe('Ej angivet');
   }
 });
 

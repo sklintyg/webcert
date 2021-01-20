@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,7 @@ import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
 import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -79,6 +79,8 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     public AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST)
             .careUnit(careUnit)

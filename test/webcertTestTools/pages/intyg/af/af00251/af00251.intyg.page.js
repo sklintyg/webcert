@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -74,7 +74,6 @@ var Af00251Intyg = AfBaseIntyg._extend({
   },
   verify: function(data) {
     this.verifieraMinUndersokning(data.minUndersokning);
-    this.verifieraAnnanUndersokning(data.annanUndersokning);
     this.verifieraArbetsmarknadspolitisktProgram(data.arbetsmarknadspolitisktProgram);
     this.verifieraFunktionsnedsattning(data.funktionsNedsattning);
     this.verifieraAktivitetsbegransning(data.aktivitetsBegransning);

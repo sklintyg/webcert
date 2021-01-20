@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.access;
 
 import java.util.ArrayList;
@@ -26,9 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
-
 import javax.validation.constraints.NotNull;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -58,8 +55,9 @@ public final class AccessServiceEvaluation {
     private WebCertUser user;
     private String certificateType;
     private String certificateId;
-    private List<String> privileges = new ArrayList<>();
-    private List<String> features = new ArrayList<>();
+    private final List<String> privileges = new ArrayList<>();
+    private final List<String> features = new ArrayList<>();
+    private final List<String> blockFeatures = new ArrayList<>();
     private Vardenhet careUnit;
     private Personnummer patient;
 
@@ -80,12 +78,12 @@ public final class AccessServiceEvaluation {
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
 
-    private List<String> excludeRenewCertificateTypes = new ArrayList<>();
-    private List<String> excludeUnitCertificateTypes = new ArrayList<>();
-    private List<String> excludeDeceasedCertificateTypes = new ArrayList<>();
-    private List<String> excludeInactiveCertificateTypes = new ArrayList<>();
+    private final List<String> excludeRenewCertificateTypes = new ArrayList<>();
+    private final List<String> excludeUnitCertificateTypes = new ArrayList<>();
+    private final List<String> excludeDeceasedCertificateTypes = new ArrayList<>();
+    private final List<String> excludeInactiveCertificateTypes = new ArrayList<>();
 
-    private List<String> invalidDeceasedCertificateTypes = new ArrayList<>();
+    private final List<String> invalidDeceasedCertificateTypes = new ArrayList<>();
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
@@ -168,6 +166,30 @@ public final class AccessServiceEvaluation {
     public AccessServiceEvaluation featureIf(@NotNull String feature, @NotNull boolean addFeature) {
         if (addFeature) {
             this.features.add(feature);
+        }
+        return this;
+    }
+
+    /**
+     * Add a feature to block access if active. This method can be called multiple times.
+     *
+     * @param blockFeature feature to block access
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation blockFeature(@NotNull String blockFeature) {
+        this.blockFeatures.add(blockFeature);
+        return this;
+    }
+
+    /**
+     * Add a feature to block access if activer IF the addBlockFeature is true. This method can be called multiple times.
+     *
+     * @param blockFeature feature to block access
+     * @param addFeature Only add feature if true.
+     */
+    public AccessServiceEvaluation blockFeatureIf(@NotNull String blockFeature, @NotNull boolean addFeature) {
+        if (addFeature) {
+            this.blockFeatures.add(blockFeature);
         }
         return this;
     }
@@ -377,40 +399,55 @@ public final class AccessServiceEvaluation {
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 
-        if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (!blockFeatures.isEmpty() && accessResult.isEmpty()) {
+            accessResult = isBlockedRuleValid(user, blockFeatures);
+        }
+
+        if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
                 invalidDeceasedCertificateTypes);
         }
 
-        if (checkPatientTestIndicator && !accessResult.isPresent()) {
+        if (checkPatientTestIndicator && accessResult.isEmpty()) {
             accessResult = isPatientTestIndicated(patient, careUnit.getEnhetsid(), allowTestIndicatorForSameUnit);
         }
 
-        if (checkTestCertificate && !accessResult.isPresent()) {
+        if (checkTestCertificate && accessResult.isEmpty()) {
             accessResult = isTestCertificate(isTestCertificate);
         }
 
-        if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isInactiveUnitRuleValid(user, careUnit.getEnhetsid(), allowInactiveForSameUnit);
         }
 
-        if (checkRenew && !excludeRenewCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkRenew && !excludeRenewCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isRenewRuleValid(user, careUnit.getEnhetsid(), allowRenewForSameUnit);
         }
 
-        if (checkPatientSecrecy && !accessResult.isPresent()) {
+        if (checkPatientSecrecy && accessResult.isEmpty()) {
             accessResult = isSekretessRuleValid(certificateType, careUnit.getEnhetsid(), user, patient);
         }
 
-        if (checkUnit && !excludeUnitCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
+        if (checkUnit && !excludeUnitCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isUnitRuleValid(careUnit, user, allowSJF, isReadOnlyOperation);
         }
 
-        if (checkUnique && !accessResult.isPresent()) {
+        if (checkUnique && accessResult.isEmpty()) {
             accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate, certificateId);
         }
 
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return accessResult.orElseGet(AccessResult::noProblem);
+    }
+
+    private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
+        for (String blockFeature : blockFeatures) {
+            final var feature = user.getFeatures().get(blockFeature);
+            if (feature != null && feature.getGlobal()) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
+                    createMessage(String.format("Feature %s is active and blocks authorization", blockFeature))));
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {
@@ -458,7 +495,8 @@ public final class AccessServiceEvaluation {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
 
-            if (enhetsId == null && isAuthorized(intygsTyp, user, Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
+            if (enhetsId == null && isAuthorized(intygsTyp, user,
+                Collections.singletonList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
                 Collections.emptyList()).isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
@@ -513,7 +551,7 @@ public final class AccessServiceEvaluation {
 
         if (SekretessStatus.TRUE.equals(sekretessStatus)) {
             final Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, Collections.emptyList(),
-                Arrays.asList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+                Collections.singletonList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
             if (accessResult.isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
                     createMessage("User missing required privilege or cannot handle sekretessmarkerad patient")));

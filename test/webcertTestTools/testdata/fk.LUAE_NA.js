@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,55 +35,32 @@ module.exports = {
       typ: 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
       baseratPa: {
         minUndersokningAvPatienten: '2017-09-26',
-        journaluppgifter: '2017-09-26',
-        anhorigsBeskrivning: '2017-09-26',
-        annat: '2017-09-26',
-        annatBeskrivning: 'Mliö62f4OrsNgKäB',
         personligKannedom: '2017-09-26'
       },
-      andraMedicinskaUtredningar: [{
-        underlag: 'Övrigt',
-        datum: '2016-04-09',
-        infoOmUtredningen: 'tSE0JcyzBKux55rP'
-      }],
       diagnos: {
         diagnoser: [{
-          kod: "Z413",
-          bakgrund: "AmÄ4N2DGrzPbDÅaP"
+          kod: "Z413"
         }],
         narOchVarStalldesDiagnoserna: 'QYCVäåuQWseawWSd',
-        nyBedomning: true,
-        diagnosForNyBedomning: 'o2ÖD423TOqrTj1hr'
+        nyBedomning: false
       },
       sjukdomsForlopp: '8XkulDgjrtcHWkxw',
       funktionsnedsattning: {
         intellektuell: 'Svajig i benen',
-        kommunikation: 'Total',
-        koncentration: 'Svajig i benen',
-        psykisk: 'Total',
-        synHorselTal: 'Inget tal',
-        balansKoordination: 'Ingen koncentration',
-        annan: 'Ingen koncentration'
+        kommunikation: 'Ej angivet',
+        koncentration: 'Ej angivet',
+        psykisk: 'Ej angivet',
+        synHorselTal: 'Ej angivet',
+        balansKoordination: 'Ej angivet',
+        annan: 'Ej angivet'
       },
       aktivitetsbegransning: 'D2åUURoA6fODF7iI',
-      medicinskbehandling: {
-        avslutad: 'Kostrådgivning',
-        pagaende: 'Lågkaloridiet',
-        planerad: 'Kostrådgivning',
-        substansintag: 'Alvedon'
-      },
+      medicinskbehandling: {},
       medicinskaForutsattningar: {
-        utecklasOverTid: 'Q5KWnk1äbEvmÄIJö',
-        trotsBegransningar: 'ÅÖ2A8ÖE0WCTmEXMa',
-        forslagTillAtgard: 'DG2PDZZ4Q3XRzJåq'
+        utecklasOverTid: 'Q5KWnk1äbEvmÄIJö'
       },
-      ovrigt: 'bÖBv3EATatnwd211',
-      kontaktMedFk: true,
-      tillaggsfragor: [{
-        svar: 'FKY1E5fijr9NM6SA'
-      }, {
-        svar: 'ucrQIäf19L3n2k38'
-      }]
+      ovrigt: 'Ej angivet',
+      kontaktMedFk: false
     };
   },
   getRandom: function(intygsID) {

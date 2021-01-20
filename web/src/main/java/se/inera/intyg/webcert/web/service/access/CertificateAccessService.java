@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.access;
 
 /**
@@ -95,6 +94,14 @@ public interface CertificateAccessService {
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters, boolean newCertificate);
+
+    /**
+     * Check if the user is allowed to create a new draft from a signed certificate/template.
+     *
+     * @param accessEvaluationParameters Parameters to use for access evaluation
+     * @return AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters);
 
     /**
      * Check if the user is allowed to answer a administrative question for a certificate.

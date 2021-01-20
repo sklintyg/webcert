@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -70,6 +69,16 @@ public final class CertificateAccessServiceHelper {
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
+    public void validateAllowCreateDraftFromSignedTemplate(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToReplace(
+            AccessEvaluationParameters.create(utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                utlatande.getGrundData().isTestIntyg()));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
     private Vardenhet getVardenhet(Utlatande utlatande) {
         return utlatande.getGrundData().getSkapadAv().getVardenhet();
     }
@@ -77,5 +86,4 @@ public final class CertificateAccessServiceHelper {
     private Personnummer getPersonnummer(Utlatande utlatande) {
         return utlatande.getGrundData().getPatient().getPersonId();
     }
-
 }

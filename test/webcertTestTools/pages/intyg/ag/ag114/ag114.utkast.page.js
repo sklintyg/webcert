@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -65,25 +65,7 @@ var Ag114Utkast = AgBaseUtkast._extend({
       return Promise.resolve();
     } else {
       var el = this.onskarFormedlaDiagnos;
-      return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
-      .then(function() {
-        return pageHelpers.moveAndSendKeys(el.diagnosRow(0).kod, onskarFormedlaDiagnos.diagnoser[0])
-        .then(function() {
-          return pageHelpers.moveAndSendKeys(el.diagnosRow(0).kod, protractor.Key.TAB);
-        })
-        .then(function() {
-          return pageHelpers.moveAndSendKeys(el.diagnosRow(1).kod, onskarFormedlaDiagnos.diagnoser[1])
-          .then(function() {
-            return pageHelpers.moveAndSendKeys(el.diagnosRow(1).kod, protractor.Key.TAB);
-          })
-          .then(function() {
-            return pageHelpers.moveAndSendKeys(el.diagnosRow(2).kod, onskarFormedlaDiagnos.diagnoser[2])
-            .then(function() {
-              return pageHelpers.moveAndSendKeys(el.diagnosRow(2).kod, protractor.Key.TAB);
-            });
-          })
-        })
-      });
+      return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE)
     }
   },
   angeDiagnosKoder: function(diagnoser) {
@@ -102,11 +84,7 @@ var Ag114Utkast = AgBaseUtkast._extend({
       var el = this.nedsattArbetsformaga;
       return pageHelpers.moveAndSendKeys(el.text, nedsattArbetsformaga.text)
       .then(function() {
-        return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
-        .then(function() {
-          return pageHelpers.moveAndSendKeys(el.formaga, nedsattArbetsformaga.formaga);
-        })
-
+        return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE)
       });
     }
   },

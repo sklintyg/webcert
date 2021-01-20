@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,15 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -152,6 +149,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
         if (certificateAccessService.allowToApproveReceivers(accessEvaluationParameters).isAllowed()) {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
+        }
+
+        if (certificateAccessService.allowToCreateDraftFromSignedTemplate(accessEvaluationParameters).isAllowed()) {
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST_FRAN_INTYG));
         }
 
         final List<ActionLink> actionLinkList = getActionLinksForQuestions(accessEvaluationParameters);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,7 +20,6 @@
 /**
  * Created by bennysce on 09/12/15.
  */
-/*globals element,by, protractor, Promise*/
 'use strict';
 
 var BaseTsUtkast = require('../ts.base.utkast.page.js');
@@ -47,7 +46,6 @@ var TsTrk1009Utkast = BaseTsUtkast._extend({
 
     this.intygetAvserBehorigheter = element(by.id('form_intygetAvserBehorigheter-typer')).all(by.css('label'));
 
-    this.informationOmTsBeslutOnskas = element(by.id('informationOmTsBeslutOnskas'));
   },
   fillInIdentitetStyrktGenom1009: function(idtyp) {
     return this.identitetStyrktGenom.element(by.cssContainingText('label', idtyp)).click();
@@ -62,11 +60,6 @@ var TsTrk1009Utkast = BaseTsUtkast._extend({
   fillBehorigheter: function(behorigheter) {
     return pageHelpers.selectAllCheckBoxes(this.intygetAvserBehorigheter, behorigheter);
   },
-  fillInformationOmTsBeslutOnskas: function(informationOmTsBeslutOnskas) {
-    if (informationOmTsBeslutOnskas) {
-      this.informationOmTsBeslutOnskas.click();
-    }
-  }
 });
 
 module.exports = new TsTrk1009Utkast();

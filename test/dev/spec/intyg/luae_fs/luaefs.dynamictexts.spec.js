@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 
-describe('Create luae_fs utkast and check dynamic texts', function() {
+xdescribe('Create luae_fs utkast and check dynamic texts', function() {
 
   var utkast = null;
   var intyg = null;

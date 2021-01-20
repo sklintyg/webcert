@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -228,7 +228,10 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
 
   verifieraMedicinskaForutsattningar: function(data) {
     expect(this.medicinskaForutsattningar.utecklasOverTid.getText()).toBe(data.medicinskaForutsattningar.utecklasOverTid);
-    expect(this.medicinskaForutsattningar.trotsBegransningar.getText()).toBe(data.medicinskaForutsattningar.trotsBegransningar);
+
+    if (data.medicinskaForutsattningar.trotsBegransningar) {
+      expect(this.medicinskaForutsattningar.trotsBegransningar.getText()).toBe(data.medicinskaForutsattningar.trotsBegransningar);
+    }
 
     if (data.medicinskaForutsattningar.forslagTillAtgard) {
       expect(this.medicinskaForutsattningar.forslagTillAtgard.getText()).toBe(data.medicinskaForutsattningar.forslagTillAtgard);

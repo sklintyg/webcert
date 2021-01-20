@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -67,10 +67,10 @@ xdescribe('Create and Sign ts-diabetes v2 utkast', function() {
       UtkastPage.fillInBedomning(data.bedomning);
     });
     it('fillInOvrigKommentar', function() {
-      UtkastPage.enableAutosave();
       UtkastPage.fillInOvrigKommentar(data);
     });
     it('fillInSpecialist', function() {
+      UtkastPage.enableAutosave();
       UtkastPage.fillInSpecialist(data.specialist);
     });
   });

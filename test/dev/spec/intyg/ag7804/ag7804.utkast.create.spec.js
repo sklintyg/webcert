@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,7 +36,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     specHelper.login();
   });
 
-  describe('smittskydd', function() {
+  xdescribe('smittskydd', function() {
     beforeAll(function() {
       ValjIntygPage.get();
       specHelper.createUtkastForPatient('191212121212', 'ag7804');
@@ -62,12 +62,12 @@ describe('Create and Sign an AG7804 utkast', function() {
       it('angeArbetsformaga', function() {
         UtkastPage.angeArbetsformaga(data.arbetsformaga);
       });
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigt(data.ovrigt);
-        UtkastPage.enableAutosave();
-      });
       it('angeKontaktMedAg', function() {
         UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
+      });
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigt(data.ovrigt);
       });
     });
 
@@ -89,10 +89,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
-
+      IntygPage.verify(data);
       expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
     });
 
@@ -149,15 +146,15 @@ describe('Create and Sign an AG7804 utkast', function() {
       it('angeAtgarder', function() {
         UtkastPage.angeAtgarder(data.atgarder);
       });
-      it('angeOvrigaUpplysningar', function() {
-        UtkastPage.angeOvrigt(data.ovrigt);
-      });
 
       it('angeKontaktMedAG', function() {
-        UtkastPage.enableAutosave();
         UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
       });
 
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.enableAutosave();
+        UtkastPage.angeOvrigt(data.ovrigt);
+      });
     });
 
     it('Signera intyget', function() {
@@ -177,9 +174,7 @@ describe('Create and Sign an AG7804 utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-      IntygPage.whenCertificateLoaded().then(function() {
-        IntygPage.verify(data);
-      });
+      IntygPage.verify(data);
     });
 
     afterAll(function() {
