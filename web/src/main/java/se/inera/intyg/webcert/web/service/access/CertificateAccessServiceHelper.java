@@ -70,7 +70,7 @@ public final class CertificateAccessServiceHelper {
     }
 
     public void validateAllowCreateDraftFromSignedTemplate(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToReplace(
+        final AccessResult accessResult = certificateAccessService.allowToCreateDraftFromSignedTemplate(
             AccessEvaluationParameters.create(utlatande.getTyp(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
