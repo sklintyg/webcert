@@ -167,11 +167,8 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
                 event.getDeliveryStatus());
             createManualNotificationRedelivery(existingRedelivery, resultMessage, updatedEvent);
         } else {
-            Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
-            LOG.debug("Updating persisted notification with eventId {} with delivery status {}", event.getId(),
-                event.getDeliveryStatus());
             updateNotificationRedelivery(existingRedelivery, getRedeliveryStrategy(existingRedelivery.getRedeliveryStrategy()),
-                resultMessage, updatedEvent);
+                resultMessage, event);
         }
     }
 
@@ -212,12 +209,15 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         final int maxRedeliveries = strategy.getMaxRedeliveries();
 
         if (attemptedDeliveries - 1 < maxRedeliveries) {
-            LOG.debug("Updating redelivery notification for eventId {}", event.getId());
+            Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
+            LOG.debug("Updating persisted notification with eventId {} with delivery status {}", updatedEvent.getId(),
+                updatedEvent.getDeliveryStatus());
+            LOG.debug("Updating redelivery notification for eventId {}", updatedEvent.getId());
             existingRedelivery.setAttemptedDeliveries(attemptedDeliveries);
             existingRedelivery.setRedeliveryTime(existingRedelivery.getRedeliveryTime()
                 .plus(strategy.getNextTimeValue(attemptedDeliveries), strategy.getNextTimeUnit(attemptedDeliveries)));
             NotificationRedelivery updatedRedelivery = notificationRedeliveryRepo.save(existingRedelivery);
-            monitorLog(event, resultMessage, updatedRedelivery); // log resend
+            monitorLog(updatedEvent, resultMessage, updatedRedelivery); // log resend
         } else {
             LOG.warn("Setting redelivery failure for eventId {}", event.getId());
             Handelse updatedEvent = updateExistingEvent(existingRedelivery, FAILURE);
@@ -277,6 +277,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
     private void monitorLog(@NonNull Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
 
+        // TODO: Check if it should be logical address or unit id. Logical address is already in the result message: resultMessage.getLogicalAddress()
         String logicalAddress = event.getEnhetsId();
         Long eventId = event.getId();
         String eventType = event.getCode() != null ? event.getCode().name() : null;
