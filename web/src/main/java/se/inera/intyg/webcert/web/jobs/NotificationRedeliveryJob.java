@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,8 +23,6 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_MANUAL_REDELIVERY;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
@@ -68,7 +66,6 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -155,8 +152,6 @@ public class NotificationRedeliveryJob {
 
         for (NotificationRedelivery redelivery : redeliveryList) {
 
-            // TODO Investigate the perceived behaviour where ts certificates appear to never be found in
-            // the webcert database. When does this happen and why?
             try {
                 final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
 
@@ -172,7 +167,7 @@ public class NotificationRedeliveryJob {
                     completeStatusUpdate(statusUpdate, redeliveryMessage, event);
 
                     final String statusUpdateXml = marshal(statusUpdate);
-                    sendJmsMessage(statusUpdateXml, event, redelivery, false);
+                    sendJmsMessage(statusUpdateXml, event, redelivery);
                 }
 
             // TODO Sort out these exception with regard to resend or fail, calls to service for execution
@@ -256,7 +251,7 @@ public class NotificationRedeliveryJob {
     }
 
     private void createManualNotification(Handelse event, NotificationRedelivery redelivery)
-        throws ModuleNotFoundException, IOException, ModuleException, TemporaryException, InvalidPersonNummerException {
+        throws ModuleNotFoundException, IOException, ModuleException, TemporaryException {
 
         if (event.getDeliveryStatus() == NotificationDeliveryStatusEnum.FAILURE) {
 
@@ -329,11 +324,11 @@ public class NotificationRedeliveryJob {
             event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
             notificationRedeliveryService.initiateManualNotification(redelivery, event);
             String statusUpdateXml = marshal(statusUpdate);
-            sendJmsMessage(statusUpdateXml, event, redelivery, true);
+            sendJmsMessage(statusUpdateXml, event, redelivery);
         }
     }
 
-   private void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery, Boolean isManualRedelivery) {
+   private void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery) {
 
         LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
             + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
@@ -345,8 +340,6 @@ public class NotificationRedeliveryJob {
                 jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
                 jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
                 jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
-                jmsMessage.setBooleanProperty(IS_FAILED_MESSAGE, false);
-                jmsMessage.setBooleanProperty(IS_MANUAL_REDELIVERY, isManualRedelivery);
                 return jmsMessage;
             });
 

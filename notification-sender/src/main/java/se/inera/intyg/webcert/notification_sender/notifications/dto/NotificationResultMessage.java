@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,31 +25,11 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 public class NotificationResultMessage {
 
-    private String certificateId;
-    private String logicalAddress;
     private String correlationId;
     private Handelse event;
-    private Boolean isFailedMessage;
-    private Boolean isManualRedelivery;
     private NotificationResultType resultType;
-    private ExceptionInfoMessage exceptionInfoMessage;
     private byte[] redeliveryMessageBytes;
 
-    public String getCertificateId() {
-        return certificateId;
-    }
-
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
-
-    public String getLogicalAddress() {
-        return logicalAddress;
-    }
-
-    public void setLogicalAddress(String logicalAddress) {
-        this.logicalAddress = logicalAddress;
-    }
 
     public String getCorrelationId() {
         return correlationId;
@@ -67,36 +47,12 @@ public class NotificationResultMessage {
         this.event = event;
     }
 
-    public Boolean getIsFailedMessage() {
-        return isFailedMessage;
-    }
-
-    public void setIsFailedMessage(Boolean isFailedMessage) {
-        this.isFailedMessage = isFailedMessage;
-    }
-
-    public Boolean getIsManualRedelivery() {
-        return isManualRedelivery;
-    }
-
-    public void setIsManualRedelivery(Boolean isManualRedelivery) {
-        this.isManualRedelivery = isManualRedelivery;
-    }
-
     public NotificationResultType getResultType() {
         return resultType;
     }
 
     public void setResultType(NotificationResultType resultType) {
         this.resultType = resultType;
-    }
-
-    public ExceptionInfoMessage getExceptionInfoMessage() {
-        return exceptionInfoMessage;
-    }
-
-    public void setExceptionInfoMessage(ExceptionInfoMessage exceptionInfoMessage) {
-        this.exceptionInfoMessage = exceptionInfoMessage;
     }
 
     public byte[] getRedeliveryMessageBytes() {
@@ -111,8 +67,8 @@ public class NotificationResultMessage {
     @JsonIgnore
     @Override
     public String toString() {
-        return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.logicalAddress, this.certificateId,
-            this.correlationId);
+        return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s]", this.event.getEnhetsId(),
+            this.event.getIntygsId(), this.correlationId);
     }
 
 }

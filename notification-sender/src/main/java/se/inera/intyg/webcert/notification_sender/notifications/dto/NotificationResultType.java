@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
+
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
@@ -26,17 +28,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 public final class NotificationResultType {
 
     private NotificationResultTypeEnum notificationResult;
+    private String exception;
     private String notificationResultText;
     private NotificationErrorTypeEnum notificationErrorType;
 
     public NotificationResultType() { }
-
-    public NotificationResultType(NotificationResultTypeEnum notificationResult, String notificationResultText,
-        NotificationErrorTypeEnum notificationErrorType) {
-        this.notificationResult = notificationResult;
-        this.notificationResultText = notificationResultText;
-        this.notificationErrorType = notificationErrorType;
-    }
 
     public NotificationResultType(ResultType resultType) {
         this.notificationResult =
@@ -46,12 +42,27 @@ public final class NotificationResultType {
         this.notificationResultText = resultType.getResultText();
     }
 
+    public NotificationResultType(NotificationResultTypeEnum typeEnum, String exception, String exceptionMessage) {
+        this.notificationResult = typeEnum;
+        this.exception = exception;
+        this.notificationResultText = exceptionMessage;
+        this.notificationErrorType = WEBCERT_EXCEPTION;
+    }
+
     public NotificationResultTypeEnum getNotificationResult() {
         return notificationResult;
     }
 
     public void setNotificationResult(NotificationResultTypeEnum notificationResult) {
         this.notificationResult = notificationResult;
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
     }
 
     public String getNotificationResultText() {

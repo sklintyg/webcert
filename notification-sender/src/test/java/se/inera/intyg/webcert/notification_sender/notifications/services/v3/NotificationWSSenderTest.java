@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -151,7 +151,7 @@ public class NotificationWSSenderTest {
     }
 
     private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
-        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID,false, false);
+        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
      }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
@@ -167,15 +167,6 @@ public class NotificationWSSenderTest {
         event.setHandelsekod(new Handelsekod());
         event.getHandelsekod().setCode(HandelsekodEnum.SKAPAT.name());
         return event;
-    }
-
-    private Patient buildPatient() {
-        Patient patient = new Patient();
-        patient.setFornamn("fornamn");
-        patient.setEfternamn("efternamn");
-        patient.setPersonId(new PersonId());
-        patient.getPersonId().setExtension("1912121212");
-        return patient;
     }
 
     private HosPersonal buildHosPersonal() {

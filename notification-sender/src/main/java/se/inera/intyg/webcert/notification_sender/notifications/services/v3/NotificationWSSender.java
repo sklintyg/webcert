@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,11 +37,9 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
-import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
@@ -73,31 +73,21 @@ public class NotificationWSSender {
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
         @Header(NotificationRouteHeaders.USER_ID) String userId,
-        @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
-        @Header(NotificationRouteHeaders.IS_FAILED_MESSAGE) Boolean isFailedMessage,
-        @Header(NotificationRouteHeaders.IS_MANUAL_REDELIVERY) Boolean isManualRedelivery) {
+        @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId) {
 
         if (Objects.nonNull(userId)) {
             statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
         }
 
         final NotificationResultMessage resultMessage = new NotificationResultMessage();
-        resultMessage.setCertificateId(certificateId);
         resultMessage.setCorrelationId(correlationId);
-        resultMessage.setLogicalAddress(logicalAddress);
-        resultMessage.setIsFailedMessage(isFailedMessage);
-        resultMessage.setIsManualRedelivery(isManualRedelivery);
         resultMessage.setEvent(extractEventFromStatusUpdate(statusUpdate));
 
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
-            if (!isFailedMessage) {
                 ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
                 resultMessage.setResultType(new NotificationResultType(resultType));
-            } else {
-                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "NullpointerException occured in"
-                    + " NotificationTransformer", NotificationErrorTypeEnum.WEBCERT_FAILURE));
-            }
+
 
             /* **********FOR TEST ONLY
             NotificationRedelivery n = notificationRedeliveryRepository.findByCorrelationId(resultMessage.getCorrelationId()).orElse(null);
@@ -109,17 +99,16 @@ public class NotificationWSSender {
 
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
-            resultMessage.setExceptionInfoMessage(new ExceptionInfoMessage(e));
+            resultMessage.setResultType(new NotificationResultType(ERROR, e.getClass().getName(), e.getMessage()));
         } finally {
-            postProcessSendResult(resultMessage, statusUpdate);
+            postProcessSendResult(resultMessage, statusUpdate, certificateId, logicalAddress);
         }
     }
 
-    private void postProcessSendResult(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate) {
+    private void postProcessSendResult(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
+        String certificateId, String logicalAddress) {
 
-        // TODO: What does this if-statement do?
-        if (resultMessage.getResultType().getNotificationResult() == NotificationResultTypeEnum.ERROR
-            || resultMessage.getExceptionInfoMessage() != null) {
+        if (potentialRedelivery(resultMessage.getResultType())) {
             resultMessage.setRedeliveryMessageBytes(getRedeliveryMessageBytes(statusUpdate));
         }
 
@@ -130,15 +119,15 @@ public class NotificationWSSender {
 
             jmsTemplateNotificationPostProcessing.send(session -> {
                 TextMessage textMessage = session.createTextMessage(notificationMessageAsJson);
-                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, resultMessage.getCertificateId());
+                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, certificateId);
                 textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
-                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, resultMessage.getLogicalAddress());
+                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, logicalAddress);
                 textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
                 return textMessage;
             });
         } catch (Exception e) {
             LOG.error("Runtime exception occurred when sending {} to postprocessing with error message: {}", resultMessage, e);
-            // TODO monitorlog this exception
+            // TODO monitorlog this exception?
         }
     }
 
@@ -185,5 +174,9 @@ public class NotificationWSSender {
         event.setSistaDatumForSvar(statusUpdate.getHandelse().getSistaDatumForSvar());
         event.setHanteratAv(userId != null ? userId.getExtension() : null);
         return event;
+    }
+
+    private boolean potentialRedelivery(NotificationResultType resultType) {
+        return resultType.getNotificationResult() == ERROR;
     }
 }

@@ -35,10 +35,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.ISSUER_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_MANUAL_REDELIVERY;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.PATIENT_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -333,8 +329,7 @@ public class NotificationServiceImpl implements NotificationService {
             save(notificationMessage, careUnitId, careGiverId,
                 utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null, null);
 
-            send(notificationMessage, careUnitId, utlatande.getTextVersion(), utlatande.getGrundData().getPatient().getPersonId()
-                .getPersonnummer(), utlatande.getGrundData().getSkapadAv().getPersonId());
+            send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
         }
@@ -436,8 +431,7 @@ public class NotificationServiceImpl implements NotificationService {
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
             utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar, hanteratAv);
 
-        send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion(), utkast.getPatientPersonnummer().getPersonnummer(),
-            utkast.getSkapadAv().getHsaId());
+        send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
 
     void createAndSendNotification(String certificateId, HandelsekodEnum handelse) {
@@ -476,8 +470,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         save(notificationMessage, careUnitId, careProviderId, patientId, amne, sistaDatumForSvar, hanteratAv);
 
-        send(notificationMessage, careUnitId, certificate.getUtlatande().getTextVersion(), certificate.getUtlatande().getGrundData()
-            .getPatient().getPersonId().getPersonnummer(), certificate.getUtlatande().getGrundData().getSkapadAv().getPersonId());
+        send(notificationMessage, careUnitId, certificate.getUtlatande().getTextVersion());
     }
 
     private Amneskod getAmnesKod(ArendeAmne amne) {
@@ -591,8 +584,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion, String patientPersonnummer,
-        String issuerId) {
+    private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
         if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
@@ -605,9 +597,7 @@ public class NotificationServiceImpl implements NotificationService {
                 new NotificationMessageCreator(
                     notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
                     intygTypeVersion, notificationMessage.getHandelse(),
-                    currentUserId(),
-                    patientPersonnummer,
-                    issuerId
+                    currentUserId()
                 ));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
@@ -677,20 +667,16 @@ public class NotificationServiceImpl implements NotificationService {
         private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
         private final String userId;
-        private final String patientPersonnummer;
-        private final String issuerId;
 
         // CHECKSTYLE:OFF ParameterNumber
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-            HandelsekodEnum handelseTyp, String userId, String patientPersonnummer, String issuerId) {
+            HandelsekodEnum handelseTyp, String userId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
             this.userId = userId;
-            this.patientPersonnummer = patientPersonnummer;
-            this.issuerId = issuerId;
         } // CHECKSTYLE:ON ParameterNumber
 
         /**
@@ -707,10 +693,6 @@ public class NotificationServiceImpl implements NotificationService {
                 msg.setStringProperty(USER_ID, this.userId);
             }
             msg.setStringProperty(CORRELATION_ID, UUID.randomUUID().toString());
-            msg.setStringProperty(PATIENT_ID, patientPersonnummer);
-            msg.setStringProperty(ISSUER_ID, issuerId);
-            msg.setBooleanProperty(IS_FAILED_MESSAGE, false);
-            msg.setBooleanProperty(IS_MANUAL_REDELIVERY, false);
             return msg;
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.common.enumerations.NotificationDeliverySta
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.SUCCESS;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.TECHNICAL_ERROR;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.INFO;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
@@ -38,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.ExceptionInfoMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
@@ -90,34 +90,27 @@ public class NotificationPostProcessor {
         }
     }
 
-    private NotificationDeliveryStatusEnum extractDeliveryStatusFromResult(NotificationResultMessage notificationResult) {
-        ExceptionInfoMessage exceptionInfoMessage = notificationResult.getExceptionInfoMessage();
+    private NotificationDeliveryStatusEnum extractDeliveryStatusFromResult(NotificationResultMessage resultMessage) {
 
-        if (Objects.nonNull(exceptionInfoMessage)) {
-            return getDeliveryStatusOnException(exceptionInfoMessage, notificationResult);
+        if (resultMessage.getResultType().getNotificationErrorType() == WEBCERT_EXCEPTION) {
+            return getDeliveryStatusOnException(resultMessage);
         } else {
-            NotificationResultType resultType = notificationResult.getResultType();
-            return getDeliveryStatusOnResultType(resultType, notificationResult);
+            return getDeliveryStatusOnResultType(resultMessage);
         }
     }
 
-    private NotificationDeliveryStatusEnum getDeliveryStatusOnException(ExceptionInfoMessage exceptionInfoMessage,
-        NotificationResultMessage resultMessage) {
-        final String exceptionType = exceptionInfoMessage.getExceptionType();
-        final String exceptionMessage = exceptionInfoMessage.getExceptionMessage();
-        if (SOAPFAULTEXCEPTION.equals(exceptionType) && Objects.nonNull(exceptionMessage) && (exceptionMessage.contains(MARSHALLING_ERROR)
-            || exceptionMessage.contains(UNMARSHALLING_ERROR))) {
-            LOG.error("Failure sending status update to care for {}, {}", resultMessage, exceptionInfoMessage.getStackTrace());
+    private NotificationDeliveryStatusEnum getDeliveryStatusOnException(NotificationResultMessage resultMessage) {
+        if (isFatalException(resultMessage.getResultType())) {
+            LOG.debug("Failure sending status update to care for {}", resultMessage);
             return FAILURE;
         } else {
-            LOG.warn("Failure sending status update to care for {}, {}, Attempting redelivery...", resultMessage,
-                exceptionInfoMessage.getStackTrace());
+            LOG.debug("Failure sending status update to care for {}, Attempting redelivery...", resultMessage);
             return RESEND;
         }
     }
 
-    private NotificationDeliveryStatusEnum getDeliveryStatusOnResultType(NotificationResultType resultType,
-        NotificationResultMessage resultMessage) {
+    private NotificationDeliveryStatusEnum getDeliveryStatusOnResultType(NotificationResultMessage resultMessage) {
+        NotificationResultType resultType = resultMessage.getResultType();
         NotificationResultTypeEnum result = resultType.getNotificationResult();
         if (ERROR == result) {
             return getDeliveryStatusOnError(resultType, resultMessage);
@@ -135,13 +128,21 @@ public class NotificationPostProcessor {
         NotificationErrorTypeEnum errorType = resultType.getNotificationErrorType();
         String errorText = resultType.getNotificationResultText();
         if (errorType == TECHNICAL_ERROR) {
-            LOG.warn("{} returned from care for status update {}, Error message: {}, Attempting redelivery...", errorType, resultMessage,
+            LOG.debug("{} returned from care for status update {}, Error message: {}, Attempting redelivery...", errorType, resultMessage,
                 errorText);
             return RESEND;
         } else {
-            LOG.error("{} returned from care for status update {}, Error message: {}", errorType, resultMessage, errorText);
+            LOG.debug("{} returned from care for status update {}, Error message: {}", errorType, resultMessage, errorText);
             return FAILURE;
         }
+    }
+
+    private boolean isFatalException(NotificationResultType resultType) {
+        String resultText = resultType.getNotificationResultText();
+        return (SOAPFAULTEXCEPTION.equals(resultType.getException())
+            && Objects.nonNull(resultText) && (resultText.contains(MARSHALLING_ERROR)
+            || resultText.contains(UNMARSHALLING_ERROR)))
+            || resultType.getNotificationResult() == NotificationResultTypeEnum.FAILURE;
     }
 
     private String getLogErrorMessage(Message message) {

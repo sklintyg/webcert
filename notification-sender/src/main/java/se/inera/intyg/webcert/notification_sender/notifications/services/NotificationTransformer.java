@@ -18,18 +18,21 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.FAILURE;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.ISSUER_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.IS_FAILED_MESSAGE;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.PATIENT_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
+import javax.jms.TextMessage;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -41,7 +44,11 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class NotificationTransformer {
@@ -59,6 +66,13 @@ public class NotificationTransformer {
 
     @Autowired
     FeaturesHelper featuresHelper;
+
+    @Autowired
+    @Qualifier("jmsTemplateNotificationPostProcessing")
+    private JmsTemplate jmsTemplateNotificationPostProcessing;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @VisibleForTesting
     void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
@@ -87,37 +101,29 @@ public class NotificationTransformer {
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
 
+            Utlatande utlatande = null;
+            String intygTypeVersion = null;
             try {
-                String intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
+                intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
                     notificationMessage.getUtkast());
                 ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
-                Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+                utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
                 Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
                 notificationPatientEnricher.enrichWithPatient(intyg);
                 message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
 
-                // TODO: Can catch Exception...
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
-                    throw e;
-                } else {
-                    // TODO: Could this instead be to create a message to put on post-processing and then throw an exception.
-                    // TODO: Extract to method.
-                    LOG.error("Failure sending notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+
+                    LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
                         + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
 
-                    message.setHeader(IS_FAILED_MESSAGE, true);
-                    message.setBody(NotificationTypeConverter.createFailedStatusUpdate(
-                        notificationMessage,
-                        message.getHeader(INTYG_TYPE_VERSION, String.class),
-                        message.getHeader(PATIENT_ID, String.class),
-                        message.getHeader(ISSUER_ID, String.class),
-                        // TODO: Could this be done without using OrganizationsService? What happens if this fails?
-                        organizationsService.getVardgivareOfVardenhet(notificationMessage.getLogiskAdress()),
-                        moduleRegistry.getModuleEntryPoint(moduleRegistry.getModuleIdFromExternalId(message
-                            .getHeader(INTYGS_TYP, String.class))))
-                    );
+                    NotificationResultMessage resultMessage = createNotificationResultMessage(message, notificationMessage, utlatande,
+                        intygTypeVersion, e);
+
+                    sendMessageToPostProcessor(resultMessage, notificationMessage);
                 }
+                throw e;
             }
         } else {
             throw new IllegalArgumentException("Unsupported combination of version '" + notificationMessage.getVersion() + "' and type '"
@@ -134,5 +140,52 @@ public class NotificationTransformer {
         String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
         message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
         return certificateVersion;
+    }
+
+    private NotificationResultMessage createNotificationResultMessage(Message message, NotificationMessage notificationMessage,
+        Utlatande utlatande, String intygTypeVersion, Exception exception) {
+
+        NotificationResultMessage resultMessage = new NotificationResultMessage();
+        resultMessage.setCorrelationId(message.getHeader(CORRELATION_ID, String.class));
+        resultMessage.setEvent(getEvent(notificationMessage, utlatande, message.getHeader(USER_ID, String.class), intygTypeVersion));
+        resultMessage.setResultType(new NotificationResultType(FAILURE, exception.getClass().getName(), exception.getMessage()));
+        return resultMessage;
+    }
+
+    public static Handelse getEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user, String version) {
+        Handelse event = new Handelse();
+        event.setIntygsId(notificationMessage.getIntygsId());
+        event.setCertificateType(notificationMessage.getIntygsTyp());
+        event.setCode(notificationMessage.getHandelse());
+        event.setTimestamp(notificationMessage.getHandelseTid());
+        event.setAmne(notificationMessage.getAmne() != null ? ArendeAmne.valueOf(notificationMessage.getAmne().getCode()) : null);
+        event.setEnhetsId(notificationMessage.getLogiskAdress());
+        event.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
+        event.setCertificateVersion(version);
+        event.setHanteratAv(user);
+        if (utlatande != null) {
+            event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+            event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
+            event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
+        }
+        return event;
+    }
+
+    private void sendMessageToPostProcessor(NotificationResultMessage resultMessage, NotificationMessage notificationMessage) {
+
+        try {
+            String notificationMessageJson = objectMapper.writeValueAsString(resultMessage);
+
+            jmsTemplateNotificationPostProcessing.send(session -> {
+                TextMessage textMessage = session.createTextMessage(notificationMessageJson);
+                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
+                textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
+                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
+                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
+                return textMessage;
+            });
+        } catch (Exception e) {
+            LOG.error("Exception occured sending NotificationResultMessage after exception in NotificationTransformer {}", resultMessage);
+        }
     }
 }
