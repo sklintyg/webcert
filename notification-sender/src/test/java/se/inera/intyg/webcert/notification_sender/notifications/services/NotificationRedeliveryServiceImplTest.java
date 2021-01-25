@@ -231,7 +231,7 @@ public class NotificationRedeliveryServiceImplTest {
 
         verifyNotificationRedeliveryCreated(notificationRedelivery);
         verifyEventUpdated(event);
-        verifyMonitorLoggingResend(event, notificationResultType, resultMessage, 1, notificationRedelivery.getRedeliveryTime());
+        verifyMonitorLoggingResend(event, notificationResultType, resultMessage, 2, notificationRedelivery.getRedeliveryTime());
         verifyNoMoreInteractions(handelseRepository);
         verifyNoMoreInteractions(logService);
     }
@@ -291,6 +291,39 @@ public class NotificationRedeliveryServiceImplTest {
 
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
+
+        doReturn(Optional.of(event)).when(handelseRepository).findById(event.getId());
+        doReturn(event).when(handelseRepository).save(event);
+
+        notificationRedeliveryService.handleNotificationResend(resultMessage);
+
+        verifyNotificationRedeliveryDeleted(notificationRedelivery);
+        verifyEventUpdated(event);
+        verifyMonitorLoggingFailure(event, notificationResultType, resultMessage, 31);
+        verifyNoMoreInteractions(handelseRepository);
+        verifyNoMoreInteractions(logService);
+    }
+
+    @Test
+    public void testHandleNotificationResendForManualRedeliveryLastAttemptFailed() {
+        final Handelse event = createEvent(NotificationDeliveryStatusEnum.FAILURE);
+
+        final NotificationResultType notificationResultType = createNotificationResultType(NotificationResultTypeEnum.ERROR,
+            "RESULT_TEXT", NotificationErrorTypeEnum.APPLICATION_ERROR);
+
+        final NotificationResultMessage resultMessage = createNotificationResultMessage(event, notificationResultType);
+
+        final NotificationRedeliveryStrategy notificationRedeliveryStrategy = createNotificationRedeliveryStrategy(
+            NotificationRedeliveryStrategyEnum.MANUAL);
+
+        final NotificationRedelivery notificationRedelivery = createNotificationRedelivery(event,
+            resultMessage, LocalDateTime.now(), 30, notificationRedeliveryStrategy);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
+            .findByCorrelationId(resultMessage.getCorrelationId());
+
+        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
+            .getResendStrategy(NotificationRedeliveryStrategyEnum.MANUAL);
 
         doReturn(Optional.of(event)).when(handelseRepository).findById(event.getId());
         doReturn(event).when(handelseRepository).save(event);

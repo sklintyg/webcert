@@ -28,18 +28,9 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 
 public class NotificationRedeliveryStrategyManual implements NotificationRedeliveryStrategy {
     private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = MANUAL;
-    private static final int MAX_REDELIVERIES = 2;
+    private static final int MAX_REDELIVERIES = 1;
     private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEME = ImmutableList.of(
-        Pair.of(ChronoUnit.MINUTES, 1),
-        Pair.of(ChronoUnit.MINUTES, 1),
         Pair.of(ChronoUnit.MINUTES, 1)
-        // Pair.of(ChronoUnit.MINUTES, 1),
-        // Pair.of(ChronoUnit.MINUTES, 10),
-        // Pair.of(ChronoUnit.HOURS, 1),
-        // Pair.of(ChronoUnit.HOURS, 4),
-        // Pair.of(ChronoUnit.HOURS, 12),
-        // Pair.of(ChronoUnit.HOURS, 24),
-        // Pair.of(ChronoUnit.WEEKS, 1)
     );
 
     public NotificationRedeliveryStrategyManual() { }

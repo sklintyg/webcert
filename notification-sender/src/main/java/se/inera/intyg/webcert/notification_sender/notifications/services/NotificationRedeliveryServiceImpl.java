@@ -134,12 +134,6 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             LOG.debug("Persisting notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
             monitorEvent = persistEvent(event);
-        } else if (existingRedelivery.getRedeliveryStrategy().value().contains("MANUAL")) { // Manually resent notification
-            // TODO: Could this be Delivery strategy that is manual instead of an attribute that says it is manual?
-            LOG.debug("Updating manually resent notification event {} with delivery status {}", event.getCode().value(),
-                event.getDeliveryStatus());
-            monitorEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
-            deleteNotificationRedelivery(existingRedelivery);
         } else {
             LOG.debug("Updating persisted notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
@@ -161,11 +155,6 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
             NotificationRedelivery notificationRedelivery = createNotificationRedelivery(monitorEvent, redeliveryStrategy,
                 resultMessage);
             monitorLog(monitorEvent, resultMessage, notificationRedelivery); // log resend
-        } else if (existingRedelivery.getRedeliveryStrategy().value().contains("MANUAL")) { // Manually resent notification
-            Handelse updatedEvent = updateExistingEvent(existingRedelivery, event.getDeliveryStatus());
-            LOG.debug("Updating manually resent notification with eventId {} with delivery status {}", event.getId(),
-                event.getDeliveryStatus());
-            createManualNotificationRedelivery(existingRedelivery, resultMessage, updatedEvent);
         } else {
             updateNotificationRedelivery(existingRedelivery, getRedeliveryStrategy(existingRedelivery.getRedeliveryStrategy()),
                 resultMessage, event);
