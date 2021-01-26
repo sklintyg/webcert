@@ -176,18 +176,6 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         return notificationRedeliveryRepo.save(newRedelivery);
     }
 
-    private void createManualNotificationRedelivery(NotificationRedelivery redelivery,
-        NotificationResultMessage resultMessage, Handelse event) {
-        NotificationRedeliveryStrategy strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
-        redelivery.setMessage(resultMessage.getRedeliveryMessageBytes());
-        redelivery.setRedeliveryTime(LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)));
-        redelivery.setAttemptedDeliveries(1);
-        LOG.debug("Creating redelivery item correlationId {} for eventId {}", redelivery.getCorrelationId(), event.getId());
-        notificationRedeliveryRepo.save(redelivery);
-        monitorLog(event, resultMessage, redelivery); // log resend
-
-    }
-
     private void updateNotificationRedelivery(NotificationRedelivery existingRedelivery,
         NotificationRedeliveryStrategy strategy, NotificationResultMessage resultMessage, Handelse event) {
         final int attemptedDeliveries = existingRedelivery.getAttemptedDeliveries() + 1;
@@ -244,20 +232,6 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         LOG.info("Aborting redelivery attempts of redundant notification [eventId: {}, correlationId: {}, eventCode: {}, "
                 + "certificateId: {}, logicalAddress: {}]. The event has been removed.", event.getId(), redelivery.getCorrelationId(),
             event.getCode(), event.getIntygsId(), event.getEnhetsId());
-    }
-
-    private Handelse setNotificationFailure(Long eventId) {
-        Handelse event = handelseRepo.findById(eventId).orElse(null);
-        NotificationRedelivery redelivery = notificationRedeliveryRepo.findByEventId(eventId).orElse(null);
-        if (event != null) {
-            event.setDeliveryStatus(FAILURE);
-            handelseRepo.save(event);
-        }
-        if (redelivery != null) {
-            deleteNotificationRedelivery(redelivery);
-        }
-        return event;
-        // TODO Monitorlog here if method keeping this method.
     }
 
     private void monitorLog(@NonNull Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
