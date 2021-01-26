@@ -29,7 +29,6 @@ import static se.inera.intyg.webcert.common.enumerations.NotificationDeliverySta
 import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -84,13 +83,9 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
         executeSuccessOrFailure(resultMessage, resultMessage.getEvent());
     }
 
-    @Transactional
     @Override
     public List<NotificationRedelivery> getNotificationsForRedelivery() {
-        List<NotificationRedelivery> redeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
-        redeliveryList.addAll(notificationRedeliveryRepo.findByCorrelationIdNull());
-        redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
-        return redeliveryList;
+        return notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
     }
 
     @Transactional
@@ -121,6 +116,7 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
     @Transactional
     @Override
     public void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery) {
+        // TODO: Shall this have a different status? Why?
         event.setDeliveryStatus(CLIENT);
         handelseRepo.save(event);
         deleteNotificationRedelivery(redelivery);

@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -335,6 +338,197 @@ public class NotificationRedeliveryServiceImplTest {
         verifyMonitorLoggingFailure(event, notificationResultType, resultMessage, 31);
         verifyNoMoreInteractions(handelseRepository);
         verifyNoMoreInteractions(logService);
+    }
+
+    @Test
+    public void testGetNotificationsForRedelivery() {
+        final var expectedList = Arrays
+            .asList(new NotificationRedelivery(), new NotificationRedelivery(), new NotificationRedelivery());
+
+        doReturn(expectedList).when(notificationRedeliveryRepository).findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+
+        final var actualList = notificationRedeliveryService.getNotificationsForRedelivery();
+
+        assertNotNull(actualList);
+        assertEquals(expectedList.size(), actualList.size());
+        for (int i = 0; i < expectedList.size(); i++) {
+            assertEquals(expectedList.get(i), actualList.get(i));
+        }
+    }
+
+    @Test
+    public void editedEventIsRedundantWhenCertificateIsSignedAndSuccessfullySent() {
+        final Handelse createdEvent = new Handelse();
+        createdEvent.setCode(HandelsekodEnum.SKAPAT);
+
+        final Handelse editedEvent = new Handelse();
+        editedEvent.setCode(HandelsekodEnum.ANDRAT);
+
+        final Handelse signedEvent = new Handelse();
+        signedEvent.setCode(HandelsekodEnum.SIGNAT);
+        signedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+
+        final Handelse sentEvent = new Handelse();
+        sentEvent.setCode(HandelsekodEnum.SKICKA);
+
+        final var eventList = Arrays.asList(createdEvent, editedEvent, signedEvent, sentEvent);
+
+        final Handelse eventToCheck = new Handelse();
+        eventToCheck.setCode(HandelsekodEnum.ANDRAT);
+        eventToCheck.setIntygsId("CERTIFICATE_ID");
+
+        doReturn(eventList).when(handelseRepository).findByIntygsId("CERTIFICATE_ID");
+
+        final var actual = notificationRedeliveryService.isRedundantRedelivery(eventToCheck);
+
+        assertEquals(true, actual);
+    }
+
+    @Test
+    public void editedEventIsNotRedundantWhenCertificateIsSignedButNotSuccessfullySent() {
+        final Handelse createdEvent = new Handelse();
+        createdEvent.setCode(HandelsekodEnum.SKAPAT);
+
+        final Handelse editedEvent = new Handelse();
+        editedEvent.setCode(HandelsekodEnum.ANDRAT);
+
+        final Handelse signedEvent = new Handelse();
+        signedEvent.setCode(HandelsekodEnum.SIGNAT);
+        signedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+
+        final Handelse sentEvent = new Handelse();
+        sentEvent.setCode(HandelsekodEnum.SKICKA);
+
+        final var eventList = Arrays.asList(createdEvent, editedEvent, signedEvent, sentEvent);
+
+        final Handelse eventToCheck = new Handelse();
+        eventToCheck.setCode(HandelsekodEnum.ANDRAT);
+        eventToCheck.setIntygsId("CERTIFICATE_ID");
+
+        doReturn(eventList).when(handelseRepository).findByIntygsId("CERTIFICATE_ID");
+
+        final var actual = notificationRedeliveryService.isRedundantRedelivery(eventToCheck);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void editedEventIsRedundantWhenCertificateIsDeleted() {
+        final Handelse createdEvent = new Handelse();
+        createdEvent.setCode(HandelsekodEnum.SKAPAT);
+
+        final Handelse editedEvent = new Handelse();
+        editedEvent.setCode(HandelsekodEnum.ANDRAT);
+
+        final Handelse deletedEvent = new Handelse();
+        deletedEvent.setCode(HandelsekodEnum.RADERA);
+        deletedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+
+        final var eventList = Arrays.asList(createdEvent, editedEvent, deletedEvent);
+
+        final Handelse eventToCheck = new Handelse();
+        eventToCheck.setCode(HandelsekodEnum.ANDRAT);
+        eventToCheck.setIntygsId("CERTIFICATE_ID");
+
+        doReturn(eventList).when(handelseRepository).findByIntygsId("CERTIFICATE_ID");
+
+        final var actual = notificationRedeliveryService.isRedundantRedelivery(eventToCheck);
+
+        assertEquals(true, actual);
+    }
+
+    @Test
+    public void createdEventIsRedundantWhenCertificateIsDeleted() {
+        final Handelse createdEvent = new Handelse();
+        createdEvent.setCode(HandelsekodEnum.SKAPAT);
+
+        final Handelse editedEvent = new Handelse();
+        editedEvent.setCode(HandelsekodEnum.ANDRAT);
+
+        final Handelse deletedEvent = new Handelse();
+        deletedEvent.setCode(HandelsekodEnum.RADERA);
+        deletedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+
+        final var eventList = Arrays.asList(createdEvent, editedEvent, deletedEvent);
+
+        final Handelse eventToCheck = new Handelse();
+        eventToCheck.setCode(HandelsekodEnum.SKAPAT);
+        eventToCheck.setIntygsId("CERTIFICATE_ID");
+
+        doReturn(eventList).when(handelseRepository).findByIntygsId("CERTIFICATE_ID");
+
+        final var actual = notificationRedeliveryService.isRedundantRedelivery(eventToCheck);
+
+        assertEquals(true, actual);
+    }
+
+    @Test
+    public void revokedEventIsNeverRedundant() {
+        final Handelse eventToCheck = new Handelse();
+        eventToCheck.setCode(HandelsekodEnum.MAKULE);
+        eventToCheck.setIntygsId("CERTIFICATE_ID");
+
+        final var actual = notificationRedeliveryService.isRedundantRedelivery(eventToCheck);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void discardRedundantRedelivery() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        final var event = new Handelse();
+
+        notificationRedeliveryService.discardRedundantRedelivery(event, notificationRedelivery);
+
+        verify(notificationRedeliveryRepository).delete(notificationRedelivery);
+        verify(handelseRepository).save(argThat(new ArgumentMatcher<Handelse>() {
+            @Override
+            public boolean matches(Handelse argument) {
+                return argument.getDeliveryStatus() == NotificationDeliveryStatusEnum.DISCARD;
+            }
+        }));
+    }
+
+    @Test
+    public void testGetEventById() {
+        final var eventId = 1000L;
+
+        final var expectedEvent = new Handelse();
+        expectedEvent.setId(eventId);
+
+        doReturn(Optional.of(expectedEvent)).when(handelseRepository).findById(eventId);
+
+        final var actualEvent = notificationRedeliveryService.getEventById(eventId);
+
+        assertNotNull(actualEvent);
+        assertEquals(expectedEvent, actualEvent);
+    }
+
+    @Test
+    public void testInitiateManualNotification() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        final var event = new Handelse();
+
+        notificationRedeliveryService.initiateManualNotification(notificationRedelivery, event);
+
+        verify(handelseRepository).save(event);
+        verify(notificationRedeliveryRepository).save(notificationRedelivery);
+    }
+
+    @Test
+    public void testSentWithV3Client() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        final var event = new Handelse();
+
+        notificationRedeliveryService.setSentWithV3Client(event, notificationRedelivery);
+
+        verify(handelseRepository).save(argThat(new ArgumentMatcher<Handelse>() {
+            @Override
+            public boolean matches(Handelse argument) {
+                return argument.getDeliveryStatus() == NotificationDeliveryStatusEnum.CLIENT;
+            }
+        }));
+        verify(notificationRedeliveryRepository).delete(notificationRedelivery);
     }
 
     private void verifyNotificationRedeliveryCreated(NotificationRedelivery notificationRedelivery) {
