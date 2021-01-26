@@ -34,6 +34,14 @@ public final class NotificationResultType {
 
     public NotificationResultType() { }
 
+    public NotificationResultType(NotificationResultTypeEnum typeEnum, String exception, String exceptionMessage,
+        NotificationErrorTypeEnum errorEnum) {
+        this.notificationResult = typeEnum;
+        this.exception = exception;
+        this.notificationResultText = exceptionMessage;
+        this.notificationErrorType = errorEnum;
+    }
+
     public NotificationResultType(ResultType resultType) {
         this.notificationResult =
             resultType.getResultCode() != null ? NotificationResultTypeEnum.fromValue(resultType.getResultCode().value()) : null;

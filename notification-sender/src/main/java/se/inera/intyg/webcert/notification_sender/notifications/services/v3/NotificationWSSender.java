@@ -40,11 +40,13 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateM
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -92,7 +94,7 @@ public class NotificationWSSender {
             /* **********FOR TEST ONLY
             NotificationRedelivery n = notificationRedeliveryRepository.findByCorrelationId(resultMessage.getCorrelationId()).orElse(null);
             if (n == null) {
-                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "",
+                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "", "",
                     NotificationErrorTypeEnum.VALIDATION_ERROR));
             }
             // ********FOR TEST ONLY */
