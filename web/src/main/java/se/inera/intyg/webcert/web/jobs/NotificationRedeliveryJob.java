@@ -61,7 +61,9 @@ public class NotificationRedeliveryJob {
     public void run() {
         LOG.info("Running notification redelivery job...");
 
-        final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
+        notificationRedeliveryJobService.resendNotifications();
+
+        /*final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
         redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
 
         // TODO Add handling of delays in the queues to make sure events don't get redelivered twice.
@@ -104,6 +106,6 @@ public class NotificationRedeliveryJob {
                     .getLogInfoString(redelivery) + "An exception occurred.", e);
                 //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             }
-        }
+        }*/
     }
 }

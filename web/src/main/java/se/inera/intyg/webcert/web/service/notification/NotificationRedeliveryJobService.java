@@ -19,18 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.io.IOException;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public interface NotificationRedeliveryJobService {
 
-    void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
+    /*void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
         Handelse event) throws ModuleNotFoundException, IOException, ModuleException;
 
     void createManualNotification(Handelse event, NotificationRedelivery redelivery) throws ModuleNotFoundException, IOException, ModuleException, TemporaryException;
@@ -39,5 +31,7 @@ public interface NotificationRedeliveryJobService {
 
     void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery);
 
-    String getLogInfoString(NotificationRedelivery redelivery);
+    String getLogInfoString(NotificationRedelivery redelivery);*/
+
+    void resendNotifications();
 }

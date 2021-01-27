@@ -32,7 +32,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -134,7 +136,70 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         HandelsekodEnum.HANFRFV, HandelsekodEnum.MAKULE);
 
     @Override
-    public void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
+    public void resendNotifications() {
+
+        // TODO Add handling of delays in the queues to make sure events don't get redelivered twice.
+        // TODO Add handling of job not finished when scheduled to run next time.
+
+        final long startTime = System.currentTimeMillis();
+
+        // TODO Move method to job service.
+        final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
+        redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
+
+        int failedRedeliveries = initiateNotificationRedeliveries(redeliveryList);
+
+        final long endTime = System.currentTimeMillis();
+
+        LOG.info("Initiated {} notification redeliveries in {} milliseconds. Number of initiation failures: {}.", redeliveryList.size(),
+            endTime - startTime, failedRedeliveries);
+    }
+
+    private int initiateNotificationRedeliveries(List<NotificationRedelivery> redeliveryList) {
+
+        int remainingRedeliveries = redeliveryList.size();
+
+        for (NotificationRedelivery redelivery : redeliveryList) {
+
+            try {
+                final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
+
+                if (notificationRedeliveryService.isRedundantRedelivery(event))  {
+                    notificationRedeliveryService.discardRedundantRedelivery(event, redelivery);
+                } else if (redelivery.getCorrelationId() == null) {
+                    createManualNotification(event, redelivery);
+                } else {
+                    final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
+                        NotificationRedeliveryMessage.class);
+
+                    final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.getV3();
+                    completeStatusUpdate(statusUpdate, redeliveryMessage, event);
+
+                    final String statusUpdateXml = marshal(statusUpdate);
+                    sendJmsMessage(statusUpdateXml, event, redelivery);
+                }
+
+                remainingRedeliveries--;
+
+                // TODO Sort out these exception with regard to resend or fail, and which action to perform.
+            } catch (NoSuchElementException e) { //when no handelse exists
+                LOG.error(getLogInfoString(redelivery) + "Could not find a corresponding event in table Handelse.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (IOException | ModuleException | ModuleNotFoundException e) {
+                LOG.error(getLogInfoString(redelivery) + "Error setting a certificate on status update object.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (WebCertServiceException e) {
+                LOG.error(e.getMessage(), e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (Exception e) {
+                LOG.error(getLogInfoString(redelivery) + "An exception occurred.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            }
+        }
+        return remainingRedeliveries;
+    }
+
+    private void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
         Handelse event) throws ModuleNotFoundException, IOException, ModuleException {
 
         Intyg certificate;
@@ -192,14 +257,12 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         return XmlMarshallerHelper.marshal(jaxbElement);
     }
 
-    @Override
-    public String getLogInfoString(NotificationRedelivery redelivery) {
+    private String getLogInfoString(NotificationRedelivery redelivery) {
         return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
             redelivery.getCorrelationId());
     }
 
-    @Override
-    public void createManualNotification(Handelse event, NotificationRedelivery redelivery)
+    private void createManualNotification(Handelse event, NotificationRedelivery redelivery)
         throws ModuleNotFoundException, IOException, ModuleException, TemporaryException {
 
         if (event.getDeliveryStatus() == NotificationDeliveryStatusEnum.FAILURE) {
@@ -277,8 +340,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         }
     }
 
-    @Override
-    public void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery) {
+    private void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery) {
 
         LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
             + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
