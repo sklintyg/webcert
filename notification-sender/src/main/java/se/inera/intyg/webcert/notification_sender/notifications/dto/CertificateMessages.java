@@ -29,7 +29,8 @@ public class CertificateMessages {
     private int answered;
     private int handled;
 
-    public CertificateMessages() { }
+    public CertificateMessages() {
+    }
 
     public int getTotal() {
         return total;
@@ -63,6 +64,7 @@ public class CertificateMessages {
         this.handled = handled;
     }
 
+    // TODO: Try to remove.
     @JsonIgnore
     public Arenden getArendenV3() {
         Arenden arenden = new Arenden();

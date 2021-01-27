@@ -121,7 +121,7 @@ public class NotificationWSSender {
         final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
         final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
 
-        final NotificationResultMessage resultMessage = new NotificationResultMessage();
+        final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
         resultMessage.setEvent(event);
         resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
@@ -191,9 +191,8 @@ public class NotificationWSSender {
     }
 
     private CertificateMessages createCertificateMessages(Arenden questions) {
-        // TODO: Can we return an empty instead of null?
         if (questions == null) {
-            return null;
+            return new CertificateMessages();
         }
 
         final var certificateMessages = new CertificateMessages();
@@ -201,6 +200,7 @@ public class NotificationWSSender {
         certificateMessages.setAnswered(questions.getBesvarade());
         certificateMessages.setHandled(questions.getHanterade());
         certificateMessages.setTotal(questions.getTotalt());
+
         return certificateMessages;
     }
 

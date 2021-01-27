@@ -77,14 +77,17 @@ public class NotificationWSSenderTest {
     private static final String USER_ID = "testUser";
     private static final String CORRELATION_ID = "testCorrelationId";
 
+    // TODO: Can we assert the message?
+
     @Test
     public void testSendStatusUpdateOk() {
         CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK,null, null);
+        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(response);
         sendStatusUpdate(request);
-        verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),any(CertificateStatusUpdateForCareType.class));
+        verify(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
         verify(jmsTemplate).send(any(MessageCreator.class));
         assertEquals(request.getHanteratAv().getExtension(), USER_ID);
         assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);

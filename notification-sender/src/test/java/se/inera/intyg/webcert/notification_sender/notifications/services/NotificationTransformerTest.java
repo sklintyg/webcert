@@ -19,9 +19,12 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -29,8 +32,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -40,15 +43,24 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -72,6 +84,15 @@ public class NotificationTransformerTest {
 
     @Mock
     private NotificationPatientEnricher notificationPatientEnricher;
+
+    @Mock
+    private FeaturesHelper featuresHelper;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private JmsTemplate jmsTemplateNotificationPostProcessing;
 
     @InjectMocks
     private NotificationTransformer transformer;
@@ -145,4 +166,73 @@ public class NotificationTransformerTest {
         verifyNoInteractions(notificationPatientEnricher);
     }
 
+    @Test
+    public void messageToPostProcessorWhenWebcertMessagingFeatureIsOn() throws Exception {
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
+            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
+        final var message = new DefaultMessage(camelContext);
+        message.setBody(notificationMessage);
+
+        final var moduleApiMock = mock(ModuleApi.class);
+        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
+        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
+        doReturn(getUtlatandeMock()).when(moduleApiMock).getUtlatandeFromJson(anyString());
+        doThrow(new RuntimeException()).when(moduleApiMock).getIntygFromUtlatande(any(Utlatande.class));
+        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+
+        try {
+            transformer.process(message);
+            assertTrue("No exception was thrown and this line should not be reached.", false);
+        } catch (Exception ex) {
+            verify(jmsTemplateNotificationPostProcessing).send(any(MessageCreator.class));
+        }
+    }
+
+    @Test
+    public void noMessageToPostProcessorWhenWebcertMessagingFeatureIsOff() throws Exception {
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
+            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
+        final var message = new DefaultMessage(camelContext);
+        message.setBody(notificationMessage);
+
+        final var moduleApiMock = mock(ModuleApi.class);
+        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
+        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
+        doThrow(new NullPointerException()).when(moduleApiMock).getUtlatandeFromJson(anyString());
+        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+
+        try {
+            transformer.process(message);
+            assertTrue("No exception was thrown and this line should not be reached.", false);
+        } catch (Exception ex) {
+            verifyNoInteractions(jmsTemplateNotificationPostProcessing);
+        }
+    }
+
+    private Utlatande getUtlatandeMock() {
+        final var utlatande = mock(Utlatande.class);
+
+        doReturn(INTYGS_ID).when(utlatande).getId();
+        doReturn(LUSE).when(utlatande).getTyp();
+        doReturn("1.0").when(utlatande).getTextVersion();
+
+        final var grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+
+        final var skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
+
+        final var vardenhet = mock(Vardenhet.class);
+        doReturn(vardenhet).when(skapadAv).getVardenhet();
+
+        final var vardgivare = mock(se.inera.intyg.common.support.model.common.internal.Vardgivare.class);
+        doReturn(vardgivare).when(vardenhet).getVardgivare();
+
+        final var patient = mock(Patient.class);
+        doReturn(patient).when(grundData).getPatient();
+
+        doReturn(Personnummer.createPersonnummer("191212121212").get()).when(patient).getPersonId();
+
+        return utlatande;
+    }
 }

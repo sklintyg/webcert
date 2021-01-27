@@ -24,7 +24,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import javax.jms.TextMessage;
 import org.apache.camel.Message;
@@ -75,65 +74,63 @@ public class NotificationTransformer {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @VisibleForTesting
-    void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
-        this.moduleRegistry = moduleRegistry;
-    }
-
     public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
-        NotificationMessage notificationMessage = message.getBody(NotificationMessage.class);
+        final var notificationMessage = message.getBody(NotificationMessage.class);
 
+        final var schemaVersion = getSchemaVersion(notificationMessage);
+
+        message.setHeader(NotificationRouteHeaders.VERSION, schemaVersion);
         message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
         message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
-
-        // Note that this header have been set already by the original sender to accommodate header-based routing
-        // in the aggreagatorRoute. It is 100% safe to overwrite it at this point.
-
         message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
 
-        if (notificationMessage.getVersion() != null) {
-            message.setHeader(NotificationRouteHeaders.VERSION, notificationMessage.getVersion().name());
-        } else {
-            LOG.warn("Recieved notificationMessage with unknown VERSION header, forcing V3");
-            message.setHeader(NotificationRouteHeaders.VERSION, SchemaVersion.VERSION_3.name());
-        }
+        Utlatande utlatande = null;
+        String intygTypeVersion;
+        try {
+            intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
+                notificationMessage.getUtkast());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
+            utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+            Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
+            notificationPatientEnricher.enrichWithPatient(intyg);
+            message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
 
-        if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
+        } catch (Exception e) {
+            LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+                + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
 
-            Utlatande utlatande = null;
-            String intygTypeVersion = null;
-            try {
-                intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
-                    notificationMessage.getUtkast());
-                ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
-                utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
-                Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
-                notificationPatientEnricher.enrichWithPatient(intyg);
-                message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
-
-            } catch (Exception e) {
-                if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
-
-                    LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
-                        + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
-
-                    NotificationResultMessage resultMessage = createNotificationResultMessage(message, notificationMessage, utlatande,
-                        intygTypeVersion, e);
-
-                    sendMessageToPostProcessor(resultMessage, notificationMessage);
-                }
-                throw e;
+            if (usingWebcertMessaging()) {
+                final var resultMessage = createResultMessage(message, notificationMessage, utlatande, e);
+                sendResultMessage(resultMessage, notificationMessage);
             }
-        } else {
-            throw new IllegalArgumentException("Unsupported combination of version '" + notificationMessage.getVersion() + "' and type '"
-                + notificationMessage.getIntygsTyp() + "'");
-
+            throw e;
         }
     }
 
-    // Prefer using header for INTYG_TYPE_VERSION before trying to parse from body.
+    private String getSchemaVersion(NotificationMessage notificationMessage) {
+        final var schemaVersion = notificationMessage.getVersion();
+        if (schemaVersion == null) {
+            LOG.warn("Recieved notificationMessage with unknown VERSION header, forcing V3");
+            return SchemaVersion.VERSION_3.name();
+        }
+
+        if (!SchemaVersion.VERSION_3.equals(schemaVersion)) {
+            throw new IllegalArgumentException("Unsupported combination of version '" + schemaVersion + "' and type '"
+                + notificationMessage.getIntygsTyp() + "'");
+        }
+
+        return schemaVersion.name();
+    }
+
+    private boolean usingWebcertMessaging() {
+        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+    }
+
+    /**
+     * Prefer using header for INTYG_TYPE_VERSION before trying to parse from body.
+     */
     private String resolveIntygTypeVersion(String intygsTyp, Message message, String json) throws ModuleNotFoundException {
         if (message.getHeader(INTYG_TYPE_VERSION) != null) {
             return (String) message.getHeader(INTYG_TYPE_VERSION);
@@ -143,42 +140,55 @@ public class NotificationTransformer {
         return certificateVersion;
     }
 
-    private NotificationResultMessage createNotificationResultMessage(Message message, NotificationMessage notificationMessage,
-        Utlatande utlatande, String intygTypeVersion, Exception exception) {
+    private NotificationResultMessage createResultMessage(Message message, NotificationMessage notificationMessage, Utlatande utlatande,
+        Exception exception) {
 
-        NotificationResultMessage resultMessage = new NotificationResultMessage();
-        resultMessage.setCorrelationId(message.getHeader(CORRELATION_ID, String.class));
-        resultMessage.setEvent(getEvent(notificationMessage, utlatande, message.getHeader(USER_ID, String.class), intygTypeVersion));
+        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
+        final var userId = message.getHeader(USER_ID, String.class);
 
+        final var event = createEvent(notificationMessage, utlatande, userId);
+
+        final var notificationResultType = createResultType(exception);
+
+        final var resultMessage = new NotificationResultMessage();
+        resultMessage.setCorrelationId(correlationId);
+        resultMessage.setEvent(event);
+        resultMessage.setResultType(notificationResultType);
+
+        return resultMessage;
+    }
+
+    private NotificationResultType createResultType(Exception exception) {
         final var notificationResultType = new NotificationResultType();
+        // TODO: Could ERROR be used or is it necessary with a specific type?
         notificationResultType.setNotificationResult(FAILURE);
         notificationResultType.setNotificationResultText(exception.getMessage());
         notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
         notificationResultType.setException(exception.getClass().getName());
-        resultMessage.setResultType(notificationResultType);
-        return resultMessage;
+        return notificationResultType;
     }
 
-    public static Handelse getEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user, String version) {
-        Handelse event = new Handelse();
-        event.setIntygsId(notificationMessage.getIntygsId());
-        event.setCertificateType(notificationMessage.getIntygsTyp());
+    public static Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user) {
+        final var event = new Handelse();
+        event.setIntygsId(utlatande.getId());
+        event.setCertificateType(utlatande.getTyp());
+        event.setCertificateVersion(utlatande.getTextVersion());
+        event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+        event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
+        event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
+
         event.setCode(notificationMessage.getHandelse());
         event.setTimestamp(notificationMessage.getHandelseTid());
         event.setAmne(notificationMessage.getAmne() != null ? ArendeAmne.valueOf(notificationMessage.getAmne().getCode()) : null);
         event.setEnhetsId(notificationMessage.getLogiskAdress());
         event.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
-        event.setCertificateVersion(version);
+
         event.setHanteratAv(user);
-        if (utlatande != null) {
-            event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
-            event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
-            event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
-        }
+
         return event;
     }
 
-    private void sendMessageToPostProcessor(NotificationResultMessage resultMessage, NotificationMessage notificationMessage) {
+    private void sendResultMessage(NotificationResultMessage resultMessage, NotificationMessage notificationMessage) {
 
         try {
             String notificationMessageJson = objectMapper.writeValueAsString(resultMessage);
@@ -192,6 +202,7 @@ public class NotificationTransformer {
                 return textMessage;
             });
         } catch (Exception e) {
+            // TODO: Log the exception.
             LOG.error("Exception occured sending NotificationResultMessage after exception in NotificationTransformer {}", resultMessage);
         }
     }
