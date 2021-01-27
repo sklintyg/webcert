@@ -46,6 +46,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -148,7 +149,13 @@ public class NotificationTransformer {
         NotificationResultMessage resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(message.getHeader(CORRELATION_ID, String.class));
         resultMessage.setEvent(getEvent(notificationMessage, utlatande, message.getHeader(USER_ID, String.class), intygTypeVersion));
-        resultMessage.setResultType(new NotificationResultType(FAILURE, exception.getClass().getName(), exception.getMessage()));
+
+        final var notificationResultType = new NotificationResultType();
+        notificationResultType.setNotificationResult(FAILURE);
+        notificationResultType.setNotificationResultText(exception.getMessage());
+        notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
+        notificationResultType.setException(exception.getClass().getName());
+        resultMessage.setResultType(notificationResultType);
         return resultMessage;
     }
 

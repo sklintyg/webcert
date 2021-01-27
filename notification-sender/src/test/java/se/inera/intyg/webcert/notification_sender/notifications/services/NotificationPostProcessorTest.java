@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.APPLICATION_ERROR;
 import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.REVOKED;
 import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.TECHNICAL_ERROR;
@@ -45,10 +46,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
+import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
@@ -209,7 +211,23 @@ public class NotificationPostProcessorTest {
         NotificationResultMessage resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(CORRELATION_ID);
         resultMessage.setEvent(new Handelse());
-        resultMessage.setResultType(new NotificationResultType(statusUpdateResponse.getResult()));
+
+        final var notificationResultType = new NotificationResultType();
+        final var resultType = statusUpdateResponse.getResult();
+
+        if (resultType.getResultCode() != null) {
+            final var notificationResult = NotificationResultTypeEnum.fromValue(resultType.getResultCode().value());
+            notificationResultType.setNotificationResult(notificationResult);
+        }
+
+        if (resultType.getErrorId() != null) {
+            final var notificationErrorType = NotificationErrorTypeEnum.fromValue(resultType.getErrorId().value());
+            notificationResultType.setNotificationErrorType(notificationErrorType);
+        }
+
+        notificationResultType.setNotificationResultText(resultType.getResultText());
+
+        resultMessage.setResultType(notificationResultType);
         return resultMessage;
     }
 
@@ -218,7 +236,12 @@ public class NotificationPostProcessorTest {
         NotificationResultMessage resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(CORRELATION_ID);
         resultMessage.setEvent(new Handelse());
-        resultMessage.setResultType(new NotificationResultType(resultEnum, exception, resultText));
+        final var notificationResultType = new NotificationResultType();
+        notificationResultType.setNotificationResult(NotificationResultTypeEnum.ERROR);
+        notificationResultType.setException(exception);
+        notificationResultType.setNotificationResultText(resultText);
+        notificationResultType.setNotificationErrorType(WEBCERT_EXCEPTION);
+        resultMessage.setResultType(notificationResultType);
         return resultMessage;
     }
 

@@ -29,9 +29,6 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -44,22 +41,17 @@ import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
@@ -133,26 +125,53 @@ public class NotificationWSSenderTest {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(response);
         sendStatusUpdate(request);
-        verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),any(CertificateStatusUpdateForCareType.class));
+        verify(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
+        verify(jmsTemplate).send(any(MessageCreator.class));
+        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
+        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
+    }
+
+    @Test
+    public void testSendStatusUpdateThrowsException() {
+        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
+        CertificateStatusUpdateForCareResponseType response =
+            buildStatusUpdateResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, "Validation error");
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+            .thenThrow(new RuntimeException());
+        sendStatusUpdate(request);
+        verify(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
         verify(jmsTemplate).send(any(MessageCreator.class));
         assertEquals(request.getHanteratAv().getExtension(), USER_ID);
         assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSendStatusUpdateWhenJsonProcessingException() throws Exception {
+    public void testSendStatusUpdateWhenMessageToJsonProcessingException() throws Exception {
         CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
         CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(response);
-        when(objectMapper.writeValueAsString(any(NotificationResultMessage.class))).thenThrow(new JsonProcessingException("") { });
+        when(objectMapper.writeValueAsString(any(NotificationResultMessage.class))).thenThrow(new JsonProcessingException("") {
+        });
+        sendStatusUpdate(request);
+        verifyNoInteractions(jmsTemplate);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSendStatusUpdateWhenMessageToByteJsonProcessingException() throws Exception {
+        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
+        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
+        when(objectMapper.writeValueAsBytes(any(NotificationRedeliveryMessage.class))).thenThrow(new JsonProcessingException("") {
+        });
         sendStatusUpdate(request);
         verifyNoInteractions(jmsTemplate);
     }
 
     private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
         notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
-     }
+    }
 
     private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
         CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();

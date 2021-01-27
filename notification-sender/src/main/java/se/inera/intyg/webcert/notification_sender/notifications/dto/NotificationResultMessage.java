@@ -63,7 +63,6 @@ public class NotificationResultMessage {
         this.redeliveryMessageBytes = redeliveryMessageBytes;
     }
 
-
     @JsonIgnore
     @Override
     public String toString() {

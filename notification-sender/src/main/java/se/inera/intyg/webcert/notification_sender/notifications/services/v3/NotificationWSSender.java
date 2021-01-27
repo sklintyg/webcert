@@ -46,12 +46,11 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class NotificationWSSender {
@@ -81,40 +80,23 @@ public class NotificationWSSender {
             statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
         }
 
-        final NotificationResultMessage resultMessage = new NotificationResultMessage();
-        resultMessage.setCorrelationId(correlationId);
-        resultMessage.setEvent(extractEventFromStatusUpdate(statusUpdate));
+        final var resultMessage = createResultMessage(statusUpdate, correlationId);
 
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
-                ResultType resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
-                resultMessage.setResultType(new NotificationResultType(resultType));
-
-
-            /* **********FOR TEST ONLY
-            NotificationRedelivery n = notificationRedeliveryRepository.findByCorrelationId(resultMessage.getCorrelationId()).orElse(null);
-            if (n == null) {
-                resultMessage.setResultType(new NotificationResultType(NotificationResultTypeEnum.ERROR, "", "",
-                    NotificationErrorTypeEnum.VALIDATION_ERROR));
-            }
-            // ********FOR TEST ONLY */
-
+            final var resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
+            addToResultMessage(resultMessage, resultType);
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
-            resultMessage.setResultType(new NotificationResultType(ERROR, e.getClass().getName(), e.getMessage()));
+            addToResultMessage(resultMessage, e);
         } finally {
-            postProcessSendResult(resultMessage, statusUpdate, certificateId, logicalAddress);
+            sendResultMessage(resultMessage, certificateId, logicalAddress);
         }
     }
 
-    private void postProcessSendResult(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
-        String certificateId, String logicalAddress) {
+    private void sendResultMessage(NotificationResultMessage resultMessage, String certificateId, String logicalAddress) {
 
-        if (potentialRedelivery(resultMessage.getResultType())) {
-            resultMessage.setRedeliveryMessageBytes(getRedeliveryMessageBytes(statusUpdate));
-        }
-
-        final String notificationMessageAsJson = messageToJson(resultMessage);
+        final String notificationMessageAsJson = resultMessageToJson(resultMessage);
 
         try {
             LOG.debug("Sending notification result message to postprocessor: {}", resultMessage);
@@ -133,15 +115,50 @@ public class NotificationWSSender {
         }
     }
 
-    private byte[] getRedeliveryMessageBytes(CertificateStatusUpdateForCareType statusUpdate) {
+    private NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId) {
+        final var event = createEvent(statusUpdate);
+
+        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
+        final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
+
+        final NotificationResultMessage resultMessage = new NotificationResultMessage();
+        resultMessage.setCorrelationId(correlationId);
+        resultMessage.setEvent(event);
+        resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
+
+        return resultMessage;
+    }
+
+    private void addToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
+        final var notificationResultType = new NotificationResultType();
+
+        if (resultType.getResultCode() != null) {
+            final var notificationResult = NotificationResultTypeEnum.fromValue(resultType.getResultCode().value());
+            notificationResultType.setNotificationResult(notificationResult);
+        }
+
+        if (resultType.getErrorId() != null) {
+            final var notificationErrorType = NotificationErrorTypeEnum.fromValue(resultType.getErrorId().value());
+            notificationResultType.setNotificationErrorType(notificationErrorType);
+        }
+
+        notificationResultType.setNotificationResultText(resultType.getResultText());
+
+        resultMessage.setResultType(notificationResultType);
+    }
+
+    private void addToResultMessage(NotificationResultMessage resultMessage, Exception exception) {
+        final var notificationResultType = new NotificationResultType();
+        notificationResultType.setNotificationResult(ERROR);
+        notificationResultType.setException(exception.getClass().getName());
+        notificationResultType.setNotificationResultText(exception.getMessage());
+        notificationResultType.setNotificationErrorType(WEBCERT_EXCEPTION);
+
+        resultMessage.setResultType(notificationResultType);
+    }
+
+    private byte[] redeliveryMessageAsBytes(NotificationRedeliveryMessage redeliveryMessage) {
         try {
-            final NotificationRedeliveryMessage redeliveryMessage = new NotificationRedeliveryMessage();
-            redeliveryMessage.set(statusUpdate.getIntyg());
-            redeliveryMessage.setSent(statusUpdate.getSkickadeFragor() != null
-                ? new CertificateMessages(statusUpdate.getSkickadeFragor()) : null);
-            redeliveryMessage.setReceived(statusUpdate.getMottagnaFragor() != null
-                ? new CertificateMessages(statusUpdate.getMottagnaFragor()) : null);
-            redeliveryMessage.setReference(statusUpdate.getRef());
             return objectMapper.writeValueAsBytes(redeliveryMessage);
         } catch (JsonProcessingException e) {
             LOG.error("Exception occured creating and NotificationWSRedeliveryMessage.", e);
@@ -149,7 +166,7 @@ public class NotificationWSSender {
         }
     }
 
-    private String messageToJson(NotificationResultMessage notificationMessage) {
+    private String resultMessageToJson(NotificationResultMessage notificationMessage) {
         try {
             return objectMapper.writeValueAsString(notificationMessage);
         } catch (JsonProcessingException e) {
@@ -158,11 +175,40 @@ public class NotificationWSSender {
         }
     }
 
-    private Handelse extractEventFromStatusUpdate(CertificateStatusUpdateForCareType statusUpdate) {
-        Amneskod topicCode = statusUpdate.getHandelse().getAmne();
-        HsaId userId = statusUpdate.getHanteratAv();
+    private NotificationRedeliveryMessage createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
+        final var redeliveryMessage = new NotificationRedeliveryMessage();
+        redeliveryMessage.set(statusUpdate.getIntyg());
 
-        Handelse event = new Handelse();
+        final var sentQuestions = createCertificateMessages(statusUpdate.getSkickadeFragor());
+        redeliveryMessage.setSent(sentQuestions);
+
+        final var recievedQuestions = createCertificateMessages(statusUpdate.getMottagnaFragor());
+        redeliveryMessage.setReceived(recievedQuestions);
+
+        redeliveryMessage.setReference(statusUpdate.getRef());
+
+        return redeliveryMessage;
+    }
+
+    private CertificateMessages createCertificateMessages(Arenden questions) {
+        // TODO: Can we return an empty instead of null?
+        if (questions == null) {
+            return null;
+        }
+
+        final var certificateMessages = new CertificateMessages();
+        certificateMessages.setUnanswered(questions.getEjBesvarade());
+        certificateMessages.setAnswered(questions.getBesvarade());
+        certificateMessages.setHandled(questions.getHanterade());
+        certificateMessages.setTotal(questions.getTotalt());
+        return certificateMessages;
+    }
+
+    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate) {
+        final var topicCode = statusUpdate.getHandelse().getAmne();
+        final var userId = statusUpdate.getHanteratAv();
+
+        final var event = new Handelse();
         event.setCode(HandelsekodEnum.fromValue(statusUpdate.getHandelse().getHandelsekod().getCode()));
         event.setEnhetsId(statusUpdate.getIntyg().getSkapadAv().getEnhet().getEnhetsId().getExtension());
         event.setIntygsId(statusUpdate.getIntyg().getIntygsId().getExtension());
@@ -176,9 +222,5 @@ public class NotificationWSSender {
         event.setSistaDatumForSvar(statusUpdate.getHandelse().getSistaDatumForSvar());
         event.setHanteratAv(userId != null ? userId.getExtension() : null);
         return event;
-    }
-
-    private boolean potentialRedelivery(NotificationResultType resultType) {
-        return resultType.getNotificationResult() == ERROR;
     }
 }

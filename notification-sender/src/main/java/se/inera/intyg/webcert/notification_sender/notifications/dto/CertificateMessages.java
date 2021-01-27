@@ -31,13 +31,6 @@ public class CertificateMessages {
 
     public CertificateMessages() { }
 
-    public CertificateMessages(Arenden arenden) {
-        this.total = arenden.getTotalt();
-        this.unanswered = arenden.getEjBesvarade();
-        this.answered = arenden.getBesvarade();
-        this.handled = arenden.getHanterade();
-    }
-
     public int getTotal() {
         return total;
     }

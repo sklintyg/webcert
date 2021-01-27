@@ -62,14 +62,17 @@ public class NotificationPostProcessor {
     public void process(Message message) {
 
         try {
-            NotificationResultMessage resultMessage = objectMapper.readValue(message.getBody(String.class),
-                NotificationResultMessage.class);
+            final var resultMessage = getNotificationResultMessage(message);
             processNotificationResult(resultMessage);
         } catch (JsonProcessingException e) {
             LOG.error(getLogErrorMessage(message), e);
             // TODO add monitorlog
             //  is recovery possible? (should we try to resend, check resend table etc)
         }
+    }
+
+    private NotificationResultMessage getNotificationResultMessage(Message message) throws JsonProcessingException {
+        return objectMapper.readValue(message.getBody(String.class), NotificationResultMessage.class);
     }
 
     private void processNotificationResult(NotificationResultMessage resultMessage) {

@@ -19,11 +19,8 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
-
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public final class NotificationResultType {
 
@@ -32,29 +29,8 @@ public final class NotificationResultType {
     private String notificationResultText;
     private NotificationErrorTypeEnum notificationErrorType;
 
-    public NotificationResultType() { }
+    public NotificationResultType() {
 
-    public NotificationResultType(NotificationResultTypeEnum typeEnum, String exception, String exceptionMessage,
-        NotificationErrorTypeEnum errorEnum) {
-        this.notificationResult = typeEnum;
-        this.exception = exception;
-        this.notificationResultText = exceptionMessage;
-        this.notificationErrorType = errorEnum;
-    }
-
-    public NotificationResultType(ResultType resultType) {
-        this.notificationResult =
-            resultType.getResultCode() != null ? NotificationResultTypeEnum.fromValue(resultType.getResultCode().value()) : null;
-        this.notificationErrorType =
-            resultType.getErrorId() != null ? NotificationErrorTypeEnum.fromValue(resultType.getErrorId().value()) : null;
-        this.notificationResultText = resultType.getResultText();
-    }
-
-    public NotificationResultType(NotificationResultTypeEnum typeEnum, String exception, String exceptionMessage) {
-        this.notificationResult = typeEnum;
-        this.exception = exception;
-        this.notificationResultText = exceptionMessage;
-        this.notificationErrorType = WEBCERT_EXCEPTION;
     }
 
     public NotificationResultTypeEnum getNotificationResult() {
