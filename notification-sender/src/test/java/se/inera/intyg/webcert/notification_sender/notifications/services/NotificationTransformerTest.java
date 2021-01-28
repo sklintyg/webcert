@@ -61,6 +61,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -206,6 +207,31 @@ public class NotificationTransformerTest {
             assertTrue("No exception was thrown and this line should not be reached.", false);
         } catch (Exception ex) {
             verifyNoInteractions(jmsTemplateNotificationPostProcessing);
+        }
+    }
+
+    @Test
+    public void noMessageToPostProcessorWhenWebcertMessagingFeatureIsOnAndTemporaryException() throws Exception {
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
+            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
+        final var message = new DefaultMessage(camelContext);
+        message.setBody(notificationMessage);
+
+        final var moduleApiMock = mock(ModuleApi.class);
+        final var utlatandeMock = getUtlatandeMock();
+        final var intygMock = mock(Intyg.class);
+        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
+        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
+        doReturn(utlatandeMock).when(moduleApiMock).getUtlatandeFromJson(anyString());
+        doReturn(intygMock).when(moduleApiMock).getIntygFromUtlatande(utlatandeMock);
+        doThrow(new TemporaryException("")).when(notificationPatientEnricher).enrichWithPatient(any(Intyg.class));
+
+        try {
+            transformer.process(message);
+            assertTrue("No exception was thrown and this line should not be reached.", false);
+        } catch (Exception ex) {
+            verifyNoInteractions(jmsTemplateNotificationPostProcessing);
+            verifyNoInteractions(featuresHelper);
         }
     }
 

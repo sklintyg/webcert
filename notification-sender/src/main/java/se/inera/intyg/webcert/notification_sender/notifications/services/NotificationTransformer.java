@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public class NotificationTransformer {
 
@@ -87,16 +87,16 @@ public class NotificationTransformer {
         message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
 
         Utlatande utlatande = null;
-        String intygTypeVersion;
         try {
-            intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
-                notificationMessage.getUtkast());
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
+            final var moduleApi = getModuleApi(notificationMessage, message);
             utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
-            Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
-            notificationPatientEnricher.enrichWithPatient(intyg);
-            message.setBody(NotificationTypeConverter.convert(notificationMessage, intyg));
 
+            final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, moduleApi, utlatande);
+            message.setBody(statusUpdateForCare);
+        } catch (TemporaryException e) {
+            LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+                + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
+            throw e;
         } catch (Exception e) {
             LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
                 + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
@@ -105,8 +105,22 @@ public class NotificationTransformer {
                 final var resultMessage = createResultMessage(message, notificationMessage, utlatande, e);
                 sendResultMessage(resultMessage, notificationMessage);
             }
+
             throw e;
         }
+    }
+
+    private CertificateStatusUpdateForCareType getStatusUpdateForCare(NotificationMessage notificationMessage, ModuleApi moduleApi,
+        Utlatande utlatande) throws ModuleException, TemporaryException {
+        final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
+        notificationPatientEnricher.enrichWithPatient(intyg);
+        return NotificationTypeConverter.convert(notificationMessage, intyg);
+    }
+
+    private ModuleApi getModuleApi(NotificationMessage notificationMessage, Message message) throws ModuleNotFoundException {
+        final var intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
+            notificationMessage.getUtkast());
+        return moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
     }
 
     private String getSchemaVersion(NotificationMessage notificationMessage) {
@@ -124,10 +138,6 @@ public class NotificationTransformer {
         return schemaVersion.name();
     }
 
-    private boolean usingWebcertMessaging() {
-        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-    }
-
     /**
      * Prefer using header for INTYG_TYPE_VERSION before trying to parse from body.
      */
@@ -138,6 +148,10 @@ public class NotificationTransformer {
         String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
         message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
         return certificateVersion;
+    }
+
+    private boolean usingWebcertMessaging() {
+        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
     }
 
     private NotificationResultMessage createResultMessage(Message message, NotificationMessage notificationMessage, Utlatande utlatande,
@@ -202,8 +216,8 @@ public class NotificationTransformer {
                 return textMessage;
             });
         } catch (Exception e) {
-            // TODO: Log the exception.
-            LOG.error("Exception occured sending NotificationResultMessage after exception in NotificationTransformer {}", resultMessage);
+            LOG.error(String.format("Exception occured sending NotificationResultMessage after exception in NotificationTransformer %s",
+                resultMessage), e);
         }
     }
 }
