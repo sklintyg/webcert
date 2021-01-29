@@ -46,7 +46,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .expect().statusCode(200).when().get("api/anvandare")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .then()
             .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
             .body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId()))
             .body("namn", equalTo(DEFAULT_LAKARE_NAME));
@@ -77,7 +77,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         spec()
             .and().body(changeRequest)
             .when().post("api/anvandare/andraenhet")
-            .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .then().statusCode(200)
             .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
@@ -160,7 +160,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .expect().statusCode(200).when().get("api/anvandare")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .then()
             .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
             .body("anvandarPreference.key1", equalTo("value1"));
 
@@ -186,7 +186,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         spec()
             .expect().statusCode(200)
             .when().get("api/anvandare")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .then()
             .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
             .body("anvandarPreference.key1", nullValue());
     }
