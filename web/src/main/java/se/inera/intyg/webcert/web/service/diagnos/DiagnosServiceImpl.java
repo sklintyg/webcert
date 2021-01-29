@@ -133,7 +133,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     @Override
     public boolean validateDiagnosisCodeFormat(String code) {
-        return SCHEMATRON_DIAGNOSIS_PATTERN.matcher(code).matches();
+        return code != null && SCHEMATRON_DIAGNOSIS_PATTERN.matcher(code).matches();
     }
 
     private DiagnosResponse findDiagnosisesByCode(String code, Diagnoskodverk codeSystem) {
