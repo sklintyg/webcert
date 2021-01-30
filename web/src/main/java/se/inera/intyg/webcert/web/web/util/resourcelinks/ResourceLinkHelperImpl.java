@@ -20,10 +20,8 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -229,6 +227,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
         if (certificateAccessService.allowToSetComplementAsHandled(accessEvaluationParameters).isAllowed()) {
             actionLinkList.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+        }
+
+        if (certificateAccessService.allowToSetQuestionAsHandled(accessEvaluationParameters).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
         }
 
         return actionLinkList;

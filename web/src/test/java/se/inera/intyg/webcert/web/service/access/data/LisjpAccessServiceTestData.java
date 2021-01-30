@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.access.data;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class LisjpAccessServiceTestData implements AccessServiceTestData {
@@ -46,7 +45,8 @@ public class LisjpAccessServiceTestData implements AccessServiceTestData {
         AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA,
         AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA,
         AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST,
-        AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD);
+        AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD,
+        AuthoritiesConstants.PRIVILEGE_MARKERA_FRAGA_SOM_HANTERAD);
 
     @Override
     public List<String> getFeatures() {

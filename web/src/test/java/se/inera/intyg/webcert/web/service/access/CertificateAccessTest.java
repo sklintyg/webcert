@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
@@ -44,7 +43,7 @@ public abstract class CertificateAccessTest extends AccessTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        accessEvaluationParameters = AccessEvaluationParameters.create(intygsTyp, vardenhet, PERSONNUMMER,false);
+        accessEvaluationParameters = AccessEvaluationParameters.create(intygsTyp, vardenhet, PERSONNUMMER, false);
     }
 
     @Test
@@ -1048,7 +1047,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditions();
 
         assertAllowToSetComplementAsHandledNoConditions(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue);
@@ -1058,7 +1057,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatient();
 
         assertAllowToSetComplementAsHandledOnDeceasedPatient(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnDeceasedPatient(AccessResult actualValue);
@@ -1068,7 +1067,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnit();
 
         assertAllowToSetComplementAsHandledOnInactiveUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnInactiveUnit(AccessResult actualValue);
@@ -1078,7 +1077,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalse();
 
         assertAllowToSetComplementAsHandledOnRenewFalse(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnRenewFalse(AccessResult actualValue);
@@ -1088,7 +1087,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -1098,7 +1097,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -1108,7 +1107,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -1118,7 +1117,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -1128,7 +1127,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -1138,10 +1137,110 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(
-                accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+            accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
     }
 
     abstract protected void assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToSetQuestionAsHandledNoConditions(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToSetQuestionAsHandledOnDeceasedPatient(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToSetQuestionAsHandledOnInactiveUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToSetQuestionAsHandledOnRenewFalse(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToSetQuestionAsHandledNoConditionsDifferentUnit(
+            accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToReadQuestionsNoConditions() {

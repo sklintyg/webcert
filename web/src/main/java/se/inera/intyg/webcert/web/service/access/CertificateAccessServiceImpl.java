@@ -264,6 +264,23 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .evaluate();
     }
 
+    @Override
+    public AccessResult allowToSetQuestionAsHandled(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+            .privilege(AuthoritiesConstants.PRIVILEGE_MARKERA_FRAGA_SOM_HANTERAD)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(true)
+            .checkPatientTestIndicator(false)
+            .checkTestCertificate(accessEvaluationParameters.isTestCertificate())
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
+    }
+
     private AccessServiceEvaluation getAccessServiceEvaluation() {
         return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
     }
