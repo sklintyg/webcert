@@ -126,4 +126,12 @@ public interface CertificateAccessService {
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters);
+
+    /**
+     * Check if the user is allowed to set administrative question as handled for a certificate.
+     *
+     * @param accessEvaluationParameters Parameters to use for access evaluation
+     * @return AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToSetQuestionAsHandled(AccessEvaluationParameters accessEvaluationParameters);
 }
