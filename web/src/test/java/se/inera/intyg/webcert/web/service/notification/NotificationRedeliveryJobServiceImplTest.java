@@ -19,15 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
@@ -41,6 +49,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryServiceImpl;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategy;
+import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyFactory;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -59,6 +68,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 public class NotificationRedeliveryJobServiceImplTest {
 
+    @Autowired
+    NotificationRedeliveryStrategyFactory redeliveryStrategyFactory;
+
     @Mock
     private NotificationRedeliveryService notificationRedeliveryService;
 
@@ -67,6 +79,9 @@ public class NotificationRedeliveryJobServiceImplTest {
 
     @Mock
     private NotificationRedeliveryRepository notificationRedeliveryRepository;
+
+    @Spy
+    ObjectMapper objectMapper;
 
     @InjectMocks
     private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
@@ -81,7 +96,18 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void testInitiateRedeliveryOfNonFailedEvent() {
+    public void testInitiateRedeliveryOfDraftFoundInWebcert() throws IOException {
+        Handelse event = createEvent(NotificationDeliveryStatusEnum.RESEND);
+        NotificationRedelivery redelivery = createNotificationRedelivery(event, "CORRELATION_ID", LocalDateTime.now(),
+            1, redeliveryStrategyFactory.getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD));
+        NotificationRedeliveryMessage redeliveryMessage = createNotificationRedeliveryMessageForDraft();
+
+        when(notificationRedeliveryService.getNotificationsForRedelivery()).thenReturn(Collections.singletonList(redelivery));
+        when(notificationRedeliveryService.getEventById(any(Long.class))).thenReturn(event);
+        when(notificationRedeliveryService.isRedundantRedelivery(any(Handelse.class))).thenReturn(false);
+        when(objectMapper.readValue(any(byte[].class), NotificationRedeliveryMessage.class)).thenReturn(redeliveryMessage);
+
+        
 
     }
 
