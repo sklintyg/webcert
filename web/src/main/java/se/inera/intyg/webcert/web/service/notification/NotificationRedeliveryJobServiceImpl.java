@@ -125,11 +125,11 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     @Autowired
     private FeaturesHelper featuresHelper;
 
-    @Value("${notification.redelivery.xml.local.part}")
-    private String xmlLocalPart;
+    //@Value("${notification.redelivery.xml.local.part}")
+    private String xmlLocalPart = "CertificateStatusUpdateForCare";
 
-    @Value("${notification.redelivery.xml.namespace.url}")
-    private String xmlNamespaceUrl;
+    //@Value("${notification.redelivery.xml.namespace.url}")
+    private String xmlNamespaceUrl = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
 
     private static final List<HandelsekodEnum> USES_QA = Arrays.asList(HandelsekodEnum.NYFRFM,
         HandelsekodEnum.NYSVFM, HandelsekodEnum.NYFRFV, HandelsekodEnum.HANFRFM,
