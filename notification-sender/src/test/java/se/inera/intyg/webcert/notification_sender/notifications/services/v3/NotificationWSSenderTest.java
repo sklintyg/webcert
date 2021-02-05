@@ -21,40 +21,26 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import se.inera.intyg.common.support.Constants;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
+import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationResultMessageCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationResultMessageSender;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationWSSenderTest {
@@ -63,11 +49,10 @@ public class NotificationWSSenderTest {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     @Mock
-    @Qualifier("jmsTemplateNotificationPostProcessing")
-    private JmsTemplate jmsTemplate;
+    private NotificationResultMessageCreator notificationResultMessageCreator;
 
-    @Spy
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Mock
+    private NotificationResultMessageSender notificationResultMessageSender;
 
     @InjectMocks
     private NotificationWSSender notificationWSSender;
@@ -77,147 +62,92 @@ public class NotificationWSSenderTest {
     private static final String USER_ID = "testUser";
     private static final String CORRELATION_ID = "testCorrelationId";
 
-    // TODO: Can we assert the message?
-
     @Test
-    public void testSendStatusUpdateOk() {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenReturn(response);
-        sendStatusUpdate(request);
-        verify(statusUpdateForCareClient)
-            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
-        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
-    }
+    public void ifUserIdIsSetTheStatusUpdateShouldBeUpdatedWithHanteratAv() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+        final var argumentCaptor = ArgumentCaptor.forClass(HsaId.class);
 
-    @Test
-    public void testSendStatusUpdateInfo() {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.INFO, null, null);
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenReturn(response);
-        sendStatusUpdate(request);
-        verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),any(CertificateStatusUpdateForCareType.class));
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
-        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
+        doReturn(mock(CertificateStatusUpdateForCareResponseType.class)).when(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
+
+        verify(statusUpdateMock).setHanteratAv(argumentCaptor.capture());
+        final var actualUserId = argumentCaptor.getValue() != null ? argumentCaptor.getValue().getExtension() : null;
+        assertEquals(USER_ID, actualUserId);
     }
 
     @Test
-    public void testSendStatusUpdateTechnicalError() {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.ERROR,
-            ErrorIdType.TECHNICAL_ERROR, "Technical error");
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenReturn(response);
-        sendStatusUpdate(request);
-        verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),any(CertificateStatusUpdateForCareType.class));
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
-        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
+    public void ifUserIdIsNotSetTheStatusUpdateShouldNotChangeHanteratAv() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+
+        doReturn(mock(CertificateStatusUpdateForCareResponseType.class)).when(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, null, CORRELATION_ID);
+
+        verify(statusUpdateMock, never()).setHanteratAv(any());
     }
 
     @Test
-    public void testSendStatusUpdateValidationError() {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response =
-            buildStatusUpdateResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, "Validation error");
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenReturn(response);
-        sendStatusUpdate(request);
-        verify(statusUpdateForCareClient)
-            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
-        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
+    public void ifStatusUpdateReturnedResultThenItShouldBeIncludedInTheResultMessage() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+        final var certificateStatusUpdateForCareResponseType = mock(CertificateStatusUpdateForCareResponseType.class);
+        final var result = mock(ResultType.class);
+
+        final var argumentCaptor = ArgumentCaptor.forClass(ResultType.class);
+        doReturn(result).when(certificateStatusUpdateForCareResponseType).getResult();
+        doReturn(certificateStatusUpdateForCareResponseType).when(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
+
+        verify(notificationResultMessageCreator).addToResultMessage(any(), argumentCaptor.capture());
+        assertEquals("Result type should be added to the result message", result, argumentCaptor.getValue());
     }
 
     @Test
-    public void testSendStatusUpdateThrowsException() {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response =
-            buildStatusUpdateResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, "Validation error");
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenThrow(new RuntimeException());
-        sendStatusUpdate(request);
-        verify(statusUpdateForCareClient)
-            .certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS), any(CertificateStatusUpdateForCareType.class));
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
-        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
+    public void ifStatusUpdateThrowExceptionThenItShouldBeIncludedInTheResultMessage() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+        final var exception = new RuntimeException();
+
+        final var argumentCaptor = ArgumentCaptor.forClass(Exception.class);
+        doThrow(exception).when(statusUpdateForCareClient).certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
+
+        verify(notificationResultMessageCreator).addToResultMessage(any(), argumentCaptor.capture());
+        assertEquals("Exception should be added to the result message", exception, argumentCaptor.getValue());
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testSendStatusUpdateWhenMessageToJsonProcessingException() throws Exception {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-            .thenReturn(response);
-        when(objectMapper.writeValueAsString(any(NotificationResultMessage.class))).thenThrow(new JsonProcessingException("") {
-        });
-        sendStatusUpdate(request);
-        verifyNoInteractions(jmsTemplate);
+    @Test
+    public void sendResultMessageShouldBeCalledIfStatusUpdateReturnsAResult() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+        final var expectedResultMessage = mock(NotificationResultMessage.class);
+        final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+        doReturn(mock(CertificateStatusUpdateForCareResponseType.class)).when(statusUpdateForCareClient)
+            .certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID);
+
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
+
+        verify(notificationResultMessageSender).sendResultMessage(argumentCaptor.capture());
+        assertEquals(expectedResultMessage, argumentCaptor.getValue());
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testSendStatusUpdateWhenMessageToByteJsonProcessingException() throws Exception {
-        CertificateStatusUpdateForCareType request = buildStatusUpdateRequest();
-        CertificateStatusUpdateForCareResponseType response = buildStatusUpdateResponse(ResultCodeType.OK, null, null);
-        when(objectMapper.writeValueAsBytes(any(NotificationRedeliveryMessage.class))).thenThrow(new JsonProcessingException("") {
-        });
-        sendStatusUpdate(request);
-        verifyNoInteractions(jmsTemplate);
-    }
+    @Test
+    public void sendResultMessageShouldBeCalledIfStatusUpdateThrowsException() {
+        final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
+        final var expectedResultMessage = mock(NotificationResultMessage.class);
+        final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-    private void sendStatusUpdate(CertificateStatusUpdateForCareType request) {
-        notificationWSSender.sendStatusUpdate(request, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
-    }
+        doThrow(new RuntimeException()).when(statusUpdateForCareClient).certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
+        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID);
 
-    private CertificateStatusUpdateForCareType buildStatusUpdateRequest() {
-        CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();
-        res.setIntyg(NotificationTestHelper.createIntyg("AF00213"));
-        res.getIntyg().setSkapadAv(buildHosPersonal());
-        res.setHandelse(buildEventV3());
-        return res;
-    }
+        notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
 
-    private se.riv.clinicalprocess.healthcond.certificate.v3.Handelse buildEventV3() {
-        se.riv.clinicalprocess.healthcond.certificate.v3.Handelse event = new se.riv.clinicalprocess.healthcond.certificate.v3.Handelse();
-        event.setHandelsekod(new Handelsekod());
-        event.getHandelsekod().setCode(HandelsekodEnum.SKAPAT.name());
-        return event;
-    }
-
-    private HosPersonal buildHosPersonal() {
-        Vardgivare careProvider = new Vardgivare();
-        HsaId careProviderHsaId = new HsaId();
-        careProviderHsaId.setExtension("testCareProvider");
-        careProvider.setVardgivareId(careProviderHsaId);
-
-        Enhet unit = new Enhet();
-        HsaId unitHsaId = new HsaId();
-        unitHsaId.setExtension("testUnit");
-        unit.setEnhetsId(unitHsaId);
-        unit.setVardgivare(careProvider);
-
-        HosPersonal hosPersonal = new HosPersonal();
-        HsaId createdByHsaId = new HsaId();
-        createdByHsaId.setExtension("createdByHsaId");
-        hosPersonal.setPersonalId(createdByHsaId);
-        hosPersonal.setEnhet(unit);
-        return hosPersonal;
-    }
-
-    private CertificateStatusUpdateForCareResponseType buildStatusUpdateResponse(ResultCodeType code, ErrorIdType errorId,
-        String resultText) {
-        CertificateStatusUpdateForCareResponseType res = new CertificateStatusUpdateForCareResponseType();
-        res.setResult(new ResultType());
-        res.getResult().setResultCode(code);
-        res.getResult().setErrorId(errorId);
-        res.getResult().setResultText(resultText);
-        return res;
+        verify(notificationResultMessageSender).sendResultMessage(argumentCaptor.capture());
+        assertEquals(expectedResultMessage, argumentCaptor.getValue());
     }
 }
