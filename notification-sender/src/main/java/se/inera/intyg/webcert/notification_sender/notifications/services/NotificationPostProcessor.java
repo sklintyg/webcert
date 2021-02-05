@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
 
 public class NotificationPostProcessor {
 
@@ -40,12 +41,12 @@ public class NotificationPostProcessor {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private NotificationRedeliveryService notificationRedeliveryService;
+    private NotificationPostProcessingService notificationPostProcessingService;
 
     public void process(Message message) {
         try {
             final var resultMessage = getNotificationResultMessage(message);
-            notificationRedeliveryService.processNotificationResult(resultMessage);
+            notificationPostProcessingService.processNotificationResult(resultMessage);
         } catch (Exception e) {
             LOG.error(getLogErrorMessage(message), e);
         }

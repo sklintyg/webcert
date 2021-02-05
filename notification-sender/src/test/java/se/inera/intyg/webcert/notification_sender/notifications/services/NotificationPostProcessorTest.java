@@ -37,13 +37,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationPostProcessorTest {
 
     @Mock
-    private NotificationRedeliveryService notificationRedeliveryService;
+    private NotificationPostProcessingService notificationPostProcessingService;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -63,7 +64,7 @@ public class NotificationPostProcessorTest {
 
         postProcessor.process(message);
 
-        verify(notificationRedeliveryService).processNotificationResult(argumentCaptor.capture());
+        verify(notificationPostProcessingService).processNotificationResult(argumentCaptor.capture());
         assertEquals(notificationResultMessage, argumentCaptor.getValue());
     }
 
@@ -77,6 +78,6 @@ public class NotificationPostProcessorTest {
 
         postProcessor.process(message);
 
-        verifyNoInteractions(notificationRedeliveryService);
+        verifyNoInteractions(notificationPostProcessingService);
     }
 }
