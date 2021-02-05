@@ -32,7 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
@@ -43,15 +42,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
@@ -60,8 +53,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -90,10 +83,10 @@ public class NotificationTransformerTest {
     private FeaturesHelper featuresHelper;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private NotificationResultMessageCreator notificationResultMessageCreator;
 
     @Mock
-    private JmsTemplate jmsTemplateNotificationPostProcessing;
+    private NotificationResultMessageSender notificationResultMessageSender;
 
     @InjectMocks
     private NotificationTransformer transformer;
@@ -174,18 +167,22 @@ public class NotificationTransformerTest {
         final var message = new DefaultMessage(camelContext);
         message.setBody(notificationMessage);
 
+        final var utlatande = getUtlatandeMock();
+        final var exception = new RuntimeException();
         final var moduleApiMock = mock(ModuleApi.class);
         doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
         doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
-        doReturn(getUtlatandeMock()).when(moduleApiMock).getUtlatandeFromJson(anyString());
-        doThrow(new RuntimeException()).when(moduleApiMock).getIntygFromUtlatande(any(Utlatande.class));
+        doReturn(utlatande).when(moduleApiMock).getUtlatandeFromJson(anyString());
+        doThrow(exception).when(moduleApiMock).getIntygFromUtlatande(any(Utlatande.class));
         doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+        doReturn(mock(NotificationResultMessage.class)).when(notificationResultMessageCreator)
+            .createFailureMessage(any(), any(), eq(notificationMessage), eq(utlatande), eq(exception));
 
         try {
             transformer.process(message);
             assertTrue("No exception was thrown and this line should not be reached.", false);
         } catch (Exception ex) {
-            verify(jmsTemplateNotificationPostProcessing).send(any(MessageCreator.class));
+            verify(notificationResultMessageSender).sendResultMessage(any());
         }
     }
 
@@ -206,7 +203,7 @@ public class NotificationTransformerTest {
             transformer.process(message);
             assertTrue("No exception was thrown and this line should not be reached.", false);
         } catch (Exception ex) {
-            verifyNoInteractions(jmsTemplateNotificationPostProcessing);
+            verifyNoInteractions(notificationResultMessageSender);
         }
     }
 
@@ -230,35 +227,12 @@ public class NotificationTransformerTest {
             transformer.process(message);
             assertTrue("No exception was thrown and this line should not be reached.", false);
         } catch (Exception ex) {
-            verifyNoInteractions(jmsTemplateNotificationPostProcessing);
+            verifyNoInteractions(notificationResultMessageSender);
             verifyNoInteractions(featuresHelper);
         }
     }
 
     private Utlatande getUtlatandeMock() {
-        final var utlatande = mock(Utlatande.class);
-
-        doReturn(INTYGS_ID).when(utlatande).getId();
-        doReturn(LUSE).when(utlatande).getTyp();
-        doReturn("1.0").when(utlatande).getTextVersion();
-
-        final var grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-
-        final var skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
-
-        final var vardenhet = mock(Vardenhet.class);
-        doReturn(vardenhet).when(skapadAv).getVardenhet();
-
-        final var vardgivare = mock(se.inera.intyg.common.support.model.common.internal.Vardgivare.class);
-        doReturn(vardgivare).when(vardenhet).getVardgivare();
-
-        final var patient = mock(Patient.class);
-        doReturn(patient).when(grundData).getPatient();
-
-        doReturn(Personnummer.createPersonnummer("191212121212").get()).when(patient).getPersonId();
-
-        return utlatande;
+        return mock(Utlatande.class);
     }
 }

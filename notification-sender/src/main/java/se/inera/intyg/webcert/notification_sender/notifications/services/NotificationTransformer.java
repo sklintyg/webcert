@@ -18,20 +18,15 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.FAILURE;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import javax.jms.TextMessage;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -43,12 +38,7 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
-import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public class NotificationTransformer {
@@ -68,11 +58,10 @@ public class NotificationTransformer {
     FeaturesHelper featuresHelper;
 
     @Autowired
-    @Qualifier("jmsTemplateNotificationPostProcessing")
-    private JmsTemplate jmsTemplateNotificationPostProcessing;
+    NotificationResultMessageCreator notificationResultMessageCreator;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    NotificationResultMessageSender notificationResultMessageSender;
 
     public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
         LOG.debug("Receiving message: {}", message.getMessageId());
@@ -80,6 +69,8 @@ public class NotificationTransformer {
         final var notificationMessage = message.getBody(NotificationMessage.class);
 
         final var schemaVersion = getSchemaVersion(notificationMessage);
+        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
+        final var userId = message.getHeader(USER_ID, String.class);
 
         message.setHeader(NotificationRouteHeaders.VERSION, schemaVersion);
         message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
@@ -102,11 +93,15 @@ public class NotificationTransformer {
                 + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
 
             if (usingWebcertMessaging()) {
-                final var resultMessage = createResultMessage(message, notificationMessage, utlatande, e);
-                sendResultMessage(resultMessage, notificationMessage);
+                final var resultMessage = notificationResultMessageCreator
+                    .createFailureMessage(correlationId, userId, notificationMessage, utlatande, e);
+                final var success = notificationResultMessageSender.sendResultMessage(resultMessage);
+                if (!success) {
+                    throw e;
+                }
+            } else {
+                throw e;
             }
-
-            throw e;
         }
     }
 
@@ -152,72 +147,5 @@ public class NotificationTransformer {
 
     private boolean usingWebcertMessaging() {
         return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-    }
-
-    private NotificationResultMessage createResultMessage(Message message, NotificationMessage notificationMessage, Utlatande utlatande,
-        Exception exception) {
-
-        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
-        final var userId = message.getHeader(USER_ID, String.class);
-
-        final var event = createEvent(notificationMessage, utlatande, userId);
-
-        final var notificationResultType = createResultType(exception);
-
-        final var resultMessage = new NotificationResultMessage();
-        resultMessage.setCorrelationId(correlationId);
-        resultMessage.setEvent(event);
-        resultMessage.setResultType(notificationResultType);
-
-        return resultMessage;
-    }
-
-    private NotificationResultType createResultType(Exception exception) {
-        final var notificationResultType = new NotificationResultType();
-        // TODO: Could ERROR be used or is it necessary with a specific type?
-        notificationResultType.setNotificationResult(FAILURE);
-        notificationResultType.setNotificationResultText(exception.getMessage());
-        notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
-        notificationResultType.setException(exception.getClass().getName());
-        return notificationResultType;
-    }
-
-    public static Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user) {
-        final var event = new Handelse();
-        event.setIntygsId(utlatande.getId());
-        event.setCertificateType(utlatande.getTyp());
-        event.setCertificateVersion(utlatande.getTextVersion());
-        event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
-        event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
-        event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
-
-        event.setCode(notificationMessage.getHandelse());
-        event.setTimestamp(notificationMessage.getHandelseTid());
-        event.setAmne(notificationMessage.getAmne() != null ? ArendeAmne.valueOf(notificationMessage.getAmne().getCode()) : null);
-        event.setEnhetsId(notificationMessage.getLogiskAdress());
-        event.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
-
-        event.setHanteratAv(user);
-
-        return event;
-    }
-
-    private void sendResultMessage(NotificationResultMessage resultMessage, NotificationMessage notificationMessage) {
-
-        try {
-            String notificationMessageJson = objectMapper.writeValueAsString(resultMessage);
-
-            jmsTemplateNotificationPostProcessing.send(session -> {
-                TextMessage textMessage = session.createTextMessage(notificationMessageJson);
-                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
-                textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
-                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
-                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
-                return textMessage;
-            });
-        } catch (Exception e) {
-            LOG.error(String.format("Exception occured sending NotificationResultMessage after exception in NotificationTransformer %s",
-                resultMessage), e);
-        }
     }
 }
