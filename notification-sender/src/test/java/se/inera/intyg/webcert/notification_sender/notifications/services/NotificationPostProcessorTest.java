@@ -237,7 +237,7 @@ public class NotificationPostProcessorTest {
         resultMessage.setCorrelationId(CORRELATION_ID);
         resultMessage.setEvent(new Handelse());
         final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(NotificationResultTypeEnum.ERROR);
+        notificationResultType.setNotificationResult(resultEnum);
         notificationResultType.setException(exception);
         notificationResultType.setNotificationResultText(resultText);
         notificationResultType.setNotificationErrorType(WEBCERT_EXCEPTION);

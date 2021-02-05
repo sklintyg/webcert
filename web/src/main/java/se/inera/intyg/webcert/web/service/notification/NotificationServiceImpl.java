@@ -591,13 +591,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         final String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
+        final String correlationId = UUID.randomUUID().toString();
 
         try {
             jmsTemplateForAggregation.send(
                 new NotificationMessageCreator(
                     notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
                     intygTypeVersion, notificationMessage.getHandelse(),
-                    currentUserId()
+                    currentUserId(),
+                    correlationId
                 ));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
@@ -605,7 +607,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         if (isWebcertMessagingUsed()) {
+            // TODO Add hashed patient id to the monitorlog.
             LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
+            monitoringLog.logStatusUpdateQueued(notificationMessage.getIntygsId(), correlationId, notificationMessage.getLogiskAdress(),
+                notificationMessage.getIntygsTyp(), intygTypeVersion, notificationMessage.getHandelse().name(),
+                notificationMessage.getHandelseTid(), currentUserId());
         } else {
             LOGGER.debug("Notification sent: {}", notificationMessage);
             monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
@@ -667,17 +673,19 @@ public class NotificationServiceImpl implements NotificationService {
         private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
         private final String userId;
+        private final String correlationId;
 
-        // CHECKSTYLE:OFF ParameterNumber
+
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-            HandelsekodEnum handelseTyp, String userId) {
+            HandelsekodEnum handelseTyp, String userId, String correlationId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
             this.userId = userId;
-        } // CHECKSTYLE:ON ParameterNumber
+            this.correlationId = correlationId;
+        }
 
         /**
          * Note that we add intygsTyp and handelseTyp as JMS headers to simplify subsequent routing.
@@ -692,7 +700,7 @@ public class NotificationServiceImpl implements NotificationService {
             if (Objects.nonNull(this.userId)) {
                 msg.setStringProperty(USER_ID, this.userId);
             }
-            msg.setStringProperty(CORRELATION_ID, UUID.randomUUID().toString());
+            msg.setStringProperty(CORRELATION_ID, correlationId);
             return msg;
         }
     }

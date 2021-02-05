@@ -67,7 +67,7 @@ public class NotificationResultMessage {
     @Override
     public String toString() {
         return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s, eventCode: %s]", this.event.getEnhetsId(),
-            this.event.getIntygsId(), this.correlationId, this.event.getCode().value());
+            this.event.getIntygsId(), this.correlationId, this.event.getCode() != null ? this.event.getCode().name() : null);
     }
 
 }
