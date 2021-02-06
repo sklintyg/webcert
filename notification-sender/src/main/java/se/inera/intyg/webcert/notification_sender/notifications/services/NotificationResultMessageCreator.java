@@ -6,12 +6,16 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -35,8 +39,14 @@ public class NotificationResultMessageCreator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public NotificationResultMessage createFailureMessage(String correlationId, String userId, NotificationMessage notificationMessage,
-        Utlatande utlatande, Exception exception) {
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
+    public NotificationResultMessage createFailureMessage(NotificationMessage notificationMessage, String correlationId, String userId,
+        String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
+        final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
+        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getIntygsTyp());
+
         final var event = createEvent(notificationMessage, utlatande, userId);
 
         final var notificationResultType = createResultType(exception);

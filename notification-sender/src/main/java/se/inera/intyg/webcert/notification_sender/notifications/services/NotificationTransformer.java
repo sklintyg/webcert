@@ -27,19 +27,16 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 
 public class NotificationTransformer {
 
@@ -49,73 +46,66 @@ public class NotificationTransformer {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private NotificationPatientEnricher notificationPatientEnricher;
+    private FeaturesHelper featuresHelper;
 
     @Autowired
-    HsaOrganizationsService organizationsService;
+    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
-    FeaturesHelper featuresHelper;
+    private NotificationResultMessageCreator notificationResultMessageCreator;
 
     @Autowired
-    NotificationResultMessageCreator notificationResultMessageCreator;
+    private NotificationResultMessageSender notificationResultMessageSender;
 
-    @Autowired
-    NotificationResultMessageSender notificationResultMessageSender;
-
+    /**
+     * Process message by adding headers and creating a CertificateStatusUpdateForCareType based on the {@link NotificationMessage} and
+     * set it as the message body.
+     *
+     * Failure to do so will result in an error and if a TemporaryException is thrown, the message will be processed again. If
+     * it resulted in a different exception a NotificationResultMessage will be created and added to the queue for post processing.
+     */
     public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
         final var notificationMessage = message.getBody(NotificationMessage.class);
 
-        final var schemaVersion = getSchemaVersion(notificationMessage);
-        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
-        final var userId = message.getHeader(USER_ID, String.class);
+        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
+            message, notificationMessage.getUtkast());
 
-        message.setHeader(NotificationRouteHeaders.VERSION, schemaVersion);
-        message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
-        message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
-        message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
-
-        Utlatande utlatande = null;
         try {
-            final var moduleApi = getModuleApi(notificationMessage, message);
-            utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+            message.setHeader(NotificationRouteHeaders.VERSION, getSchemaVersion(notificationMessage));
+            message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
+            message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
+            message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
 
-            final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, moduleApi, utlatande);
+            final var statusUpdateForCare = certificateStatusUpdateForCareCreator.create(notificationMessage, certificateTypeVersion);
             message.setBody(statusUpdateForCare);
         } catch (TemporaryException e) {
-            LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
-                + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
+            handleTemporaryException(notificationMessage, e);
             throw e;
         } catch (Exception e) {
-            LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
-                + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
-
-            if (usingWebcertMessaging()) {
-                final var resultMessage = notificationResultMessageCreator
-                    .createFailureMessage(correlationId, userId, notificationMessage, utlatande, e);
-                final var success = notificationResultMessageSender.sendResultMessage(resultMessage);
-                if (!success) {
-                    throw e;
-                }
-            } else {
-                throw e;
-            }
+            handleExceptions(message, notificationMessage, certificateTypeVersion, e);
+            throw e;
         }
     }
 
-    private CertificateStatusUpdateForCareType getStatusUpdateForCare(NotificationMessage notificationMessage, ModuleApi moduleApi,
-        Utlatande utlatande) throws ModuleException, TemporaryException {
-        final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
-        notificationPatientEnricher.enrichWithPatient(intyg);
-        return NotificationTypeConverter.convert(notificationMessage, intyg);
+    private void handleTemporaryException(NotificationMessage notificationMessage, TemporaryException e) {
+        LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+            + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
     }
 
-    private ModuleApi getModuleApi(NotificationMessage notificationMessage, Message message) throws ModuleNotFoundException {
-        final var intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message,
-            notificationMessage.getUtkast());
-        return moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
+    private void handleExceptions(Message message, NotificationMessage notificationMessage, String certificateTypeVersion, Exception e)
+        throws ModuleNotFoundException, IOException, ModuleException {
+        LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
+            + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
+
+        if (usingWebcertMessaging()) {
+            final var correlationId = message.getHeader(CORRELATION_ID, String.class);
+            final var userId = message.getHeader(USER_ID, String.class);
+            final var resultMessage = notificationResultMessageCreator
+                .createFailureMessage(notificationMessage, correlationId, userId, certificateTypeVersion, e);
+            notificationResultMessageSender.sendResultMessage(resultMessage);
+        }
     }
 
     private String getSchemaVersion(NotificationMessage notificationMessage) {
