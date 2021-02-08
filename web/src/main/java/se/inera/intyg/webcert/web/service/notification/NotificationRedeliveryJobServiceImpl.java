@@ -143,42 +143,60 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         int remainingRedeliveries = redeliveryList.size();
 
         for (NotificationRedelivery redelivery : redeliveryList) {
+            remainingRedeliveries = redeliver(redelivery, remainingRedeliveries);
+        }
+        
+        return remainingRedeliveries;
+    }
 
-            try {
-                final Handelse event = notificationRedeliveryService.getEventById(redelivery.getEventId());
+    private int redeliver(NotificationRedelivery notificationRedelivery, int remainingRedeliveries) {
+        try {
+            final Handelse event = notificationRedeliveryService.getEventById(notificationRedelivery.getEventId());
 
-                if (notificationRedeliveryService.isRedundantRedelivery(event)) {
-                    notificationRedeliveryService.discardRedundantRedelivery(event, redelivery);
-                } else if (redelivery.getCorrelationId() == null) {
-                    createManualNotification(event, redelivery);
-                } else {
-                    final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
-                        NotificationRedeliveryMessage.class);
+            if (notificationRedeliveryService.isRedundantRedelivery(event)) {
+                notificationRedeliveryService.discardRedundantRedelivery(event, notificationRedelivery);
+            } else {
+                // TODO: Need to handle if no manual delivery should be done.... statusUpdate === null.
+                final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery, event);
 
-                    final CertificateStatusUpdateForCareType statusUpdate = redeliveryMessage.getV3();
-                    completeStatusUpdate(statusUpdate, redeliveryMessage, event);
+                sendJmsMessage(statusUpdate, event, notificationRedelivery);
 
-                    sendJmsMessage(statusUpdate, event, redelivery);
+                // If the feature is not active, then make sure that the redelivery is removed.
+                if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
+                    notificationRedeliveryService.setSentWithV3Client(event, notificationRedelivery);
                 }
-
-                remainingRedeliveries--;
-
-                // TODO Sort out these exception with regard to resend or fail, and which action to perform.
-            } catch (NoSuchElementException e) { //when no handelse exists
-                LOG.error(getLogInfoString(redelivery) + "Could not find a corresponding event in table Handelse.", e);
-                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-            } catch (IOException | ModuleException | ModuleNotFoundException e) {
-                LOG.error(getLogInfoString(redelivery) + "Error setting a certificate on status update object.", e);
-                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-            } catch (WebCertServiceException e) {
-                LOG.error(e.getMessage(), e);
-                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-            } catch (Exception e) {
-                LOG.error(getLogInfoString(redelivery) + "An exception occurred.", e);
-                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
             }
+
+            remainingRedeliveries--;
+
+            // TODO Sort out these exception with regard to resend or fail, and which action to perform.
+        } catch (NoSuchElementException e) { //when no handelse exists
+            LOG.error(getLogInfoString(notificationRedelivery) + "Could not find a corresponding event in table Handelse.", e);
+            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+        } catch (IOException | ModuleException | ModuleNotFoundException e) {
+            LOG.error(getLogInfoString(notificationRedelivery) + "Error setting a certificate on status update object.", e);
+            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+        } catch (WebCertServiceException e) {
+            LOG.error(e.getMessage(), e);
+            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+        } catch (Exception e) {
+            LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
+            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
         }
         return remainingRedeliveries;
+    }
+
+    private CertificateStatusUpdateForCareType getCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
+        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
+        if (redelivery.getCorrelationId() == null) {
+            return createManualNotification(event, redelivery);
+        } else {
+            final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
+                NotificationRedeliveryMessage.class);
+            final var statusUpdate = redeliveryMessage.getV3();
+            completeStatusUpdate(statusUpdate, redeliveryMessage, event);
+            return statusUpdate;
+        }
     }
 
     private void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
@@ -244,12 +262,12 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             redelivery.getCorrelationId());
     }
 
-    private void createManualNotification(Handelse event, NotificationRedelivery redelivery)
+    private CertificateStatusUpdateForCareType createManualNotification(Handelse event, NotificationRedelivery redelivery)
         throws ModuleNotFoundException, IOException, ModuleException, TemporaryException {
 
         // If it is a failure it can be resent, otherwise it can´t... but should we let all events to be resent? No, this is probably a good idea.
         if (event.getDeliveryStatus() != NotificationDeliveryStatusEnum.FAILURE) {
-            return;
+            return null;
         }
 
         final var statusUpdate = createStatusUpdate(event);
@@ -263,12 +281,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         // This saves changes to the event and redelivery
         notificationRedeliveryService.initiateManualNotification(redelivery, event);
 
-        sendJmsMessage(statusUpdate, event, redelivery);
-
-        // If the feature is not active, then make sure that the redelivery is removed.
-        if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
-            notificationRedeliveryService.setSentWithV3Client(event, redelivery);
-        }
+        return statusUpdate;
     }
 
     private CertificateStatusUpdateForCareType createStatusUpdate(Handelse event)
