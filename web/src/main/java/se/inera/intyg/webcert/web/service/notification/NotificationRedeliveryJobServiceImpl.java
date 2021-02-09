@@ -61,8 +61,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
+import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -145,7 +145,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         for (NotificationRedelivery redelivery : redeliveryList) {
             remainingRedeliveries = redeliver(redelivery, remainingRedeliveries);
         }
-        
+
         return remainingRedeliveries;
     }
 
@@ -153,19 +153,18 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         try {
             final Handelse event = notificationRedeliveryService.getEventById(notificationRedelivery.getEventId());
 
-            if (notificationRedeliveryService.isRedundantRedelivery(event)) {
-                notificationRedeliveryService.discardRedundantRedelivery(event, notificationRedelivery);
-            } else {
-                // TODO: Need to handle if no manual delivery should be done.... statusUpdate === null.
-                final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery, event);
+            // TODO: Need to handle if no manual delivery should be done.... statusUpdate === null.
+            final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery, event);
 
-                sendJmsMessage(statusUpdate, event, notificationRedelivery);
+            sendJmsMessage(statusUpdate, event, notificationRedelivery);
 
-                // If the feature is not active, then make sure that the redelivery is removed.
-                if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
-                    notificationRedeliveryService.setSentWithV3Client(event, notificationRedelivery);
-                }
+            // If the feature is not active, then make sure that the redelivery is removed.
+            if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
+                // TODO: Change name of method.
+                notificationRedeliveryService.setSentWithV3Client(event, notificationRedelivery);
             }
+
+            // TODO: How do we update the redelivery once it is delivered.
 
             remainingRedeliveries--;
 
@@ -188,6 +187,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private CertificateStatusUpdateForCareType getCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
         throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
+        // TODO: Check if it contains a redelivery message. Correlation id will be set.
         if (redelivery.getCorrelationId() == null) {
             return createManualNotification(event, redelivery);
         } else {
@@ -273,12 +273,14 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         final var statusUpdate = createStatusUpdate(event);
 
         // Create a correlation id for the redelivery.
+        // TODO: This can be moved to redelivery service.
         redelivery.setCorrelationId(UUID.randomUUID().toString());
 
         // Set that the event will be resent
         event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
 
         // This saves changes to the event and redelivery
+        // Shall this be done after it has been sent?
         notificationRedeliveryService.initiateManualNotification(redelivery, event);
 
         return statusUpdate;

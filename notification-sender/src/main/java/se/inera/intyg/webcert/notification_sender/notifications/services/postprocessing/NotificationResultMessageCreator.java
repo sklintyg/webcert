@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.notification_sender.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;

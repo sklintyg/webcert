@@ -66,7 +66,7 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationRedeliveryService;
+import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategy;
 import se.inera.intyg.webcert.notification_sender.notifications.strategy.NotificationRedeliveryStrategyStandard;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;

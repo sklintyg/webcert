@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
@@ -52,6 +52,8 @@ public class NotificationRedeliveryServiceImpl implements NotificationRedelivery
 
     @Override
     public List<NotificationRedelivery> getNotificationsForRedelivery() {
+        // TODO: Get all notifications up for redelivery. Remove redeliveries that should be discarded.
+        // TODO: Set correlation-id if missing.
         return notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
     }
 

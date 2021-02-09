@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.notification_sender.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.jms.TextMessage;
