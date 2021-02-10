@@ -232,6 +232,15 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>defaultCharacterEncodingFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.web.auth.DefaultCharacterEncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>defaultCharacterEncodingFilter</filter-name>
+        <url-pattern>/visa/intyg/utf/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>idpSelectionFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
