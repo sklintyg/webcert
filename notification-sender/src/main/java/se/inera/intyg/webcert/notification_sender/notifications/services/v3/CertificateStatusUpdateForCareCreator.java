@@ -5,6 +5,8 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -42,6 +45,12 @@ public class CertificateStatusUpdateForCareCreator {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    //@Value("${notification.redelivery.xml.local.part}")
+    private String xmlLocalPart = "CertificateStatusUpdateForCare";
+
+    //@Value("${notification.redelivery.xml.namespace.url}")
+    private String xmlNamespaceUrl = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
 
     public CertificateStatusUpdateForCareType create(NotificationMessage notificationMessage, String certificateTypeVersion)
         throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
@@ -89,5 +98,13 @@ public class CertificateStatusUpdateForCareCreator {
         statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
 
         return statusUpdate;
+    }
+
+    public String marshal(CertificateStatusUpdateForCareType statusUpdate) {
+        final QName qName = new QName(xmlNamespaceUrl, xmlLocalPart);
+        final JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
+            new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
+
+        return XmlMarshallerHelper.marshal(jaxbElement);
     }
 }

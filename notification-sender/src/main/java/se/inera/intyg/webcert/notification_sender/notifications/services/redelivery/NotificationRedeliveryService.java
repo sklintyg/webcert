@@ -32,13 +32,5 @@ public interface NotificationRedeliveryService {
      */
     List<NotificationRedelivery> getNotificationsForRedelivery();
 
-    Handelse getEventById(Long id);
-
-    boolean isRedundantRedelivery(Handelse event);
-
-    void discardRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
-
-    void initiateManualNotification(NotificationRedelivery redelivery, Handelse event);
-
-    void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery);
+    void resend(NotificationRedelivery notificationRedelivery, Handelse event, byte[] message);
 }

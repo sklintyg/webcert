@@ -20,27 +20,15 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -50,11 +38,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -66,6 +51,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.redeliv
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -83,6 +69,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJobServiceImpl.class);
 
     @Autowired
+    private HandelseRepository handelseRepo;
+    @Autowired
     private IntygModuleRegistry moduleRegistry;
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
@@ -90,9 +78,6 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private IntygService certificateService;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    @Qualifier("jmsTemplateNotificationWSSender")
-    private JmsTemplate jmsTemplate;
     @Autowired
     private UtkastService draftService;
     @Autowired
@@ -106,17 +91,9 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     @Autowired
     private HsaPersonService hsaPersonService;
     @Autowired
-    private FeaturesHelper featuresHelper;
-    @Autowired
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
     @Autowired
     private NotificationMessageFactory notificationMessageFactory;
-
-    //@Value("${notification.redelivery.xml.local.part}")
-    private String xmlLocalPart = "CertificateStatusUpdateForCare";
-
-    //@Value("${notification.redelivery.xml.namespace.url}")
-    private String xmlNamespaceUrl = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
 
     @Override
     public void resendNotifications() {
@@ -138,6 +115,10 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             endTime - startTime, failedRedeliveries);
     }
 
+    private Handelse getEventById(Long id) {
+        return handelseRepo.findById(id).orElseThrow();
+    }
+
     private int initiateNotificationRedeliveries(List<NotificationRedelivery> redeliveryList) {
 
         int remainingRedeliveries = redeliveryList.size();
@@ -151,18 +132,12 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private int redeliver(NotificationRedelivery notificationRedelivery, int remainingRedeliveries) {
         try {
-            final Handelse event = notificationRedeliveryService.getEventById(notificationRedelivery.getEventId());
+            final Handelse event = getEventById(notificationRedelivery.getEventId());
 
             // TODO: Need to handle if no manual delivery should be done.... statusUpdate === null.
             final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery, event);
 
             sendJmsMessage(statusUpdate, event, notificationRedelivery);
-
-            // If the feature is not active, then make sure that the redelivery is removed.
-            if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING)) {
-                // TODO: Change name of method.
-                notificationRedeliveryService.setSentWithV3Client(event, notificationRedelivery);
-            }
 
             // TODO: How do we update the redelivery once it is delivered.
 
@@ -187,8 +162,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private CertificateStatusUpdateForCareType getCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
         throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
-        // TODO: Check if it contains a redelivery message. Correlation id will be set.
-        if (redelivery.getCorrelationId() == null) {
+        if (redelivery.getMessage() == null) {
             return createManualNotification(event, redelivery);
         } else {
             final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
@@ -214,6 +188,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             statusUpdate.setIntyg(certificate);
         }
 
+        // TODO Why update
         statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
         statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
             event.getSistaDatumForSvar()));
@@ -249,14 +224,6 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         }
     }
 
-    private String marshal(CertificateStatusUpdateForCareType statusUpdate) {
-        final QName qName = new QName(xmlNamespaceUrl, xmlLocalPart);
-        final JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
-            new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
-
-        return XmlMarshallerHelper.marshal(jaxbElement);
-    }
-
     private String getLogInfoString(NotificationRedelivery redelivery) {
         return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
             redelivery.getCorrelationId());
@@ -271,17 +238,6 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         }
 
         final var statusUpdate = createStatusUpdate(event);
-
-        // Create a correlation id for the redelivery.
-        // TODO: This can be moved to redelivery service.
-        redelivery.setCorrelationId(UUID.randomUUID().toString());
-
-        // Set that the event will be resent
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
-
-        // This saves changes to the event and redelivery
-        // Shall this be done after it has been sent?
-        notificationRedeliveryService.initiateManualNotification(redelivery, event);
 
         return statusUpdate;
     }
@@ -327,21 +283,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
             + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
 
-        try {
-            final var statusUpdateXml = marshal(statusUpdate);
+        final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
 
-            jmsTemplate.convertAndSend(statusUpdateXml.getBytes(), jmsMessage -> {
-                jmsMessage.setStringProperty(CORRELATION_ID, redelivery.getCorrelationId());
-                jmsMessage.setStringProperty(INTYGS_ID, event.getIntygsId());
-                jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
-                jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
-                jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
-                return jmsMessage;
-            });
-        } catch (JmsException e) {
-            throw new RuntimeException(String.format("Failure resending message [notificationId: %s, event: %s, "
-                    + "logicalAddress: %s, correlationId: %s]. Exception occurred setting JMs message headers.", event.getId(),
-                event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId()), e);
-        }
+        notificationRedeliveryService.resend(redelivery, event, statusUpdateXml.getBytes());
     }
 }
