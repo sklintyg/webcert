@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.auth;
+package se.inera.intyg.webcert.web.web.filter;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

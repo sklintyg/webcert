@@ -233,7 +233,7 @@
 
     <filter>
         <filter-name>defaultCharacterEncodingFilter</filter-name>
-        <filter-class>se.inera.intyg.webcert.web.auth.DefaultCharacterEncodingFilter</filter-class>
+        <filter-class>se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>defaultCharacterEncodingFilter</filter-name>
