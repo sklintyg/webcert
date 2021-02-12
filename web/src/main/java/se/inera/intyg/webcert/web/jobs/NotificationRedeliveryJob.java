@@ -36,8 +36,10 @@ public class NotificationRedeliveryJob {
 
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
+
     @Autowired
     private NotificationRedeliveryJobService notificationRedeliveryJobService;
+
     @Autowired
     private ObjectMapper objectMapper;
 

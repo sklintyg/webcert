@@ -19,26 +19,110 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
+import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
+import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.CLIENT;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-public interface NotificationRedeliveryService {
+@Service
+public class NotificationRedeliveryService {
 
-    /**
-     * Collects and returns the redeliveries that, based in their redelivery time, are scheduled for resend.
-     *
-     * @return A list of NotificationRedeliveries to be resent.
-     */
-    List<NotificationRedelivery> getNotificationsForRedelivery();
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryService.class);
 
-    Handelse getEventById(Long id);
+    @Autowired
+    private HandelseRepository handelseRepo;
 
-    boolean isRedundantRedelivery(Handelse event);
+    @Autowired
+    private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
-    void discardRedundantRedelivery(Handelse event, NotificationRedelivery redelivery);
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
-    void initiateManualNotification(NotificationRedelivery redelivery, Handelse event);
+    @Autowired
+    @Qualifier("jmsTemplateNotificationWSSender")
+    private JmsTemplate jmsTemplate;
 
-    void setSentWithV3Client(Handelse event, NotificationRedelivery redelivery);
+    public List<NotificationRedelivery> getNotificationsForRedelivery() {
+        final var notificationRedeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
+
+        notificationRedeliveryList.forEach(this::addCorrelationIdIfMissing);
+
+        return notificationRedeliveryList.stream()
+            .sorted(Comparator.comparing(NotificationRedelivery::getEventId))
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void resend(NotificationRedelivery notificationRedelivery, Handelse event, byte[] message) {
+        try {
+            jmsTemplate.convertAndSend(message, jmsMessage -> {
+                jmsMessage.setStringProperty(CORRELATION_ID, notificationRedelivery.getCorrelationId());
+                jmsMessage.setStringProperty(INTYGS_ID, event.getIntygsId());
+                jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
+                jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
+                jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
+                return jmsMessage;
+            });
+        } catch (JmsException e) {
+            final var errorMessage = String.format("Failure resending message [notificationId: %s, event: %s, "
+                    + "logicalAddress: %s, correlationId: %s]. Exception occurred setting JMs message headers.", event.getId(),
+                event.getCode(), event.getEnhetsId(), notificationRedelivery.getCorrelationId());
+            LOG.error(errorMessage, e);
+            throw new RuntimeException(errorMessage, e);
+        }
+
+        if (isWebcertMessagingUsed()) {
+            clearRedeliveryTime(notificationRedelivery);
+        } else {
+            setEventAsDeliveredByClient(event);
+            deleteNotificationRedelivery(notificationRedelivery);
+        }
+    }
+
+    private void clearRedeliveryTime(NotificationRedelivery notificationRedelivery) {
+        notificationRedelivery.setRedeliveryTime(null);
+        notificationRedeliveryRepo.save(notificationRedelivery);
+    }
+
+    private boolean isWebcertMessagingUsed() {
+        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+    }
+
+    private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
+        if (notificationRedelivery.getCorrelationId() == null) {
+            notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
+        }
+    }
+
+    private void setEventAsDeliveredByClient(Handelse event) {
+        event.setDeliveryStatus(CLIENT);
+        handelseRepo.save(event);
+    }
+
+    private void deleteNotificationRedelivery(NotificationRedelivery record) {
+        notificationRedeliveryRepo.delete(record);
+    }
 }

@@ -20,25 +20,23 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Message;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
-
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationPostProcessorTest {
@@ -46,38 +44,49 @@ public class NotificationPostProcessorTest {
     @Mock
     private NotificationPostProcessingService notificationPostProcessingService;
 
-    @Mock
+    private NotificationPostProcessor notificationPostProcessor;
+
     private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private NotificationPostProcessor postProcessor;
-
-    @Test
-    public void processNotificationResultFromMessage() throws Exception {
-        final var message = mock(Message.class);
-        final var body = "BODY";
-        final var notificationResultMessage = mock(NotificationResultMessage.class);
-        final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        doReturn(body).when(message).getBody(String.class);
-        doReturn(notificationResultMessage).when(objectMapper).readValue(body, NotificationResultMessage.class);
-
-        postProcessor.process(message);
-
-        verify(notificationPostProcessingService).processNotificationResult(argumentCaptor.capture());
-        assertEquals(notificationResultMessage, argumentCaptor.getValue());
+    @Before
+    public void setup() {
+        objectMapper = new ObjectMapper();
+        notificationPostProcessor = new NotificationPostProcessor(objectMapper, notificationPostProcessingService);
     }
 
     @Test
-    public void dontProcessAnythingIfMessageIsCorrupt() throws Exception {
+    public void shallProcessNotificationResultMessage() throws Exception {
         final var message = mock(Message.class);
-        final var body = "BODY";
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var body = objectMapper.writeValueAsString(notificationResultMessage);
+        final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
         doReturn(body).when(message).getBody(String.class);
-        doThrow(new RuntimeException()).when(objectMapper).readValue(anyString(), eq(NotificationResultMessage.class));
 
-        postProcessor.process(message);
+        notificationPostProcessor.process(message);
+
+        verify(notificationPostProcessingService).processNotificationResult(argumentCaptor.capture());
+        assertEquals(notificationResultMessage.getCorrelationId(), argumentCaptor.getValue().getCorrelationId());
+    }
+
+    @Test
+    public void shallNotProcessNotificationResultMessageIfCorrupt() {
+        final var message = mock(Message.class);
+        final var body = "JUST ADD SOME TEXT THAT WILL NOT SUCCESSFULLY BE PARSED!";
+
+        doReturn(body).when(message).getBody(String.class);
+
+        notificationPostProcessor.process(message);
 
         verifyNoInteractions(notificationPostProcessingService);
+    }
+
+    private NotificationResultMessage createNotificationResultMessage() {
+        final var notificationResultMessage = new NotificationResultMessage();
+        notificationResultMessage.setEvent(new Handelse());
+        notificationResultMessage.setResultType(new NotificationResultType());
+        notificationResultMessage.setRedeliveryMessageBytes("BYTES".getBytes());
+        notificationResultMessage.setCorrelationId("CORRELATION_ID");
+        return notificationResultMessage;
     }
 }

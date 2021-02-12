@@ -36,12 +36,16 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.postpro
 public class NotificationPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessor.class);
-
-    @Autowired
+    
     private ObjectMapper objectMapper;
 
-    @Autowired
     private NotificationPostProcessingService notificationPostProcessingService;
+
+    @Autowired
+    public NotificationPostProcessor(ObjectMapper objectMapper, NotificationPostProcessingService notificationPostProcessingService) {
+        this.objectMapper = objectMapper;
+        this.notificationPostProcessingService = notificationPostProcessingService;
+    }
 
     public void process(Message message) {
         try {
