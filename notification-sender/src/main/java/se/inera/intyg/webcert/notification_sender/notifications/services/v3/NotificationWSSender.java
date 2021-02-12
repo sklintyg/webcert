@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Objects;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
@@ -48,9 +47,6 @@ public class NotificationWSSender {
     @Autowired
     private NotificationResultMessageSender notificationResultMessageSender;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
@@ -71,7 +67,7 @@ public class NotificationWSSender {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
             notificationResultMessageCreator.addToResultMessage(resultMessage, e);
         } finally {
-            final var success = notificationResultMessageSender.sendResultMessage(resultMessage);
+            notificationResultMessageSender.sendResultMessage(resultMessage);
         }
     }
 }
