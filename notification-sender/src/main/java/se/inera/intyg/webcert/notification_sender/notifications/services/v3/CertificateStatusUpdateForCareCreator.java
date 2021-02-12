@@ -55,7 +55,7 @@ public class CertificateStatusUpdateForCareCreator {
     public CertificateStatusUpdateForCareType create(NotificationMessage notificationMessage, String certificateTypeVersion)
         throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
         final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
-        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getIntygsTyp());
+        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
         final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
         notificationPatientEnricher.enrichWithPatient(intyg);
         return NotificationTypeConverter.convert(notificationMessage, intyg);

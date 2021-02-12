@@ -45,7 +45,7 @@ public class NotificationResultMessageCreator {
     public NotificationResultMessage createFailureMessage(NotificationMessage notificationMessage, String correlationId, String userId,
         String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
         final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
-        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getIntygsTyp());
+        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
 
         final var event = createEvent(notificationMessage, utlatande, userId);
 
