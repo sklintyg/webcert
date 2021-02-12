@@ -131,7 +131,6 @@ public class NotificationRedeliveryJobServiceImplTest {
         assertEquals(expectedStatusUpdateXml.getBytes().length, captureBytes.getValue().length);
     }
 
-
     private NotificationRedelivery createNotificationRedelivery(Long id) {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId("CORRELATION_ID");

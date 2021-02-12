@@ -94,7 +94,7 @@ public class NotificationRedeliveryService {
             throw new RuntimeException(errorMessage, e);
         }
 
-        if (isWebcertMessagingUsed()) {
+        if (usingWebcertMesssaging()) {
             clearRedeliveryTime(notificationRedelivery);
         } else {
             setEventAsDeliveredByClient(event);
@@ -107,7 +107,7 @@ public class NotificationRedeliveryService {
         notificationRedeliveryRepo.save(notificationRedelivery);
     }
 
-    private boolean isWebcertMessagingUsed() {
+    private boolean usingWebcertMesssaging() {
         return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
     }
 

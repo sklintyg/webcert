@@ -23,7 +23,6 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
@@ -98,14 +97,12 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     @Override
     public void resendNotifications() {
 
-        // TODO Add handling of delays in the queues to make sure events don't get redelivered twice.
         // TODO Add handling of job not finished when scheduled to run next time.
 
         final long startTime = System.currentTimeMillis();
 
         // TODO Move method to job service.
         final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
-        redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
 
         int failedRedeliveries = initiateNotificationRedeliveries(redeliveryList);
 

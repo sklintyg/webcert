@@ -18,179 +18,235 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.internal.verification.VerificationModeFactory.noInteractions;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.VERSION;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.camel.Message;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationTransformerTest {
-//
-//    private static final String INTYGS_ID = "intyg1";
-//    private static final String LOGISK_ADRESS = "address1";
-//    private static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
-//    private static final String LUSE = "luse";
-//
-//    private CamelContext camelContext = new DefaultCamelContext();
-//
-//    @Mock
-//    private IntygModuleRegistry moduleRegistry;
-//
-//    @Mock
-//    private NotificationPatientEnricher notificationPatientEnricher;
-//
-//    @Mock
-//    private FeaturesHelper featuresHelper;
-//
-//    @Mock
-//    private NotificationResultMessageCreator notificationResultMessageCreator;
-//
-//    @Mock
-//    private NotificationResultMessageSender notificationResultMessageSender;
-//
-//    @InjectMocks
-//    private NotificationTransformer transformer;
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testSendVersion1ThrowsException() throws Exception {
-//        // Given
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
-//        Message message = spy(new DefaultMessage(camelContext));
-//        message.setBody(notificationMessage);
-//
-//        // When
-//        try {
-//            transformer.process(message);
-//        } finally {
-//            verifyNoInteractions(notificationPatientEnricher);
-//        }
-//    }
-//
-//    @Test
-//    public void testSchemaVersion2Transformation() throws Exception {
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_3, "ref");
-//        Message message = spy(new DefaultMessage(camelContext));
-//        message.setBody(notificationMessage);
-//
-//        ModuleApi moduleApi = mock(ModuleApi.class);
-//        when(moduleRegistry.getModuleApi(eq(LUSE), eq("1.0"))).thenReturn(moduleApi);
-//        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
-//        Intyg intyg = new Intyg();
-//        IntygId intygsId = new IntygId();
-//        intygsId.setExtension(INTYGS_ID);
-//        intyg.setIntygsId(intygsId);
-//        HosPersonal hosPersonal = new HosPersonal();
-//        Enhet enhet = new Enhet();
-//        enhet.setArbetsplatskod(new ArbetsplatsKod());
-//        enhet.setVardgivare(new Vardgivare());
-//        hosPersonal.setEnhet(enhet);
-//        intyg.setSkapadAv(hosPersonal);
-//
-//        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(intyg);
-//
-//        transformer.process(message);
-//
-//        assertEquals(INTYGS_ID,
-//            ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType) message
-//                .getBody()).getIntyg().getIntygsId().getExtension());
-//        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
-//        assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
-//        assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
-//        assertEquals(SchemaVersion.VERSION_3.name(), message.getHeader(NotificationRouteHeaders.VERSION));
-//
-//        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
-//        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-//        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
-//        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
-//        verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE), eq("1.0"));
-//        verify(moduleApi, times(1)).getUtlatandeFromJson(any());
-//        verify(moduleApi, times(1)).getIntygFromUtlatande(any());
-//        verify(notificationPatientEnricher, times(1)).enrichWithPatient(any());
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
-//        Message message = new DefaultMessage(camelContext);
-//        message.setBody(notificationMessage);
-//        transformer.process(message);
-//        verifyNoInteractions(notificationPatientEnricher);
-//    }
-//
-//    @Test
-//    public void messageToPostProcessorWhenWebcertMessagingFeatureIsOn() throws Exception {
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
-//        final var message = new DefaultMessage(camelContext);
-//        message.setBody(notificationMessage);
-//
-//        final var utlatande = getUtlatandeMock();
-//        final var exception = new RuntimeException();
-//        final var moduleApiMock = mock(ModuleApi.class);
-//        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
-//        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
-//        doReturn(utlatande).when(moduleApiMock).getUtlatandeFromJson(anyString());
-//        doThrow(exception).when(moduleApiMock).getIntygFromUtlatande(any(Utlatande.class));
-//        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-//        doReturn(mock(NotificationResultMessage.class)).when(notificationResultMessageCreator)
-//            .createFailureMessage(any(), any(), eq(notificationMessage), eq(utlatande), eq(exception));
-//
-//        try {
-//            transformer.process(message);
-//            assertTrue("No exception was thrown and this line should not be reached.", false);
-//        } catch (Exception ex) {
-//            verify(notificationResultMessageSender).sendResultMessage(any());
-//        }
-//    }
-//
-//    @Test
-//    public void noMessageToPostProcessorWhenWebcertMessagingFeatureIsOff() throws Exception {
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
-//        final var message = new DefaultMessage(camelContext);
-//        message.setBody(notificationMessage);
-//
-//        final var moduleApiMock = mock(ModuleApi.class);
-//        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
-//        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
-//        doThrow(new NullPointerException()).when(moduleApiMock).getUtlatandeFromJson(anyString());
-//        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-//
-//        try {
-//            transformer.process(message);
-//            assertTrue("No exception was thrown and this line should not be reached.", false);
-//        } catch (Exception ex) {
-//            verifyNoInteractions(notificationResultMessageSender);
-//        }
-//    }
-//
-//    @Test
-//    public void noMessageToPostProcessorWhenWebcertMessagingFeatureIsOnAndTemporaryException() throws Exception {
-//        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-//            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_3, "ref");
-//        final var message = new DefaultMessage(camelContext);
-//        message.setBody(notificationMessage);
-//
-//        final var moduleApiMock = mock(ModuleApi.class);
-//        final var utlatandeMock = getUtlatandeMock();
-//        final var intygMock = mock(Intyg.class);
-//        doReturn("1.0").when(moduleRegistry).resolveVersionFromUtlatandeJson(anyString(), anyString());
-//        doReturn(moduleApiMock).when(moduleRegistry).getModuleApi(LUSE, "1.0");
-//        doReturn(utlatandeMock).when(moduleApiMock).getUtlatandeFromJson(anyString());
-//        doReturn(intygMock).when(moduleApiMock).getIntygFromUtlatande(utlatandeMock);
-//        doThrow(new TemporaryException("")).when(notificationPatientEnricher).enrichWithPatient(any(Intyg.class));
-//
-//        try {
-//            transformer.process(message);
-//            assertTrue("No exception was thrown and this line should not be reached.", false);
-//        } catch (Exception ex) {
-//            verifyNoInteractions(notificationResultMessageSender);
-//            verifyNoInteractions(featuresHelper);
-//        }
-//    }
-//
-//    private Utlatande getUtlatandeMock() {
-//        return mock(Utlatande.class);
-//    }
+
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private FeaturesHelper featuresHelper;
+
+    @Mock
+    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+
+    @Mock
+    private NotificationResultMessageCreator notificationResultMessageCreator;
+
+    @Mock
+    private NotificationResultMessageSender notificationResultMessageSender;
+
+    @InjectMocks
+    private NotificationTransformer notificationTransformer;
+
+    @Test
+    public void shallTransformNotificationMessageToCertificateStatusUpdateForCare() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockCertificateStatusUpdateForCare = mock(CertificateStatusUpdateForCareType.class);
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doReturn(mockCertificateStatusUpdateForCare).when(certificateStatusUpdateForCareCreator).create(eq(notificationMessage), any());
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setBody(eq(mockCertificateStatusUpdateForCare));
+    }
+
+    @Test
+    public void shallSetVersionHeaderOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_3);
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(VERSION, notificationMessage.getVersion().name());
+    }
+
+    @Test
+    public void shallSetVersionV3HeaderOnTransformedMessageWithoutVersion() throws Exception {
+        final var notificationMessage = createNotificationMessage(null);
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(VERSION, SchemaVersion.VERSION_3.name());
+    }
+
+    @Test
+    public void shallThrowExceptionOnTransformedMessageWithUnsupportedVersion() throws Exception {
+        final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_1);
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        try {
+            notificationTransformer.process(mockMessage);
+            assertTrue("Should have thrown exception due to unsupported version!", false);
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void shallSetLogicalAddressHeaderOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(LOGISK_ADRESS, notificationMessage.getLogiskAdress());
+    }
+
+    @Test
+    public void shallSetCertificateIdHeaderOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(INTYGS_ID, notificationMessage.getIntygsId());
+    }
+
+    @Test
+    public void shallSetEventTypeHeaderOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(HANDELSE, notificationMessage.getHandelse().value());
+    }
+
+    @Test
+    public void shallSetCertificateTypeVersionHeaderOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doReturn(expectedCertificateTypeVersion).when(moduleRegistry)
+            .resolveVersionFromUtlatandeJson(notificationMessage.getIntygsTyp(), "CERTIFICATE_AS_JSON_STRING");
+
+        notificationTransformer.process(mockMessage);
+
+        verify(mockMessage).setHeader(INTYG_TYPE_VERSION, expectedCertificateTypeVersion);
+    }
+
+    @Test
+    public void shallUseCertificateTypeVersionHeaderIfAlreadyExistsOnTransformedMessage() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doReturn(expectedCertificateTypeVersion).when(mockMessage).getHeader(INTYG_TYPE_VERSION);
+
+        notificationTransformer.process(mockMessage);
+
+        verify(moduleRegistry, noInteractions()).resolveVersionFromUtlatandeJson(any(), any());
+    }
+
+    @Test
+    public void shallSendResultMessageOnTransformationErrorIfWebcertMessagingIsUsed() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
+        final var mockMessage = mock(Message.class);
+
+        final var captureNotificationResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doThrow(new RuntimeException()).when(certificateStatusUpdateForCareCreator).create(any(), any());
+        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+        doReturn(mockNotificationResultMessage).when(notificationResultMessageCreator)
+            .createFailureMessage(any(), any(), any(), any(), any());
+
+        try {
+            notificationTransformer.process(mockMessage);
+            assertTrue("Should have thrown exception due to transformation error!", false);
+        } catch (Exception e) {
+            verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
+
+            assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
+        }
+    }
+
+    @Test
+    public void shallNotSendResultMessageOnTransformationErrorIfWebcertMessagingIsntUsed() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doThrow(new RuntimeException()).when(certificateStatusUpdateForCareCreator).create(any(), any());
+        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+
+        try {
+            notificationTransformer.process(mockMessage);
+            assertTrue("Should have thrown exception due to transformation error!", false);
+        } catch (Exception e) {
+            verifyNoInteractions(notificationResultMessageSender);
+        }
+    }
+
+    private NotificationMessage createNotificationMessage() {
+        return createNotificationMessage(SchemaVersion.VERSION_3);
+    }
+
+    private NotificationMessage createNotificationMessage(SchemaVersion version) {
+        final var notificationMessage = new NotificationMessage();
+        notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
+        notificationMessage.setLogiskAdress("ENHETS_ID");
+        notificationMessage.setIntygsId("INTYGS_ID");
+        notificationMessage.setVersion(version);
+        final var mockCertificateAsJson = mock(JsonNode.class);
+        doReturn("CERTIFICATE_AS_JSON_STRING").when(mockCertificateAsJson).toString();
+        notificationMessage.setUtkast(mockCertificateAsJson);
+        return notificationMessage;
+    }
 }
