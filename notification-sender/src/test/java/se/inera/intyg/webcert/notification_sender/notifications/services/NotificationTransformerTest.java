@@ -48,6 +48,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -233,6 +234,24 @@ public class NotificationTransformerTest {
             verifyNoInteractions(notificationResultMessageSender);
         }
     }
+
+    @Test
+    public void shallSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsUsed() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockMessage = mock(Message.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doThrow(new TemporaryException("Temporarily failed!")).when(certificateStatusUpdateForCareCreator).create(any(), any());
+
+        try {
+            notificationTransformer.process(mockMessage);
+            assertTrue("Should have thrown a TemporaryException!", false);
+        } catch (TemporaryException e) {
+            verifyNoInteractions(notificationResultMessageSender);
+            verifyNoInteractions(featuresHelper);
+        }
+    }
+
 
     private NotificationMessage createNotificationMessage() {
         return createNotificationMessage(SchemaVersion.VERSION_3);
