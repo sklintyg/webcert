@@ -3,15 +3,11 @@ package se.inera.intyg.webcert.web.web.filter;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -52,17 +48,5 @@ public class DefaultCharacterEncodingFilterTest {
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(httpServletRequest, times(0)).setCharacterEncoding("UTF-8");
-    }
-
-    @Test
-    public void testUtfStringDoesNotGetCorrupt() throws IOException, ServletException {
-        String json = "{\"responsibleHospName\":åäö}";
-        when(httpServletRequest.getReader()).thenReturn(
-            new BufferedReader(new StringReader(json)));
-
-        testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-        String body = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-
-        Assert.assertEquals(json, body);
     }
 }

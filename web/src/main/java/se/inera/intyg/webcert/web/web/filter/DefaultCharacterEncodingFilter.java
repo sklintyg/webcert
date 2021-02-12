@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.filter;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -10,12 +29,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- *  This filter is used to set the character encoding to UTF-8 when handling POST requests to /visa/intyg/utf/{certId}.
+ *  This filter is used to set the character encoding to UTF-8 when handling uthopp POST requests.
  *  {@link se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController}
- *
- *  It solves an issue where saving a request to redis corrupts the request data if characters such as åäö are present.
- *  This filter does not alter the original endpoint /visa/intyg/{certId}.
- *  @author robertdanielsson
  */
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
