@@ -241,7 +241,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @GET
-    @Path("utf/{certId}/saved")
+    @Path("defaultutf8/{certId}/saved")
     @PrometheusTimeMethod
     public Response getRedirectToIntygUtf(@Context UriInfo uriInfo,
         @PathParam(PARAM_CERT_ID) String intygId,
@@ -286,7 +286,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @POST
-    @Path("/utf/{certId}")
+    @Path("/defaultutf8/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @PrometheusTimeMethod
     public Response postRedirectToIntygUtf(@Context UriInfo uriInfo,

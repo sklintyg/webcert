@@ -237,7 +237,7 @@
     </filter>
     <filter-mapping>
         <filter-name>defaultCharacterEncodingFilter</filter-name>
-        <url-pattern>/visa/intyg/utf/*</url-pattern>
+        <url-pattern>/visa/intyg/defaultutf8/*</url-pattern>
     </filter-mapping>
 
     <filter>
