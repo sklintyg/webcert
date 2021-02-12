@@ -63,7 +63,7 @@ public class NotificationWSSenderTest {
     private static final String CORRELATION_ID = "testCorrelationId";
 
     @Test
-    public void ifUserIdIsSetTheStatusUpdateShouldBeUpdatedWithHanteratAv() {
+    public void shallUpdateHandleByIfUserIdHeaderIsSet() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
         final var argumentCaptor = ArgumentCaptor.forClass(HsaId.class);
 
@@ -78,7 +78,7 @@ public class NotificationWSSenderTest {
     }
 
     @Test
-    public void ifUserIdIsNotSetTheStatusUpdateShouldNotChangeHanteratAv() {
+    public void shallLeaveHandleByUnchangedIfUserIdHeaderIsMissing() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
 
         doReturn(mock(CertificateStatusUpdateForCareResponseType.class)).when(statusUpdateForCareClient)
@@ -90,7 +90,7 @@ public class NotificationWSSenderTest {
     }
 
     @Test
-    public void ifStatusUpdateReturnedResultThenItShouldBeIncludedInTheResultMessage() {
+    public void shallAddResultTypeToNotificationResultMessageWhenCertificateStatusUpdateForCareReturns() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
         final var certificateStatusUpdateForCareResponseType = mock(CertificateStatusUpdateForCareResponseType.class);
         final var result = mock(ResultType.class);
@@ -107,7 +107,7 @@ public class NotificationWSSenderTest {
     }
 
     @Test
-    public void ifStatusUpdateThrowExceptionThenItShouldBeIncludedInTheResultMessage() {
+    public void shallAddExceptionToNotificationResultMessageWhenCertificateStatusUpdateForCareThrowsException() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
         final var exception = new RuntimeException();
 
@@ -121,7 +121,7 @@ public class NotificationWSSenderTest {
     }
 
     @Test
-    public void sendResultMessageShouldBeCalledIfStatusUpdateReturnsAResult() {
+    public void shallSendNotificationResultMessageWhenCertificateStatusUpdateForCareReturns() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
         final var expectedResultMessage = mock(NotificationResultMessage.class);
         final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
@@ -137,7 +137,7 @@ public class NotificationWSSenderTest {
     }
 
     @Test
-    public void sendResultMessageShouldBeCalledIfStatusUpdateThrowsException() {
+    public void shallSendNotificationResultMessageWhenCertificateStatusUpdateForCareThrowsException() {
         final var statusUpdateMock = mock(CertificateStatusUpdateForCareType.class);
         final var expectedResultMessage = mock(NotificationResultMessage.class);
         final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
