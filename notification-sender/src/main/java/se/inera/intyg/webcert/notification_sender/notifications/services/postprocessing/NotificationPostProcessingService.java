@@ -7,6 +7,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.INFO;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.UNRECOVERABLE_ERROR;
 
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class NotificationPostProcessingService {
     }
 
     private NotificationDeliveryStatusEnum getDeliveryStatusOnException(NotificationResultMessage resultMessage) {
-        if (isFatalException(resultMessage.getResultType())) {
+        if (isUnrecoverableException(resultMessage.getResultType())) {
             LOG.debug("Failure sending status update to care for {}", resultMessage);
             return FAILURE;
         } else {
@@ -100,11 +101,10 @@ public class NotificationPostProcessingService {
         }
     }
 
-    private boolean isFatalException(NotificationResultType resultType) {
+    private boolean isUnrecoverableException(NotificationResultType resultType) {
         String resultText = resultType.getNotificationResultText();
-        return (SOAPFAULTEXCEPTION.equals(resultType.getException())
-            && Objects.nonNull(resultText) && (resultText.contains(MARSHALLING_ERROR)
-            || resultText.contains(UNMARSHALLING_ERROR)))
-            || resultType.getNotificationResult() == NotificationResultTypeEnum.FAILURE;
+        return resultType.getNotificationResult() == UNRECOVERABLE_ERROR
+            || (SOAPFAULTEXCEPTION.equals(resultType.getException()) && Objects.nonNull(resultText)
+            && (resultText.contains(MARSHALLING_ERROR) || resultText.contains(UNMARSHALLING_ERROR)));
     }
 }

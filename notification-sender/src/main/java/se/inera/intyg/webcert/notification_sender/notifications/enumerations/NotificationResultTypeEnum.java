@@ -26,7 +26,7 @@ public enum NotificationResultTypeEnum {
     OK("OK", "Notification result type OK"),
     INFO("INFO", "Notification result type INFO"),
     ERROR("ERROR", "Notification result type ERROR"),
-    FAILURE("FAILURE", "Notification result type FAILURE");
+    UNRECOVERABLE_ERROR("FAILURE", "Notification result type FAILURE");
 
     private final String value;
     private final String description;

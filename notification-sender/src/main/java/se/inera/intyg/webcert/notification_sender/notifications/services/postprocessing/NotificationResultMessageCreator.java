@@ -2,7 +2,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
-import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.FAILURE;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.UNRECOVERABLE_ERROR;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,7 +162,7 @@ public class NotificationResultMessageCreator {
     private NotificationResultType createResultType(Exception exception) {
         final var notificationResultType = new NotificationResultType();
         // TODO: Could ERROR be used or is it necessary with a specific type?
-        notificationResultType.setNotificationResult(FAILURE);
+        notificationResultType.setNotificationResult(UNRECOVERABLE_ERROR);
         notificationResultType.setNotificationResultText(exception.getMessage());
         notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
         notificationResultType.setException(exception.getClass().getName());
