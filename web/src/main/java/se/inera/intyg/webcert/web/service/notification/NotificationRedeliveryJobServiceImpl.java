@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
@@ -60,6 +61,7 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
@@ -164,31 +166,43 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         } else {
             final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
                 NotificationRedeliveryMessage.class);
-            final var statusUpdate = redeliveryMessage.getV3();
-            completeStatusUpdate(statusUpdate, redeliveryMessage, event);
+            final var statusUpdate = new CertificateStatusUpdateForCareType();
+            statusUpdate.setSkickadeFragor(createMessages(redeliveryMessage.getSent()));
+            statusUpdate.setMottagnaFragor(createMessages(redeliveryMessage.getReceived()));
+            statusUpdate.setRef(redeliveryMessage.getReference());
+            Intyg certificate;
+            if (!redeliveryMessage.hasCertificate()) {
+                certificate = getCertificateFromWebcert(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
+                if (certificate == null) {
+                    certificate = getCertificateFromIntygstjanst(event.getIntygsId(), event.getCertificateType(),
+                        event.getCertificateVersion());
+                }
+                certificate.setPatient(redeliveryMessage.getPatient());
+                NotificationTypeConverter.complementIntyg(certificate);
+                statusUpdate.setIntyg(certificate);
+            } else {
+                statusUpdate.setIntyg(redeliveryMessage.getCert());
+            }
+
+            // TODO Why update
+            statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
+            statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
+                event.getSistaDatumForSvar()));
             return statusUpdate;
         }
     }
 
-    private void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
-        Handelse event) throws ModuleNotFoundException, IOException, ModuleException {
-
-        Intyg certificate;
-        if (!redeliveryMessage.hasCertificate()) {
-            certificate = getCertificateFromWebcert(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
-            if (certificate == null) {
-                certificate = getCertificateFromIntygstjanst(event.getIntygsId(), event.getCertificateType(),
-                    event.getCertificateVersion());
-            }
-            certificate.setPatient(redeliveryMessage.getPatient());
-            NotificationTypeConverter.complementIntyg(certificate);
-            statusUpdate.setIntyg(certificate);
+    private Arenden createMessages(CertificateMessages certificateMessages) {
+        if (certificateMessages == null) {
+            return new Arenden();
         }
-
-        // TODO Why update
-        statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
-        statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
-            event.getSistaDatumForSvar()));
+        
+        final var messages = new Arenden();
+        messages.setTotalt(certificateMessages.getTotal());
+        messages.setEjBesvarade(certificateMessages.getUnanswered());
+        messages.setBesvarade(certificateMessages.getAnswered());
+        messages.setHanterade(certificateMessages.getHandled());
+        return messages;
     }
 
     private Intyg getCertificateFromWebcert(String certificateId, String certificateType, String certificateVersion)

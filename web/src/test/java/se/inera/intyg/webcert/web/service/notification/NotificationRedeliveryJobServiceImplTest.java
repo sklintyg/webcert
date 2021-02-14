@@ -116,7 +116,6 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryMessageMock).when(objectMapper)
             .readValue(expectedNotificationRedelivery.getMessage(), NotificationRedeliveryMessage.class);
         doReturn(true).when(notificationRedeliveryMessageMock).hasCertificate();
-        doReturn(certificateStatusUpdateForCareMock).when(notificationRedeliveryMessageMock).getV3();
         doReturn(expectedStatusUpdateXml).when(certificateStatusUpdateForCareCreator).marshal(any());
 
         notificationRedeliveryJobService.resendNotifications();

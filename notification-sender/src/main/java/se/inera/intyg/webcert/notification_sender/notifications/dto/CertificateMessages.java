@@ -19,9 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
-
 public class CertificateMessages {
 
     private int total;
@@ -62,16 +59,5 @@ public class CertificateMessages {
 
     public void setHandled(int handled) {
         this.handled = handled;
-    }
-
-    // TODO: Try to remove.
-    @JsonIgnore
-    public Arenden getArendenV3() {
-        Arenden arenden = new Arenden();
-        arenden.setTotalt(this.total);
-        arenden.setEjBesvarade(this.unanswered);
-        arenden.setBesvarade(this.answered);
-        arenden.setHanterade(this.handled);
-        return arenden;
     }
 }

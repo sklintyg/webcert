@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
@@ -83,19 +82,6 @@ public class NotificationRedeliveryMessage implements Serializable {
             this.patient = certificate.getPatient();
         }
         return this;
-    }
-
-    @JsonIgnore
-    public CertificateStatusUpdateForCareType getV3() {
-        CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setSkickadeFragor(this.sent.getArendenV3());
-        statusUpdate.setMottagnaFragor(this.received.getArendenV3());
-        statusUpdate.setRef(this.reference);
-
-        if (hasCertificate()) {
-            statusUpdate.setIntyg(this.cert);
-        }
-        return statusUpdate;
     }
 
     @JsonIgnore
