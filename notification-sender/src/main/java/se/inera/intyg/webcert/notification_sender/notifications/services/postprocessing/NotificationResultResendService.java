@@ -76,23 +76,24 @@ public class NotificationResultResendService {
         final var maxRedeliveries = strategy.getMaxRedeliveries();
 
         if (attemptedDeliveries - 1 < maxRedeliveries) {
-            LOG.debug("Updating redelivery notification for eventId {}", event.getId());
+            event.setId(redelivery.getEventId());
+            LOG.debug("Updating notification redelivery for eventId {}", event.getId());
             redelivery.setAttemptedDeliveries(attemptedDeliveries);
             redelivery.setRedeliveryTime(redelivery.getRedeliveryTime()
                 .plus(strategy.getNextTimeValue(attemptedDeliveries), strategy.getNextTimeUnit(attemptedDeliveries)));
             notificationRedeliveryRepo.save(redelivery);
             monitorLogResend(event, resultMessage, redelivery);
         } else {
-            LOG.warn("Setting redelivery failure for eventId {}", event.getId());
-            final var updatedEvent = setRedeliveryFailure(redelivery);
+            final var updatedEvent = setRedeliveryFailure(redelivery.getEventId());
+            LOG.warn("Setting redelivery failure for eventId {}", updatedEvent.getId());
             notificationRedeliveryRepo.delete(redelivery);
             redelivery.setAttemptedDeliveries(attemptedDeliveries);
             monitorLogFailure(updatedEvent, resultMessage, redelivery);
         }
     }
 
-    private Handelse setRedeliveryFailure(NotificationRedelivery existingRedelivery) {
-        final var event = handelseRepo.findById(existingRedelivery.getEventId()).orElseThrow();
+    private Handelse setRedeliveryFailure(Long eventId) {
+        final var event = handelseRepo.findById(eventId).orElseThrow();
         event.setDeliveryStatus(FAILURE);
         return handelseRepo.save(event);
     }

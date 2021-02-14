@@ -22,12 +22,15 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.TECHNICAL_ERROR;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -74,8 +77,22 @@ public class NotificationResultResendServiceTest {
     @InjectMocks
     NotificationResultResendService notificationResultResendService;
 
+    private static final String CORRELATION_ID = "CORRELATION_ID";
+    private static final byte[] REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+
+    private static final Long EVENT_ID = 1000L;
+    private static final String UNIT_ID = "UNIT_ID";
+    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+    private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
+
+    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM= ERROR;
+    private static final NotificationErrorTypeEnum RESULT_ERROR_TYPE_ENUM = TECHNICAL_ERROR;
+    private static final String RESULT_TEXT = "TECHNICAL_ERROR_TEXT";
+
+    private static final int ATTEMPTED_DELIVERIES = 2;
+
     @Test
-    public void shouldMonitorLogResendOnProcessOfNewRedelivery() {
+    public void shouldMonitorLogResendOnProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -89,12 +106,12 @@ public class NotificationResultResendServiceTest {
         final var captureRedeliveryTime = ArgumentCaptor.forClass(LocalDateTime.class);
 
         doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(createSavedEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(1);
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(1);
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
@@ -109,22 +126,22 @@ public class NotificationResultResendServiceTest {
             captureCurrentSendAttempt.capture(),
             captureRedeliveryTime.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().name(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationErrorType().name(), captureErrorId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationResultText(), captureResultText.getValue());
+        assertEquals(EVENT_ID, captureEventId.getValue());
+        assertEquals(EVENT_ENUM.name(), captureEventType.getValue());
+        assertEquals(UNIT_ID, captureLogicalAddress.getValue());
+        assertEquals(CERTIFICATE_ID, captureCertificateId.getValue());
+        assertEquals(CORRELATION_ID, captureCorrelationId.getValue());
+        assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
+        assertEquals(RESULT_TEXT, captureResultText.getValue());
         assertNotNull(captureCurrentSendAttempt.getValue());
         assertNotNull(captureRedeliveryTime.getValue());
     }
 
     @Test
-    public void shouldMonitorLogResendOnProcessOfExistingRedelivery() {
+    public void shouldMonitorLogResendOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var maxValueHigherThanCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
         final var captureEventType = ArgumentCaptor.forClass(String.class);
@@ -136,14 +153,14 @@ public class NotificationResultResendServiceTest {
         final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
         final var captureRedeliveryTime = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(notificationRedelivery.getAttemptedDeliveries() + 1);
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(notificationRedelivery.getAttemptedDeliveries() + 1);
-        doReturn(maxValueHigherThanCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
@@ -158,13 +175,13 @@ public class NotificationResultResendServiceTest {
             captureCurrentSendAttempt.capture(),
             captureRedeliveryTime.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().name(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationErrorType().name(), captureErrorId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationResultText(), captureResultText.getValue());
+        assertEquals(EVENT_ID, captureEventId.getValue());
+        assertEquals(EVENT_ENUM.name(), captureEventType.getValue());
+        assertEquals(UNIT_ID, captureLogicalAddress.getValue());
+        assertEquals(CERTIFICATE_ID, captureCertificateId.getValue());
+        assertEquals(CORRELATION_ID, captureCorrelationId.getValue());
+        assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
+        assertEquals(RESULT_TEXT, captureResultText.getValue());
         assertNotNull(captureCurrentSendAttempt.getValue());
         assertNotNull(captureRedeliveryTime.getValue());
     }
@@ -172,11 +189,7 @@ public class NotificationResultResendServiceTest {
     @Test
     public void shouldMonitorLogFailureWhenReachingMaxRedeliveries() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var maxValueEqualToCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries();
-
-        // Attempted redeliveries should be increased before monitorlog on failure.
-        final var expectedSendAttemptsAfterServiceCall = notificationRedelivery.getAttemptedDeliveries() + 1;
+        final var notificationRedelivery = createNotificationRedelivery();
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
         final var captureEventType = ArgumentCaptor.forClass(String.class);
@@ -187,12 +200,13 @@ public class NotificationResultResendServiceTest {
         final var captureResultText = ArgumentCaptor.forClass(String.class);
         final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(any(Long.class));
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(Optional.of(createSavedEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(maxValueEqualToCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxRedeliveries();
 
         notificationResultResendService.process(notificationResultMessage);
 
@@ -206,46 +220,51 @@ public class NotificationResultResendServiceTest {
             captureResultText.capture(),
             captureCurrentSendAttempt.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().name(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationErrorType().name(), captureErrorId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationResultText(), captureResultText.getValue());
-        assertEquals(expectedSendAttemptsAfterServiceCall, captureCurrentSendAttempt.getValue().intValue());
+        assertEquals(EVENT_ID, captureEventId.getValue());
+        assertEquals(EVENT_ENUM.name(), captureEventType.getValue());
+        assertEquals(UNIT_ID, captureLogicalAddress.getValue());
+        assertEquals(CERTIFICATE_ID, captureCertificateId.getValue());
+        assertEquals(CORRELATION_ID, captureCorrelationId.getValue());
+        assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
+        assertEquals(RESULT_TEXT, captureResultText.getValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 1, captureCurrentSendAttempt.getValue().intValue());
     }
 
     @Test
-    public void shouldCreateNewEventRecordWhenNoneExists() {
+    public void shouldCreateNewEventRecordWhenprocessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
 
+        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+
         doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(createSavedEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(5).when(notificationRedeliveryStrategy).getNextTimeValue(1);
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(1);
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(1);
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
-        verify(handelseRepository).save(notificationResultMessage.getEvent());
+        verify(handelseRepository).save(captureEvent.capture());
+        assertEquals(notificationResultMessage.getEvent(), captureEvent.getValue());
+        assertNull(captureEvent.getValue().getId());
     }
 
     @Test
-    public void shouldNotUpdateExistingEventWhenNoStatusChange() {
+    public void shouldNotRedundantlyUpdateExistingEventWhenNoStatusChange() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var maxValueHigherThanCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(maxValueHigherThanCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
-        doReturn(5).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
@@ -253,27 +272,27 @@ public class NotificationResultResendServiceTest {
     }
 
     @Test
-    public void shouldCreateNewRedeliveryRecordWhenNoneExists() {
+    public void shouldCreateNewRedeliveryRecordWhenProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
         var currentTimeStamp = LocalDateTime.now();
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
         doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(createSavedEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(1);
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(1);
         doReturn(NotificationRedeliveryStrategyEnum.STANDARD).when(notificationRedeliveryStrategy).getName();
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
         verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
-        assertEquals(notificationResultMessage.getEvent().getId(), captureRedelivery.getValue().getEventId());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureRedelivery.getValue().getCorrelationId());
-        assertEquals(notificationResultMessage.getRedeliveryMessageBytes(), captureRedelivery.getValue().getMessage());
+        assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
+        assertEquals(CORRELATION_ID, captureRedelivery.getValue().getCorrelationId());
+        assertEquals(REDELIVERY_MESSAGE, captureRedelivery.getValue().getMessage());
         assertEquals(NotificationRedeliveryStrategyEnum.STANDARD, captureRedelivery.getValue().getRedeliveryStrategy());
         assertEquals(1, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
         assertTrue(captureRedelivery.getValue().getRedeliveryTime().isAfter(currentTimeStamp));
@@ -282,111 +301,112 @@ public class NotificationResultResendServiceTest {
     @Test
     public void shouldUpdateRedeliveryTimeAndSendAttemptOnExistingRedelivery() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var expectedSendAttemptAfterServiceCall = notificationRedelivery.getAttemptedDeliveries() + 1;
+        final var notificationRedelivery = createNotificationRedelivery();
         final var expectedRedeliveryTimeAfterServiceCall = notificationRedelivery.getRedeliveryTime().plusMinutes(1L);
-        final var maxValueHigherThanCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(maxValueHigherThanCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
         verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
-        assertEquals(expectedSendAttemptAfterServiceCall, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 1, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
         assertEquals(expectedRedeliveryTimeAfterServiceCall, captureRedelivery.getValue().getRedeliveryTime());
     }
 
     @Test
     public void shouldUpdateEventDeliveryStatusOnFailure() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var maxValueEqualToCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries();
+        final var notificationRedelivery = createNotificationRedelivery();
 
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(maxValueEqualToCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(any(Long.class));
-        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
+        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(Optional.of(createSavedEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
         verify(handelseRepository).save(captureEvent.capture());
+        assertEquals(EVENT_ID, captureEvent.getValue().getId());
         assertEquals(NotificationDeliveryStatusEnum.FAILURE, captureEvent.getValue().getDeliveryStatus());
     }
 
     @Test
     public void shouldDeleteRedeliveryRecordOnFailure() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+        final var notificationRedelivery = createNotificationRedelivery();
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(notificationRedelivery.getAttemptedDeliveries()).when(notificationRedeliveryStrategy).getMaxRedeliveries();
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(any(Long.class));
-        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
+        doReturn(Optional.of(createSavedEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultResendService.process(notificationResultMessage);
 
-        verify(notificationRedeliveryRepository).delete(notificationRedelivery);
+        verify(notificationRedeliveryRepository).delete(captureRedelivery.capture());
+        assertEquals(notificationRedelivery, captureRedelivery.getValue());
+        assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
     }
 
     @Test
     public void shouldProperlyUpdateTimeAndSendAttemptOnConsecutiveRedeliveries() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var maxValueHigherThanCurrentSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 3;
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 3;
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(maxValueHigherThanCurrentSendAttempt).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
         doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         var expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusMinutes(1);
-        var expectedSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(expectedSendAttempt);
-        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(expectedSendAttempt);
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         notificationResultResendService.process(notificationResultMessage);
         assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(expectedSendAttempt, notificationRedelivery.getAttemptedDeliveries().intValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 1, notificationRedelivery.getAttemptedDeliveries().intValue());
 
         expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusHours(1);
-        expectedSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(expectedSendAttempt);
-        doReturn(ChronoUnit.HOURS).when(notificationRedeliveryStrategy).getNextTimeUnit(expectedSendAttempt);
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.HOURS).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         notificationResultResendService.process(notificationResultMessage);
         assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(expectedSendAttempt, notificationRedelivery.getAttemptedDeliveries().intValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 2, notificationRedelivery.getAttemptedDeliveries().intValue());
 
         expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusDays(1);
-        expectedSendAttempt = notificationRedelivery.getAttemptedDeliveries() + 1;
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(expectedSendAttempt);
-        doReturn(ChronoUnit.DAYS).when(notificationRedeliveryStrategy).getNextTimeUnit(expectedSendAttempt);
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.DAYS).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         notificationResultResendService.process(notificationResultMessage);
         assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(expectedSendAttempt, notificationRedelivery.getAttemptedDeliveries().intValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 3, notificationRedelivery.getAttemptedDeliveries().intValue());
     }
 
-    private NotificationRedelivery createNotificationRedelivery(NotificationResultMessage notificationResultMessage) {
+    private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
-        notificationRedelivery.setEventId(notificationResultMessage.getEvent().getId());
-        notificationRedelivery.setAttemptedDeliveries(2);
+        notificationRedelivery.setCorrelationId(CORRELATION_ID);
+        notificationRedelivery.setEventId(EVENT_ID);
+        notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
         notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
-        notificationRedelivery.setMessage(new byte[100]);
+        notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
         notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
         return notificationRedelivery;
     }
@@ -394,26 +414,32 @@ public class NotificationResultResendServiceTest {
     private NotificationResultMessage createNotificationResultMessage() {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createEvent());
-        notificationResultMessage.setCorrelationId("CORRELATION_ID");
+        notificationResultMessage.setCorrelationId(CORRELATION_ID);
         notificationResultMessage.setResultType(createNotificationResultType());
+        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
         return notificationResultMessage;
     }
 
     private Handelse createEvent() {
         final var event = new Handelse();
-        event.setId(1000L);
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId("INTYGS_ID");
-        event.setEnhetsId("ENHETS_ID");
+        event.setCode(EVENT_ENUM);
+        event.setIntygsId(CERTIFICATE_ID);
+        event.setEnhetsId(UNIT_ID);
         event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+        return event;
+    }
+
+    private Handelse createSavedEvent() {
+        final var event = createEvent();
+        event.setId(EVENT_ID);
         return event;
     }
 
     private NotificationResultType createNotificationResultType() {
         final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(NotificationResultTypeEnum.ERROR);
-        notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.TECHNICAL_ERROR);
-        notificationResultType.setNotificationResultText("TECHNICAL_ERROR_TEXT");
+        notificationResultType.setNotificationResult(RESULT_TYPE_ENUM);
+        notificationResultType.setNotificationErrorType(RESULT_ERROR_TYPE_ENUM);
+        notificationResultType.setNotificationResultText(RESULT_TEXT);
         return notificationResultType;
     }
 }
