@@ -30,16 +30,16 @@ public class NotificationResultSuccessService {
 
     @Transactional
     public void process(@NonNull NotificationResultMessage resultMessage) {
-        final var event = resultMessage.getEvent();
         final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+        var event = resultMessage.getEvent();
         if (existingRedelivery.isEmpty()) {
             LOG.debug("Persisting notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
-            createEvent(event);
+            event = createEvent(event);
         } else {
             LOG.debug("Updating persisted notification event {} with delivery status {}", event.getCode().value(),
                 event.getDeliveryStatus());
-            updateEvent(event);
+            event = updateEvent(existingRedelivery.get().getEventId(), event);
             deleteNotificationRedelivery(existingRedelivery.get());
         }
 
@@ -51,8 +51,8 @@ public class NotificationResultSuccessService {
         return handelseRepo.save(event);
     }
 
-    private Handelse updateEvent(Handelse event) {
-        final var eventToUpdate = handelseRepo.findById(event.getId()).orElseThrow();
+    private Handelse updateEvent(Long eventId, Handelse event) {
+        final var eventToUpdate = handelseRepo.findById(eventId).orElseThrow();
         eventToUpdate.setDeliveryStatus(event.getDeliveryStatus());
         return handelseRepo.save(eventToUpdate);
     }
