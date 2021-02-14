@@ -90,9 +90,8 @@ public class NotificationResultFailedServiceTest {
         final var captureResultText = ArgumentCaptor.forClass(String.class);
         final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
-            .getCorrelationId());
-        doReturn(setEventId(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(createSavedEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -119,7 +118,7 @@ public class NotificationResultFailedServiceTest {
     @Test
     public void shouldMonitorLogFailureOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+        final var notificationRedelivery = createNotificationRedelivery();
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
         final var captureEventType = ArgumentCaptor.forClass(String.class);
@@ -132,8 +131,8 @@ public class NotificationResultFailedServiceTest {
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
             .getCorrelationId());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doReturn(setEventId(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(Optional.of(createRedeliveredEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -160,13 +159,11 @@ public class NotificationResultFailedServiceTest {
     @Test
     public void shouldCreateNewEventOnProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        final var savedEvent = createSavedEvent();
 
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
-            .getCorrelationId());
-        doReturn(savedEvent).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(createSavedEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -178,15 +175,14 @@ public class NotificationResultFailedServiceTest {
     @Test
     public void shouldSetDeliveryStatusFailureOnRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setEvent(createRedeliveredEvent());
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+        final var notificationRedelivery = createNotificationRedelivery();
 
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
             .getCorrelationId());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
+        doReturn(Optional.of(createRedeliveredEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -198,15 +194,14 @@ public class NotificationResultFailedServiceTest {
     @Test
     public void shouldDeleteRedeliveryOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setEvent(createRedeliveredEvent());
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+        final var notificationRedelivery = createNotificationRedelivery();
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
             .getCorrelationId());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
+        doReturn(Optional.of(createRedeliveredEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -215,9 +210,9 @@ public class NotificationResultFailedServiceTest {
         assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
     }
 
-    private NotificationRedelivery createNotificationRedelivery(NotificationResultMessage notificationResultMessage) {
+    private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
+        notificationRedelivery.setCorrelationId(CORRELATION_ID);
         notificationRedelivery.setEventId(EVENT_ID);
         notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
         return notificationRedelivery;
@@ -243,11 +238,6 @@ public class NotificationResultFailedServiceTest {
 
     private Handelse createSavedEvent() {
         final var event = createUnsavedEvent();
-        event.setId(EVENT_ID);
-        return event;
-    }
-
-    private Handelse setEventId(Handelse event) {
         event.setId(EVENT_ID);
         return event;
     }

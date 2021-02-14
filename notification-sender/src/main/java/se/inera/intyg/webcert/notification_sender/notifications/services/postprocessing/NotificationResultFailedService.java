@@ -35,34 +35,35 @@ public class NotificationResultFailedService {
         final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
 
         if (existingRedelivery.isEmpty()) {
-            LOG.debug("Creating notification event {} with delivery status {}", event.getCode().value(),
-                event.getDeliveryStatus());
             event = createEvent(event);
         } else {
-            LOG.debug("Updating notification event {} with delivery status {}", event.getId(), event.getDeliveryStatus());
-            updateEvent(existingRedelivery.get());
+            event = updateEvent(existingRedelivery.get().getEventId());
             deleteNotificationRedelivery(existingRedelivery.get());
         }
 
         monitorLogFailure(event, resultMessage, existingRedelivery);
     }
 
-    private Handelse createEvent(Handelse event) {
-        return handelseRepo.save(event);
-    }
-
-    private Handelse updateEvent(NotificationRedelivery existingRedelivery) {
-        final var event = handelseRepo.findById(existingRedelivery.getEventId()).orElseThrow();
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
-        return handelseRepo.save(event);
-    }
-
     private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
         return notificationRedeliveryRepo.findByCorrelationId(correlationId);
     }
 
-    private void deleteNotificationRedelivery(NotificationRedelivery record) {
-        notificationRedeliveryRepo.delete(record);
+    private Handelse createEvent(Handelse event) {
+        final var createdEvent = handelseRepo.save(event);
+        LOG.debug("Creating notification event {} with delivery status {}", createdEvent.getId(), createdEvent.getDeliveryStatus());
+        return createdEvent;
+    }
+
+    private Handelse updateEvent(Long eventId) {
+        final var event = handelseRepo.findById(eventId).orElseThrow();
+        event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
+        LOG.debug("Setting Delivery Status {} for event with id {}.", event.getDeliveryStatus(), event.getId());
+        return handelseRepo.save(event);
+    }
+
+    private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
+        LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
+        notificationRedeliveryRepo.delete(redelivery);
     }
 
     private void monitorLogFailure(Handelse event, NotificationResultMessage resultMessage, Optional<NotificationRedelivery> redelivery) {
