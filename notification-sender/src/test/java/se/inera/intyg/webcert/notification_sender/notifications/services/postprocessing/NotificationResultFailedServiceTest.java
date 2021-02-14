@@ -21,8 +21,13 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.VALIDATION_ERROR;
+import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -58,8 +63,22 @@ public class NotificationResultFailedServiceTest {
     @InjectMocks
     NotificationResultFailedService notificationResultFailedService;
 
+    private static final String CORRELATION_ID = "CORRELATION_ID";
+    private static final byte[] REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+
+    private static final Long EVENT_ID = 1000L;
+    private static final String UNIT_ID = "UNIT_ID";
+    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+    private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
+
+    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM= ERROR;
+    private static final NotificationErrorTypeEnum RESULT_ERROR_TYPE_ENUM = VALIDATION_ERROR;
+    private static final String RESULT_TEXT = "VALIDATION_ERROR_TEXT";
+
+    private static final int ATTEMPTED_DELIVERIES = 2;
+
     @Test
-    public void shouldMonitorLogFailureOnProcessResult() {
+    public void shouldMonitorLogFailureOnProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -71,8 +90,9 @@ public class NotificationResultFailedServiceTest {
         final var captureResultText = ArgumentCaptor.forClass(String.class);
         final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
+        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(setEventId(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -86,18 +106,18 @@ public class NotificationResultFailedServiceTest {
             captureResultText.capture(),
             captureCurrentSendAttempt.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().name(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationErrorType().name(), captureErrorId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationResultText(), captureResultText.getValue());
+        assertEquals(EVENT_ID, captureEventId.getValue());
+        assertEquals(EVENT_ENUM.name(), captureEventType.getValue());
+        assertEquals(UNIT_ID, captureLogicalAddress.getValue());
+        assertEquals(CERTIFICATE_ID, captureCertificateId.getValue());
+        assertEquals(CORRELATION_ID, captureCorrelationId.getValue());
+        assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
+        assertEquals(RESULT_TEXT, captureResultText.getValue());
         assertEquals(1, captureCurrentSendAttempt.getValue().intValue());
     }
 
     @Test
-    public void shouldMonitorLogFailureOnProcessResultWhenExistingRedelivery() {
+    public void shouldMonitorLogFailureOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
 
@@ -110,11 +130,10 @@ public class NotificationResultFailedServiceTest {
         final var captureResultText = ArgumentCaptor.forClass(String.class);
         final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationResultMessage.getEvent()
-            .getId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doReturn(setEventId(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
 
         notificationResultFailedService.process(notificationResultMessage);
 
@@ -128,94 +147,123 @@ public class NotificationResultFailedServiceTest {
             captureResultText.capture(),
             captureCurrentSendAttempt.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().name(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationErrorType().name(), captureErrorId.getValue());
-        assertEquals(notificationResultMessage.getResultType().getNotificationResultText(), captureResultText.getValue());
-        assertEquals(notificationRedelivery.getAttemptedDeliveries(), captureCurrentSendAttempt.getValue());
+        assertEquals(EVENT_ID, captureEventId.getValue());
+        assertEquals(EVENT_ENUM.name(), captureEventType.getValue());
+        assertEquals(UNIT_ID, captureLogicalAddress.getValue());
+        assertEquals(CERTIFICATE_ID, captureCertificateId.getValue());
+        assertEquals(CORRELATION_ID, captureCorrelationId.getValue());
+        assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
+        assertEquals(RESULT_TEXT, captureResultText.getValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 1, captureCurrentSendAttempt.getValue().intValue());
     }
 
     @Test
-    public void shouldCreateNewEventOnProcessWithNoExistingRedelivery() {
+    public void shouldCreateNewEventOnProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
-
-        notificationResultFailedService.process(notificationResultMessage);
-
-        verify(handelseRepository).save(notificationResultMessage.getEvent());
-    }
-
-    @Test
-    public void shouldUpdateEventOnProcessWithExistingRedelivery() {
-        final var notificationResultMessage = createNotificationResultMessage();
+        final var savedEvent = createSavedEvent();
 
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
-        doReturn(Optional.of(createNotificationRedelivery(notificationResultMessage))).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationResultMessage.getEvent()
-            .getId());
+        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(savedEvent).when(handelseRepository).save(notificationResultMessage.getEvent());
 
         notificationResultFailedService.process(notificationResultMessage);
 
         verify(handelseRepository).save(captureEvent.capture());
-
-        assertEquals(notificationResultMessage.getEvent().getDeliveryStatus().name(), captureEvent.getValue().getDeliveryStatus().name());
+        assertEquals(notificationResultMessage.getEvent(), captureEvent.getValue());
+        assertNull(captureEvent.getValue().getId());
     }
 
     @Test
-    public void shouldDeleteRedeliveryOnProcessWithExistingRedelivery() {
+    public void shouldSetDeliveryStatusFailureOnRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
+        notificationResultMessage.setEvent(createRedeliveredEvent());
         final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(notificationResultMessage.getEvent()).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationResultMessage.getEvent()
-            .getId());
+        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
 
         notificationResultFailedService.process(notificationResultMessage);
 
-        verify(notificationRedeliveryRepository).delete(notificationRedelivery);
+        verify(handelseRepository).save(captureEvent.capture());
+        assertEquals(EVENT_ID, captureEvent.getValue().getId());
+        assertEquals(NotificationDeliveryStatusEnum.FAILURE, captureEvent.getValue().getDeliveryStatus());
+    }
+
+    @Test
+    public void shouldDeleteRedeliveryOnProcessingRedeliveredNotification() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        notificationResultMessage.setEvent(createRedeliveredEvent());
+        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(Optional.of(notificationResultMessage.getEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArguments()[0]).when(handelseRepository).save(any(Handelse.class));
+
+        notificationResultFailedService.process(notificationResultMessage);
+
+        verify(notificationRedeliveryRepository).delete(captureRedelivery.capture());
+        assertEquals(notificationRedelivery, captureRedelivery.getValue());
+        assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
     }
 
     private NotificationRedelivery createNotificationRedelivery(NotificationResultMessage notificationResultMessage) {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
-        notificationRedelivery.setEventId(notificationResultMessage.getEvent().getId());
-        notificationRedelivery.setAttemptedDeliveries(2);
+        notificationRedelivery.setEventId(EVENT_ID);
+        notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
         return notificationRedelivery;
     }
 
     private NotificationResultMessage createNotificationResultMessage() {
         final var notificationResultMessage = new NotificationResultMessage();
-        notificationResultMessage.setEvent(createEvent());
-        notificationResultMessage.setCorrelationId("CORRELATION_ID");
+        notificationResultMessage.setEvent(createUnsavedEvent());
+        notificationResultMessage.setCorrelationId(CORRELATION_ID);
+        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
         notificationResultMessage.setResultType(createNotificationResultType());
         return notificationResultMessage;
     }
 
-    private Handelse createEvent() {
+    private Handelse createUnsavedEvent() {
         final var event = new Handelse();
-        event.setId(1000L);
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId("INTYGS_ID");
-        event.setEnhetsId("ENHETS_ID");
+        event.setCode(EVENT_ENUM);
+        event.setIntygsId(CERTIFICATE_ID);
+        event.setEnhetsId(UNIT_ID);
         event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
+        return event;
+    }
+
+    private Handelse createSavedEvent() {
+        final var event = createUnsavedEvent();
+        event.setId(EVENT_ID);
+        return event;
+    }
+
+    private Handelse setEventId(Handelse event) {
+        event.setId(EVENT_ID);
+        return event;
+    }
+
+    private Handelse createRedeliveredEvent() {
+        final var event = createUnsavedEvent();
+        event.setId(EVENT_ID);
+        event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
         return event;
     }
 
     private NotificationResultType createNotificationResultType() {
         final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(NotificationResultTypeEnum.ERROR);
-        notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.VALIDATION_ERROR);
-        notificationResultType.setNotificationResultText("VALIDATION_ERROR_TEXT");
+        notificationResultType.setNotificationResult(RESULT_TYPE_ENUM);
+        notificationResultType.setNotificationErrorType(RESULT_ERROR_TYPE_ENUM);
+        notificationResultType.setNotificationResultText(RESULT_TEXT);
         return notificationResultType;
     }
 }

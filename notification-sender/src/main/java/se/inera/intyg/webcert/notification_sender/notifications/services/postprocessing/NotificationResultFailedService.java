@@ -40,7 +40,7 @@ public class NotificationResultFailedService {
             event = createEvent(event);
         } else {
             LOG.debug("Updating notification event {} with delivery status {}", event.getId(), event.getDeliveryStatus());
-            updateEvent(existingRedelivery.get(), event.getDeliveryStatus());
+            updateEvent(existingRedelivery.get());
             deleteNotificationRedelivery(existingRedelivery.get());
         }
 
@@ -51,9 +51,9 @@ public class NotificationResultFailedService {
         return handelseRepo.save(event);
     }
 
-    private Handelse updateEvent(NotificationRedelivery existingRedelivery, NotificationDeliveryStatusEnum deliveryStatus) {
+    private Handelse updateEvent(NotificationRedelivery existingRedelivery) {
         final var event = handelseRepo.findById(existingRedelivery.getEventId()).orElseThrow();
-        event.setDeliveryStatus(deliveryStatus);
+        event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
         return handelseRepo.save(event);
     }
 
@@ -68,7 +68,8 @@ public class NotificationResultFailedService {
     private void monitorLogFailure(Handelse event, NotificationResultMessage resultMessage, Optional<NotificationRedelivery> redelivery) {
         final var resultType = resultMessage.getResultType();
         final var errorId = resultType.getNotificationErrorType() != null ? resultType.getNotificationErrorType().name() : null;
-        final var currentSendAttempt = redelivery.isPresent() ? redelivery.get().getAttemptedDeliveries() : 1;
+        final var currentSendAttempt = redelivery.map(notificationRedelivery -> notificationRedelivery.getAttemptedDeliveries() + 1)
+            .orElse(1);
 
         logService.logStatusUpdateForCareStatusFailure(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
             resultMessage.getCorrelationId(), errorId, resultType.getNotificationResultText(), currentSendAttempt);
