@@ -16,33 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.access.data;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class Fk7263AccessServiceTestData implements AccessServiceTestData {
+
     private static List<String> FEATURES = Arrays.asList(
-            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-            AuthoritiesConstants.FEATURE_UTSKRIFT,
-            AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-            AuthoritiesConstants.FEATURE_SKICKA_INTYG,
-            AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
-            AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
+        AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+        AuthoritiesConstants.FEATURE_UTSKRIFT,
+        AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
+        AuthoritiesConstants.FEATURE_SKICKA_INTYG,
+        AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
+        AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
     private static List<String> PRIVILEGES = Arrays.asList(
-            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
-            AuthoritiesConstants.PRIVILEGE_LASA_FRAGA,
-            AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA,
-            AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA,
-            AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD);
+        AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+        AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
+        AuthoritiesConstants.PRIVILEGE_LASA_FRAGA,
+        AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD,
+        AuthoritiesConstants.PRIVILEGE_MARKERA_FRAGA_SOM_HANTERAD);
 
     @Override
     public List<String> getFeatures() {

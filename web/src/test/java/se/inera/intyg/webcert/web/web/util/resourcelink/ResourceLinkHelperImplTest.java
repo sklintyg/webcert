@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.util.resourcelink;
 
 import static org.junit.Assert.assertEquals;
@@ -189,6 +188,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(), anyBoolean());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(any());
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetQuestionAsHandled(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToApproveReceivers(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSend(any());
@@ -206,6 +206,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
 
         final DraftHolder draftHolder = new DraftHolder();
 
@@ -240,6 +241,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToSetComplementAsHandled(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToSetQuestionAsHandled(any());
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(any());
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -271,6 +274,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(), anyBoolean());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(any());
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetQuestionAsHandled(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToApproveReceivers(any());
 
@@ -289,6 +293,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
 
         final Utlatande utlatande = mock(Utlatande.class);
         doReturn(intygsTyp).when(utlatande).getTyp();
@@ -347,6 +352,8 @@ public class ResourceLinkHelperImplTest {
             .allowToAnswerComplementQuestion(any(), anyBoolean());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToSetComplementAsHandled(any());
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToSetQuestionAsHandled(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
@@ -415,8 +422,10 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService).allowToRenew(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToRead(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToRenew(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
