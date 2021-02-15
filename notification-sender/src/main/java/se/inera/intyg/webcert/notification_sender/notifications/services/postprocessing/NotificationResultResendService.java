@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
@@ -26,29 +25,55 @@ public class NotificationResultResendService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationResultResendService.class);
 
-    @Autowired
-    private MonitoringLogService logService;
+    private final MonitoringLogService logService;
+    private final HandelseRepository handelseRepo;
+    private final NotificationRedeliveryRepository notificationRedeliveryRepo;
+    private final NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
 
-    @Autowired
-    private HandelseRepository handelseRepo;
-
-    @Autowired
-    private NotificationRedeliveryRepository notificationRedeliveryRepo;
-
-    @Autowired
-    private NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
+    public NotificationResultResendService(
+        MonitoringLogService logService, HandelseRepository handelseRepo, NotificationRedeliveryRepository notificationRedeliveryRepo,
+        NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory) {
+        this.logService = logService;
+        this.handelseRepo = handelseRepo;
+        this.notificationRedeliveryRepo = notificationRedeliveryRepo;
+        this.notificationRedeliveryStrategyFactory = notificationRedeliveryStrategyFactory;
+    }
 
     @Transactional
     public void process(@NonNull NotificationResultMessage resultMessage) {
-        var event = resultMessage.getEvent();
+        final var event = resultMessage.getEvent();
         final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+
         if (existingRedelivery.isEmpty()) {
-            event = createEventRecord(event);
-            LOG.debug("Persisting notification eventId {} with delivery status {}", event.getId(), event.getDeliveryStatus());
-            final var notificationRedelivery = createNotificationRedelivery(event, resultMessage);
-            monitorLogResend(event, resultMessage, notificationRedelivery);
+            createEventAndNotificationRedelivery(event, resultMessage);
+
         } else {
-            updateNotificationRedelivery(existingRedelivery.get(), resultMessage, event);
+            updateEventAndNotificationRedelivery(event, resultMessage, existingRedelivery.get());
+        }
+    }
+
+    private void createEventAndNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage) {
+        final var createdEvent = createEvent(event);
+        final var createdRedelivery = createNotificationRedelivery(createdEvent, resultMessage);
+        monitorLogResend(createdEvent, resultMessage, createdRedelivery);
+    }
+
+    private void updateEventAndNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage,
+        NotificationRedelivery redelivery) {
+        final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
+        final var attemptedDeliveries = redelivery.getAttemptedDeliveries() + 1;
+        final var maxRedeliveries = strategy.getMaxRedeliveries();
+
+        if (attemptedDeliveries <= maxRedeliveries) {
+            event.setId(redelivery.getEventId());
+            updateRedeliveryTimeAndSendAttempt(redelivery, strategy, attemptedDeliveries);
+            monitorLogResend(event, resultMessage, redelivery);
+
+        } else {
+            final var updatedEvent = setDeliveryStatusFailure(redelivery.getEventId());
+            deleteNotificationRedelivery(redelivery);
+            redelivery.setAttemptedDeliveries(attemptedDeliveries);
+            monitorLogFailure(updatedEvent, resultMessage, redelivery);
         }
     }
 
@@ -56,8 +81,14 @@ public class NotificationResultResendService {
         return notificationRedeliveryRepo.findByCorrelationId(correlationId);
     }
 
-    private Handelse createEventRecord(Handelse event) {
-        return handelseRepo.save(event);
+    private NotificationRedeliveryStrategy getRedeliveryStrategy(NotificationRedeliveryStrategyEnum strategy) {
+        return notificationRedeliveryStrategyFactory.getResendStrategy(strategy);
+    }
+
+    private Handelse createEvent(Handelse event) {
+        final var createdEvent = handelseRepo.save(event);
+        LOG.debug("Creating Notification Event with id {} and delivery status {}", createdEvent.getId(), createdEvent.getDeliveryStatus());
+        return createdEvent;
     }
 
     private NotificationRedelivery createNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage) {
@@ -65,41 +96,31 @@ public class NotificationResultResendService {
         final var redelivery =  new NotificationRedelivery(
             resultMessage.getCorrelationId(), event.getId(), resultMessage.getRedeliveryMessageBytes(), strategy.getName(),
             LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)), 1);
-        LOG.debug("Creating redelivery item correlationId {} for eventId {}", redelivery.getCorrelationId(), event.getId());
+        LOG.debug("Creating Notification Redelivery for event with id {} and correlation id {}.", event.getId(),
+            redelivery.getCorrelationId());
         return notificationRedeliveryRepo.save(redelivery);
     }
 
-    private void updateNotificationRedelivery(NotificationRedelivery redelivery, NotificationResultMessage resultMessage,
-        Handelse event) {
-        final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
-        final var attemptedDeliveries = redelivery.getAttemptedDeliveries() + 1;
-        final var maxRedeliveries = strategy.getMaxRedeliveries();
-
-        if (attemptedDeliveries - 1 < maxRedeliveries) {
-            event.setId(redelivery.getEventId());
-            LOG.debug("Updating notification redelivery for eventId {}", event.getId());
-            redelivery.setAttemptedDeliveries(attemptedDeliveries);
-            redelivery.setRedeliveryTime(redelivery.getRedeliveryTime()
-                .plus(strategy.getNextTimeValue(attemptedDeliveries), strategy.getNextTimeUnit(attemptedDeliveries)));
-            notificationRedeliveryRepo.save(redelivery);
-            monitorLogResend(event, resultMessage, redelivery);
-        } else {
-            final var updatedEvent = setRedeliveryFailure(redelivery.getEventId());
-            LOG.warn("Setting redelivery failure for eventId {}", updatedEvent.getId());
-            notificationRedeliveryRepo.delete(redelivery);
-            redelivery.setAttemptedDeliveries(attemptedDeliveries);
-            monitorLogFailure(updatedEvent, resultMessage, redelivery);
-        }
+    private void updateRedeliveryTimeAndSendAttempt(NotificationRedelivery redelivery, NotificationRedeliveryStrategy strategy,
+        int attemptedDeliveries) {
+        redelivery.setAttemptedDeliveries(attemptedDeliveries);
+        redelivery.setRedeliveryTime(redelivery.getRedeliveryTime().plus(strategy.getNextTimeValue(attemptedDeliveries),
+            strategy.getNextTimeUnit(attemptedDeliveries)));
+        notificationRedeliveryRepo.save(redelivery);
+        LOG.debug("Updating Notification Redelivery for event with id {} and correlation id {}", redelivery.getEventId(),
+            redelivery.getCorrelationId());
     }
 
-    private Handelse setRedeliveryFailure(Long eventId) {
+    private Handelse setDeliveryStatusFailure(Long eventId) {
         final var event = handelseRepo.findById(eventId).orElseThrow();
         event.setDeliveryStatus(FAILURE);
+        LOG.debug("Setting Delivery Status {} for event with id {}.", event.getDeliveryStatus(), event.getId());
         return handelseRepo.save(event);
     }
 
-    private NotificationRedeliveryStrategy getRedeliveryStrategy(NotificationRedeliveryStrategyEnum strategy) {
-        return notificationRedeliveryStrategyFactory.getResendStrategy(strategy);
+    private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
+        LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
+        notificationRedeliveryRepo.delete(redelivery);
     }
 
     private void monitorLogResend(Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {

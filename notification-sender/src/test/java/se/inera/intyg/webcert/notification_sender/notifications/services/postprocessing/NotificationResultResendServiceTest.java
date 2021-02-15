@@ -274,7 +274,7 @@ public class NotificationResultResendServiceTest {
     @Test
     public void shouldCreateNewRedeliveryRecordWhenProcessingNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
-        var currentTimeStamp = LocalDateTime.now();
+        var testStartTime = LocalDateTime.now();
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
@@ -295,7 +295,7 @@ public class NotificationResultResendServiceTest {
         assertEquals(REDELIVERY_MESSAGE, captureRedelivery.getValue().getMessage());
         assertEquals(NotificationRedeliveryStrategyEnum.STANDARD, captureRedelivery.getValue().getRedeliveryStrategy());
         assertEquals(1, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
-        assertTrue(captureRedelivery.getValue().getRedeliveryTime().isAfter(currentTimeStamp));
+        assertTrue(captureRedelivery.getValue().getRedeliveryTime().isAfter(testStartTime));
     }
 
     @Test
@@ -330,7 +330,8 @@ public class NotificationResultResendServiceTest {
 
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxRedeliveries();
@@ -372,7 +373,8 @@ public class NotificationResultResendServiceTest {
         final var notificationRedelivery = createNotificationRedelivery();
         final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 3;
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
