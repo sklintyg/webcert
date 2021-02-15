@@ -18,38 +18,13 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import javax.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -68,7 +43,18 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeConverterTest {
@@ -77,7 +63,7 @@ public class ArendeConverterTest {
     private static final String PARTKOD_FKASSA = "FKASSA";
 
     @Mock
-    HsaEmployeeService hsaEmployeeService;
+    HsatkEmployeeService hsaEmployeeService;
 
     @Test
     public void testConvertArende() {
@@ -456,10 +442,10 @@ public class ArendeConverterTest {
         when(hsaEmployeeService.getEmployee(eq(id1), any())).thenThrow(WebServiceException.class);
 
         when(hsaEmployeeService.getEmployee(eq(id2), any())).thenAnswer(invocation -> {
-            PersonInformationType personInformation = new PersonInformationType();
+            PersonInformation personInformation = new PersonInformation();
             personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
 
-            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
+            List<PersonInformation> personInformationTypeList = new ArrayList<>();
             personInformationTypeList.add(personInformation);
             return personInformationTypeList;
         });
@@ -520,10 +506,10 @@ public class ArendeConverterTest {
         return res;
     }
 
-    private List<PersonInformationType> createHsaResponse(String givenName, String middleAndSurname) {
-        PersonInformationType pit = new PersonInformationType();
+    private List<PersonInformation> createHsaResponse(String givenName, String middleAndSurname) {
+        PersonInformation pit = new PersonInformation();
         pit.setGivenName(givenName);
         pit.setMiddleAndSurName(middleAndSurname);
-        return Arrays.asList(new PersonInformationType(), pit, new PersonInformationType(), new PersonInformationType());
+        return Arrays.asList(new PersonInformation(), pit, new PersonInformation(), new PersonInformation());
     }
 }

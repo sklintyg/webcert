@@ -18,32 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.google.common.base.Strings;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.ws.rs.core.Response;
-import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,10 +35,10 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -74,7 +49,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -88,6 +62,20 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import javax.ws.rs.core.Response;
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastApiControllerTest {
@@ -125,7 +113,7 @@ public class UtkastApiControllerTest {
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Mock
-    private HsaEmployeeService hsaEmployeeService;
+    private HsatkEmployeeService hsaEmployeeService;
 
     @Mock
     private IntygDraftDecorator intygDraftDecorator;
@@ -359,13 +347,14 @@ public class UtkastApiControllerTest {
         String hsaIdNotFound = "notFoundHsa";
         String nameNotFound = "notFoundName";
         String hsaIdFound = "hsaIdFound";
+        String nameFoundAndReplaced = "nameFoundAndReplaced";
 
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(hsaEmployeeService.getEmployee(eq(hsaIdNotFound), any())).thenThrow(WebServiceException.class);
 
-        Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdFound, "nameFoundAndReplaced"));
+        Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdFound, nameFoundAndReplaced));
         utkast2.setSenastSparadDatum(LocalDateTime.now().plusDays(1));
 
         when(utkastService.filterIntyg(any()))
@@ -381,7 +370,7 @@ public class UtkastApiControllerTest {
         assertEquals(2, queryIntygResponse.getResults().size());
 
         assertEquals(hsaIdFound, queryIntygResponse.getResults().get(0).getUpdatedSignedById());
-        assertEquals(hsaIdFound, queryIntygResponse.getResults().get(0).getUpdatedSignedBy());
+        assertEquals(nameFoundAndReplaced, queryIntygResponse.getResults().get(0).getUpdatedSignedBy());
 
         assertEquals(hsaIdNotFound, queryIntygResponse.getResults().get(1).getUpdatedSignedById());
         assertEquals(nameNotFound, queryIntygResponse.getResults().get(1).getUpdatedSignedBy());

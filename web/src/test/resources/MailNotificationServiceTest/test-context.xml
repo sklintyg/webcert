@@ -44,17 +44,20 @@
   <bean class="se.inera.intyg.common.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
   <bean class="se.inera.intyg.common.integration.hsa.stub.HsaWebServiceStub"/>
      -->
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetEmployeeResponderStub" />
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetHealthCareUnitResponderStub" />
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetHealthCareUnitMembersResponderStub" />
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetUnitResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetAuthorizationsForPersonResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetEmployeeResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHealthCareProviderResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHealthCareUnitResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHealthCareUnitMembersResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetUnitResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHospCredentialsForPersonResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHospLastUpdateResponderStub" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.HandleHospCertificationPersonResponderStub" />
 
-
-  <bean class="se.inera.intyg.infra.integration.hsa.client.OrganizationUnitServiceBean" />
-  <bean class="se.inera.intyg.infra.integration.hsa.client.AuthorizationManagementServiceBean" />
-  <bean class="se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl" />
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.HsaServiceStub"/>
+  <bean class="se.inera.intyg.infra.integration.hsatk.client.OrganizationClient" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.client.AuthorizationManagementClient" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsServiceImpl" />
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.HsaServiceStub"/>
 
   <bean class="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl" />
 
