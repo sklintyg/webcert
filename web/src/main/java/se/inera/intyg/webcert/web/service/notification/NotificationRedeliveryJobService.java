@@ -33,5 +33,5 @@ public interface NotificationRedeliveryJobService {
 
     String getLogInfoString(NotificationRedelivery redelivery);*/
 
-    void resendNotifications();
+    void resendScheduledNotifications();
 }

@@ -65,6 +65,11 @@ public class NotificationRedeliveryService {
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
+    /**
+     * Retrieves the notifications that are up for redelivery and returns them in the order they should be resent.
+     *
+     * @return list of {@link NotificationRedelivery} up for redelivery.
+     */
     public List<NotificationRedelivery> getNotificationsForRedelivery() {
         final var notificationRedeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
 
@@ -77,6 +82,9 @@ public class NotificationRedeliveryService {
 
     @Transactional
     public void resend(NotificationRedelivery notificationRedelivery, Handelse event, byte[] message) {
+        LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
+            + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), notificationRedelivery.getCorrelationId());
+
         try {
             jmsTemplate.convertAndSend(message, jmsMessage -> {
                 jmsMessage.setStringProperty(CORRELATION_ID, notificationRedelivery.getCorrelationId());
@@ -100,6 +108,12 @@ public class NotificationRedeliveryService {
             setEventAsDeliveredByClient(event);
             deleteNotificationRedelivery(notificationRedelivery);
         }
+    }
+
+    @Transactional
+    public void resend(NotificationRedelivery notificationRedelivery, byte[] message) {
+        final var event = handelseRepo.findById(notificationRedelivery.getEventId()).orElseThrow();
+        resend(notificationRedelivery, event, message);
     }
 
     private void clearRedeliveryTime(NotificationRedelivery notificationRedelivery) {

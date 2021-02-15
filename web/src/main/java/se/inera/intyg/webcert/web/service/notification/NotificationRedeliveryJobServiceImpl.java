@@ -30,20 +30,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
@@ -53,10 +48,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.util.Notificatio
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -97,16 +90,39 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private NotificationMessageFactory notificationMessageFactory;
 
     @Override
-    public void resendNotifications() {
+    public void resendScheduledNotifications() {
 
         // TODO Add handling of job not finished when scheduled to run next time.
 
         final long startTime = System.currentTimeMillis();
 
-        // TODO Move method to job service.
         final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
 
-        int failedRedeliveries = initiateNotificationRedeliveries(redeliveryList);
+        int remainingRedeliveries = redeliveryList.size();
+
+        for (NotificationRedelivery redelivery : redeliveryList) {
+            try {
+                final var messageAsBytes = getMessageAsBytes(redelivery);
+                notificationRedeliveryService.resend(redelivery, messageAsBytes);
+                remainingRedeliveries--;
+
+                // TODO Sort out these exception with regard to resend or fail, and which action to perform.
+            } catch (NoSuchElementException e) { //when no handelse exists
+                LOG.error(getLogInfoString(redelivery) + "Could not find a corresponding event in table Handelse.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (IOException | ModuleException | ModuleNotFoundException e) {
+                LOG.error(getLogInfoString(redelivery) + "Error setting a certificate on status update object.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (WebCertServiceException e) {
+                LOG.error(e.getMessage(), e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            } catch (Exception e) {
+                LOG.error(getLogInfoString(redelivery) + "An exception occurred.", e);
+                //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
+            }
+        }
+
+        int failedRedeliveries = remainingRedeliveries;
 
         final long endTime = System.currentTimeMillis();
 
@@ -114,55 +130,18 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             endTime - startTime, failedRedeliveries);
     }
 
-    private Handelse getEventById(Long id) {
-        return handelseRepo.findById(id).orElseThrow();
+    private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery)
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
+        final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery);
+        final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
+        return statusUpdateXml.getBytes();
     }
 
-    private int initiateNotificationRedeliveries(List<NotificationRedelivery> redeliveryList) {
-
-        int remainingRedeliveries = redeliveryList.size();
-
-        for (NotificationRedelivery redelivery : redeliveryList) {
-            remainingRedeliveries = redeliver(redelivery, remainingRedeliveries);
-        }
-
-        return remainingRedeliveries;
-    }
-
-    private int redeliver(NotificationRedelivery notificationRedelivery, int remainingRedeliveries) {
-        try {
-            final Handelse event = getEventById(notificationRedelivery.getEventId());
-
-            // TODO: Need to handle if no manual delivery should be done.... statusUpdate === null.
-            final var statusUpdate = getCertificateStatusUpdate(notificationRedelivery, event);
-
-            sendJmsMessage(statusUpdate, event, notificationRedelivery);
-
-            // TODO: How do we update the redelivery once it is delivered.
-
-            remainingRedeliveries--;
-
-            // TODO Sort out these exception with regard to resend or fail, and which action to perform.
-        } catch (NoSuchElementException e) { //when no handelse exists
-            LOG.error(getLogInfoString(notificationRedelivery) + "Could not find a corresponding event in table Handelse.", e);
-            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-        } catch (IOException | ModuleException | ModuleNotFoundException e) {
-            LOG.error(getLogInfoString(notificationRedelivery) + "Error setting a certificate on status update object.", e);
-            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-        } catch (WebCertServiceException e) {
-            LOG.error(e.getMessage(), e);
-            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-        } catch (Exception e) {
-            LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
-            //notificationRedeliveryService.setNotificationFailure(redelivery.getEventId(), redelivery.getCorrelationId());
-        }
-        return remainingRedeliveries;
-    }
-
-    private CertificateStatusUpdateForCareType getCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
+    private CertificateStatusUpdateForCareType getCertificateStatusUpdate(NotificationRedelivery redelivery)
         throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
+        final Handelse event = getEventById(redelivery.getEventId());
         if (redelivery.getMessage() == null) {
-            return createManualNotification(event, redelivery);
+            return createStatusUpdate(event);
         } else {
             final NotificationRedeliveryMessage redeliveryMessage = objectMapper.readValue(redelivery.getMessage(),
                 NotificationRedeliveryMessage.class);
@@ -170,13 +149,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             statusUpdate.setSkickadeFragor(createMessages(redeliveryMessage.getSent()));
             statusUpdate.setMottagnaFragor(createMessages(redeliveryMessage.getReceived()));
             statusUpdate.setRef(redeliveryMessage.getReference());
-            Intyg certificate;
             if (!redeliveryMessage.hasCertificate()) {
-                certificate = getCertificateFromWebcert(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
-                if (certificate == null) {
-                    certificate = getCertificateFromIntygstjanst(event.getIntygsId(), event.getCertificateType(),
-                        event.getCertificateVersion());
-                }
+                final var certificate = getCertificate(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
                 certificate.setPatient(redeliveryMessage.getPatient());
                 NotificationTypeConverter.complementIntyg(certificate);
                 statusUpdate.setIntyg(certificate);
@@ -192,11 +166,15 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         }
     }
 
+    private Handelse getEventById(Long id) {
+        return handelseRepo.findById(id).orElseThrow();
+    }
+
     private Arenden createMessages(CertificateMessages certificateMessages) {
         if (certificateMessages == null) {
             return new Arenden();
         }
-        
+
         final var messages = new Arenden();
         messages.setTotalt(certificateMessages.getTotal());
         messages.setEjBesvarade(certificateMessages.getUnanswered());
@@ -205,13 +183,22 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         return messages;
     }
 
+    private Intyg getCertificate(String certificateId, String certificateType, String certificateVersion)
+        throws ModuleNotFoundException, ModuleException, IOException {
+        var certificate = getCertificateFromWebcert(certificateId, certificateType, certificateVersion);
+        if (certificate == null) {
+            certificate = getCertificateFromIntygstjanst(certificateId, certificateType, certificateVersion);
+        }
+        return certificate;
+    }
+
     private Intyg getCertificateFromWebcert(String certificateId, String certificateType, String certificateVersion)
         throws ModuleNotFoundException, ModuleException, IOException {
         try {
-            Utkast draft = draftService.getDraft(certificateId, moduleRegistry.getModuleIdFromExternalId(certificateType), false);
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType),
-                certificateVersion);
-            Utlatande utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
+            final var draft = draftService.getDraft(certificateId, moduleRegistry.getModuleIdFromExternalId(certificateType), false);
+            final var moduleApi = moduleRegistry
+                .getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType), certificateVersion);
+            final var utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
             LOG.warn("Could not find certificate {} of type {} in webcert's database. Will check intygstjanst...", certificateId,
@@ -223,34 +210,16 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private Intyg getCertificateFromIntygstjanst(String certificateId, String certificateType, String certificateVersion)
         throws ModuleNotFoundException, ModuleException, WebCertServiceException {
         try {
-            IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
-            Utlatande utlatande = certContentHolder.getUtlatande();
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType),
-                certificateVersion);
+            final var certificateContentHolder = certificateService.fetchIntygDataForInternalUse(certificateId, true);
+            final var moduleApi = moduleRegistry
+                .getModuleApi(moduleRegistry.getModuleIdFromExternalId(certificateType), certificateVersion);
+            final var utlatande = certificateContentHolder.getUtlatande();
             return moduleApi.getIntygFromUtlatande(utlatande);
         } catch (WebCertServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                 String.format("Could not find certificate id: %s of type %s in intygstjanst's database", certificateId,
                     certificateType), e);
         }
-    }
-
-    private String getLogInfoString(NotificationRedelivery redelivery) {
-        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
-            redelivery.getCorrelationId());
-    }
-
-    private CertificateStatusUpdateForCareType createManualNotification(Handelse event, NotificationRedelivery redelivery)
-        throws ModuleNotFoundException, IOException, ModuleException, TemporaryException {
-
-        // If it is a failure it can be resent, otherwise it can´t... but should we let all events to be resent? No, this is probably a good idea.
-        if (event.getDeliveryStatus() != NotificationDeliveryStatusEnum.FAILURE) {
-            return null;
-        }
-
-        final var statusUpdate = createStatusUpdate(event);
-
-        return statusUpdate;
     }
 
     private CertificateStatusUpdateForCareType createStatusUpdate(Handelse event)
@@ -268,34 +237,17 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private NotificationMessage createNotificationMessage(Handelse event)
         throws ModuleNotFoundException, IOException, ModuleException {
-        String draftJson;
         final var draft = draftRepo.findById(event.getIntygsId()).orElse(null);
         if (draft != null) {
-            draftJson = draft.getModel();
+            return notificationMessageFactory.createNotificationMessage(event, draft.getModel());
         } else {
-            IntygContentHolder certContentHolder = certificateService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
-            draftJson = certContentHolder.getContents();
+            final var certificateContentHolder = certificateService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
+            return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
         }
-
-        final var moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(event.getCertificateType()),
-            event.getCertificateVersion());
-        final var utlatande = moduleApi.getUtlatandeFromJson(draftJson);
-        final var schemaVersion = sendNotificationStrategy.decideNotificationForIntyg(utlatande).orElse(SchemaVersion.VERSION_3);
-        final var reference = referenceService.getReferensForIntygsId(event.getIntygsId());
-        final var topicCode = event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription())
-            : null;
-
-        return notificationMessageFactory.createNotificationMessage(event.getIntygsId(), event.getCertificateType(), event.getEnhetsId(),
-            draftJson, event.getCode(), schemaVersion, reference, topicCode, event.getSistaDatumForSvar());
     }
 
-    private void sendJmsMessage(CertificateStatusUpdateForCareType statusUpdate, Handelse event, NotificationRedelivery redelivery) {
-
-        LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
-            + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), redelivery.getCorrelationId());
-
-        final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
-
-        notificationRedeliveryService.resend(redelivery, event, statusUpdateXml.getBytes());
+    private String getLogInfoString(NotificationRedelivery redelivery) {
+        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
+            redelivery.getCorrelationId());
     }
 }

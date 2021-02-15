@@ -50,7 +50,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryJobServiceImplTest {
@@ -98,18 +97,16 @@ public class NotificationRedeliveryJobServiceImplTest {
     private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
 
     @Test
-    public void shallSendNotificationUpForRedelivery() throws IOException {
+    public void shallResendANotificationThatIsUpForRedelivery() throws IOException {
         final var expectedEvent = createEvent();
         final var expectedNotificationRedelivery = createNotificationRedelivery(expectedEvent.getId());
         final var expectedStatusUpdateXml = "CERTIFICATE_STATUS_XML";
         final var notificationRedeliveryList = Arrays.asList(expectedNotificationRedelivery);
 
         final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
         final var captureBytes = ArgumentCaptor.forClass(byte[].class);
 
         final var notificationRedeliveryMessageMock = mock(NotificationRedeliveryMessage.class);
-        final var certificateStatusUpdateForCareMock = mock(CertificateStatusUpdateForCareType.class);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery();
         doReturn(Optional.of(expectedEvent)).when(handelseRepo).findById(expectedNotificationRedelivery.getEventId());
@@ -118,15 +115,13 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(true).when(notificationRedeliveryMessageMock).hasCertificate();
         doReturn(expectedStatusUpdateXml).when(certificateStatusUpdateForCareCreator).marshal(any());
 
-        notificationRedeliveryJobService.resendNotifications();
+        notificationRedeliveryJobService.resendScheduledNotifications();
 
         verify(notificationRedeliveryService).resend(
             captureNotificationRedelivery.capture(),
-            captureEvent.capture(),
             captureBytes.capture());
 
         assertEquals(expectedNotificationRedelivery, captureNotificationRedelivery.getValue());
-        assertEquals(expectedEvent, captureEvent.getValue());
         assertEquals(expectedStatusUpdateXml.getBytes().length, captureBytes.getValue().length);
     }
 
