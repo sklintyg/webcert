@@ -172,12 +172,12 @@ public class NotificationResultMessageCreator {
     private Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user) {
         final var event = new Handelse();
         event.setIntygsId(utlatande.getId());
-        event.setCertificateType(utlatande.getTyp());
         event.setCertificateVersion(utlatande.getTextVersion());
         event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
         event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
 
+        event.setCertificateType(notificationMessage.getIntygsTyp());
         event.setCode(notificationMessage.getHandelse());
         event.setTimestamp(notificationMessage.getHandelseTid());
         event.setAmne(notificationMessage.getAmne() != null ? ArendeAmne.valueOf(notificationMessage.getAmne().getCode()) : null);
