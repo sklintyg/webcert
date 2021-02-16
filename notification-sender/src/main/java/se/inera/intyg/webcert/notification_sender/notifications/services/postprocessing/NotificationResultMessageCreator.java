@@ -46,8 +46,10 @@ public class NotificationResultMessageCreator {
         String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
         final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
         final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+        final var moduleEntryPoint = moduleRegistry.getModuleEntryPoint(notificationMessage.getIntygsTyp());
+        final var certificateTypeExternalId = moduleEntryPoint.getExternalId();
 
-        final var event = createEvent(notificationMessage, utlatande, userId);
+        final var event = createEvent(notificationMessage, utlatande, userId, certificateTypeExternalId);
 
         final var notificationResultType = createResultType(exception);
 
@@ -169,15 +171,16 @@ public class NotificationResultMessageCreator {
         return notificationResultType;
     }
 
-    private Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user) {
+    private Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user,
+        String certificateTypeExternalId) {
         final var event = new Handelse();
         event.setIntygsId(utlatande.getId());
+        event.setCertificateType(certificateTypeExternalId);
         event.setCertificateVersion(utlatande.getTextVersion());
         event.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         event.setCertificateIssuer(utlatande.getGrundData().getSkapadAv().getPersonId());
         event.setPersonnummer(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
 
-        event.setCertificateType(notificationMessage.getIntygsTyp());
         event.setCode(notificationMessage.getHandelse());
         event.setTimestamp(notificationMessage.getHandelseTid());
         event.setAmne(notificationMessage.getAmne() != null ? ArendeAmne.valueOf(notificationMessage.getAmne().getCode()) : null);

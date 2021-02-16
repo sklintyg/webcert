@@ -58,6 +58,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
@@ -90,6 +91,9 @@ public class NotificationResultMessageCreatorTest {
 
     @Mock
     private ModuleApi moduleApi;
+
+    @Mock
+    private ModuleEntryPoint moduleEntryPoint;
 
     @Spy
     private ObjectMapper objectMapper;
@@ -124,6 +128,8 @@ public class NotificationResultMessageCreatorTest {
 
         doReturn(moduleApi).when(moduleRegistry).getModuleApi(notificationMessage.getIntygsTyp(), TEXT_VERSION);
         doReturn(createUtlatande()).when(moduleApi).getUtlatandeFromJson(notificationMessage.getUtkast());
+        doReturn(moduleEntryPoint).when(moduleRegistry).getModuleEntryPoint(notificationMessage.getIntygsTyp());
+        doReturn(CERTIFICATE_TYPE_EXTERNAL).when(moduleEntryPoint).getExternalId();
 
         var notificationResultMessage = notificationResultMessageCreator.createFailureMessage(notificationMessage,
             CORRELATION_ID, USER_ID, TEXT_VERSION, EXCEPTION);
@@ -205,7 +211,7 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void redeliveryMessageShouldHavePropelySetArenden() throws JsonProcessingException {
+    public void redeliveryMessageShouldHaveProperlySetArenden() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithArenden();
 
         final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
@@ -258,43 +264,9 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
     }
 
-    private ResultType createNotificationResultType() {
-        final var resultTypeV3 = new ResultType();
-        resultTypeV3.setResultCode(ResultCodeType.ERROR);
-        resultTypeV3.setErrorId(ErrorIdType.TECHNICAL_ERROR);
-        resultTypeV3.setResultText(RESULT_TEXT);
-        return resultTypeV3;
-    }
-
-    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithSignedCertificate() {
-        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
-        final var underskriftType = new UnderskriftType();
-        underskriftType.setSignature(new SignatureType());
-        statusUpdate.getIntyg().setUnderskrift(underskriftType);
-        statusUpdate.getIntyg().setSigneringstidpunkt(LocalDateTime.now());
-        return statusUpdate;
-    }
-
-    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithArenden() {
-        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
-        statusUpdate.setSkickadeFragor(createArendenV3());
-        statusUpdate.setMottagnaFragor(createArendenV3());
-        return statusUpdate;
-    }
-
-    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithUnsignedCertificate() {
-        final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setIntyg(createCertificateV3());
-        statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(EVENT_ENUM, LocalDateTime.now(), ArendeAmne.fromAmne(
-            Amne.KOMPLETTERING_AV_LAKARINTYG).orElse(null), LocalDate.now()));
-        statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), USER_ID, HSA_ID_OID));
-        statusUpdate.setRef("REFERENCE");
-        return statusUpdate;
-    }
-
     private NotificationMessage createNotificationMessage() {
         final var notificationMessage = new NotificationMessage();
-        notificationMessage.setIntygsTyp(CERTIFICATE_TYPE_EXTERNAL);
+        notificationMessage.setIntygsTyp(CERTIFICATE_TYPE_INTERNAL);
         notificationMessage.setIntygsId(CERTIFICATE_ID);
         notificationMessage.setUtkast(JsonNodeFactory.instance.textNode("UTKAST_JSON"));
         notificationMessage.setHandelse(EVENT_ENUM);
@@ -345,6 +317,32 @@ public class NotificationResultMessageCreatorTest {
         return patient;
     }
 
+    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithSignedCertificate() {
+        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        final var underskriftType = new UnderskriftType();
+        underskriftType.setSignature(new SignatureType());
+        statusUpdate.getIntyg().setUnderskrift(underskriftType);
+        statusUpdate.getIntyg().setSigneringstidpunkt(LocalDateTime.now());
+        return statusUpdate;
+    }
+
+    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithArenden() {
+        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        statusUpdate.setSkickadeFragor(createArendenV3());
+        statusUpdate.setMottagnaFragor(createArendenV3());
+        return statusUpdate;
+    }
+
+    private CertificateStatusUpdateForCareType createStatusUpdateForCareWithUnsignedCertificate() {
+        final var statusUpdate = new CertificateStatusUpdateForCareType();
+        statusUpdate.setIntyg(createCertificateV3());
+        statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(EVENT_ENUM, LocalDateTime.now(), ArendeAmne.fromAmne(
+            Amne.KOMPLETTERING_AV_LAKARINTYG).orElse(null), LocalDate.now()));
+        statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), USER_ID, HSA_ID_OID));
+        statusUpdate.setRef("REFERENCE");
+        return statusUpdate;
+    }
+
     private Intyg createCertificateV3() {
         final var certificate = new Intyg();
         certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), CERTIFICATE_ID, LOGICAL_ADDRESS));
@@ -372,6 +370,14 @@ public class NotificationResultMessageCreatorTest {
         final var personInformationType = new PersonInformationType();
         personInformationType.setPersonHsaId(ISSUER_ID);
         return personInformationType;
+    }
+
+    private ResultType createNotificationResultType() {
+        final var resultTypeV3 = new ResultType();
+        resultTypeV3.setResultCode(ResultCodeType.ERROR);
+        resultTypeV3.setErrorId(ErrorIdType.TECHNICAL_ERROR);
+        resultTypeV3.setResultText(RESULT_TEXT);
+        return resultTypeV3;
     }
 
     private Arenden createArendenV3() {
