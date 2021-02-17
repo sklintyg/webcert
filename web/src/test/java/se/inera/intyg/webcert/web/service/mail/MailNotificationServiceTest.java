@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -34,10 +29,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.stub.HsaServiceStub;
+import se.inera.intyg.infra.integration.hsatk.stub.HsaServiceStub;
+import se.inera.intyg.infra.integration.hsatk.stub.model.CareProviderStub;
 import se.inera.intyg.webcert.mailstub.MailStore;
 import se.inera.intyg.webcert.mailstub.OutgoingMail;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author andreaskaltenbach
@@ -65,9 +66,9 @@ public class MailNotificationServiceTest {
 
     @PostConstruct
     public void setupTestlandVardgivare() throws IOException {
-        Vardgivare vardgivare = new CustomObjectMapper().readValue(new ClassPathResource(
-            "MailNotificationServiceTest/landstinget-testland.json").getFile(), Vardgivare.class);
-        hsaStub.getVardgivare().add(vardgivare);
+        CareProviderStub careProvider = new CustomObjectMapper().readValue(new ClassPathResource(
+                "MailNotificationServiceTest/landstinget-testland.json").getFile(), CareProviderStub.class);
+        hsaStub.addCareProvider(careProvider);
     }
 
     @Test

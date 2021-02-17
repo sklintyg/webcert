@@ -233,6 +233,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             actionLinkList.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
         }
 
+        if (certificateAccessService.allowToSetQuestionAsHandled(accessEvaluationParameters).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
+        }
+
         return actionLinkList;
     }
 }

@@ -73,6 +73,10 @@ public class DiagnosServiceImpl implements DiagnosService {
      */
     private static final String KSH97P_CODE_REGEXP = "^([A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}|F438A)$";
 
+    // CHECKSTYLE:OFF LineLength
+    private static final Pattern SCHEMATRON_DIAGNOSIS_PATTERN = Pattern.compile("^([A-EG-Ya-eg-y][0-9]{2}[A-Za-z0-9-]*|[Zz][0-689][0-9][A-Za-z0-9-]*|[Zz]7[0-24-9][A-Za-z0-9-]*|[Zz]73[A-Za-z0-9-]+|[Ff][0-9]{2}[A-Za-z0-9-]+)$");
+    // CHECKSTYLE:ON LineLength
+
     private static final String COMMA = ",";
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosServiceImpl.class);
@@ -125,6 +129,11 @@ public class DiagnosServiceImpl implements DiagnosService {
         }
 
         return findDiagnosisesByCode(code, codeSystem);
+    }
+
+    @Override
+    public boolean validateDiagnosisCodeFormat(String code) {
+        return code != null && SCHEMATRON_DIAGNOSIS_PATTERN.matcher(code).matches();
     }
 
     private DiagnosResponse findDiagnosisesByCode(String code, Diagnoskodverk codeSystem) {

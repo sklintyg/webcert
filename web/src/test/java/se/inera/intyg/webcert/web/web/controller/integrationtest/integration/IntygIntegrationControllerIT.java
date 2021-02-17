@@ -265,7 +265,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("api/anvandare")
             .prettyPeek()
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.alternateSsn", equalTo(DEFAULT_PATIENT_PERSONNUMMER))
             .body("parameters.responsibleHospName", equalTo("HrDoktor"))
             .body("parameters.fornamn", equalTo("patientfornamn"))
@@ -324,7 +323,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("api/anvandare")
             .prettyPeek()
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.alternateSsn", equalTo("19121212-1212"))
             .body("parameters.responsibleHospName", equalTo("HrDoktor"))
             .body("parameters.fornamn", equalTo("nyaförnamnet"))
@@ -389,7 +387,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("api/anvandare")
             .prettyPeek()
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.alternateSsn", equalTo("19121212-1212"))
             .body("parameters.responsibleHospName", equalTo("HrDoktor"))
             .body("parameters.fornamn", equalTo("nyaförnamnet"))
@@ -437,7 +434,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("api/anvandare")
             .prettyPeek()
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.alternateSsn", equalTo(DEFAULT_PATIENT_PERSONNUMMER))
             .body("parameters.responsibleHospName", equalTo("HrDoktor"))
             .body("parameters.fornamn", equalTo("patientfornamn"))
@@ -470,7 +466,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .when().get("api/anvandare")
             .prettyPeek()
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.alternateSsn", equalTo("x"))
             .body("parameters.responsibleHospName", equalTo("x"))
             .body("$", not(hasKey("parameters.fornamn")));
@@ -534,7 +529,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().get("api/anvandare")
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.inactiveUnit", equalTo(true));
     }
 
@@ -563,7 +557,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(200)
             .when().get("api/anvandare")
             .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
             .body("parameters.fornyaOk", equalTo(true));
     }
 

@@ -125,6 +125,11 @@ public enum ActionLinkType {
     MARKERA_KOMPLETTERING_SOM_HANTERAD,
 
     /**
+     * Set administrative question as handled.
+     */
+    MARKERA_FRAGA_SOM_HANTERAD,
+
+    /**
      * Select receivers of certificates.
      */
     GODKANNA_MOTTAGARE,
