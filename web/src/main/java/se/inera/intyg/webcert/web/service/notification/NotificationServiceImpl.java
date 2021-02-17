@@ -607,7 +607,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         if (isWebcertMessagingUsed()) {
-            // TODO Add hashed patient id to the monitorlog.
             LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
             monitoringLog.logStatusUpdateQueued(notificationMessage.getIntygsId(), correlationId, notificationMessage.getLogiskAdress(),
                 notificationMessage.getIntygsTyp(), intygTypeVersion, notificationMessage.getHandelse().name(),

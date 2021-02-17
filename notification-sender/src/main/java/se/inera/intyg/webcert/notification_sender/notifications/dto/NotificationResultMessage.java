@@ -69,5 +69,4 @@ public class NotificationResultMessage {
         return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s, eventCode: %s]", this.event.getEnhetsId(),
             this.event.getIntygsId(), this.correlationId, this.event.getCode() != null ? this.event.getCode().name() : null);
     }
-
 }

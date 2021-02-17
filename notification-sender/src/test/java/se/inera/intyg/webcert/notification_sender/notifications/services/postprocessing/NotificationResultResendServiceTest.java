@@ -85,7 +85,7 @@ public class NotificationResultResendServiceTest {
     private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
     private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
 
-    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM= ERROR;
+    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = ERROR;
     private static final NotificationErrorTypeEnum RESULT_ERROR_TYPE_ENUM = TECHNICAL_ERROR;
     private static final String RESULT_TEXT = "TECHNICAL_ERROR_TEXT";
 

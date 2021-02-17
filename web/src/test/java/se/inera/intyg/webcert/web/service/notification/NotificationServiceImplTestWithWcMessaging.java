@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -973,13 +974,8 @@ public class NotificationServiceImplTestWithWcMessaging {
 
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
-/*
-        verify(mockMonitoringLogService).logStatusUpdateQueued(INTYG_ID, res.getStringProperty(NotificationRouteHeaders.CORRELATION_ID),
-            ENHET_ID, res.getStringProperty(NotificationRouteHeaders.INTYGS_TYP),
-            res.getStringProperty(NotificationRouteHeaders.INTYG_TYPE_VERSION), res.getStringProperty(NotificationRouteHeaders.HANDELSE),
-            any(LocalDateTime.class), any(String.class));*/
-        // verify(handelseRepository).save(any(Handelse.class));
-        //verifyNoInteractions(mockMonitoringLogService);
+
+        verifyMonitorLogging(res);
         verifyNoInteractions(handelseRepository);
     }
 
@@ -1011,10 +1007,20 @@ public class NotificationServiceImplTestWithWcMessaging {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        // verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
-        // verify(handelseRepository).save(any(Handelse.class));
-        verifyNoInteractions(mockMonitoringLogService);
+        verifyMonitorLogging(res);
         verifyNoInteractions(handelseRepository);
+    }
+
+    private void verifyMonitorLogging(Message message) throws JMSException {
+        verify(mockMonitoringLogService).logStatusUpdateQueued(
+            eq(INTYG_ID),
+            eq(message.getStringProperty(NotificationRouteHeaders.CORRELATION_ID)),
+            any(String.class),
+            eq(message.getStringProperty(NotificationRouteHeaders.INTYGS_TYP)),
+            nullable(String.class),
+            eq(message.getStringProperty(NotificationRouteHeaders.HANDELSE)),
+            any(LocalDateTime.class),
+            nullable(String.class));
     }
 
     private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
