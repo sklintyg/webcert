@@ -37,12 +37,12 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
@@ -53,7 +53,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 public final class NotificationRedeliveryUtil {
 
@@ -93,7 +92,7 @@ public final class NotificationRedeliveryUtil {
         return eventV3;
     }
 
-    public static HosPersonal getHosPersonal(Vardgivare careProvider, Vardenhet careUnit, PersonInformationType personInfo) {
+    public static HosPersonal getHosPersonal(Vardgivare careProvider, Vardenhet careUnit, PersonInformation personInfo) {
         se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare careProviderV3 =
             new se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare();
         careProviderV3.setVardgivareId(getIIType(new HsaId(), careProvider.getId(), HSA_ID_OID));

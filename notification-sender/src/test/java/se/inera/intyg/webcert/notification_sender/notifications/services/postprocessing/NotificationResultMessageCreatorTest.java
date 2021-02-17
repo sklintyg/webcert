@@ -62,6 +62,7 @@ import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
@@ -81,7 +82,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationResultMessageCreatorTest {
@@ -350,24 +350,24 @@ public class NotificationResultMessageCreatorTest {
         certificate.setVersion(TEXT_VERSION);
         certificate.setPatient(NotificationRedeliveryUtil.getPatient(PATIENT_ID));
         certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(createCareProviderInfra(), createCareUnitInfra(),
-            createPersonInformationType()));
+            createPersonInformation()));
         return certificate;
     }
 
-    private se.inera.intyg.infra.integration.hsa.model.Vardgivare createCareProviderInfra() {
-        final var careProviderInfra = new se.inera.intyg.infra.integration.hsa.model.Vardgivare();
+    private se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare createCareProviderInfra() {
+        final var careProviderInfra = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
         careProviderInfra.setId(CARE_PROVIDER_ID);
         return careProviderInfra;
     }
 
-    private se.inera.intyg.infra.integration.hsa.model.Vardenhet createCareUnitInfra() {
-        final var careUnitInfra = new se.inera.intyg.infra.integration.hsa.model.Vardenhet();
+    private se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet createCareUnitInfra() {
+        final var careUnitInfra = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet();
         careUnitInfra.setId(LOGICAL_ADDRESS);
         return careUnitInfra;
     }
 
-    private PersonInformationType createPersonInformationType() {
-        final var personInformationType = new PersonInformationType();
+    private PersonInformation createPersonInformation() {
+        final var personInformationType = new PersonInformation();
         personInformationType.setPersonHsaId(ISSUER_ID);
         return personInformationType;
     }

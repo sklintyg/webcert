@@ -20,8 +20,9 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
@@ -33,7 +34,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 @Component
 public class CertificateStatusUpdateForCareCreator {
@@ -62,7 +62,7 @@ public class CertificateStatusUpdateForCareCreator {
     }
 
     public CertificateStatusUpdateForCareType create(Handelse event, Vardgivare careProvider,
-        Vardenhet careUnit, PersonInformationType personInfo) throws ModuleNotFoundException, TemporaryException {
+        Vardenhet careUnit, PersonInformation personInfo) throws ModuleNotFoundException, TemporaryException {
         String certificateId = event.getIntygsId();
         String certificateType = event.getCertificateType();
         String certificateVersion = event.getCertificateVersion();
