@@ -65,6 +65,10 @@ public class NotificationRedeliveryService {
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
+    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
+        return getNotificationsForRedelivery();
+    }
+
     /**
      * Retrieves the notifications that are up for redelivery and returns them in the order they should be resent.
      *

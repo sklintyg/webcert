@@ -21,101 +21,62 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
+import org.slf4j.Logger;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryJobServiceImplTest {
 
     @Mock
-    private HandelseRepository handelseRepo;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
+    private NotificationRedeliveryMessageCreatorService notificationRedeliveryMessageCreatorService;
 
     @Mock
     private NotificationRedeliveryService notificationRedeliveryService;
 
     @Mock
-    private IntygService certificateService;
-
-    @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
-    private UtkastService draftService;
-
-    @Mock
-    private UtkastRepository draftRepo;
-
-    @Mock
-    private SendNotificationStrategy sendNotificationStrategy;
-
-    @Mock
-    private ReferensService referenceService;
-
-    @Mock
-    private HsaOrganizationsService hsaOrganizationsService;
-
-    @Mock
-    private HsaPersonService hsaPersonService;
-
-    @Mock
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
-    @Mock
-    private NotificationMessageFactory notificationMessageFactory;
 
     @InjectMocks
     private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
 
     @Test
-    public void shallResendANotificationThatIsUpForRedelivery() throws IOException {
-        final var expectedEvent = createEvent();
-        final var expectedNotificationRedelivery = createNotificationRedelivery(expectedEvent.getId());
+    public void shallResendANotificationThatIsUpForRedelivery() throws Exception {
+        final var expectedNotificationRedelivery = createNotificationRedelivery();
         final var expectedStatusUpdateXml = "CERTIFICATE_STATUS_XML";
         final var notificationRedeliveryList = Arrays.asList(expectedNotificationRedelivery);
 
         final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
         final var captureBytes = ArgumentCaptor.forClass(byte[].class);
 
-        final var notificationRedeliveryMessageMock = mock(NotificationRedeliveryMessage.class);
+        final var mockStatusUpdate = mock(CertificateStatusUpdateForCareType.class);
 
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery();
-        doReturn(Optional.of(expectedEvent)).when(handelseRepo).findById(expectedNotificationRedelivery.getEventId());
-        doReturn(notificationRedeliveryMessageMock).when(objectMapper)
-            .readValue(expectedNotificationRedelivery.getMessage(), NotificationRedeliveryMessage.class);
-        doReturn(true).when(notificationRedeliveryMessageMock).hasCertificate();
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+        doReturn(mockStatusUpdate).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(expectedNotificationRedelivery);
         doReturn(expectedStatusUpdateXml).when(certificateStatusUpdateForCareCreator).marshal(any());
 
-        notificationRedeliveryJobService.resendScheduledNotifications();
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
 
         verify(notificationRedeliveryService).resend(
             captureNotificationRedelivery.capture(),
@@ -125,21 +86,105 @@ public class NotificationRedeliveryJobServiceImplTest {
         assertEquals(expectedStatusUpdateXml.getBytes().length, captureBytes.getValue().length);
     }
 
-    private NotificationRedelivery createNotificationRedelivery(Long id) {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId("CORRELATION_ID");
-        notificationRedelivery.setEventId(id);
-        notificationRedelivery.setMessage("MESSAGE".getBytes());
-        return notificationRedelivery;
+    @Test
+    public void shallResendManyNotificationsThatAreUpForRedelivery() throws Exception {
+        final var numberOfMessages = 100;
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+        for (int i = 0; i < numberOfMessages; i++) {
+            notificationRedeliveryList.add(createNotificationRedelivery());
+        }
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+        verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
+            .resend(any(NotificationRedelivery.class), any(byte[].class));
     }
 
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setId(1000L);
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId("INTYGS_ID");
-        event.setEnhetsId("ENHETS_ID");
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
-        return event;
+    @Test
+    public void shallResendNoneIfNoNotificationsAreUpForRedelivery() {
+        doReturn(Collections.emptyList()).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+        verify(notificationRedeliveryService, never()).resend(any(), any());
+    }
+
+    @Test
+    public void shallResendNotificationsThatAreUpForRedeliveryEvenWhenSomeFail() throws Exception {
+        final var numberOfMessages = 10;
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+        for (int i = 0; i < numberOfMessages; i++) {
+            notificationRedeliveryList.add(createNotificationRedelivery());
+        }
+
+        final var failingNotificationRedelivery = createNotificationRedelivery();
+        notificationRedeliveryList.add(3, failingNotificationRedelivery);
+        notificationRedeliveryList.add(7, failingNotificationRedelivery);
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(failingNotificationRedelivery);
+
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+        verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
+            .resend(any(NotificationRedelivery.class), any(byte[].class));
+    }
+
+    @Test
+    public void shallLogSuccessAndFailures() throws Exception {
+        final var LOG = mock(Logger.class);
+        setStaticFinalAttribute(NotificationRedeliveryJobServiceImpl.class, "LOG", LOG);
+
+        final var numberOfSuccess = 10;
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+        for (int i = 0; i < numberOfSuccess; i++) {
+            notificationRedeliveryList.add(createNotificationRedelivery());
+        }
+
+        final var numberOfFailures = 2;
+        final var failingNotificationRedelivery = createNotificationRedelivery();
+        notificationRedeliveryList.add(3, failingNotificationRedelivery);
+        notificationRedeliveryList.add(7, failingNotificationRedelivery);
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryMessageCreatorService)
+            .getCertificateStatusUpdate(failingNotificationRedelivery);
+
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+        verify(LOG).info(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
+    }
+
+    @Test
+    public void shallLimitMessagesToBatchSize() {
+        final var expectedBatch = 345;
+
+        final var captureInt = ArgumentCaptor.forClass(int.class);
+
+        notificationRedeliveryJobService.resendScheduledNotifications(expectedBatch);
+
+        verify(notificationRedeliveryService).getNotificationsForRedelivery(captureInt.capture());
+
+        assertEquals(expectedBatch, captureInt.getValue().intValue());
+    }
+
+    private NotificationRedelivery createNotificationRedelivery() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        notificationRedelivery.setCorrelationId("CORRELATION_ID");
+        notificationRedelivery.setEventId(1000L);
+        notificationRedelivery.setMessage("MESSAGE".getBytes());
+        return notificationRedelivery;
     }
 }

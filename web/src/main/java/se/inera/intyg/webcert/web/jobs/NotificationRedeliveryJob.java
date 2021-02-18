@@ -52,7 +52,7 @@ public class NotificationRedeliveryJob {
     public void run() {
         LOG.info("Running notification redelivery job...");
 
-        notificationRedeliveryJobService.resendScheduledNotifications();
+        notificationRedeliveryJobService.resendScheduledNotifications(100);
 
         /*final List<NotificationRedelivery> redeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
         redeliveryList.sort(Comparator.comparing(NotificationRedelivery::getEventId));
