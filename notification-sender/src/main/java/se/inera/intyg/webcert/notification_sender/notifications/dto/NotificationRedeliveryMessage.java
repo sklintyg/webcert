@@ -75,22 +75,7 @@ public class NotificationRedeliveryMessage implements Serializable {
     }
 
     @JsonIgnore
-    public NotificationRedeliveryMessage set(Intyg certificate) {
-        if (!hasSignature(certificate)) {
-            this.cert = certificate;
-        } else {
-            this.patient = certificate.getPatient();
-        }
-        return this;
-    }
-
-    @JsonIgnore
     public boolean hasCertificate() {
         return this.cert != null;
-    }
-
-    @JsonIgnore
-    private boolean hasSignature(Intyg certificate) {
-        return certificate.getUnderskrift() != null;
     }
 }

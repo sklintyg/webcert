@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Component
@@ -114,7 +115,7 @@ public class NotificationResultMessageCreator {
 
     private NotificationRedeliveryMessage createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
         final var redeliveryMessage = new NotificationRedeliveryMessage();
-        redeliveryMessage.set(statusUpdate.getIntyg());
+        addCertificateOrPatient(redeliveryMessage, statusUpdate.getIntyg());
 
         final var sentQuestions = createCertificateMessages(statusUpdate.getSkickadeFragor());
         redeliveryMessage.setSent(sentQuestions);
@@ -190,5 +191,13 @@ public class NotificationResultMessageCreator {
         event.setHanteratAv(user);
 
         return event;
+    }
+
+    private void addCertificateOrPatient(NotificationRedeliveryMessage redeliveryMessage, Intyg certificate) {
+        if (certificate.getUnderskrift() == null) {
+            redeliveryMessage.setCert(certificate);
+        } else {
+            redeliveryMessage.setPatient(certificate.getPatient());
+        }
     }
 }
