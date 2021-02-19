@@ -190,6 +190,10 @@
         <url-pattern>/visa/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>integrationapi</servlet-name>
+        <url-pattern>/v2/visa/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>metrics</servlet-name>
         <url-pattern>/metrics</url-pattern>
     </servlet-mapping>
@@ -237,7 +241,7 @@
     </filter>
     <filter-mapping>
         <filter-name>defaultCharacterEncodingFilter</filter-name>
-        <url-pattern>/visa/intyg/defaultutf8/*</url-pattern>
+        <url-pattern>/v2/visa/intyg/*</url-pattern>
     </filter-mapping>
 
     <filter>

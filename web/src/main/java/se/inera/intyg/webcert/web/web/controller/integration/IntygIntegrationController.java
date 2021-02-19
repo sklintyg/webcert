@@ -240,16 +240,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
 
-    @GET
-    @Path("defaultutf8/{certId}/saved")
-    @PrometheusTimeMethod
-    public Response getRedirectToIntygUtf(@Context UriInfo uriInfo,
-        @PathParam(PARAM_CERT_ID) String intygId,
-        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
-
-        return getRedirectToIntyg(uriInfo, intygId, enhetId);
-    }
-
     @POST
     @Path("/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -283,30 +273,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         user.setParameters(integrationParameters);
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
-    }
-
-    @POST
-    @Path("/defaultutf8/{certId}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @PrometheusTimeMethod
-    public Response postRedirectToIntygUtf(@Context UriInfo uriInfo,
-        @PathParam(PARAM_CERT_ID) String intygId,
-        @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
-        @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-        @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-        @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
-        @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-        @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-        @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
-        @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-        @FormParam(PARAM_PATIENT_POSTORT) String postort,
-        @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-        @FormParam(PARAM_REFERENCE) String reference,
-        @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-        @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
-
-        return postRedirectToIntyg(uriInfo, intygId, enhetId, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress, postnummer, postort, coherentJournaling, reference, inactiveUnit, deceased, fornyaOk);
     }
 
     @GET
