@@ -45,7 +45,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
-    private NotificationRedeliveryMessageCreatorService notificationRedeliveryMessageCreatorService;
+    private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
 
     @Override
     public void resendScheduledNotifications(int batchSize) {
@@ -94,7 +94,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery)
         throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
-        final var statusUpdate = notificationRedeliveryMessageCreatorService.getCertificateStatusUpdate(notificationRedelivery);
+        final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery);
         final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
         return statusUpdateXml.getBytes();
     }

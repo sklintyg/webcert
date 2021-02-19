@@ -49,7 +49,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 public class NotificationRedeliveryJobServiceImplTest {
 
     @Mock
-    private NotificationRedeliveryMessageCreatorService notificationRedeliveryMessageCreatorService;
+    private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
 
     @Mock
     private NotificationRedeliveryService notificationRedeliveryService;
@@ -72,8 +72,8 @@ public class NotificationRedeliveryJobServiceImplTest {
         final var mockStatusUpdate = mock(CertificateStatusUpdateForCareType.class);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(mockStatusUpdate).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(expectedNotificationRedelivery);
+        doReturn(mockStatusUpdate).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(expectedNotificationRedelivery);
         doReturn(expectedStatusUpdateXml).when(certificateStatusUpdateForCareCreator).marshal(any());
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
@@ -95,8 +95,8 @@ public class NotificationRedeliveryJobServiceImplTest {
         }
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(any(NotificationRedelivery.class));
         doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
@@ -127,11 +127,11 @@ public class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(any(NotificationRedelivery.class));
         doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(failingNotificationRedelivery);
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(failingNotificationRedelivery);
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -156,11 +156,11 @@ public class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(any(NotificationRedelivery.class));
+        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(any(NotificationRedelivery.class));
         doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryMessageCreatorService)
-            .getCertificateStatusUpdate(failingNotificationRedelivery);
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(failingNotificationRedelivery);
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 

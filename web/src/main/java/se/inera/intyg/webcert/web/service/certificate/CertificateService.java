@@ -18,8 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
+import java.io.IOException;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 /**
  * Service that retrieves certificates.
@@ -28,9 +32,13 @@ public interface CertificateService {
 
     /**
      * Retrieves certificates for a doctor on the logged in unit.
+     *
      * @param queryParameter Parameters that certificates should be filtered according on.
      * @return response including a list of certificates and the total amount of certificates.
      */
     CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParameter);
 
+
+    Intyg getCertificate(String certificateId, String certificateType, String certificateVersion)
+        throws ModuleNotFoundException, ModuleException, IOException;
 }
