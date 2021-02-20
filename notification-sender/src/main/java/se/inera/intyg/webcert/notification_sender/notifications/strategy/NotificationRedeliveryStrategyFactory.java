@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
@@ -26,14 +27,15 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 @Service
 public class NotificationRedeliveryStrategyFactory {
 
+    @Value("${notification.redelivery.strategy.template.standard}")
+    private String strategyTemplateStandard;
 
     public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
-        switch (notificationResendStrategy) {
-            case MANUAL:
-                return new NotificationRedeliveryStrategyManual();
-            default:
-                return new NotificationRedeliveryStrategyStandard();
+        if (notificationResendStrategy == NotificationRedeliveryStrategyEnum.SINGLE) {
+            return new NotificationRedeliveryStrategySingle();
+        } else {
+            return new NotificationRedeliveryStrategyStandard(strategyTemplateStandard);
         }
     }
 }

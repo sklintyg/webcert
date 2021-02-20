@@ -23,8 +23,9 @@ import java.util.stream.Stream;
 
 public enum NotificationRedeliveryStrategyEnum {
 
-    STANDARD("STANDARD", "Notification redelivery strategy standard"),
-    MANUAL("MANUAL", "Notification redelivery strategy manual");
+    STANDARD("STANDARD", "Notification redelivery strategy STANDARD"),
+    SINGLE("SINGLE", "Notification redelivery strategy SINGLE");
+
 
     private final String value;
     private final String description;

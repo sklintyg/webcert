@@ -19,21 +19,22 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.MANUAL;
+import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.SINGLE;
 
 import com.google.common.collect.ImmutableList;
 import java.time.temporal.ChronoUnit;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-public class NotificationRedeliveryStrategyManual implements NotificationRedeliveryStrategy {
-    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = MANUAL;
+public class NotificationRedeliveryStrategySingle implements NotificationRedeliveryStrategy {
+
+    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = SINGLE;
     private static final int MAX_REDELIVERIES = 1;
-    private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEME = ImmutableList.of(
-        Pair.of(ChronoUnit.MINUTES, 1)
+    private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEDULE = ImmutableList.of(
+        Pair.of(ChronoUnit.SECONDS, 10)
     );
 
-    public NotificationRedeliveryStrategyManual() { }
+    public NotificationRedeliveryStrategySingle() { }
 
     @Override
     public NotificationRedeliveryStrategyEnum getName() {
@@ -50,10 +51,10 @@ public class NotificationRedeliveryStrategyManual implements NotificationRedeliv
 
         int attemptedRedeliveries = attemptedDeliveries - 1;
 
-        if (attemptedRedeliveries - 1 < NOTIFICATION_REDELIVERY_SCHEME.size()) {
-            return NOTIFICATION_REDELIVERY_SCHEME.get(attemptedRedeliveries).getFirst();
+        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
+            return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getFirst();
         } else {
-            return NOTIFICATION_REDELIVERY_SCHEME.get(NOTIFICATION_REDELIVERY_SCHEME.size() - 1).getFirst();
+            return NOTIFICATION_REDELIVERY_SCHEDULE.get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1).getFirst();
         }
     }
 
@@ -62,10 +63,10 @@ public class NotificationRedeliveryStrategyManual implements NotificationRedeliv
 
         int attemptedRedeliveries = attemptedDeliveries - 1;
 
-        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEME.size()) {
-            return NOTIFICATION_REDELIVERY_SCHEME.get(attemptedRedeliveries).getSecond();
+        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
+            return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getSecond();
         } else {
-            return NOTIFICATION_REDELIVERY_SCHEME.get(NOTIFICATION_REDELIVERY_SCHEME.size() - 1).getSecond();
+            return NOTIFICATION_REDELIVERY_SCHEDULE.get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1).getSecond();
         }
     }
 }
