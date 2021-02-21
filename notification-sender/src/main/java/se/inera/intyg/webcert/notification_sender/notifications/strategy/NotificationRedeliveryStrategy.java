@@ -24,7 +24,7 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 
 public interface NotificationRedeliveryStrategy {
 
-    String STRATEGY_TEMPLATE_FORMAT_REGEX = "^[1-9][0-9]?#([1-9][0-9]?:[smhd],){0,}([1-9][0-9]?:[smhd])$";
+    String STRATEGY_TEMPLATE_FORMAT_REGEX = "^[1-9][0-9]?#([1-9][0-9]?:[smhd],)*([1-9][0-9]?:[smhd])$";
 
     NotificationRedeliveryStrategyEnum getName();
 
