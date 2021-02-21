@@ -38,40 +38,40 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId,
         String unitId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, eventId, eventType, unitId, certificateId, correlationId);
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, certificateId, correlationId, unitId, eventId, eventType);
     }
 
     @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId,
         String correlationId, String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
-            sendAttempt, nextAttempt);
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
+            errorCode, message, nextAttempt);
     } //CHECKSTYLE:ON ParameterNumber
 
     @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId,
         String correlationId,
         String errorCode, String message, int sendAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, eventId, eventType, unitId, certificateId, correlationId, errorCode, message,
-            sendAttempt);
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
+            errorCode, message);
     } //CHECKSTYLE:ON ParameterNumber
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
-        StringBuilder logMsg = new StringBuilder();
-        logMsg.append(logEvent.name()).append(SPACE).append(logEvent.getMessage());
-
-        LOG.info(LogMarkers.MONITORING, logMsg.toString(), logMsgArgs);
+        LOG.info(LogMarkers.MONITORING, logEvent.name() + SPACE + logEvent.getMessage(), logMsgArgs);
     }
 
 
     private enum MonitoringEvent {
         STATUS_UPDATE_RESULT_SUCCESS(
-            "Status update for care message eventId: '{}' with event: '{}' successfully delivered to unit '{}' for certificateId: '{}', correlationId: '{}'"),
+         "Status update for care successfully delivered for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
+            + "eventId: {}, eventType: {}]."),
         STATUS_UPDATE_RESULT_RESEND(
-            "Status update for care message eventId: '{}' with event: '{}' failed deliver to unit '{}' for certificateId: '{}', correlationId: '{}', errorCode: '{}', message: '{}', sendAttempt: '{}' nextAttempt: '{}'. Will resend."),
+        "Status update for care failure on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
+            + "eventId: {}, eventType: {}, errorCode: {}, errorMessage: {}]. Redelivery has been scheduled for {}."),
         STATUS_UPDATE_RESULT_FAILURE(
-            "Status update for care message eventId: '{}' with event: '{}' failed deliver to unit '{}' for certificateId: '{}', correlationId: '{}', errorCode: '{}', message: '{}', sendAttempt: '{}'. Will not attempt to resend.");
+        "Status update for care failure on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
+            + "eventId: {}, eventType: {}, errorCode: {}, errorMessage: {}]. No further delivery attempts will be performed.");
 
         private final String message;
 
