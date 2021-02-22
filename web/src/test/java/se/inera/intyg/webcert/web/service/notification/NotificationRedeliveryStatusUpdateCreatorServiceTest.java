@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.certificate.CertificateService;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -76,7 +76,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Mock
-    private CertificateService certificateService;
+    private GetCertificateService getCertificateService;
 
     @Mock
     private IntygService intygService;
@@ -289,7 +289,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
     }
 
     private void setupMockToReturnCertificate(Intyg certificate, Handelse event) throws Exception {
-        doReturn(certificate).when(certificateService)
+        doReturn(certificate).when(getCertificateService)
             .getCertificate(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
 
         final var createdBy = mock(HosPersonal.class);

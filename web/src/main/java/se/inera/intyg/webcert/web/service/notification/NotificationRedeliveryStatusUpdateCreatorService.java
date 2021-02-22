@@ -22,7 +22,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.certificate.CertificateService;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
@@ -51,7 +51,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
-    private CertificateService certificateService;
+    private GetCertificateService getCertificateService;
 
     @Autowired
     private IntygService intygService;
@@ -132,7 +132,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
             return redeliveryMessage.getCert();
         }
 
-        final var certificate = certificateService.getCertificate(event.getIntygsId(),
+        final var certificate = getCertificateService.getCertificate(event.getIntygsId(),
             event.getCertificateType(), event.getCertificateVersion());
         certificate.setPatient(redeliveryMessage.getPatient());
         NotificationTypeConverter.complementIntyg(certificate);

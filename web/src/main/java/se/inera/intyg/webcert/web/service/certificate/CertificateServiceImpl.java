@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -27,26 +26,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -56,24 +47,17 @@ public class CertificateServiceImpl implements CertificateService {
     private LogService logService;
     private WebCertUserService webcertUserService;
     private AuthoritiesHelper authoritiesHelper;
-    private IntygModuleRegistry intygModuleRegistry;
-    private UtkastService utkastService;
-    private IntygService intygService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateServiceImpl.class);
 
     @Autowired
     public CertificateServiceImpl(ITIntegrationService itIntegrationService, PatientDetailsResolver patientDetailsResolver,
-        WebCertUserService webCertUserService, LogService logService, AuthoritiesHelper authoritiesHelper,
-        IntygModuleRegistry intygModuleRegistry, UtkastService utkastService, IntygService intygService) {
+        WebCertUserService webCertUserService, LogService logService, AuthoritiesHelper authoritiesHelper) {
         this.itIntegrationService = itIntegrationService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.webcertUserService = webCertUserService;
         this.logService = logService;
         this.authoritiesHelper = authoritiesHelper;
-        this.intygModuleRegistry = intygModuleRegistry;
-        this.utkastService = utkastService;
-        this.intygService = intygService;
     }
 
     @Override
@@ -122,46 +106,6 @@ public class CertificateServiceImpl implements CertificateService {
 
     private Optional<Personnummer> getCivicRegistrationNumber(String civicRegistrationNumber) {
         return Personnummer.createPersonnummer(civicRegistrationNumber);
-    }
-
-    @Override
-    public Intyg getCertificate(String certificateId, String certificateType, String certificateVersion)
-        throws ModuleNotFoundException, ModuleException, IOException {
-        var certificate = getCertificateFromWebcert(certificateId, certificateType, certificateVersion);
-        if (certificate == null) {
-            certificate = getCertificateFromIntygstjanst(certificateId, certificateType, certificateVersion);
-        }
-        return certificate;
-    }
-
-    private Intyg getCertificateFromWebcert(String certificateId, String certificateType, String certificateVersion)
-        throws ModuleNotFoundException, ModuleException, IOException {
-        try {
-            final var draft = utkastService.getDraft(certificateId, intygModuleRegistry.getModuleIdFromExternalId(certificateType), false);
-            final var moduleApi = intygModuleRegistry
-                .getModuleApi(intygModuleRegistry.getModuleIdFromExternalId(certificateType), certificateVersion);
-            final var utlatande = moduleApi.getUtlatandeFromJson(draft.getModel());
-            return moduleApi.getIntygFromUtlatande(utlatande);
-        } catch (WebCertServiceException e) {
-            LOGGER.warn("Could not find certificate {} of type {} in webcert's database. Will check intygstjanst...", certificateId,
-                certificateType, e);
-            return null;
-        }
-    }
-
-    private Intyg getCertificateFromIntygstjanst(String certificateId, String certificateType, String certificateVersion)
-        throws ModuleNotFoundException, ModuleException, WebCertServiceException {
-        try {
-            final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
-            final var moduleApi = intygModuleRegistry
-                .getModuleApi(intygModuleRegistry.getModuleIdFromExternalId(certificateType), certificateVersion);
-            final var utlatande = certificateContentHolder.getUtlatande();
-            return moduleApi.getIntygFromUtlatande(utlatande);
-        } catch (WebCertServiceException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                String.format("Could not find certificate id: %s of type %s in intygstjanst's database", certificateId,
-                    certificateType), e);
-        }
     }
 }
 
