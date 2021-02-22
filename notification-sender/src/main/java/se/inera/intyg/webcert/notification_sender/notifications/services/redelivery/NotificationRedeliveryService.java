@@ -65,10 +65,6 @@ public class NotificationRedeliveryService {
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
-    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
-        return getNotificationsForRedelivery();
-    }
-
     /**
      * Retrieves the notifications that are up for redelivery and returns them in the order they should be resent.
      *
@@ -82,6 +78,18 @@ public class NotificationRedeliveryService {
         return notificationRedeliveryList.stream()
             .sorted(Comparator.comparing(NotificationRedelivery::getEventId))
             .collect(Collectors.toList());
+    }
+
+    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
+        final var notificationRedeliveryList = getNotificationsForRedelivery();
+        if (shouldLimitBatchSize(notificationRedeliveryList, batchSize)) {
+            return notificationRedeliveryList.subList(0, batchSize);
+        }
+        return notificationRedeliveryList;
+    }
+
+    private boolean shouldLimitBatchSize(List<NotificationRedelivery> notificationRedeliveryList, int batchSize) {
+        return batchSize > 0 && notificationRedeliveryList.size() > batchSize;
     }
 
     @Transactional

@@ -38,6 +38,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -237,6 +238,36 @@ public class NotificationRedeliveryServiceTest {
         verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
 
         assertNull("RedeliveryTime hasn't been cleared on resend", captureRedelivery.getValue().getRedeliveryTime());
+    }
+
+    @Test
+    public void shallLimitBatchWhenMoreNotificationsAreUpForRedelivery() {
+        final var expectedBatchSize = 10;
+        final var notificationRedeliveryList = new ArrayList(20);
+        for (int i = 0; i < 20; i++) {
+            notificationRedeliveryList.add(createNotificationRedelivery());
+        }
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo).findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
+
+        assertEquals(expectedBatchSize, actualNotificationRedeliveryList.size());
+    }
+
+    @Test
+    public void shallNotLimitBatchWhenThereAreLessNotificationsUpForRedelivery() {
+        final var expectedBatchSize = 10;
+        final var notificationRedeliveryList = new ArrayList(9);
+        for (int i = 0; i < 9; i++) {
+            notificationRedeliveryList.add(createNotificationRedelivery());
+        }
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo).findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
+
+        assertEquals(notificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
     }
 
     private NotificationRedelivery createNotificationRedelivery() {
