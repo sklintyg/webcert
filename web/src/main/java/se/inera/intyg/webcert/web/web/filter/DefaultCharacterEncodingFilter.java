@@ -18,6 +18,7 @@
  */
 
 package se.inera.intyg.webcert.web.web.filter;
+
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,8 +30,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- *  This filter is used to set the character encoding to UTF-8 when handling uthopp POST requests.
- *  {@link se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController}
+ * This filter is used to set the character encoding to UTF-8 when handling uthopp POST requests.
+ * {@link se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController}
  */
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -41,7 +42,7 @@ public class DefaultCharacterEncodingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
-        if(request.getCharacterEncoding() == null){
+        if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding("UTF-8");
         }
 
