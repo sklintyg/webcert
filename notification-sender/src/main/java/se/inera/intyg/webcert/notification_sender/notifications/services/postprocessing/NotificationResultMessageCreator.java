@@ -7,6 +7,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class NotificationResultMessageCreator {
         final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
         resultMessage.setEvent(event);
+        resultMessage.setNotificationSentTime(LocalDateTime.now());
         resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
 
         return resultMessage;

@@ -302,7 +302,8 @@ public class NotificationResultResendServiceTest {
     public void shouldUpdateRedeliveryTimeAndSendAttemptOnExistingRedelivery() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();
-        final var expectedRedeliveryTimeAfterServiceCall = notificationRedelivery.getRedeliveryTime().plusMinutes(1L);
+        final var expectedRedeliveryTimeAfterServiceCall = notificationResultMessage.getNotificationSentTime()
+            .plusMinutes(1L);
         final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
@@ -367,47 +368,11 @@ public class NotificationResultResendServiceTest {
         assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
     }
 
-    @Test
-    public void shouldProperlyUpdateTimeAndSendAttemptOnConsecutiveRedeliveries() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 3;
-
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
-            .getCorrelationId());
-        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
-            .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
-        doAnswer(i -> i.getArguments()[0]).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
-
-        var expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusMinutes(1);
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
-        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
-        notificationResultResendService.process(notificationResultMessage);
-        assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(ATTEMPTED_DELIVERIES + 1, notificationRedelivery.getAttemptedDeliveries().intValue());
-
-        expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusHours(1);
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
-        doReturn(ChronoUnit.HOURS).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
-        notificationResultResendService.process(notificationResultMessage);
-        assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(ATTEMPTED_DELIVERIES + 2, notificationRedelivery.getAttemptedDeliveries().intValue());
-
-        expectedRedeliveryTime = notificationRedelivery.getRedeliveryTime().plusDays(1);
-        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
-        doReturn(ChronoUnit.DAYS).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
-        notificationResultResendService.process(notificationResultMessage);
-        assertEquals(expectedRedeliveryTime, notificationRedelivery.getRedeliveryTime());
-        assertEquals(ATTEMPTED_DELIVERIES + 3, notificationRedelivery.getAttemptedDeliveries().intValue());
-    }
-
     private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);
         notificationRedelivery.setEventId(EVENT_ID);
         notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
-        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
         notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
         notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
         return notificationRedelivery;
@@ -417,6 +382,7 @@ public class NotificationResultResendServiceTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
+        notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
         notificationResultMessage.setResultType(createNotificationResultType());
         notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
         return notificationResultMessage;

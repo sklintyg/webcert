@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 
@@ -27,6 +28,7 @@ public class NotificationResultMessage {
 
     private String correlationId;
     private Handelse event;
+    private LocalDateTime notificationSentTime;
     private NotificationResultType resultType;
     private byte[] redeliveryMessageBytes;
 
@@ -45,6 +47,14 @@ public class NotificationResultMessage {
 
     public void setEvent(Handelse event) {
         this.event = event;
+    }
+
+    public LocalDateTime getNotificationSentTime() {
+        return notificationSentTime;
+    }
+
+    public void setNotificationSentTime(LocalDateTime notificationSentTime) {
+        this.notificationSentTime = notificationSentTime;
     }
 
     public NotificationResultType getResultType() {

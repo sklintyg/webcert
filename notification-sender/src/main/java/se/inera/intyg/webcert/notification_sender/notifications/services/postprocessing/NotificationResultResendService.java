@@ -24,6 +24,7 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 public class NotificationResultResendService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationResultResendService.class);
+    private static final int ONE_ATTEMPTED_DELIVERY = 1;
 
     private final MonitoringLogService logService;
     private final HandelseRepository handelseRepo;
@@ -66,7 +67,7 @@ public class NotificationResultResendService {
 
         if (attemptedDeliveries <= maxRedeliveries) {
             event.setId(redelivery.getEventId());
-            updateRedeliveryTimeAndSendAttempt(redelivery, strategy, attemptedDeliveries);
+            updateRedeliveryTimeAndSendAttempt(redelivery, strategy, attemptedDeliveries, resultMessage.getNotificationSentTime());
             monitorLogResend(event, resultMessage, redelivery);
 
         } else {
@@ -94,21 +95,33 @@ public class NotificationResultResendService {
     private NotificationRedelivery createNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage) {
         final var strategy = getRedeliveryStrategy(STANDARD);
         final var redelivery =  new NotificationRedelivery(
-            resultMessage.getCorrelationId(), event.getId(), resultMessage.getRedeliveryMessageBytes(), strategy.getName(),
-            LocalDateTime.now().plus(strategy.getNextTimeValue(1), strategy.getNextTimeUnit(1)), 1);
+            resultMessage.getCorrelationId(),
+            event.getId(),
+            resultMessage.getRedeliveryMessageBytes(),
+            strategy.getName(),
+            getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
+            ONE_ATTEMPTED_DELIVERY
+        );
         LOG.debug("Creating Notification Redelivery for event with id {} and correlation id {}.", event.getId(),
             redelivery.getCorrelationId());
         return notificationRedeliveryRepo.save(redelivery);
     }
 
     private void updateRedeliveryTimeAndSendAttempt(NotificationRedelivery redelivery, NotificationRedeliveryStrategy strategy,
-        int attemptedDeliveries) {
+        int attemptedDeliveries, LocalDateTime notificationSentTime) {
+        final var nextRedeliveryTime = getNextRedeliveryTime(strategy, notificationSentTime, attemptedDeliveries);
+        redelivery.setRedeliveryTime(nextRedeliveryTime);
         redelivery.setAttemptedDeliveries(attemptedDeliveries);
-        redelivery.setRedeliveryTime(redelivery.getRedeliveryTime().plus(strategy.getNextTimeValue(attemptedDeliveries),
-            strategy.getNextTimeUnit(attemptedDeliveries)));
         notificationRedeliveryRepo.save(redelivery);
         LOG.debug("Updating Notification Redelivery for event with id {} and correlation id {}", redelivery.getEventId(),
             redelivery.getCorrelationId());
+    }
+
+    private LocalDateTime getNextRedeliveryTime(NotificationRedeliveryStrategy strategy, LocalDateTime notificationSentTime,
+        int attemptedDeliveries) {
+        final var nextTimeValue = strategy.getNextTimeValue(attemptedDeliveries);
+        final var nextTimeUnit = strategy.getNextTimeUnit(attemptedDeliveries);
+        return notificationSentTime.plus(nextTimeValue, nextTimeUnit);
     }
 
     private Handelse setDeliveryStatusFailure(Long eventId) {

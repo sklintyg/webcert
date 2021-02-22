@@ -65,13 +65,13 @@ public class MonitoringLogServiceImplTest {
 
     @Before
     public void setup() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        final var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(mockAppender);
     }
 
     @After
     public void teardown() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        final var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.detachAppender(mockAppender);
     }
 
@@ -122,7 +122,7 @@ public class MonitoringLogServiceImplTest {
 
     private void verifyLog(String logMessage) {
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
-        final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
+        final var loggingEvent = captorLoggingEvent.getValue();
 
         assertEquals(Level.INFO, loggingEvent.getLevel());
         assertEquals(logMessage, loggingEvent.getFormattedMessage());

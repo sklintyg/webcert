@@ -110,7 +110,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
         final var topicCode = event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription())
             : null;
 
-        return createNotificationMessage(event.getIntygsId(), event.getCertificateType(), event.getEnhetsId(),
+        return createNotificationMessage(event.getIntygsId(), utlatande.getTyp(), event.getEnhetsId(),
             draftJson, event.getCode(), schemaVersion, reference, topicCode, event.getSistaDatumForSvar());
     }
 
