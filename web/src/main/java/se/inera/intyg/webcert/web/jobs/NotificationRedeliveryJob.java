@@ -48,6 +48,10 @@ public class NotificationRedeliveryJob {
     public void run() {
         LOG.info("Running notification redelivery job...");
 
-        notificationRedeliveryJobService.resendScheduledNotifications(batchSize);
+        try {
+            notificationRedeliveryJobService.resendScheduledNotifications(batchSize);
+        } catch (Exception ex) {
+            LOG.error("Redelivery job failed due to unexpected error: ", ex);
+        }
     }
 }
