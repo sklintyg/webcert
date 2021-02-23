@@ -37,9 +37,10 @@ public class NotificationResultSuccessServiceTest {
     private NotificationResultSuccessService notificationResultSuccessService;
 
     private static final Long EVENT_ID = 1000L;
+    private static final Integer ATTEMPTED_DELIVERIES = 4;
 
     @Test
-    public void shallMakeMonitorLogOnProcessResult() {
+    public void shallMakeMonitorLogOnProcessingOfNewNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -47,6 +48,7 @@ public class NotificationResultSuccessServiceTest {
         final var captureCertificateId = ArgumentCaptor.forClass(String.class);
         final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
         final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
+        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
 
         doReturn(eventAsSaved(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
         doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
@@ -58,17 +60,19 @@ public class NotificationResultSuccessServiceTest {
             captureEventType.capture(),
             captureCertificateId.capture(),
             captureCorrelationId.capture(),
-            captureLogicalAddress.capture());
+            captureLogicalAddress.capture(),
+            captureAttemptedDeliveries.capture());
 
         assertEquals(EVENT_ID, captureEventId.getValue());
         assertEquals(notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
         assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
         assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
         assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
+        assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
     }
 
     @Test
-    public void shallMakeMonitorLogOnProcessResultForRedelivery() {
+    public void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
         final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
@@ -78,7 +82,8 @@ public class NotificationResultSuccessServiceTest {
         final var captureCertificateId = ArgumentCaptor.forClass(String.class);
         final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
         final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
-        
+        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
+
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
             .findByCorrelationId(notificationResultMessage.getCorrelationId());
         doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
@@ -91,13 +96,37 @@ public class NotificationResultSuccessServiceTest {
             captureEventType.capture(),
             captureCertificateId.capture(),
             captureCorrelationId.capture(),
-            captureLogicalAddress.capture());
+            captureLogicalAddress.capture(),
+            captureAttemptedDeliveries.capture());
 
         assertEquals(notificationRedelivery.getEventId(), captureEventId.getValue());
         assertEquals(notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
         assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
         assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
         assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
+        assertEquals(ATTEMPTED_DELIVERIES + 1, captureAttemptedDeliveries.getValue().intValue());
+    }
+
+    @Test
+    public void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+        notificationRedelivery.setAttemptedDeliveries(null);
+        final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
+
+        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
+            .findByCorrelationId(notificationResultMessage.getCorrelationId());
+        doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
+
+        notificationResultSuccessService.process(notificationResultMessage);
+
+        verify(monitoringLogService).logStatusUpdateForCareStatusSuccess(any(Long.class), any(String.class), any(String.class),
+            any(String.class),any(String.class), captureAttemptedDeliveries.capture());
+
+        assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
     }
 
     @Test
@@ -152,6 +181,7 @@ public class NotificationResultSuccessServiceTest {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
         notificationRedelivery.setEventId(1000L);
+        notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
         return notificationRedelivery;
     }
 
