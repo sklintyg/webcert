@@ -30,6 +30,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.common.support.Constants.KV_INTYGSTYP_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.TECHNICAL_ERROR;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
@@ -76,6 +77,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.UnderskriftType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
@@ -104,6 +106,7 @@ public class NotificationResultMessageCreatorTest {
     private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
     private static final String CERTIFICATE_TYPE_EXTERNAL = "LISJP";
     private static final String CERTIFICATE_TYPE_INTERNAL = "lisjp";
+    private static final String CERTIFICATE_DISPLAY_NAME = "Läkarintyg för sjukpenning";
     private static final String TEXT_VERSION = "TEXT_VERSION";
 
     private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.NYFRFM;
@@ -346,12 +349,20 @@ public class NotificationResultMessageCreatorTest {
     private Intyg createCertificateV3() {
         final var certificate = new Intyg();
         certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), CERTIFICATE_ID, LOGICAL_ADDRESS));
-        certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(CERTIFICATE_TYPE_EXTERNAL));
+        certificate.setTyp(createCertificateType());
         certificate.setVersion(TEXT_VERSION);
         certificate.setPatient(NotificationRedeliveryUtil.getPatient(PATIENT_ID));
         certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(createCareProviderInfra(), createCareUnitInfra(),
             createPersonInformation()));
         return certificate;
+    }
+
+    private TypAvIntyg createCertificateType() {
+        TypAvIntyg certificateTypeV3 = new TypAvIntyg();
+        certificateTypeV3.setCode(CERTIFICATE_TYPE_EXTERNAL);
+        certificateTypeV3.setCodeSystem(KV_INTYGSTYP_CODE_SYSTEM);
+        certificateTypeV3.setDisplayName(CERTIFICATE_DISPLAY_NAME);
+        return certificateTypeV3;
     }
 
     private se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare createCareProviderInfra() {

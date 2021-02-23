@@ -34,7 +34,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
@@ -122,15 +121,6 @@ public final class NotificationRedeliveryUtil {
         certificateTypeV3.setCode(moduleEntryPoint.getExternalId());
         certificateTypeV3.setCodeSystem(KV_INTYGSTYP_CODE_SYSTEM);
         certificateTypeV3.setDisplayName(moduleEntryPoint.getModuleName());
-        return certificateTypeV3;
-    }
-
-    public static TypAvIntyg getCertificateType(String certificateType) {
-        TypAvIntyg certificateTypeV3 = new TypAvIntyg();
-        KvIntygstyp certificateTypeEnum = KvIntygstyp.valueOf(certificateType.trim().toUpperCase());
-        certificateTypeV3.setCode(certificateTypeEnum.getCodeValue());
-        certificateTypeV3.setCodeSystem(KV_INTYGSTYP_CODE_SYSTEM);
-        certificateTypeV3.setDisplayName(certificateTypeEnum.getDisplayName());
         return certificateTypeV3;
     }
 
