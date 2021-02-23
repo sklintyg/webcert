@@ -62,7 +62,7 @@ public class NotificationResultResendService {
     private void updateEventAndNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage,
         NotificationRedelivery redelivery) {
         final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
-        final var attemptedDeliveries = redelivery.getAttemptedDeliveries() + 1;
+        final var attemptedDeliveries = attemptedRedeliveries(redelivery) + 1;
         final var maxRedeliveries = strategy.getMaxRedeliveries();
 
         if (attemptedDeliveries <= maxRedeliveries) {
@@ -76,6 +76,10 @@ public class NotificationResultResendService {
             redelivery.setAttemptedDeliveries(attemptedDeliveries);
             monitorLogFailure(updatedEvent, resultMessage, redelivery);
         }
+    }
+
+    private int attemptedRedeliveries(NotificationRedelivery redelivery) {
+        return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
     }
 
     private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {

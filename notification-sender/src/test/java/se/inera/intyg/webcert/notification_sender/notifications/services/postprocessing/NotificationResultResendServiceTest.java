@@ -368,6 +368,32 @@ public class NotificationResultResendServiceTest {
         assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
     }
 
+    @Test
+    public void shallConsiderNullRedeliveryAttemptsAsOne() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery();
+        notificationRedelivery.setAttemptedDeliveries(null);
+        final var expectedRedeliveryAttempt = 1;
+
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
+            .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+
+        notificationResultResendService.process(notificationResultMessage);
+
+        verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
+        assertEquals(expectedRedeliveryAttempt, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
+    }
+
     private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);
