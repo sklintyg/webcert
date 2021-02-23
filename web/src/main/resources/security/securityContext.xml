@@ -284,7 +284,7 @@
   <!-- ======================================================================== -->
   <beans profile="wc-security-test">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
+    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/v2\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -333,7 +333,7 @@
     </security:http>
 
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/v2\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
      <!-- <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/> -->
@@ -418,7 +418,7 @@
          Second constructor argument is set to null to match all HTTP methods.
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token\/.*"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/v2\/visa\/.*|\/webcert\/.*|\/oauth/token\/.*"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 

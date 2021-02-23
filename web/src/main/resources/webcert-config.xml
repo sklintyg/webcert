@@ -168,6 +168,8 @@
         <property name="savedRequestFactory" ref="savedRequestFactory"/>
     </bean>
 
+    <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter" />
+
     <!-- Eleg login redirect filter for easier URL handling in PP -->
     <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
 
