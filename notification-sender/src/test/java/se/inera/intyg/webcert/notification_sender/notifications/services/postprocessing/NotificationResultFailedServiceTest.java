@@ -23,6 +23,8 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -154,6 +156,34 @@ public class NotificationResultFailedServiceTest {
         assertEquals(RESULT_ERROR_TYPE_ENUM.name(), captureErrorId.getValue());
         assertEquals(RESULT_TEXT, captureResultText.getValue());
         assertEquals(ATTEMPTED_DELIVERIES + 1, captureCurrentSendAttempt.getValue().intValue());
+    }
+
+    @Test
+    public void shouldMonitorLogFailureOnProcessingRedeliveredNotificationWithNullAttemptedRedeliveries() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery();
+        notificationRedelivery.setAttemptedDeliveries(null);
+
+        final var captureCurrentSendAttempt = ArgumentCaptor.forClass(Integer.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(Optional.of(createRedeliveredEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
+        doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
+
+        notificationResultFailedService.process(notificationResultMessage);
+
+        verify(monitoringLogService).logStatusUpdateForCareStatusFailure(
+            anyLong(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            captureCurrentSendAttempt.capture());
+
+        assertEquals(1, captureCurrentSendAttempt.getValue().intValue());
     }
 
     @Test

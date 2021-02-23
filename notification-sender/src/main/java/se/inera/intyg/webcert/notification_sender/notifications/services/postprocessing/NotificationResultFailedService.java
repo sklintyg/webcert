@@ -69,10 +69,14 @@ public class NotificationResultFailedService {
     private void monitorLogFailure(Handelse event, NotificationResultMessage resultMessage, Optional<NotificationRedelivery> redelivery) {
         final var resultType = resultMessage.getResultType();
         final var errorId = resultType.getNotificationErrorType() != null ? resultType.getNotificationErrorType().name() : null;
-        final var currentSendAttempt = redelivery.map(notificationRedelivery -> notificationRedelivery.getAttemptedDeliveries() + 1)
+        final var currentSendAttempt = redelivery.map(notificationRedelivery -> attemptedRedeliveries(notificationRedelivery) + 1)
             .orElse(1);
 
         logService.logStatusUpdateForCareStatusFailure(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
             resultMessage.getCorrelationId(), errorId, resultType.getNotificationResultText(), currentSendAttempt);
+    }
+
+    private int attemptedRedeliveries(NotificationRedelivery redelivery) {
+        return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
     }
 }
