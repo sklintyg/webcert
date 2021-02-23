@@ -37,8 +37,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId,
-        String unitId) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, certificateId, correlationId, unitId, eventId, eventType);
+        String unitId, int sendAttempt) {
+        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, sendAttempt, certificateId, correlationId, unitId, eventId,
+            eventType);
     }
 
     @Override //CHECKSTYLE:OFF ParameterNumber
@@ -64,7 +65,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     private enum MonitoringEvent {
         STATUS_UPDATE_RESULT_SUCCESS(
-         "Status update for care successfully delivered for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
+         "Status update for care success on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
             + "eventId: {}, eventType: {}]."),
         STATUS_UPDATE_RESULT_RESEND(
         "Status update for care failure on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "

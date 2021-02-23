@@ -23,7 +23,8 @@ import java.time.LocalDateTime;
 
 public interface MonitoringLogService {
 
-    void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId, String unitId);
+    void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId, String unitId,
+        int sendAttempt);
 
     //CHECKSTYLE:OFF ParameterNumber
     void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId, String correlationId,

@@ -77,8 +77,10 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogNotificationDeliverySuccess() {
-        logService.logStatusUpdateForCareStatusSuccess(EVENT_ID, EVENT_TYPE, CERTIFICATE_ID, CORRELATION_ID, LOGICAL_ADDRESS);
-        verifyLog("STATUS_UPDATE_RESULT_SUCCESS Status update for care successfully delivered for event ["
+        logService.logStatusUpdateForCareStatusSuccess(EVENT_ID, EVENT_TYPE, CERTIFICATE_ID, CORRELATION_ID,
+            LOGICAL_ADDRESS, DELIVERY_ATTEMPT);
+        verifyLog("STATUS_UPDATE_RESULT_SUCCESS Status update for care success on "
+            + "delivery attempt " + DELIVERY_ATTEMPT + " for event ["
             + "certificateId: " + CERTIFICATE_ID + ", "
             + "correlationId: " + CORRELATION_ID + ", "
             + "logicalAddress: " + LOGICAL_ADDRESS + ", "
