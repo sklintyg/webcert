@@ -18,6 +18,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
@@ -59,6 +60,7 @@ public class NotificationResultMessageCreator {
         resultMessage.setCorrelationId(correlationId);
         resultMessage.setEvent(event);
         resultMessage.setResultType(notificationResultType);
+        resultMessage.setNotificationSentTime(LocalDateTime.now());
 
         return resultMessage;
     }
@@ -166,12 +168,19 @@ public class NotificationResultMessageCreator {
 
     private NotificationResultType createResultType(Exception exception) {
         final var notificationResultType = new NotificationResultType();
-        // TODO: Could ERROR be used or is it necessary with a specific type?
-        notificationResultType.setNotificationResult(UNRECOVERABLE_ERROR);
+        notificationResultType.setNotificationResult(getNotificationResult(exception));
         notificationResultType.setNotificationResultText(exception.getMessage());
         notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
         notificationResultType.setException(exception.getClass().getName());
         return notificationResultType;
+    }
+
+    private NotificationResultTypeEnum getNotificationResult(Exception exception) {
+        return isTemporaryException(exception) ? ERROR : UNRECOVERABLE_ERROR;
+    }
+
+    private boolean isTemporaryException(Exception exception) {
+        return exception instanceof TemporaryException;
     }
 
     private Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user,

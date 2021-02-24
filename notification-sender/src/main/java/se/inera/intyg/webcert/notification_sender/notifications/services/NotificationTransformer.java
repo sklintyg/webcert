@@ -82,18 +82,10 @@ public class NotificationTransformer {
 
             final var statusUpdateForCare = certificateStatusUpdateForCareCreator.create(notificationMessage, certificateTypeVersion);
             message.setBody(statusUpdateForCare);
-        } catch (TemporaryException e) {
-            handleTemporaryException(notificationMessage, e);
-            throw e;
         } catch (Exception e) {
             handleExceptions(message, notificationMessage, certificateTypeVersion, e);
             throw e;
         }
-    }
-
-    private void handleTemporaryException(NotificationMessage notificationMessage, TemporaryException e) {
-        LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
-            + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
     }
 
     private void handleExceptions(Message message, NotificationMessage notificationMessage, String certificateTypeVersion, Exception e)
@@ -107,6 +99,14 @@ public class NotificationTransformer {
             final var resultMessage = notificationResultMessageCreator
                 .createFailureMessage(notificationMessage, correlationId, userId, certificateTypeVersion, e);
             notificationResultMessageSender.sendResultMessage(resultMessage);
+
+            ifTemporaryExceptionThenConvertToRuntimeException(e);
+        }
+    }
+
+    private void ifTemporaryExceptionThenConvertToRuntimeException(Exception e) {
+        if (e instanceof TemporaryException) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 

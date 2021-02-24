@@ -47,7 +47,6 @@ public class NotificationResultResendService {
 
         if (existingRedelivery.isEmpty()) {
             createEventAndNotificationRedelivery(event, resultMessage);
-
         } else {
             updateEventAndNotificationRedelivery(event, resultMessage, existingRedelivery.get());
         }
@@ -67,9 +66,8 @@ public class NotificationResultResendService {
 
         if (attemptedDeliveries <= maxRedeliveries) {
             event.setId(redelivery.getEventId());
-            updateRedeliveryTimeAndSendAttempt(redelivery, strategy, attemptedDeliveries, resultMessage.getNotificationSentTime());
+            updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
             monitorLogResend(event, resultMessage, redelivery);
-
         } else {
             final var updatedEvent = setDeliveryStatusFailure(redelivery.getEventId());
             deleteNotificationRedelivery(redelivery);
@@ -111,14 +109,23 @@ public class NotificationResultResendService {
         return notificationRedeliveryRepo.save(redelivery);
     }
 
-    private void updateRedeliveryTimeAndSendAttempt(NotificationRedelivery redelivery, NotificationRedeliveryStrategy strategy,
-        int attemptedDeliveries, LocalDateTime notificationSentTime) {
-        final var nextRedeliveryTime = getNextRedeliveryTime(strategy, notificationSentTime, attemptedDeliveries);
+    private void updateRedelivery(NotificationRedelivery redelivery, NotificationRedeliveryStrategy strategy, int attemptedDeliveries,
+        NotificationResultMessage resultMessage) {
+        final var nextRedeliveryTime = getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), attemptedDeliveries);
         redelivery.setRedeliveryTime(nextRedeliveryTime);
         redelivery.setAttemptedDeliveries(attemptedDeliveries);
+
+        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getRedeliveryMessageBytes())) {
+            redelivery.setMessage(resultMessage.getRedeliveryMessageBytes());
+        }
+
         notificationRedeliveryRepo.save(redelivery);
         LOG.debug("Updating Notification Redelivery for event with id {} and correlation id {}", redelivery.getEventId(),
             redelivery.getCorrelationId());
+    }
+
+    private boolean needToUpdateMessage(byte[] currentMessage, byte[] newMessage) {
+        return currentMessage == null && newMessage != null;
     }
 
     private LocalDateTime getNextRedeliveryTime(NotificationRedeliveryStrategy strategy, LocalDateTime notificationSentTime,

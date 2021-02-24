@@ -236,19 +236,44 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsUsed() throws Exception {
+    public void shallNotSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsntUsed() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockMessage = mock(Message.class);
 
         doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
         doThrow(new TemporaryException("Temporarily failed!")).when(certificateStatusUpdateForCareCreator).create(any(), any());
+        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
 
         try {
             notificationTransformer.process(mockMessage);
             assertTrue("Should have thrown a TemporaryException!", false);
         } catch (TemporaryException e) {
             verifyNoInteractions(notificationResultMessageSender);
-            verifyNoInteractions(featuresHelper);
+        }
+    }
+
+    @Test
+    public void shallSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsUsed() throws Exception {
+        final var notificationMessage = createNotificationMessage();
+        final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
+        final var mockMessage = mock(Message.class);
+
+        final var captureNotificationResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+        doThrow(new TemporaryException("Temporarily failed!")).when(certificateStatusUpdateForCareCreator).create(any(), any());
+        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+        doReturn(mockNotificationResultMessage).when(notificationResultMessageCreator)
+            .createFailureMessage(any(), any(), any(), any(), any());
+
+        try {
+            notificationTransformer.process(mockMessage);
+            assertTrue("Should have thrown a Exception!", false);
+        } catch (TemporaryException e) {
+            assertTrue("Should not throw TemporaryException if Webcert messaging is on", false);
+        } catch (Exception e) {
+            verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
+            assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
         }
     }
 

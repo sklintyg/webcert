@@ -325,6 +325,31 @@ public class NotificationResultResendServiceTest {
     }
 
     @Test
+    public void shouldUpdateRedeliveryMessageOnExistingRedeliveryIfMissing() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery();
+        notificationRedelivery.setMessage(null);
+        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
+            .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
+        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+
+        notificationResultResendService.process(notificationResultMessage);
+
+        verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
+        assertNotNull("Must update redelivery message if it didn't exist from before", captureRedelivery.getValue().getMessage());
+        assertEquals(REDELIVERY_MESSAGE, captureRedelivery.getValue().getMessage());
+    }
+
+    @Test
     public void shouldUpdateEventDeliveryStatusOnFailure() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();

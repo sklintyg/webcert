@@ -23,6 +23,7 @@ public class NotificationResultMessageSender {
     @Autowired
     private ObjectMapper objectMapper;
 
+    
     public boolean sendResultMessage(NotificationResultMessage resultMessage) {
 
         try {

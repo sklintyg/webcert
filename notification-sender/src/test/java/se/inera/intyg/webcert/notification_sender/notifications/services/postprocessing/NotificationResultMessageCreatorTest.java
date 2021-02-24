@@ -65,6 +65,7 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
@@ -156,6 +157,37 @@ public class NotificationResultMessageCreatorTest {
         assertEquals(ISSUER_ID, notificationResultMessage.getEvent().getCertificateIssuer());
         assertEquals(SUBJECT_CODE, notificationResultMessage.getEvent().getAmne().name());
         assertEquals(USER_ID, notificationResultMessage.getEvent().getHanteratAv());
+    }
+
+    @Test
+    public void shallReturnNotificationResultErrorOnTemporaryException() throws ModuleNotFoundException, IOException, ModuleException {
+        final var notificationMessage = createNotificationMessage();
+
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(notificationMessage.getIntygsTyp(), TEXT_VERSION);
+        doReturn(createUtlatande()).when(moduleApi).getUtlatandeFromJson(notificationMessage.getUtkast());
+        doReturn(moduleEntryPoint).when(moduleRegistry).getModuleEntryPoint(notificationMessage.getIntygsTyp());
+        doReturn(CERTIFICATE_TYPE_EXTERNAL).when(moduleEntryPoint).getExternalId();
+
+        final var actualNotificationResultMessage = notificationResultMessageCreator.createFailureMessage(notificationMessage,
+            CORRELATION_ID, USER_ID, TEXT_VERSION, new TemporaryException("Temporary exception!"));
+
+        assertEquals(ERROR, actualNotificationResultMessage.getResultType().getNotificationResult());
+    }
+
+    @Test
+    public void shallAddANotificationDateTimeForFailureMessages() throws ModuleNotFoundException, IOException, ModuleException {
+        final var notificationMessage = createNotificationMessage();
+
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(notificationMessage.getIntygsTyp(), TEXT_VERSION);
+        doReturn(createUtlatande()).when(moduleApi).getUtlatandeFromJson(notificationMessage.getUtkast());
+        doReturn(moduleEntryPoint).when(moduleRegistry).getModuleEntryPoint(notificationMessage.getIntygsTyp());
+        doReturn(CERTIFICATE_TYPE_EXTERNAL).when(moduleEntryPoint).getExternalId();
+
+        final var actualNotificationResultMessage = notificationResultMessageCreator.createFailureMessage(notificationMessage,
+            CORRELATION_ID, USER_ID, TEXT_VERSION, new TemporaryException("Temporary exception!"));
+
+        assertNotNull("Must include a LocalDateTime for when it was (unsuccessfully) sent",
+            actualNotificationResultMessage.getNotificationSentTime());
     }
 
     @Test
