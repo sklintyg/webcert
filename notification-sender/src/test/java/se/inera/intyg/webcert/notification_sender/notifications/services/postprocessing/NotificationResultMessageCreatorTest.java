@@ -65,7 +65,9 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
@@ -75,6 +77,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -125,6 +129,9 @@ public class NotificationResultMessageCreatorTest {
     private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = ERROR;
     private static final NotificationErrorTypeEnum RESULT_ERROR_TYPE_ENUM = TECHNICAL_ERROR;
     private static final String RESULT_TEXT = "TECHNICAL_ERROR_TEXT";
+
+    private static final long EVENT_ID = 1000L;
+    private static final byte[] REDELIVERY_MESSAGE = "REDELIVERY_MESSAGE".getBytes();
 
     @Test
     public void testCreateFailureMessage() throws ModuleNotFoundException, IOException, ModuleException {
@@ -297,6 +304,79 @@ public class NotificationResultMessageCreatorTest {
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
 
         notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+    }
+
+    @Test
+    public void shouldReturnResultMessageWithCorrectData() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var exception = new NullPointerException("EXCEPTION");
+
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event,
+            notificationRedelivery, exception);
+
+        assertEquals(event, resultMessage.getEvent());
+        assertEquals(EVENT_ID, resultMessage.getEvent().getId().longValue());
+        assertEquals(REDELIVERY_MESSAGE, resultMessage.getRedeliveryMessageBytes());
+        assertEquals(CORRELATION_ID, resultMessage.getCorrelationId());
+        assertNotNull(resultMessage.getNotificationSentTime());
+    }
+
+    @Test
+    public void shouldReturnResultMessageWithCorrectResultType() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var exception = new NullPointerException("EXCEPTION");
+
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event,
+            notificationRedelivery, exception);
+
+        assertEquals("java.lang.NullPointerException", resultMessage.getResultType().getException());
+        assertEquals("EXCEPTION", resultMessage.getResultType().getNotificationResultText());
+        assertEquals(NotificationErrorTypeEnum.WEBCERT_EXCEPTION, resultMessage.getResultType().getNotificationErrorType());
+    }
+
+    @Test
+    public void shouldReturnResultTypeUnrecoverableErrorOnWebcertServiceEception() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
+
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event,
+            notificationRedelivery, exception);
+
+        assertEquals(NotificationResultTypeEnum.UNRECOVERABLE_ERROR, resultMessage.getResultType().getNotificationResult());
+    }
+
+    @Test
+    public void shouldReturnResultTypeErrorOnOtherThanWebcertServiceEception() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var exception = new NullPointerException("EXCEPTION");
+
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event,
+            notificationRedelivery, exception);
+
+        assertEquals(NotificationResultTypeEnum.ERROR, resultMessage.getResultType().getNotificationResult());
+    }
+
+    private Handelse createEvent() {
+        final var event = new Handelse();
+        event.setId(EVENT_ID);
+        event.setCode(HandelsekodEnum.SKAPAT);
+        event.setIntygsId("INTYGS_ID");
+        event.setEnhetsId("ENHETS_ID");
+        event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+        return event;
+    }
+
+    private NotificationRedelivery createNotificationRedelivery() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        notificationRedelivery.setCorrelationId(CORRELATION_ID);
+        notificationRedelivery.setEventId(1000L);
+        notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
+        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
+        return notificationRedelivery;
     }
 
     private NotificationMessage createNotificationMessage() {

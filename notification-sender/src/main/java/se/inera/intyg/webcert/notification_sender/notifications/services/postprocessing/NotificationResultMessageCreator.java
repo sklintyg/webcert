@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -54,7 +55,8 @@ public class NotificationResultMessageCreator {
 
         final var event = createEvent(notificationMessage, utlatande, userId, certificateTypeExternalId);
 
-        final var notificationResultType = createResultType(exception);
+        final var resultTypeEnum = getResultTypeForExceptionFromDelivery(exception);
+        final var notificationResultType = createResultType(exception, resultTypeEnum);
 
         final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
@@ -63,6 +65,19 @@ public class NotificationResultMessageCreator {
         resultMessage.setNotificationSentTime(LocalDateTime.now());
 
         return resultMessage;
+    }
+
+    public NotificationResultMessage createFailureMessage(Handelse event, NotificationRedelivery redelivery, Exception exception) {
+        final var resultTypeEnum = getResultTypeForExceptionFromRedelivery(exception);
+        final var notificationResultType = createResultType(exception, resultTypeEnum);
+
+        final var notificationResultMessage = new NotificationResultMessage();
+        notificationResultMessage.setCorrelationId(redelivery.getCorrelationId());
+        notificationResultMessage.setEvent(event);
+        notificationResultMessage.setResultType(notificationResultType);
+        notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
+        notificationResultMessage.setRedeliveryMessageBytes(redelivery.getMessage());
+        return notificationResultMessage;
     }
 
     public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId) {
@@ -166,21 +181,21 @@ public class NotificationResultMessageCreator {
         return event;
     }
 
-    private NotificationResultType createResultType(Exception exception) {
+    private NotificationResultType createResultType(Exception exception, NotificationResultTypeEnum resultTypeEnum) {
         final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(getNotificationResult(exception));
+        notificationResultType.setNotificationResult(resultTypeEnum);
         notificationResultType.setNotificationResultText(exception.getMessage());
         notificationResultType.setNotificationErrorType(NotificationErrorTypeEnum.WEBCERT_EXCEPTION);
         notificationResultType.setException(exception.getClass().getName());
         return notificationResultType;
     }
 
-    private NotificationResultTypeEnum getNotificationResult(Exception exception) {
-        return isTemporaryException(exception) ? ERROR : UNRECOVERABLE_ERROR;
+    private NotificationResultTypeEnum getResultTypeForExceptionFromRedelivery(Exception exception) {
+        return exception instanceof WebCertServiceException ? UNRECOVERABLE_ERROR : ERROR;
     }
 
-    private boolean isTemporaryException(Exception exception) {
-        return exception instanceof TemporaryException;
+    private NotificationResultTypeEnum getResultTypeForExceptionFromDelivery(Exception exception) {
+        return exception instanceof TemporaryException ? ERROR : UNRECOVERABLE_ERROR;
     }
 
     private Handelse createEvent(NotificationMessage notificationMessage, Utlatande utlatande, String user,

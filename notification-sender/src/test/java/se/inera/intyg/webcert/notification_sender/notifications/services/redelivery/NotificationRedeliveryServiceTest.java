@@ -20,16 +20,17 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING;
 import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
@@ -40,6 +41,8 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.junit.Test;
@@ -54,6 +57,12 @@ import org.springframework.jms.core.MessagePostProcessor;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -74,13 +83,19 @@ public class NotificationRedeliveryServiceTest {
     @Mock
     private JmsTemplate jmsTemplate;
 
+    @Mock
+    private NotificationResultMessageCreator notificationResultMessageCreator;
+
+    @Mock
+    private NotificationResultMessageSender notificationResultMessageSender;
+
     @InjectMocks
     private NotificationRedeliveryService notificationRedeliveryService;
 
     @Test
     public void shallReturnNotificationRedeliveriesScheduledToBeResend() {
         final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedNotificationRedeliveryList = Arrays.asList(expectedNotificationRedelivery);
+        final var expectedNotificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
 
         doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
             .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
@@ -186,7 +201,7 @@ public class NotificationRedeliveryServiceTest {
 
         try {
             notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-            assertFalse("Expected an exception to be thrown when sending message failed!", true);
+            fail("Expected an exception to be thrown when sending message failed!");
         } catch (Exception ex) {
             assertTrue(true);
         }
@@ -240,9 +255,22 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
+    public void shallFetchEventBeforeCallingResendIfNeeded() {
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var event = createEvent();
+        final var message = "MESSAGE_AS_BYTES".getBytes();
+
+        doReturn(Optional.of(event)).when(handelseRepo).findById(notificationRedelivery.getEventId());
+
+        notificationRedeliveryService.resend(notificationRedelivery, message);
+
+        verify(jmsTemplate).convertAndSend(eq(message), any(MessagePostProcessor.class));
+    }
+
+    @Test
     public void shallLimitBatchWhenMoreNotificationsAreUpForRedelivery() {
         final var expectedBatchSize = 10;
-        final var notificationRedeliveryList = new ArrayList(20);
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(20);
         for (int i = 0; i < 20; i++) {
             notificationRedeliveryList.add(createNotificationRedelivery());
         }
@@ -257,7 +285,7 @@ public class NotificationRedeliveryServiceTest {
     @Test
     public void shallNotLimitBatchWhenThereAreLessNotificationsUpForRedelivery() {
         final var expectedBatchSize = 10;
-        final var notificationRedeliveryList = new ArrayList(9);
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(9);
         for (int i = 0; i < 9; i++) {
             notificationRedeliveryList.add(createNotificationRedelivery());
         }
@@ -267,6 +295,72 @@ public class NotificationRedeliveryServiceTest {
         final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
 
         assertEquals(notificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
+    }
+
+    @Test
+    public void shouldSendResultMessageToPostProcessor() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
+
+        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
+        doReturn(notificationResultMessage).when(notificationResultMessageCreator).createFailureMessage(event,
+            notificationRedelivery, exception);
+
+        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
+
+        verify(notificationResultMessageSender).sendResultMessage(notificationResultMessage);
+    }
+
+    @Test
+    public void shouldClearRedeliveryTime() {
+        final var event = createEvent();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
+
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
+        doReturn(notificationResultMessage).when(notificationResultMessageCreator).createFailureMessage(eq(event),
+            eq(notificationRedelivery), any(Exception.class));
+
+        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
+
+        verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
+        assertNull(captureRedelivery.getValue().getRedeliveryTime());
+    }
+
+    @Test
+    public void shouldSetDeliveryStatusResendWhenCorrelationIdIsMissing() {
+        final var notificationRedelivery = createManualNotificationRedelivery();
+        final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);
+        final var event = createEvent();
+
+        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
+            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
+
+        notificationRedeliveryService.getNotificationsForRedelivery();
+
+        verify(handelseRepo).save(captureEvent.capture());
+        assertEquals(NotificationDeliveryStatusEnum.RESEND, captureEvent.getValue().getDeliveryStatus());
+    }
+
+    @Test
+    public void shouldNotSetDeliveryStatusWhenCorrelationIdIsPresent() {
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
+            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+
+        notificationRedeliveryService.getNotificationsForRedelivery();
+
+        verifyNoInteractions(handelseRepo);
     }
 
     private NotificationRedelivery createNotificationRedelivery() {
@@ -294,5 +388,17 @@ public class NotificationRedeliveryServiceTest {
         event.setEnhetsId("ENHETS_ID");
         event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
         return event;
+    }
+
+    private NotificationRedelivery createManualNotificationRedelivery() {
+        final var notificationRedelivery = new NotificationRedelivery();
+        notificationRedelivery.setEventId(1000L);
+        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
+        notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
+        return notificationRedelivery;
+    }
+
+    private NotificationResultMessage createNotificationResultMessage() {
+        return new NotificationResultMessage();
     }
 }

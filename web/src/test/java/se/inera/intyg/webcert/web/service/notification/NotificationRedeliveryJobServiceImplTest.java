@@ -29,6 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +41,10 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -178,6 +183,22 @@ public class NotificationRedeliveryJobServiceImplTest {
         verify(notificationRedeliveryService).getNotificationsForRedelivery(captureInt.capture());
 
         assertEquals(expectedBatch, captureInt.getValue().intValue());
+    }
+
+    @Test
+    public void shouldHandleErrorsWhenExceptionIsReceived()
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
+        final var redelivery = createNotificationRedelivery();
+        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+        notificationRedeliveryList.add(redelivery);
+
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(Integer.class));
+        doThrow(WebCertServiceException.class).when(notificationRedeliveryStatusUpdateCreatorService)
+            .createCertificateStatusUpdate(redelivery);
+
+        notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
+
+        verify(notificationRedeliveryService).handleErrors(eq(redelivery), any(WebCertServiceException.class));
     }
 
     private NotificationRedelivery createNotificationRedelivery() {

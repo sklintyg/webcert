@@ -42,6 +42,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -62,6 +65,12 @@ public class NotificationRedeliveryService {
     private FeaturesHelper featuresHelper;
 
     @Autowired
+    private NotificationResultMessageCreator notificationResultMessageCreator;
+
+    @Autowired
+    private NotificationResultMessageSender notificationResultMessageSender;
+
+    @Autowired
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
@@ -70,6 +79,7 @@ public class NotificationRedeliveryService {
      *
      * @return list of {@link NotificationRedelivery} up for redelivery.
      */
+    @Transactional
     public List<NotificationRedelivery> getNotificationsForRedelivery() {
         final var notificationRedeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
 
@@ -80,6 +90,7 @@ public class NotificationRedeliveryService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
         final var notificationRedeliveryList = getNotificationsForRedelivery();
         if (shouldLimitBatchSize(notificationRedeliveryList, batchSize)) {
@@ -140,6 +151,15 @@ public class NotificationRedeliveryService {
     private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
         if (notificationRedelivery.getCorrelationId() == null) {
             notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
+            setDeliveryStatusResendOnEvent(notificationRedelivery.getEventId());
+        }
+    }
+
+    private void setDeliveryStatusResendOnEvent(Long eventId) {
+        final var event = handelseRepo.findById(eventId);
+        if (event.isPresent()) {
+            event.get().setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+            handelseRepo.save(event.get());
         }
     }
 
@@ -150,5 +170,13 @@ public class NotificationRedeliveryService {
 
     private void deleteNotificationRedelivery(NotificationRedelivery record) {
         notificationRedeliveryRepo.delete(record);
+    }
+
+    @Transactional
+    public void handleErrors(NotificationRedelivery redelivery, Exception exception) {
+        final var event = handelseRepo.findById(redelivery.getEventId()).orElseThrow();
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event, redelivery, exception);
+        notificationResultMessageSender.sendResultMessage(resultMessage);
+        clearRedeliveryTime(redelivery);
     }
 }

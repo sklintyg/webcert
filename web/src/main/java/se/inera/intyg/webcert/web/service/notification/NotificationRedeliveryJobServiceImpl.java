@@ -83,6 +83,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             return true;
         } catch (Exception e) {
             LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
+            notificationRedeliveryService.handleErrors(notificationRedelivery, e);
             return false;
         }
     }
