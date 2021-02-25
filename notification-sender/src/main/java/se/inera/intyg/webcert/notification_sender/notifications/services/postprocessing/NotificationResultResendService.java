@@ -62,9 +62,9 @@ public class NotificationResultResendService {
         NotificationRedelivery redelivery) {
         final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
         final var attemptedDeliveries = attemptedRedeliveries(redelivery) + 1;
-        final var maxRedeliveries = strategy.getMaxRedeliveries();
+        final var maxTotalDeliveries = strategy.getMaxDeliveries();
 
-        if (attemptedDeliveries <= maxRedeliveries) {
+        if (attemptedDeliveries < maxTotalDeliveries) {
             event.setId(redelivery.getEventId());
             updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
             monitorLogResend(event, resultMessage, redelivery);

@@ -39,11 +39,11 @@ public class NotificationRedeliveryStrategySingleTest {
     }
 
     @Test
-    public void shouldReturnCorrectValueMaxRedeliveries() {
+    public void shouldReturnCorrectValueMaxDeliveries() {
         final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var maxRedeliveries = standardStrategy.getMaxRedeliveries();
+        final var maxDeliveries = standardStrategy.getMaxDeliveries();
 
-        assertEquals(1, maxRedeliveries);
+        assertEquals(1, maxDeliveries);
     }
 
     @Test

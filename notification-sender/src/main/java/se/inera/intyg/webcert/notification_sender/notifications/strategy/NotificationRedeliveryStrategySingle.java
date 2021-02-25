@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 public class NotificationRedeliveryStrategySingle implements NotificationRedeliveryStrategy {
 
     private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = SINGLE;
-    private static final int MAX_REDELIVERIES = 1;
+    private static final int MAX_DELIVERIES = 1;
     private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEDULE = ImmutableList.of(
         Pair.of(ChronoUnit.SECONDS, 10)
     );
@@ -42,14 +42,14 @@ public class NotificationRedeliveryStrategySingle implements NotificationRedeliv
     }
 
     @Override
-    public int getMaxRedeliveries() {
-        return MAX_REDELIVERIES;
+    public int getMaxDeliveries() {
+        return MAX_DELIVERIES;
     }
 
     @Override
     public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
 
-        int attemptedRedeliveries = attemptedDeliveries - 1;
+        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
 
         if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
             return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getFirst();
@@ -61,12 +61,16 @@ public class NotificationRedeliveryStrategySingle implements NotificationRedeliv
     @Override
     public int getNextTimeValue(int attemptedDeliveries) {
 
-        int attemptedRedeliveries = attemptedDeliveries - 1;
+        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
 
         if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
             return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getSecond();
         } else {
             return NOTIFICATION_REDELIVERY_SCHEDULE.get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1).getSecond();
         }
+    }
+
+    private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
+        return attemptedDeliveries - 1;
     }
 }

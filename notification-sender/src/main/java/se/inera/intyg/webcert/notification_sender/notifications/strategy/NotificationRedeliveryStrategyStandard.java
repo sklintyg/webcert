@@ -25,7 +25,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-import org.checkerframework.common.value.qual.IntRange;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
@@ -34,7 +33,7 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
 
     private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = STANDARD;
     private final String strategyTemplateString;
-    private int maxRedeliveries;
+    private int maxDeliveries;
     private List<Pair<ChronoUnit, Integer>> notificationRedeliverySchedule;
 
     public NotificationRedeliveryStrategyStandard(@Nonnull String strategyTemplateString) {
@@ -48,16 +47,16 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
     }
 
     @Override
-    public int getMaxRedeliveries() {
+    public int getMaxDeliveries() {
         assertHasNotificationStrategy();
-        return maxRedeliveries;
+        return maxDeliveries;
     }
 
     @Override
     public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
         assertHasNotificationStrategy();
 
-        int attemptedRedeliveries = attemptedDeliveries - 1;
+        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
 
         if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
             return notificationRedeliverySchedule.get(attemptedRedeliveries).getFirst();
@@ -70,13 +69,17 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
     public int getNextTimeValue(int attemptedDeliveries) {
         assertHasNotificationStrategy();
 
-        int attemptedRedeliveries = attemptedDeliveries - 1;
+        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
 
         if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
             return notificationRedeliverySchedule.get(attemptedRedeliveries).getSecond();
         } else {
             return notificationRedeliverySchedule.get(notificationRedeliverySchedule.size() - 1).getSecond();
         }
+    }
+
+    private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
+        return attemptedDeliveries - 1;
     }
 
     private void throwExceptionIfInvalidTemplate(String strategyTemplateString) {
@@ -94,7 +97,7 @@ public class NotificationRedeliveryStrategyStandard implements NotificationRedel
 
     private void buildRedeliveryStrategyFromTemplateString() {
         final var splitStrategyTemplate = strategyTemplateString.split("#");
-        maxRedeliveries = Integer.parseInt(splitStrategyTemplate[0]);
+        maxDeliveries = Integer.parseInt(splitStrategyTemplate[0]);
         notificationRedeliverySchedule = createRedliveryScheduleFromTemplate(splitStrategyTemplate[1]);
     }
 

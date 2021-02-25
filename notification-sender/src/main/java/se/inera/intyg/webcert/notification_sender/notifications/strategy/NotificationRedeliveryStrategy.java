@@ -28,7 +28,7 @@ public interface NotificationRedeliveryStrategy {
 
     NotificationRedeliveryStrategyEnum getName();
 
-    int getMaxRedeliveries();
+    int getMaxDeliveries();
 
     int getNextTimeValue(int attemptedDeliveries);
 

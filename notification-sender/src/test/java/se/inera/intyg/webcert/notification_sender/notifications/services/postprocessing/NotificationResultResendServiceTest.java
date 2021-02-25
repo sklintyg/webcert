@@ -141,7 +141,7 @@ public class NotificationResultResendServiceTest {
     public void shouldMonitorLogResendOnProcessingRedeliveredNotification() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
 
         final var captureEventId = ArgumentCaptor.forClass(Long.class);
         final var captureEventType = ArgumentCaptor.forClass(String.class);
@@ -159,7 +159,7 @@ public class NotificationResultResendServiceTest {
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(notificationRedelivery.getAttemptedDeliveries() + 1);
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(notificationRedelivery.getAttemptedDeliveries() + 1);
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 
         notificationResultResendService.process(notificationResultMessage);
@@ -187,7 +187,7 @@ public class NotificationResultResendServiceTest {
     }
 
     @Test
-    public void shouldMonitorLogFailureWhenReachingMaxRedeliveries() {
+    public void shouldMonitorLogFailureWhenReachingMaxDeliveries() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();
 
@@ -206,7 +206,7 @@ public class NotificationResultResendServiceTest {
         doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxDeliveries();
 
         notificationResultResendService.process(notificationResultMessage);
 
@@ -255,13 +255,13 @@ public class NotificationResultResendServiceTest {
     public void shouldNotRedundantlyUpdateExistingEventWhenNoStatusChange() {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
 
         doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
@@ -304,7 +304,7 @@ public class NotificationResultResendServiceTest {
         final var notificationRedelivery = createNotificationRedelivery();
         final var expectedRedeliveryTimeAfterServiceCall = notificationResultMessage.getNotificationSentTime()
             .plusMinutes(1L);
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
@@ -312,7 +312,7 @@ public class NotificationResultResendServiceTest {
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
@@ -329,7 +329,7 @@ public class NotificationResultResendServiceTest {
         final var notificationResultMessage = createNotificationResultMessage();
         final var notificationRedelivery = createNotificationRedelivery();
         notificationRedelivery.setMessage(null);
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
@@ -337,7 +337,7 @@ public class NotificationResultResendServiceTest {
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
@@ -360,7 +360,7 @@ public class NotificationResultResendServiceTest {
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(ATTEMPTED_DELIVERIES).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(Optional.of(createSavedEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
         doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
@@ -382,7 +382,7 @@ public class NotificationResultResendServiceTest {
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(notificationRedelivery.getAttemptedDeliveries()).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(notificationRedelivery.getAttemptedDeliveries()).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(Optional.of(createSavedEvent())).when(handelseRepository).findById(notificationRedelivery.getEventId());
         doAnswer(i -> i.getArgument(0)).when(handelseRepository).save(any(Handelse.class));
 
@@ -400,7 +400,7 @@ public class NotificationResultResendServiceTest {
         notificationRedelivery.setAttemptedDeliveries(null);
         final var expectedRedeliveryAttempt = 1;
 
-        final var valueToNotHitMaxRedeliveries = ATTEMPTED_DELIVERIES + 1;
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
 
         final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
 
@@ -408,7 +408,7 @@ public class NotificationResultResendServiceTest {
             .getCorrelationId());
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
-        doReturn(valueToNotHitMaxRedeliveries).when(notificationRedeliveryStrategy).getMaxRedeliveries();
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
         doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
