@@ -275,7 +275,7 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void shouldProperlyAddResultTypeToNotificationReslutMessage() {
+    public void shouldAddResultTypeToNotificationReslutMessage() {
         final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = createNotificationResultType();
@@ -289,7 +289,7 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void shouldProperlyAddResultTypeToNotificationReslutMessageOnException() {
+    public void shouldAddResultTypeToNotificationReslutMessageOnException() {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
 
@@ -301,15 +301,36 @@ public class NotificationResultMessageCreatorTest {
         assertEquals(EXCEPTION.getClass().getName(), notificationResultMessage.getResultType().getException());
     }
 
-    @Test (expected = WebCertServiceException.class)
-    public void shouldFailWhenJsonProcessingException() throws JsonProcessingException {
+    @Test
+    public void shouldSetRedeliveryMessageToNullIfExceptionInBytesConversion() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
-        final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = createNotificationResultType();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
+        notificationResultMessage.setRedeliveryMessageBytes(notNullBytes);
 
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
+
+        assertNull(notificationResultMessage.getRedeliveryMessageBytes());
+    }
+
+    @Test
+    public void shouldSetReResultTypeNormallyIfExceptionInBytesConversion() throws JsonProcessingException {
+        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        final var resultTypeV3 = createNotificationResultType();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
+        notificationResultMessage.setRedeliveryMessageBytes(notNullBytes);
+
+        doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
+
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
+
+        assertEquals(TECHNICAL_ERROR, notificationResultMessage.getResultType().getNotificationErrorType());
+        assertEquals(ERROR, notificationResultMessage.getResultType().getNotificationResult());
+        assertEquals(RESULT_TEXT, notificationResultMessage.getResultType().getNotificationResultText());
     }
 
     @Test

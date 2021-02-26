@@ -19,7 +19,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
@@ -140,8 +139,8 @@ public class NotificationResultMessageCreator {
         try {
             return objectMapper.writeValueAsBytes(redeliveryMessage);
         } catch (JsonProcessingException e) {
-            LOG.error("Exception occured creating and NotificationWSRedeliveryMessage.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+            LOG.error("Exception occured converting NotificationRedeliveryMessage to bytes.", e);
+            return null;
         }
     }
 
