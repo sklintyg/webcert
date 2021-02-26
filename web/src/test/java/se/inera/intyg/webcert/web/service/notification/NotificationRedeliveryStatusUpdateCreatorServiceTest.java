@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -21,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
@@ -35,15 +33,9 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
@@ -53,12 +45,6 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
     @Mock
     private HandelseRepository handelseRepo;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private UtkastService draftService;
 
     @Mock
     private UtkastRepository draftRepo;
@@ -74,9 +60,6 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
     @Mock
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
-    @Mock
-    private GetCertificateService getCertificateService;
 
     @Mock
     private IntygService intygService;
@@ -191,36 +174,6 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
     }
 
     @Test
-    public void shallRetrieveCertificateIfMissingFromRedeliveryMessage() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var expectedCertificate = mock(Intyg.class);
-        final var expectedEvent = createEvent();
-
-        setupMockToReturnEvent();
-        setupMockToReturnNotificationRedeliveryMessage(null);
-        setupMockToReturnCertificate(expectedCertificate, expectedEvent);
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery);
-
-        assertEquals(expectedCertificate, actualStatusUpdate.getIntyg());
-    }
-
-    @Test
-    public void shallRetrieveCertificateIfMissingFromRedeliveryMessageAndUsePatientFromRedeliveryMessage() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var expectedPatient = mock(Patient.class);
-        final var expectedEvent = createEvent();
-
-        setupMockToReturnEvent();
-        setupMockToReturnNotificationRedeliveryMessage(null, expectedPatient);
-        setupMockToReturnCertificate(spy(Intyg.class), expectedEvent);
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery);
-
-        assertEquals(expectedPatient, actualStatusUpdate.getIntyg().getPatient());
-    }
-
-    @Test
     public void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
         final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
         final var expectedDraft = mock(Utkast.class);
@@ -288,48 +241,19 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         doReturn(certificate).when(intygService).fetchIntygDataForInternalUse(any(String.class), eq(true));
     }
 
-    private void setupMockToReturnCertificate(Intyg certificate, Handelse event) throws Exception {
-        doReturn(certificate).when(getCertificateService)
-            .getCertificate(event.getIntygsId(), event.getCertificateType(), event.getCertificateVersion());
-
-        final var createdBy = mock(HosPersonal.class);
-        final var unit = mock(Enhet.class);
-        final var workplaceCode = new ArbetsplatsKod();
-        workplaceCode.setExtension("ARBETSPLATS_KOD");
-
-        doReturn(createdBy).when(certificate).getSkapadAv();
-        doReturn(unit).when(createdBy).getEnhet();
-        doReturn(workplaceCode).when(unit).getArbetsplatskod();
-    }
-
-    private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate, Patient patient) throws Exception {
-        setupMockToReturnNotificationRedeliveryMessage(certificate, patient, null, null);
-    }
-
     private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate) throws Exception {
         setupMockToReturnNotificationRedeliveryMessage(certificate, null, null);
     }
 
     private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate, CertificateMessages sent, CertificateMessages received)
         throws Exception {
-        setupMockToReturnNotificationRedeliveryMessage(certificate, null, sent, received);
-    }
-
-    private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate, Patient patient, CertificateMessages sent,
-        CertificateMessages received)
-        throws Exception {
         final var mockNotificationRedeliveryMessage = mock(NotificationRedeliveryMessage.class);
         doReturn(mockNotificationRedeliveryMessage).when(objectMapper)
             .readValue(any(byte[].class), eq(NotificationRedeliveryMessage.class));
-        doReturn(certificate != null).when(mockNotificationRedeliveryMessage).hasCertificate();
         doReturn(certificate).when(mockNotificationRedeliveryMessage).getCert();
         doReturn("REF").when(mockNotificationRedeliveryMessage).getReference();
         doReturn(sent).when(mockNotificationRedeliveryMessage).getSent();
         doReturn(received).when(mockNotificationRedeliveryMessage).getReceived();
-
-        if (patient != null) {
-            doReturn(patient).when(mockNotificationRedeliveryMessage).getPatient();
-        }
     }
 
     private void setupMockToReturnEventADeleteEvent() {
@@ -363,5 +287,4 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         event.setSistaDatumForSvar(LAST_DAY_FOR_ANSWER);
         return event;
     }
-
 }
