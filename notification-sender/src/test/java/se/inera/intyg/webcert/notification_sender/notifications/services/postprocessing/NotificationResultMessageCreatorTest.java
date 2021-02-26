@@ -21,10 +21,8 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -205,7 +203,8 @@ public class NotificationResultMessageCreatorTest {
             CORRELATION_ID);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
-        assertNotNull(notificationResultMessage.getRedeliveryMessageBytes());
+        assertNull(notificationResultMessage.getRedeliveryMessageBytes());
+        assertNotNull(notificationResultMessage.getNotificationSentTime());
 
         assertNull(notificationResultMessage.getEvent().getId());
         assertEquals(CERTIFICATE_ID, notificationResultMessage.getEvent().getIntygsId());
@@ -221,44 +220,47 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void shouldHaveProperRedeliveryMessageWhenSignedCertificate() throws JsonProcessingException {
+    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenSignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var resultTypeV3 = new ResultType();
 
         final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
 
-        notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNull(captureRedeliveryMessage.getValue().getCert());
-        assertFalse(captureRedeliveryMessage.getValue().hasCertificate());
+        assertNotNull(captureRedeliveryMessage.getValue().getCert());
         assertNotNull(captureRedeliveryMessage.getValue().getSent());
         assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertEquals(PATIENT_ID, captureRedeliveryMessage.getValue().getPatient().getPersonId().getExtension());
+        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
     }
 
     @Test
-    public void shouldHaveProperRedeliveryMessageWhenUnsignedCertificate() throws JsonProcessingException {
+    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenUnsignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var resultTypeV3 = new ResultType();
 
         final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
 
-        notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNull(captureRedeliveryMessage.getValue().getPatient());
-        assertTrue(captureRedeliveryMessage.getValue().hasCertificate());
         assertNotNull(captureRedeliveryMessage.getValue().getSent());
         assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertEquals(CERTIFICATE_ID, captureRedeliveryMessage.getValue().getCert().getIntygsId().getExtension());
+        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
     }
 
     @Test
     public void redeliveryMessageShouldHaveProperlySetArenden() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithArenden();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var resultTypeV3 = new ResultType();
 
         final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
 
-        notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
         assertEquals(1, captureRedeliveryMessage.getValue().getSent().getAnswered());
@@ -274,10 +276,11 @@ public class NotificationResultMessageCreatorTest {
 
     @Test
     public void shouldProperlyAddResultTypeToNotificationReslutMessage() {
+        final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = createNotificationResultType();
 
-        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, resultTypeV3);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         assertEquals(RESULT_TYPE_ENUM, notificationResultMessage.getResultType().getNotificationResult());
         assertEquals(RESULT_ERROR_TYPE_ENUM, notificationResultMessage.getResultType().getNotificationErrorType());
@@ -287,9 +290,10 @@ public class NotificationResultMessageCreatorTest {
 
     @Test
     public void shouldProperlyAddResultTypeToNotificationReslutMessageOnException() {
+        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
 
-        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, EXCEPTION);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, EXCEPTION);
 
         assertEquals(ERROR, notificationResultMessage.getResultType().getNotificationResult());
         assertEquals(WEBCERT_EXCEPTION, notificationResultMessage.getResultType().getNotificationErrorType());
@@ -300,10 +304,12 @@ public class NotificationResultMessageCreatorTest {
     @Test (expected = WebCertServiceException.class)
     public void shouldFailWhenJsonProcessingException() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        final var notificationResultMessage = new NotificationResultMessage();
+        final var resultTypeV3 = createNotificationResultType();
 
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
 
-        notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
     }
 
     @Test

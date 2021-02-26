@@ -102,7 +102,7 @@ public class NotificationWSSenderTest {
 
         notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
 
-        verify(notificationResultMessageCreator).addToResultMessage(any(), argumentCaptor.capture());
+        verify(notificationResultMessageCreator).addToResultMessage(any(), any(), argumentCaptor.capture());
         assertEquals("Result type should be added to the result message", result, argumentCaptor.getValue());
     }
 
@@ -116,7 +116,7 @@ public class NotificationWSSenderTest {
 
         notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
 
-        verify(notificationResultMessageCreator).addToResultMessage(any(), argumentCaptor.capture());
+        verify(notificationResultMessageCreator).addToResultMessage(any(), any(), argumentCaptor.capture());
         assertEquals("Exception should be added to the result message", exception, argumentCaptor.getValue());
     }
 
