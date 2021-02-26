@@ -333,6 +333,21 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
+    public void shouldClearRedeliveryTimeEvenIfEventDoesntExists() {
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
+
+        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+
+        doReturn(Optional.empty()).when(handelseRepo).findById(any(Long.class));
+
+        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
+
+        verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
+        assertNull(captureRedelivery.getValue().getRedeliveryTime());
+    }
+
+    @Test
     public void shouldSetDeliveryStatusResendWhenCorrelationIdIsMissing() {
         final var notificationRedelivery = createManualNotificationRedelivery();
         final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);

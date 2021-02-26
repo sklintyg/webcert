@@ -174,9 +174,16 @@ public class NotificationRedeliveryService {
 
     @Transactional
     public void handleErrors(NotificationRedelivery redelivery, Exception exception) {
-        final var event = handelseRepo.findById(redelivery.getEventId()).orElseThrow();
-        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event, redelivery, exception);
-        notificationResultMessageSender.sendResultMessage(resultMessage);
+        final var event = handelseRepo.findById(redelivery.getEventId());
+        if (event.isPresent()) {
+            final var resultMessage = notificationResultMessageCreator.createFailureMessage(event.get(), redelivery, exception);
+            notificationResultMessageSender.sendResultMessage(resultMessage);
+        } else {
+            LOG.error(String.format(
+                "Couldn't find the event '%s' for the redelivery '%s' that resulted in error!"
+                    + " Will clear redelivery time so it doens't block others to be resent.",
+                redelivery.getEventId(), redelivery.getCorrelationId()));
+        }
         clearRedeliveryTime(redelivery);
     }
 }
