@@ -32,7 +32,6 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Component
@@ -83,19 +82,33 @@ public class NotificationResultMessageCreator {
     public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId) {
         final var event = createEvent(statusUpdate);
 
-        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
-        final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
-
         final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
         resultMessage.setEvent(event);
         resultMessage.setNotificationSentTime(LocalDateTime.now());
-        resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
-
         return resultMessage;
     }
 
-    public void addToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
+    public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
+        ResultType resultType) {
+        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addResultTypeToResultMessage(resultMessage, resultType);
+    }
+
+    public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
+        Exception exception) {
+        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addResultTypeToResultMessage(resultMessage, exception);
+    }
+
+    private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
+        CertificateStatusUpdateForCareType statusUpdate) {
+        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
+        final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
+        resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
+    }
+
+    private void addResultTypeToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
         final var notificationResultType = new NotificationResultType();
 
         if (resultType.getResultCode() != null) {
@@ -113,7 +126,7 @@ public class NotificationResultMessageCreator {
         resultMessage.setResultType(notificationResultType);
     }
 
-    public void addToResultMessage(NotificationResultMessage resultMessage, Exception exception) {
+    private void addResultTypeToResultMessage(NotificationResultMessage resultMessage, Exception exception) {
         final var notificationResultType = new NotificationResultType();
         notificationResultType.setNotificationResult(ERROR);
         notificationResultType.setException(exception.getClass().getName());
@@ -134,7 +147,10 @@ public class NotificationResultMessageCreator {
 
     private NotificationRedeliveryMessage createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
         final var redeliveryMessage = new NotificationRedeliveryMessage();
-        addCertificateOrPatient(redeliveryMessage, statusUpdate.getIntyg());
+
+        final var certificate = statusUpdate.getIntyg();
+        certificate.setUnderskrift(null);
+        redeliveryMessage.setCert(certificate);
 
         final var sentQuestions = createCertificateMessages(statusUpdate.getSkickadeFragor());
         redeliveryMessage.setSent(sentQuestions);
@@ -217,13 +233,5 @@ public class NotificationResultMessageCreator {
         event.setHanteratAv(user);
 
         return event;
-    }
-
-    private void addCertificateOrPatient(NotificationRedeliveryMessage redeliveryMessage, Intyg certificate) {
-        if (certificate.getUnderskrift() == null) {
-            redeliveryMessage.setCert(certificate);
-        } else {
-            redeliveryMessage.setPatient(certificate.getPatient());
-        }
     }
 }

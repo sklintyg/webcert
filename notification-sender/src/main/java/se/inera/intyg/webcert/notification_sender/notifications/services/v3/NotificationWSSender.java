@@ -62,10 +62,10 @@ public class NotificationWSSender {
         try {
             LOG.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
             final var resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
-            notificationResultMessageCreator.addToResultMessage(resultMessage, resultType);
+            notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, resultType);
         } catch (Exception e) {
             LOG.warn("Runtime exception occurred during status update for care {} with error message: {}", resultMessage, e);
-            notificationResultMessageCreator.addToResultMessage(resultMessage, e);
+            notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, e);
         } finally {
             notificationResultMessageSender.sendResultMessage(resultMessage);
         }

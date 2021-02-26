@@ -15,7 +15,6 @@ import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -27,7 +26,6 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
@@ -77,10 +75,10 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     }
 
     private CertificateStatusUpdateForCareType createStatusUpdateFromExistingMessage(NotificationRedelivery redelivery, Handelse event)
-        throws IOException, ModuleNotFoundException, ModuleException {
+        throws IOException {
         final NotificationRedeliveryMessage redeliveryMessage = getRedeliveryMessage(redelivery);
 
-        final var certificate = getCertificate(event, redeliveryMessage);
+        final var certificate = redeliveryMessage.getCert();
         final var messagesSent = createMessages(redeliveryMessage.getSent());
         final var messagesReceived = createMessages(redeliveryMessage.getReceived());
         final var handledBy = NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID);
@@ -124,20 +122,6 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
         final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
         return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
-    }
-
-    private Intyg getCertificate(Handelse event, NotificationRedeliveryMessage redeliveryMessage)
-        throws ModuleNotFoundException, ModuleException, IOException {
-        if (redeliveryMessage.hasCertificate()) {
-            return redeliveryMessage.getCert();
-        }
-
-        final var certificate = getCertificateService.getCertificate(event.getIntygsId(),
-            event.getCertificateType(), event.getCertificateVersion());
-        certificate.setPatient(redeliveryMessage.getPatient());
-        NotificationTypeConverter.complementIntyg(certificate);
-
-        return certificate;
     }
 
     private NotificationRedeliveryMessage getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {

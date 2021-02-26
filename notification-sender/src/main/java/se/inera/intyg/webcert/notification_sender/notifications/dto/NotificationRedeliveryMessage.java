@@ -19,15 +19,12 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 public class NotificationRedeliveryMessage implements Serializable {
 
     private Intyg cert;
-    private Patient patient;
     private CertificateMessages sent;
     private CertificateMessages received;
     private String reference;
@@ -40,14 +37,6 @@ public class NotificationRedeliveryMessage implements Serializable {
 
     public void setCert(Intyg cert) {
         this.cert = cert;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
     }
 
     public CertificateMessages getSent() {
@@ -72,10 +61,5 @@ public class NotificationRedeliveryMessage implements Serializable {
 
     public void setReference(String reference) {
         this.reference = reference;
-    }
-
-    @JsonIgnore
-    public boolean hasCertificate() {
-        return this.cert != null;
     }
 }
