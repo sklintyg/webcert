@@ -38,7 +38,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 /**
@@ -47,8 +46,8 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateStoreProcessorTest {
 
-    private static String LOGICAL_ADDRESS1 = "address-1";
-    private static String BODY = "body";
+    private static final String LOGICAL_ADDRESS1 = "address-1";
+    private static final String BODY = "body";
 
     ExternalServiceCallException technicalErrorException = new ExternalServiceCallException("",
         ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
@@ -101,8 +100,8 @@ public class CertificateStoreProcessorTest {
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
     }
 
-    @Test(expected = PermanentException.class)
-    public void testStoreCertificateThrowsPermanentOnValidationError() throws Exception {
+    @Test(expected = TemporaryException.class)
+    public void testStoreCertificateThrowsTemporaryOnValidationError() throws Exception {
         // Given
         doThrow(validationErrorException).when(moduleApi).registerCertificate(anyString(), anyString());
 
@@ -110,8 +109,8 @@ public class CertificateStoreProcessorTest {
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
     }
 
-    @Test(expected = PermanentException.class)
-    public void testStoreCertificateThrowsPermanentOnTransformationError() throws Exception {
+    @Test(expected = TemporaryException.class)
+    public void testStoreCertificateThrowsTemporaryOnTransformationError() throws Exception {
         // Given
         doThrow(transformationErrorException).when(moduleApi).registerCertificate(anyString(), anyString());
 
@@ -119,8 +118,8 @@ public class CertificateStoreProcessorTest {
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
     }
 
-    @Test(expected = PermanentException.class)
-    public void testStoreCertificateThrowsPermanentOnModuleException() throws Exception {
+    @Test(expected = TemporaryException.class)
+    public void testStoreCertificateThrowsTemporaryOnModuleException() throws Exception {
         // Given
         doThrow(new ModuleException()).when(moduleApi).registerCertificate(anyString(), anyString());
 
@@ -138,7 +137,7 @@ public class CertificateStoreProcessorTest {
     }
 
     @Test(expected = TemporaryException.class)
-    public void testStoreCertificateThrowsPermanentOnException() throws Exception {
+    public void testStoreCertificateThrowsTemporaryOnException() throws Exception {
         // Given
         doThrow(new RuntimeException()).when(moduleApi).registerCertificate(anyString(), anyString());
 
