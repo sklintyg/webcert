@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntygWithCareUnit;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
@@ -123,4 +124,7 @@ public interface UtkastService {
      * @return true or false value if draft has been created through a replacement of another certificate.
      */
     boolean isDraftCreatedFromReplacement(String certificateId);
+
+    Map<String, Map<String, PreviousIntygWithCareUnit>> checkIfPersonHasExistingIntygForFrontend(Personnummer personnummer,
+        IntygUser user, String currentDraftId);
 }

@@ -366,6 +366,53 @@ public class UtkastServiceImpl implements UtkastService {
         return ret;
     }
 
+    @Override
+    public Map<String, Map<String, PreviousIntygWithCareUnit>> checkIfPersonHasExistingIntygForFrontend(final Personnummer personnummer,
+        final IntygUser user, final String currentDraftId) {
+
+        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
+            authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
+
+        List<Utkast> signedList = toFilter.stream()
+            .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
+            .filter(utkast -> utkast.getAterkalladDatum() == null)
+            .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
+            .collect(Collectors.toList());
+
+        Map<String, Map<String, PreviousIntygWithCareUnit>> ret = new HashMap<>();
+
+        ret.put(INTYG_INDICATOR, signedList.stream()
+            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                Collectors.mapping(utkast -> PreviousIntygWithCareUnit.of(
+                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                    draftAccessServiceHelper.isAllowedToReadUtkast(utkast, utkast.getPatientPersonnummer()),
+                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                    utkast.getEnhetsNamn(),
+                    utkast.getIntygsId(),
+                    utkast.getSkapad()),
+                    Collectors.reducing(new PreviousIntygWithCareUnit(), (a, b) -> b.isSameVardgivare() ? b : a)))));
+
+        ret.put(UTKAST_INDICATOR, toFilter.stream()
+            .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
+                && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
+                && !utkast.getIntygsId().equals(currentDraftId))
+            .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
+            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                Collectors.mapping(utkast -> PreviousIntygWithCareUnit.of(
+                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                    draftAccessServiceHelper.isAllowedToReadUtkast(utkast, utkast.getPatientPersonnummer()) &&
+                        draftAccessServiceHelper.isAllowedToEditUtkast(utkast),
+                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                    utkast.getEnhetsNamn(),
+                    utkast.getIntygsId(),
+                    utkast.getSkapad()),
+                    Collectors.reducing(new PreviousIntygWithCareUnit(), (a, b) -> b.isSameVardgivare() ? b : a)))));
+
+        return ret;
+    }
+
+
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
             AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST);
