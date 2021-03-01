@@ -51,6 +51,7 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceI
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -103,6 +104,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
+    @Autowired
+    private DraftModelToXmlValidator draftModelToXMLValidator;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
         String ticketId) {
@@ -110,6 +114,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
         // Check if Utkast is eligible for signing right now, if so get it.
         Utkast utkast = getUtkastForSignering(intygsId, version, user);
+
+        validateXml(utkast);
 
         // Update JSON with current user as vardperson
         String updatedJson = updateJsonWithVardpersonAndSigneringsTid(utkast, user);
@@ -139,6 +145,15 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         }
 
         return signaturBiljett;
+    }
+
+    private void validateXml(Utkast draft) {
+        try {
+            var validationResponse = draftModelToXMLValidator.validateDraftModelAsXml(draft);
+            draftModelToXMLValidator.assertResponse(draft.getIntygsId(), validationResponse);
+        } catch (ModuleNotFoundException | ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
     }
 
     /**

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright (C) 2021 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ns20:RegisterCertificate xmlns:ns60="urn:riv:infrastructure:directory:organization:GetHealthCareUnitResponder:1" xmlns:ns4="urn:riv:clinicalprocess:healthcond:rehabilitation:1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:ns6="urn:riv:clinicalprocess:healthcond:certificate:types:1" xmlns:ns53="urn:riv:infrastructure:directory:privatepractitioner:GetPrivatePractitionerTermsResponder:1" xmlns:ns5="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:ns52="urn:riv:infrastructure:directory:privatepractitioner:terms:1" xmlns:ns8="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1" xmlns:ns51="urn:riv:infrastructure:directory:organization:GetUnitResponder:3.1" xmlns:ns7="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:ns50="urn:riv:infrastructure:directory:organization:3" xmlns:ns13="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3.2" xmlns:ns57="urn:riv:infrastructure:directory:1" xmlns:ns9="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:ns12="urn:riv:clinicalprocess:healthcond:certificate:3.2" xmlns:ns56="urn:riv:infrastructure:directory:privatepractitioner:ValidatePrivatePractitionerResponder:1" xmlns:ns11="urn:riv:clinicalprocess:healthcond:certificate:3.4" xmlns:ns55="urn:riv:infrastructure:directory:privatepractitioner:GetPrivatePractitionerResponder:1" xmlns:ns10="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3" xmlns:ns54="urn:riv:infrastructure:directory:privatepractitioner:1" xmlns:ns17="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1" xmlns:ns16="urn:riv:clinicalprocess:healthcond:certificate:3.3" xmlns:ns15="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:ns59="urn:riv:infrastructure:directory:employee:GetEmployeeIncludingProtectedPersonResponder:1" xmlns:ns14="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1" xmlns:ns58="urn:riv:infrastructure:directory:authorizationmanagement:GetCredentialsForPersonIncludingProtectedPersonResponder:1" xmlns:ns19="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:1" xmlns:ns18="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:3" xmlns:ns42="urn:riv:infrastructure:directory:employee:2.2" xmlns:ns86="urn:local:se:intygstjanster:services:RegisterTSBasResponder:1" xmlns:ns41="urn:riv:infrastructure:directory:employee:2.1" xmlns:ns85="urn:local:se:intygstjanster:services:types:1" xmlns:ns40="urn:riv:infrastructure:directory:employee:2" xmlns:ns84="urn:local:se:intygstjanster:services:GetTSBasResponder:1" xmlns:ns83="urn:local:se:intygstjanster:services:1" xmlns:ns46="urn:riv:infrastructure:directory:organization:2" xmlns:ns45="urn:riv:infrastructure:directory:organization:GetHealthCareUnitMembersResponder:2" xmlns:ns89="http://www.w3.org/2005/08/addressing" xmlns:dsf="http://www.w3.org/2002/06/xmldsig-filter2" xmlns:ns44="urn:riv:infrastructure:directory:organization:GetHealthCareProviderResponder:1" xmlns:ns88="urn:local:se:intygstjanster:services:RegisterTSDiabetesResponder:1" xmlns:ns43="urn:riv:infrastructure:directory:employee:GetEmployeeIncludingProtectedPersonResponder:2" xmlns:ns87="urn:local:se:intygstjanster:services:GetTSDiabetesResponder:1" xmlns:ns49="urn:riv:infrastructure:directory:organization:GetUnitResponder:3" xmlns:ns48="urn:riv:infrastructure:directory:organization:GetHealthCareUnitResponder:2" xmlns:ns47="urn:riv:infrastructure:directory:organization:2.1" xmlns:ns82="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:ns81="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" xmlns:ns80="urn:riv:insuranceprocess:healthreporting:SetCertificateStatusResponder:1" xmlns:ns31="urn:riv:infrastructure:directory:authorizationmanagement:2" xmlns:ns75="urn:riv:insuranceprocess:healthreporting:RevokeMedicalCertificateResponder:1" xmlns:ns30="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3" xmlns:ns74="urn:riv:insuranceprocess:healthreporting:RegisterMedicalCertificateResponder:3" xmlns:ns73="urn:riv:insuranceprocess:healthreporting:ListCertificatesResponder:1" xmlns:ns72="urn:riv:insuranceprocess:certificate:1" xmlns:ns35="urn:riv:infrastructure:directory:authorizationmanagement:2.3" xmlns:ns79="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestionResponder:1" xmlns:ns34="urn:riv:infrastructure:directory:authorizationmanagement:GetCredentialsForPersonIncludingProtectedPersonResponder:2" xmlns:ns78="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateResponder:1" xmlns:ns33="urn:riv:infrastructure:directory:authorizationmanagement:2.1" xmlns:ns77="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswerResponder:1" xmlns:ns32="urn:riv:infrastructure:directory:authorizationmanagement:2.2" xmlns:ns76="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:ns39="urn:riv:infrastructure:directory:authorizationmanagement:HandleHospCertificationPersonResponder:1" xmlns:ns38="urn:riv:infrastructure:directory:authorizationmanagement:GetHospLastUpdateResponder:1" xmlns:ns37="urn:riv:infrastructure:directory:authorizationmanagement:GetHospCredentialsForPersonResponder:1" xmlns:ns36="urn:riv:infrastructure:directory:authorizationmanagement:GetCredentialsForPersonIncludingProtectedPersonResponder:2.1" xmlns:ns71="urn:riv:insuranceprocess:healthreporting:GetCertificateResponder:1" xmlns:ns70="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns20="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3" xmlns:ns64="urn:riv:strategicresourcemanagement:persons:person:3" xmlns:ns63="urn:riv:infrastructure:directory:organization:GetUnitResponder:1" xmlns:ns62="urn:riv:infrastructure:directory:organization:GetHealthCareUnitMembersResponder:1" xmlns:ns61="urn:riv:infrastructure:directory:organization:GetHealthCareUnitListResponder:1" xmlns:ns24="urn:riv:clinicalprocess:healthcond:certificate:SendCertificateToRecipientResponder:2" xmlns:ns68="urn:riv:informationsecurity:auditing:log:StoreLogResponder:2" xmlns:ns23="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:2" xmlns:ns67="urn:riv:informationsecurity:auditing:log:2" xmlns:ns22="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2" xmlns:ns66="urn:riv:strategicresourcemanagement:persons:person:GetPersonsForProfileResponder:3" xmlns:ns21="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateResponder:2" xmlns:ns65="urn:riv:strategicresourcemanagement:persons:person:3.1" xmlns:ns28="urn:riv:clinicalprocess:healthcond:certificate:SetCertificateStatusResponder:2" xmlns:ns27="urn:riv:clinicalprocess:healthcond:certificate:RevokeCertificateResponder:2" xmlns:ns26="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCitizenResponder:4" xmlns:ns25="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCitizenResponder:3" xmlns:ns69="urn:riv:insuranceprocess:healthreporting:mu7263:3" xmlns:ns29="urn:riv:clinicalprocess:healthcond:certificate:ListSickLeavesForCareResponder:1">
+  <ns20:intyg>
+    <ns9:intygs-id>
+      <ns7:root>SE2321000016-H489</ns7:root>
+      <ns7:extension>1234567</ns7:extension>
+    </ns9:intygs-id>
+    <ns9:typ>
+      <ns7:code>DB</ns7:code>
+      <ns7:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</ns7:codeSystem>
+      <ns7:displayName>Dödsbevis</ns7:displayName>
+    </ns9:typ>
+    <ns9:version>1.0</ns9:version>
+    <ns9:signeringstidpunkt>2015-12-07T15:48:05</ns9:signeringstidpunkt>
+    <ns9:skickatTidpunkt>2015-12-07T15:48:05</ns9:skickatTidpunkt>
+    <ns9:patient>
+      <ns9:person-id>
+        <ns7:root>1.2.752.129.2.1.3.1</ns7:root>
+        <ns7:extension>191212121212</ns7:extension>
+      </ns9:person-id>
+      <ns9:fornamn>Olivia</ns9:fornamn>
+      <ns9:efternamn>Olsson</ns9:efternamn>
+      <ns9:postadress>Testgatan 1</ns9:postadress>
+      <ns9:postnummer>111 11</ns9:postnummer>
+      <ns9:postort>Teststaden</ns9:postort>
+      <ns12:kallaAdressuppgifter>
+        <ns7:code>ANVANDARE</ns7:code>
+        <ns7:codeSystem>4ade8de2-effe-41d0-b177-fedc820e69fa</ns7:codeSystem>
+        <ns7:displayName>Person som använder systemet</ns7:displayName>
+      </ns12:kallaAdressuppgifter>
+    </ns9:patient>
+    <ns9:skapadAv>
+      <ns9:personal-id>
+        <ns7:root>1.2.752.129.2.1.4.1</ns7:root>
+        <ns7:extension>SE2321000016-6G5R</ns7:extension>
+      </ns9:personal-id>
+      <ns9:fullstandigtNamn>Karl Karlsson</ns9:fullstandigtNamn>
+      <ns9:forskrivarkod>09874321</ns9:forskrivarkod>
+      <ns9:befattning>
+        <ns7:code>201010</ns7:code>
+        <ns7:codeSystem>1.2.752.129.2.2.1.4</ns7:codeSystem>
+        <ns7:displayName>Överläkare</ns7:displayName>
+      </ns9:befattning>
+      <ns9:befattning>
+        <ns7:code>204510</ns7:code>
+        <ns7:codeSystem>1.2.752.129.2.2.1.4</ns7:codeSystem>
+        <ns7:displayName>Psykolog</ns7:displayName>
+      </ns9:befattning>
+      <ns9:enhet>
+        <ns9:enhets-id>
+          <ns7:root>1.2.752.129.2.1.4.1</ns7:root>
+          <ns7:extension>SE2321000016-H489</ns7:extension>
+        </ns9:enhets-id>
+        <ns9:arbetsplatskod>
+          <ns7:root>1.2.752.29.4.71</ns7:root>
+          <ns7:extension>45312</ns7:extension>
+        </ns9:arbetsplatskod>
+        <ns9:enhetsnamn>Vårdenheten</ns9:enhetsnamn>
+        <ns9:postadress>Enhetsg. 1</ns9:postadress>
+        <ns9:postnummer>100 10</ns9:postnummer>
+        <ns9:postort>Stadby</ns9:postort>
+        <ns9:telefonnummer>0812341234</ns9:telefonnummer>
+        <ns9:epost>ve1@vg1.se</ns9:epost>
+        <ns9:vardgivare>
+          <ns9:vardgivare-id>
+            <ns7:root>1.2.752.129.2.1.4.1</ns7:root>
+            <ns7:extension>SE2321000016-39KJ</ns7:extension>
+          </ns9:vardgivare-id>
+          <ns9:vardgivarnamn>Vårdgivaren</ns9:vardgivarnamn>
+        </ns9:vardgivare>
+      </ns9:enhet>
+    </ns9:skapadAv>
+    <ns9:svar id="1">
+    </ns9:svar>
+    <ns9:svar id="2">
+      <ns9:delsvar id="2.1">false</ns9:delsvar>
+      <ns9:delsvar id="2.2">2017-01-01</ns9:delsvar>
+      <ns9:delsvar id="2.3">2017-01-02</ns9:delsvar>
+    </ns9:svar>
+    <ns9:svar id="3">
+      <ns9:delsvar id="3.1">kommun</ns9:delsvar>
+      <ns9:delsvar id="3.2">
+        <ns7:cv>
+          <ns7:code>SJUKHUS</ns7:code>
+          <ns7:codeSystem>65f0069f-14b5-4634-b187-5193580a3349</ns7:codeSystem>
+          <ns7:displayName>Sjukhus</ns7:displayName>
+        </ns7:cv>
+      </ns9:delsvar>
+    </ns9:svar>
+    <ns9:svar id="4">
+      <ns9:delsvar id="4.1">true</ns9:delsvar>
+    </ns9:svar>
+    <ns9:svar id="5">
+      <ns9:delsvar id="5.1">true</ns9:delsvar>
+      <ns9:delsvar id="5.2">true</ns9:delsvar>
+    </ns9:svar>
+    <ns9:svar id="6">
+      <ns9:delsvar id="6.1">false</ns9:delsvar>
+      <ns9:delsvar id="6.2">
+        <ns7:cv>
+          <ns7:code>UNDERSOKNING_GJORT</ns7:code>
+          <ns7:codeSystem>da46dd8c-b3f1-4e39-8d62-777d069213ea</ns7:codeSystem>
+          <ns7:displayName>Den avlidne undersökt kort före döden</ns7:displayName>
+        </ns7:cv>
+      </ns9:delsvar>
+      <ns9:delsvar id="6.3">2016-12-31</ns9:delsvar>
+    </ns9:svar>
+    <ns9:svar id="7">
+      <ns9:delsvar id="7.1">true</ns9:delsvar>
+    </ns9:svar>
+  </ns20:intyg>
+</ns20:RegisterCertificate>
