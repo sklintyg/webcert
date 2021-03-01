@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.UnmarshallingFailureException;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
@@ -42,7 +41,7 @@ public class SendMessageToRecipientProcessor {
     private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
 
     public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
 
         try {
             SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);
@@ -56,30 +55,19 @@ public class SendMessageToRecipientProcessor {
                 case INFO:
                     return;
                 case ERROR:
-                    switch (result.getErrorId()) {
-                        case REVOKED:
-                        case VALIDATION_ERROR:
-                            LOG.error(
-                                "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
-                                    + " Rethrowing as PermanentException", intygsId, result.getResultText(), result.getErrorId());
-                            throw new PermanentException(result.getResultText());
-                        case APPLICATION_ERROR:
-                        case TECHNICAL_ERROR:
-                            LOG.error(
-                                "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
-                                    + " Rethrowing as TemporaryException", intygsId, result.getResultText(), result.getErrorId());
-                            throw new TemporaryException(result.getResultText());
-                    }
+                    LOG.error(
+                        "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
+                            + " Rethrowing as PermanentException", intygsId, result.getResultText(), result.getErrorId());
+                    throw new TemporaryException(result.getResultText());
             }
         } catch (UnmarshallingFailureException e) {
             LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Rethrowing as PermanentException",
                 intygsId, e.getMessage());
-            throw new PermanentException(e.getMessage());
+            throw new TemporaryException(e.getMessage());
         } catch (WebServiceException e) {
             LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
                 intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }
     }
-
 }

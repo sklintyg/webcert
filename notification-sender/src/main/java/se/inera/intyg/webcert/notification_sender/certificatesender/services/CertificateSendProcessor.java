@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
@@ -46,7 +45,7 @@ public class CertificateSendProcessor {
         @Header(Constants.INTYGS_ID) String intygsId,
         @Header(Constants.PERSON_ID) String personId,
         @Header(Constants.RECIPIENT) String recipient,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
 
         SendCertificateToRecipientResponseType response;
         try {
@@ -56,16 +55,7 @@ public class CertificateSendProcessor {
             final String resultText = result.getResultText();
             if (ResultCodeType.ERROR == result.getResultCode()) {
                 LOG.warn("Error occured when trying to send intyg '{}'; {}", intygsId, resultText);
-
-                switch (result.getErrorId()) {
-                    case APPLICATION_ERROR:
-                    case TECHNICAL_ERROR:
-                        throw new TemporaryException(resultText);
-                    case REVOKED:
-                    case VALIDATION_ERROR:
-                        throw new PermanentException(resultText);
-                }
-
+                throw new TemporaryException(resultText);
             } else {
                 if (ResultCodeType.INFO.equals(result.getResultCode())) {
                     LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue.", intygsId, resultText);

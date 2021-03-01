@@ -43,7 +43,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,7 +53,7 @@ public class RegisterApprovedReceiversProcessorTest {
 
     private static final String LOGICAL_ADDRESS = "logisk-adress";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
@@ -63,7 +62,7 @@ public class RegisterApprovedReceiversProcessorTest {
     private RegisterApprovedReceiversProcessor testee;
 
     @Test
-    public void testRegisterOk() throws TemporaryException, PermanentException, JsonProcessingException {
+    public void testRegisterOk() throws TemporaryException, JsonProcessingException {
         when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
             .thenReturn(buildResponse(ResultCodeType.OK));
 
@@ -73,7 +72,7 @@ public class RegisterApprovedReceiversProcessorTest {
 
     @Test(expected = TemporaryException.class)
     public void testRegisterThrowsTemporaryExceptionOnWebServiceException()
-        throws TemporaryException, PermanentException, JsonProcessingException {
+        throws TemporaryException, JsonProcessingException {
         when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
             .thenThrow(new WebServiceException(""));
         try {
@@ -84,8 +83,8 @@ public class RegisterApprovedReceiversProcessorTest {
         }
     }
 
-    @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnError() throws TemporaryException, PermanentException, JsonProcessingException {
+    @Test(expected = TemporaryException.class)
+    public void testRegisterThrowsTemporaryExceptionOnError() throws TemporaryException, JsonProcessingException {
         when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
             .thenReturn(buildResponse(ResultCodeType.ERROR));
         try {
@@ -96,8 +95,8 @@ public class RegisterApprovedReceiversProcessorTest {
         }
     }
 
-    @Test(expected = PermanentException.class)
-    public void testUnparsableBodyThrowsPermanentException() throws TemporaryException, PermanentException {
+    @Test(expected = TemporaryException.class)
+    public void testUnparsableBodyThrowsTemporaryException() throws TemporaryException {
         try {
             testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
@@ -106,9 +105,9 @@ public class RegisterApprovedReceiversProcessorTest {
     }
 
 
-    @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnMissingIntygsId()
-        throws TemporaryException, PermanentException, JsonProcessingException {
+    @Test(expected = TemporaryException.class)
+    public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId()
+        throws TemporaryException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
@@ -116,9 +115,9 @@ public class RegisterApprovedReceiversProcessorTest {
         }
     }
 
-    @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnMissingIntygsTyp()
-        throws TemporaryException, PermanentException, JsonProcessingException {
+    @Test(expected = TemporaryException.class)
+    public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp()
+        throws TemporaryException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
         } finally {
@@ -126,9 +125,9 @@ public class RegisterApprovedReceiversProcessorTest {
         }
     }
 
-    @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnBlankIntygsTyp()
-        throws TemporaryException, PermanentException, JsonProcessingException {
+    @Test(expected = TemporaryException.class)
+    public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp()
+        throws TemporaryException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
         } finally {

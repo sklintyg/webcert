@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
@@ -84,7 +83,7 @@ public class SendMessageToRecipientProcessorTest {
         assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void processJaxbExceptionTest() throws Exception {
         sendMessageProcessor.process("invalid-xml", INTYG_ID, LOGICAL_ADDRESS);
     }
@@ -96,14 +95,14 @@ public class SendMessageToRecipientProcessorTest {
         sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void processErrorIdRevokedTest() throws Exception {
         when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
             .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.REVOKED, "")));
         sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void processErrorIdValidationErrorTest() throws Exception {
         when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
             .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "")));

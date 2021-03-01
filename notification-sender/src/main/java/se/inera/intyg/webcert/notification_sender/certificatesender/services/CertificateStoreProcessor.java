@@ -18,17 +18,12 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import javax.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 /**
@@ -43,24 +38,13 @@ public class CertificateStoreProcessor {
     public void process(@Body String utkastAsJson,
         @Header(Constants.INTYGS_TYP) String intygsTyp,
         @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
-        throws TemporaryException, PermanentException, ModuleNotFoundException {
+        throws TemporaryException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp,
                 moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));
 
             moduleApi.registerCertificate(utkastAsJson, logicalAddress);
-        } catch (ExternalServiceCallException e) {
-            switch (e.getErroIdEnum()) {
-                case TECHNICAL_ERROR:
-                case APPLICATION_ERROR:
-                    throw new TemporaryException(e.getMessage());
-                default:
-                    throw new PermanentException(e.getMessage());
-            }
-        } catch (ModuleException e) {
-            throw new PermanentException(e.getMessage());
-        } catch (WebServiceException e) {
-            throw new TemporaryException(e.getMessage());
+
         } catch (Exception e) {
             throw new TemporaryException(e);
         }
