@@ -51,7 +51,7 @@ public class NotificationPostProcessor {
         try {
             final var resultMessage = getNotificationResultMessage(message);
             notificationPostProcessingService.processNotificationResult(resultMessage);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             LOG.error(getLogErrorMessage(message), e);
         }
     }
