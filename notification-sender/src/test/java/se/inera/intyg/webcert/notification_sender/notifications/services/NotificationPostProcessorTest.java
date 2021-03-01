@@ -20,7 +20,10 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -79,6 +82,22 @@ public class NotificationPostProcessorTest {
         notificationPostProcessor.process(message);
 
         verifyNoInteractions(notificationPostProcessingService);
+    }
+
+    @Test(expected = Exception.class)
+    public void shallNotCatchExceptionsExceptJsonProcessingExceptions() throws Exception {
+        final var message = mock(Message.class);
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var body = objectMapper.writeValueAsString(notificationResultMessage);
+
+        doReturn(body).when(message).getBody(String.class);
+        doThrow(new RuntimeException("Fail!"))
+            .when(notificationPostProcessingService)
+            .processNotificationResult(any(NotificationResultMessage.class));
+
+        notificationPostProcessor.process(message);
+
+        assertFalse("Should never reach this assert!", true);
     }
 
     private NotificationResultMessage createNotificationResultMessage() {
