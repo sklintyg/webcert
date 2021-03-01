@@ -19,12 +19,14 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -98,9 +100,9 @@ public class NotificationRedeliveryServiceTest {
         final var expectedNotificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
 
         doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
 
         assertNotNull(actualNotificationRedeliveryList);
         assertEquals(expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
@@ -112,18 +114,17 @@ public class NotificationRedeliveryServiceTest {
 
     @Test
     public void shallReturnNotificationRedeliveriesBasedOnEventInChronologicalAscendingOrder() {
-        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(1000L);
-        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(2000L);
-        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(3000L);
+        final var now = LocalDateTime.now();
+        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
+        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(1000L, now.plus(1, SECONDS));
+        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(2000L, now.plus(2, SECONDS));
         final var expectedNotificationRedeliveryList = Arrays
             .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
-        final var incorrectlyOrderedNotificationDeliveryList = Arrays
-            .asList(expectedNotificationRedeliveryLast, expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle);
 
-        doReturn(incorrectlyOrderedNotificationDeliveryList).when(notificationRedeliveryRepo)
-            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
 
         assertNotNull(actualNotificationRedeliveryList);
         assertEquals(expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
@@ -135,15 +136,15 @@ public class NotificationRedeliveryServiceTest {
     @Test
     public void shallAddCorrelationIdIfMissingInNotificationRedelivery() {
         final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(1000L);
-        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(2000L, null);
+        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(2000L, (String) null);
         final var expectedNotificationRedeliveryLast = createNotificationRedelivery(3000L);
         final var expectedNotificationRedeliveryList = Arrays
             .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
 
         doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery();
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
 
         assertNotNull(actualNotificationRedeliveryList);
         for (var notificationRedelivery : actualNotificationRedeliveryList) {
@@ -268,14 +269,8 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
-    public void shallLimitBatchWhenMoreNotificationsAreUpForRedelivery() {
-        final var expectedBatchSize = 10;
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(20);
-        for (int i = 0; i < 20; i++) {
-            notificationRedeliveryList.add(createNotificationRedelivery());
-        }
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo).findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+    public void shallReturnEmptyListIfBatchSizeIsZero() {
+        final var expectedBatchSize = 0;
 
         final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
 
@@ -283,14 +278,15 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
-    public void shallNotLimitBatchWhenThereAreLessNotificationsUpForRedelivery() {
+    public void shallLimitBatchWhenRetrievingRedeliveriesUpForRedelivery() {
         final var expectedBatchSize = 10;
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(9);
         for (int i = 0; i < 9; i++) {
             notificationRedeliveryList.add(createNotificationRedelivery());
         }
 
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo).findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), eq(expectedBatchSize));
 
         final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
 
@@ -356,10 +352,10 @@ public class NotificationRedeliveryServiceTest {
         final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
         doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
 
-        notificationRedeliveryService.getNotificationsForRedelivery();
+        notificationRedeliveryService.getNotificationsForRedelivery(100);
 
         verify(handelseRepo).save(captureEvent.capture());
         assertEquals(NotificationDeliveryStatusEnum.RESEND, captureEvent.getValue().getDeliveryStatus());
@@ -371,9 +367,9 @@ public class NotificationRedeliveryServiceTest {
         final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findByRedeliveryTimeLessThan(any(LocalDateTime.class));
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        notificationRedeliveryService.getNotificationsForRedelivery();
+        notificationRedeliveryService.getNotificationsForRedelivery(100);
 
         verifyNoInteractions(handelseRepo);
     }
@@ -386,12 +382,20 @@ public class NotificationRedeliveryServiceTest {
         return createNotificationRedelivery(eventId, "CORRELATION_ID");
     }
 
+    private NotificationRedelivery createNotificationRedelivery(Long eventId, LocalDateTime redeliveryTime) {
+        return createNotificationRedelivery(eventId, "CORRELATION_ID", redeliveryTime);
+    }
+
     private NotificationRedelivery createNotificationRedelivery(Long eventId, String correlationId) {
+        return createNotificationRedelivery(eventId, correlationId, LocalDateTime.now());
+    }
+
+    private NotificationRedelivery createNotificationRedelivery(Long eventId, String correlationId, LocalDateTime redeliveryTime) {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(correlationId);
         notificationRedelivery.setEventId(eventId);
         notificationRedelivery.setMessage("MESSAGE".getBytes());
-        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
+        notificationRedelivery.setRedeliveryTime(redeliveryTime);
         return notificationRedelivery;
     }
 

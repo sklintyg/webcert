@@ -22,6 +22,10 @@ package se.inera.intyg.webcert.persistence.notification.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
@@ -34,6 +38,18 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
     Optional<NotificationRedelivery> findByEventId(Long handelseId);
 
     List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
+
+    List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime, Pageable pageable);
+
+    default List<NotificationRedelivery> findRedeliveryUpForDelivery(LocalDateTime time, int limit) {
+        final var pageZero = 0;
+        final var pageable = PageRequest.of(
+            pageZero,
+            limit,
+            Sort.by(Order.asc("redeliveryTime"))
+        );
+        return findByRedeliveryTimeLessThan(time, pageable);
+    }
 
     List<NotificationRedelivery> findByRedeliveryTime(LocalDateTime currentTime);
 

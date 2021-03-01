@@ -28,10 +28,9 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,33 +73,20 @@ public class NotificationRedeliveryService {
     @Qualifier("jmsTemplateNotificationWSSender")
     private JmsTemplate jmsTemplate;
 
-    /**
-     * Retrieves the notifications that are up for redelivery and returns them in the order they should be resent.
-     *
-     * @return list of {@link NotificationRedelivery} up for redelivery.
-     */
     @Transactional
-    public List<NotificationRedelivery> getNotificationsForRedelivery() {
-        final var notificationRedeliveryList = notificationRedeliveryRepo.findByRedeliveryTimeLessThan(LocalDateTime.now());
+    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
+        final var notificationRedeliveryList = getNotificationsForRedelivery(LocalDateTime.now(), batchSize);
 
         notificationRedeliveryList.forEach(this::addCorrelationIdIfMissing);
 
-        return notificationRedeliveryList.stream()
-            .sorted(Comparator.comparing(NotificationRedelivery::getEventId))
-            .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
-        final var notificationRedeliveryList = getNotificationsForRedelivery();
-        if (shouldLimitBatchSize(notificationRedeliveryList, batchSize)) {
-            return notificationRedeliveryList.subList(0, batchSize);
-        }
         return notificationRedeliveryList;
     }
 
-    private boolean shouldLimitBatchSize(List<NotificationRedelivery> notificationRedeliveryList, int batchSize) {
-        return batchSize > 0 && notificationRedeliveryList.size() > batchSize;
+    private List<NotificationRedelivery> getNotificationsForRedelivery(LocalDateTime timeLess, int batchSize) {
+        if (batchSize < 1) {
+            return Collections.emptyList();
+        }
+        return notificationRedeliveryRepo.findRedeliveryUpForDelivery(timeLess, batchSize);
     }
 
     @Transactional
