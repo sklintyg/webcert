@@ -38,7 +38,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 /**
@@ -102,7 +101,7 @@ public class CertificateRevokeProcessorTest {
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnValidationErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
@@ -114,7 +113,7 @@ public class CertificateRevokeProcessorTest {
 
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnTransformationErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
@@ -150,5 +149,4 @@ public class CertificateRevokeProcessorTest {
     public void testLogicalAddressIsMissing() throws Exception {
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, null, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
-
 }

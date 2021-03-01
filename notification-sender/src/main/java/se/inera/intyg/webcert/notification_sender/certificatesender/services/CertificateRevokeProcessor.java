@@ -21,16 +21,12 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Strings;
-import javax.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class CertificateRevokeProcessor {
@@ -43,7 +39,7 @@ public class CertificateRevokeProcessor {
         @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
         @Header(Constants.INTYGS_TYP) String intygsTyp,
         @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
-        throws TemporaryException, PermanentException {
+        throws TemporaryException {
 
         checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
             Constants.INTYGS_ID);
@@ -57,20 +53,8 @@ public class CertificateRevokeProcessor {
         try {
             ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
             moduleApi.revokeCertificate(xmlBody, logicalAddress);
-        } catch (ExternalServiceCallException e) {
-            switch (e.getErroIdEnum()) {
-                case TECHNICAL_ERROR:
-                case APPLICATION_ERROR:
-                    throw new TemporaryException(e.getMessage());
-                default:
-                    throw new PermanentException(e.getMessage());
-            }
-        } catch (ModuleException e) {
-            throw new PermanentException(e.getMessage());
-        } catch (WebServiceException e) {
-            throw new TemporaryException(e.getMessage());
         } catch (Exception e) {
-            throw new PermanentException(e.getMessage());
+            throw new TemporaryException(e.getMessage());
         }
     }
 }
