@@ -21,12 +21,15 @@ package se.inera.intyg.webcert.persistence.handelse.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -35,6 +38,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
 @Entity
 @Table(name = "HANDELSE")
+@SecondaryTable(name = "HANDELSE_METADATA",  pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
 public class Handelse {
 
     @Id
@@ -73,21 +77,12 @@ public class Handelse {
     @Column(name = "HANTERAT_AV")
     private String hanteratAv;
 
-    @Column(name = "DELIVERY_STATUS")
-    @Enumerated(EnumType.STRING)
-    private NotificationDeliveryStatusEnum deliveryStatus;
+    @Embedded
+    private HandelseMetaData handelseMetaData = new HandelseMetaData();
 
-    @Column(name = "CERTIFICATE_TYPE")
-    private String certificateType;
 
-    @Column(name = "CERTIFICATE_VERSION")
-    private String certificateVersion;
+    public Handelse() { }
 
-    @Column(name = "CERTIFICATE_ISSUER")
-    private String certificateIssuer;
-
-    public Handelse() {
-    }
 
     public Long getId() {
         return id;
@@ -169,35 +164,41 @@ public class Handelse {
         this.hanteratAv = hanteratAv;
     }
 
+    public HandelseMetaData getHandelseMetaData() {
+        return handelseMetaData;
+    }
+
+    public void setHandelseMetaData(HandelseMetaData handelseMetaData) {
+        this.handelseMetaData = handelseMetaData;
+    }
+
     public NotificationDeliveryStatusEnum getDeliveryStatus() {
-        return deliveryStatus;
+        return handelseMetaData.getDeliveryStatus();
     }
-
     public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
+        this.handelseMetaData.setDeliveryStatus(deliveryStatus);
     }
-
     public String getCertificateType() {
-        return certificateType;
+        return this.handelseMetaData.getCertificateType();
     }
 
     public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
+        this.handelseMetaData.setCertificateType(certificateType);
     }
 
     public String getCertificateVersion() {
-        return certificateVersion;
+        return this.handelseMetaData.getCertificateVersion();
     }
 
     public void setCertificateVersion(String certificateVersion) {
-        this.certificateVersion = certificateVersion;
+        this.handelseMetaData.setCertificateVersion(certificateVersion);
     }
 
     public String getCertificateIssuer() {
-        return certificateIssuer;
+        return this.handelseMetaData.getCertificateIssuer();
     }
 
     public void setCertificateIssuer(String certificateIssuer) {
-        this.certificateIssuer = certificateIssuer;
+        this.handelseMetaData.setCertificateIssuer(certificateIssuer);
     }
 }
