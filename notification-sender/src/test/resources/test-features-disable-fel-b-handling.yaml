@@ -248,7 +248,7 @@ features:
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B
-    global: false
+    global: true
   - &f300
     name: *kf300
     desc: Activate Webcert message handling
