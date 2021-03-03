@@ -37,8 +37,8 @@ public class NotificationRedeliveryJob {
     private NotificationRedeliveryJobService notificationRedeliveryJobService;
 
     private static final String JOB_NAME = "NotificationRedeliveryJob.run";
-    private static final String LOCK_AT_MOST = "PT59S";
-    private static final String LOCK_AT_LEAST = "PT55S";
+    private static final String LOCK_AT_MOST = "PT29S";
+    private static final String LOCK_AT_LEAST = "PT20S";
 
     @Value("${job.notification.redelivery.batchsize:1000}")
     private int batchSize;
