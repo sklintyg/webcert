@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,12 +120,15 @@ public class NotificationRedeliveryService {
 
     @Transactional
     public void clearRedeliveryTime(List<NotificationRedelivery> notificationRedeliveryList) {
-        notificationRedeliveryList.forEach(this::clearRedeliveryTime);
-    }
+        if (notificationRedeliveryList.size() == 0) {
+            return;
+        }
 
-    private void clearRedeliveryTime(NotificationRedelivery notificationRedelivery) {
-        notificationRedelivery.setRedeliveryTime(null);
-        notificationRedeliveryRepo.save(notificationRedelivery);
+        final var eventIds = notificationRedeliveryList.stream()
+            .map(notificationRedelivery -> notificationRedelivery.getEventId())
+            .collect(Collectors.toList());
+
+        notificationRedeliveryRepo.clearRedeliveryTime(eventIds);
     }
 
     private boolean usingWebcertMesssaging() {

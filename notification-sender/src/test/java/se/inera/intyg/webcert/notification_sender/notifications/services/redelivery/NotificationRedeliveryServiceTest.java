@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.redeli
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +30,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING;
@@ -45,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.junit.Test;
@@ -121,16 +120,16 @@ public class NotificationRedeliveryServiceTest {
         final var expectedNotificationRedeliveryList = Arrays
             .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
 
+        final var captureEventIds = ArgumentCaptor.forClass(List.class);
+
         doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
             .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
+        notificationRedeliveryService.getNotificationsForRedelivery(100);
 
-        for (var actualNotificationRedelivery : actualNotificationRedeliveryList) {
-            assertNull("Redelivery time should be null", actualNotificationRedelivery.getRedeliveryTime());
-        }
+        verify(notificationRedeliveryRepo).clearRedeliveryTime(captureEventIds.capture());
 
-        verify(notificationRedeliveryRepo, times(actualNotificationRedeliveryList.size())).save(any(NotificationRedelivery.class));
+        assertEquals(expectedNotificationRedeliveryList.size(), captureEventIds.getValue().size());
     }
 
     @Test
