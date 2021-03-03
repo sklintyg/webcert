@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-
 public interface NotificationRedeliveryJobService {
 
     void resendScheduledNotifications(int batchSize);
