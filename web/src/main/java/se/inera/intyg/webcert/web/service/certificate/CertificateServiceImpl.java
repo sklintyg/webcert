@@ -107,6 +107,5 @@ public class CertificateServiceImpl implements CertificateService {
     private Optional<Personnummer> getCivicRegistrationNumber(String civicRegistrationNumber) {
         return Personnummer.createPersonnummer(civicRegistrationNumber);
     }
-
 }
 

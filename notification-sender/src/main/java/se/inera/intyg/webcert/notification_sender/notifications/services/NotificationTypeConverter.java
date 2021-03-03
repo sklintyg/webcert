@@ -58,7 +58,7 @@ public final class NotificationTypeConverter {
      * It is needed because a utkast might not contain the information needed to meet the requirements of the service
      * contract. And we send not yet signed utkast in CertificateStatusUpdateForCare.
      */
-    private static void complementIntyg(Intyg intyg) {
+    public static void complementIntyg(Intyg intyg) {
         Enhet enhet = intyg.getSkapadAv().getEnhet();
         if (Strings.nullToEmpty(enhet.getArbetsplatskod().getExtension()).trim().isEmpty()) {
             enhet.getArbetsplatskod().setExtension(TEMPORARY_ARBETSPLATSKOD);

@@ -22,6 +22,7 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,6 +242,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     public void logNotificationSent(String hanType, String unitId, String intygsId) {
         logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId, intygsId);
     }
+
+    @Override
+    // CHECKSTYLE:OFF ParameterNumber
+    public void logStatusUpdateQueued(String certificateId, String correlationId, String logicalAddress, String certificateType,
+        String certificateVersion, String eventName, LocalDateTime eventTime, String currentUser) {
+            logEvent(MonitoringEvent.STATUS_UPDATE_QUEUED, certificateId, correlationId, logicalAddress, certificateType,
+                certificateVersion, eventName, eventTime, currentUser);
+    } // CHECKSTYLE:ON ParameterNumber
 
     @Override
     public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds,
@@ -488,6 +497,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),
+        STATUS_UPDATE_QUEUED("Sent notification to aggregation queue, certificateId: {}, correlationId: {}, logicalAddress: {}, "
+            + "certificateType: {}, certificateVersion: {}, eventType: {}, eventTime: {}, currentUser: {}"),
         ARENDE_RECEIVED_ANSWER("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         ARENDE_RECEIVED_QUESTION("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         MEDICINSKT_ARENDE_RECEIVED("Received medicinskt arende for '{}' of type '{}' for unit '{}' on questions '{}'"),

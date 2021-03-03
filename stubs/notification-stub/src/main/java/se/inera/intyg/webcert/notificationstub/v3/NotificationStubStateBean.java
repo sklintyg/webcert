@@ -30,17 +30,6 @@ public class NotificationStubStateBean {
     }
 
     public void setErrorCode(String errorCode) {
-        switch (errorCode) {
-            case "0":
-            case "1":
-            case "2":
-            case "3":
-            case "4":
-            case "5":
-                this.errorCode = errorCode;
-                break;
-            default:
-                this.errorCode = "0";
-        }
+        this.errorCode = errorCode;
     }
 }

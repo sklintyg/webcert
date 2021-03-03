@@ -21,19 +21,24 @@ package se.inera.intyg.webcert.persistence.handelse.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
 @Entity
 @Table(name = "HANDELSE")
+@SecondaryTable(name = "HANDELSE_METADATA",  pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
 public class Handelse {
 
     @Id
@@ -72,8 +77,12 @@ public class Handelse {
     @Column(name = "HANTERAT_AV")
     private String hanteratAv;
 
-    public Handelse() {
-    }
+    @Embedded
+    private HandelseMetaData handelseMetaData = new HandelseMetaData();
+
+
+    public Handelse() { }
+
 
     public Long getId() {
         return id;
@@ -153,5 +162,43 @@ public class Handelse {
 
     public void setHanteratAv(String hanteratAv) {
         this.hanteratAv = hanteratAv;
+    }
+
+    public HandelseMetaData getHandelseMetaData() {
+        return handelseMetaData;
+    }
+
+    public void setHandelseMetaData(HandelseMetaData handelseMetaData) {
+        this.handelseMetaData = handelseMetaData;
+    }
+
+    public NotificationDeliveryStatusEnum getDeliveryStatus() {
+        return handelseMetaData.getDeliveryStatus();
+    }
+    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
+        this.handelseMetaData.setDeliveryStatus(deliveryStatus);
+    }
+    public String getCertificateType() {
+        return this.handelseMetaData.getCertificateType();
+    }
+
+    public void setCertificateType(String certificateType) {
+        this.handelseMetaData.setCertificateType(certificateType);
+    }
+
+    public String getCertificateVersion() {
+        return this.handelseMetaData.getCertificateVersion();
+    }
+
+    public void setCertificateVersion(String certificateVersion) {
+        this.handelseMetaData.setCertificateVersion(certificateVersion);
+    }
+
+    public String getCertificateIssuer() {
+        return this.handelseMetaData.getCertificateIssuer();
+    }
+
+    public void setCertificateIssuer(String certificateIssuer) {
+        this.handelseMetaData.setCertificateIssuer(certificateIssuer);
     }
 }

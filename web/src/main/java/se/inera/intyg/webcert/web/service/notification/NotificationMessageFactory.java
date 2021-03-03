@@ -18,10 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
@@ -40,5 +44,8 @@ public interface NotificationMessageFactory {
     NotificationMessage createNotificationMessage(String intygsId, String intygsTyp, String logiskAdress, String utkastJson,
         HandelsekodEnum handelse, SchemaVersion version,
         String reference, Amneskod amne, LocalDate sistaSvarsDatum);
+
+    NotificationMessage createNotificationMessage(Handelse event, String draftJson)
+        throws ModuleNotFoundException, IOException, ModuleException;
     // CHECKSTYLE:ON ParameterNumber
 }

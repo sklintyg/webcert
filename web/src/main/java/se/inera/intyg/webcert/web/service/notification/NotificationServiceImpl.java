@@ -66,6 +66,8 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
@@ -97,6 +99,9 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -563,18 +568,20 @@ public class NotificationServiceImpl implements NotificationService {
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
         ArendeAmne amne, LocalDate sistaDatumForSvar, String hanteratAv) {
 
-        Handelse handelse = new Handelse();
-        handelse.setCode(notificationMessage.getHandelse());
-        handelse.setEnhetsId(enhetsId);
-        handelse.setIntygsId(notificationMessage.getIntygsId());
-        handelse.setPersonnummer(personnummer);
-        handelse.setTimestamp(notificationMessage.getHandelseTid());
-        handelse.setVardgivarId(vardgivarId);
-        handelse.setAmne(amne);
-        handelse.setSistaDatumForSvar(sistaDatumForSvar);
-        handelse.setHanteratAv(hanteratAv);
+        if (!isWebcertMessagingUsed()) {
+            Handelse handelse = new Handelse();
+            handelse.setCode(notificationMessage.getHandelse());
+            handelse.setEnhetsId(enhetsId);
+            handelse.setIntygsId(notificationMessage.getIntygsId());
+            handelse.setPersonnummer(personnummer);
+            handelse.setTimestamp(notificationMessage.getHandelseTid());
+            handelse.setVardgivarId(vardgivarId);
+            handelse.setAmne(amne);
+            handelse.setSistaDatumForSvar(sistaDatumForSvar);
+            handelse.setHanteratAv(hanteratAv);
 
-        handelseRepo.save(handelse);
+            handelseRepo.save(handelse);
+        }
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
@@ -584,21 +591,32 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         final String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
+        final String correlationId = UUID.randomUUID().toString();
 
         try {
             jmsTemplateForAggregation.send(
                 new NotificationMessageCreator(
                     notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
                     intygTypeVersion, notificationMessage.getHandelse(),
-                    currentUserId()));
+                    currentUserId(),
+                    correlationId
+                ));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
         }
 
-        LOGGER.debug("Notification sent: {}", notificationMessage);
-        monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+        if (isWebcertMessagingUsed()) {
+            LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
+            monitoringLog.logStatusUpdateQueued(notificationMessage.getIntygsId(), correlationId, notificationMessage.getLogiskAdress(),
+                notificationMessage.getIntygsTyp(), intygTypeVersion, notificationMessage.getHandelse().name(),
+                notificationMessage.getHandelseTid(), currentUserId());
+        } else {
+            LOGGER.debug("Notification sent: {}", notificationMessage);
+            monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+        }
     }
+
 
     private String currentUserId() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -642,6 +660,10 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private boolean isWebcertMessagingUsed() {
+        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
+    }
+
     private static final class NotificationMessageCreator implements MessageCreator {
 
         private final String value;
@@ -650,16 +672,18 @@ public class NotificationServiceImpl implements NotificationService {
         private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
         private final String userId;
+        private final String correlationId;
+
 
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-            HandelsekodEnum handelseTyp,
-            String userId) {
+            HandelsekodEnum handelseTyp, String userId, String correlationId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
             this.userId = userId;
+            this.correlationId = correlationId;
         }
 
         /**
@@ -675,7 +699,7 @@ public class NotificationServiceImpl implements NotificationService {
             if (Objects.nonNull(this.userId)) {
                 msg.setStringProperty(USER_ID, this.userId);
             }
-            msg.setStringProperty(CORRELATION_ID, UUID.randomUUID().toString());
+            msg.setStringProperty(CORRELATION_ID, correlationId);
             return msg;
         }
     }

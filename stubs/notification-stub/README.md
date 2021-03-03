@@ -41,6 +41,9 @@ Sätter vilket fel som ska emuleras av stubben. Försöker man sätta ett värde
 | 3 | TechError Unspecified Service. |
 | 4 | Thowing ```RuntimeException``` that should result in a 500 Server Error. |
 | 5 | Fel B. For all notifications. |
+| 6 | Application Error. |
+| 7 | Validation Error. |
+| 8 | NO ERROR! But changes the return type to INFO |
     
 # Licens
 

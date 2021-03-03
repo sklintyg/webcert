@@ -21,11 +21,17 @@ package se.inera.intyg.webcert.web.service.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,14 +40,21 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -57,6 +70,15 @@ public class NotificationMessageFactoryTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
+
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private SendNotificationStrategy sendNotificationStrategy;
+
+    @Mock
+    private ReferensService referenceService;
 
     @InjectMocks
     private NotificationMessageFactory notificationMessageFactory = new NotificationMessageFactoryImpl();
@@ -210,4 +232,105 @@ public class NotificationMessageFactoryTest {
         return utkast;
     }
 
+    @Test
+    public void shallDecideSchemaStrategyBasedOnUtlatandeWhenCreatingFromEvent() throws Exception {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+        final var expectedSchemaVersion = SchemaVersion.VERSION_1;
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+        doReturn(Optional.of(expectedSchemaVersion)).when(sendNotificationStrategy).decideNotificationForIntyg(utlatande);
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(expectedSchemaVersion, actualNotificationMessage.getVersion());
+    }
+
+    @Test
+    public void shallUseSchemaV3StrategyAsDefaultWhenCreatingFromEvent() throws Exception {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+        final var expectedSchemaVersion = SchemaVersion.VERSION_3;
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+        doReturn(Optional.empty()).when(sendNotificationStrategy).decideNotificationForIntyg(utlatande);
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(expectedSchemaVersion, actualNotificationMessage.getVersion());
+    }
+
+    @Test
+    public void shallIncludeReferenceWhenCreatingFromEvent() throws Exception {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+        final var expectedReference = "REFERENCE";
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+        doReturn(expectedReference).when(referenceService).getReferensForIntygsId(event.getIntygsId());
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(expectedReference, actualNotificationMessage.getReference());
+    }
+
+    @Test
+    public void shallAddTopicFromEventWhenCreatingFromEvent() throws Exception {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(event.getAmne().name(), actualNotificationMessage.getAmne().getCode());
+        assertEquals(event.getAmne().getDescription(), actualNotificationMessage.getAmne().getDisplayName());
+    }
+
+    @Test
+    public void shallLeaveTopicAsNullIfMissingWhenCreatingFromEvent() throws Exception {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+        event.setAmne(null);
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(null, actualNotificationMessage.getAmne());
+    }
+
+    private Handelse createEvent() {
+        final var event = new Handelse();
+        event.setId(1000L);
+        event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+        event.setEnhetsId("UNIT_ID");
+        event.setCode(HandelsekodEnum.SKAPAT);
+        event.setIntygsId("CERTIFICATE_ID");
+        event.setVardgivarId("CAREPROVIDER_ID");
+        event.setTimestamp(LocalDateTime.now());
+        event.setHanteratAv("HANDLED_BY");
+        event.setPersonnummer("PERSON_NUMBER");
+        event.setCertificateVersion("CERTIFICATE_VERSION");
+        event.setCertificateIssuer("CERTIFICATE_ISSUER");
+        event.setCertificateVersion("CERTIFICATE_VERSION");
+        event.setAmne(ArendeAmne.AVSTMN);
+        event.setSistaDatumForSvar(LocalDate.now().plusDays(10));
+        return event;
+    }
 }
