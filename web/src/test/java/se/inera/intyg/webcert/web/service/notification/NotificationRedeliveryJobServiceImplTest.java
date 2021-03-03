@@ -92,6 +92,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         verify(notificationRedeliveryService).resend(
             captureNotificationRedelivery.capture(),
+            any(Handelse.class),
             captureBytes.capture());
 
         assertEquals(expectedNotificationRedelivery, captureNotificationRedelivery.getValue());
@@ -115,7 +116,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
         verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
-            .resend(any(NotificationRedelivery.class), any(byte[].class));
+            .resend(any(NotificationRedelivery.class), any(Handelse.class), any(byte[].class));
     }
 
     @Test
@@ -124,7 +125,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(notificationRedeliveryService, never()).resend(any(), any());
+        verify(notificationRedeliveryService, never()).resend(any(), any(), any());
     }
 
     @Test
@@ -150,7 +151,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
         verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
-            .resend(any(NotificationRedelivery.class), any(byte[].class));
+            .resend(any(NotificationRedelivery.class), any(Handelse.class), any(byte[].class));
     }
 
     @Test
@@ -209,7 +210,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
 
-        verify(notificationRedeliveryService).handleErrors(eq(redelivery), any(WebCertServiceException.class));
+        verify(notificationRedeliveryService).handleErrors(eq(redelivery), any(Handelse.class), any(WebCertServiceException.class));
     }
 
     private NotificationRedelivery createNotificationRedelivery() {

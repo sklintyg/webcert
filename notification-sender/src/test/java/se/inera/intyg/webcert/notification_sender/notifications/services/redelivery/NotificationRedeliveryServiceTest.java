@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING;
@@ -44,7 +45,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.junit.Test;
@@ -110,6 +110,27 @@ public class NotificationRedeliveryServiceTest {
             assertTrue("Doesn't contain actual notification redelivery",
                 expectedNotificationRedeliveryList.contains(actualNotificationRedelivery));
         }
+    }
+
+    @Test
+    public void shallClearRedeliveryTimeOnNotificationRedeliveriesScheduledToBeResend() {
+        final var now = LocalDateTime.now();
+        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
+        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(1000L, now.plus(1, SECONDS));
+        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(2000L, now.plus(2, SECONDS));
+        final var expectedNotificationRedeliveryList = Arrays
+            .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
+
+        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
+            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+
+        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
+
+        for (var actualNotificationRedelivery : actualNotificationRedeliveryList) {
+            assertNull("Redelivery time should be null", actualNotificationRedelivery.getRedeliveryTime());
+        }
+
+        verify(notificationRedeliveryRepo, times(actualNotificationRedeliveryList.size())).save(any(NotificationRedelivery.class));
     }
 
     @Test
@@ -209,19 +230,6 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
-    public void shallRemoveNotificationRedeliveryIfWebcertMessagingFeatureIsOff() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
-
-        doReturn(false).when(featuresHelper).isFeatureActive(FEATURE_USE_WEBCERT_MESSAGING);
-
-        notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-
-        verify(notificationRedeliveryRepo).delete(expectedNotificationRedelivery);
-    }
-
-    @Test
     public void shallUpdateEventWithDeliveryStatusClientIfWebcertMessagingFeatureIsOff() {
         final var expectedNotificationRedelivery = createNotificationRedelivery();
         final var expectedEvent = createEvent();
@@ -239,31 +247,12 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
-    public void shallClearRedeliveryTimeOnResend() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
-
-        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-
-        doReturn(true).when(featuresHelper).isFeatureActive(FEATURE_USE_WEBCERT_MESSAGING);
-
-        notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-
-        verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
-
-        assertNull("RedeliveryTime hasn't been cleared on resend", captureRedelivery.getValue().getRedeliveryTime());
-    }
-
-    @Test
     public void shallFetchEventBeforeCallingResendIfNeeded() {
         final var notificationRedelivery = createNotificationRedelivery();
         final var event = createEvent();
         final var message = "MESSAGE_AS_BYTES".getBytes();
 
-        doReturn(Optional.of(event)).when(handelseRepo).findById(notificationRedelivery.getEventId());
-
-        notificationRedeliveryService.resend(notificationRedelivery, message);
+        notificationRedeliveryService.resend(notificationRedelivery, event, message);
 
         verify(jmsTemplate).convertAndSend(eq(message), any(MessagePostProcessor.class));
     }
@@ -300,65 +289,12 @@ public class NotificationRedeliveryServiceTest {
         final var notificationResultMessage = createNotificationResultMessage();
         final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
 
-        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
         doReturn(notificationResultMessage).when(notificationResultMessageCreator).createFailureMessage(event,
             notificationRedelivery, exception);
 
-        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
+        notificationRedeliveryService.handleErrors(notificationRedelivery, event, exception);
 
         verify(notificationResultMessageSender).sendResultMessage(notificationResultMessage);
-    }
-
-    @Test
-    public void shouldClearRedeliveryTime() {
-        final var event = createEvent();
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
-
-        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-
-        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
-        doReturn(notificationResultMessage).when(notificationResultMessageCreator).createFailureMessage(eq(event),
-            eq(notificationRedelivery), any(Exception.class));
-
-        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
-
-        verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
-        assertNull(captureRedelivery.getValue().getRedeliveryTime());
-    }
-
-    @Test
-    public void shouldClearRedeliveryTimeEvenIfEventDoesntExists() {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
-
-        final var captureRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-
-        doReturn(Optional.empty()).when(handelseRepo).findById(any(Long.class));
-
-        notificationRedeliveryService.handleErrors(notificationRedelivery, exception);
-
-        verify(notificationRedeliveryRepo).save(captureRedelivery.capture());
-        assertNull(captureRedelivery.getValue().getRedeliveryTime());
-    }
-
-    @Test
-    public void shouldSetDeliveryStatusResendWhenCorrelationIdIsMissing() {
-        final var notificationRedelivery = createManualNotificationRedelivery();
-        final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);
-        final var event = createEvent();
-
-        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
-        doReturn(Optional.of(event)).when(handelseRepo).findById(any(Long.class));
-
-        notificationRedeliveryService.getNotificationsForRedelivery(100);
-
-        verify(handelseRepo).save(captureEvent.capture());
-        assertEquals(NotificationDeliveryStatusEnum.RESEND, captureEvent.getValue().getDeliveryStatus());
     }
 
     @Test

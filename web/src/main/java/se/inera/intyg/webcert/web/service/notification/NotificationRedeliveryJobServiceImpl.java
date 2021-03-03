@@ -103,11 +103,11 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
         try {
             final var messageAsBytes = getMessageAsBytes(notificationRedelivery, event);
-            notificationRedeliveryService.resend(notificationRedelivery, messageAsBytes);
+            notificationRedeliveryService.resend(notificationRedelivery, event, messageAsBytes);
             return true;
         } catch (Exception e) {
             LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
-            notificationRedeliveryService.handleErrors(notificationRedelivery, e);
+            notificationRedeliveryService.handleErrors(notificationRedelivery, event, e);
             return false;
         }
     }

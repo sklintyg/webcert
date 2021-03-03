@@ -41,7 +41,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -79,6 +78,8 @@ public class NotificationRedeliveryService {
 
         notificationRedeliveryList.forEach(this::addCorrelationIdIfMissing);
 
+        clearRedeliveryTime(notificationRedeliveryList);
+
         return notificationRedeliveryList;
     }
 
@@ -111,18 +112,14 @@ public class NotificationRedeliveryService {
             throw new RuntimeException(errorMessage, e);
         }
 
-        if (usingWebcertMesssaging()) {
-            clearRedeliveryTime(notificationRedelivery);
-        } else {
+        if (!usingWebcertMesssaging()) {
             setEventAsDeliveredByClient(event);
-            deleteNotificationRedelivery(notificationRedelivery);
         }
     }
 
     @Transactional
-    public void resend(NotificationRedelivery notificationRedelivery, byte[] message) {
-        final var event = handelseRepo.findById(notificationRedelivery.getEventId()).orElseThrow();
-        resend(notificationRedelivery, event, message);
+    public void clearRedeliveryTime(List<NotificationRedelivery> notificationRedeliveryList) {
+        notificationRedeliveryList.forEach(this::clearRedeliveryTime);
     }
 
     private void clearRedeliveryTime(NotificationRedelivery notificationRedelivery) {
@@ -137,15 +134,6 @@ public class NotificationRedeliveryService {
     private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
         if (notificationRedelivery.getCorrelationId() == null) {
             notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
-            setDeliveryStatusResendOnEvent(notificationRedelivery.getEventId());
-        }
-    }
-
-    private void setDeliveryStatusResendOnEvent(Long eventId) {
-        final var event = handelseRepo.findById(eventId);
-        if (event.isPresent()) {
-            event.get().setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
-            handelseRepo.save(event.get());
         }
     }
 
@@ -154,22 +142,9 @@ public class NotificationRedeliveryService {
         handelseRepo.save(event);
     }
 
-    private void deleteNotificationRedelivery(NotificationRedelivery record) {
-        notificationRedeliveryRepo.delete(record);
-    }
-
     @Transactional
-    public void handleErrors(NotificationRedelivery redelivery, Exception exception) {
-        final var event = handelseRepo.findById(redelivery.getEventId());
-        if (event.isPresent()) {
-            final var resultMessage = notificationResultMessageCreator.createFailureMessage(event.get(), redelivery, exception);
-            notificationResultMessageSender.sendResultMessage(resultMessage);
-        } else {
-            LOG.error(String.format(
-                "Couldn't find the event '%s' for the redelivery '%s' that resulted in error!"
-                    + " Will clear redelivery time so it doens't block others to be resent.",
-                redelivery.getEventId(), redelivery.getCorrelationId()));
-        }
-        clearRedeliveryTime(redelivery);
+    public void handleErrors(NotificationRedelivery redelivery, Handelse event, Exception exception) {
+        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event, redelivery, exception);
+        notificationResultMessageSender.sendResultMessage(resultMessage);
     }
 }
