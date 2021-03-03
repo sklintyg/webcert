@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +124,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService
             .createCertificateStatusUpdate(notificationRedelivery, event);
         final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
-        return statusUpdateXml.getBytes();
+        return statusUpdateXml.getBytes(StandardCharsets.UTF_8);
     }
 
 

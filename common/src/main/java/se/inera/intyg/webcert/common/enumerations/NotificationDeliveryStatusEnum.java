@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,9 +25,7 @@ public enum NotificationDeliveryStatusEnum {
 
     SUCCESS("SUCCESS", "Notification delivery status success"),
     RESEND("RESEND", "Notification delivery status resend"),
-    FAILURE("FAILURE", "Notification delivery status failure"),
-    DISCARD("DISCARD", "Notification delivery status discard"),
-    CLIENT("CLIENT", "Notification delivery status client");
+    FAILURE("FAILURE", "Notification delivery status failure");
 
     private final String value;
     private final String description;

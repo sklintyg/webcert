@@ -22,16 +22,5 @@ package se.inera.intyg.webcert.web.service.notification;
 
 public interface NotificationRedeliveryJobService {
 
-    /*void completeStatusUpdate(CertificateStatusUpdateForCareType statusUpdate, NotificationRedeliveryMessage redeliveryMessage,
-        Handelse event) throws ModuleNotFoundException, IOException, ModuleException;
-
-    void createManualNotification(Handelse event, NotificationRedelivery redelivery) throws ModuleNotFoundException, IOException, ModuleException, TemporaryException;
-
-    String marshal(CertificateStatusUpdateForCareType statusUpdate);
-
-    void sendJmsMessage(String statusUpdateXml, Handelse event, NotificationRedelivery redelivery);
-
-    String getLogInfoString(NotificationRedelivery redelivery);*/
-
     void resendScheduledNotifications(int batchSize);
 }
