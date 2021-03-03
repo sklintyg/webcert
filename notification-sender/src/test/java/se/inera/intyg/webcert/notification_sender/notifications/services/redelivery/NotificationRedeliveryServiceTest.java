@@ -31,8 +31,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING;
 import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
@@ -56,16 +54,13 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
@@ -73,13 +68,7 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 public class NotificationRedeliveryServiceTest {
 
     @Mock
-    private HandelseRepository handelseRepo;
-
-    @Mock
     private NotificationRedeliveryRepository notificationRedeliveryRepo;
-
-    @Mock
-    private FeaturesHelper featuresHelper;
 
     @Mock
     private JmsTemplate jmsTemplate;
@@ -229,23 +218,6 @@ public class NotificationRedeliveryServiceTest {
     }
 
     @Test
-    public void shallUpdateEventWithDeliveryStatusClientIfWebcertMessagingFeatureIsOff() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
-
-        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
-
-        doReturn(false).when(featuresHelper).isFeatureActive(FEATURE_USE_WEBCERT_MESSAGING);
-
-        notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-
-        verify(handelseRepo).save(captureEvent.capture());
-
-        assertEquals(NotificationDeliveryStatusEnum.CLIENT, captureEvent.getValue().getDeliveryStatus());
-    }
-
-    @Test
     public void shallFetchEventBeforeCallingResendIfNeeded() {
         final var notificationRedelivery = createNotificationRedelivery();
         final var event = createEvent();
@@ -296,19 +268,6 @@ public class NotificationRedeliveryServiceTest {
         verify(notificationResultMessageSender).sendResultMessage(notificationResultMessage);
     }
 
-    @Test
-    public void shouldNotSetDeliveryStatusWhenCorrelationIdIsPresent() {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var notificationRedeliveryList = Collections.singletonList(notificationRedelivery);
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
-
-        notificationRedeliveryService.getNotificationsForRedelivery(100);
-
-        verifyNoInteractions(handelseRepo);
-    }
-
     private NotificationRedelivery createNotificationRedelivery() {
         return createNotificationRedelivery(1000L);
     }
@@ -342,14 +301,6 @@ public class NotificationRedeliveryServiceTest {
         event.setEnhetsId("ENHETS_ID");
         event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
         return event;
-    }
-
-    private NotificationRedelivery createManualNotificationRedelivery() {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
-        notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
-        return notificationRedelivery;
     }
 
     private NotificationResultMessage createNotificationResultMessage() {

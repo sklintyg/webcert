@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
 import static se.inera.intyg.webcert.common.Constants.JMS_TIMESTAMP;
-import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.CLIENT;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
@@ -40,12 +39,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
@@ -55,13 +51,7 @@ public class NotificationRedeliveryService {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryService.class);
 
     @Autowired
-    private HandelseRepository handelseRepo;
-
-    @Autowired
     private NotificationRedeliveryRepository notificationRedeliveryRepo;
-
-    @Autowired
-    private FeaturesHelper featuresHelper;
 
     @Autowired
     private NotificationResultMessageCreator notificationResultMessageCreator;
@@ -112,10 +102,6 @@ public class NotificationRedeliveryService {
             LOG.error(errorMessage, e);
             throw new RuntimeException(errorMessage, e);
         }
-
-        if (!usingWebcertMesssaging()) {
-            setEventAsDeliveredByClient(event);
-        }
     }
 
     @Transactional
@@ -131,19 +117,10 @@ public class NotificationRedeliveryService {
         notificationRedeliveryRepo.clearRedeliveryTime(eventIds);
     }
 
-    private boolean usingWebcertMesssaging() {
-        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-    }
-
     private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
         if (notificationRedelivery.getCorrelationId() == null) {
             notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
         }
-    }
-
-    private void setEventAsDeliveredByClient(Handelse event) {
-        event.setDeliveryStatus(CLIENT);
-        handelseRepo.save(event);
     }
 
     @Transactional
