@@ -67,7 +67,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
     it('should have dynamic texts on luae_fs draft', function() {
 
       //Min undersökning av patienten
-      expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
+      expect(UtkastPage.getDynamicLabelText('KV_FKMU_0005.ARBETSTERAPEUT.RBK')).toBe(texts['KV_FKMU_0005.ARBETSTERAPEUT.RBK']);
 
       //Funktionsnedsättning/påverkan
       expect(UtkastPage.getDynamicLabelTextById('FRG_16-RBK')).toContain(texts['FRG_16.RBK']);
@@ -92,7 +92,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
 
     it('should have dynamic texts on certificate', function() {
       //Min undersökning av patienten
-      expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
+      expect(IntygPage.getDynamicLabelText('KV_FKMU_0005.ARBETSTERAPEUT.RBK')).toBe(texts['KV_FKMU_0005.ARBETSTERAPEUT.RBK']);
 
       //Funktionsnedsättning/påverkan
       expect(IntygPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
