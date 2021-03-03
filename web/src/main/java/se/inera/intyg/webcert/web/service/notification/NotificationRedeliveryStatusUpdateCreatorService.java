@@ -18,7 +18,6 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
@@ -29,10 +28,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
-
-    @Autowired
-    private HandelseRepository handelseRepo;
-
+    
     @Autowired
     private UtkastRepository draftRepo;
 
@@ -60,9 +56,8 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     /**
      * Creates a {@link CertificateStatusUpdateForCareType} based on the information received in the {@link NotificationRedelivery}.
      */
-    public CertificateStatusUpdateForCareType createCertificateStatusUpdate(NotificationRedelivery redelivery)
+    public CertificateStatusUpdateForCareType createCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
         throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
-        final Handelse event = getEventById(redelivery.getEventId());
         if (containsMessage(redelivery)) {
             return createStatusUpdateFromExistingMessage(redelivery, event);
         }
@@ -126,10 +121,6 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
     private NotificationRedeliveryMessage getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
         return objectMapper.readValue(redelivery.getMessage(), NotificationRedeliveryMessage.class);
-    }
-
-    private Handelse getEventById(Long id) {
-        return handelseRepo.findById(id).orElseThrow();
     }
 
     private Arenden createMessages(CertificateMessages certificateMessages) {

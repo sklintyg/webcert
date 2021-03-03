@@ -20,8 +20,11 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,8 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
 @Service
@@ -46,6 +51,9 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     @Autowired
     private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
+
+    @Autowired
+    private HandelseRepository eventRepository;
 
     @Override
     public void resendScheduledNotifications(int batchSize) {
@@ -66,8 +74,11 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private int resend(List<NotificationRedelivery> notificationRedeliveryList) {
         var successfullySent = 0;
 
+        final var eventMap = getEventMap(notificationRedeliveryList);
+
         for (NotificationRedelivery notificationRedelivery : notificationRedeliveryList) {
-            final var success = resend(notificationRedelivery);
+            final var event = eventMap.get(notificationRedelivery.getEventId());
+            final var success = resend(notificationRedelivery, event);
             if (success) {
                 successfullySent++;
             }
@@ -76,9 +87,22 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         return successfullySent;
     }
 
-    private boolean resend(NotificationRedelivery notificationRedelivery) {
+    private Map<Long, Handelse> getEventMap(List<NotificationRedelivery> notificationRedeliveryList) {
+        final var eventIds = notificationRedeliveryList.stream()
+            .map(NotificationRedelivery::getEventId)
+            .collect(Collectors.toList());
+
+        final var events = eventRepository.findAllById(eventIds);
+
+        final var eventMap = new HashMap<Long, Handelse>(events.size());
+        events.stream().forEach(event -> eventMap.put(event.getId(), event));
+
+        return eventMap;
+    }
+
+    private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
         try {
-            final var messageAsBytes = getMessageAsBytes(notificationRedelivery);
+            final var messageAsBytes = getMessageAsBytes(notificationRedelivery, event);
             notificationRedeliveryService.resend(notificationRedelivery, messageAsBytes);
             return true;
         } catch (Exception e) {
@@ -93,9 +117,10 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             redelivery.getCorrelationId());
     }
 
-    private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery)
+    private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery, Handelse event)
         throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
-        final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery);
+        final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService
+            .createCertificateStatusUpdate(notificationRedelivery, event);
         final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
         return statusUpdateXml.getBytes();
     }
