@@ -1374,10 +1374,6 @@
       </column>
     </createTable>
 
-    <addForeignKeyConstraint constraintName="NOTIFICATION_REDELIVERY_HANDELSE_ID_INTYG_FK"
-        baseColumnNames="HANDELSE_ID" baseTableName="NOTIFICATION_REDELIVERY"
-        referencedColumnNames="ID" referencedTableName="HANDELSE"/>
-
     <createIndex indexName="IDX_NOTIFICATION_REDELIVERY_REDELIVERY_TIME"
         tableName="NOTIFICATION_REDELIVERY" unique="false">
       <column name="REDELIVERY_TIME"/>
@@ -1390,26 +1386,23 @@
   </changeSet>
 
   <changeSet id="68" author="mh">
-    <addColumn tableName="HANDELSE">
-      <column name="DELIVERY_STATUS" type="varchar(255)">
-        <constraints nullable="true"/> <!-- Set to true until functionality of new amq solution has been confirmed -->
+    <createTable tableName="HANDELSE_METADATA">
+      <column name="HANDELSE_ID" type="bigint">
+        <constraints primaryKey="true" nullable="false"/>
       </column>
-    </addColumn>
-    <addColumn tableName="HANDELSE">
+      <column name="DELIVERY_STATUS" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
       <column name="CERTIFICATE_TYPE" type="varchar(255)">
         <constraints nullable="true"/>
       </column>
-    </addColumn>
-    <addColumn tableName="HANDELSE">
       <column name="CERTIFICATE_VERSION" type="varchar(255)">
         <constraints nullable="true"/>
       </column>
-    </addColumn>
-    <addColumn tableName="HANDELSE">
       <column name="CERTIFICATE_ISSUER" type="varchar(255)">
         <constraints nullable="true"/>
       </column>
-    </addColumn>
+    </createTable>
   </changeSet>
 
 </databaseChangeLog>
