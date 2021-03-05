@@ -214,7 +214,7 @@ public class AuthoritiesHelperUtilTest {
 
     private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndSameUnit() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
@@ -224,7 +224,7 @@ public class AuthoritiesHelperUtilTest {
 
     private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndOtherUnit() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(true, false, false,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(true, false, false, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
@@ -234,7 +234,7 @@ public class AuthoritiesHelperUtilTest {
 
     private Map<String, Map<String, PreviousIntyg>> createDBDraftOnOtherCareProvider() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(false, false, false,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(false, false, false, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
@@ -245,12 +245,12 @@ public class AuthoritiesHelperUtilTest {
     private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnSameCareProviderAndSameUnit() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(true, true, true,"", "", null);
+        PreviousIntyg certificate = PreviousIntyg.of(true, true, true, "", "", null);
         Map<String, PreviousIntyg> certificateMap = new HashMap<>();
         certificateMap.put(DB, certificate);
         map.put(CERTIFICATE, certificateMap);
@@ -261,12 +261,12 @@ public class AuthoritiesHelperUtilTest {
     private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnSameCareProviderAndOtherUnit() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(true, false, false,"", "", null);
+        PreviousIntyg certificate = PreviousIntyg.of(true, false, false, "", "", null);
         Map<String, PreviousIntyg> certificateMap = new HashMap<>();
         certificateMap.put(DB, certificate);
         map.put(CERTIFICATE, certificateMap);
@@ -277,12 +277,12 @@ public class AuthoritiesHelperUtilTest {
     private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnOtherCareProvider() {
         Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true,"", "", null);
+        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
         Map<String, PreviousIntyg> draftMap = new HashMap<>();
         draftMap.put(DB, draft);
         map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(false, false, false,"", "", null);
+        PreviousIntyg certificate = PreviousIntyg.of(false, false, false, "", "", null);
         Map<String, PreviousIntyg> certificateMap = new HashMap<>();
         certificateMap.put(DB, certificate);
         map.put(CERTIFICATE, certificateMap);

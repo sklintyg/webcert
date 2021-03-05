@@ -229,7 +229,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
             "utkast", ImmutableMap.of(),
-            "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, true,"name", "id", ogIntygSkapad))));
+            "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, true, "name", "id", ogIntygSkapad))));
 
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
