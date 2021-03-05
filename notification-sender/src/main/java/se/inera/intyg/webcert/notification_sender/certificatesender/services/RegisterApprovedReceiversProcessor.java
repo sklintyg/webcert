@@ -39,7 +39,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class RegisterApprovedReceiversProcessor {
@@ -49,10 +48,10 @@ public class RegisterApprovedReceiversProcessor {
     @Autowired
     private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_TYP) String intygsTyp,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
 
         List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
@@ -80,12 +79,12 @@ public class RegisterApprovedReceiversProcessor {
 
             // Any problems on the other end that yields an ERROR result are treated as PermanentExceptions.
             if (responseType.getResult().getResultCode() == ResultCodeType.ERROR) {
-                throw new PermanentException(responseType.getResult().getResultText());
+                throw new TemporaryException(responseType.getResult().getResultText());
             }
         } catch (IllegalArgumentException e) {
             LOG.error("RegisterApprovedReceiversProcessor message processing failed due to IllegalArgumentException, message: {}",
                 e.getMessage());
-            throw new PermanentException(e.getMessage());
+            throw new TemporaryException(e.getMessage());
         } catch (WebServiceException e) {
             LOG.error("Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
                 intygsId, e.getMessage());
@@ -93,12 +92,12 @@ public class RegisterApprovedReceiversProcessor {
         }
     }
 
-    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws PermanentException {
+    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws  TemporaryException {
         try {
-            return objectMapper.readValue(jsonBody, new TypeReference<List<ReceiverApprovalStatus>>() {
+            return objectMapper.readValue(jsonBody, new TypeReference<>() {
             });
         } catch (IOException e) {
-            throw new PermanentException("Could not parse message body into list of approved receivers.");
+            throw new TemporaryException("Could not parse message body into list of approved receivers.");
         }
     }
 }

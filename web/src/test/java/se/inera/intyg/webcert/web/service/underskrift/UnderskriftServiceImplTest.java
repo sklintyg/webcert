@@ -36,6 +36,8 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateXmlResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -60,6 +62,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -130,6 +133,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
+    @Mock
+    private DraftModelToXmlValidator draftModelToXMLValidator;
+
     @InjectMocks
     private UnderskriftServiceImpl testee;
 
@@ -169,7 +175,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     }
 
     @Test
-    public void testStartSigning() {
+    public void testStartSigning() throws ModuleNotFoundException, ModuleException {
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
@@ -177,6 +183,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
             anyString()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
+
+        when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
 
         SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
         assertNotNull(sb.getIntygSignature());
@@ -238,6 +246,18 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testStartSignInvalidDraft() throws ModuleException, ModuleNotFoundException {
+        when(utkastRepository.findById(INTYG_ID))
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
+                ENHET_ID, PERSON_ID)));
+
+        when(draftModelToXMLValidator.validateDraftModelAsXml(any())).
+            thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
+
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 

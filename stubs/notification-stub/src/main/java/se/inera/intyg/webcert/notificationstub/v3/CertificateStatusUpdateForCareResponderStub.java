@@ -132,6 +132,18 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
                     + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
                     + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
                 break;
+            case "6":
+                LOG.debug("Stub messing upp response. APPLICATION_ERROR");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "Something went terribly wrong!"));
+                break;
+            case "7":
+                LOG.debug("Stub messing upp response. VALIDATION_ERROR");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "This does not validate!"));
+                break;
+            case "8":
+                LOG.debug("Stub messing upp response. Setting as INFO");
+                response.setResult(ResultTypeUtil.infoResult("Thank you!"));
+                break;
             default:
                 LOG.debug("Stub OK. No error emulated.");
                 break;

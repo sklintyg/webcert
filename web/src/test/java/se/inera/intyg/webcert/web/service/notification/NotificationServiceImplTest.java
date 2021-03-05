@@ -71,6 +71,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -81,6 +82,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -107,6 +109,8 @@ public class NotificationServiceImplTest {
     private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
     private static final String ARENDE_ID = "arendeId";
     private static final String VARDGIVAR_ID = "vardgivarId";
+    private static final String SKAPAD_AV_HSA_ID = "skapadAvHsaID";
+    private static final String SKAPAD_AV_FULL_NAME = "Firstname Lastname";
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElse(null);
 
@@ -153,6 +157,9 @@ public class NotificationServiceImplTest {
     @Mock
     private IntygService intygService;
 
+    @Mock
+    private FeaturesHelper featuresHelper;
+
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -165,6 +172,7 @@ public class NotificationServiceImplTest {
 
         when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
         when(referensService.getReferensForIntygsId(any(String.class))).thenReturn(USER_REFERENCE);
+        when(featuresHelper.isFeatureActive(any(String.class))).thenReturn(false);
     }
 
     private void setupMocks(SchemaVersion schemaVersion) {
@@ -1020,6 +1028,7 @@ public class NotificationServiceImplTest {
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         utkast.setModel(INTYG_JSON);
         utkast.setPatientPersonnummer(PATIENT_ID);
+        utkast.setSkapadAv(new VardpersonReferens(SKAPAD_AV_HSA_ID, SKAPAD_AV_FULL_NAME));
         return utkast;
     }
 

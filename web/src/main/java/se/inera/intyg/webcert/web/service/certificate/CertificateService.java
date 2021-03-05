@@ -28,9 +28,9 @@ public interface CertificateService {
 
     /**
      * Retrieves certificates for a doctor on the logged in unit.
+     *
      * @param queryParameter Parameters that certificates should be filtered according on.
      * @return response including a list of certificates and the total amount of certificates.
      */
     CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParameter);
-
 }

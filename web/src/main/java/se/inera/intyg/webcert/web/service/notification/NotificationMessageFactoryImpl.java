@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -26,11 +27,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Component
@@ -42,6 +49,12 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
     @Autowired
     private FragorOchSvarCreator fragorOchSvarCreator;
+    @Autowired
+    private SendNotificationStrategy sendNotificationStrategy;
+    @Autowired
+    private ReferensService referenceService;
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     @Override
     public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
@@ -85,4 +98,20 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
             fragaSvar, skickadeFragor, mottagnaFragor, version, reference, amne, sistaSvarsDatum);
     }
     // CHECKSTYLE:ON ParameterNumber
+    
+    @Override
+    public NotificationMessage createNotificationMessage(Handelse event, String draftJson)
+        throws ModuleNotFoundException, IOException, ModuleException {
+        final var moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(event.getCertificateType()),
+            event.getCertificateVersion());
+        final var utlatande = moduleApi.getUtlatandeFromJson(draftJson);
+        final var schemaVersion = sendNotificationStrategy.decideNotificationForIntyg(utlatande).orElse(SchemaVersion.VERSION_3);
+        final var reference = referenceService.getReferensForIntygsId(event.getIntygsId());
+        final var topicCode = event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription())
+            : null;
+
+        return createNotificationMessage(event.getIntygsId(), utlatande.getTyp(), event.getEnhetsId(),
+            draftJson, event.getCode(), schemaVersion, reference, topicCode, event.getSistaDatumForSvar());
+    }
+
 }

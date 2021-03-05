@@ -58,6 +58,9 @@ public class JmsConfig {
     @Value("${notification.ws.queueName}")
     private String notificationWSQueueName;
 
+    @Value("${notification.postProcessing.queueName}")
+    private String notificationPostProcessingQueueName;
+
     @Value("${notification.aggregation.queueName}")
     private String notificationAggregationQueueName;
 
@@ -109,6 +112,16 @@ public class JmsConfig {
     @Bean
     public JmsTemplate jmsNotificationTemplateForAggregation(ConnectionFactory jmsConnectionFactory) {
         return template(jmsConnectionFactory, notificationAggregationQueueName);
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplateNotificationPostProcessing(ConnectionFactory jmsConnectionFactory) {
+        return template(jmsConnectionFactory, notificationPostProcessingQueueName);
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplateNotificationWSSender(ConnectionFactory jmsConnectionFactory) {
+        return template(jmsConnectionFactory, notificationWSQueueName);
     }
 
     @Bean

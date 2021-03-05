@@ -64,6 +64,7 @@ knownFeatures:
   - &kf180 TAK_KONTROLL_TRADKLATTRING
   - &kf190 SEKRETESSMARKERING
   - &kf200 NOTIFICATION_DISCARD_FELB
+  - &kf300 WEBCERT_MESSAGE_HANDLING
 
 # Aktiverade features i Webcert
 features:
@@ -247,6 +248,10 @@ features:
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B
+    global: false
+  - &f300
+    name: *kf300
+    desc: Activate Webcert message handling
     global: false
 
 pilots:

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
@@ -96,6 +97,9 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion);
 
     void logNotificationSent(String hanType, String unitId, String intygsId);
+
+    void logStatusUpdateQueued(String certificateId, String correlationId, String logicalAddress, String certificateType,
+        String certificateVersion, String eventName, LocalDateTime eventTime, String currentUser);
 
     void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
 

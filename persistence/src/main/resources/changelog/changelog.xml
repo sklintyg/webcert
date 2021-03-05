@@ -1352,4 +1352,57 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="67" author="mh">
+    <createTable tableName="NOTIFICATION_REDELIVERY">
+      <column name="HANDELSE_ID" type="bigint">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="CORRELATION_ID" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="MESSAGE" type="mediumblob">
+        <constraints nullable="true"/>
+      </column>
+      <column name="REDELIVERY_STRATEGY" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="REDELIVERY_TIME" type="datetime">
+        <constraints nullable="true"/>
+      </column>
+      <column name="ATTEMPTED_DELIVERIES" type="int">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+
+    <createIndex indexName="IDX_NOTIFICATION_REDELIVERY_REDELIVERY_TIME"
+        tableName="NOTIFICATION_REDELIVERY" unique="false">
+      <column name="REDELIVERY_TIME"/>
+    </createIndex>
+
+    <createIndex indexName="IDX_NOTIFICATION_REDELIVERY_CORRELATION_ID"
+        tableName="NOTIFICATION_REDELIVERY" unique="true">
+      <column name="CORRELATION_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="68" author="mh">
+    <createTable tableName="HANDELSE_METADATA">
+      <column name="HANDELSE_ID" type="bigint">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="DELIVERY_STATUS" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CERTIFICATE_TYPE" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CERTIFICATE_VERSION" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CERTIFICATE_ISSUER" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>

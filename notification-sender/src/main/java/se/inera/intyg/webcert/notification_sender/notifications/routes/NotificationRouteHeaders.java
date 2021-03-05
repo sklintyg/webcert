@@ -31,5 +31,4 @@ public final class NotificationRouteHeaders {
 
     private NotificationRouteHeaders() {
     }
-
 }
