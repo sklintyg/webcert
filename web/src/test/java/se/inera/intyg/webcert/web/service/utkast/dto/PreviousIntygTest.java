@@ -29,31 +29,34 @@ public class PreviousIntygTest {
 
     @Test
     public void testNotSameVardgivare() {
-        PreviousIntyg dto = PreviousIntyg.of(false, true, "Enhet", "intygsId", null);
+        PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null);
 
         assertFalse(dto.isSameVardgivare());
         assertNull(dto.getEnhetName());
         assertNull(dto.getLatestIntygsId());
+        assertFalse(dto.isEnableShowDoiButton());
         assertFalse(dto.isSameEnhet());
     }
 
     @Test
     public void testSameVardgivareSameEnhet() {
-        PreviousIntyg dto = PreviousIntyg.of(true, true, "Enhet", "intygsId", null);
+        PreviousIntyg dto = PreviousIntyg.of(true, true, true, "Enhet", "intygsId", null);
 
         assertTrue(dto.isSameVardgivare());
         assertEquals("Enhet", dto.getEnhetName());
         assertEquals("intygsId", dto.getLatestIntygsId());
+        assertTrue(dto.isEnableShowDoiButton());
         assertTrue(dto.isSameEnhet());
     }
 
     @Test
     public void testSameVardgivareNotSameEnhet() {
-        PreviousIntyg dto = PreviousIntyg.of(true, false, "Enhet", "intygsId", null);
+        PreviousIntyg dto = PreviousIntyg.of(true, false, false, "Enhet", "intygsId", null);
 
         assertTrue(dto.isSameVardgivare());
         assertEquals("Enhet", dto.getEnhetName());
         assertEquals("intygsId", dto.getLatestIntygsId());
+        assertFalse(dto.isEnableShowDoiButton());
         assertFalse(dto.isSameEnhet());
     }
 }
