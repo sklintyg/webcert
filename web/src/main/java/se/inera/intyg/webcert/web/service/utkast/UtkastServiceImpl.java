@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Strings;
+import java.util.stream.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
+import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.*;
@@ -37,9 +39,12 @@ import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -51,6 +56,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -325,8 +331,8 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
-                                                                                 final IntygUser user,
-                                                                                 final String currentDraftId) {
+        final IntygUser user, final String currentDraftId) {
+
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
             authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
@@ -340,78 +346,51 @@ public class UtkastServiceImpl implements UtkastService {
         Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
 
         ret.put(INTYG_INDICATOR, signedList.stream()
-            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                Collectors.mapping(utkast -> PreviousIntyg.of(
-                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                    utkast.getEnhetsNamn(),
-                    utkast.getIntygsId(),
-                    utkast.getSkapad()),
-                    Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
-
-        ret.put(UTKAST_INDICATOR, toFilter.stream()
-            .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
-                    && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
-                    && !utkast.getIntygsId().equals(currentDraftId))
-            .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
-            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                Collectors.mapping(utkast -> PreviousIntyg.of(
-                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                    utkast.getEnhetsNamn(),
-                    utkast.getIntygsId(),
-                    utkast.getSkapad()),
-                    Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
-
-        return ret;
-    }
-
-    @Override
-    public Map<String, Map<String, PreviousIntygWithCareUnit>> checkIfPersonHasExistingIntygForFrontend(final Personnummer personnummer,
-        final IntygUser user, final String currentDraftId) {
-
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
-            authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
-                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
-
-        List<Utkast> signedList = toFilter.stream()
-            .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
-            .filter(utkast -> utkast.getAterkalladDatum() == null)
-            .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
-            .collect(Collectors.toList());
-
-        Map<String, Map<String, PreviousIntygWithCareUnit>> ret = new HashMap<>();
-
-        ret.put(INTYG_INDICATOR, signedList.stream()
-            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                Collectors.mapping(utkast -> PreviousIntygWithCareUnit.of(
-                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                    draftAccessServiceHelper.isAllowedToReadUtkast(utkast, utkast.getPatientPersonnummer()),
-                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                    utkast.getEnhetsNamn(),
-                    utkast.getIntygsId(),
-                    utkast.getSkapad()),
-                    Collectors.reducing(new PreviousIntygWithCareUnit(), (a, b) -> b.isSameVardgivare() ? b : a)))));
+            .collect(getUtkastMapCollector(user)));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
             .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
                 && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
                 && !utkast.getIntygsId().equals(currentDraftId))
             .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
-            .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                Collectors.mapping(utkast -> PreviousIntygWithCareUnit.of(
-                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                    draftAccessServiceHelper.isAllowedToReadUtkast(utkast, utkast.getPatientPersonnummer()) &&
-                        draftAccessServiceHelper.isAllowedToEditUtkast(utkast),
-                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                    utkast.getEnhetsNamn(),
-                    utkast.getIntygsId(),
-                    utkast.getSkapad()),
-                    Collectors.reducing(new PreviousIntygWithCareUnit(), (a, b) -> b.isSameVardgivare() ? b : a)))));
+            .collect(getUtkastMapCollector(user)));
 
         return ret;
     }
 
+    private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(IntygUser user) {
+        return Collectors.groupingBy(Utkast::getIntygsTyp,
+            Collectors.mapping(utkast -> PreviousIntyg.of(
+                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                enableShowDoiButton(user, utkast),
+                utkast.getEnhetsNamn(),
+                utkast.getIntygsId(),
+                utkast.getSkapad()),
+                Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)));
+    }
+
+    private boolean enableShowDoiButton(IntygUser user, Utkast utkast) {
+        if (!utkast.getIntygsTyp().equalsIgnoreCase(KvIntygstyp.DOI.name())) {
+            return false;
+        }
+
+        final var isSameCareUnit = CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, utkast.getEnhetsId());
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+            return isSameCareUnit;
+        }
+
+        if (user.getOrigin().equals(UserOriginType.NORMAL.name())) {
+            final var isSameUnit = user.getValdVardenhet().getId().equals(utkast.getEnhetsId());
+            final var unitOfUser = HoSPersonHelper.findVardenhetEllerMottagning(user, user.getValdVardenhet().getId());
+            if (unitOfUser.isPresent()) {
+                final var userOnCareUnit = unitOfUser.get() instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+                return userOnCareUnit ? isSameCareUnit : isSameUnit;
+            }
+        }
+
+        return false;
+    }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),

@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntygWithCareUnit;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
@@ -211,8 +211,8 @@ public class UtkastApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer,
                                                    @PathParam("currentDraftId") String currentDraftId) {
-        Map<String, Map<String, PreviousIntygWithCareUnit>> res = utkastService
-            .checkIfPersonHasExistingIntygForFrontend(Personnummer.createPersonnummer(personnummer).get(),
+        Map<String, Map<String, PreviousIntyg>> res = utkastService
+            .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
                 getWebCertUserService().getUser(), currentDraftId);
         return Response.ok(res).build();
     }
