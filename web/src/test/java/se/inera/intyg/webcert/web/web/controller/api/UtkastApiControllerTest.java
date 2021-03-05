@@ -135,7 +135,7 @@ public class UtkastApiControllerTest {
 
         Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
-        hasPreviousIntyg.put("luse", PreviousIntyg.of(true, false, "Enhet", "intygsId", null));
+        hasPreviousIntyg.put("luse", PreviousIntyg.of(true, false, false,"Enhet", "intygsId", null));
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any(), any())).thenReturn(hasPrevious);
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);

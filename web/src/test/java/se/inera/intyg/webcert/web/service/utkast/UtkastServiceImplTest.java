@@ -1198,6 +1198,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         user.setHsaId("hsaId");
         user.setNamn("namn");
+        user.setOrigin("NORMAL");
         List<String> tmp = new ArrayList<>();
         tmp.add("Ortoped");
         user.setSpecialiseringar(tmp);
