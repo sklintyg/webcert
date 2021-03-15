@@ -2107,66 +2107,66 @@ F106		Amnesisyndrom orsakat av alkohol
 F107		Psykotisk störning som resttillstånd eller med sen debut, orsakad av alkohol
 F108		Andra specificerade psykiska störningar och beteendestörningar orsakade av alkohol
 F109		Psykiska störningar och beteendestörningar orsakade av alkohol, ospecificerade
-F110		Psykiska störningar och beteendestörningar orsakade av opioider-Akut intoxikation
-F111		Psykiska störningar och beteendestörningar orsakade av opioider-Skadligt bruk
-F112		Psykiska störningar och beteendestörningar orsakade av opioider-Beroendesyndrom
-F113		Psykiska störningar och beteendestörningar orsakade av opioider-Abstinens
-F114		Psykiska störningar och beteendestörningar orsakade av opioider-Abstinens med delirium
-F115		Psykiska störningar och beteendestörningar orsakade av opioider-Psykotisk störning
-F116		Psykiska störningar och beteendestörningar orsakade av opioider-Amnesisyndrom
-F117		Psykiska störningar och beteendestörningar orsakade av opioider-Psykotisk störning som resttillstånd eller med sen debut
-F118		Psykiska störningar och beteendestörningar orsakade av opioider-Andra specificerade psykiska störningar och beteendestörningar
-F119		Psykiska störningar och beteendestörningar orsakade av opioider-Psykisk störning och beteendestörning, ospecificerad
-F120		Psykiska störningar och beteendestörningar orsakade av cannabis-Akut intoxikation
-F121		Psykiska störningar och beteendestörningar orsakade av cannabis-Skadligt bruk
-F122		Psykiska störningar och beteendestörningar orsakade av cannabis-Beroendesyndrom
-F123		Psykiska störningar och beteendestörningar orsakade av cannabis-Abstinens
-F124		Psykiska störningar och beteendestörningar orsakade av cannabis-Abstinens med delirium
-F125		Psykiska störningar och beteendestörningar orsakade av cannabis-Psykotisk störning
-F126		Psykiska störningar och beteendestörningar orsakade av cannabis-Amnesisyndrom
-F127		Psykiska störningar och beteendestörningar orsakade av cannabis-Psykotisk störning som resttillstånd eller med sen debut
-F128		Psykiska störningar och beteendestörningar orsakade av cannabis-Andra specificerade psykiska störningar och beteendestörningar
-F129		Psykiska störningar och beteendestörningar orsakade av cannabis-Psykisk störning och beteendestörning, ospecificerad
-F130		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Akut intoxikation
-F131		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Skadligt bruk
-F132		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Beroendesyndrom
-F133		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Abstinens
-F134		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Abstinens med delirium
-F135		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Psykotisk störning
-F136		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Amnesisyndrom
-F137		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Psykotisk störning som resttillstånd eller med sen debut
-F138		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Andra specificerade psykiska störningar och beteendestörningar
-F139		Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika-Psykisk störning och beteendestörning, ospecificerad
-F140		Psykiska störningar och beteendestörningar orsakade av kokain-Akut intoxikation
-F141		Psykiska störningar och beteendestörningar orsakade av kokain-Skadligt bruk
-F142		Psykiska störningar och beteendestörningar orsakade av kokain-Beroendesyndrom
-F143		Psykiska störningar och beteendestörningar orsakade av kokain-Abstinens
-F144		Psykiska störningar och beteendestörningar orsakade av kokain-Abstinens med delirium
-F145		Psykiska störningar och beteendestörningar orsakade av kokain-Psykotisk störning
-F146		Psykiska störningar och beteendestörningar orsakade av kokain-Amnesisyndrom
-F147		Psykiska störningar och beteendestörningar orsakade av kokain-Psykotisk störning som resttillstånd eller med sen debut
-F148		Psykiska störningar och beteendestörningar orsakade av kokain-Andra specificerade psykiska störningar och beteendestörningar
-F149		Psykiska störningar och beteendestörningar orsakade av kokain-Psykisk störning och beteendestörning, ospecificerad
-F150		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Akut intoxikation
-F151		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Skadligt bruk
-F152		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Beroendesyndrom
-F153		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Abstinens
-F154		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Abstinens med delirium
-F155		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Psykotisk störning
-F156		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Amnesisyndrom
-F157		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Psykotisk störning som resttillstånd eller med sen debut
-F158		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Andra specificerade psykiska störningar och beteendestörningar
-F159		Psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein-Psykisk störning och beteendestörning, ospecificerad
-F160		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Akut intoxikation
-F161		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Skadligt bruk
-F162		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Beroendesyndrom
-F163		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Abstinens
-F164		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Abstinens med delirium
-F165		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Psykotisk störning
-F166		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Amnesisyndrom
-F167		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Psykotisk störning som resttillstånd eller med sen debut
-F168		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Andra specificerade psykiska störningar och beteendestörningar
-F169		Psykiska störningar och beteendestörningar orsakade av hallucinogener-Psykisk störning och beteendestörning, ospecificerad
+F110		Akut intoxikation orsakad av opioider
+F111		Skadligt bruk av opioider
+F112		Opioidberoende
+F113		Abstinens orsakad av opioider
+F114		Abstinens med delirium orsakad av opioider
+F115		Psykotisk störning orsakad av opioider
+F116		Amnesisyndrom orsakat av opioider
+F117		Psykotisk störning som resttillstånd eller med sen debut orsakad av opioider
+F118		Andra specificerade psykiska störningar och beteendestörningar orsakade av opioider
+F119		Psykisk störning och beteendestörning orsakad av opioider, ospecificerad
+F120		Akut intoxikation orsakad av cannabis
+F121		Skadligt bruk av cannabis
+F122		Cannabisberoende
+F123		Abstinens orsakad av cannabis
+F124		Abstinens med delirium orsakad av cannabis
+F125		Psykotisk störning orsakad av cannabis
+F126		Amnesisyndrom orsakat av cannabis
+F127		Psykotisk störning som resttillstånd eller med sen debut orsakad av cannabis
+F128		Andra specificerade psykiska störningar och beteendestörningar orsakade av cannabis
+F129		Psykisk störning och beteendestörning orsakad av cannabis, ospecificerad
+F130		Akut intoxikation orsakad av sedativa och hypnotika
+F131		Skadligt bruk av sedativa och hypnotika
+F132		Beroende av sedativa och hypnotika
+F133		Abstinens orsakad av sedativa och hypnotika
+F134		Abstinens med delirium orsakad av sedativa och hypnotika
+F135		Psykotisk störning orsakad av sedativa och hypnotika
+F136		Amnesisyndrom orsakat av sedativa och hypnotika
+F137		Psykotisk störning som resttillstånd eller med sen debut orsakad av sedativa och hypnotika
+F138		Andra specificerade psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika
+F139		Psykisk störning och beteendestörning orsakad av sedativa och hypnotika, ospecificerad
+F140		Akut intoxikation orsakad av kokain
+F141		Skadligt bruk av kokain
+F142		Kokainberoende
+F143		Abstinens orsakad av kokain
+F144		Abstinens med delirium orsakad av kokain
+F145		Psykotisk störning orsakad av kokain
+F146		Amnesisyndrom orsakat av kokain
+F147		Psykotisk störning som resttillstånd eller med sen debut orsakad av kokain
+F148		Andra specificerade psykiska störningar och beteendestörningar orsakade av kokain
+F149		Psykisk störning och beteendestörning orsakad av kokain, ospecificerad
+F150		Akut intoxikation orsakad av andra stimulantia, däribland koffein
+F151		Skadligt bruk av andra stimulantia, däribland koffein
+F152		Beroende av andra stimulantia, däribland koffein
+F153		Abstinens orsakad av andra stimulantia, däribland koffein
+F154		Abstinens med delirium orsakad av andra stimulantia, däribland koffein
+F155		Psykotisk störning orsakad av andra stimulantia, däribland koffein
+F156		Amnesisyndrom orsakat av andra stimulantia, däribland koffein
+F157		Psykotisk störning som resttillstånd eller med sen debut orsakad av andra stimulantia, däribland koffein
+F158		Andra specificerade psykiska störningar och beteendestörningar orsakade av andra stimulantia, däribland koffein
+F159		Psykisk störning och beteendestörning orsakad av andra stimulantia, däribland koffein, ospecificerad
+F160		Akut intoxikation orsakad av hallucinogener
+F161		Skadligt bruk av hallucinogener
+F162		Beroende av hallucinogener
+F163		Abstinens orsakad av hallucinogener
+F164		Abstinens med delirium orsakad av hallucinogener
+F165		Psykotisk störning orsakad av hallucinogener
+F166		Amnesisyndrom orsakat av hallucinogener
+F167		Psykotisk störning som resttillstånd eller med sen debut orsakad av hallucinogener
+F168		Andra specificerade psykiska störningar och beteendestörningar orsakade av hallucinogener
+F169		Psykisk störning och beteendestörning orsakad av hallucinogener, ospecificerad
 F170		Akut intoxikation orsakad av tobak
 F171		Skadligt bruk av tobak
 F172		Tobaksberoende
@@ -2177,26 +2177,26 @@ F176		Amnesisyndrom orsakat av tobak
 F177		Psykotisk störning som resttillstånd eller med sen debut orsakad av tobak
 F178		Andra specificerade psykiska störningar och beteendestörningar orsakade av tobak
 F179		Psykisk störning och beteendestörning orsakad av tobak, ospecificerad
-F180		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Akut intoxikation
-F181		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Skadligt bruk
-F182		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Beroendesyndrom
-F183		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Abstinens
-F184		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Abstinens med delirium
-F185		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Psykotisk störning
-F186		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Amnesisyndrom
-F187		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Psykotisk störning som resttillstånd eller med sen debut
-F188		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Andra specificerade psykiska störningar och beteendestörningar
-F189		Psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel-Psykisk störning och beteendestörning, ospecificerad
-F190		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Akut intoxikation
-F191		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Skadligt bruk
-F192		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Beroendesyndrom
-F193		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Abstinens
-F194		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Abstinens med delirium
-F195		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Psykotisk störning
-F196		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Amnesisyndrom
-F197		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Psykotisk störning som resttillstånd eller med sen debut
-F198		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Andra specificerade psykiska störningar och beteendestörningar
-F199		Psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser-Psykisk störning och beteendestörning, ospecificerad
+F180		Akut intoxikation orsakad av flyktiga lösningsmedel
+F181		Skadligt bruk av flyktiga lösningsmedel
+F182		Beroende av flyktiga lösningsmedel
+F183		Abstinens orsakad av flyktiga lösningsmedel
+F184		Abstinens med delirium orsakad av flyktiga lösningsmedel
+F185		Psykotisk störning orsakad av flyktiga lösningsmedel
+F186		Amnesisyndrom orsakat av flyktiga lösningsmedel
+F187		Psykotisk störning som resttillstånd eller med sen debut orsakad av flyktiga lösningsmedel
+F188		Andra specificerade psykiska störningar och beteendestörningar orsakade av flyktiga lösningsmedel
+F189		Psykisk störning och beteendestörning orsakad av flyktiga lösningsmedel, ospecificerad
+F190		Akut intoxikation orsakad av flera droger i kombination och av andra psykoaktiva substanser
+F191		Skadligt bruk av flera droger i kombination och av andra psykoaktiva substanser
+F192		Beroende av flera droger i kombination och av andra psykoaktiva substanser
+F193		Abstinens orsakad av flera droger i kombination och av andra psykoaktiva substanser
+F194		Abstinens med delirium orsakad av flera droger i kombination och av andra psykoaktiva substanser
+F195		Psykotisk störning orsakad av flera droger i kombination och av andra psykoaktiva substanser
+F196		Amnesisyndrom orsakat av flera droger i kombination och av andra psykoaktiva substanser
+F197		Psykotisk störning som resttillstånd eller med sen debut orsakad av flera droger i kombination och av andra psykoaktiva substanser
+F198		Andra specificerade psykiska störningar och beteendestörningar orsakade av flera droger i kombination och av andra psykoaktiva substanser
+F199		Psykisk störning och beteendestörning orsakad av flera droger i kombination och av andra psykoaktiva substanser, ospecificerad
 F200		Paranoid schizofreni
 F201		Hebefren schizofreni
 F202		Kataton schizofreni
@@ -2277,7 +2277,7 @@ F422		Tvångstankar med tvångshandlingar
 F428		Andra specificerade tvångssyndrom
 F429		Tvångssyndrom, ospecificerat
 F430		Akut stressreaktion
-F431		Posttraumatiskt stressyndrom
+F431		Posttraumatiskt stressyndrom (PTSD)
 F432		Anpassningsstörning
 F438		Andra specificerade reaktioner på svår stress
 F439		Reaktion på svår stress, ospecificerad
@@ -2487,7 +2487,7 @@ G058	*	Encefalit, myelit och encefalomyelit vid andra sjukdomar som klassificera
 G060		Intrakraniell abscess och intrakraniellt granulom
 G061		Intraspinal abscess och intraspinalt granulom
 G062		Extradural och subdural abscess, ospecificerad
-G079		Abscess och granulom i skallen och ryggradskanalen vid sjukdomar som klassificeras på annan plats
+G079	*	Abscess och granulom i skallen och ryggradskanalen vid sjukdomar som klassificeras på annan plats
 G089		Flebit och tromboflebit i skallens och ryggradskanalens venösa hålrum
 G099		Sena effekter av inflammatoriska sjukdomar i centrala nervsystemet
 G109		Huntingtons sjukdom
@@ -2516,7 +2516,7 @@ G213		Postencefalitisk parkinsonism
 G214		Vaskulär parkinsonism
 G218		Annan sekundär parkinsonism
 G219		Sekundär parkinsonism, ospecificerad
-G229		Parkinsonism vid sjukdomar som klassificeras på annan plats
+G229	*	Parkinsonism vid sjukdomar som klassificeras på annan plats
 G230		Hallervorden-Spatz sjukdom
 G231		Progressiv supranukleär oftalmoplegi [Steele-Richardson-Olszewski]
 G232		Multipel systematrofi, parkinsontyp [MSA-P]
@@ -2540,7 +2540,7 @@ G255		Annan korea
 G256		Läkemedelsutlösta tics och andra tics av organisk orsak
 G258		Andra specificerade basalgangliesjukdomar och rörelserubbningar
 G259		Basalgangliesjukdom och rörelserubbning, ospecificerad
-G269		Basalganglietillstånd och rörelserubbningar vid sjukdomar som klassificeras på annan plats
+G269	*	Basalganglietillstånd och rörelserubbningar vid sjukdomar som klassificeras på annan plats
 G300		Alzheimers sjukdom med tidig debut
 G301		Alzheimers sjukdom med sen debut
 G308		Annan specificerad form av Alzheimers sjukdom
@@ -3137,7 +3137,7 @@ H813		Annan perifer yrsel
 H814		Yrsel av central orsak
 H818		Andra specificerade rubbningar i balansapparatens funktion
 H819		Rubbning i balansapparatens funktion, ospecificerad
-H829		Yrselsyndrom vid sjukdomar som klassificeras på annan plats
+H829	*	Yrselsyndrom vid sjukdomar som klassificeras på annan plats
 H830		Labyrintit
 H831		Labyrintfistel
 H832		Labyrintdysfunktion
@@ -3370,8 +3370,8 @@ I494		Annan och ospecificerad prematur depolarisation
 I495		Sick sinus syndrome
 I498		Andra specificerade hjärtarytmier
 I499		Hjärtarytmi, ospecificerad
-I500		Högerhjärtsvikt (akut) (kronisk)
-I501		Vänsterhjärtsvikt (akut) (subakut)
+I500		Högerhjärtsvikt
+I501		Vänsterhjärtsvikt
 I509		Hjärtinsufficiens, ospecificerad
 I510		Förvärvad septumdefekt i hjärtat
 I511		Ruptur av chordae tendineae som ej klassificeras på annan plats
@@ -4145,7 +4145,7 @@ K739		Kronisk hepatit, ospecificerad
 K740		Leverfibros
 K741		Leverskleros
 K742		Leverfibros med leverskleros
-K743		Primär biliär cirros
+K743		Primär biliär cirros (PBC)
 K744		Sekundär biliär cirros
 K745		Biliär cirros, ospecificerad
 K746		Annan och ospecificerad levercirros
@@ -5789,6 +5789,8 @@ O470		Förvärkar och hotande förtidsbörd före utgången av graviditetsvecka 
 O471		Förvärkar och avstannat värkarbete efter utgången av graviditetsvecka 37
 O479		Förvärkar och avstannat värkarbete, ospecificerat
 O489		Överburenhet
+O490		Graviditetslängd v. 40+0 – v. 40+6
+O491		Graviditetslängd v. 41+0 – v. 41+6
 O601		För tidigt spontant värkarbete med prematurbörd
 O602		För tidigt spontant värkarbete med förlossning i fullgången tid
 O603		Prematurbörd utan spontant värkarbete
@@ -6653,10 +6655,10 @@ Q555		Medfödd avsaknad och aplasi av penis
 Q556		Andra medfödda missbildningar av penis
 Q558		Andra specificerade medfödda missbildningar av de manliga könsorganen
 Q559		Medfödd missbildning av manligt könsorgan, ospecificerad
-Q560		Hermafroditism som ej klassificeras på annan plats
-Q561		Manlig pseudohermafroditism som ej klassificeras på annan plats
-Q562		Kvinnlig pseudohermafroditism som ej klassificeras på annan plats
-Q563		Pseudohermafroditism, ospecificerad
+Q560		Person med både testikel- och ovarievävnad som ej klassificeras på annan plats
+Q561		Man med testikelvävnad och bristande maskulinisering som ej klassificeras på annan plats
+Q562		Kvinna med ovarievävnad och maskulinisering/virilisering som ej klassificeras på annan plats
+Q563		Person med obestämd könskörtel
 Q564		Obestämt kön, ospecificerat
 Q600		Njuragenesi, ensidig
 Q601		Njuragenesi, dubbelsidig
@@ -6939,7 +6941,7 @@ Q987		Man med könskromosomal mosaicism
 Q988		Andra specificerade könskromosomavvikelser, manlig fenotyp
 Q989		Könskromosomavvikelse, manlig fenotyp, ospecificerad
 Q990		Chimär 46,XX/46,XY
-Q991		46,XX äkta hermafrodit
+Q991		Gonaddysgenesi
 Q992		Skör X-kromosom
 Q998		Andra specificerade kromosomavvikelser
 Q999		Kromosomavvikelse, ospecificerad
@@ -8565,8 +8567,8 @@ T982		Sena besvär av vissa tidiga komplikationer av skada genom yttre våld
 T983		Sena besvär av komplikationer till kirurgiska åtgärder och medicinsk vård som ej klassificeras på annan plats
 U049		Svår akut respiratorisk sjukdom [SARS], ospecificerad
 U070		Hälsotillstånd relaterat till bruk av elektroniska cigaretter (Vaping related disorder)
-U071		Covid-19, virus påvisat
-U072		Covid-19, virus ej påvisat
+U071		Covid-19, virus identifierat
+U072		Covid-19, virus ej identifierat
 U073		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U074		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U075		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
@@ -8583,7 +8585,7 @@ U085		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Soci
 U086		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U087		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U088		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
-U089		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U089		Covid-19 i den egna sjukhistorien, ospecificerat
 U090		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U091		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U092		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
@@ -8593,7 +8595,47 @@ U095		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Soci
 U096		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U097		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U098		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
-U099		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U099		Postinfektiöst tillstånd efter covid-19, ospecificerat
+U100		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U101		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U102		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U103		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U104		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U105		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U106		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U107		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U108		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U109		Multisystemiskt inflammatoriskt syndrom associerat med covid-19, ospecificerat
+U110		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U111		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U112		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U113		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U114		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U115		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U116		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U117		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U118		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U119		Kontakt för vaccination mot covid-19
+U120		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U121		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U122		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U123		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U124		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U125		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U126		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U127		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U128		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U129		Vaccin mot covid-19 i terapeutiskt bruk som orsak till ogynnsam effekt
+U130		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U131		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U132		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U133		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U134		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U135		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U136		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U137		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U138		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
+U139		Kod som kan tas i bruk med kort varsel efter beslut av WHO och enligt Socialstyrelsens anvisningar
 U820		Resistens mot penicillin
 U821		Resistens mot meticillin
 U822		Resistens på grund av betalaktamaser med utvidgat spektrum (ESBL)

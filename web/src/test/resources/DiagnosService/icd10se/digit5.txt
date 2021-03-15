@@ -316,7 +316,7 @@ C887W		Annan specificerad malign immunoproliferativ sjukdom
 C910A		Akut lymfatisk leukemi (T-ALL)
 C910B		Akut lymfatisk leukemi (pre-B-ALL, B-ALL)
 C920A		Akut myeloisk leukemi (M0, M1, M2)
-C920B		Akut myeloisk leukemi (t8;21)
+C920B		Akut myeloisk leukemi t(8;21)
 D069A		Höggradig intraepitelial skivepitellesion (HSIL) i cervix
 D069W		Cancer in situ i cervix beskriven på annat sätt (än som HSIL)
 D136A		Intraduktal papillär mucinös neoplasi (IPMN) i pankreas, involverar huvudgången
@@ -655,7 +655,7 @@ E230W		Andra former av hypofysunderfunktion
 E230X		Hypofunktion hypofys UNS
 E250A		Binjurebarkshyperplasi, kongenital, med saltförlust
 E250B		Binjurebarkshyperplasi, kongenital, med enzymbrist
-E250C		Pseudohermafroditism, adrenal, kvinnlig
+E250C		Binjurebarkshyperplasi, sent debuterande form (icke klassisk form) 
 E250D		Macrogenitosomia praecox
 E343A		Kortvuxenhet, konstitutionell
 E343B		Kortvuxenhet, psykosocialt betingad
@@ -664,8 +664,8 @@ E343D		Kortvuxenhet efter intrauterin tillväxthämning (SGA) och/eller underbur
 E343X		Kortvuxenhet UNS
 E344A		Långvuxenhet, konstitutionell
 E344X		Långvuxenhet UNS
-E345A		Testikulär feminisering
-E345B		Pseudohermafroditism, manlig, med androgenresistens
+E345A		Fullständig androgenokänslighet (CAIS)
+E345B		Partiell androgenokänslighet (PAIS)
 E345W		Annan specificerad androgenresistens
 E348B		Progeri [Hutchinson-Gilford]
 E348C		Leprechaunism
@@ -793,6 +793,7 @@ F318C		Bipolär sjukdom typ 2, svår depressiv episod utan psykotiska symtom
 F318D		Bipolär sjukdom typ 2, svår depressiv episod med psykotiska symtom
 F318E		Bipolär sjukdom typ 2, blandad episod
 F318F		Bipolär sjukdom typ 2, utan aktuella symtom
+F318W		Bipolär sjukdom, annan specificerad
 F323A		Uppgivenhetssyndrom
 F323W		Annan svår depressiv episod med psykotiska symtom
 F402B		Djurfobi
@@ -980,13 +981,13 @@ H348A		Centralocklusion av retinalven
 H348B		Grenocklusion av retinalven
 H348C		Incipient retinalvensocklusion
 H348X		Ospecificerad form av retinalvensocklusion
-H351A		Prematuritetsretinopati; demarkationslinje mellan vaskulariserad och ej vaskulariserad retina
-H351B		Prematuritetsretinopati; lätt upphöjd vall (ridge), ej vidgade eller slingriga kärl i centrum
-H351C		Prematuritetsretinopati; ridge med slingriga och vidgade kärl i centrum
-H351D		Prematuritetsretinopati; ridge med extraretinala fibrovaskulära förändringar, ej vidgade eller slingriga kärl i centrum
-H351E		Prematuritetsretinopati; ridge med extraretinala fibrovaskulära förändringar samt vidgade och slingriga kärl i centrum
-H351F		Prematuritetsretinopati; subtotal retinalavlossning
-H351G		Prematuritetsretinopati; total retinalavlossning, retrolental fibroplasi
+H351A		Prematuritetsretinopati: demarkationslinje mellan vaskulariserad och ej vaskulariserad retina
+H351B		Prematuritetsretinopati: lätt upphöjd vall (ridge), ej vidgade eller slingriga kärl i centrum
+H351C		Prematuritetsretinopati: ridge med slingriga och vidgade kärl i centrum
+H351D		Prematuritetsretinopati: ridge med extraretinala fibrovaskulära förändringar, ej vidgade eller slingriga kärl i centrum
+H351E		Prematuritetsretinopati: ridge med extraretinala fibrovaskulära förändringar samt vidgade och slingriga kärl i centrum
+H351F		Prematuritetsretinopati: subtotal retinalavlossning
+H351G		Prematuritetsretinopati: total retinalavlossning, retrolental fibroplasi
 H351L		Prematuritetsretinopati (ROP), grad 1-2
 H351M		Prematuritetsretinopati (ROP), grad 3-5, ej behandlad
 H351N		Prematuritetsretinopati (ROP), grad 3-5, behandlad
@@ -1079,6 +1080,10 @@ I498C		Kardiell ersättningsrytm
 I498D		Brugadas syndrom
 I498E		Långt QT-syndrom
 I498W		Andra specificerade hjärtarytmier
+I501A		Vänsterhjärtsvikt med nedsatt ejektionsfraktion (HFrEF)
+I501B		Vänsterhjärtsvikt med lätt nedsatt ejektionsfraktion (HFmrEF)
+I501C		Vänsterhjärtsvikt med bevarad ejektionsfraktion (HFpEF)
+I501X		Vänsterhjärtsvikt, ospecificerad
 I700A		Ateroskleros i torakala aorta
 I700B		Ateroskleros i bukaorta
 I700X		Ateroskleros i aorta, ospecificerat
@@ -1113,6 +1118,8 @@ I781A		Angioma senile
 I781B		Spindelnevus
 I781C		Telangiektasier
 I781X		Icke-neoplastiskt nevus, ospecifierat
+I828A		Emboli och trombos i mesenterialven
+I828W		Emboli och trombos i annan specificerad ven
 I871A		Striktur av ven
 I871B		May-Thurner syndrom
 I871C		Vena cava superior syndrom
@@ -2071,8 +2078,8 @@ N394W		Annan specificerad urininkontinens
 N469A		Manlig infertilitet på grund av azoospermi
 N469B		Manlig infertilitet på grund av andra störningar i sädeskvaliteten än azoospermi
 N469C		Manlig infertilitet beroende på faktorer hos partnern
-N469D		Manlig infertilitet; sociala faktorer med möjlig inverkan på fertiliteten
-N469E		Manlig infertilitet; oförklarad efter utredning
+N469D		Manlig infertilitet: sociala faktorer med möjlig inverkan på fertiliteten
+N469E		Manlig infertilitet: oförklarad efter utredning
 N469W		Manlig infertilitet av annan specificerad orsak
 N469X		Manlig infertilitet, ospecificerad orsak
 N479A		Fastsittande förhud
@@ -2120,10 +2127,10 @@ N950A		Postmenopausal blödning hos icke hormonbehandlad kvinna
 N950B		Postmenopausal blödning hos östrogenbehandlad kvinna
 N950W		Annan specificerad postmenopausal blödning
 N950X		Postmenopausal blödning, ospecificerad
-N978A		Kvinnlig infertilitet; immunologiska orsaker
-N978B		Kvinnlig infertilitet; sociala faktorer med möjlig inverkan på fertiliteten
-N978C		Kvinnlig infertilitet; oförklarad efter utredning
-N978D		Kvinnlig infertilitet; i samband med endometrios
+N978A		Kvinnlig infertilitet: immunologiska orsaker
+N978B		Kvinnlig infertilitet: sociala faktorer med möjlig inverkan på fertiliteten
+N978C		Kvinnlig infertilitet: oförklarad efter utredning
+N978D		Kvinnlig infertilitet: i samband med endometrios
 N978W		Kvinnlig infertilitet av annan specificerad orsak
 O049A		Legal abort t.o.m. graviditetsvecka 9+0
 O049B		Legal abort fr.o.m. graviditetsvecka 9+1 t.o.m. v. 12+0
@@ -2203,8 +2210,8 @@ O368B		Vård av blivande moder för annat specificerat (misstänkt) problem hos 
 O368C		Vård av blivande moder för alloimmun trombocytimmunisering
 O368D		Vård av blivande moder för autoimmun trombocytimmunisering
 O368W		Vård av blivande moder för annat känt eller misstänkt problem hos fostret
-O430A		Placentalt transfusionssyndrom; fetomaternell transfusion
-O430B		Placentalt transfusionssyndrom; tvillingtransfusion
+O430A		Placentalt transfusionssyndrom: fetomaternell transfusion
+O430B		Placentalt transfusionssyndrom: tvillingtransfusion
 O430W		Annat specificerat placentalt transfusionssyndrom
 O430X		Placentalt transfusionssyndrom, ospecificerat
 O432A		Placenta accreta/increta
@@ -2221,30 +2228,30 @@ O603A		Prematurbörd utan spontant värkarbete, extremt förtidig förlossning (
 O603B		Prematurbörd utan spontant värkarbete, mycket förtidig förlossning (förlossning fr.o.m. graviditetsvecka 29 men före utgången av vecka 32)
 O603C		Prematurbörd utan spontant värkarbete, måttligt förtidig förlossning (förlossning fr.o.m. graviditetsvecka 33 men före utgången av vecka 37)
 O603X		Prematurbörd utan spontant värkarbete, ospecificerad
-O610A		Försök till medicinskt igångsättande av värkarbetet; förlossning inom 48 timmar
+O610A		Försök till medicinskt igångsättande av värkarbetet: förlossning inom 48 timmar
 O610B		Försök till medicinskt igångsättande av värkarbetet, förlossning efter mer än 48 timmar, inkl. misslyckad induktion
-O610X		Försök till medicinskt igångsättande av värkarbetet; ospecificerad tid till förlossning
+O610X		Försök till medicinskt igångsättande av värkarbetet: ospecificerad tid till förlossning
 O611A		Försök till mekaniskt igångsättande av värkarbetet, förlossning inom 48 timmar
 O611B		Försök till mekaniskt igångsättande av värkarbetet, förlossning efter mer än 48 timmar, inkl. misslyckad induktion
-O611X		Försök till mekaniskt igångsättande av värkarbetet; ospecificerad tid till förlossning
-O701A		Perinealbristning av andra graden; skada som omfattar mindre än halva perinealkroppen
-O701B		Perinealbristning av andra graden; skada som omfattar mer än halva perinealkroppen
-O701C		Perinealbristning av andra graden; skada som omfattar perinealkroppen och bristning djupare än 2 cm i nedre delen av vagina
-O701D		Perinealbristning av andra graden; skada som omfattar perinealkroppen och bristning som sträcker sig till övre delen av vagina och är djupare än 2 cm
-O701E		Perinealbristning av andra graden; unilateral skada på m. levator ani
-O701F		Perinealbristning av andra graden; bilateral skada på m. levator ani
+O611X		Försök till mekaniskt igångsättande av värkarbetet: ospecificerad tid till förlossning
+O701A		Perinealbristning av andra graden: skada som omfattar mindre än halva perinealkroppen
+O701B		Perinealbristning av andra graden: skada som omfattar mer än halva perinealkroppen
+O701C		Perinealbristning av andra graden: skada som omfattar perinealkroppen och bristning djupare än 2 cm i nedre delen av vagina
+O701D		Perinealbristning av andra graden: skada som omfattar perinealkroppen och bristning som sträcker sig till övre delen av vagina och är djupare än 2 cm
+O701E		Perinealbristning av andra graden: unilateral skada på m. levator ani
+O701F		Perinealbristning av andra graden: bilateral skada på m. levator ani
 O701W		Perinealbristning av andra graden, annan specificerad
 O701X		Perinealbristning av andra graden, ospecificerad
-O702C		Perinealbristning av tredje graden; skada som omfattar mindre än halva externa analsfinktern
-O702D		Perinealbristning av tredje graden; skada som omfattar mer än halva externa analsfinktern (inkl. total ruptur av externa sfinktern utan engagemang av interna sfinktern)
-O702E		Perinealbristning av tredje graden; skada som omfattar både externa och interna analsfinktern
-O702F		Perinealbristning av tredje graden; skada som omfattar endast inre analsfinktern
+O702C		Perinealbristning av tredje graden: skada som omfattar mindre än halva externa analsfinktern
+O702D		Perinealbristning av tredje graden: skada som omfattar mer än halva externa analsfinktern (inkl. total ruptur av externa sfinktern utan engagemang av interna sfinktern)
+O702E		Perinealbristning av tredje graden: skada som omfattar både externa och interna analsfinktern
+O702F		Perinealbristning av tredje graden: skada som omfattar endast inre analsfinktern
 O702X		Perinealbristning av tredje graden, ospecificerad
 O721A		Atonisk blödning efter placentaavgång
 O721B		Blödning i efterbördsskedet p.g.a. förlossningsskada
 O721X		Blödning omedelbart efter förlossningen, UNS
-O756A		Vattenavgång utan sammandragningar i fullgången tid; förlossningen startar spontant
-O756B		Vattenavgång utan sammandragningar i fullgången tid; förlossningen induceras
+O756A		Vattenavgång utan sammandragningar i fullgången tid: förlossningen startar spontant
+O756B		Vattenavgång utan sammandragningar i fullgången tid: förlossningen induceras
 O756X		Fördröjd förlossning UNS efter spontan eller ospecificerad hinnbristning
 O800A		Spontanförlossning, enkelbörd, framstupa kronbjudning
 O800B		Spontanförlossning, enkelbörd, vidöppen hjässbjudning
@@ -2897,6 +2904,19 @@ T823A		Graftmigration som komplikation i andra kärltransplantat
 T823B		Stentfraktur som komplikation i andra kärltransplantat
 T823W		Annan specificerad mekanisk komplikation i andra kärltransplantat
 T823X		Ospecificerad mekanisk komplikation i andra kärltransplantat
+T828A		Blödning som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828B		Emboli som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828C		Distal embolisering som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828D		Trombos som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828E		Ocklusion som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828F		Stenos i graft eller nativt kärl som komplikation av protes, implantat och transplantat i hjärta och kärl, med ischemiska symtom
+T828G		Stenos i graft eller nativt kärl som komplikation av protes, implantat och transplantat i hjärta och kärl, utan ischemiska symtom
+T828H		Pseudoaneurysm som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828J		AV-fistel som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828K		Aortoenterisk fistel som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828L		Endoläckage som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828M		Kärlruptur som komplikation av protes, implantat och transplantat i hjärta och kärl
+T828W		Annan specificerad komplikation av protes, implantat och transplantat i hjärta och kärl
 T840B		Mekanisk komplikation av inre ledprotes i axelled
 T840C		Mekanisk komplikation av inre ledprotes i armbåge
 T840D		Mekanisk komplikation av inre ledprotes i handled/hand
@@ -23919,8 +23939,6 @@ Z858E		Malign tumör i annan bindväv och mjukvävnad i den egna sjukhistorien (
 Z858F		Malign tumör i hjärnan och andra delar av centrala nervsystemet i den egna sjukhistorien (tillstånd som klassificeras under C70-C72)
 Z858G		Malign tumör i tyreoidea i den egna sjukhistorien (tillstånd som klassificeras under C73)
 Z858W		Malign tumör i andra specificerade organ och organsystem eller med ofullständigt angiven lokalisation i den egna sjukhistorien (tillstånd som klassificeras under C69, C74-C79, C97)
-Z861A		Covid-19 i den egna sjukhistorien (tillstånd som klassificeras under U07.1-U07.2)
-Z861W		Annan specificerad infektions- och parasitsjukdom i den egna sjukhistorien (tillstånd som klassificeras under A00-B89, B99)
 Z864A		Skadligt bruk av tobak i den egna sjukhistorien (tillstånd som klassificeras under F17)
 Z864W		Skadligt bruk och missbruk av psykoaktiva droger i den egna sjukhistorien (tillstånd som klassificeras under F10-F16, F18-F19)
 Z866A		TIA (transitoriska ischemiska attacker) i den egna sjukhistorien (tillstånd som klassificeras under G45)
