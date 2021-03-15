@@ -286,6 +286,10 @@ public class UtkastApiController extends AbstractApiController {
             .map(lie -> lie.getPatientId())
             .collect(Collectors.toList()));
 
+        Map<Personnummer, Boolean> deceasedStatusMap = patientDetailsResolver.getDeceasedStatusForList(listIntygEntries.stream()
+            .map(lie -> lie.getPatientId())
+            .collect(Collectors.toList()));
+
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
             .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
@@ -295,6 +299,8 @@ public class UtkastApiController extends AbstractApiController {
         listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
 
         listIntygEntries.stream().forEach(lie -> markTestIndicator(lie, testIndicatorStatusMap));
+
+        listIntygEntries.stream().forEach(lie -> markDeceased(lie, deceasedStatusMap));
 
         listIntygEntries.forEach(this::markForwardingAllowed);
 
@@ -403,6 +409,12 @@ public class UtkastApiController extends AbstractApiController {
     private void markTestIndicator(ListIntygEntry lie, Map<Personnummer, Boolean> testIndicatorStatusMap) {
         if (testIndicatorStatusMap.get(lie.getPatientId())) {
             lie.setTestIntyg(true);
+        }
+    }
+
+    private void markDeceased(ListIntygEntry lie, Map<Personnummer, Boolean> deceasedStatusMap) {
+        if (deceasedStatusMap.get(lie.getPatientId())) {
+            lie.setAvliden(true);
         }
     }
 

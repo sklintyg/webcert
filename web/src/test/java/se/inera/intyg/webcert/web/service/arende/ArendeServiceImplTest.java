@@ -112,6 +112,9 @@ public class ArendeServiceImplTest {
         final HashMap<Personnummer, Boolean> testIndicatorMap = new HashMap<>();
         testIndicatorMap.put(Personnummer.createPersonnummer(PATIENT_PERSON_ID).get(), Boolean.FALSE);
         Mockito.when(patientDetailsResolver.getTestIndicatorForList(any())).thenReturn(testIndicatorMap);
+        final HashMap<Personnummer, Boolean> deceasedStatusMap = new HashMap<>();
+        deceasedStatusMap.put(Personnummer.createPersonnummer(PATIENT_PERSON_ID).get(), Boolean.FALSE);
+        Mockito.when(patientDetailsResolver.getDeceasedStatusForList(any())).thenReturn(deceasedStatusMap);
         final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
         qfsr.setResults(Lists.emptyList());
         Mockito.when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);

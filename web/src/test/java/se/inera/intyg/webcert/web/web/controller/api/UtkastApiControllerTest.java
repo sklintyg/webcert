@@ -153,6 +153,10 @@ public class UtkastApiControllerTest {
         Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
         when(testIndicatorMap.get(any())).thenReturn(Boolean.FALSE);
         when(patientDetailsResolver.getTestIndicatorForList(anyList())).thenReturn(testIndicatorMap);
+
+        Map<Personnummer, Boolean> deceasedStatusMap = mock(Map.class);
+        when(deceasedStatusMap.get(any(Personnummer.class))).thenReturn(Boolean.FALSE);
+        Mockito.when(patientDetailsResolver.getDeceasedStatusForList(any())).thenReturn(deceasedStatusMap);
     }
 
     @Test

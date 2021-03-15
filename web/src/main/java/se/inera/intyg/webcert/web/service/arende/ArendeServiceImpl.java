@@ -522,6 +522,12 @@ public class ArendeServiceImpl implements ArendeService {
             .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
             .collect(Collectors.toList()));
 
+        Map<Personnummer, Boolean> deceasedStatusMap = patientDetailsResolver.getDeceasedStatusForList(results.stream()
+            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
+            .collect(Collectors.toList()));
+
+
+
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
             .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
@@ -535,6 +541,10 @@ public class ArendeServiceImpl implements ArendeService {
         results.stream()
             .filter(ali -> testIndicatorStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()))
             .forEach(ali -> ali.setTestIntyg(true));
+
+        results.stream()
+            .filter(ali -> deceasedStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()))
+            .forEach(ali -> ali.setAvliden(true));
 
         response.setTotalCount(results.size());
 

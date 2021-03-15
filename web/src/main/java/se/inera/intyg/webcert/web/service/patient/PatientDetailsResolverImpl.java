@@ -151,6 +151,27 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
+    public Map<Personnummer, Boolean> getDeceasedStatusForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, Boolean> deceasedStatusMap = new HashMap<>();
+        if (personnummerList == null || personnummerList.size() == 0) {
+            return deceasedStatusMap;
+        }
+
+        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
+
+        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
+        persons.forEach((key, value) -> {
+            if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
+                deceasedStatusMap.put(key, value.getPerson().isAvliden());
+            } else {
+                deceasedStatusMap.put(key, false);
+            }
+        });
+
+        return deceasedStatusMap;
+    }
+
+    @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
         return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
