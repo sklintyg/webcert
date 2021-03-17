@@ -279,7 +279,8 @@ public class UtkastApiController extends AbstractApiController {
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
-        Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap =
+            patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
             .map(lie -> lie.getPatientId())
             .collect(Collectors.toList()));
 
