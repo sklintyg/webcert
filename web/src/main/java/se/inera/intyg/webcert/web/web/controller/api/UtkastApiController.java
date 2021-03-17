@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -278,29 +279,17 @@ public class UtkastApiController extends AbstractApiController {
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
-        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(listIntygEntries.stream()
-            .map(lie -> lie.getPatientId())
-            .collect(Collectors.toList()));
-
-        Map<Personnummer, Boolean> testIndicatorStatusMap = patientDetailsResolver.getTestIndicatorForList(listIntygEntries.stream()
-            .map(lie -> lie.getPatientId())
-            .collect(Collectors.toList()));
-
-        Map<Personnummer, Boolean> deceasedStatusMap = patientDetailsResolver.getDeceasedStatusForList(listIntygEntries.stream()
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
             .map(lie -> lie.getPatientId())
             .collect(Collectors.toList()));
 
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
-            .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
+            .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, statusMap))
             .collect(Collectors.toList());
 
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
-        listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
-
-        listIntygEntries.stream().forEach(lie -> markTestIndicator(lie, testIndicatorStatusMap));
-
-        listIntygEntries.stream().forEach(lie -> markDeceased(lie, deceasedStatusMap));
+        listIntygEntries.stream().forEach(lie -> markStatuses(lie, statusMap));
 
         listIntygEntries.forEach(this::markForwardingAllowed);
 
@@ -382,22 +371,25 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user,
-        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        final SekretessStatus sekretessStatus = sekretessStatusMap.get(patientId);
-
+        Map<Personnummer, PatientDetailsResolverResponse> sekretessStatusMap) {
+        final SekretessStatus sekretessStatus = sekretessStatusMap.get(patientId).isProtectedPerson();
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            // No matter if user has
             return false;
         } else {
             return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified();
         }
-
     }
 
-    private void markSekretessMarkering(ListIntygEntry lie, Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        if (sekretessStatusMap.get(lie.getPatientId()) == SekretessStatus.TRUE) {
+    private void markStatuses(ListIntygEntry lie, Map<Personnummer, PatientDetailsResolverResponse> statusMap) {
+        markSekretessMarkering(lie, statusMap);
+        markDeceased(lie, statusMap);
+        markTestIndicator(lie, statusMap);
+    }
+
+    private void markSekretessMarkering(ListIntygEntry lie, Map<Personnummer, PatientDetailsResolverResponse> statusMap) {
+        if (statusMap.get(lie.getPatientId()).isProtectedPerson() == SekretessStatus.TRUE) {
             lie.setSekretessmarkering(true);
         }
     }
@@ -406,14 +398,14 @@ public class UtkastApiController extends AbstractApiController {
      * If the patient is marked with testIndicator, always consider it as a test intyg. DON'T set it to false if it isn't, because
      * the certificate could already have been marked as testintyg if it was created at the time that the patient was testIndicated.
      */
-    private void markTestIndicator(ListIntygEntry lie, Map<Personnummer, Boolean> testIndicatorStatusMap) {
-        if (testIndicatorStatusMap.get(lie.getPatientId())) {
+    private void markTestIndicator(ListIntygEntry lie, Map<Personnummer, PatientDetailsResolverResponse> statusMap) {
+        if (statusMap.get(lie.getPatientId()).isTestIndicator()) {
             lie.setTestIntyg(true);
         }
     }
 
-    private void markDeceased(ListIntygEntry lie, Map<Personnummer, Boolean> deceasedStatusMap) {
-        if (deceasedStatusMap.get(lie.getPatientId())) {
+    private void markDeceased(ListIntygEntry lie, Map<Personnummer, PatientDetailsResolverResponse> statusMap) {
+        if (statusMap.get(lie.getPatientId()).isDeceased()) {
             lie.setAvliden(true);
         }
     }

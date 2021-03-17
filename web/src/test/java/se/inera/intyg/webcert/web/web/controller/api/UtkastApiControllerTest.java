@@ -52,6 +52,7 @@ import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -150,13 +151,13 @@ public class UtkastApiControllerTest {
             return personInformationTypeList;
         });
 
-        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
-        when(testIndicatorMap.get(any())).thenReturn(Boolean.FALSE);
-        when(patientDetailsResolver.getTestIndicatorForList(anyList())).thenReturn(testIndicatorMap);
-
-        Map<Personnummer, Boolean> deceasedStatusMap = mock(Map.class);
-        when(deceasedStatusMap.get(any(Personnummer.class))).thenReturn(Boolean.FALSE);
-        Mockito.when(patientDetailsResolver.getDeceasedStatusForList(any())).thenReturn(deceasedStatusMap);
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
+        PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
+        response.setTestIndicator(false);
+        response.setDeceased(false);
+        response.setProtectedPerson(SekretessStatus.FALSE);
+        when(statusMap.get(any(Personnummer.class))).thenReturn(response);
+        Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
 
     @Test
@@ -384,16 +385,20 @@ public class UtkastApiControllerTest {
     public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
         setupUser("", LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
-        when(sekretessMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
-        when(sekretessMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
+        PatientDetailsResolverResponse patientResponse = mock(PatientDetailsResolverResponse.class);
+        when(patientResponse.isTestIndicator()).thenReturn(false);
+        when(patientResponse.isDeceased()).thenReturn(false);
+        when(patientResponse.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
 
-        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
-        when(testIndicatorMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(Boolean.FALSE);
-        when(testIndicatorMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(Boolean.FALSE);
-        when(patientDetailsResolver.getTestIndicatorForList(anyList())).thenReturn(testIndicatorMap);
+        PatientDetailsResolverResponse responseProtectedPerson = mock(PatientDetailsResolverResponse.class);
+        when(responseProtectedPerson.isTestIndicator()).thenReturn(false);
+        when(responseProtectedPerson.isDeceased()).thenReturn(false);
+        when(responseProtectedPerson.isProtectedPerson()).thenReturn(SekretessStatus.TRUE);
 
+        when(statusMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(patientResponse);
+        when(statusMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(responseProtectedPerson);
+        when(patientDetailsResolver.getPersonStatusesForList(anyList())).thenReturn(statusMap);
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
         when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
@@ -411,9 +416,11 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
-        when(sekretessMap.get(any())).thenReturn(SekretessStatus.UNDEFINED);
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
+        PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
+        patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
+        when(statusMap.get(any())).thenReturn(patientResponse);
+        when(patientDetailsResolver.getPersonStatusesForList(anyList())).thenReturn(statusMap);
 
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));

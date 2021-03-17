@@ -75,6 +75,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
@@ -198,17 +199,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             return personInformationTypeList;
         });
 
-        Map<Personnummer, SekretessStatus> map = mock(Map.class);
-        when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        doReturn(map).when(patientDetailsResolver).getSekretessStatusForList(anyList());
-
-        Map<Personnummer, Boolean> testIndicatorMap = mock(Map.class);
-        when(testIndicatorMap.get(any(Personnummer.class))).thenReturn(Boolean.FALSE);
-        Mockito.when(patientDetailsResolver.getTestIndicatorForList(any())).thenReturn(testIndicatorMap);
-
-        Map<Personnummer, Boolean> deceasedStatusMap = mock(Map.class);
-        when(deceasedStatusMap.get(any(Personnummer.class))).thenReturn(Boolean.FALSE);
-        Mockito.when(patientDetailsResolver.getDeceasedStatusForList(any())).thenReturn(deceasedStatusMap);
+        PatientDetailsResolverResponse response = mock(PatientDetailsResolverResponse.class);
+        when(response.isTestIndicator()).thenReturn(false);
+        when(response.isDeceased()).thenReturn(false);
+        when(response.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
+        when(statusMap.get(any())).thenReturn(response);
+        Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
 
     @Test
@@ -1333,9 +1330,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testFilterArendeFiltersOutNonVerifiedSekretessPatients() {
         WebCertUser webCertUser = createUser();
 
-        Map<Personnummer, SekretessStatus> map = mock(Map.class);
-        when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        doReturn(map).when(patientDetailsResolver).getSekretessStatusForList(anyList());
+        Map<Personnummer, PatientDetailsResolverResponse> map = mock(Map.class);
+        PatientDetailsResolverResponse patientResponse = mock(PatientDetailsResolverResponse.class);
+        when(patientResponse.isTestIndicator()).thenReturn(false);
+        when(patientResponse.isDeceased()).thenReturn(false);
+        when(patientResponse.isProtectedPerson()).thenReturn(SekretessStatus.UNDEFINED);
+        when(map.get(any())).thenReturn(patientResponse);
+        doReturn(map).when(patientDetailsResolver).getPersonStatusesForList(anyList());
 
         when(webcertUserService.getUser()).thenReturn(webCertUser);
         when(webcertUserService.isAuthorizedForUnit(any(), eq(true))).thenReturn(true);
@@ -1357,7 +1358,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(patientDetailsResolver, times(1)).getSekretessStatusForList(anyList());
+        verify(patientDetailsResolver, times(1)).getPersonStatusesForList(anyList());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
         verify(arendeRepository).filterArende(any(Filter.class));

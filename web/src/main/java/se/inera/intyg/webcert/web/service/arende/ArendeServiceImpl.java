@@ -79,6 +79,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
@@ -86,6 +87,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
@@ -514,37 +516,18 @@ public class ArendeServiceImpl implements ArendeService {
         results.addAll(fsResults.getResults());
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
-        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(results.stream()
             .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
             .collect(Collectors.toList()));
-
-        Map<Personnummer, Boolean> testIndicatorStatusMap = patientDetailsResolver.getTestIndicatorForList(results.stream()
-            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
-            .collect(Collectors.toList()));
-
-        Map<Personnummer, Boolean> deceasedStatusMap = patientDetailsResolver.getDeceasedStatusForList(results.stream()
-            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
-            .collect(Collectors.toList()));
-
-
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
-            .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
+            .filter(ali -> this.passesSekretessCheck(ali.getIntygTyp(), user,
+                statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())))
             .collect(Collectors.toList());
 
-        // We must mark all items having patient with sekretessmarkering
-        results.stream()
-            .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE, sekretessStatusMap))
-            .forEach(ali -> ali.setSekretessmarkering(true));
+        results.stream().forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())));
 
-        results.stream()
-            .filter(ali -> testIndicatorStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()))
-            .forEach(ali -> ali.setTestIntyg(true));
-
-        results.stream()
-            .filter(ali -> deceasedStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()))
-            .forEach(ali -> ali.setAvliden(true));
 
         response.setTotalCount(results.size());
 
@@ -580,6 +563,12 @@ public class ArendeServiceImpl implements ArendeService {
 
     Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
         return ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+    }
+
+    private void markStatuses(ArendeListItem ali, PatientDetailsResolverResponse status) {
+        ali.setAvliden(status.isDeceased());
+        ali.setTestIntyg(status.isTestIndicator());
+        ali.setSekretessmarkering(status.isProtectedPerson() == SekretessStatus.TRUE);
     }
 
     private static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
@@ -642,11 +631,9 @@ public class ArendeServiceImpl implements ArendeService {
         return comparator;
     }
 
-    private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
-        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-
-        final SekretessStatus sekretessStatus = sekretessStatusMap.get(Personnummer.createPersonnummer(patientId).get());
-
+    private boolean passesSekretessCheck(String intygsTyp, WebCertUser user,
+        PatientDetailsResolverResponse response) {
+        final SekretessStatus sekretessStatus = response.isProtectedPerson();
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             return false;
         } else {
@@ -654,13 +641,7 @@ public class ArendeServiceImpl implements ArendeService {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified();
         }
-
-    }
-
-    private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus,
-        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        return sekretessStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()) == sekretessStatus;
-    }
+}
 
     @Override
     @Transactional

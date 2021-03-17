@@ -128,47 +128,30 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
-    public Map<Personnummer, Boolean> getTestIndicatorForList(List<Personnummer> personnummerList) {
-        Map<Personnummer, Boolean> testIndicatorStatusMap = new HashMap<>();
+    public Map<Personnummer, PatientDetailsResolverResponse> getPersonStatusesForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = new HashMap<>();
         if (personnummerList == null || personnummerList.size() == 0) {
-            return testIndicatorStatusMap;
-        }
-
-        // Make sure we don't ask twice for a given personnummer.
-        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
-
-        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
-        persons.forEach((key, value) -> {
-            if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
-                testIndicatorStatusMap.put(key, value.getPerson().isTestIndicator());
-            } else {
-                // If no matching person was found, then consider it to have the testIndicator.
-                testIndicatorStatusMap.put(key, true);
-            }
-        });
-
-        return testIndicatorStatusMap;
-    }
-
-    @Override
-    public Map<Personnummer, Boolean> getDeceasedStatusForList(List<Personnummer> personnummerList) {
-        Map<Personnummer, Boolean> deceasedStatusMap = new HashMap<>();
-        if (personnummerList == null || personnummerList.size() == 0) {
-            return deceasedStatusMap;
+            return statusMap;
         }
 
         List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
 
         Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
         persons.forEach((key, value) -> {
+            PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
             if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
-                deceasedStatusMap.put(key, value.getPerson().isAvliden());
+                patientResponse.setDeceased(value.getPerson().isAvliden());
+                patientResponse.setTestIndicator(value.getPerson().isTestIndicator());
+                patientResponse.setProtectedPerson(value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
-                deceasedStatusMap.put(key, false);
+                patientResponse.setDeceased(false);
+                patientResponse.setTestIndicator(true);
+                patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
             }
+            statusMap.put(key, patientResponse);
         });
 
-        return deceasedStatusMap;
+        return statusMap;
     }
 
     @Override
