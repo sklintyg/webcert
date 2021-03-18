@@ -79,7 +79,7 @@ export function sektionExplosivtImplantat(implantat) {
 export function sektionYttreUndersökning(undersökning) {
     const idagMinus10Dagar  = Cypress.moment().subtract(10,  'days').format('YYYY-MM-DD');
     if (undersökning.ja) {
-        cy.get('#undersokningYttre-JA').check();
+        cy.get('#undersokningYttre-SVAR_JA').check();
     }
     if (undersökning.skaGöras) {
         cy.get('#undersokningYttre-UNDERSOKNING_SKA_GORAS').check();
