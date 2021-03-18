@@ -109,11 +109,11 @@ public class ArendeServiceImplTest {
 
         Mockito.when(arendeRepository.filterArende(any())).thenReturn(Arrays.asList(arende1, arende3, arende2));
         final Map<Personnummer, PatientDetailsResolverResponse> statusMap = Mockito.mock(Map.class);
-        PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
-        response.setTestIndicator(false);
-        response.setDeceased(false);
-        response.setProtectedPerson(SekretessStatus.FALSE);
-        Mockito.when(statusMap.get(any())).thenReturn(response);
+        PatientDetailsResolverResponse response = Mockito.mock(PatientDetailsResolverResponse.class);
+        Mockito.when(response.isTestIndicator()).thenReturn(false);
+        Mockito.when(response.isDeceased()).thenReturn(false);
+        Mockito.when(response.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
+        Mockito.when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
         final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
         qfsr.setResults(Lists.emptyList());

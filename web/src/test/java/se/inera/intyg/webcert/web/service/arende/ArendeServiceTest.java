@@ -204,7 +204,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(response.isDeceased()).thenReturn(false);
         when(response.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
-        when(statusMap.get(any())).thenReturn(response);
+        when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
 
