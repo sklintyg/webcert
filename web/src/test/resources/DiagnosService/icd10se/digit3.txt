@@ -1115,6 +1115,7 @@ O45		För tidig avlossning av moderkakan
 O46		Blödning före förlossningen som ej klassificeras på annan plats
 O47		Förvärkar och hotande förtidsbörd
 O48		Överburenhet
+O49		Graviditetslängd v. 40+0 – v. 41+6
 O60		För tidigt värkarbete och prematurbörd
 O61		Försök till igångsättande av förlossningsarbetet
 O62		Värkrubbningar
@@ -1257,7 +1258,7 @@ Q52		Andra medfödda missbildningar av de kvinnliga könsorganen
 Q53		Icke nedstigen testikel
 Q54		Hypospadi
 Q55		Andra medfödda missbildningar av de manliga könsorganen
-Q56		Obestämt kön och pseudohermafroditism
+Q56		Obestämt kön
 Q60		Avsaknad och annan medfödd underutveckling av njure
 Q61		Cystnjuresjukdom
 Q62		Medfödda avflödeshinder i njurbäcken och medfödda missbildningar i urinledare
@@ -1585,8 +1586,12 @@ T97		Sena besvär av toxiska effekter av substanser med i huvudsak icke-medicins
 T98		Sena besvär av andra och ospecificerade effekter av yttre orsaker
 U04		Svår akut respiratorisk sjukdom [SARS]
 U07		Kod som kan tas i bruk med kort varsel
-U08		Kod som kan tas i bruk med kort varsel
-U09		Kod som kan tas i bruk med kort varsel
+U08		Covid-19 i den egna sjukhistorien
+U09		Postinfektiöst tillstånd efter covid-19
+U10		Multisystemiskt inflammatoriskt syndrom associerat med covid-19
+U11		Kontakt för vaccination avseende covid-19
+U12		Vaccin avseende covid-19 i terapeutiskt bruk som orsak till ogynnsam effekt
+U13		Kod som kan tas i bruk med kort varsel
 U82		Resistens mot betalaktamantibiotika
 U83		Resistens mot andra antibiotika
 U84		Resistens mot andra antimikrobiella läkemedel

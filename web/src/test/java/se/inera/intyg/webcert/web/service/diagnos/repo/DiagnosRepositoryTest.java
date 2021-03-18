@@ -58,7 +58,7 @@ public class DiagnosRepositoryTest {
         List<String> fileList = Arrays.asList(FILE_1, FILE_2, FILE_3);
         DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
                 StandardCharsets.UTF_8);
-        assertEquals(35600, repoImpl.nbrOfDiagosis());
+        assertEquals(35665, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }
 

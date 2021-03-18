@@ -71,7 +71,7 @@ public class DiagnosRepositoryFactoryTest {
         DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
                 StandardCharsets.UTF_8);
         assertNotNull(repository);
-        assertEquals(11652, repository.nbrOfDiagosis());
+        assertEquals(11699, repository.nbrOfDiagosis());
     }
 
     @Test
