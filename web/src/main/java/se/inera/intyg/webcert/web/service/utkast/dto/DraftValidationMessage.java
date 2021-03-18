@@ -32,6 +32,8 @@ public class DraftValidationMessage {
 
     private String dynamicKey;
 
+    private String questionId;
+
     public DraftValidationMessage(String category, String field, ValidationMessageType type, String message, String dynamicKey) {
         super();
         this.category = category;
@@ -39,6 +41,17 @@ public class DraftValidationMessage {
         this.type = type;
         this.message = message;
         this.dynamicKey = dynamicKey;
+    }
+
+    public DraftValidationMessage(String category, String field, ValidationMessageType type, String message, String dynamicKey,
+        String questionId) {
+        super();
+        this.category = category;
+        this.field = field;
+        this.type = type;
+        this.message = message;
+        this.dynamicKey = dynamicKey;
+        this.questionId = questionId;
     }
 
     public String getCategory() {
@@ -69,4 +82,7 @@ public class DraftValidationMessage {
         this.message = message;
     }
 
+    public String getQuestionId() {
+        return questionId;
+    }
 }
