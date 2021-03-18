@@ -47,5 +47,5 @@ public interface PatientDetailsResolver {
 
     boolean isTestIndicator(Personnummer personnummer);
 
-    Map<Personnummer, Boolean> getTestIndicatorForList(List<Personnummer> personnummerList);
+    Map<Personnummer, PatientDetailsResolverResponse> getPersonStatusesForList(List<Personnummer> personnummerList);
 }

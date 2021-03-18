@@ -128,26 +128,30 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
-    public Map<Personnummer, Boolean> getTestIndicatorForList(List<Personnummer> personnummerList) {
-        Map<Personnummer, Boolean> testIndicatorStatusMap = new HashMap<>();
+    public Map<Personnummer, PatientDetailsResolverResponse> getPersonStatusesForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, PatientDetailsResolverResponse> statusMap = new HashMap<>();
         if (personnummerList == null || personnummerList.size() == 0) {
-            return testIndicatorStatusMap;
+            return statusMap;
         }
 
-        // Make sure we don't ask twice for a given personnummer.
         List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
 
         Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
         persons.forEach((key, value) -> {
+            PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
             if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
-                testIndicatorStatusMap.put(key, value.getPerson().isTestIndicator());
+                patientResponse.setDeceased(value.getPerson().isAvliden());
+                patientResponse.setTestIndicator(value.getPerson().isTestIndicator());
+                patientResponse.setProtectedPerson(value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
-                // If no matching person was found, then consider it to have the testIndicator.
-                testIndicatorStatusMap.put(key, true);
+                patientResponse.setDeceased(false);
+                patientResponse.setTestIndicator(true);
+                patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
             }
+            statusMap.put(key, patientResponse);
         });
 
-        return testIndicatorStatusMap;
+        return statusMap;
     }
 
     @Override
