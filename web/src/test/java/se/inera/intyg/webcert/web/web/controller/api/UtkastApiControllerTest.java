@@ -152,10 +152,10 @@ public class UtkastApiControllerTest {
         });
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
-        PatientDetailsResolverResponse response = mock(PatientDetailsResolverResponse.class);
-        when(response.isTestIndicator()).thenReturn(false);
-        when(response.isDeceased()).thenReturn(false);
-        when(response.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
+        PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
+        response.setTestIndicator(false);
+        response.setDeceased(false);
+        response.setProtectedPerson(SekretessStatus.FALSE);
         when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
@@ -386,15 +386,15 @@ public class UtkastApiControllerTest {
         setupUser("", LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
-        PatientDetailsResolverResponse patientResponse = mock(PatientDetailsResolverResponse.class);
-        when(patientResponse.isTestIndicator()).thenReturn(false);
-        when(patientResponse.isDeceased()).thenReturn(false);
-        when(patientResponse.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
+        PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
+        patientResponse.setTestIndicator(false);
+        patientResponse.setDeceased(false);
+        patientResponse.setProtectedPerson(SekretessStatus.FALSE);
 
-        PatientDetailsResolverResponse responseProtectedPerson = mock(PatientDetailsResolverResponse.class);
-        when(responseProtectedPerson.isTestIndicator()).thenReturn(false);
-        when(responseProtectedPerson.isDeceased()).thenReturn(false);
-        when(responseProtectedPerson.isProtectedPerson()).thenReturn(SekretessStatus.TRUE);
+        PatientDetailsResolverResponse responseProtectedPerson = new PatientDetailsResolverResponse();
+        responseProtectedPerson.setTestIndicator(false);
+        responseProtectedPerson.setDeceased(false);
+        responseProtectedPerson.setProtectedPerson(SekretessStatus.TRUE);
 
         when(statusMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(patientResponse);
         when(statusMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(responseProtectedPerson);
@@ -417,8 +417,8 @@ public class UtkastApiControllerTest {
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
-        PatientDetailsResolverResponse patientResponse = mock(PatientDetailsResolverResponse.class);
-        when(patientResponse.isProtectedPerson()).thenReturn(SekretessStatus.UNDEFINED);
+        PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
+        patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
         when(statusMap.get(any(Personnummer.class))).thenReturn(patientResponse);
         when(patientDetailsResolver.getPersonStatusesForList(anyList())).thenReturn(statusMap);
 

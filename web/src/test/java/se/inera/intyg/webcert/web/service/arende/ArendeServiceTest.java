@@ -199,10 +199,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             return personInformationTypeList;
         });
 
-        PatientDetailsResolverResponse response = mock(PatientDetailsResolverResponse.class);
-        when(response.isTestIndicator()).thenReturn(false);
-        when(response.isDeceased()).thenReturn(false);
-        when(response.isProtectedPerson()).thenReturn(SekretessStatus.FALSE);
+        PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
+        response.setTestIndicator(false);
+        response.setDeceased(false);
+        response.setProtectedPerson(SekretessStatus.FALSE);
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
         when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
@@ -1331,10 +1331,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser webCertUser = createUser();
 
         Map<Personnummer, PatientDetailsResolverResponse> map = mock(Map.class);
-        PatientDetailsResolverResponse patientResponse = mock(PatientDetailsResolverResponse.class);
-        when(patientResponse.isTestIndicator()).thenReturn(false);
-        when(patientResponse.isDeceased()).thenReturn(false);
-        when(patientResponse.isProtectedPerson()).thenReturn(SekretessStatus.UNDEFINED);
+        PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
+        patientResponse.setTestIndicator(false);
+        patientResponse.setDeceased(false);
+        patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
         when(map.get(any())).thenReturn(patientResponse);
         doReturn(map).when(patientDetailsResolver).getPersonStatusesForList(anyList());
 
