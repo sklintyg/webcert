@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/FK_intyg/luaeFsIntyg'
-import * as pdl from '../../../support/pdl_helpers'
+import * as intyg from '../../support/FK_intyg/luaeFsIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LUAE-FS = Läkarutlåtande för aktivitetsersättning vid förlängd skolgång, FK 7802
 

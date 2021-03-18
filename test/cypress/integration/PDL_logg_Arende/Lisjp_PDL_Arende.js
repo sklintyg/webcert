@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/FK_intyg/lisjpIntyg'
-import * as pdl from '../../../support/pdl_helpers'
+import * as intyg from '../../support/FK_intyg/lisjpIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LISJP = Läkarintyg för sjukpenning, FK 7804
 

@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/FK_intyg/luaeNaIntyg'
-import * as pdl from '../../../support/pdl_helpers'
+import * as intyg from '../../support/FK_intyg/luaeNaIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LUAE-NA = Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmånga, FK 7801
 
