@@ -497,8 +497,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),
-        STATUS_UPDATE_QUEUED("Sent notification to aggregation queue, certificateId: {}, correlationId: {}, logicalAddress: {}, "
-            + "certificateType: {}, certificateVersion: {}, eventType: {}, eventTime: {}, currentUser: {}"),
+        STATUS_UPDATE_QUEUED("Sent notification to aggregation queue, certificateId: '{}', correlationId: '{}', logicalAddress: '{}', "
+            + "certificateType: '{}', certificateVersion: '{}', eventType: '{}', eventTime: '{}', currentUser: '{}'"),
         ARENDE_RECEIVED_ANSWER("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         ARENDE_RECEIVED_QUESTION("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         MEDICINSKT_ARENDE_RECEIVED("Received medicinskt arende for '{}' of type '{}' for unit '{}' on questions '{}'"),

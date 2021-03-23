@@ -80,12 +80,12 @@ public class MonitoringLogServiceImplTest {
         logService.logStatusUpdateForCareStatusSuccess(EVENT_ID, EVENT_TYPE, CERTIFICATE_ID, CORRELATION_ID,
             LOGICAL_ADDRESS, DELIVERY_ATTEMPT);
         verifyLog("STATUS_UPDATE_RESULT_SUCCESS Status update for care success on "
-            + "delivery attempt " + DELIVERY_ATTEMPT + " for event ["
-            + "certificateId: " + CERTIFICATE_ID + ", "
-            + "correlationId: " + CORRELATION_ID + ", "
-            + "logicalAddress: " + LOGICAL_ADDRESS + ", "
-            + "eventId: " + EVENT_ID + ", "
-            + "eventType: " + EVENT_TYPE + "]."
+            + "delivery attempt '" + DELIVERY_ATTEMPT + "' for event ["
+            + "certificateId: '" + CERTIFICATE_ID + "', "
+            + "correlationId: '" + CORRELATION_ID + "', "
+            + "logicalAddress: '" + LOGICAL_ADDRESS + "', "
+            + "eventId: '" + EVENT_ID + "', "
+            + "eventType: '" + EVENT_TYPE + "']."
         );
     }
 
@@ -94,15 +94,15 @@ public class MonitoringLogServiceImplTest {
         logService.logStatusUpdateForCareStatusResend(EVENT_ID, EVENT_TYPE, LOGICAL_ADDRESS, CERTIFICATE_ID, CORRELATION_ID, ERROR_CODE,
             ERROR_MESSAGE, DELIVERY_ATTEMPT, NEXT_REDELIEVERY_TIME);
         verifyLog("STATUS_UPDATE_RESULT_RESEND Status update for care failure on "
-            + "delivery attempt " + DELIVERY_ATTEMPT + " for event ["
-            + "certificateId: " + CERTIFICATE_ID + ", "
-            + "correlationId: " + CORRELATION_ID + ", "
-            + "logicalAddress: " + LOGICAL_ADDRESS + ", "
-            + "eventId: " + EVENT_ID + ", "
-            + "eventType: " + EVENT_TYPE + ", "
-            + "errorCode: " + ERROR_CODE + ", "
-            + "errorMessage: " + ERROR_MESSAGE + "]. "
-            + "Redelivery has been scheduled for "+ NEXT_REDELIEVERY_TIME + "."
+            + "delivery attempt '" + DELIVERY_ATTEMPT + "' for event ["
+            + "certificateId: '" + CERTIFICATE_ID + "', "
+            + "correlationId: '" + CORRELATION_ID + "', "
+            + "logicalAddress: '" + LOGICAL_ADDRESS + "', "
+            + "eventId: '" + EVENT_ID + "', "
+            + "eventType: '" + EVENT_TYPE + "', "
+            + "errorCode: '" + ERROR_CODE + "', "
+            + "errorMessage: '" + ERROR_MESSAGE + "']. "
+            + "Redelivery has been scheduled for '"+ NEXT_REDELIEVERY_TIME + "'."
         );
     }
 
@@ -111,14 +111,14 @@ public class MonitoringLogServiceImplTest {
         logService.logStatusUpdateForCareStatusFailure(EVENT_ID, EVENT_TYPE, LOGICAL_ADDRESS, CERTIFICATE_ID, CORRELATION_ID, ERROR_CODE,
             ERROR_MESSAGE, DELIVERY_ATTEMPT);
         verifyLog("STATUS_UPDATE_RESULT_FAILURE Status update for care failure on "
-            + "delivery attempt " + DELIVERY_ATTEMPT + " for event ["
-            + "certificateId: " + CERTIFICATE_ID + ", "
-            + "correlationId: " + CORRELATION_ID + ", "
-            + "logicalAddress: "+ LOGICAL_ADDRESS + ", "
-            + "eventId: " + EVENT_ID + ", "
-            + "eventType: " + EVENT_TYPE + ", "
-            + "errorCode: " + ERROR_CODE + ", "
-            + "errorMessage: " + ERROR_MESSAGE + "]. No further delivery attempts will be performed."
+            + "delivery attempt '" + DELIVERY_ATTEMPT + "' for event ["
+            + "certificateId: '" + CERTIFICATE_ID + "', "
+            + "correlationId: '" + CORRELATION_ID + "', "
+            + "logicalAddress: '"+ LOGICAL_ADDRESS + "', "
+            + "eventId: '" + EVENT_ID + "', "
+            + "eventType: '" + EVENT_TYPE + "', "
+            + "errorCode: '" + ERROR_CODE + "', "
+            + "errorMessage: '" + ERROR_MESSAGE + "']. No further delivery attempts will be performed."
         );
     }
 
