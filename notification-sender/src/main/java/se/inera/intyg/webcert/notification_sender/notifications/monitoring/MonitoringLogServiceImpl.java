@@ -65,14 +65,16 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     private enum MonitoringEvent {
         STATUS_UPDATE_RESULT_SUCCESS(
-         "Status update for care success on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
-            + "eventId: {}, eventType: {}]."),
+         "Status update for care success on delivery attempt '{}' for event [certificateId: '{}', correlationId: '{}', "
+            + "logicalAddress: '{}', eventId: '{}', eventType: '{}']."),
         STATUS_UPDATE_RESULT_RESEND(
-        "Status update for care failure on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
-            + "eventId: {}, eventType: {}, errorCode: {}, errorMessage: {}]. Redelivery has been scheduled for {}."),
+        "Status update for care failure on delivery attempt '{}' for event [certificateId: '{}', correlationId: '{}', "
+            + "logicalAddress: '{}', eventId: '{}', eventType: '{}', errorCode: '{}', errorMessage: '{}']. "
+            + "Redelivery has been scheduled for '{}'."),
         STATUS_UPDATE_RESULT_FAILURE(
-        "Status update for care failure on delivery attempt {} for event [certificateId: {}, correlationId: {}, logicalAddress: {}, "
-            + "eventId: {}, eventType: {}, errorCode: {}, errorMessage: {}]. No further delivery attempts will be performed.");
+        "Status update for care failure on delivery attempt '{}' for event [certificateId: '{}', correlationId: '{}', "
+            + "logicalAddress: '{}', eventId: '{}', eventType: '{}', errorCode: '{}', errorMessage: '{}']. "
+            + "No further delivery attempts will be performed.");
 
         private final String message;
 
