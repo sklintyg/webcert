@@ -20,13 +20,14 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     }
 
     private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery, Handelse event)
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException, XMLStreamException {
         final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService
             .createCertificateStatusUpdate(notificationRedelivery, event);
         final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);

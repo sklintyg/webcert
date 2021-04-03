@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -198,7 +200,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
     @Test
     public void shouldHandleErrorsWhenExceptionIsReceived()
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException, XMLStreamException {
         final var redelivery = createNotificationRedelivery();
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
         notificationRedeliveryList.add(redelivery);

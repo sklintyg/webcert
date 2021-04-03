@@ -220,39 +220,6 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenSignedCertificate() throws JsonProcessingException {
-        final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
-        final var notificationResultMessage = new NotificationResultMessage();
-        final var resultTypeV3 = new ResultType();
-
-        final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
-
-        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
-
-        verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getCert());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
-    }
-
-    @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenUnsignedCertificate() throws JsonProcessingException {
-        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
-        final var notificationResultMessage = new NotificationResultMessage();
-        final var resultTypeV3 = new ResultType();
-
-        final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
-
-        notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
-
-        verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
-    }
-
-    @Test
     public void redeliveryMessageShouldHaveProperlySetArenden() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithArenden();
         final var notificationResultMessage = new NotificationResultMessage();

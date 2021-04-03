@@ -20,22 +20,21 @@
 package se.inera.intyg.webcert.notification_sender.notifications.dto;
 
 import java.io.Serializable;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class NotificationRedeliveryMessage implements Serializable {
 
-    private Intyg cert;
+    private String cert;
     private CertificateMessages sent;
     private CertificateMessages received;
     private String reference;
 
     public NotificationRedeliveryMessage() { }
 
-    public Intyg getCert() {
+    public String getCert() {
         return cert;
     }
 
-    public void setCert(Intyg cert) {
+    public void setCert(String cert) {
         this.cert = cert;
     }
 

@@ -24,12 +24,18 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.helger.xml.transform.StringStreamResult;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -48,7 +54,11 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PQType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Component
@@ -61,6 +71,8 @@ public class NotificationResultMessageCreator {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    private static final String XML_LOCAL_PART = "Intyg";
 
     public NotificationResultMessage createFailureMessage(NotificationMessage notificationMessage, String correlationId, String userId,
         String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
@@ -120,8 +132,7 @@ public class NotificationResultMessageCreator {
 
     private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
         CertificateStatusUpdateForCareType statusUpdate) {
-        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
-        final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
+        final var redeliveryMessageAsBytes = createRedeliveryMessageBytes(statusUpdate);
         resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
     }
 
@@ -153,21 +164,19 @@ public class NotificationResultMessageCreator {
         resultMessage.setResultType(notificationResultType);
     }
 
-    private byte[] redeliveryMessageAsBytes(NotificationRedeliveryMessage redeliveryMessage) {
-        try {
-            return objectMapper.writeValueAsBytes(redeliveryMessage);
-        } catch (JsonProcessingException e) {
-            LOG.error("Exception occured converting NotificationRedeliveryMessage to bytes.", e);
-            return null;
-        }
+    private String marshal(Intyg certificate) throws JAXBException {
+        final var stringStreamResult = new StringStreamResult();
+        final var qName = new QName(XML_LOCAL_PART);
+        final var jaxbElement = new JAXBElement<>(qName, Intyg.class, JAXBElement.GlobalScope.class, certificate);
+        final var jaxbContext = JAXBContext.newInstance(Intyg.class, CertificateStatusUpdateForCareType.class, DatePeriodType.class,
+            PartialDateType.class, XPathType.class, PQType.class);
+        final var marshaller = jaxbContext.createMarshaller();
+        marshaller.marshal(jaxbElement, stringStreamResult);
+        return stringStreamResult.getAsString();
     }
 
-    private NotificationRedeliveryMessage createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
+    private byte[] createRedeliveryMessageBytes(CertificateStatusUpdateForCareType statusUpdate) {
         final var redeliveryMessage = new NotificationRedeliveryMessage();
-
-        final var certificate = statusUpdate.getIntyg();
-        certificate.setUnderskrift(null);
-        redeliveryMessage.setCert(certificate);
 
         final var sentQuestions = createCertificateMessages(statusUpdate.getSkickadeFragor());
         redeliveryMessage.setSent(sentQuestions);
@@ -177,7 +186,17 @@ public class NotificationResultMessageCreator {
 
         redeliveryMessage.setReference(statusUpdate.getRef());
 
-        return redeliveryMessage;
+        final var certificate = statusUpdate.getIntyg();
+        certificate.setUnderskrift(null);
+
+        try {
+            final var certificateXml = marshal(certificate);
+            redeliveryMessage.setCert(certificateXml);
+            return objectMapper.writeValueAsBytes(redeliveryMessage);
+        } catch (JAXBException | JsonProcessingException e) {
+            LOG.error("Exception occured creating NotificationRedeliveryMessage", e);
+            return null;
+        }
     }
 
     private CertificateMessages createCertificateMessages(Arenden questions) {
