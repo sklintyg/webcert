@@ -63,7 +63,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
         final var endTimeInMilliseconds = System.currentTimeMillis();
 
-        LOG.info("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",
+        LOG.debug("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",
             total(notificationsToResend),
             durationInSeconds(startTimeInMilliseconds, endTimeInMilliseconds),
             noOfFailed(notificationsToResend, successfullySent));

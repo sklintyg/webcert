@@ -158,9 +158,6 @@ public class NotificationResultMessageCreator {
     private byte[] createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
         final var redeliveryMessage = new NotificationRedeliveryMessage();
 
-        final var certificate = statusUpdate.getIntyg();
-        certificate.setUnderskrift(null);
-
         try {
             final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
             redeliveryMessage.setStatusUpdateXml(statusUpdateXml);
