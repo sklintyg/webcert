@@ -173,7 +173,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(LOG).info(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
+        verify(LOG).debug(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
     }
 
     @Test
