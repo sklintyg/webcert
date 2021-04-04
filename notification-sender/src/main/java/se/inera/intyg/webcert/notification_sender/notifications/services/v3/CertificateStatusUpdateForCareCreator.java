@@ -20,20 +20,24 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
+import com.helger.xml.transform.StringStreamResult;
 import java.io.IOException;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -43,8 +47,11 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.Notific
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PQType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Component
@@ -59,8 +66,6 @@ public class CertificateStatusUpdateForCareCreator {
     private IntygModuleRegistry moduleRegistry;
 
     private static final String XML_LOCAL_PART = "CertificateStatusUpdateForCare";
-    private static final String XML_NAMESPACE_URL =
-        "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
 
     public CertificateStatusUpdateForCareType create(NotificationMessage notificationMessage, String certificateTypeVersion)
         throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
@@ -98,11 +103,16 @@ public class CertificateStatusUpdateForCareCreator {
         return statusUpdate;
     }
 
-    public String marshal(CertificateStatusUpdateForCareType statusUpdate) {
-        final QName qName = new QName(XML_NAMESPACE_URL, XML_LOCAL_PART);
+    public String marshal(CertificateStatusUpdateForCareType statusUpdate) throws JAXBException {
+        final QName qName = new QName(XML_LOCAL_PART);
         final JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
             new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
 
-        return XmlMarshallerHelper.marshal(jaxbElement);
+        StringStreamResult stringStreamResult = new StringStreamResult();
+        JAXBContext jaxbContext = JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class,
+            PartialDateType.class, XPathType.class, PQType.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.marshal(jaxbElement, stringStreamResult);
+        return stringStreamResult.getAsString();
     }
 }

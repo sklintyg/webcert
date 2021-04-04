@@ -20,13 +20,13 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -47,9 +46,6 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
-
-    @Autowired
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
     private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
@@ -120,10 +116,9 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     }
 
     private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery, Handelse event)
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
-        final var statusUpdate = notificationRedeliveryStatusUpdateCreatorService
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
+        final var statusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
             .createCertificateStatusUpdate(notificationRedelivery, event);
-        final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
         return statusUpdateXml.getBytes(StandardCharsets.UTF_8);
     }
 

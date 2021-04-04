@@ -23,6 +23,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -39,6 +40,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -72,6 +74,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -99,6 +102,9 @@ public class NotificationResultMessageCreatorTest {
 
     @Mock
     private ModuleEntryPoint moduleEntryPoint;
+
+    @Spy
+    CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Spy
     private ObjectMapper objectMapper;
@@ -130,6 +136,8 @@ public class NotificationResultMessageCreatorTest {
 
     private static final long EVENT_ID = 1000L;
     private static final byte[] REDELIVERY_MESSAGE = "REDELIVERY_MESSAGE".getBytes();
+
+    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
     @Test
     public void testCreateFailureMessage() throws ModuleNotFoundException, IOException, ModuleException {
@@ -220,7 +228,7 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenSignedCertificate() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
@@ -230,14 +238,16 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getCert());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
+        assertNotNull(captureRedeliveryMessage.getValue().getStatusUpdateXml());
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().startsWith(XML_HEADER));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(CERTIFICATE_ID));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(EVENT_ENUM.name()));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(PATIENT_ID));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(USER_ID));
     }
 
     @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenUnsignedCertificate() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
@@ -247,13 +257,16 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
+        assertNotNull(captureRedeliveryMessage.getValue().getStatusUpdateXml());
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().startsWith(XML_HEADER));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(CERTIFICATE_ID));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(EVENT_ENUM.name()));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(PATIENT_ID));
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().contains(USER_ID));
     }
 
     @Test
-    public void redeliveryMessageShouldHaveProperlySetArenden() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithArenden();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
@@ -263,15 +276,12 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
         verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertEquals(1, captureRedeliveryMessage.getValue().getSent().getAnswered());
-        assertEquals(2, captureRedeliveryMessage.getValue().getSent().getUnanswered());
-        assertEquals(3, captureRedeliveryMessage.getValue().getSent().getHandled());
-        assertEquals(4, captureRedeliveryMessage.getValue().getSent().getTotal());
-
-        assertEquals(1, captureRedeliveryMessage.getValue().getReceived().getAnswered());
-        assertEquals(2, captureRedeliveryMessage.getValue().getReceived().getUnanswered());
-        assertEquals(3, captureRedeliveryMessage.getValue().getReceived().getHandled());
-        assertEquals(4, captureRedeliveryMessage.getValue().getReceived().getTotal());
+        assertNotNull(captureRedeliveryMessage.getValue().getStatusUpdateXml());
+        assertTrue(captureRedeliveryMessage.getValue().getStatusUpdateXml().startsWith(XML_HEADER));
+        assertEquals(2, StringUtils.countMatches(captureRedeliveryMessage.getValue().getStatusUpdateXml(), "besvarade>1</"));
+        assertEquals(2, StringUtils.countMatches(captureRedeliveryMessage.getValue().getStatusUpdateXml(), "ejBesvarade>2</"));
+        assertEquals(2, StringUtils.countMatches(captureRedeliveryMessage.getValue().getStatusUpdateXml(), "hanterade>3</"));
+        assertEquals(2, StringUtils.countMatches(captureRedeliveryMessage.getValue().getStatusUpdateXml(), "totalt>4</"));
     }
 
     @Test

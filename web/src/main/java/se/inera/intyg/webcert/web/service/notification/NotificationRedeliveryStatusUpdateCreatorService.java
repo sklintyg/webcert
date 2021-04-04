@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import javax.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -31,18 +30,13 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
-import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
@@ -63,9 +57,6 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
-    private GetCertificateService getCertificateService;
-
-    @Autowired
     private IntygService intygService;
 
     @Autowired
@@ -74,10 +65,10 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     /**
      * Creates a {@link CertificateStatusUpdateForCareType} based on the information received in the {@link NotificationRedelivery}.
      */
-    public CertificateStatusUpdateForCareType createCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
-        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
+    public String createCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
+        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException, JAXBException {
         if (containsMessage(redelivery)) {
-            return createStatusUpdateFromExistingMessage(redelivery, event);
+            return getStatusUpdateFromExistingMessage(redelivery);
         }
 
         return createStatusUpdateFromEvent(event);
@@ -87,39 +78,27 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
         return redelivery.getMessage() != null;
     }
 
-    private CertificateStatusUpdateForCareType createStatusUpdateFromExistingMessage(NotificationRedelivery redelivery, Handelse event)
-        throws IOException {
+    private String getStatusUpdateFromExistingMessage(NotificationRedelivery redelivery) throws IOException {
         final NotificationRedeliveryMessage redeliveryMessage = getRedeliveryMessage(redelivery);
-
-        final var certificate = redeliveryMessage.getCert();
-        final var messagesSent = createMessages(redeliveryMessage.getSent());
-        final var messagesReceived = createMessages(redeliveryMessage.getReceived());
-        final var handledBy = NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID);
-        final var statusUpdateEvent = NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
-            event.getSistaDatumForSvar());
-
-        final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setSkickadeFragor(messagesSent);
-        statusUpdate.setMottagnaFragor(messagesReceived);
-        statusUpdate.setRef(redeliveryMessage.getReference());
-        statusUpdate.setIntyg(certificate);
-        statusUpdate.setHanteratAv(handledBy);
-        statusUpdate.setHandelse(statusUpdateEvent);
-
-        return statusUpdate;
+        return redeliveryMessage.getStatusUpdateXml();
     }
 
-    private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
-        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
+    private String createStatusUpdateFromEvent(Handelse event)
+        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException, JAXBException {
+
+        CertificateStatusUpdateForCareType statusUpdate;
+
         if (isDeletedEvent(event)) {
             final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
             final var careUnit = hsaOrganizationsService.getVardenhet(event.getEnhetsId());
             final var personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
-            return certificateStatusUpdateForCareCreator.create(event, careProvider, careUnit, personInfo);
+            statusUpdate =  certificateStatusUpdateForCareCreator.create(event, careProvider, careUnit, personInfo);
+        } else {
+            final var notificationMessage = createNotificationMessage(event);
+            statusUpdate = certificateStatusUpdateForCareCreator.create(notificationMessage, event.getCertificateVersion());
         }
 
-        final var notificationMessage = createNotificationMessage(event);
-        return certificateStatusUpdateForCareCreator.create(notificationMessage, event.getCertificateVersion());
+        return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
     }
 
     private boolean isDeletedEvent(Handelse event) {
@@ -139,19 +118,5 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
     private NotificationRedeliveryMessage getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
         return objectMapper.readValue(redelivery.getMessage(), NotificationRedeliveryMessage.class);
-    }
-
-    private Arenden createMessages(CertificateMessages certificateMessages) {
-        if (certificateMessages == null) {
-            return new Arenden();
-        }
-
-        final var messages = new Arenden();
-        messages.setTotalt(certificateMessages.getTotal());
-        messages.setEjBesvarade(certificateMessages.getUnanswered());
-        messages.setBesvarade(certificateMessages.getAnswered());
-        messages.setHanterade(certificateMessages.getHandled());
-
-        return messages;
     }
 }
