@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -194,6 +195,16 @@ public class CertificateStatusUpdateForCareCreatorTest {
         final var stringXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
 
         assertTrue(stringXml.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+    }
+
+    @Test
+    public void shouldReturnCertificateAfterCallToUnmarshalWithXmlString() throws JAXBException, XMLStreamException {
+        final String certificateXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Intyg xmlns:ns6=\"urn:riv:clinicalprocess:healthcond:certificate:3.4\" xmlns:ns5=\"urn:riv:clinicalprocess:healthcond:certificate:3.2\" xmlns:ns8=\"urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3.2\" xmlns:ns7=\"urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3\" xmlns:dsf=\"http://www.w3.org/2002/06/xmldsig-filter2\" xmlns:ns4=\"urn:riv:clinicalprocess:healthcond:certificate:3\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:ns3=\"urn:riv:clinicalprocess:healthcond:certificate:types:3\"><ns4:intygs-id><ns3:root>SE4815162344-1A02</ns3:root><ns3:extension>CERTIFICATE_ID</ns3:extension></ns4:intygs-id><ns4:typ><ns3:code>AF00213</ns3:code><ns3:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</ns3:codeSystem><ns3:displayName>Arbetsförmedlingens medicinska utlåtande</ns3:displayName></ns4:typ><ns4:version>1.0</ns4:version><ns4:patient><ns4:person-id><ns3:root>1.2.752.129.2.1.3.1</ns3:root><ns3:extension>191212121212</ns3:extension></ns4:person-id><ns4:fornamn></ns4:fornamn><ns4:efternamn></ns4:efternamn><ns4:postadress></ns4:postadress><ns4:postnummer></ns4:postnummer><ns4:postort></ns4:postort></ns4:patient><ns4:skapadAv><ns4:personal-id><ns3:root>1.2.752.129.2.1.4.1</ns3:root><ns3:extension>SE4815162344-1B01</ns3:extension></ns4:personal-id><ns4:fullstandigtNamn>Ivar Integration</ns4:fullstandigtNamn><ns4:forskrivarkod>0000000</ns4:forskrivarkod><ns4:enhet><ns4:enhets-id><ns3:root>1.2.752.129.2.1.4.1</ns3:root><ns3:extension>SE4815162344-1A02</ns3:extension></ns4:enhets-id><ns4:arbetsplatskod><ns3:root>1.2.752.29.4.71</ns3:root><ns3:extension>12345678</ns3:extension></ns4:arbetsplatskod><ns4:enhetsnamn>WebCert-Integration Enhet 1</ns4:enhetsnamn><ns4:postadress>Integrationstorget 1</ns4:postadress><ns4:postnummer>12345</ns4:postnummer><ns4:postort>Storstaden</ns4:postort><ns4:telefonnummer>0101234567890</ns4:telefonnummer><ns4:epost>integration-enhet1@webcert.invalid.se</ns4:epost><ns4:vardgivare><ns4:vardgivare-id><ns3:root>1.2.752.129.2.1.4.1</ns3:root><ns3:extension>SE4815162344-1A01</ns3:extension></ns4:vardgivare-id><ns4:vardgivarnamn>WebCert-Integration Vårdgivare 1</ns4:vardgivarnamn></ns4:vardgivare></ns4:enhet></ns4:skapadAv></Intyg>";
+
+        final var statusUpdate = certificateStatusUpdateForCareCreator.unmarshal(certificateXml);
+
+        assertNotNull(statusUpdate);
+        assertEquals(CERTIFICATE_ID, statusUpdate.getIntygsId().getExtension());
     }
 
     private Handelse createEvent() {

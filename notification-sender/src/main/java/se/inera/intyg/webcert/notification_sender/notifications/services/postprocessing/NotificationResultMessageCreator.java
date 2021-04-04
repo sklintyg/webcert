@@ -186,15 +186,12 @@ public class NotificationResultMessageCreator {
 
         redeliveryMessage.setReference(statusUpdate.getRef());
 
-        final var certificate = statusUpdate.getIntyg();
-        certificate.setUnderskrift(null);
-
         try {
-            final var certificateXml = marshal(certificate);
+            final var certificateXml = marshal(statusUpdate.getIntyg());
             redeliveryMessage.setCert(certificateXml);
             return objectMapper.writeValueAsBytes(redeliveryMessage);
         } catch (JAXBException | JsonProcessingException e) {
-            LOG.error("Exception occured creating NotificationRedeliveryMessage", e);
+            LOG.error("Exception occurred creating NotificationRedeliveryMessage", e);
             return null;
         }
     }
