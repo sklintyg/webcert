@@ -104,7 +104,7 @@ public class NotificationPostProcessorTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(new Handelse());
         notificationResultMessage.setResultType(new NotificationResultType());
-        notificationResultMessage.setRedeliveryMessageBytes("BYTES".getBytes());
+        notificationResultMessage.setStatusUpdateBytes("BYTES".getBytes());
         notificationResultMessage.setCorrelationId("CORRELATION_ID");
         return notificationResultMessage;
     }

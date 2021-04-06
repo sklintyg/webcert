@@ -111,7 +111,7 @@ public class NotificationResultMessageSenderTest {
         final var message = messageCaptor.getValue().createMessage(session);
         final var capturedTextMessage = objectMapper.readValue(((TextMessage) message).getText(), NotificationResultMessage.class);
         assertNull(capturedTextMessage.getEvent().getId());
-        assertNotNull(capturedTextMessage.getRedeliveryMessageBytes());
+        assertNotNull(capturedTextMessage.getStatusUpdateBytes());
         assertEquals(CORRELATION_ID, capturedTextMessage.getCorrelationId());
         assertEquals(CERTIFICATE_ID, capturedTextMessage.getEvent().getIntygsId());
         assertEquals(LOGICAL_ADDRESS, capturedTextMessage.getEvent().getEnhetsId());
@@ -145,7 +145,7 @@ public class NotificationResultMessageSenderTest {
         notificationResultMessage.setEvent(createEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
         notificationResultMessage.setResultType(createNotificationResultType());
-        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateBytes(REDELIVERY_MESSAGE);
         return notificationResultMessage;
     }
 

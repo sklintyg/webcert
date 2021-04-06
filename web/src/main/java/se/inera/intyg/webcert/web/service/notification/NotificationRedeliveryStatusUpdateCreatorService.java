@@ -30,7 +30,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -79,8 +78,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     }
 
     private String getStatusUpdateFromExistingMessage(NotificationRedelivery redelivery) throws IOException {
-        final NotificationRedeliveryMessage redeliveryMessage = getRedeliveryMessage(redelivery);
-        return redeliveryMessage.getStatusUpdateXml();
+        return getRedeliveryMessage(redelivery);
     }
 
     private String createStatusUpdateFromEvent(Handelse event)
@@ -107,16 +105,20 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
     private NotificationMessage createNotificationMessage(Handelse event)
         throws ModuleNotFoundException, IOException, ModuleException {
+        NotificationMessage notificationMessage;
         final var draft = draftRepo.findById(event.getIntygsId());
         if (draft.isPresent()) {
-            return notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
+            notificationMessage = notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
+        } else {
+            final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
+            notificationMessage = notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
         }
 
-        final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
-        return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
+        notificationMessage.setHandelseTid(event.getTimestamp());
+        return notificationMessage;
     }
 
-    private NotificationRedeliveryMessage getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
-        return objectMapper.readValue(redelivery.getMessage(), NotificationRedeliveryMessage.class);
+    private String getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
+        return objectMapper.readValue(redelivery.getMessage(), String.class);
     }
 }

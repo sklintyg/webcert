@@ -84,6 +84,7 @@ public class NotificationResultResendService {
 
         if (attemptedDeliveries < maxTotalDeliveries) {
             event.setId(redelivery.getEventId());
+            updateEventIfNeeded(attemptedDeliveries, event);
             updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
             monitorLogResend(event, resultMessage, redelivery);
         } else {
@@ -91,6 +92,12 @@ public class NotificationResultResendService {
             deleteNotificationRedelivery(redelivery);
             redelivery.setAttemptedDeliveries(attemptedDeliveries);
             monitorLogFailure(updatedEvent, resultMessage, redelivery);
+        }
+    }
+
+    private void updateEventIfNeeded(int attemptedDeliveries, Handelse event) {
+        if (attemptedDeliveries == 1) {
+            handelseRepo.save(event);
         }
     }
 
@@ -117,7 +124,7 @@ public class NotificationResultResendService {
         final var redelivery =  new NotificationRedelivery(
             resultMessage.getCorrelationId(),
             event.getId(),
-            resultMessage.getRedeliveryMessageBytes(),
+            resultMessage.getStatusUpdateBytes(),
             strategy.getName(),
             getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
             ONE_ATTEMPTED_DELIVERY
@@ -133,8 +140,8 @@ public class NotificationResultResendService {
         redelivery.setRedeliveryTime(nextRedeliveryTime);
         redelivery.setAttemptedDeliveries(attemptedDeliveries);
 
-        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getRedeliveryMessageBytes())) {
-            redelivery.setMessage(resultMessage.getRedeliveryMessageBytes());
+        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateBytes())) {
+            redelivery.setMessage(resultMessage.getStatusUpdateBytes());
         }
 
         notificationRedeliveryRepo.save(redelivery);

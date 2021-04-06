@@ -39,7 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
@@ -95,7 +94,7 @@ public class NotificationResultMessageCreator {
         notificationResultMessage.setEvent(event);
         notificationResultMessage.setResultType(notificationResultType);
         notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
-        notificationResultMessage.setRedeliveryMessageBytes(redelivery.getMessage());
+        notificationResultMessage.setStatusUpdateBytes(redelivery.getMessage());
         return notificationResultMessage;
     }
 
@@ -123,8 +122,8 @@ public class NotificationResultMessageCreator {
 
     private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
         CertificateStatusUpdateForCareType statusUpdate) {
-        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
-        resultMessage.setRedeliveryMessageBytes(redeliveryMessage);
+        final var statusUpdateBytes = createRedeliveryMessage(statusUpdate);
+        resultMessage.setStatusUpdateBytes(statusUpdateBytes);
     }
 
     private void addResultTypeToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
@@ -156,12 +155,9 @@ public class NotificationResultMessageCreator {
     }
 
     private byte[] createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
-        final var redeliveryMessage = new NotificationRedeliveryMessage();
-
         try {
             final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
-            redeliveryMessage.setStatusUpdateXml(statusUpdateXml);
-            return objectMapper.writeValueAsBytes(redeliveryMessage);
+            return objectMapper.writeValueAsBytes(statusUpdateXml);
         } catch (JAXBException | JsonProcessingException e) {
             LOG.error("Exception occurred creating NotificationRedeliveryMessage", e);
             return null;

@@ -22,12 +22,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,11 +40,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -92,7 +96,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         final var event = createEvent();
         final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
 
-        setupMockToReturnNotificationRedeliveryMessage(expectedStatusUpdateXml);
+        setupMockToReturnStatusUpdateXml(expectedStatusUpdateXml);
 
         final var actualStatusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
             .createCertificateStatusUpdate(notificationRedelivery, event);
@@ -106,8 +110,10 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
         final var event = createEvent();
         final var expectedDraft = mock(Utkast.class);
+        final var notificationMessage = mock(NotificationMessage.class);
 
         setupMockToReturnDraft(expectedDraft);
+        setupMockToReturnNotificationMessage(notificationMessage);
 
         notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
 
@@ -119,9 +125,11 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
         final var event = createEvent();
         final var expectedCertificate = mock(IntygContentHolder.class);
+        final var notificationMessage = mock(NotificationMessage.class);
 
         setupMockToReturnDraft(null);
         setupMockToReturnIntygHolder(expectedCertificate);
+        setupMockToReturnNotificationMessage(notificationMessage);
 
         notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
 
@@ -170,12 +178,14 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         doReturn(certificate).when(intygService).fetchIntygDataForInternalUse(any(String.class), eq(true));
     }
 
-    private void setupMockToReturnNotificationRedeliveryMessage(String statusUpdateXml)
-        throws Exception {
-        final var mockNotificationRedeliveryMessage = mock(NotificationRedeliveryMessage.class);
-        doReturn(mockNotificationRedeliveryMessage).when(objectMapper)
-            .readValue(any(byte[].class), eq(NotificationRedeliveryMessage.class));
-        doReturn(statusUpdateXml).when(mockNotificationRedeliveryMessage).getStatusUpdateXml();
+    private void setupMockToReturnNotificationMessage(NotificationMessage notificationMessage)
+        throws ModuleNotFoundException, IOException, ModuleException {
+        doReturn(notificationMessage).when(notificationMessageFactory).createNotificationMessage(any(Handelse.class),
+            nullable(String.class));
+    }
+
+    private void setupMockToReturnStatusUpdateXml(String statusUpdateXml) throws Exception {
+        doReturn(statusUpdateXml).when(objectMapper).readValue(any(byte[].class), eq(String.class));
     }
 
     private Handelse createEvent() {

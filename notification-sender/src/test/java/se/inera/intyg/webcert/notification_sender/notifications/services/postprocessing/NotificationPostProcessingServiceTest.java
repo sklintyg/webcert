@@ -96,7 +96,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -115,7 +115,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -134,7 +134,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -152,7 +152,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -170,7 +170,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -188,7 +188,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -206,7 +206,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -225,7 +225,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -243,7 +243,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -261,7 +261,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getStatusUpdateBytes());
         assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -287,7 +287,7 @@ public class NotificationPostProcessingServiceTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setRedeliveryMessageBytes(TEST_REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateBytes(TEST_REDELIVERY_MESSAGE);
         return notificationResultMessage;
     }
 

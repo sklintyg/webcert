@@ -435,7 +435,7 @@ public class NotificationResultResendServiceTest {
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
         notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
         notificationResultMessage.setResultType(createNotificationResultType());
-        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateBytes(REDELIVERY_MESSAGE);
         return notificationResultMessage;
     }
 

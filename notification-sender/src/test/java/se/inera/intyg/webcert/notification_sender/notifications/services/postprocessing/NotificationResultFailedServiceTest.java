@@ -252,7 +252,7 @@ public class NotificationResultFailedServiceTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createUnsavedEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateBytes(REDELIVERY_MESSAGE);
         notificationResultMessage.setResultType(createNotificationResultType());
         return notificationResultMessage;
     }
