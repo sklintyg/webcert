@@ -29,8 +29,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
@@ -42,7 +44,9 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
@@ -313,6 +317,23 @@ public class NotificationMessageFactoryTest {
         final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
 
         assertEquals(null, actualNotificationMessage.getAmne());
+    }
+
+    @Test
+    public void shallResetEventTimestampBasedOnEventRecord() throws ModuleNotFoundException, IOException, ModuleException {
+        final var event = createEvent();
+        final var json = "DRAFT_JSON";
+        final var eventTime = LocalDateTime.of(2021, Month.APRIL, 1, 12, 34, 56, 123456789);
+        event.setTimestamp(eventTime);
+
+        final var utlatande = mock(Utlatande.class);
+        final var moduleApi = mock(ModuleApi.class);
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(any(), any());
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(json);
+
+        final var actualNotificationMessage = notificationMessageFactory.createNotificationMessage(event, json);
+
+        assertEquals(eventTime, actualNotificationMessage.getHandelseTid());
     }
 
     private Handelse createEvent() {

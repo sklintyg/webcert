@@ -419,6 +419,33 @@ public class NotificationResultResendServiceTest {
         assertEquals(expectedRedeliveryAttempt, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
     }
 
+    @Test
+    public void shouldUpdateDeliveryStatusOnManualResendIfNeeded() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
+        final var savedEvent = createSavedEvent();
+        savedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
+        notificationRedelivery.setAttemptedDeliveries(null);
+
+        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
+            .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doReturn(Optional.of(savedEvent)).when(handelseRepository).findById(notificationRedelivery.getEventId());
+
+        notificationResultResendService.process(notificationResultMessage);
+
+        verify(handelseRepository).save(captureEvent.capture());
+        assertEquals(NotificationDeliveryStatusEnum.RESEND, captureEvent.getValue().getDeliveryStatus());
+    }
+
     private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);

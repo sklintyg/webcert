@@ -105,17 +105,13 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
     private NotificationMessage createNotificationMessage(Handelse event)
         throws ModuleNotFoundException, IOException, ModuleException {
-        NotificationMessage notificationMessage;
         final var draft = draftRepo.findById(event.getIntygsId());
         if (draft.isPresent()) {
-            notificationMessage = notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
-        } else {
-            final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
-            notificationMessage = notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
+            return notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
         }
 
-        notificationMessage.setHandelseTid(event.getTimestamp());
-        return notificationMessage;
+        final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
+        return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
     }
 
     private String getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
