@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import javax.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -31,18 +30,12 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
-import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
@@ -63,54 +56,36 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Autowired
-    private GetCertificateService getCertificateService;
-
-    @Autowired
     private IntygService intygService;
 
     @Autowired
     private NotificationMessageFactory notificationMessageFactory;
 
     /**
-     * Creates a {@link CertificateStatusUpdateForCareType} based on the information received in the {@link NotificationRedelivery}.
+     * Returns an XML String of a {@link CertificateStatusUpdateForCareType} created based on the information received in e
+     * {@link NotificationRedelivery} or, in case of manually initiated redeliveries, a {@link Handelse}.
      */
-    public CertificateStatusUpdateForCareType createCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
-        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException {
+    public String getCertificateStatusUpdateXml(NotificationRedelivery redelivery, Handelse event)
+        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException, JAXBException {
         if (containsMessage(redelivery)) {
-            return createStatusUpdateFromExistingMessage(redelivery, event);
+            return getStatusUpdateXmlFromNotificationRedelivery(redelivery);
         }
 
-        return createStatusUpdateFromEvent(event);
+        final var statusUpdate = createStatusUpdateFromEvent(event);
+        return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
     }
 
     private boolean containsMessage(NotificationRedelivery redelivery) {
         return redelivery.getMessage() != null;
     }
 
-    private CertificateStatusUpdateForCareType createStatusUpdateFromExistingMessage(NotificationRedelivery redelivery, Handelse event)
-        throws IOException {
-        final NotificationRedeliveryMessage redeliveryMessage = getRedeliveryMessage(redelivery);
-
-        final var certificate = redeliveryMessage.getCert();
-        final var messagesSent = createMessages(redeliveryMessage.getSent());
-        final var messagesReceived = createMessages(redeliveryMessage.getReceived());
-        final var handledBy = NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID);
-        final var statusUpdateEvent = NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
-            event.getSistaDatumForSvar());
-
-        final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setSkickadeFragor(messagesSent);
-        statusUpdate.setMottagnaFragor(messagesReceived);
-        statusUpdate.setRef(redeliveryMessage.getReference());
-        statusUpdate.setIntyg(certificate);
-        statusUpdate.setHanteratAv(handledBy);
-        statusUpdate.setHandelse(statusUpdateEvent);
-
-        return statusUpdate;
+    private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery) throws IOException {
+        return objectMapper.readValue(redelivery.getMessage(), String.class);
     }
 
     private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
         throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
+
         if (isDeletedEvent(event)) {
             final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
             final var careUnit = hsaOrganizationsService.getVardenhet(event.getEnhetsId());
@@ -135,23 +110,5 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
         final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
         return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
-    }
-
-    private NotificationRedeliveryMessage getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
-        return objectMapper.readValue(redelivery.getMessage(), NotificationRedeliveryMessage.class);
-    }
-
-    private Arenden createMessages(CertificateMessages certificateMessages) {
-        if (certificateMessages == null) {
-            return new Arenden();
-        }
-
-        final var messages = new Arenden();
-        messages.setTotalt(certificateMessages.getTotal());
-        messages.setEjBesvarade(certificateMessages.getUnanswered());
-        messages.setBesvarade(certificateMessages.getAnswered());
-        messages.setHanterade(certificateMessages.getHandled());
-
-        return messages;
     }
 }

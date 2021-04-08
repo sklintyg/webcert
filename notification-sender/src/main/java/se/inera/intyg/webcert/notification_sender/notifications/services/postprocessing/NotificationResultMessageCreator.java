@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +39,15 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Component
@@ -61,6 +60,9 @@ public class NotificationResultMessageCreator {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     public NotificationResultMessage createFailureMessage(NotificationMessage notificationMessage, String correlationId, String userId,
         String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
@@ -92,7 +94,7 @@ public class NotificationResultMessageCreator {
         notificationResultMessage.setEvent(event);
         notificationResultMessage.setResultType(notificationResultType);
         notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
-        notificationResultMessage.setRedeliveryMessageBytes(redelivery.getMessage());
+        notificationResultMessage.setStatusUpdateXml(redelivery.getMessage());
         return notificationResultMessage;
     }
 
@@ -108,21 +110,20 @@ public class NotificationResultMessageCreator {
 
     public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
         ResultType resultType) {
-        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addStatusUpdateToResultMessage(resultMessage, statusUpdate);
         addResultTypeToResultMessage(resultMessage, resultType);
     }
 
     public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
         Exception exception) {
-        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addStatusUpdateToResultMessage(resultMessage, statusUpdate);
         addResultTypeToResultMessage(resultMessage, exception);
     }
 
-    private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
+    private void addStatusUpdateToResultMessage(NotificationResultMessage resultMessage,
         CertificateStatusUpdateForCareType statusUpdate) {
-        final var redeliveryMessage = createRedeliveryMessage(statusUpdate);
-        final var redeliveryMessageAsBytes = redeliveryMessageAsBytes(redeliveryMessage);
-        resultMessage.setRedeliveryMessageBytes(redeliveryMessageAsBytes);
+        final var statusUpdateXmlAsBytes = getStatusUpdateXmlAsBytes(statusUpdate);
+        resultMessage.setStatusUpdateXml(statusUpdateXmlAsBytes);
     }
 
     private void addResultTypeToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
@@ -153,45 +154,14 @@ public class NotificationResultMessageCreator {
         resultMessage.setResultType(notificationResultType);
     }
 
-    private byte[] redeliveryMessageAsBytes(NotificationRedeliveryMessage redeliveryMessage) {
+    private byte[] getStatusUpdateXmlAsBytes(CertificateStatusUpdateForCareType statusUpdate) {
         try {
-            return objectMapper.writeValueAsBytes(redeliveryMessage);
-        } catch (JsonProcessingException e) {
-            LOG.error("Exception occured converting NotificationRedeliveryMessage to bytes.", e);
+            final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
+            return objectMapper.writeValueAsBytes(statusUpdateXml);
+        } catch (JAXBException | JsonProcessingException e) {
+            LOG.error("Exception occurred creating NotificationRedeliveryMessage", e);
             return null;
         }
-    }
-
-    private NotificationRedeliveryMessage createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
-        final var redeliveryMessage = new NotificationRedeliveryMessage();
-
-        final var certificate = statusUpdate.getIntyg();
-        certificate.setUnderskrift(null);
-        redeliveryMessage.setCert(certificate);
-
-        final var sentQuestions = createCertificateMessages(statusUpdate.getSkickadeFragor());
-        redeliveryMessage.setSent(sentQuestions);
-
-        final var recievedQuestions = createCertificateMessages(statusUpdate.getMottagnaFragor());
-        redeliveryMessage.setReceived(recievedQuestions);
-
-        redeliveryMessage.setReference(statusUpdate.getRef());
-
-        return redeliveryMessage;
-    }
-
-    private CertificateMessages createCertificateMessages(Arenden questions) {
-        if (questions == null) {
-            return new CertificateMessages();
-        }
-
-        final var certificateMessages = new CertificateMessages();
-        certificateMessages.setUnanswered(questions.getEjBesvarade());
-        certificateMessages.setAnswered(questions.getBesvarade());
-        certificateMessages.setHandled(questions.getHanterade());
-        certificateMessages.setTotal(questions.getTotalt());
-
-        return certificateMessages;
     }
 
     private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate) {

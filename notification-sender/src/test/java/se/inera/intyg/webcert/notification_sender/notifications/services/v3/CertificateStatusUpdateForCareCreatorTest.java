@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -187,7 +188,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
     }
 
     @Test
-    public void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() {
+    public void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() throws JAXBException {
         final var statusUpdate = new CertificateStatusUpdateForCareType();
 
         final var stringXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);

@@ -30,7 +30,7 @@ public class NotificationResultMessage {
     private Handelse event;
     private LocalDateTime notificationSentTime;
     private NotificationResultType resultType;
-    private byte[] redeliveryMessageBytes;
+    private byte[] statusUpdateXml;
 
 
     public String getCorrelationId() {
@@ -65,12 +65,12 @@ public class NotificationResultMessage {
         this.resultType = resultType;
     }
 
-    public byte[] getRedeliveryMessageBytes() {
-        return redeliveryMessageBytes;
+    public byte[] getStatusUpdateXml() {
+        return statusUpdateXml;
     }
 
-    public void setRedeliveryMessageBytes(byte[] redeliveryMessageBytes) {
-        this.redeliveryMessageBytes = redeliveryMessageBytes;
+    public void setStatusUpdateXml(byte[] statusUpdateXml) {
+        this.statusUpdateXml = statusUpdateXml;
     }
 
     @JsonIgnore

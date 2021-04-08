@@ -66,7 +66,7 @@ public class NotificationResultFailedServiceTest {
     NotificationResultFailedService notificationResultFailedService;
 
     private static final String CORRELATION_ID = "CORRELATION_ID";
-    private static final byte[] REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
     private static final Long EVENT_ID = 1000L;
     private static final String UNIT_ID = "UNIT_ID";
@@ -252,7 +252,7 @@ public class NotificationResultFailedServiceTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createUnsavedEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
         notificationResultMessage.setResultType(createNotificationResultType());
         return notificationResultMessage;
     }

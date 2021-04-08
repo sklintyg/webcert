@@ -46,7 +46,7 @@ public class NotificationRedeliveryJob {
     @Scheduled(cron = "${job.notification.redelivery.cron:-}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void run() {
-        LOG.info("Running notification redelivery job...");
+        LOG.debug("Running notification redelivery job...");
 
         try {
             notificationRedeliveryJobService.resendScheduledNotifications(batchSize);

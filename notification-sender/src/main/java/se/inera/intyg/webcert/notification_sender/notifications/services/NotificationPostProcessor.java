@@ -37,9 +37,9 @@ public class NotificationPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessor.class);
     
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    private NotificationPostProcessingService notificationPostProcessingService;
+    private final NotificationPostProcessingService notificationPostProcessingService;
 
     @Autowired
     public NotificationPostProcessor(ObjectMapper objectMapper, NotificationPostProcessingService notificationPostProcessingService) {

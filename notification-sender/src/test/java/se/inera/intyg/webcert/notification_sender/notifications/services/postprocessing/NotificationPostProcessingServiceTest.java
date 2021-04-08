@@ -75,7 +75,7 @@ public class NotificationPostProcessingServiceTest {
     private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
     private static final String CORRELATION_ID = "CORRELATION_ID";
     private static final HandelsekodEnum TEST_EVENT_ENUM = HandelsekodEnum.SKAPAT;
-    private static final byte[] TEST_REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
     private static final String SOAPFAULTEXCEPTION = "javax.xml.ws.soap.SOAPFaultException";
     private static final String MARSHALLING_ERROR = "Marshalling Error";
@@ -96,7 +96,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -115,7 +115,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -134,7 +134,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -152,7 +152,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -170,7 +170,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -188,7 +188,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -206,7 +206,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -225,7 +225,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -243,7 +243,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -261,7 +261,7 @@ public class NotificationPostProcessingServiceTest {
         assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
         assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
         assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(TEST_REDELIVERY_MESSAGE, captureResultMessage.getValue().getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
         assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
     }
 
@@ -287,7 +287,7 @@ public class NotificationPostProcessingServiceTest {
         final var notificationResultMessage = new NotificationResultMessage();
         notificationResultMessage.setEvent(createEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setRedeliveryMessageBytes(TEST_REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
         return notificationResultMessage;
     }
 

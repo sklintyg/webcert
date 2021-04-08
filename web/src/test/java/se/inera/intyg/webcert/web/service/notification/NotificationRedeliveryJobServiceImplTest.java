@@ -31,9 +31,9 @@ import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttr
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -51,7 +51,6 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.v3.Cert
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryJobServiceImplTest {
@@ -75,18 +74,15 @@ public class NotificationRedeliveryJobServiceImplTest {
     public void shallResendANotificationThatIsUpForRedelivery() throws Exception {
         final var expectedNotificationRedelivery = createNotificationRedelivery();
         final var expectedStatusUpdateXml = "CERTIFICATE_STATUS_XML";
-        final var notificationRedeliveryList = Arrays.asList(expectedNotificationRedelivery);
+        final var notificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
 
         final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
         final var captureBytes = ArgumentCaptor.forClass(byte[].class);
 
-        final var mockStatusUpdate = mock(CertificateStatusUpdateForCareType.class);
-
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(mockStatusUpdate).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(expectedNotificationRedelivery), any(Handelse.class));
-        doReturn(expectedStatusUpdateXml).when(certificateStatusUpdateForCareCreator).marshal(any());
+        doReturn(expectedStatusUpdateXml).when(notificationRedeliveryStatusUpdateCreatorService)
+            .getCertificateStatusUpdateXml(eq(expectedNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -109,9 +105,8 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -142,11 +137,10 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
         doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(failingNotificationRedelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -172,15 +166,14 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(mock(CertificateStatusUpdateForCareType.class)).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(certificateStatusUpdateForCareCreator).marshal(any());
+        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
         doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(failingNotificationRedelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(LOG).info(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
+        verify(LOG).debug(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
     }
 
     @Test
@@ -198,7 +191,7 @@ public class NotificationRedeliveryJobServiceImplTest {
 
     @Test
     public void shouldHandleErrorsWhenExceptionIsReceived()
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
+        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
         final var redelivery = createNotificationRedelivery();
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
         notificationRedeliveryList.add(redelivery);
@@ -206,7 +199,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(Integer.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doThrow(WebCertServiceException.class).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(redelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(redelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
 

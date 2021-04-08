@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
+import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
 import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
 import java.time.LocalDateTime;
@@ -84,6 +85,7 @@ public class NotificationResultResendService {
 
         if (attemptedDeliveries < maxTotalDeliveries) {
             event.setId(redelivery.getEventId());
+            updateDeliveryStatusToResendIfNeeded(attemptedDeliveries, redelivery.getEventId());
             updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
             monitorLogResend(event, resultMessage, redelivery);
         } else {
@@ -92,6 +94,21 @@ public class NotificationResultResendService {
             redelivery.setAttemptedDeliveries(attemptedDeliveries);
             monitorLogFailure(updatedEvent, resultMessage, redelivery);
         }
+    }
+
+    private void updateDeliveryStatusToResendIfNeeded(int attemptedDeliveries, Long eventId) {
+        if (isFirstAttemptedDeliveryOfManualResend(attemptedDeliveries)) {
+            Optional<Handelse> optionalEvent = handelseRepo.findById(eventId);
+            if (optionalEvent.isPresent() && optionalEvent.get().getDeliveryStatus() != RESEND) {
+                Handelse event = optionalEvent.get();
+                event.setDeliveryStatus(RESEND);
+                handelseRepo.save(event);
+            }
+        }
+    }
+
+    private boolean isFirstAttemptedDeliveryOfManualResend(int attemptedDeliveries) {
+        return attemptedDeliveries == 1;
     }
 
     private int attemptedRedeliveries(NotificationRedelivery redelivery) {
@@ -117,7 +134,7 @@ public class NotificationResultResendService {
         final var redelivery =  new NotificationRedelivery(
             resultMessage.getCorrelationId(),
             event.getId(),
-            resultMessage.getRedeliveryMessageBytes(),
+            resultMessage.getStatusUpdateXml(),
             strategy.getName(),
             getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
             ONE_ATTEMPTED_DELIVERY
@@ -133,8 +150,8 @@ public class NotificationResultResendService {
         redelivery.setRedeliveryTime(nextRedeliveryTime);
         redelivery.setAttemptedDeliveries(attemptedDeliveries);
 
-        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getRedeliveryMessageBytes())) {
-            redelivery.setMessage(resultMessage.getRedeliveryMessageBytes());
+        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateXml())) {
+            redelivery.setMessage(resultMessage.getStatusUpdateXml());
         }
 
         notificationRedeliveryRepo.save(redelivery);

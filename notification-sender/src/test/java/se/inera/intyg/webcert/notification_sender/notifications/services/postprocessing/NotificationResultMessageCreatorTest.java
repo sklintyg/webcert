@@ -23,6 +23,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -39,6 +40,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -68,10 +70,10 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -99,6 +101,9 @@ public class NotificationResultMessageCreatorTest {
 
     @Mock
     private ModuleEntryPoint moduleEntryPoint;
+
+    @Spy
+    CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Spy
     private ObjectMapper objectMapper;
@@ -129,7 +134,9 @@ public class NotificationResultMessageCreatorTest {
     private static final String RESULT_TEXT = "TECHNICAL_ERROR_TEXT";
 
     private static final long EVENT_ID = 1000L;
-    private static final byte[] REDELIVERY_MESSAGE = "REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
+
+    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
     @Test
     public void testCreateFailureMessage() throws ModuleNotFoundException, IOException, ModuleException {
@@ -144,7 +151,7 @@ public class NotificationResultMessageCreatorTest {
             CORRELATION_ID, USER_ID, TEXT_VERSION, EXCEPTION);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
-        assertNull(notificationResultMessage.getRedeliveryMessageBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
 
         assertEquals(EXCEPTION.getClass().getName(), notificationResultMessage.getResultType().getException());
         assertEquals(EXCEPTION.getMessage(), notificationResultMessage.getResultType().getNotificationResultText());
@@ -203,7 +210,7 @@ public class NotificationResultMessageCreatorTest {
             CORRELATION_ID);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
-        assertNull(notificationResultMessage.getRedeliveryMessageBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
         assertNotNull(notificationResultMessage.getNotificationSentTime());
 
         assertNull(notificationResultMessage.getEvent().getId());
@@ -220,58 +227,60 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenSignedCertificate() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
 
-        final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
+        final var captureStatusUpdateXml = ArgumentCaptor.forClass(String.class);
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
-        verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getCert());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
-    }
+        verify(objectMapper).writeValueAsBytes(captureStatusUpdateXml.capture());
+        assertNotNull(captureStatusUpdateXml.getValue());
+        assertTrue(captureStatusUpdateXml.getValue().startsWith(XML_HEADER));
+        assertTrue(captureStatusUpdateXml.getValue().contains(CERTIFICATE_ID));
+        assertTrue(captureStatusUpdateXml.getValue().contains(EVENT_ENUM.name()));
+        assertTrue(captureStatusUpdateXml.getValue().contains(PATIENT_ID));
+        assertTrue(captureStatusUpdateXml.getValue().contains(USER_ID));
+}
 
     @Test
-    public void certificateSignatureShouldBeNullInRedeliveryMessageWhenUnsignedCertificate() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
 
-        final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
+        final var captureStatusUpdateXml = ArgumentCaptor.forClass(String.class);
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
-        verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertNotNull(captureRedeliveryMessage.getValue().getSent());
-        assertNotNull(captureRedeliveryMessage.getValue().getReceived());
-        assertNull(captureRedeliveryMessage.getValue().getCert().getUnderskrift());
+        verify(objectMapper).writeValueAsBytes(captureStatusUpdateXml.capture());
+        assertNotNull(captureStatusUpdateXml.getValue());
+        assertTrue(captureStatusUpdateXml.getValue().startsWith(XML_HEADER));
+        assertTrue(captureStatusUpdateXml.getValue().contains(CERTIFICATE_ID));
+        assertTrue(captureStatusUpdateXml.getValue().contains(EVENT_ENUM.name()));
+        assertTrue(captureStatusUpdateXml.getValue().contains(PATIENT_ID));
+        assertTrue(captureStatusUpdateXml.getValue().contains(USER_ID));
     }
 
     @Test
-    public void redeliveryMessageShouldHaveProperlySetArenden() throws JsonProcessingException {
+    public void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JsonProcessingException {
         final var statusUpdate = createStatusUpdateForCareWithArenden();
         final var notificationResultMessage = new NotificationResultMessage();
         final var resultTypeV3 = new ResultType();
 
-        final var captureRedeliveryMessage = ArgumentCaptor.forClass(NotificationRedeliveryMessage.class);
+        final var captureStatusUpdateXml = ArgumentCaptor.forClass(String.class);
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
-        verify(objectMapper).writeValueAsBytes(captureRedeliveryMessage.capture());
-        assertEquals(1, captureRedeliveryMessage.getValue().getSent().getAnswered());
-        assertEquals(2, captureRedeliveryMessage.getValue().getSent().getUnanswered());
-        assertEquals(3, captureRedeliveryMessage.getValue().getSent().getHandled());
-        assertEquals(4, captureRedeliveryMessage.getValue().getSent().getTotal());
-
-        assertEquals(1, captureRedeliveryMessage.getValue().getReceived().getAnswered());
-        assertEquals(2, captureRedeliveryMessage.getValue().getReceived().getUnanswered());
-        assertEquals(3, captureRedeliveryMessage.getValue().getReceived().getHandled());
-        assertEquals(4, captureRedeliveryMessage.getValue().getReceived().getTotal());
+        verify(objectMapper).writeValueAsBytes(captureStatusUpdateXml.capture());
+        assertNotNull(captureStatusUpdateXml.getValue());
+        assertTrue(captureStatusUpdateXml.getValue().startsWith(XML_HEADER));
+        assertEquals(2, StringUtils.countMatches(captureStatusUpdateXml.getValue(), "besvarade>1</"));
+        assertEquals(2, StringUtils.countMatches(captureStatusUpdateXml.getValue(), "ejBesvarade>2</"));
+        assertEquals(2, StringUtils.countMatches(captureStatusUpdateXml.getValue(), "hanterade>3</"));
+        assertEquals(2, StringUtils.countMatches(captureStatusUpdateXml.getValue(), "totalt>4</"));
     }
 
     @Test
@@ -307,13 +316,13 @@ public class NotificationResultMessageCreatorTest {
         final var resultTypeV3 = createNotificationResultType();
         final var notificationResultMessage = new NotificationResultMessage();
         final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
-        notificationResultMessage.setRedeliveryMessageBytes(notNullBytes);
+        notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
-        doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
+        doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
-        assertNull(notificationResultMessage.getRedeliveryMessageBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
     }
 
     @Test
@@ -322,9 +331,9 @@ public class NotificationResultMessageCreatorTest {
         final var resultTypeV3 = createNotificationResultType();
         final var notificationResultMessage = new NotificationResultMessage();
         final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
-        notificationResultMessage.setRedeliveryMessageBytes(notNullBytes);
+        notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
-        doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(NotificationRedeliveryMessage.class));
+        doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
@@ -344,7 +353,7 @@ public class NotificationResultMessageCreatorTest {
 
         assertEquals(event, resultMessage.getEvent());
         assertEquals(EVENT_ID, resultMessage.getEvent().getId().longValue());
-        assertEquals(REDELIVERY_MESSAGE, resultMessage.getRedeliveryMessageBytes());
+        assertEquals(STATUS_UPDATE_XML, resultMessage.getStatusUpdateXml());
         assertEquals(CORRELATION_ID, resultMessage.getCorrelationId());
         assertNotNull(resultMessage.getNotificationSentTime());
     }
@@ -401,7 +410,7 @@ public class NotificationResultMessageCreatorTest {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);
         notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
+        notificationRedelivery.setMessage(STATUS_UPDATE_XML);
         notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
         return notificationRedelivery;
     }

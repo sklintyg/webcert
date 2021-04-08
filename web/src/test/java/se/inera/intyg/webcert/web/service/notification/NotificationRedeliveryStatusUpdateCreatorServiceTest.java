@@ -22,12 +22,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,12 +40,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.CertificateMessages;
-import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationRedeliveryMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -53,7 +56,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
@@ -89,112 +91,18 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
     private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
 
     @Test
-    public void shallUseCertificateFromNotificationRedeliveryMessageIfExists() throws Exception {
+    public void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
         final var notificationRedelivery = createNotificationRedelivery();
         final var event = createEvent();
-        final var expectedCertificate = mock(Intyg.class);
+        final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
 
-        setupMockToReturnNotificationRedeliveryMessage(expectedCertificate);
+        setupMockToReturnStatusUpdateXml(expectedStatusUpdateXml);
 
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
+        final var actualStatusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
+            .getCertificateStatusUpdateXml(notificationRedelivery, event);
 
-        assertNotNull(actualStatusUpdate);
-        assertEquals(expectedCertificate, actualStatusUpdate.getIntyg());
-    }
-
-    @Test
-    public void shallUseRefFromNotificationRedeliveryMessage() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedRef = "REF";
-
-        setupMockToReturnNotificationRedeliveryMessage(mock(Intyg.class));
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
-
-        assertNotNull(actualStatusUpdate);
-        assertEquals(expectedRef, actualStatusUpdate.getRef());
-    }
-
-    @Test
-    public void shallUseMessageSentFromNotificationRedeliveryMessage() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedMessagesSent = new CertificateMessages();
-        expectedMessagesSent.setUnanswered(1);
-        expectedMessagesSent.setAnswered(2);
-        expectedMessagesSent.setHandled(3);
-        expectedMessagesSent.setTotal(4);
-
-        setupMockToReturnNotificationRedeliveryMessage(mock(Intyg.class), expectedMessagesSent, null);
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
-
-        assertNotNull(actualStatusUpdate);
-        assertNotNull(actualStatusUpdate.getSkickadeFragor());
-        assertEquals(expectedMessagesSent.getUnanswered(), actualStatusUpdate.getSkickadeFragor().getEjBesvarade());
-        assertEquals(expectedMessagesSent.getAnswered(), actualStatusUpdate.getSkickadeFragor().getBesvarade());
-        assertEquals(expectedMessagesSent.getHandled(), actualStatusUpdate.getSkickadeFragor().getHanterade());
-        assertEquals(expectedMessagesSent.getTotal(), actualStatusUpdate.getSkickadeFragor().getTotalt());
-    }
-
-    @Test
-    public void shallUseMessageReceivedFromNotificationRedeliveryMessage() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedMessagesReceived = new CertificateMessages();
-        expectedMessagesReceived.setUnanswered(1);
-        expectedMessagesReceived.setAnswered(2);
-        expectedMessagesReceived.setHandled(3);
-        expectedMessagesReceived.setTotal(4);
-
-        setupMockToReturnNotificationRedeliveryMessage(mock(Intyg.class), null, expectedMessagesReceived);
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
-
-        assertNotNull(actualStatusUpdate);
-        assertNotNull(actualStatusUpdate.getSkickadeFragor());
-        assertEquals(expectedMessagesReceived.getUnanswered(), actualStatusUpdate.getMottagnaFragor().getEjBesvarade());
-        assertEquals(expectedMessagesReceived.getAnswered(), actualStatusUpdate.getMottagnaFragor().getBesvarade());
-        assertEquals(expectedMessagesReceived.getHandled(), actualStatusUpdate.getMottagnaFragor().getHanterade());
-        assertEquals(expectedMessagesReceived.getTotal(), actualStatusUpdate.getMottagnaFragor().getTotalt());
-    }
-
-    @Test
-    public void shallUseHandledByFromEventIfExists() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedHandledBy = "HANDLED_BY";
-
-        setupMockToReturnNotificationRedeliveryMessage(mock(Intyg.class));
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
-
-        assertNotNull(actualStatusUpdate);
-        assertEquals(expectedHandledBy, actualStatusUpdate.getHanteratAv().getExtension());
-    }
-
-    @Test
-    public void shallUseEventInformationFromEventIfExists() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedEvent = createEvent();
-
-        setupMockToReturnNotificationRedeliveryMessage(mock(Intyg.class));
-
-        final var actualStatusUpdate = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
-
-        assertNotNull(actualStatusUpdate);
-        assertEquals(expectedEvent.getCode().value(), actualStatusUpdate.getHandelse().getHandelsekod().getCode());
-        assertEquals(EVENT_TIMESTAMP, actualStatusUpdate.getHandelse().getTidpunkt());
-        assertEquals(expectedEvent.getAmne().name(), actualStatusUpdate.getHandelse().getAmne().getCode());
-        assertEquals(LAST_DAY_FOR_ANSWER, actualStatusUpdate.getHandelse().getSistaDatumForSvar());
+        assertNotNull(actualStatusUpdateXml);
+        assertEquals(expectedStatusUpdateXml, actualStatusUpdateXml);
     }
 
     @Test
@@ -202,10 +110,12 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
         final var event = createEvent();
         final var expectedDraft = mock(Utkast.class);
+        final var notificationMessage = mock(NotificationMessage.class);
 
         setupMockToReturnDraft(expectedDraft);
+        setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
 
         verify(expectedDraft, times(1)).getModel();
     }
@@ -215,11 +125,13 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
         final var event = createEvent();
         final var expectedCertificate = mock(IntygContentHolder.class);
+        final var notificationMessage = mock(NotificationMessage.class);
 
         setupMockToReturnDraft(null);
         setupMockToReturnIntygHolder(expectedCertificate);
+        setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
 
         verify(expectedCertificate, times(1)).getContents();
     }
@@ -232,7 +144,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
         doReturn(mock(List.class)).when(hsaPersonService).getHsaPersonInfo(expectedEvent.getCertificateIssuer());
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, expectedEvent);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, expectedEvent);
 
         verify(hsaOrganizationsService, times(1)).getVardgivareInfo(expectedEvent.getVardgivarId());
         verify(hsaOrganizationsService, times(1)).getVardenhet(expectedEvent.getEnhetsId());
@@ -240,7 +152,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
     }
 
     private NotificationRedelivery createNotificationRedelivery() {
-        return createNotificationRedelivery("REDELIVERY_MESSAGE".getBytes());
+        return createNotificationRedelivery("STATUS_UPDATE_XML".getBytes());
     }
 
     private NotificationRedelivery createNotificationRedeliveryWithoutMessage() {
@@ -266,19 +178,14 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         doReturn(certificate).when(intygService).fetchIntygDataForInternalUse(any(String.class), eq(true));
     }
 
-    private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate) throws Exception {
-        setupMockToReturnNotificationRedeliveryMessage(certificate, null, null);
+    private void setupMockToReturnNotificationMessage(NotificationMessage notificationMessage)
+        throws ModuleNotFoundException, IOException, ModuleException {
+        doReturn(notificationMessage).when(notificationMessageFactory).createNotificationMessage(any(Handelse.class),
+            nullable(String.class));
     }
 
-    private void setupMockToReturnNotificationRedeliveryMessage(Intyg certificate, CertificateMessages sent, CertificateMessages received)
-        throws Exception {
-        final var mockNotificationRedeliveryMessage = mock(NotificationRedeliveryMessage.class);
-        doReturn(mockNotificationRedeliveryMessage).when(objectMapper)
-            .readValue(any(byte[].class), eq(NotificationRedeliveryMessage.class));
-        doReturn(certificate).when(mockNotificationRedeliveryMessage).getCert();
-        doReturn("REF").when(mockNotificationRedeliveryMessage).getReference();
-        doReturn(sent).when(mockNotificationRedeliveryMessage).getSent();
-        doReturn(received).when(mockNotificationRedeliveryMessage).getReceived();
+    private void setupMockToReturnStatusUpdateXml(String statusUpdateXml) throws Exception {
+        doReturn(statusUpdateXml).when(objectMapper).readValue(any(byte[].class), eq(String.class));
     }
 
     private Handelse createEvent() {

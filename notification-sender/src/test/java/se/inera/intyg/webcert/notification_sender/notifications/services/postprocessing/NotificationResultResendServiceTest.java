@@ -78,7 +78,7 @@ public class NotificationResultResendServiceTest {
     NotificationResultResendService notificationResultResendService;
 
     private static final String CORRELATION_ID = "CORRELATION_ID";
-    private static final byte[] REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
     private static final Long EVENT_ID = 1000L;
     private static final String UNIT_ID = "UNIT_ID";
@@ -292,7 +292,7 @@ public class NotificationResultResendServiceTest {
         verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
         assertEquals(EVENT_ID, captureRedelivery.getValue().getEventId());
         assertEquals(CORRELATION_ID, captureRedelivery.getValue().getCorrelationId());
-        assertEquals(REDELIVERY_MESSAGE, captureRedelivery.getValue().getMessage());
+        assertEquals(STATUS_UPDATE_XML, captureRedelivery.getValue().getMessage());
         assertEquals(NotificationRedeliveryStrategyEnum.STANDARD, captureRedelivery.getValue().getRedeliveryStrategy());
         assertEquals(1, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
         assertTrue(captureRedelivery.getValue().getRedeliveryTime().isAfter(testStartTime));
@@ -346,7 +346,7 @@ public class NotificationResultResendServiceTest {
 
         verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
         assertNotNull("Must update redelivery message if it didn't exist from before", captureRedelivery.getValue().getMessage());
-        assertEquals(REDELIVERY_MESSAGE, captureRedelivery.getValue().getMessage());
+        assertEquals(STATUS_UPDATE_XML, captureRedelivery.getValue().getMessage());
     }
 
     @Test
@@ -419,12 +419,39 @@ public class NotificationResultResendServiceTest {
         assertEquals(expectedRedeliveryAttempt, captureRedelivery.getValue().getAttemptedDeliveries().intValue());
     }
 
+    @Test
+    public void shouldUpdateDeliveryStatusOnManualResendIfNeeded() {
+        final var notificationResultMessage = createNotificationResultMessage();
+        final var notificationRedelivery = createNotificationRedelivery();
+        final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
+        final var savedEvent = createSavedEvent();
+        savedEvent.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
+        notificationRedelivery.setAttemptedDeliveries(null);
+
+        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+
+        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage
+            .getCorrelationId());
+        doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
+            .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
+        doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
+        doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(any(Integer.class));
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(any(Integer.class));
+        doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
+        doReturn(Optional.of(savedEvent)).when(handelseRepository).findById(notificationRedelivery.getEventId());
+
+        notificationResultResendService.process(notificationResultMessage);
+
+        verify(handelseRepository).save(captureEvent.capture());
+        assertEquals(NotificationDeliveryStatusEnum.RESEND, captureEvent.getValue().getDeliveryStatus());
+    }
+
     private NotificationRedelivery createNotificationRedelivery() {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);
         notificationRedelivery.setEventId(EVENT_ID);
         notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
-        notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
+        notificationRedelivery.setMessage(STATUS_UPDATE_XML);
         notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
         return notificationRedelivery;
     }
@@ -435,7 +462,7 @@ public class NotificationResultResendServiceTest {
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
         notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
         notificationResultMessage.setResultType(createNotificationResultType());
-        notificationResultMessage.setRedeliveryMessageBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
         return notificationResultMessage;
     }
 
