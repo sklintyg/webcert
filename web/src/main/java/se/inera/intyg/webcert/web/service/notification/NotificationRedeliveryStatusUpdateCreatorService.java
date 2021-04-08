@@ -71,7 +71,8 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
             return getStatusUpdateXmlFromNotificationRedelivery(redelivery);
         }
 
-        return createStatusUpdateXmlFromEvent(event);
+        final var statusUpdate = createStatusUpdateFromEvent(event);
+        return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
     }
 
     private boolean containsMessage(NotificationRedelivery redelivery) {
@@ -82,22 +83,18 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
         return objectMapper.readValue(redelivery.getMessage(), String.class);
     }
 
-    private String createStatusUpdateXmlFromEvent(Handelse event)
-        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException, JAXBException {
-
-        CertificateStatusUpdateForCareType statusUpdate;
+    private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
+        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
 
         if (isDeletedEvent(event)) {
             final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
             final var careUnit = hsaOrganizationsService.getVardenhet(event.getEnhetsId());
             final var personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
-            statusUpdate =  certificateStatusUpdateForCareCreator.create(event, careProvider, careUnit, personInfo);
-        } else {
-            final var notificationMessage = createNotificationMessage(event);
-            statusUpdate = certificateStatusUpdateForCareCreator.create(notificationMessage, event.getCertificateVersion());
+            return certificateStatusUpdateForCareCreator.create(event, careProvider, careUnit, personInfo);
         }
 
-        return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
+        final var notificationMessage = createNotificationMessage(event);
+        return certificateStatusUpdateForCareCreator.create(notificationMessage, event.getCertificateVersion());
     }
 
     private boolean isDeletedEvent(Handelse event) {

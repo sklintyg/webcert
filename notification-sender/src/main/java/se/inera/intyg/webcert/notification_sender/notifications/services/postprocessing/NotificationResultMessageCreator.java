@@ -110,17 +110,17 @@ public class NotificationResultMessageCreator {
 
     public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
         ResultType resultType) {
-        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addStatusUpdateToResultMessage(resultMessage, statusUpdate);
         addResultTypeToResultMessage(resultMessage, resultType);
     }
 
     public void addToResultMessage(NotificationResultMessage resultMessage, CertificateStatusUpdateForCareType statusUpdate,
         Exception exception) {
-        addRedeliveryMessageToResultMessage(resultMessage, statusUpdate);
+        addStatusUpdateToResultMessage(resultMessage, statusUpdate);
         addResultTypeToResultMessage(resultMessage, exception);
     }
 
-    private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
+    private void addStatusUpdateToResultMessage(NotificationResultMessage resultMessage,
         CertificateStatusUpdateForCareType statusUpdate) {
         final var statusUpdateXmlAsBytes = getStatusUpdateXmlAsBytes(statusUpdate);
         resultMessage.setStatusUpdateXml(statusUpdateXmlAsBytes);
