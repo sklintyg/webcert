@@ -94,7 +94,7 @@ public class NotificationResultMessageCreator {
         notificationResultMessage.setEvent(event);
         notificationResultMessage.setResultType(notificationResultType);
         notificationResultMessage.setNotificationSentTime(LocalDateTime.now());
-        notificationResultMessage.setStatusUpdateBytes(redelivery.getMessage());
+        notificationResultMessage.setStatusUpdateXml(redelivery.getMessage());
         return notificationResultMessage;
     }
 
@@ -122,8 +122,8 @@ public class NotificationResultMessageCreator {
 
     private void addRedeliveryMessageToResultMessage(NotificationResultMessage resultMessage,
         CertificateStatusUpdateForCareType statusUpdate) {
-        final var statusUpdateBytes = createRedeliveryMessage(statusUpdate);
-        resultMessage.setStatusUpdateBytes(statusUpdateBytes);
+        final var statusUpdateXmlAsBytes = getStatusUpdateXmlAsBytes(statusUpdate);
+        resultMessage.setStatusUpdateXml(statusUpdateXmlAsBytes);
     }
 
     private void addResultTypeToResultMessage(NotificationResultMessage resultMessage, ResultType resultType) {
@@ -154,7 +154,7 @@ public class NotificationResultMessageCreator {
         resultMessage.setResultType(notificationResultType);
     }
 
-    private byte[] createRedeliveryMessage(CertificateStatusUpdateForCareType statusUpdate) {
+    private byte[] getStatusUpdateXmlAsBytes(CertificateStatusUpdateForCareType statusUpdate) {
         try {
             final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
             return objectMapper.writeValueAsBytes(statusUpdateXml);

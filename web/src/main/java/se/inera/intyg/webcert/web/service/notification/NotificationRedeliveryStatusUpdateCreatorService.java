@@ -62,26 +62,27 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     private NotificationMessageFactory notificationMessageFactory;
 
     /**
-     * Creates a {@link CertificateStatusUpdateForCareType} based on the information received in the {@link NotificationRedelivery}.
+     * Returns an XML String of a {@link CertificateStatusUpdateForCareType} created based on the information received in e
+     * {@link NotificationRedelivery} or, in case of manually initiated redeliveries, a {@link Handelse}.
      */
-    public String createCertificateStatusUpdate(NotificationRedelivery redelivery, Handelse event)
+    public String getCertificateStatusUpdateXml(NotificationRedelivery redelivery, Handelse event)
         throws IOException, ModuleException, ModuleNotFoundException, TemporaryException, JAXBException {
         if (containsMessage(redelivery)) {
-            return getStatusUpdateFromExistingMessage(redelivery);
+            return getStatusUpdateXmlFromNotificationRedelivery(redelivery);
         }
 
-        return createStatusUpdateFromEvent(event);
+        return createStatusUpdateXmlFromEvent(event);
     }
 
     private boolean containsMessage(NotificationRedelivery redelivery) {
         return redelivery.getMessage() != null;
     }
 
-    private String getStatusUpdateFromExistingMessage(NotificationRedelivery redelivery) throws IOException {
-        return getRedeliveryMessage(redelivery);
+    private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery) throws IOException {
+        return objectMapper.readValue(redelivery.getMessage(), String.class);
     }
 
-    private String createStatusUpdateFromEvent(Handelse event)
+    private String createStatusUpdateXmlFromEvent(Handelse event)
         throws TemporaryException, ModuleNotFoundException, IOException, ModuleException, JAXBException {
 
         CertificateStatusUpdateForCareType statusUpdate;
@@ -112,9 +113,5 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
         final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
         return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
-    }
-
-    private String getRedeliveryMessage(NotificationRedelivery redelivery) throws IOException {
-        return objectMapper.readValue(redelivery.getMessage(), String.class);
     }
 }

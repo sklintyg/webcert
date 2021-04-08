@@ -67,7 +67,7 @@ public class NotificationResultMessageSenderTest {
     private NotificationResultMessageSender notificationResultMessageSender;
 
     private static final String CORRELATION_ID = "CORRELATION_ID";
-    private static final byte[] REDELIVERY_MESSAGE = "TEST_REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
     private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
     private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
@@ -111,7 +111,7 @@ public class NotificationResultMessageSenderTest {
         final var message = messageCaptor.getValue().createMessage(session);
         final var capturedTextMessage = objectMapper.readValue(((TextMessage) message).getText(), NotificationResultMessage.class);
         assertNull(capturedTextMessage.getEvent().getId());
-        assertNotNull(capturedTextMessage.getStatusUpdateBytes());
+        assertNotNull(capturedTextMessage.getStatusUpdateXml());
         assertEquals(CORRELATION_ID, capturedTextMessage.getCorrelationId());
         assertEquals(CERTIFICATE_ID, capturedTextMessage.getEvent().getIntygsId());
         assertEquals(LOGICAL_ADDRESS, capturedTextMessage.getEvent().getEnhetsId());
@@ -145,7 +145,7 @@ public class NotificationResultMessageSenderTest {
         notificationResultMessage.setEvent(createEvent());
         notificationResultMessage.setCorrelationId(CORRELATION_ID);
         notificationResultMessage.setResultType(createNotificationResultType());
-        notificationResultMessage.setStatusUpdateBytes(REDELIVERY_MESSAGE);
+        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
         return notificationResultMessage;
     }
 

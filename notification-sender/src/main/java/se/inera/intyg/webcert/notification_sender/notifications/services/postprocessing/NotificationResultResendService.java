@@ -134,7 +134,7 @@ public class NotificationResultResendService {
         final var redelivery =  new NotificationRedelivery(
             resultMessage.getCorrelationId(),
             event.getId(),
-            resultMessage.getStatusUpdateBytes(),
+            resultMessage.getStatusUpdateXml(),
             strategy.getName(),
             getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
             ONE_ATTEMPTED_DELIVERY
@@ -150,8 +150,8 @@ public class NotificationResultResendService {
         redelivery.setRedeliveryTime(nextRedeliveryTime);
         redelivery.setAttemptedDeliveries(attemptedDeliveries);
 
-        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateBytes())) {
-            redelivery.setMessage(resultMessage.getStatusUpdateBytes());
+        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateXml())) {
+            redelivery.setMessage(resultMessage.getStatusUpdateXml());
         }
 
         notificationRedeliveryRepo.save(redelivery);

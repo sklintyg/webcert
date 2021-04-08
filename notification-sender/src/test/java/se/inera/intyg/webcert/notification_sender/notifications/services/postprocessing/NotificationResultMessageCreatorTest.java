@@ -134,7 +134,7 @@ public class NotificationResultMessageCreatorTest {
     private static final String RESULT_TEXT = "TECHNICAL_ERROR_TEXT";
 
     private static final long EVENT_ID = 1000L;
-    private static final byte[] REDELIVERY_MESSAGE = "REDELIVERY_MESSAGE".getBytes();
+    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
     private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
@@ -151,7 +151,7 @@ public class NotificationResultMessageCreatorTest {
             CORRELATION_ID, USER_ID, TEXT_VERSION, EXCEPTION);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
-        assertNull(notificationResultMessage.getStatusUpdateBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
 
         assertEquals(EXCEPTION.getClass().getName(), notificationResultMessage.getResultType().getException());
         assertEquals(EXCEPTION.getMessage(), notificationResultMessage.getResultType().getNotificationResultText());
@@ -210,7 +210,7 @@ public class NotificationResultMessageCreatorTest {
             CORRELATION_ID);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
-        assertNull(notificationResultMessage.getStatusUpdateBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
         assertNotNull(notificationResultMessage.getNotificationSentTime());
 
         assertNull(notificationResultMessage.getEvent().getId());
@@ -316,13 +316,13 @@ public class NotificationResultMessageCreatorTest {
         final var resultTypeV3 = createNotificationResultType();
         final var notificationResultMessage = new NotificationResultMessage();
         final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
-        notificationResultMessage.setStatusUpdateBytes(notNullBytes);
+        notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
         notificationResultMessageCreator.addToResultMessage(notificationResultMessage, statusUpdate, resultTypeV3);
 
-        assertNull(notificationResultMessage.getStatusUpdateBytes());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
     }
 
     @Test
@@ -331,7 +331,7 @@ public class NotificationResultMessageCreatorTest {
         final var resultTypeV3 = createNotificationResultType();
         final var notificationResultMessage = new NotificationResultMessage();
         final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
-        notificationResultMessage.setStatusUpdateBytes(notNullBytes);
+        notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
@@ -353,7 +353,7 @@ public class NotificationResultMessageCreatorTest {
 
         assertEquals(event, resultMessage.getEvent());
         assertEquals(EVENT_ID, resultMessage.getEvent().getId().longValue());
-        assertEquals(REDELIVERY_MESSAGE, resultMessage.getStatusUpdateBytes());
+        assertEquals(STATUS_UPDATE_XML, resultMessage.getStatusUpdateXml());
         assertEquals(CORRELATION_ID, resultMessage.getCorrelationId());
         assertNotNull(resultMessage.getNotificationSentTime());
     }
@@ -410,7 +410,7 @@ public class NotificationResultMessageCreatorTest {
         final var notificationRedelivery = new NotificationRedelivery();
         notificationRedelivery.setCorrelationId(CORRELATION_ID);
         notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setMessage(REDELIVERY_MESSAGE);
+        notificationRedelivery.setMessage(STATUS_UPDATE_XML);
         notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
         return notificationRedelivery;
     }

@@ -82,7 +82,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doReturn(expectedStatusUpdateXml).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(expectedNotificationRedelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(expectedNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -106,7 +106,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -138,9 +138,9 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
         doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(failingNotificationRedelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -167,9 +167,9 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(any(NotificationRedelivery.class), any(Handelse.class));
+            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
         doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(failingNotificationRedelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -199,7 +199,7 @@ public class NotificationRedeliveryJobServiceImplTest {
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(Integer.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doThrow(WebCertServiceException.class).when(notificationRedeliveryStatusUpdateCreatorService)
-            .createCertificateStatusUpdate(eq(redelivery), any(Handelse.class));
+            .getCertificateStatusUpdateXml(eq(redelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
 

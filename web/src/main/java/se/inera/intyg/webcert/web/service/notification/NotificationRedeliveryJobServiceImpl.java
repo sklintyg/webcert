@@ -100,8 +100,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
         try {
-            final var messageAsBytes = getMessageAsBytes(notificationRedelivery, event);
-            notificationRedeliveryService.resend(notificationRedelivery, event, messageAsBytes);
+            final var statusUpdateXml = getCertificateStatusUpdateXmlABytes(notificationRedelivery, event);
+            notificationRedeliveryService.resend(notificationRedelivery, event, statusUpdateXml);
             return true;
         } catch (Exception e) {
             LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
@@ -115,10 +115,10 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
             redelivery.getCorrelationId());
     }
 
-    private byte[] getMessageAsBytes(NotificationRedelivery notificationRedelivery, Handelse event)
+    private byte[] getCertificateStatusUpdateXmlABytes(NotificationRedelivery notificationRedelivery, Handelse event)
         throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
         final var statusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
+            .getCertificateStatusUpdateXml(notificationRedelivery, event);
         return statusUpdateXml.getBytes(StandardCharsets.UTF_8);
     }
 

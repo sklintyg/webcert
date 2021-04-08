@@ -99,7 +99,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         setupMockToReturnStatusUpdateXml(expectedStatusUpdateXml);
 
         final var actualStatusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
-            .createCertificateStatusUpdate(notificationRedelivery, event);
+            .getCertificateStatusUpdateXml(notificationRedelivery, event);
 
         assertNotNull(actualStatusUpdateXml);
         assertEquals(expectedStatusUpdateXml, actualStatusUpdateXml);
@@ -115,7 +115,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         setupMockToReturnDraft(expectedDraft);
         setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
 
         verify(expectedDraft, times(1)).getModel();
     }
@@ -131,7 +131,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
         setupMockToReturnIntygHolder(expectedCertificate);
         setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, event);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
 
         verify(expectedCertificate, times(1)).getContents();
     }
@@ -144,7 +144,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
         doReturn(mock(List.class)).when(hsaPersonService).getHsaPersonInfo(expectedEvent.getCertificateIssuer());
 
-        notificationRedeliveryStatusUpdateCreatorService.createCertificateStatusUpdate(notificationRedelivery, expectedEvent);
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, expectedEvent);
 
         verify(hsaOrganizationsService, times(1)).getVardgivareInfo(expectedEvent.getVardgivarId());
         verify(hsaOrganizationsService, times(1)).getVardenhet(expectedEvent.getEnhetsId());
