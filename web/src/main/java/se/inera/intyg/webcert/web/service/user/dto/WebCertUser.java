@@ -27,6 +27,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 /**
@@ -39,6 +40,7 @@ public class WebCertUser extends IntygUser {
     private Map<String, String> anvandarPreference = new HashMap<>();
     private IntegrationParameters parameters;
     private boolean useSigningService = false;
+    private SubscriptionInfo subscriptionInfo;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -110,6 +112,14 @@ public class WebCertUser extends IntygUser {
 
     public void setUseSigningService(boolean useSigningService) {
         this.useSigningService = useSigningService;
+    }
+
+    public SubscriptionInfo getSubscriptionInfo() {
+        return subscriptionInfo;
+    }
+
+    public void setSubscriptionInfo(SubscriptionInfo subscriptionInfo) {
+        this.subscriptionInfo = subscriptionInfo;
     }
 
     @JsonIgnore

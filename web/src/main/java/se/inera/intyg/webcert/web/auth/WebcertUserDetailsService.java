@@ -18,14 +18,17 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -40,6 +43,9 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
     @Autowired
     AnvandarPreferenceRepository anvandarMetadataRepository;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     /**
      * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
      * as Principal.
@@ -52,6 +58,8 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         IntygUser user = super.buildUserPrincipal(credential);
         WebCertUser webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
+        webCertUser.setSubscriptionInfo(subscriptionService.fetchSubscriptionInfo(webCertUser.getOrigin(), webCertUser.getFeatures(),
+            webCertUser.getVardgivare().stream().map(Vardgivare::getId).collect(Collectors.toList())));
         return webCertUser;
     }
 
