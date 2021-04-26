@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
@@ -88,6 +89,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
     @Mock
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+    @Mock
+    private SubscriptionService subscriptionService;
 
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
