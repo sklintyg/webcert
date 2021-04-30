@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -116,6 +117,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
+
+        when(subscriptionService.determineSubscriptionAction(any(), any()))
+            .thenReturn(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE);
 
         WebCertUserOrigin userOrigin = mock(WebCertUserOrigin.class);
         when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");

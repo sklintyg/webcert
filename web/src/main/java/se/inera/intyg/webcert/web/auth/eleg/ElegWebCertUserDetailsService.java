@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.auth.eleg;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
@@ -52,6 +54,7 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
@@ -164,7 +167,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         // Set application mode / request origin
         user.setOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName());
 
-        user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
         user.setNamn(hosPerson.getFullstandigtNamn());
@@ -182,10 +184,28 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
+        decorateWebcertUserWithPrivatLakareAvtalGodkand(requestOrigin, user.getFeatures(), hosPerson, user);
+        decorateWebcertUserWithSubscriptionInfo(requestOrigin, user.getFeatures(), user.getVardgivare(), user);
 
-        user.setSubscriptionInfo(subscriptionService.fetchSubscriptionInfo(requestOrigin, user.getFeatures(),
-            user.getVardgivare().stream().map(Vardgivare::getId).collect(Collectors.toList())));
         return user;
+    }
+
+    private void decorateWebcertUserWithSubscriptionInfo(String requestOrigin, Map<String, Feature> features,
+        List<Vardgivare> careProviders, WebCertUser user) {
+        final var careProviderHsaIdList = careProviders.stream().map(Vardgivare::getId).collect(Collectors.toList());
+        final var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(requestOrigin, features, careProviderHsaIdList);
+        user.setSubscriptionInfo(subscriptionInfo);
+    }
+
+    private void decorateWebcertUserWithPrivatLakareAvtalGodkand(String requestOrigin, Map<String, Feature> features,
+        HoSPersonType hosPerson, WebCertUser user) {
+        final var subscriptionInfoAction = subscriptionService.determineSubscriptionAction(requestOrigin, features);
+
+        if (subscriptionInfoAction == SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
+            user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
+        } else {
+            user.setPrivatLakareAvtalGodkand(true);
+        }
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {

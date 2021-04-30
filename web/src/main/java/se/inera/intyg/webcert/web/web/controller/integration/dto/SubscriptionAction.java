@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
-public enum MissingSubscriptionAction {
-    NONE,
-    WARN,
-    BLOCK
+public enum SubscriptionAction {
+    NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE,
+    MISSING_SUBSCRIPTION_WARN,
+    MISSING_SUBSCRIPTION_BLOCK
 }

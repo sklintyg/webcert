@@ -83,15 +83,15 @@ public class WebCertUser extends IntygUser {
         if (super.equals(o)) {
             WebCertUser that = (WebCertUser) o;
             return Objects.equals(this.anvandarPreference, that.anvandarPreference)
-                && Objects.equals(this.parameters, that.parameters);
+                && Objects.equals(this.parameters, that.parameters)
+                && Objects.equals(this.subscriptionInfo, that.subscriptionInfo);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters);
-
+        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters, this.subscriptionInfo);
     }
 
     public void setAnvandarPreference(Map<String, String> anvandarMetadata) {

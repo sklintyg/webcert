@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.subscription;
 
 import static org.junit.Assert.assertEquals;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.MissingSubscriptionAction;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionServiceTest {
@@ -37,7 +37,9 @@ public class SubscriptionServiceTest {
     @InjectMocks
     private SubscriptionServiceImpl subscriptionService;
 
-    private Map<String, Feature> createFeatures(boolean subscriptionDuringAdjustmentPeriodActive, boolean subscriptionPastAdjustmentPeriodActive) {
+    private Map<String, Feature> createFeatures(boolean subscriptionDuringAdjustmentPeriodActive,
+        boolean subscriptionPastAdjustmentPeriodActive) {
+
         var featureSubscriptionDuringAdjustmentPeriod = new Feature();
         featureSubscriptionDuringAdjustmentPeriod.setGlobal(subscriptionDuringAdjustmentPeriodActive);
         featureSubscriptionDuringAdjustmentPeriod.setName(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD);
@@ -53,32 +55,35 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void testFetchSubscriptionInfoActionNone() {
-        var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(UserOriginType.DJUPINTEGRATION.name(),
-            createFeatures(false, false), new ArrayList<>());
+    public void testDetermineSubscriptionActionOriginDjupintegration() {
+        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.DJUPINTEGRATION.name(),
+            createFeatures(false, false));
 
-        assertEquals(MissingSubscriptionAction.NONE, subscriptionInfo.getMissingSubscriptionAction());
+        assertEquals(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, subscriptionAction);
     }
 
     @Test
-    public void testFetchSubscriptionInfoActionWarn() {
-        var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(UserOriginType.NORMAL.name(),
-            createFeatures(true, false), new ArrayList<>());
+    public void testDetermineSubscriptionActionOriginNormalNoFeature() {
+        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
+            createFeatures(false, false));
 
-        assertEquals(MissingSubscriptionAction.WARN, subscriptionInfo.getMissingSubscriptionAction());
+        assertEquals(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, subscriptionAction);
     }
 
     @Test
-    public void testFetchSubscriptionInfoActionBlock() {
-        var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(UserOriginType.NORMAL.name(),
-            createFeatures(false, true), new ArrayList<>());
+    public void testDetermineSubscriptionActionOriginNormalWarn() {
+        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
+            createFeatures(true, false));
 
-        assertEquals(MissingSubscriptionAction.BLOCK, subscriptionInfo.getMissingSubscriptionAction());
+        assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_WARN, subscriptionAction);
+    }
 
-        subscriptionInfo = subscriptionService.fetchSubscriptionInfo(UserOriginType.NORMAL.name(),
-            createFeatures(true, true), new ArrayList<>());
+    @Test
+    public void testDetermineSubscriptionActionOriginNormalBlock() {
+        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
+            createFeatures(true, true));
 
-        assertEquals(MissingSubscriptionAction.BLOCK, subscriptionInfo.getMissingSubscriptionAction());
+        assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK, subscriptionAction);
     }
 
 }

@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.MissingSubscriptionAction;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 @Service
@@ -32,25 +32,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public SubscriptionInfo fetchSubscriptionInfo(String origin, Map<String, Feature> features, List<String> careProviderHsaIdList) {
-        final var missingSubscriptionAction = determineMissingSubscriptionAction(origin, features);
-        if (missingSubscriptionAction != MissingSubscriptionAction.NONE) {
+        final var missingSubscriptionAction = determineSubscriptionAction(origin, features);
+        if (missingSubscriptionAction != SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
             //TODO: Call Kundportalen
             return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIdList);
         }
 
-        return new SubscriptionInfo(missingSubscriptionAction);
+        return SubscriptionInfo.createSubscriptionInfoFeaturesNotActive();
     }
 
-    private MissingSubscriptionAction determineMissingSubscriptionAction(String origin, Map<String, Feature> features) {
+    @Override
+    public SubscriptionAction determineSubscriptionAction(String origin, Map<String, Feature> features) {
         if (origin.equals(UserOriginType.NORMAL.name())) {
             if (Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD).getGlobal())) {
-                return MissingSubscriptionAction.BLOCK;
+                return SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK;
             } else if (Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD).getGlobal())) {
-                return MissingSubscriptionAction.WARN;
+                return SubscriptionAction.MISSING_SUBSCRIPTION_WARN;
             }
         }
 
-        return MissingSubscriptionAction.NONE;
+        return SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE;
     }
 
 }
