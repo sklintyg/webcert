@@ -135,4 +135,9 @@ public class WebcertCertificateRelation {
         return result;
     }
     // CHECKSTYLE:ON MagicNumber
+
+    @Override
+    public String toString() {
+        return relationKod != null ? relationKod.getKlartext() : "Missing relationKod";
+    }
 }

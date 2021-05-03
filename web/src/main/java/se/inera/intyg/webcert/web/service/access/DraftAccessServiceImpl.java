@@ -135,7 +135,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient, String certificateId) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
             .careUnit(careUnit)
             .patient(patient)
             .certificateId(certificateId)

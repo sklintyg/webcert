@@ -69,6 +69,10 @@ allprojects {
         }
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springbootMavenBomVersion}"
@@ -102,8 +106,15 @@ allprojects {
         testCompile "org.glassfish.jaxb:jaxb-runtime"
 
         testCompile "se.inera.intyg.refdata:refdata:${refDataVersion}"
-        testCompile 'junit:junit:4.+'
+
+        testCompile "junit:junit:4.13"
+        testCompile "org.junit.jupiter:junit-jupiter-api"
+        testCompile "org.junit.jupiter:junit-jupiter-params"
+        testCompile "org.mockito:mockito-junit-jupiter"
         testCompile "org.mockito:mockito-core"
+
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+        testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
     }
 
     group = 'se.inera.intyg.webcert'
