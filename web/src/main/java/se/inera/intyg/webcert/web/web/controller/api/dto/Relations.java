@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import java.util.ArrayList;
+import java.util.List;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 
 /**
@@ -74,6 +76,27 @@ public class Relations {
 
         public void setUtkastCopy(WebcertCertificateRelation utkastCopy) {
             this.utkastCopy = utkastCopy;
+        }
+
+        @Override
+        public String toString() {
+            final List<String> list = new ArrayList<>();
+            if (this.complementedByIntyg != null) {
+                list.add(complementedByIntyg.toString());
+            }
+            if (this.complementedByUtkast != null) {
+                list.add(complementedByUtkast.toString());
+            }
+            if (this.replacedByIntyg != null) {
+                list.add(replacedByIntyg.toString());
+            }
+            if (this.replacedByUtkast != null) {
+                list.add(replacedByUtkast.toString());
+            }
+            if (this.utkastCopy != null) {
+                list.add(utkastCopy.toString());
+            }
+            return list.size() > 0 ? list.toString() : "Empty FrontendRelations";
         }
     }
 

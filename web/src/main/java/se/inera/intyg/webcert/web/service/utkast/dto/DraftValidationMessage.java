@@ -58,6 +58,10 @@ public class DraftValidationMessage {
         return category;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getField() {
         return field;
     }
@@ -68,6 +72,10 @@ public class DraftValidationMessage {
 
     public ValidationMessageType getType() {
         return type;
+    }
+
+    public void setType(ValidationMessageType type) {
+        this.type = type;
     }
 
     public String getMessage() {
@@ -84,5 +92,9 @@ public class DraftValidationMessage {
 
     public String getQuestionId() {
         return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 }

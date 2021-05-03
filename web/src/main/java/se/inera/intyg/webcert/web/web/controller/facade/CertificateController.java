@@ -15,11 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import se.inera.intyg.common.support.modules.support.facade.dto.CertificateDTO;
-import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.CertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
@@ -36,12 +45,26 @@ public class CertificateController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private CertificateFacadeService certificateFacadeService;
-
     @Autowired
-    public CertificateController(CertificateFacadeService certificateFacadeService) {
-        this.certificateFacadeService = certificateFacadeService;
-    }
+    private GetCertificateFacadeService getCertificateFacadeService;
+    @Autowired
+    private SaveCertificateFacadeService saveCertificateFacadeService;
+    @Autowired
+    private ValidateCertificateFacadeService validationCertificateFacadeService;
+    @Autowired
+    private SignCertificateFacadeService signCertificateFacadeService;
+    @Autowired
+    private DeleteCertificateFacadeService deleteCertificateFacadeService;
+    @Autowired
+    private RevokeCertificateFacadeService revokeCertificateFacadeService;
+    @Autowired
+    private ReplaceCertificateFacadeService replaceCertificateFacadeService;
+    @Autowired
+    private CopyCertificateFacadeService copyCertificateFacadeService;
+    @Autowired
+    private ForwardCertificateFacadeService forwardCertificateFacadeService;
+    @Autowired
+    private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -51,8 +74,8 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
-        final CertificateDTO certificateDTO = certificateFacadeService.getCertificate(certificateId);
-        return Response.ok(certificateDTO).build();
+        final Certificate certificate = getCertificateFacadeService.getCertificate(certificateId);
+        return Response.ok(CertificateResponseDTO.create(certificate)).build();
     }
 
     @PUT
@@ -60,11 +83,11 @@ public class CertificateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response saveCertificate(@RequestBody @NotNull CertificateDTO certificate) {
+    public Response saveCertificate(@RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+            LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getId());
         }
-        final long version = certificateFacadeService.saveCertificate(certificate);
+        final long version = saveCertificateFacadeService.saveCertificate(certificate);
         return Response.ok(SaveCertificateResponseDTO.create(version)).build();
     }
 
@@ -72,11 +95,11 @@ public class CertificateController {
     @Path("/{certificateId}/validate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response validateCertificate(@RequestBody @NotNull CertificateDTO certificate) {
+    public Response validateCertificate(@RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+            LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getId());
         }
-        final var validationErrors = certificateFacadeService.validate(certificate);
+        final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
     }
 
@@ -84,12 +107,12 @@ public class CertificateController {
     @Path("/{certificateId}/sign")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response signCertificate(@RequestBody @NotNull CertificateDTO certificate) {
+    public Response signCertificate(@RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getCertificateId());
+            LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getId());
         }
-        final CertificateDTO certificateDTO = certificateFacadeService.signCertificate(certificate);
-        return Response.ok(certificateDTO).build();
+        final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
+        return Response.ok(CertificateResponseDTO.create(signedCertificate)).build();
     }
 
     @DELETE
@@ -101,7 +124,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Deleting certificate with id: '{}' and version: '{}'", certificateId, version);
         }
-        certificateFacadeService.deleteCertificate(certificateId, version);
+        deleteCertificateFacadeService.deleteCertificate(certificateId, version);
         return Response.ok().build();
     }
 
@@ -112,12 +135,18 @@ public class CertificateController {
     public Response revokeCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull RevokeCertificateRequestDTO revokeCertificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Revoking certificate with id: '{}' and reason: '{}' and message: '{}'", certificateId, revokeCertificate.getReason(),
-                revokeCertificate.getMessage());
+            LOG.debug("Revoking certificate with id: '{}' and reason: '{}' and message: '{}'",
+                certificateId,
+                revokeCertificate.getReason(),
+                revokeCertificate.getMessage()
+            );
         }
-        final CertificateDTO certificateDTO = certificateFacadeService
-            .revokeCertificate(certificateId, revokeCertificate.getReason(), revokeCertificate.getMessage());
-        return Response.ok(certificateDTO).build();
+        final var certificate = revokeCertificateFacadeService.revokeCertificate(
+            certificateId,
+            revokeCertificate.getReason(),
+            revokeCertificate.getMessage()
+        );
+        return Response.ok(CertificateResponseDTO.create(certificate)).build();
     }
 
     @POST
@@ -129,8 +158,11 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Replacing certificate with id: '{}'", certificateId);
         }
-        final var newCertificateId = certificateFacadeService
-            .replaceCertificate(certificateId, replaceCertificate.getCertificateType(), replaceCertificate.getPatientId());
+        final var newCertificateId = replaceCertificateFacadeService.replaceCertificate(
+            certificateId,
+            replaceCertificate.getCertificateType(),
+            replaceCertificate.getPatientId().getId()
+        );
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
     }
 
@@ -143,8 +175,11 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Copy certificate with id: '{}'", certificateId);
         }
-        final var newCertificateId = certificateFacadeService
-            .copyCertificate(certificateId, copyCertificate.getCertificateType(), copyCertificate.getPatientId());
+        final var newCertificateId = copyCertificateFacadeService.copyCertificate(
+            certificateId,
+            copyCertificate.getCertificateType(),
+            copyCertificate.getPatientId().getId()
+        );
         return Response.ok(CopyCertificateResponseDTO.create(newCertificateId)).build();
     }
 
@@ -155,12 +190,18 @@ public class CertificateController {
     public Response forwardCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @PathParam("version") @NotNull long version, @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Forward certificate with id: '{}' and version: '{}' and forwarded: '{}'", certificateId, version,
-                forwardCertificate.isForwarded());
+            LOG.debug("Forward certificate with id: '{}' and version: '{}' and forwarded: '{}'",
+                certificateId,
+                version,
+                forwardCertificate.isForwarded()
+            );
         }
-        final CertificateDTO certificateDTO = certificateFacadeService
-            .forwardCertificate(certificateId, version, forwardCertificate.isForwarded());
-        return Response.ok(certificateDTO).build();
+        final var certificate = forwardCertificateFacadeService.forwardCertificate(
+            certificateId,
+            version,
+            forwardCertificate.isForwarded()
+        );
+        return Response.ok(CertificateResponseDTO.create(certificate)).build();
     }
 
     @GET
@@ -171,7 +212,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
         }
-        final CertificateEventDTO[] certificateEvents = certificateFacadeService.getCertificateEvents(certificateId);
+        final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
         return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
     }
 }
