@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import java.util.List;
 import java.util.Map;
 import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 
 public interface SubscriptionService {
 
-    SubscriptionInfo fetchSubscriptionInfo(String origin, Map<String, Feature> features, List<String> careProviderHsaIdList);
+    SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
 
     SubscriptionAction determineSubscriptionAction(String origin, Map<String, Feature> features);
 

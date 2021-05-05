@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -58,8 +56,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         IntygUser user = super.buildUserPrincipal(credential);
         WebCertUser webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        webCertUser.setSubscriptionInfo(subscriptionService.fetchSubscriptionInfo(webCertUser.getOrigin(), webCertUser.getFeatures(),
-            webCertUser.getVardgivare().stream().map(Vardgivare::getId).collect(Collectors.toList())));
+        webCertUser.setSubscriptionInfo(subscriptionService.fetchSubscriptionInfo(webCertUser));
         return webCertUser;
     }
 

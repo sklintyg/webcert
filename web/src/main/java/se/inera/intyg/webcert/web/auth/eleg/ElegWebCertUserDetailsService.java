@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,22 +184,22 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
         decorateWebcertUserWithPrivatLakareAvtalGodkand(requestOrigin, user.getFeatures(), hosPerson, user);
-        decorateWebcertUserWithSubscriptionInfo(requestOrigin, user.getFeatures(), user.getVardgivare(), user);
+        decorateWebcertUserWithSubscriptionInfo(user);
 
         return user;
     }
 
-    private void decorateWebcertUserWithSubscriptionInfo(String requestOrigin, Map<String, Feature> features,
-        List<Vardgivare> careProviders, WebCertUser user) {
-        final var careProviderHsaIdList = careProviders.stream().map(Vardgivare::getId).collect(Collectors.toList());
-        final var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(requestOrigin, features, careProviderHsaIdList);
+
+    private void decorateWebcertUserWithSubscriptionInfo(WebCertUser user) {
+
+        final var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(user);
         user.setSubscriptionInfo(subscriptionInfo);
     }
 
     private void decorateWebcertUserWithPrivatLakareAvtalGodkand(String requestOrigin, Map<String, Feature> features,
         HoSPersonType hosPerson, WebCertUser user) {
-        final var subscriptionInfoAction = subscriptionService.determineSubscriptionAction(requestOrigin, features);
 
+        final var subscriptionInfoAction = subscriptionService.determineSubscriptionAction(requestOrigin, features);
         if (subscriptionInfoAction == SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
             user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         } else {
