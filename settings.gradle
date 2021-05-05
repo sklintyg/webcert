@@ -15,6 +15,7 @@ include ':fmb-integration'
 include ':tak-integration'
 include ':fk-stub'
 include ':intygstjanst-stub'
+include ':kundportalen-stub'
 include ':mail-stub'
 include ':notification-stub'
 include ':webcert-web'
@@ -29,6 +30,7 @@ project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" 
 project(':tak-integration').projectDir = "$rootDir/integration/tak-integration" as File
 project(':fk-stub').projectDir = "$rootDir/stubs/fk-stub" as File
 project(':intygstjanst-stub').projectDir = "$rootDir/stubs/intygstjanst-stub" as File
+project(':kundportalen-stub').projectDir = "$rootDir/stubs/kundportalen-stub" as File
 project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
 project(':notification-stub').projectDir = "$rootDir/stubs/notification-stub" as File
 project(':webcert-web').projectDir = "$rootDir/web" as File
