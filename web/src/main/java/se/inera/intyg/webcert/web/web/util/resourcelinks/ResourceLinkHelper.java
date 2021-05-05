@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.List;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -89,4 +90,6 @@ public interface ResourceLinkHelper {
      * @param careUnit Care Unit to consider.
      */
     void decorateArendeWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet careUnit);
+
+    void decorateCertificateWithValidActionLinks(Certificate certificate);
 }

@@ -32,6 +32,7 @@ public class TsAccessServiceTestData implements AccessServiceTestData {
         AuthoritiesConstants.FEATURE_SKICKA_INTYG);
     private static List<String> PRIVILEGES = Arrays.asList(
         AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG,
         AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
         AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
         AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG,
