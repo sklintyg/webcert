@@ -5,7 +5,7 @@ name: Java CI with Gradle
 
 on:
   pull_request:
-    branches: [ release/2021-1 ]
+    branches: [ release/2021-2 ]
 
 jobs:
   build:
