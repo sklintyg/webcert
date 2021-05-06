@@ -111,6 +111,9 @@ public class DssSignatureService {
     @Value("${dss.service.signmessage}")
     private String signMessage;
 
+    @Value("#{'${dss.client.approved.loa}'.split(',')}")
+    private List<String> approvedLoaList;
+
     @Value("${dss.client.ie.unit.whitelist:}")
     private String dssUnitWhitelistForIeProperty;
     private List<String> dssUnitWhitelistForIe = new ArrayList<>();
@@ -264,6 +267,8 @@ public class DssSignatureService {
 
         signRequestExtensionType.setSignMessage(createSignMessage(intygsId));
 
+        signRequestExtensionType.setVersion("1.4");
+
         return objectFactoryCsig.createSignRequestExtension(signRequestExtensionType);
     }
 
@@ -299,7 +304,8 @@ public class DssSignatureService {
 
         var certRequestPropertiesType = objectFactoryCsig.createCertRequestPropertiesType();
         certRequestPropertiesType.setCertType("PKC");
-        certRequestPropertiesType.setAuthnContextClassRef("http://id.sambi.se/loa/loa3");
+        var loaList = certRequestPropertiesType.getAuthnContextClassRef();
+        loaList.addAll(approvedLoaList);
 
         var requestedAttributesType = objectFactoryCsig.createRequestedAttributesType();
 
