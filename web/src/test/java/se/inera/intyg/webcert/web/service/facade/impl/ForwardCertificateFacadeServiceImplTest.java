@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -31,8 +31,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.builder.CertificateMetadataBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -57,7 +57,7 @@ class ForwardCertificateFacadeServiceImplTest {
     void setup() {
         certificate = CertificateBuilder.create()
             .metadata(
-                CertificateMetadataBuilder.create()
+                CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
                     .build()
             )

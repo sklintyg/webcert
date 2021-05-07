@@ -35,7 +35,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
-import se.inera.intyg.common.support.facade.model.Unit;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -122,12 +122,10 @@ public class GetCertificateServiceImpl implements GetCertificateFacadeService {
     }
 
     private Unit getCareProvider(Utkast certificate) {
-        final var unit = new Unit();
-
-        unit.setUnitId(certificate.getVardgivarId());
-        unit.setUnitName(certificate.getVardgivarNamn());
-
-        return unit;
+        return Unit.builder()
+            .unitId(certificate.getVardgivarId())
+            .unitName(certificate.getVardgivarNamn())
+            .build();
     }
 
     private CertificateRelations getRelations(String certificateId) {
