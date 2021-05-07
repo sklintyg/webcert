@@ -44,12 +44,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.builder.CertificateMetadataBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.common.support.facade.model.Unit;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -817,19 +817,20 @@ class GetCertificateServiceImplTest {
     private Certificate createCertificate() {
         return CertificateBuilder.create()
             .metadata(
-                CertificateMetadataBuilder.create()
+                CertificateMetadata.builder()
                     .id("certificateId")
                     .type("certificateType")
                     .typeVersion("certificateTypeVersion")
-                    .unit(Unit.create()
-                        .unitId("unitId")
-                        .unitName("unitName")
-                        .address("address")
-                        .zipCode("zipCode")
-                        .city("city")
-                        .email("email")
-                        .phoneNumber("phoneNumber")
-                        .build()
+                    .unit(
+                        Unit.builder()
+                            .unitId("unitId")
+                            .unitName("unitName")
+                            .address("address")
+                            .zipCode("zipCode")
+                            .city("city")
+                            .email("email")
+                            .phoneNumber("phoneNumber")
+                            .build()
                     )
                     .build()
             )

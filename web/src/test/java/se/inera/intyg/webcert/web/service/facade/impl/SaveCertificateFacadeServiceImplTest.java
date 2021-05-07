@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -31,8 +30,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.builder.CertificateMetadataBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -66,7 +65,7 @@ class SaveCertificateFacadeServiceImplTest {
     void setup() throws Exception {
         certificate = CertificateBuilder.create()
             .metadata(
-                CertificateMetadataBuilder.create()
+                CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
                     .type(CERTIFICATE_TYPE)
                     .typeVersion(CERTIFICATE_TYPE_VERSION)

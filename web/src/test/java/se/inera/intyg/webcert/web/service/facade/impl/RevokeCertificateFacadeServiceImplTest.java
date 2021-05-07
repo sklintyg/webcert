@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -30,9 +30,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.builder.CertificateMetadataBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -63,7 +63,7 @@ class RevokeCertificateFacadeServiceImplTest {
     void setup() {
         certificate = CertificateBuilder.create()
             .metadata(
-                CertificateMetadataBuilder.create()
+                CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
                     .type(CERTIFICATE_TYPE)
                     .build()
