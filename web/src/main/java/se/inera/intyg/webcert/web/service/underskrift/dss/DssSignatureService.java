@@ -76,6 +76,7 @@ public class DssSignatureService {
     private static final Logger LOG = LoggerFactory.getLogger(DssSignatureService.class);
     public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success"; //TODO
     public static final String REQUESTED_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256;
+    private static final String ACTIVATE_SUPPORT_FOR_SEVERAL_LOA_AND_AUTH_PROFILE = "1.4";
 
     private final DssMetadataService dssMetadataService;
     private final WebCertUserService userService;
@@ -267,7 +268,7 @@ public class DssSignatureService {
 
         signRequestExtensionType.setSignMessage(createSignMessage(intygsId));
 
-        signRequestExtensionType.setVersion("1.4");
+        signRequestExtensionType.setVersion(ACTIVATE_SUPPORT_FOR_SEVERAL_LOA_AND_AUTH_PROFILE);
 
         return objectFactoryCsig.createSignRequestExtension(signRequestExtensionType);
     }
