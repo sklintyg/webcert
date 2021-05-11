@@ -121,10 +121,11 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Override
     public void decorateIntygWithValidActionLinks(IntygContentHolder intygContentHolder) {
-        final String intygsTyp = intygContentHolder.getUtlatande().getTyp();
-        final Vardenhet vardenhet = intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = intygContentHolder.getUtlatande().getGrundData().getPatient().getPersonId();
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(intygsTyp,
+        final var certificateType = intygContentHolder.getUtlatande().getTyp();
+        final var certificateTypeVersion = intygContentHolder.getUtlatande().getTextVersion();
+        final var vardenhet = intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
+        final var personnummer = intygContentHolder.getUtlatande().getGrundData().getPatient().getPersonId();
+        final var accessEvaluationParameters = AccessEvaluationParameters.create(certificateType, certificateTypeVersion,
             vardenhet, personnummer, intygContentHolder.isTestIntyg());
 
         if (certificateAccessService.allowToRenew(accessEvaluationParameters).isAllowed()) {

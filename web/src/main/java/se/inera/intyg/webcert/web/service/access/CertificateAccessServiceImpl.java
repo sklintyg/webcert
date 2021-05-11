@@ -72,6 +72,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .certificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)

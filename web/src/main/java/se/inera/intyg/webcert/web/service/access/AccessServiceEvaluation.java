@@ -54,6 +54,7 @@ public final class AccessServiceEvaluation {
 
     private WebCertUser user;
     private String certificateType;
+    private String certificateTypeVersion;
     private String certificateId;
     private final List<String> privileges = new ArrayList<>();
     private final List<String> features = new ArrayList<>();
@@ -213,6 +214,12 @@ public final class AccessServiceEvaluation {
      */
     public AccessServiceEvaluation careUnit(@NotNull Vardenhet careUnit) {
         this.careUnit = careUnit;
+        return this;
+    }
+
+
+    public AccessServiceEvaluation certificateTypeVersion(String certificateTypeVersion) {
+        this.certificateTypeVersion = certificateTypeVersion;
         return this;
     }
 
@@ -673,4 +680,5 @@ public final class AccessServiceEvaluation {
         }
         return message;
     }
+
 }
