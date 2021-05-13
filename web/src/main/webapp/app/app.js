@@ -253,9 +253,9 @@
   // Inject language resources
   app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', '$stateParams', 'common.messageService',
     'common.moduleService', 'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
-    'idpConnectivityService', 'moduleConfig',
+    'idpConnectivityService', 'moduleConfig', 'common.subscriptionService',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, $stateParams, messageService, moduleService,
-             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
+             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig, subscriptionService) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
@@ -295,6 +295,17 @@
               }
             };
 
+            var subscriptionInfo = function() {
+              if (toState.name !== 'webcert.subscription') {
+                UserModel.transitioning = false;
+              }
+              if (!subscriptionService.hasAcknowledgedSubscriptionInfoForCareUnit() && !UserModel.transitioning) {
+                event.preventDefault();
+                UserModel.transitioning = true;
+                $state.transitionTo('webcert.subscription');
+              }
+            };
+
             // if we dont have a user
             if (!UserModel.user) {
               // Make sure we send user to login state
@@ -308,9 +319,15 @@
                   UserModel.idpConnectivityChecked = true;
                   idpConnectivityService.checkAndLogConnectivity();
                 }
-                termsCheck();
+                if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+                  termsCheck();
+                }
+                if (UserModel.isNormalOrigin() && UserModel.user.hasOwnProperty('valdVardenhet') &&
+                subscriptionService.isDuringAdjustmentPeriod() && subscriptionService.hasCareProviderMissingSubscription()) {
+                  subscriptionInfo();
+                }
 
-                if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
+                if (fromState.name !== 'webcert.terms' || fromState.name !== 'webcert.subscription' || !UserModel.transitioning) {
                   // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
                   // open, but close modal.
                   if ($uibModalStack.getTop()) {
