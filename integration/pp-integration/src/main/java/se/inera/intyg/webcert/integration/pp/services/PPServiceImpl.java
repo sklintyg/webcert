@@ -63,7 +63,7 @@ public class PPServiceImpl implements PPService {
     }
 
     @Override
-    public boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
+    public ValidatePrivatePractitionerResponseType validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
         LOG.debug("Validating person information from Privatläkarportalen.");
         validateIdentifier(hsaIdentityNumber, personalIdentityNumber);
 
@@ -71,7 +71,7 @@ public class PPServiceImpl implements PPService {
         return validatePrivatePractitioner(logicalAddress, request);
     }
 
-    private boolean validatePrivatePractitioner(String logicalAddress, ValidatePrivatePractitionerType parameters) {
+    private ValidatePrivatePractitionerResponseType validatePrivatePractitioner(String logicalAddress, ValidatePrivatePractitionerType parameters) {
         try {
             ValidatePrivatePractitionerResponseType response = validatePrivatePractitionerService
                 .validatePrivatePractitioner(logicalAddress, parameters);
@@ -84,7 +84,7 @@ public class PPServiceImpl implements PPService {
                 LOG.info(response.getResultText());
             }
 
-            return response.getResultCode() == ResultCodeEnum.OK;
+            return response;
 
         } catch (SOAPFaultException e) {
             throw new WebServiceException(e);

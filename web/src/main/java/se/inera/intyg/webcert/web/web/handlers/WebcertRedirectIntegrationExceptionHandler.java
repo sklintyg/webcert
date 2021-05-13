@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException;
 
 
 /**
@@ -42,6 +43,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     public static final String ERROR_REASON_MISSING_PARAMETER = "missing-parameter";
     public static final String ERROR_REASON_AUTH_EXCEPTION = "auth-exception";
+    public static final String ERROR_REASON_AUTH_EXCEPTION_SUBSRIPTION = "auth-exception-subscription";
     public static final String ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING = "auth-exception-sekretessmarkering";
     public static final String ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE = "auth-exception-user-already-active";
     public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
@@ -53,7 +55,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     public Response toResponse(RuntimeException e) {
 
         if (e instanceof AuthoritiesException) {
-            return handleAuthorityException((AuthoritiesException) e);
+            return handleAuthorityException(e);
         } else {
             return handleRuntimeException(e);
         }
@@ -63,8 +65,11 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     /**
      * The user requested an operation that caused an Auth check to fail.
      */
-    private Response handleAuthorityException(AuthoritiesException e) {
-        LOG.warn("AuthValidation occured: ", e);
+    private Response handleAuthorityException(Exception e) {
+        LOG.warn("AuthValidation exception occured: ", e);
+        if (e instanceof PrivatePractitionerSubscriptionException) {
+            return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SUBSRIPTION, e.getMessage());
+        }
         return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, e.getMessage());
     }
 

@@ -16,18 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.pp.services;
 
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
+package se.inera.intyg.webcert.web.auth.exceptions;
 
-/**
- * Created by Magnus Ekstrand on 18/06/15.
- */
-public interface PPService {
+import org.springframework.security.core.AuthenticationException;
 
-    HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
+public class PrivatePractitionerSubscriptionException extends AuthenticationException {
 
-    ValidatePrivatePractitionerResponseType validatePrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
-
+    public PrivatePractitionerSubscriptionException(String message) {
+        super(message);
+    }
 }

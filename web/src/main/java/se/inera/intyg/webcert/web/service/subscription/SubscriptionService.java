@@ -28,6 +28,8 @@ public interface SubscriptionService {
 
     SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
 
-    SubscriptionAction determineSubscriptionAction(String origin, Map<String, Feature> features);
+    SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features);
+
+    boolean fetchSubscriptionInfoUnregisteredElegUser(String personId);
 
 }

@@ -69,19 +69,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public SubscriptionInfo fetchSubscriptionInfo(WebCertUser webCertUser) {
         final var missingSubscriptionAction = determineSubscriptionAction(webCertUser.getOrigin(), webCertUser.getFeatures());
         if (missingSubscriptionAction != SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
-            final var httpEntity = getHttpEntity();
-            final var restTemplate = new RestTemplate();
+            LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
+            final var httpEntity = getAuthorizationHeaders();
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
             final var serviceCodes = getRelevantServiceCodes(webCertUser);
-            final var careProviderHsaIds = getMissingSubscriptions(httpEntity, restTemplate, careProviderOrgNumbers, serviceCodes);
+            final var careProviderHsaIds = getMissingSubscriptions(httpEntity, new RestTemplate(), careProviderOrgNumbers, serviceCodes);
             return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds);
         }
         return SubscriptionInfo.createSubscriptionInfoFeaturesNotActive();
     }
 
     @Override
-    public SubscriptionAction determineSubscriptionAction(String origin, Map<String, Feature> features) {
-        if (isFristaendeWebcertUser(origin)) {
+    public boolean fetchSubscriptionInfoUnregisteredElegUser(String personId) {
+        final var httpEntity = getAuthorizationHeaders();
+        final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
+        LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
+        return isOrganizationMissingSubscription(organizationNumber, kundportalenElegServiceCodes, new RestTemplate(), httpEntity);
+    }
+
+    @Override
+    public SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features) {
+        if (isFristaendeWebcertUser(requestOrigin)) {
             if (isPastSubscriptionAdjustmentPeriod(features)) {
                 return SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK;
             } else if (isDuringSubscriptionAdjustmentPeriod(features)) {
@@ -91,22 +99,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE;
     }
 
-    private HttpEntity<String> getHttpEntity() {
+    private HttpEntity<String> getAuthorizationHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", kundportalenAccessToken);
-        headers.set("Content-Type", "application/json");
         return new HttpEntity<>(headers);
     }
 
     private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
         if (isPrivatePractitioner(webCertUser) && isElegUser(webCertUser)) {
-            final var careProvider = webCertUser.getVardgivare().stream().findFirst().map(Vardgivare::getId).orElse("NOT_FOUND");
-            final var orgNumber = extractOrgNumberFromPersonId(webCertUser.getPersonId());
+            final var careProvider = webCertUser.getVardgivare().stream().findFirst().map(Vardgivare::getId)
+                .orElse("CARE PRIVIDER HSAID NOT_FOUND");
+            final var orgNumber = extractOrganizationNumberFromPersonId(webCertUser.getPersonId());
             return Map.of(careProvider, orgNumber);
         } else {
             final var careProviderOrgNumbers = new HashMap<String, String>();
             for (var careProvider : webCertUser.getVardgivare()) {
-                careProviderOrgNumbers.put(careProvider.getId(), extractOrgNumberFromCareUnits(careProvider.getVardenheter()));
+                careProviderOrgNumbers.put(careProvider.getId(), extractCareProviderOrganizationNumbers(careProvider.getVardenheter()));
             }
             return careProviderOrgNumbers;
         }
@@ -117,18 +125,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<String> missingSubscriptions = new ArrayList<>();
         for (var entry : organizationNumbers.entrySet()) {
             final var careProviderHsaId = entry.getKey();
-            final var careProviderOrgNumber = entry.getValue();
-            if (isCareProviderMissingSubscription(careProviderOrgNumber, serviceCodes, restTemplate, httpEntity)) {
+            final var organizationNumber = entry.getValue();
+            if (isOrganizationMissingSubscription(organizationNumber, serviceCodes, restTemplate, httpEntity)) {
                 missingSubscriptions.add(careProviderHsaId);
             }
         }
         return missingSubscriptions;
     }
 
-    private boolean isCareProviderMissingSubscription(String careProviderOrgNumber, List<String> serviceCodes, RestTemplate restTemplate,
+    private boolean isOrganizationMissingSubscription(String organizationNumber, List<String> serviceCodes, RestTemplate restTemplate,
         HttpEntity<String> httpEntity) {
         for (final var serviceCode : serviceCodes) {
-            final var url = kundportalenSubscriptionServiceUrl + "/" + careProviderOrgNumber + "/" + serviceCode;
+            final var url = kundportalenSubscriptionServiceUrl + "/" + organizationNumber + "/" + serviceCode;
             final var response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, MAP_STRING_BOOLEAN_TYPE);
             if (hasActiveSubscriptionOrServiceCallFailure(response)) {
                 return false;
@@ -148,14 +156,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return isPrivatePractitioner(webCertUser) && isElegUser(webCertUser) ? kundportalenElegServiceCodes : kundportalenSithsServiceCodes;
     }
 
-    private String extractOrgNumberFromPersonId(String personId) {
+    private String extractOrganizationNumberFromPersonId(String personId) {
         final var optionalPersonnummer = Personnummer.createPersonnummer(personId);
-        return optionalPersonnummer.map(personnummer -> personnummer.getPersonnummerWithDash().substring(2)).orElse("NOT_FOUND");
+        return optionalPersonnummer.map(pnr -> pnr.getPersonnummerWithDash().substring(2)).orElse("PERSONUMMER_NOT_FOUND");
     }
 
-    private String extractOrgNumberFromCareUnits(List<Vardenhet> careUnits) {
+    private String extractCareProviderOrganizationNumbers(List<Vardenhet> careUnits) {
         return careUnits.stream().filter(u -> u.getVardgivareOrgnr() != null).findFirst().map(Vardenhet::getVardgivareOrgnr)
-            .orElse("NOT_FOUND");
+            .orElse("ORGANIZATION_NUMBER_NOT_FOUND");
     }
 
     private boolean isPrivatePractitioner(WebCertUser webCertUser) {
@@ -176,6 +184,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private boolean isDuringSubscriptionAdjustmentPeriod(Map<String, Feature> features) {
-        return Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD).getGlobal());
+        return Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD).getGlobal())
+            && Boolean.FALSE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD).getGlobal());
     }
 }

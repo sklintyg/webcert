@@ -114,6 +114,9 @@
         <prop key="se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException">
           ${privatepractitioner.portal.registration.url}
         </prop>
+        <prop key="se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException">
+          /new-error.jsp?reason=auth-exception-subscription
+        </prop>
 
       </props>
     </property>
