@@ -19,10 +19,8 @@
 package se.inera.intyg.webcert.integration.pp.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import javax.xml.ws.WebServiceException;
 import org.junit.Test;
@@ -32,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:PPServiceTest/test-context.xml")
@@ -79,16 +78,14 @@ public class PPServiceTest {
 
     @Test
     public void testValidatePrivatePractitioner() {
-        boolean res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
-
-        assertTrue(res);
+        final var res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
+        assertEquals(ResultCodeEnum.OK, res.getResultCode());
     }
 
     @Test
     public void testValidatePrivatePractitionerError() {
-        boolean res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
-
-        assertFalse(res);
+        final var res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
+        assertEquals(ResultCodeEnum.ERROR, res.getResultCode());
     }
 
     @Test(expected = IllegalArgumentException.class)

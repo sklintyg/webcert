@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,34 +57,37 @@ public class SubscriptionServiceTest {
 
     @Test
     public void testDetermineSubscriptionActionOriginDjupintegration() {
-        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.DJUPINTEGRATION.name(),
-            createFeatures(false, false));
+        final var features = createFeatures(false, false);
+        final var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.DJUPINTEGRATION.name(), features);
 
         assertEquals(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, subscriptionAction);
     }
 
     @Test
     public void testDetermineSubscriptionActionOriginNormalNoFeature() {
-        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
-            createFeatures(false, false));
+        final var features = createFeatures(false, false);
+        final var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(), features);
 
         assertEquals(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, subscriptionAction);
     }
 
+
     @Test
     public void testDetermineSubscriptionActionOriginNormalWarn() {
-        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
-            createFeatures(true, false));
+        final var features = createFeatures(true, false);
+        final var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(), features);
 
         assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_WARN, subscriptionAction);
     }
 
+
     @Test
     public void testDetermineSubscriptionActionOriginNormalBlock() {
-        var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(),
-            createFeatures(true, true));
+        final var features = createFeatures(true, true);
+        final var subscriptionAction = subscriptionService.determineSubscriptionAction(UserOriginType.NORMAL.name(), features);
 
         assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK, subscriptionAction);
     }
+
 
 }
