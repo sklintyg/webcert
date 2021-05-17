@@ -53,7 +53,6 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptio
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
@@ -219,19 +218,13 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return user;
     }
 
-
     private void decorateWebcertUserWithSubscriptionInfo(WebCertUser user) {
         final var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(user);
         user.setSubscriptionInfo(subscriptionInfo);
     }
 
     private void decorateWebcertUserWithPrivatLakareAvtalGodkand(HoSPersonType hosPerson, WebCertUser user) {
-        final var subscriptionInfoAction = subscriptionService.determineSubscriptionAction(user.getOrigin(), user.getFeatures());
-        if (subscriptionInfoAction == SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
             user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
-        } else {
-            user.setPrivatLakareAvtalGodkand(false);
-        }
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {
