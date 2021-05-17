@@ -63,6 +63,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Value("#{${kundportalen.service.codes.siths}}")
     private List<String> kundportalenSithsServiceCodes;
 
+    @Value("${subscription.block.start.date}")
+    private String subscriptionBlockStartDate;
+
     private static final ParameterizedTypeReference<Map<String, Boolean>> MAP_STRING_BOOLEAN_TYPE = new ParameterizedTypeReference<>() { };
 
     @Override
@@ -74,7 +77,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
             final var serviceCodes = getRelevantServiceCodes(webCertUser);
             final var careProviderHsaIds = getMissingSubscriptions(httpEntity, new RestTemplate(), careProviderOrgNumbers, serviceCodes);
-            return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds);
+            final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
+            return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod, subscriptionBlockStartDate);
         }
         return SubscriptionInfo.createSubscriptionInfoFeaturesNotActive();
     }
@@ -85,6 +89,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
         LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
         return isOrganizationMissingSubscription(organizationNumber, kundportalenElegServiceCodes, new RestTemplate(), httpEntity);
+    }
+
+    @Override
+    public List<String> setAcknowledgedWarning(List<String> acknowledgedWarnings, String hsaId) {
+        if (!acknowledgedWarnings.contains(hsaId)) {
+            acknowledgedWarnings.add(hsaId);
+        }
+        return acknowledgedWarnings;
     }
 
     @Override

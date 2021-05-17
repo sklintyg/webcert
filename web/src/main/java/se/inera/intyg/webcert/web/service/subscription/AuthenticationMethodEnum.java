@@ -16,23 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.subscription;
 
-import java.util.List;
-import java.util.Map;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
+public enum AuthenticationMethodEnum {
+    ELEG("ELEG", "Authentication method ELEG"),
+    SITHS("SITHS", "Authentication method SITHS");
 
-public interface SubscriptionService {
+    private final String value;
+    private final String description;
 
-    SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
+    AuthenticationMethodEnum(String value, String description) {
+        this.value = value;
+        this.description = description;
+    }
 
-    SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features);
+    public String value() {
+        return this.value;
+    }
 
-    boolean fetchSubscriptionInfoUnregisteredElegUser(String personId);
-
-    List<String> setAcknowledgedWarning(List<String> acknowledgedWarnings, String hsaId);
-
+    public String description() {
+        return this.description;
+    }
 }

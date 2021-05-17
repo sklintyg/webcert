@@ -20,23 +20,35 @@ package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import se.inera.intyg.webcert.web.service.subscription.AuthenticationMethodEnum;
 
 public class SubscriptionInfo implements Serializable {
 
     @JsonProperty
     private SubscriptionAction subscriptionAction;
     @JsonProperty
+    private AuthenticationMethodEnum authenticationMethod;
+    @JsonProperty
     private List<String> unitHsaIdList;
+    @JsonProperty
+    private List<String> acknowledgedWarnings;
+    @JsonProperty
+    private String subscriptionBlockStartDate;
 
-    public SubscriptionInfo(SubscriptionAction subscriptionAction, List<String> unitHsaIdList) {
+    public SubscriptionInfo(SubscriptionAction subscriptionAction, List<String> unitHsaIdList,
+        AuthenticationMethodEnum authenticationMethod, String subscriptionBlockStartDate) {
         this.subscriptionAction = subscriptionAction;
+        this.authenticationMethod = authenticationMethod;
         this.unitHsaIdList = unitHsaIdList;
+        this.acknowledgedWarnings = new ArrayList<>();
+        this.subscriptionBlockStartDate = subscriptionBlockStartDate;
     }
 
     public static SubscriptionInfo createSubscriptionInfoFeaturesNotActive() {
-        return new SubscriptionInfo(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, null);
+        return new SubscriptionInfo(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, null, null, null);
     }
 
     public SubscriptionAction getSubscriptionAction() {
@@ -47,12 +59,36 @@ public class SubscriptionInfo implements Serializable {
         this.subscriptionAction = subscriptionAction;
     }
 
+    public AuthenticationMethodEnum getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(AuthenticationMethodEnum authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
+
     public List<String> getUnitHsaIdList() {
         return unitHsaIdList;
     }
 
     public void setUnitHsaIdList(List<String> unitHsaIdList) {
         this.unitHsaIdList = unitHsaIdList;
+    }
+
+    public List<String> getAcknowledgedWarnings() {
+        return acknowledgedWarnings;
+    }
+
+    public void setAcknowledgedWarnings(List<String> acknowledgedWarnings) {
+        this.acknowledgedWarnings = acknowledgedWarnings;
+    }
+
+    public String getAdjustmentPeriodStartDate() {
+        return subscriptionBlockStartDate;
+    }
+
+    public void setAdjustmentPeriodStartDate(String subscriptionBlockStartDate) {
+        this.subscriptionBlockStartDate = subscriptionBlockStartDate;
     }
 
     @Override
@@ -64,7 +100,8 @@ public class SubscriptionInfo implements Serializable {
             return false;
         }
         SubscriptionInfo that = (SubscriptionInfo) o;
-        return subscriptionAction == that.subscriptionAction && Objects.equals(unitHsaIdList, that.unitHsaIdList);
+        return subscriptionAction == that.subscriptionAction && Objects.equals(unitHsaIdList, that.unitHsaIdList)
+            && Objects.equals(acknowledgedWarnings, that.acknowledgedWarnings);
     }
 
     @Override
