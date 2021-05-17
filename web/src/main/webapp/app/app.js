@@ -299,7 +299,7 @@
               if (toState.name !== 'webcert.subscription') {
                 UserModel.transitioning = false;
               }
-              if (!subscriptionService.hasAcknowledgedSubscriptionInfoForCareUnit() && !UserModel.transitioning) {
+              if (!subscriptionService.hasAcknowledgedSubscriptionWarning() && !UserModel.transitioning) {
                 event.preventDefault();
                 UserModel.transitioning = true;
                 $state.transitionTo('webcert.subscription');
@@ -322,8 +322,7 @@
                 if (!subscriptionService.isAnySubscriptionFeatureActive()) {
                   termsCheck();
                 }
-                if (UserModel.isNormalOrigin() && UserModel.user.hasOwnProperty('valdVardenhet') &&
-                subscriptionService.isDuringAdjustmentPeriod() && subscriptionService.hasCareProviderMissingSubscription()) {
+                if (subscriptionService.shouldDisplaySubscriptionWarning()) {
                   subscriptionInfo();
                 }
 

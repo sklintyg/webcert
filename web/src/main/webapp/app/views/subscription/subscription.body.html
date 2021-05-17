@@ -1,11 +1,6 @@
 <div class="subscriptioninfo-body">
-  <div ng-if="bodyTextId != undefined">
-    <span dynamic-label key="{{bodyTextId}}"></span>
-  </div>
-  <div ng-if="options.body.info != undefined">
-    <span dynamic-label key="{{options.body.info}}"></span>
+    <span ng-bind-html="options.body.info"></span>
     <span dynamic-label key="{{options.body.eleg}}"></span>
-    <p />
+    <p></p>
     <p dynamic-label key="{{options.body.links}}"></p>
-  </div>
 </div>

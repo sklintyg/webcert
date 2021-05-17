@@ -37,31 +37,31 @@
  */
 
 angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$rootScope', '$scope', '$window','$sanitize', '$state',
-    '$location', 'common.UserModel', 'common.subscriptionService', 'common.dynamicLinkService',
-    function($log, $rootScope, $scope, $window, $sanitize, $state, $location, UserModel, subscriptionService, dynamicLinkService) {
+    '$location', 'common.UserModel', 'common.subscriptionService', 'common.dynamicLinkService', 'webcert.SubscriptionProxy',
+    'common.messageService',
+    function($log, $rootScope, $scope, $window, $sanitize, $state, $location, UserModel, subscriptionService, dynamicLinkService,
+             subscriptionProxy, messageService) {
     'use strict';
 
     UserModel.transitioning = false;
 
     $scope.modalBody = {
-        bodyTextId: 'subscription-modal-body-text',
-        info: 'subscription.during.adjustment.info.text',
-        eleg: subscriptionService.isElegUser() ? 'subscription.during.adjustment.eleg.text' : '',
-        links: 'subscription.during.adjustment.link.text'
+        info: messageService.getProperty('subscription.warning.info.text',
+            {blockStartDate: subscriptionService.getSubscriptionBlockStartDate()}),
+        eleg: subscriptionService.isElegUser() ? 'subscription.warning.eleg.text' : '',
+        links: 'subscription.warning.link.text'
     };
 
     $scope.modalOptions = {
         body: $scope.modalBody,
         modalBodyTemplateUrl: '/app/views/subscription/subscription.body.html',
-        titleId: 'subscription.during.adjustment.title.text',
+        titleId: 'subscription.warning.title.text',
         buttons: [
             {
                 name: 'subscription.sign.agreement.now',
                 clickFn: function() {
-                    subscriptionService.acknowledgeSubscriptionInfoForCareUnit();
-                    $scope.modalOptions.modalInstance.dismiss('cancel');
+                    acknowledgeSubscriptionWarning(UserModel.user.valdVardenhet.id);
                     $window.open(dynamicLinkService.getLink('kundportalenGetAccount').url);
-                    $state.transitionTo('webcert.create-index');
                 },
                 text: 'subscription.sign.agreement.now.label',
                 id: 'subscriptionSignAgreementNowBtn',
@@ -70,9 +70,7 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
             {
                 name: 'subscription.sign.agreement.later',
                 clickFn: function() {
-                    subscriptionService.acknowledgeSubscriptionInfoForCareUnit();
-                    $scope.modalOptions.modalInstance.dismiss('cancel');
-                    $state.transitionTo('webcert.create-index');
+                    acknowledgeSubscriptionWarning(UserModel.user.valdVardenhet.id);
                 },
                 text: 'subscription.sign.agreement.later.label',
                 id: 'subscriptionSignAgreementLaterBtn',
@@ -81,5 +79,16 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
       ],
       showClose: false
     };
+
+    function acknowledgeSubscriptionWarning(hsaId) {
+        $scope.modalOptions.modalInstance.dismiss('cancel');
+        subscriptionProxy.updateAcknowledgedWarnings(hsaId, function(acknowledgedWarnings) {
+            subscriptionService.setAcknowledgedWarnings(acknowledgedWarnings);
+            $state.transitionTo('webcert.create-index');
+        }, function() {
+            subscriptionService.addAcknowledgedWarning();
+            $state.transitionTo('webcert.create-index');
+        });
+    }
   }]
 );
