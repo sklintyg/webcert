@@ -78,6 +78,7 @@ public final class AccessServiceEvaluation {
     private boolean allowTestIndicatorForSameUnit;
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
+    private boolean checkLatestCertificateTypeVersion;
 
     private final List<String> excludeRenewCertificateTypes = new ArrayList<>();
     private final List<String> excludeUnitCertificateTypes = new ArrayList<>();
@@ -218,7 +219,8 @@ public final class AccessServiceEvaluation {
     }
 
 
-    public AccessServiceEvaluation certificateTypeVersion(String certificateTypeVersion) {
+    public AccessServiceEvaluation checkLatestCertificateTypeVersion(String certificateTypeVersion) {
+        this.checkLatestCertificateTypeVersion = true;
         this.certificateTypeVersion = certificateTypeVersion;
         return this;
     }
@@ -284,6 +286,7 @@ public final class AccessServiceEvaluation {
 
     /**
      * Consider if certificate is flagged as a test certificate.
+     *
      * @param isTestCertificate If certificate is a test certificate or not.
      * @return AccessServiceEvaluation
      */
@@ -410,6 +413,10 @@ public final class AccessServiceEvaluation {
             accessResult = isBlockedRuleValid(user, blockFeatures);
         }
 
+        if (checkLatestCertificateTypeVersion && accessResult.isEmpty()) {
+            
+        }
+
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
                 invalidDeceasedCertificateTypes);
@@ -513,11 +520,11 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isPatientTestIndicated(Personnummer patient, String unitId,
-                                                          boolean allowForSameUnit) {
+        boolean allowForSameUnit) {
         if (patientDetailsResolver.isTestIndicator(patient)
-                && (isUserLoggedInOnDifferentUnit(unitId) || !allowForSameUnit)) {
-                return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT,
-                        createMessage("Patient has Test Indicator")));
+            && (isUserLoggedInOnDifferentUnit(unitId) || !allowForSameUnit)) {
+            return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT,
+                createMessage("Patient has Test Indicator")));
         }
         return Optional.empty();
     }
@@ -624,7 +631,7 @@ public final class AccessServiceEvaluation {
                 if (intygExists != null && !utkastService.isDraftCreatedFromReplacement(certificateId)) {
                     if (isUniqueFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(
-                                AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
+                            AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
                                 createMessage("Already exists certificates for this patient")));
                     }
 
