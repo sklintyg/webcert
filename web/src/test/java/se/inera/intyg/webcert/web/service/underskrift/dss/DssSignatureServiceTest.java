@@ -175,6 +175,8 @@ public class DssSignatureServiceTest {
         var signMessageTemplate = "Härmed skriver jag under {intygsTyp} utfärdat för {patientPnr}<br/><br/>Intygs-id: {intygsId}";
         ReflectionTestUtils.setField(dssSignatureService, "signMessage",
             signMessageTemplate);
+        ReflectionTestUtils.setField(dssSignatureService, "approvedLoaList", Arrays.asList("http://id.sambi.se/loa/loa2",
+            "http://id.sambi.se/loa/loa3"));
 
         var sb = SignaturBiljettBuilder.aSignaturBiljett("ticketId", SignaturTyp.XMLDSIG, SignMethod.SIGN_SERVICE).withIntygsId("intygsId")
             .withHash("HASH").build();

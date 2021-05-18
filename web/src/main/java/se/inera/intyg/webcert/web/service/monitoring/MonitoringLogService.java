@@ -177,6 +177,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
     // Signature service
     void logSignResponseReceived(String transactionId);
 
+    void logSignResponseSuccess(String transactionId, String certificateId);
+
     void logSignResponseInvalid(String transactionId, String intygsId, String s);
 
     void logSignRequestCreated(String transactionId, String intygsId);

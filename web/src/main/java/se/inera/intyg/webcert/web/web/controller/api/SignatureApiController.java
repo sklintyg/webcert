@@ -167,7 +167,15 @@ public class SignatureApiController extends AbstractApiController {
 
         signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
+        logIfSuccess(relayState, signaturBiljett);
+
         return getRedirectResponseWithReturnUrl(signaturBiljett);
+    }
+
+    private void logIfSuccess(String relayState, SignaturBiljett signaturBiljett) {
+        if (signaturBiljett.getStatus() == SignaturStatus.SIGNERAD) {
+            monitoringLogService.logSignResponseSuccess(relayState, signaturBiljett.getIntygsId());
+        }
     }
 
     private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett) {
