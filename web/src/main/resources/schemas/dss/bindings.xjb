@@ -30,7 +30,7 @@
       <jaxb:package name="se.inera.intyg.webcert.dss.xsd.dsscore" />
     </jaxb:schemaBindings>
   </jaxb:bindings>
-  <jaxb:bindings schemaLocation="EidCentralSigDssExt-1.1.xsd">
+  <jaxb:bindings schemaLocation="EidCentralSigDssExt-1.1.2-DRAFT.xsd">
     <jaxb:schemaBindings>
       <jaxb:package name="se.inera.intyg.webcert.dss.xsd.dssext" />
     </jaxb:schemaBindings>

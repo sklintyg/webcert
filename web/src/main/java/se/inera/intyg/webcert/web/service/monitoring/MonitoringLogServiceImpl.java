@@ -419,6 +419,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logSignResponseSuccess(String transactionId, String certificateId) {
+        logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_SUCCESS, certificateId, transactionId);
+    }
+
+    @Override
     public void logSignResponseReceived(String transactionId) {
         logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_RECEIVED, transactionId);
     }
@@ -543,6 +548,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         MESSAGE_IMPORTED("Message '{}' with type '{}' for certificate '{}' on caregiver '{}' and care unit '{}' was imported"),
 
         DSS_SIGNATURE_RESPONSE_RECEIVED("Received sign response from sign service with transactionID '{}'"),
+
+        DSS_SIGNATURE_RESPONSE_SUCCESS("Received sign response success for certificate '{}' with transactionID '{}'"),
 
         DSS_SIGNATURE_RESPONSE_INVALID("Failed to read or validate sign response with transactionID '{}' for certificate '{}': {}"),
 
