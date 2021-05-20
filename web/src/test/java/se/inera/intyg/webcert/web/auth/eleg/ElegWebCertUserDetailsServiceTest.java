@@ -39,17 +39,20 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
+import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -124,9 +127,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
 
-        when(subscriptionService.determineSubscriptionAction(any(), any()))
-            .thenReturn(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE);
-
         WebCertUserOrigin userOrigin = mock(WebCertUserOrigin.class);
         when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
         ReflectionTestUtils.setField(testee, "userOrigin", Optional.of(userOrigin));
@@ -197,6 +197,34 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerSubscriptionException.class)
+    public void shouldThrowSubscriptionExceptIfUnregisteredWithoutSubscription() {
+        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.ERROR);
+        privatePractitionerResponseType.setResultText("No private practitioner with personal identity number: " + null + " exists.");
+
+        reset(ppService);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD)).thenReturn(true);
+        when(subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(null)).thenReturn(true);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test
+    public void shouldSetSubscriptionInfo() {
+        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.OK);
+        reset(ppService);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
+        when(subscriptionService.fetchSubscriptionInfo(any(WebCertUser.class)))
+            .thenReturn(SubscriptionInfo.createSubscriptionInfoNoAction());
+
+        final var webCertUser = (WebCertUser) testee
+            .loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webCertUser.getSubscriptionInfo());
     }
 
     private HoSPersonType buildHosPerson() {

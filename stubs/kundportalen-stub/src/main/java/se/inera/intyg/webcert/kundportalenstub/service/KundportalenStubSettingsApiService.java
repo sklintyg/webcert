@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.kundportalenstub.state.KundportalenStubState;
 
-
 @Service
 public class KundportalenStubSettingsApiService {
 

@@ -39,7 +39,7 @@ public class KundportalenStubState {
     @Value("#{${kundportalenstub.service.codes.siths}}")
     private List<Map<String, String>> kundportalenSithsServices;
 
-    public List<Map<String, String>> getSServices() {
+    public List<Map<String, String>> getServices() {
         return Stream.concat(kundportalenElegServices.stream(), kundportalenSithsServices.stream()).collect(Collectors.toList());
     }
 

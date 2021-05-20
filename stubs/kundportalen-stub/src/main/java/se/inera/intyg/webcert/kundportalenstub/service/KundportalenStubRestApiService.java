@@ -32,7 +32,7 @@ public class KundportalenStubRestApiService {
     private KundportalenStubState stubState;
 
     public List<Map<String, String>> getServices() {
-        return stubState.getSServices();
+        return stubState.getServices();
     }
 
     public Boolean getSubscriptionInfo(String orgNumber, String serviceCode) {
