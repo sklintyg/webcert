@@ -31,6 +31,7 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -53,14 +54,16 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
+    private final IntygTextsService intygTextsService;
 
     @Autowired
     public LockedDraftAccessServiceImpl(final WebCertUserService webCertUserService,
         final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService) {
+        final UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
+        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -139,7 +142,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {
-        return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
+        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     private WebCertUser getUser() {

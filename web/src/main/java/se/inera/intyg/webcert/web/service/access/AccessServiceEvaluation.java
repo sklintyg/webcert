@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import javax.validation.constraints.NotNull;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -51,6 +52,7 @@ public final class AccessServiceEvaluation {
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
+    private final IntygTextsService intygTextsService;
 
     private WebCertUser user;
     private String certificateType;
@@ -89,10 +91,11 @@ public final class AccessServiceEvaluation {
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
-        UtkastService utkastService) {
+        UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
+        this.intygTextsService = intygTextsService;
     }
 
     /**
@@ -105,8 +108,9 @@ public final class AccessServiceEvaluation {
      */
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
         @NotNull PatientDetailsResolver patientDetailsResolver,
-        @NotNull UtkastService utkastService) {
-        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService);
+        @NotNull UtkastService utkastService,
+        @NotNull IntygTextsService intygTextsService) {
+        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     /**
@@ -414,7 +418,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkLatestCertificateTypeVersion && accessResult.isEmpty()) {
-            
+            accessResult = isLatestMajorVersionRuleValid(user, certificateType, certificateTypeVersion);
         }
 
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
@@ -451,6 +455,19 @@ public final class AccessServiceEvaluation {
         }
 
         return accessResult.orElseGet(AccessResult::noProblem);
+    }
+
+    private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION);
+        if (feature != null && feature.getGlobal()) {
+            if (!intygTextsService.isLatestMajorVersion(certificateType, certificateTypeVersion)) {
+                return Optional.of(
+                    AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
+                            createMessage(String.format("Feature %s is active and blocks the action", feature)))
+                );
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
