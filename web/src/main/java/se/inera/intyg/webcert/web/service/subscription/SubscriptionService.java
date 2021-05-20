@@ -19,20 +19,15 @@
 package se.inera.intyg.webcert.web.service.subscription;
 
 import java.util.List;
-import java.util.Map;
-import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 
 public interface SubscriptionService {
 
     SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
 
-    SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features);
-
     boolean fetchSubscriptionInfoUnregisteredElegUser(String personId);
 
-    List<String> setAcknowledgedWarning(List<String> acknowledgedWarnings, String hsaId);
+    List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId);
 
 }

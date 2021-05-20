@@ -47,8 +47,8 @@ public class SubscriptionInfo implements Serializable {
         this.subscriptionBlockStartDate = subscriptionBlockStartDate;
     }
 
-    public static SubscriptionInfo createSubscriptionInfoFeaturesNotActive() {
-        return new SubscriptionInfo(SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE, null, null, null);
+    public static SubscriptionInfo createSubscriptionInfoNoAction() {
+        return new SubscriptionInfo(SubscriptionAction.NONE, new ArrayList<>(), null, null);
     }
 
     public SubscriptionAction getSubscriptionAction() {

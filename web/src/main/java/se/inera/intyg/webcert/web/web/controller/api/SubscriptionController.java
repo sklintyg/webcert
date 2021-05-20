@@ -41,7 +41,7 @@ public class SubscriptionController extends AbstractApiController {
     @Path("/acknowledge/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> acknowledgeSubscriptionWarning(@PathParam("hsaId") String hsaId) {
-        final var acknowledgedWarnings = getWebCertUserService().getUser().getSubscriptionInfo().getAcknowledgedWarnings();
-        return subscriptionService.setAcknowledgedWarning(acknowledgedWarnings, hsaId);
+        final var webCertUser = getWebCertUserService().getUser();
+        return subscriptionService.setAcknowledgedWarning(webCertUser, hsaId);
     }
 }

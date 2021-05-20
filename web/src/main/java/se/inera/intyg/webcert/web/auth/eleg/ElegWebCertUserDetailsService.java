@@ -171,9 +171,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private boolean isAnySubscriptionFeatureActive() {
-        // final var features = getAuthoritiesResolver().getFeatures(Collections.emptyList());
-        // return Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD).getGlobal())
-        //     || Boolean.TRUE.equals(features.get(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD).getGlobal());
         return Boolean.TRUE.equals(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD))
             || Boolean.TRUE.equals(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD));
     }

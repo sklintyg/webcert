@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,21 +67,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Value("${subscription.block.start.date}")
     private String subscriptionBlockStartDate;
 
+    private RestTemplate restTemplate;
     private static final ParameterizedTypeReference<Map<String, Boolean>> MAP_STRING_BOOLEAN_TYPE = new ParameterizedTypeReference<>() { };
+
+    @PostConstruct
+    public void init() {
+        restTemplate = new RestTemplate();
+    }
 
     @Override
     public SubscriptionInfo fetchSubscriptionInfo(WebCertUser webCertUser) {
         final var missingSubscriptionAction = determineSubscriptionAction(webCertUser.getOrigin(), webCertUser.getFeatures());
-        if (missingSubscriptionAction != SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE) {
+        if (missingSubscriptionAction != SubscriptionAction.NONE) {
             LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
             final var httpEntity = getAuthorizationHeaders();
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
             final var serviceCodes = getRelevantServiceCodes(webCertUser);
-            final var careProviderHsaIds = getMissingSubscriptions(httpEntity, new RestTemplate(), careProviderOrgNumbers, serviceCodes);
+            final var careProviderHsaIds = getMissingSubscriptions(httpEntity, restTemplate, careProviderOrgNumbers, serviceCodes);
             final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
             return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod, subscriptionBlockStartDate);
         }
-        return SubscriptionInfo.createSubscriptionInfoFeaturesNotActive();
+        return SubscriptionInfo.createSubscriptionInfoNoAction();
     }
 
     @Override
@@ -88,19 +95,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         final var httpEntity = getAuthorizationHeaders();
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
         LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
-        return isOrganizationMissingSubscription(organizationNumber, kundportalenElegServiceCodes, new RestTemplate(), httpEntity);
+        return isOrganizationMissingSubscription(organizationNumber, kundportalenElegServiceCodes, restTemplate, httpEntity);
     }
 
     @Override
-    public List<String> setAcknowledgedWarning(List<String> acknowledgedWarnings, String hsaId) {
+    public List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId) {
+        final var acknowledgedWarnings = webCertUser.getSubscriptionInfo().getAcknowledgedWarnings();
         if (!acknowledgedWarnings.contains(hsaId)) {
             acknowledgedWarnings.add(hsaId);
         }
         return acknowledgedWarnings;
     }
 
-    @Override
-    public SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features) {
+    private SubscriptionAction determineSubscriptionAction(String requestOrigin, Map<String, Feature> features) {
         if (isFristaendeWebcertUser(requestOrigin)) {
             if (isPastSubscriptionAdjustmentPeriod(features)) {
                 return SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK;
@@ -108,7 +115,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 return SubscriptionAction.MISSING_SUBSCRIPTION_WARN;
             }
         }
-        return SubscriptionAction.NONE_SUBSCRIPTION_FEATURES_NOT_ACTIVE;
+        return SubscriptionAction.NONE;
     }
 
     private HttpEntity<String> getAuthorizationHeaders() {
@@ -120,7 +127,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
         if (isPrivatePractitioner(webCertUser) && isElegUser(webCertUser)) {
             final var careProvider = webCertUser.getVardgivare().stream().findFirst().map(Vardgivare::getId)
-                .orElse("CARE PRIVIDER HSAID NOT_FOUND");
+                .orElse("CARE PROVIDER HSA ID NOT_FOUND");
             final var orgNumber = extractOrganizationNumberFromPersonId(webCertUser.getPersonId());
             return Map.of(careProvider, orgNumber);
         } else {
@@ -158,7 +165,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private boolean hasActiveSubscriptionOrServiceCallFailure(ResponseEntity<Map<String, Boolean>> response) {
-        if (response.getBody() != null) {
+        if (response != null && response.getBody() != null) {
             return !(response.getStatusCode() == HttpStatus.OK && !response.getBody().get("subscriptionActive"));
         }
         return true;
