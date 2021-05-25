@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -55,6 +60,10 @@ public class AccessServiceEvaluationTest {
 
     @Test
     public void shallBlockIfNotOfLatestMajorVersion() {
+        Feature feature = new Feature();
+        feature.setGlobal(true);
+        Map<String, Feature> features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+        when(user.getFeatures()).thenReturn(features);
         final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas").checkLatestCertificateTypeVersion("6.8").evaluate();
         Assert.assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
     }
