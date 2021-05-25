@@ -19,8 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,11 +62,50 @@ public class AccessServiceEvaluationTest {
 
     @Test
     public void shallBlockIfNotOfLatestMajorVersion() {
-        Feature feature = new Feature();
+        final var feature = new Feature();
         feature.setGlobal(true);
-        Map<String, Feature> features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
         when(user.getFeatures()).thenReturn(features);
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas").checkLatestCertificateTypeVersion("6.8").evaluate();
-        Assert.assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkLatestCertificateTypeVersion("6.8")
+            .evaluate();
+
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfLatestMajorVersion() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+        when(user.getFeatures()).thenReturn(features);
+        when(intygTextsService.isLatestMajorVersion("ts-bas", "7.0")).thenReturn(true);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkLatestCertificateTypeVersion("7.0")
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfNotLatestMajorVersionWhenNotActive() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkLatestCertificateTypeVersion("2.0")
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
     }
 }

@@ -459,7 +459,7 @@ public final class AccessServiceEvaluation {
 
     private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
         final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION);
-        if (feature != null && feature.getGlobal()) {
+        if (feature != null && feature.getIntygstyper().contains(certificateType) && feature.getGlobal()) {
             if (!intygTextsService.isLatestMajorVersion(certificateType, certificateTypeVersion)) {
                 return Optional.of(
                     AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
