@@ -29,7 +29,8 @@ public final class AccessEvaluationParameters {
     private final Personnummer patient;
     private final boolean isTestCertificate;
 
-    private AccessEvaluationParameters(String certificateType, String certificateTypeVersion, Vardenhet unit, Personnummer patient, boolean isTestCertificate) {
+    private AccessEvaluationParameters(String certificateType, String certificateTypeVersion, Vardenhet unit, Personnummer patient,
+        boolean isTestCertificate) {
         this.certificateType = certificateType;
         this.certificateTypeVersion = certificateTypeVersion;
         this.unit = unit;
@@ -37,9 +38,8 @@ public final class AccessEvaluationParameters {
         this.isTestCertificate = isTestCertificate;
     }
 
-    public static AccessEvaluationParameters create(String certificateType, Vardenhet unit, Personnummer patient,
-        boolean isTestCertificate) {
-        return new AccessEvaluationParameters(certificateType, null, unit, patient, isTestCertificate);
+    public static AccessEvaluationParameters create(String intygsTyp, Personnummer patientPersonnummer) {
+        return new AccessEvaluationParameters(intygsTyp, null, null, patientPersonnummer, false);
     }
 
     public static AccessEvaluationParameters create(String certificateType, String certificateTypeVersion, Vardenhet unit,

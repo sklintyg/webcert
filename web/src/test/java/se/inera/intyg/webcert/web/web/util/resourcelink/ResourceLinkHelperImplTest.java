@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -63,7 +63,7 @@ public class ResourceLinkHelperImplTest {
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
-    private LockedDraftAccessService lockedDraftAccessService;
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
     @Mock
     private CertificateAccessService certificateAccessService;
@@ -119,12 +119,13 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygstypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowToPrint(intygsTyp, vardenhet, patient);
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
@@ -134,7 +135,7 @@ public class ResourceLinkHelperImplTest {
         final DraftHolder draftHolder = new DraftHolder();
         draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -144,22 +145,20 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygstypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowToPrint(intygsTyp, vardenhet, patient);
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
         final DraftHolder draftHolder = new DraftHolder();
         draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -177,12 +176,13 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygsTypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToEditUtkast(any(AccessEvaluationParameters.class));
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(any(AccessEvaluationParameters.class));
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToPrintUtkast(any(AccessEvaluationParameters.class));
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(any());
@@ -210,7 +210,7 @@ public class ResourceLinkHelperImplTest {
 
         final DraftHolder draftHolder = new DraftHolder();
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -220,12 +220,13 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygsTypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToEditUtkast(any(AccessEvaluationParameters.class));
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(any(AccessEvaluationParameters.class));
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToPrintUtkast(any(AccessEvaluationParameters.class));
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToApproveReceivers(any());
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
@@ -249,7 +250,7 @@ public class ResourceLinkHelperImplTest {
 
         final DraftHolder draftHolder = new DraftHolder();
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 

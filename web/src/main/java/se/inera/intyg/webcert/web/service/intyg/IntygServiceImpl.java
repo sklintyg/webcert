@@ -1094,6 +1094,7 @@ public class IntygServiceImpl implements IntygService {
     private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
         final AccessResult accessResult = certificateAccessService.allowToPrint(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardEnhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()), isEmployer);
@@ -1104,6 +1105,7 @@ public class IntygServiceImpl implements IntygService {
     private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToInvalidate(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardEnhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -1114,6 +1116,7 @@ public class IntygServiceImpl implements IntygService {
     private void validateAccessToReadIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRead(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardEnhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -1124,6 +1127,7 @@ public class IntygServiceImpl implements IntygService {
     private void validateAccessToSendIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToSend(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardEnhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));

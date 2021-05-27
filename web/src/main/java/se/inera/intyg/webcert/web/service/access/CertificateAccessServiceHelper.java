@@ -25,9 +25,6 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-/**
- * @author Magnus Ekstrand on 2019-09-25.
- */
 @Component
 public final class CertificateAccessServiceHelper {
 
@@ -37,10 +34,10 @@ public final class CertificateAccessServiceHelper {
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
-
-    public void validateAccessToRenewIntyg(Utlatande utlatande) {
+    public void validateAccessToRenewCertificate(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRenew(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -48,9 +45,10 @@ public final class CertificateAccessServiceHelper {
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    public void validateAccessToComplementIntyg(Utlatande utlatande) {
+    public void validateAccessToComplementCertificate(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()),
@@ -59,9 +57,10 @@ public final class CertificateAccessServiceHelper {
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    public void validateAccessToReplaceIntyg(Utlatande utlatande) {
+    public void validateAccessToReplaceCertificate(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToReplace(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -72,6 +71,7 @@ public final class CertificateAccessServiceHelper {
     public void validateAllowCreateDraftFromSignedTemplate(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToCreateDraftFromSignedTemplate(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));

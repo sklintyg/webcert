@@ -46,9 +46,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-/**
- * Implementation of DraftAccessService.
- */
 @Service
 public class DraftAccessServiceImpl implements DraftAccessService {
 
@@ -68,16 +65,16 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToCreateDraft(String certificateType, Personnummer patient) {
+    public AccessResult allowToCreateDraft(AccessEvaluationParameters accessEvaluationParameters) {
         final Vardenhet vardenhet = getVardenhet();
 
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .careUnit(vardenhet)
-            .patient(patient)
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
             .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(false)
@@ -88,24 +85,25 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToReadDraft(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientSecrecy()
             .checkUnit(true, true)
             .evaluate();
     }
 
     @Override
-    public AccessResult allowToEditDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToEditDraft(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
@@ -116,12 +114,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToDeleteDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToDeleteDraft(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientTestIndicator(true)
             .checkPatientDeceased(true)
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
@@ -135,10 +133,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient, String certificateId) {
+    public AccessResult allowToSignDraft(String certificateType, String certificateTypeVersion, Vardenhet careUnit, Personnummer patient,
+        String certificateId) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .checkLatestCertificateTypeVersion(certificateTypeVersion)
             .careUnit(careUnit)
             .patient(patient)
             .certificateId(certificateId)
@@ -153,12 +153,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToPrintDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .excludeCertificateTypesForDeceased(
@@ -182,12 +182,13 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToForwardDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
@@ -197,22 +198,16 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .evaluate();
     }
 
-    /**
-     * Check if the user is allowed to update a draft with information from a candidate (i.e. signed certificate).
-     *
-     * @param certificateType The type of the certificate being checked.
-     * @param patient The patient which the certificate belongs to.
-     * @return AccessResult which contains the answer if the user is allowed or not.
-     */
     @Override
-    public AccessResult allowToCopyFromCandidate(String certificateType, Personnummer patient) {
+    public AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters) {
         final Vardenhet vardenhet = getVardenhet();
 
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
-            .patient(patient)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .patient(accessEvaluationParameters.getPatient())
             .careUnit(vardenhet)
             .checkInactiveCareUnit(true)
             .checkPatientDeceased(true)
@@ -240,5 +235,4 @@ public class DraftAccessServiceImpl implements DraftAccessService {
         vardenhet.setEnhetsid(user.getValdVardenhet().getId());
         return vardenhet;
     }
-
 }

@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -164,7 +165,7 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Add a feature to consider IF the addFeature is true. This method can be called multiple times.
+     * Add a feature to consider IF the addCheck is true. This method can be called multiple times.
      *
      * @param feature feature to consider.
      * @param addFeature Only add feature if true.
@@ -222,8 +223,14 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
+    public AccessServiceEvaluation checkLatestCertificateTypeVersionIf(@NotNull String certificateTypeVersion, @NotNull boolean addCheck) {
+        if (addCheck) {
+            checkLatestCertificateTypeVersion(certificateTypeVersion);
+        }
+        return this;
+    }
 
-    public AccessServiceEvaluation checkLatestCertificateTypeVersion(String certificateTypeVersion) {
+    public AccessServiceEvaluation checkLatestCertificateTypeVersion(@NotNull String certificateTypeVersion) {
         this.checkLatestCertificateTypeVersion = true;
         this.certificateTypeVersion = certificateTypeVersion;
         return this;
@@ -458,27 +465,50 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION);
-        if (feature != null && feature.getIntygstyper().contains(certificateType) && feature.getGlobal()) {
-            if (!intygTextsService.isLatestMajorVersion(certificateType, certificateTypeVersion)) {
-                return Optional.of(
-                    AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
-                            createMessage(String.format("Feature %s is active and blocks the action", feature)))
-                );
-            }
+        final var feature = getFeature(user, AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION);
+        if (!isFeatureActive(feature, certificateType)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        if (intygTextsService.isLatestMajorVersion(certificateType, certificateTypeVersion)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
+                createMessage(String.format("Feature %s is active and blocks the action", feature)))
+        );
     }
 
     private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
         for (String blockFeature : blockFeatures) {
-            final var feature = user.getFeatures().get(blockFeature);
-            if (feature != null && feature.getGlobal()) {
+            final var feature = getFeature(user, blockFeature);
+            if (isFeatureActive(feature)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
                     createMessage(String.format("Feature %s is active and blocks authorization", blockFeature))));
             }
         }
         return Optional.empty();
+    }
+
+    private Feature getFeature(WebCertUser user, String feature) {
+        return user.getFeatures().get(feature);
+    }
+
+    private boolean isFeatureActive(Feature feature) {
+        return isFeatureActive(feature, null);
+    }
+
+    private boolean isFeatureActive(Feature feature, String certificateType) {
+        if (feature == null) {
+            return false;
+        }
+
+        if (certificateType == null) {
+            return feature.getGlobal();
+        }
+
+        return feature.getIntygstyper().contains(certificateType) && feature.getGlobal();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.access;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -77,6 +78,33 @@ public class AccessServiceEvaluationTest {
     }
 
     @Test
+    public void shallBlockIfNotOfLatestMajorVersionWhenAddCheck() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkLatestCertificateTypeVersionIf("6.8", true)
+            .evaluate();
+
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfNotOfLatestMajorVersionWhenNotAddCheck() {
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkLatestCertificateTypeVersionIf("6.8", false)
+            .evaluate();
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+
+        // Make sure no interaction with user-mock as it would show that the check is being made anyway.
+        verifyNoInteractions(user);
+    }
+
+    @Test
     public void shallAllowIfLatestMajorVersion() {
         final var feature = new Feature();
         feature.setGlobal(true);
@@ -107,5 +135,57 @@ public class AccessServiceEvaluationTest {
             .evaluate();
 
         assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfNotLatestMajorVersionWhenFeatureMissing() {
+        when(user.getFeatures()).thenReturn(Collections.emptyMap());
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkLatestCertificateTypeVersion("2.0")
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfNoBlockRuleActive() {
+        final var feature = new Feature();
+        feature.setGlobal(false);
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfNoBlockRuleExists() {
+        when(user.getFeatures()).thenReturn(Collections.emptyMap());
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallBlockIfBlockRuleValid() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
+            .evaluate();
+
+        assertEquals(AccessResultCode.AUTHORIZATION_BLOCKED, actualAccessResult.getCode());
     }
 }

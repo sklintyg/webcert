@@ -1021,6 +1021,7 @@ public class ArendeServiceImpl implements ArendeService {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()), newCertificate);
@@ -1032,6 +1033,7 @@ public class ArendeServiceImpl implements ArendeService {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -1043,6 +1045,7 @@ public class ArendeServiceImpl implements ArendeService {
         final Utlatande utlatande = getUtlatande(certificateId);
         final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));
@@ -1054,6 +1057,7 @@ public class ArendeServiceImpl implements ArendeService {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
             AccessEvaluationParameters.create(utlatande.getTyp(),
+                utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()));

@@ -149,7 +149,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
         // Do authorization check
-        draftAccessServiceHelper.validateAllowToReadUtkast(utkast, utkast.getPatientPersonnummer());
+        draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -178,7 +178,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             // candidate information to copy data from
             if (utkast.getStatus().equals(UtkastStatus.DRAFT_INCOMPLETE) && utkast.getVersion() == 0 && utkast.getRelationKod() == null) {
                 Optional<UtkastCandidateMetaData> metaData =
-                    utkastCandidateService.getCandidateMetaData(moduleApi, intygsTyp, resolvedPatientData, false);
+                    utkastCandidateService.getCandidateMetaData(moduleApi, intygsTyp, utkast.getIntygTypeVersion(), resolvedPatientData, false);
                 // Update draft with meta data
                 newDraft.setCandidateMetaData(metaData.orElse(null));
             }
@@ -186,6 +186,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             resourceLinkHelper.decorateUtkastWithValidActionLinks(
                 newDraft,
                 intygsTyp,
+                utkast.getIntygTypeVersion(),
                 utlatande.getGrundData().getSkapadAv().getVardenhet(),
                 resolvedPatientData.getPersonId());
 
@@ -260,7 +261,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         // Do authorization check
-        draftAccessServiceHelper.validateAllowToReadUtkast(utkast, utkast.getPatientPersonnummer());
+        draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
 
         LOG.debug("Validating utkast with id '{}'", intygsId);
 
@@ -338,7 +339,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
         // Do authorization check
-        lockedDraftAccessServiceHelper.validateAccessToCopyLockedUtkast(utkast);
+        lockedDraftAccessServiceHelper.validateAccessToCopy(utkast);
 
         CopyIntygRequest request = new CopyIntygRequest();
         request.setPatientPersonnummer(utkast.getPatientPersonnummer());
@@ -412,7 +413,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         // Do authorization check
-        lockedDraftAccessServiceHelper.validateAllowToInvalidateLockedUtkast(utkast);
+        lockedDraftAccessServiceHelper.validateAccessToInvalidate(utkast);
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
             .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {

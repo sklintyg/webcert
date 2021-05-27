@@ -53,6 +53,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -103,6 +108,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToReplaceNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReplaceOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
@@ -120,6 +130,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     @Override
     protected void assertAllowToReplaceNoConditionsDifferentUnit(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReplaceNotLatestMajorVersionDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
 
     @Override
@@ -149,6 +164,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToRenewNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToRenewNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -218,6 +238,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToDeleteOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -264,6 +289,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -318,6 +348,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToSendNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToSendOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -364,6 +399,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToCreateQuestionNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -418,6 +458,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToAnswerComplementNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToAnswerComplementOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
@@ -464,6 +509,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToAnswerQuestionNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerQuestionNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -518,6 +568,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToAnswerAdminQuestionNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToAnswerAdminQuestionOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
@@ -564,6 +619,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -618,6 +678,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToSetQuestionAsHandledNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToSetQuestionAsHandledOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
@@ -668,6 +733,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadQuestionsNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadQuestionsOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
@@ -714,6 +784,11 @@ public class TsCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToForwardQuestionsNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 

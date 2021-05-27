@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
@@ -135,7 +136,10 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        final AccessResult actionResult = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
+        final AccessResult actionResult = draftAccessService.allowToCreateDraft(
+            AccessEvaluationParameters.create(intygsTyp, request.getPatientPersonnummer())
+        );
+
         if (actionResult.isDenied()) {
             if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
                 || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
@@ -211,7 +215,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer,
-                                                   @PathParam("currentDraftId") String currentDraftId) {
+        @PathParam("currentDraftId") String currentDraftId) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
             .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
                 getWebCertUserService().getUser(), currentDraftId);
@@ -281,8 +285,8 @@ public class UtkastApiController extends AbstractApiController {
         // authorized
         Map<Personnummer, PatientDetailsResolverResponse> statusMap =
             patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
-            .map(lie -> lie.getPatientId())
-            .collect(Collectors.toList()));
+                .map(lie -> lie.getPatientId())
+                .collect(Collectors.toList()));
 
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
@@ -412,10 +416,15 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private void markForwardingAllowed(ListIntygEntry listIntygEntry) {
-        String certificateType = listIntygEntry.getIntygType();
-        Personnummer patientId = listIntygEntry.getPatientId();
-        Vardenhet careUnit = UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId());
-        boolean isForwardingAllowed = draftAccessService.allowToForwardDraft(certificateType, careUnit, patientId).isAllowed();
+        final var isForwardingAllowed = draftAccessService.allowToForwardDraft(
+            AccessEvaluationParameters.create(
+                listIntygEntry.getIntygType(),
+                listIntygEntry.getIntygTypeVersion(),
+                UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId()),
+                listIntygEntry.getPatientId(),
+                listIntygEntry.isTestIntyg()
+            )
+        ).isAllowed();
 
         if (isForwardingAllowed) {
             listIntygEntry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));

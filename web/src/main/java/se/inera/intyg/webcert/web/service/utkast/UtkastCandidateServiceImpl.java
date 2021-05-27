@@ -37,8 +37,10 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.LogUtil;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -55,7 +57,7 @@ public class UtkastCandidateServiceImpl {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastCandidateServiceImpl.class);
 
     @Autowired
-    private DraftAccessService draftAccessService;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -71,7 +73,7 @@ public class UtkastCandidateServiceImpl {
 
 
     public Optional<UtkastCandidateMetaData> getCandidateMetaData(
-        ModuleApi moduleApi, String intygType, Patient patient, boolean isCoherentJournaling) {
+        ModuleApi moduleApi, String intygType, String intygTypeVersion, Patient patient, boolean isCoherentJournaling) {
 
         UtkastCandidateMetaData metaData = null;
 
@@ -82,9 +84,11 @@ public class UtkastCandidateServiceImpl {
         }
 
         // Kontrollera användarens rättigheter
-        AccessResult accessResult =
-            draftAccessService.allowToCopyFromCandidate(intygType, patient.getPersonId());
-        if (accessResult.isDenied()) {
+        final var isAllowedToCopy = draftAccessServiceHelper.isAllowedToCopyFromCandidate(
+            AccessEvaluationParameters.create(intygType, intygTypeVersion, null, patient.getPersonId(), false)
+        );
+
+        if (!isAllowedToCopy) {
             return Optional.empty();
         }
 

@@ -29,7 +29,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -38,9 +38,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-/**
- * Implementation of ResourceLinkHelper.
- */
 @Component
 public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
@@ -48,7 +45,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
-    private LockedDraftAccessService lockedDraftAccessService;
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
     @Autowired
     private CertificateAccessService certificateAccessService;
@@ -68,38 +65,38 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     }
 
     @Override
-    public void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, Vardenhet careUnit,
-        Personnummer patient) {
-        boolean isLocked = draftHolder.getStatus() != null ? draftHolder.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
+    public void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, String certificateTypeVersion,
+        Vardenhet careUnit, Personnummer patient) {
+        boolean isLocked = draftHolder.getStatus() != null && draftHolder.getStatus().equals(UtkastStatus.DRAFT_LOCKED);
 
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(certificateType,
-            careUnit, patient, draftHolder.isTestIntyg());
+            certificateTypeVersion, careUnit, patient, draftHolder.isTestIntyg());
 
         if (isLocked) {
 
-            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(certificateType, careUnit, patient).isAllowed()) {
+            if (lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
             }
 
-            if (lockedDraftAccessService.allowedToCopyLockedUtkast(certificateType, careUnit, patient).isAllowed()) {
+            if (lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
             }
 
-            if (lockedDraftAccessService.allowToPrint(certificateType, careUnit, patient).isAllowed()) {
+            if (lockedDraftAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 
         } else {
 
-            if (draftAccessServiceHelper.isAllowedToEditUtkast(certificateType, careUnit, patient)) {
+            if (draftAccessServiceHelper.isAllowedToEditUtkast(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
             }
 
-            if (draftAccessServiceHelper.isAllowedToDeleteUtkast(certificateType, careUnit, patient)) {
+            if (draftAccessServiceHelper.isAllowedToDeleteUtkast(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
 
-            if (draftAccessServiceHelper.isAllowedToPrintUtkast(certificateType, careUnit, patient)) {
+            if (draftAccessServiceHelper.isAllowedToPrintUtkast(accessEvaluationParameters)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 
@@ -111,7 +108,6 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
             }
 
-            // Add action links related to questions, as the utkast can be part of a kompletteringsbegäran.
             final List<ActionLink> actionLinkList = getActionLinksForQuestions(accessEvaluationParameters);
             for (ActionLink actionLink : actionLinkList) {
                 draftHolder.addLink(actionLink);
@@ -177,7 +173,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         vardenhet.getVardgivare().setVardgivarid(listIntygEntry.getVardgivarId());
 
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-            listIntygEntry.getIntygType(), vardenhet, patient, listIntygEntry.isTestIntyg());
+            listIntygEntry.getIntygType(), listIntygEntry.getIntygTypeVersion(), vardenhet, patient, listIntygEntry.isTestIntyg());
 
         if (certificateAccessService.allowToRead(accessEvaluationParameters).isAllowed()) {
             listIntygEntry.addLink(new ActionLink(ActionLinkType.LASA_INTYG));
@@ -193,6 +189,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         for (ArendeListItem arendeListItem : arendeListItems) {
             final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
                 arendeListItem.getIntygTyp(),
+                null,
                 careUnit,
                 Personnummer.createPersonnummer(arendeListItem.getPatientId()).get(),
                 arendeListItem.isTestIntyg());

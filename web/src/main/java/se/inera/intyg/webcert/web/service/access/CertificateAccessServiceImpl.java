@@ -36,9 +36,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-/**
- * Implementation of CertificateAccessService.
- */
 @Service
 public class CertificateAccessServiceImpl implements CertificateAccessService {
 
@@ -95,6 +92,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
@@ -138,6 +136,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToSend(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
@@ -154,6 +153,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     public AccessResult allowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .privilege(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
@@ -192,6 +192,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 newCertificate && getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .checkLatestCertificateTypeVersionIf(accessEvaluationParameters.getCertificateTypeVersion(), newCertificate)
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
@@ -211,6 +212,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)

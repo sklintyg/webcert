@@ -334,7 +334,8 @@ public class IntygApiController extends AbstractApiController {
             var vardenhet = getVardenhet(utkast);
 
             var params = AccessEvaluationParameters
-                .create(utkast.getIntygsTyp(), vardenhet, utkast.getPatientPersonnummer(), utkast.isTestIntyg());
+                .create(utkast.getIntygsTyp(), utkast.getIntygTypeVersion(), vardenhet, utkast.getPatientPersonnummer(),
+                    utkast.isTestIntyg());
 
             var accessResult = accessService.allowToApproveReceivers(params);
 
