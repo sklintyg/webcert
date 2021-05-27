@@ -28,11 +28,15 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @Component
 public final class DraftAccessServiceHelper {
 
-    @Autowired
-    private DraftAccessService draftAccessService;
+    private final DraftAccessService draftAccessService;
+    private final AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    public DraftAccessServiceHelper(DraftAccessService draftAccessService,
+        AccessResultExceptionHelper accessResultExceptionHelper) {
+        this.draftAccessService = draftAccessService;
+        this.accessResultExceptionHelper = accessResultExceptionHelper;
+    }
 
     public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
@@ -72,11 +76,11 @@ public final class DraftAccessServiceHelper {
         );
     }
 
-    public boolean isAllowedToEditUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    public boolean isAllowToEditUtkast(AccessEvaluationParameters accessEvaluationParameters) {
         return draftAccessService.allowToEditDraft(accessEvaluationParameters).isAllowed();
     }
 
-    public boolean isAllowedToEditUtkast(Utkast draft) {
+    public boolean isAllowToEditUtkast(Utkast draft) {
         return evaluateAllowToEditUtkast(draft).isAllowed();
     }
 
@@ -97,11 +101,11 @@ public final class DraftAccessServiceHelper {
         );
     }
 
-    public boolean isAllowedToDeleteUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    public boolean isAllowToDeleteUtkast(AccessEvaluationParameters accessEvaluationParameters) {
         return draftAccessService.allowToDeleteDraft(accessEvaluationParameters).isAllowed();
     }
 
-    public boolean isAllowedToDeleteUtkast(Utkast draft) {
+    public boolean isAllowToDeleteUtkast(Utkast draft) {
         return evaluateAllowToDeleteUtkast(draft).isAllowed();
     }
 
@@ -123,11 +127,11 @@ public final class DraftAccessServiceHelper {
         );
     }
 
-    public boolean isAllowedToPrintUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    public boolean isAllowToPrintUtkast(AccessEvaluationParameters accessEvaluationParameters) {
         return draftAccessService.allowToPrintDraft(accessEvaluationParameters).isAllowed();
     }
 
-    public boolean isAllowedToPrintUtkast(Utkast draft) {
+    public boolean isAllowToPrintUtkast(Utkast draft) {
         return evaluateAllowToPrintUtkast(draft).isAllowed();
     }
 

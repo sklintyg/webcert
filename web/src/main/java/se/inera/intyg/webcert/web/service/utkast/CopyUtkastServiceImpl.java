@@ -178,7 +178,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 coherentJournaling,
                 false);
 
-            certificateAccessServiceHelper.validateAccessToComplementCertificate(utlatande);
+            certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, true);
 
             addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
 
@@ -228,7 +228,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 coherentJournaling,
                 false);
 
-            certificateAccessServiceHelper.validateAccessToRenewCertificate(utlatande);
+            certificateAccessServiceHelper.validateAccessToRenew(utlatande);
 
             addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
 
@@ -275,7 +275,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 replacementRequest.isCoherentJournaling(),
                 false);
 
-            certificateAccessServiceHelper.validateAccessToReplaceCertificate(utlatande);
+            certificateAccessServiceHelper.validateAccessToReplace(utlatande);
 
             addTestIntygFlagIfNecessaryToCopyRequest(replacementRequest, utlatande.getGrundData().isTestIntyg());
 
