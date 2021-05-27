@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,13 +28,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
@@ -214,7 +217,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
-            .thenReturn(new HashSet<>(Arrays.asList(Fk7263EntryPoint.MODULE_ID)));
+            .thenReturn(new HashSet<>(Collections.singletonList(Fk7263EntryPoint.MODULE_ID)));
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator
@@ -236,6 +239,38 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
+    }
+
+    @Test
+    public void shouldIncludeModuleNameInErrorMessageWhenCreatingDbForSekretessmarkerad() {
+        final var user = buildUserUnauthorized();
+        final var certificate = buildIntyg(DbModuleEntryPoint.MODULE_ID, "lastName", "firstName",
+            "fullName", "unitId", "unitName", true);
+
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>());
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+
+        final var response = validator.validateApplicationErrors(certificate, user);
+
+        assertEquals(1, response.getErrorMessages().size());
+        assertTrue(response.getErrorMessages().get(0).contains(DbModuleEntryPoint.MODULE_NAME.toLowerCase()));
+    }
+
+    @Test
+    public void shouldIncludeModuleNameInErrorMessageWhenCreatingDoiForSekretessmarkerad() {
+        final var user = buildUserUnauthorized();
+        final var certificate = buildIntyg(DoiModuleEntryPoint.MODULE_ID, "lastName", "firstName",
+            "fullName", "unitId", "unitName", true);
+
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>());
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+
+        final var response = validator.validateApplicationErrors(certificate, user);
+
+        assertEquals(1, response.getErrorMessages().size());
+        assertTrue(response.getErrorMessages().get(0).contains(DoiModuleEntryPoint.MODULE_NAME.toLowerCase()));
     }
 
     private PersonSvar buildPersonSvar() {
