@@ -48,7 +48,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -63,7 +63,6 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -123,10 +122,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Mock
-    protected CertificateAccessService certificateAccessService;
-
-    @Mock
-    protected AccessResultExceptionHelper accessResultExceptionHelper;
+    protected CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();

@@ -159,12 +159,15 @@ public final class CertificateAccessServiceHelper {
     }
 
     public boolean isAllowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters) {
-        return certificateAccessService.allowToApproveReceivers(accessEvaluationParameters).isAllowed();
+        return validateAccessToApproveReceivers(accessEvaluationParameters).isAllowed();
+    }
+
+    public AccessResult validateAccessToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters) {
+        return certificateAccessService.allowToApproveReceivers(accessEvaluationParameters);
     }
 
     public void validateAccessToApproveReceivers(Utlatande utlatande) {
         final AccessResult accessResult = evaluateAccessToApproveReceivers(utlatande);
-
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
@@ -177,28 +180,28 @@ public final class CertificateAccessServiceHelper {
                 utlatande.getGrundData().isTestIntyg()));
     }
 
-    public boolean isAllowToPrint(Utlatande certificate) {
-        return evaluateAccessToPrint(certificate).isAllowed();
+    public boolean isAllowToPrint(Utlatande certificate, boolean isEmployer) {
+        return evaluateAccessToPrint(certificate, isEmployer).isAllowed();
     }
 
-    public boolean isAllowToPrint(AccessEvaluationParameters accessEvaluationParameters) {
-        return certificateAccessService.allowToPrint(accessEvaluationParameters, false).isAllowed();
+    public boolean isAllowToPrint(AccessEvaluationParameters accessEvaluationParameters, boolean isEmployer) {
+        return certificateAccessService.allowToPrint(accessEvaluationParameters, isEmployer).isAllowed();
     }
 
-    public void validateAccessToPrint(Utlatande utlatande) {
-        final AccessResult accessResult = evaluateAccessToPrint(utlatande);
+    public void validateAccessToPrint(Utlatande utlatande, boolean isEmployer) {
+        final AccessResult accessResult = evaluateAccessToPrint(utlatande, isEmployer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    private AccessResult evaluateAccessToPrint(Utlatande utlatande) {
+    private AccessResult evaluateAccessToPrint(Utlatande utlatande, boolean isEmployer) {
         return certificateAccessService.allowToPrint(
             AccessEvaluationParameters.create(utlatande.getTyp(),
                 utlatande.getTextVersion(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
                 utlatande.getGrundData().isTestIntyg()),
-            false);
+            isEmployer);
     }
 
     public boolean isAllowToRead(Utlatande certificate) {

@@ -391,7 +391,7 @@ public class CertificateAccessServiceHelperTest {
         try {
             doReturn(createNoAccessResult()).when(certificateAccessService)
                 .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-            certificateAccessServiceHelper.validateAccessToPrint(certificate);
+            certificateAccessServiceHelper.validateAccessToPrint(certificate, false);
             fail();
         } catch (AuthoritiesException ex) {
             assertTrue(true);
@@ -401,35 +401,35 @@ public class CertificateAccessServiceHelperTest {
     @Test
     public void shallNotThrowExeptionIfAllowAccessToPrint() {
         doReturn(createAccessResult()).when(certificateAccessService).allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        certificateAccessServiceHelper.validateAccessToPrint(certificate);
+        certificateAccessServiceHelper.validateAccessToPrint(certificate, false);
         assertTrue(true);
     }
 
     @Test
     public void shallAllowIfAllowAccessToPrint() {
         doReturn(createAccessResult()).when(certificateAccessService).allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(certificate);
+        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(certificate, false);
         assertTrue(actualResult);
     }
 
     @Test
     public void shallNotAllowIfNoAccessToPrint() {
         doReturn(createNoAccessResult()).when(certificateAccessService).allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(certificate);
+        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(certificate, false);
         assertFalse(actualResult);
     }
 
     @Test
     public void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
         doReturn(createAccessResult()).when(certificateAccessService).allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
+        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class), false);
         assertTrue(actualResult);
     }
 
     @Test
     public void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
         doReturn(createNoAccessResult()).when(certificateAccessService).allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
+        final var actualResult = certificateAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class), false);
         assertFalse(actualResult);
     }
 

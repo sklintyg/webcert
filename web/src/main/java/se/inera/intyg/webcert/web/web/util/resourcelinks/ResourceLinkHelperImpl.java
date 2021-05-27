@@ -132,7 +132,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.MAKULERA_INTYG));
         }
 
-        if (certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)) {
+        if (certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters, false)) {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
         }
 

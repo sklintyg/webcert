@@ -41,14 +41,13 @@ public final class DraftAccessServiceHelper {
     public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
     }
-
     public void validateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         final AccessResult accessResult = evaluateAllowToCreateUtkast(intygsTyp, personnummer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    private AccessResult evaluateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+    public AccessResult evaluateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         return draftAccessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, personnummer)
         );

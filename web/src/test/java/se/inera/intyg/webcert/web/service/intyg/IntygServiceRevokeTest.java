@@ -22,14 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-
 import java.util.Optional;
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
@@ -37,7 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -56,7 +53,6 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -125,8 +121,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
-
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
@@ -164,8 +158,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         when(intygRelationHelper.getRelationsForIntyg(INTYG_ID)).thenReturn(childRelations);
         when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);
-
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
 
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 

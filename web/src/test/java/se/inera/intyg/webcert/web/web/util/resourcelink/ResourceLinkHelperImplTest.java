@@ -258,7 +258,7 @@ public class ResourceLinkHelperImplTest {
 
         doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
         doReturn(true).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
         doReturn(true).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
         doReturn(true).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
         doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -326,7 +326,7 @@ public class ResourceLinkHelperImplTest {
 
         doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
         doReturn(false).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));

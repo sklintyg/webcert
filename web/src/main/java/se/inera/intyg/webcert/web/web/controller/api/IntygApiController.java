@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.converter.CertificateEventConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificate.CertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -117,7 +117,7 @@ public class IntygApiController extends AbstractApiController {
     private LogService logService;
 
     @Autowired
-    private CertificateAccessService accessService;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Autowired
     private CertificateEventConverter certificateEventConverter;
@@ -328,16 +328,15 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getAllowToApprovedReceivers(@PathParam("intygsId") String intygsId) {
 
-        var utkast = utkastRepository.findById(intygsId).orElse(null);
+        final var utkast = utkastRepository.findById(intygsId).orElse(null);
 
         if (utkast != null) {
-            var vardenhet = getVardenhet(utkast);
+            final var vardenhet = getVardenhet(utkast);
 
-            var params = AccessEvaluationParameters
-                .create(utkast.getIntygsTyp(), utkast.getIntygTypeVersion(), vardenhet, utkast.getPatientPersonnummer(),
-                    utkast.isTestIntyg());
+            final var params = AccessEvaluationParameters.create(utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion(), vardenhet, utkast.getPatientPersonnummer(), utkast.isTestIntyg());
 
-            var accessResult = accessService.allowToApproveReceivers(params);
+            final var accessResult = certificateAccessServiceHelper.validateAccessToApproveReceivers(params);
 
             return Response.ok(accessResult.isAllowed()).build();
         } else {

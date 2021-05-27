@@ -50,7 +50,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
@@ -62,7 +62,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import javax.ws.rs.core.Response;
@@ -109,10 +108,7 @@ public class UtkastApiControllerTest {
     private IntygTextsService intygTextsService;
 
     @Mock
-    private DraftAccessService draftAccessService;
-
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
     private HsatkEmployeeService hsaEmployeeService;
@@ -176,7 +172,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.noProblem()).when(draftAccessServiceHelper).evaluateAllowToCreateUtkast(anyString(), any(Personnummer.class));
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
         assertEquals(OK.getStatusCode(), response.getStatus());
@@ -186,7 +182,7 @@ public class UtkastApiControllerTest {
     public void testCreateUtkastSetsPatientFullName() {
         String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.noProblem()).when(draftAccessServiceHelper).evaluateAllowToCreateUtkast(anyString(), any(Personnummer.class));
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
@@ -208,7 +204,7 @@ public class UtkastApiControllerTest {
 
         // Fake PU service being down
         when(patientDetailsResolver.resolvePatient(PATIENT_PERSONNUMMER, intygsTyp, INTYG_TYPE_VERSION)).thenReturn(null);
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.noProblem()).when(draftAccessServiceHelper).evaluateAllowToCreateUtkast(anyString(), any(Personnummer.class));
         CreateUtkastRequest utkastRequest = buildRequest("luse");
         utkastRequest.setPatientMellannamn(null); // no middlename
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
@@ -227,7 +223,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.noProblem()).when(draftAccessServiceHelper).evaluateAllowToCreateUtkast(anyString(), any(Personnummer.class));
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientFornamn(Strings.repeat("a", 255));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
@@ -251,7 +247,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        doReturn(AccessResult.noProblem()).when(draftAccessServiceHelper).evaluateAllowToCreateUtkast(anyString(), any(Personnummer.class));
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientEfternamn(Strings.repeat("a", 255));
@@ -278,7 +274,7 @@ public class UtkastApiControllerTest {
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
 
-        when(draftAccessService.allowToForwardDraft(any(AccessEvaluationParameters.class))).thenReturn(AccessResult.noProblem());
+        when(draftAccessServiceHelper.isAllowedToForwardUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
@@ -307,7 +303,7 @@ public class UtkastApiControllerTest {
         nameByHsaid.put("lakareid2", "c");
         nameByHsaid.put("lakareid3", "a");
         Mockito.doReturn(nameByHsaid).when(utkastControllerSpy).getNamesByHsaIds(any());
-        when(draftAccessService.allowToForwardDraft(any(AccessEvaluationParameters.class))).thenReturn(AccessResult.noProblem());
+        when(draftAccessServiceHelper.isAllowedToForwardUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
 
         //When
         final Response response = utkastControllerSpy.filterDraftsForUnit(filterParameters);
@@ -335,7 +331,7 @@ public class UtkastApiControllerTest {
         filterParameters.setOrderAscending(false);
         filterParameters.setOrderBy("patientPersonnummer");
 
-        when(draftAccessService.allowToForwardDraft(any(AccessEvaluationParameters.class))).thenReturn(AccessResult.noProblem());
+        when(draftAccessServiceHelper.isAllowedToForwardUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
 
         //When
         final Response response = utkastController.filterDraftsForUnit(filterParameters);
@@ -368,7 +364,7 @@ public class UtkastApiControllerTest {
                 buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdNotFound, nameNotFound)),
                 utkast2));
 
-        when(draftAccessService.allowToForwardDraft(any(AccessEvaluationParameters.class))).thenReturn(AccessResult.noProblem());
+        when(draftAccessServiceHelper.isAllowedToForwardUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
@@ -402,7 +398,7 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.getPersonStatusesForList(anyList())).thenReturn(statusMap);
         when(utkastService.filterIntyg(any()))
             .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
-        when(draftAccessService.allowToForwardDraft(any(AccessEvaluationParameters.class))).thenReturn(AccessResult.noProblem());
+        when(draftAccessServiceHelper.isAllowedToForwardUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
