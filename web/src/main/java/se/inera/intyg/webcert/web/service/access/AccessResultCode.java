@@ -98,6 +98,6 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action because not the latest version.
      */
-    NOT_LATEST_MAJOR_VERSION;
+    NOT_LATEST_MAJOR_VERSION
 
 }
