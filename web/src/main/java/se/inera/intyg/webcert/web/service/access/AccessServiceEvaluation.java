@@ -26,10 +26,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import javax.validation.constraints.NotNull;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -51,9 +53,11 @@ public final class AccessServiceEvaluation {
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
+    private final IntygTextsService intygTextsService;
 
     private WebCertUser user;
     private String certificateType;
+    private String certificateTypeVersion;
     private String certificateId;
     private final List<String> privileges = new ArrayList<>();
     private final List<String> features = new ArrayList<>();
@@ -77,6 +81,7 @@ public final class AccessServiceEvaluation {
     private boolean allowTestIndicatorForSameUnit;
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
+    private boolean checkLatestCertificateTypeVersion;
 
     private final List<String> excludeRenewCertificateTypes = new ArrayList<>();
     private final List<String> excludeUnitCertificateTypes = new ArrayList<>();
@@ -87,10 +92,11 @@ public final class AccessServiceEvaluation {
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
-        UtkastService utkastService) {
+        UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
+        this.intygTextsService = intygTextsService;
     }
 
     /**
@@ -103,8 +109,9 @@ public final class AccessServiceEvaluation {
      */
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
         @NotNull PatientDetailsResolver patientDetailsResolver,
-        @NotNull UtkastService utkastService) {
-        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService);
+        @NotNull UtkastService utkastService,
+        @NotNull IntygTextsService intygTextsService) {
+        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     /**
@@ -158,7 +165,7 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Add a feature to consider IF the addFeature is true. This method can be called multiple times.
+     * Add a feature to consider IF the addCheck is true. This method can be called multiple times.
      *
      * @param feature feature to consider.
      * @param addFeature Only add feature if true.
@@ -213,6 +220,19 @@ public final class AccessServiceEvaluation {
      */
     public AccessServiceEvaluation careUnit(@NotNull Vardenhet careUnit) {
         this.careUnit = careUnit;
+        return this;
+    }
+
+    public AccessServiceEvaluation checkLatestCertificateTypeVersionIf(@NotNull String certificateTypeVersion, @NotNull boolean addCheck) {
+        if (addCheck) {
+            checkLatestCertificateTypeVersion(certificateTypeVersion);
+        }
+        return this;
+    }
+
+    public AccessServiceEvaluation checkLatestCertificateTypeVersion(@NotNull String certificateTypeVersion) {
+        this.checkLatestCertificateTypeVersion = true;
+        this.certificateTypeVersion = certificateTypeVersion;
         return this;
     }
 
@@ -277,6 +297,7 @@ public final class AccessServiceEvaluation {
 
     /**
      * Consider if certificate is flagged as a test certificate.
+     *
      * @param isTestCertificate If certificate is a test certificate or not.
      * @return AccessServiceEvaluation
      */
@@ -403,6 +424,10 @@ public final class AccessServiceEvaluation {
             accessResult = isBlockedRuleValid(user, blockFeatures);
         }
 
+        if (checkLatestCertificateTypeVersion && accessResult.isEmpty()) {
+            accessResult = isLatestMajorVersionRuleValid(user, certificateType, certificateTypeVersion);
+        }
+
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && accessResult.isEmpty()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
                 invalidDeceasedCertificateTypes);
@@ -439,15 +464,51 @@ public final class AccessServiceEvaluation {
         return accessResult.orElseGet(AccessResult::noProblem);
     }
 
+    private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
+        final var feature = getFeature(user, AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION);
+        if (!isFeatureActive(feature, certificateType)) {
+            return Optional.empty();
+        }
+
+        if (intygTextsService.isLatestMajorVersion(certificateType, certificateTypeVersion)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
+                createMessage(String.format("Feature %s is active and blocks the action", feature)))
+        );
+    }
+
     private Optional<AccessResult> isBlockedRuleValid(WebCertUser user, List<String> blockFeatures) {
         for (String blockFeature : blockFeatures) {
-            final var feature = user.getFeatures().get(blockFeature);
-            if (feature != null && feature.getGlobal()) {
+            final var feature = getFeature(user, blockFeature);
+            if (isFeatureActive(feature)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED,
                     createMessage(String.format("Feature %s is active and blocks authorization", blockFeature))));
             }
         }
         return Optional.empty();
+    }
+
+    private Feature getFeature(WebCertUser user, String feature) {
+        return user.getFeatures().get(feature);
+    }
+
+    private boolean isFeatureActive(Feature feature) {
+        return isFeatureActive(feature, null);
+    }
+
+    private boolean isFeatureActive(Feature feature, String certificateType) {
+        if (feature == null) {
+            return false;
+        }
+
+        if (certificateType == null) {
+            return feature.getGlobal();
+        }
+
+        return feature.getIntygstyper().contains(certificateType) && feature.getGlobal();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {
@@ -506,11 +567,11 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isPatientTestIndicated(Personnummer patient, String unitId,
-                                                          boolean allowForSameUnit) {
+        boolean allowForSameUnit) {
         if (patientDetailsResolver.isTestIndicator(patient)
-                && (isUserLoggedInOnDifferentUnit(unitId) || !allowForSameUnit)) {
-                return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT,
-                        createMessage("Patient has Test Indicator")));
+            && (isUserLoggedInOnDifferentUnit(unitId) || !allowForSameUnit)) {
+            return Optional.of(AccessResult.create(AccessResultCode.TEST_INDICATED_PATIENT,
+                createMessage("Patient has Test Indicator")));
         }
         return Optional.empty();
     }
@@ -617,7 +678,7 @@ public final class AccessServiceEvaluation {
                 if (intygExists != null && !utkastService.isDraftCreatedFromReplacement(certificateId)) {
                     if (isUniqueFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(
-                                AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
+                            AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
                                 createMessage("Already exists certificates for this patient")));
                     }
 
@@ -673,4 +734,5 @@ public final class AccessServiceEvaluation {
         }
         return message;
     }
+
 }

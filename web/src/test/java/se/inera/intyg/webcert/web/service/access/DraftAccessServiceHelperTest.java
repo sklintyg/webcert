@@ -18,25 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DraftAccessServiceHelperTest {
@@ -44,333 +44,336 @@ public class DraftAccessServiceHelperTest {
     @Mock
     private DraftAccessService draftAccessService;
 
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    @Spy
+    private final AccessResultExceptionHelper accessResultExceptionHelper = new AccessResultExceptionHelperImpl();
 
     @InjectMocks
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    private final static String INTYGSTYP = "intygstyp";
-    private final static Personnummer PERSONNUMMER = mock(Personnummer.class);
-    private final static Utkast UTKAST = mock(Utkast.class);
-    private final static Vardenhet VARDENHET = mock(Vardenhet.class);
+    private Utkast draft;
 
-    @Test
-    public void testIsAllowToCreateUtkastHasAccess() {
-        when(draftAccessService.allowToCreateDraft(any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToCreateUtkast(INTYGSTYP, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    @Before
+    public void setup() {
+        draft = new Utkast();
+        draft.setIntygsTyp("certificateType");
+        draft.setIntygTypeVersion("certificateTypeVersion");
+        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").get());
+        draft.setTestIntyg(false);
     }
 
     @Test
-    public void testIsAllowToCreateUtkastAccessDenied() {
-        when(draftAccessService.allowToCreateDraft(any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToCreateUtkast(INTYGSTYP, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
-    public void testValidateAllowToCreateUtkastHasAccess() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = mock(Personnummer.class);
-        draftAccessServiceHelper.validateAllowToCreateUtkast(intygsTyp, personnummer);
-    }
-
-    @Test
-    public void testValidateAllowToCreateUtkastAccessDenied() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = mock(Personnummer.class);
-
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
-
+    public void shallThrowExceptionIfNoAccessToCreate() {
         try {
-            draftAccessServiceHelper.validateAllowToCreateUtkast(intygsTyp, personnummer);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToCreateUtkast(draft.getIntygsTyp(), draft.getPatientPersonnummer());
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testIsAllowToReadUtkastHasAccess() {
-        when(draftAccessService.allowToReadDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToReadUtkast(UTKAST, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotThrowExeptionIfAllowAccessToCreate() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToCreateUtkast(draft.getIntygsTyp(), draft.getPatientPersonnummer());
+        assertTrue(true);
     }
 
     @Test
-    public void testIsAllowToReadUtkastAccessDenied() {
-        when(draftAccessService.allowToReadDraft(any(), any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToReadUtkast(UTKAST, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToCreate() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToCreateUtkast(draft.getIntygsTyp(), draft.getPatientPersonnummer());
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testValidateAccessToReadUtkastHasAccess() {
-        final Utkast utkast = mock(Utkast.class);
-        final Personnummer personnummer = mock(Personnummer.class);
-        draftAccessServiceHelper.validateAllowToReadUtkast(utkast, personnummer);
+    public void shallNotAllowIfNoAccessToCreate() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToCreateDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToCreateUtkast(draft.getIntygsTyp(), draft.getPatientPersonnummer());
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testValidateAccessToReadUtkastAccessDenied() {
-        final Utkast utkast = mock(Utkast.class);
-        final Personnummer personnummer = mock(Personnummer.class);
-
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
-
+    public void shallThrowExceptionIfNoAccessToRead() {
         try {
-            draftAccessServiceHelper.validateAllowToReadUtkast(utkast, personnummer);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToReadDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToReadUtkast(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testValidateAccessToEditUtkastHasAccess() {
-        draftAccessServiceHelper.validateAllowToEditUtkast(UTKAST);
+    public void shallNotThrowExeptionIfAllowAccessToRead() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToReadDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToReadUtkast(draft);
+        assertTrue(true);
     }
 
     @Test
-    public void testValidateAccessToEditUtkastAccessDenied() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
+    public void shallAllowIfAllowAccessToRead() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToReadDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToReadUtkast(draft);
+        assertTrue(actualResult);
+    }
 
+    @Test
+    public void shallNotAllowIfNoAccessToRead() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToReadDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToReadUtkast(draft);
+        assertFalse(actualResult);
+    }
+
+    @Test
+    public void shallThrowExceptionIfNoAccessToEdit() {
         try {
-            draftAccessServiceHelper.validateAllowToEditUtkast(UTKAST);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToEditUtkast(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testIsAllowToEditUtkast() {
-        when(draftAccessService.allowToEditDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToEditUtkast(INTYGSTYP, VARDENHET, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotThrowExeptionIfAllowAccessToEdit() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToEditUtkast(draft);
+        assertTrue(true);
     }
 
     @Test
-    public void testIsAllowToEditUtkastHasAccess() {
-        when(draftAccessService.allowToEditDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToEditUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToEdit() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToEditUtkast(draft);
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testIsAllowToEditUtkastAccessDenied() {
-        when(draftAccessService.allowToEditDraft(any(), any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToEditUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotAllowIfNoAccessToEdit() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToEditUtkast(draft);
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testIsAllowToDeleteUtkast() {
-        when(draftAccessService.allowToDeleteDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToDeleteUtkast(INTYGSTYP, VARDENHET, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToEditCertificatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToEditUtkast(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testIsAllowToDeleteUtkastHasAccess() {
-        when(draftAccessService.allowToDeleteDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToDeleteUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotAllowIfNoAccessToEditCertificatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToEditDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToEditUtkast(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testIsAllowToDeleteUtkastAccessDenied() {
-        when(draftAccessService.allowToDeleteDraft(any(), any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToDeleteUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
-    public void testValidateAccessToDeleteUtkastHasAccess() {
-        draftAccessServiceHelper.validateAllowToDeleteUtkast(UTKAST);
-    }
-
-    @Test
-    public void testValidateAccessToDeleteUtkastAccessDenied() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
-
+    public void shallThrowExceptionIfNoAccessToDelete() {
         try {
-            draftAccessServiceHelper.validateAllowToDeleteUtkast(UTKAST);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToDeleteUtkast(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testIsAllowToPrintUtkast() {
-        when(draftAccessService.allowToPrintDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToPrintUtkast(INTYGSTYP, VARDENHET, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotThrowExeptionIfAllowAccessToDelete() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToDeleteUtkast(draft);
+        assertTrue(true);
     }
 
     @Test
-    public void testIsAllowToPrintUtkastHasAccess() {
-        when(draftAccessService.allowToPrintDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToPrintUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToDelete() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToDeleteUtkast(draft);
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testIsAllowToPrintUtkastAccessDenied() {
-        when(draftAccessService.allowToPrintDraft(any(), any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToPrintUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotAllowIfNoAccessToDelete() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToDeleteUtkast(draft);
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testValidateAccessToPrintUtkastHasAccess() {
-        draftAccessServiceHelper.validateAllowToPrintUtkast(UTKAST);
+    public void shallAllowIfAllowAccessToDeleteCertificatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToDeleteUtkast(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testValidateAccessToPrintUtkastAccessDenied() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
+    public void shallNotAllowIfNoAccessToDeleteCertificatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToDeleteDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToDeleteUtkast(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
+    }
 
+    @Test
+    public void shallThrowExceptionIfNoAccessToPrint() {
         try {
-            draftAccessServiceHelper.validateAllowToPrintUtkast(UTKAST);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToPrintUtkast(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testIsAllowToForwardUtkast() {
-        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(INTYGSTYP, VARDENHET, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotThrowExeptionIfAllowAccessToPrint() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToPrintUtkast(draft);
+        assertTrue(true);
     }
 
     @Test
-    public void testIsAllowToForwardUtkastHasAccess() {
-        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToPrint() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToPrintUtkast(draft);
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testIsAllowToForwardUtkastAccessDenied() {
-        when(draftAccessService.allowToForwardDraft(any(), any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotAllowIfNoAccessToPrint() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowToPrintUtkast(draft);
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testValidateAccessToForwardUtkastHasAccess() {
-        draftAccessServiceHelper.validateAllowToForwardDraft(UTKAST);
+    public void shallAllowIfAllowAccessToPrintCertificatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToPrintUtkast(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testValidateAccessToForwardUtkastAccessDenied() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
+    public void shallNotAllowIfNoAccessToPrintCertificatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToPrintDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowToPrintUtkast(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
+    }
 
+    @Test
+    public void shallThrowExceptionIfNoAccessToForward() {
         try {
-            draftAccessServiceHelper.validateAllowToForwardDraft(UTKAST);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToForwardDraft(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
     }
 
     @Test
-    public void testIsAllowToToCopyFromCandidate() {
-        when(draftAccessService.allowToCopyFromCandidate(any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToCopyFromCandidate(INTYGSTYP, VARDENHET, PERSONNUMMER);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotThrowExeptionIfAllowAccessToForward() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToForwardDraft(draft);
+        assertTrue(true);
     }
 
     @Test
-    public void testIsAllowToToCopyFromCandidateHasAccess() {
-        when(draftAccessService.allowToCopyFromCandidate(any(), any())).thenReturn(AccessResult.noProblem());
-
-        final boolean expectedResult = true;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToCopyFromCandidate(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallAllowIfAllowAccessToForward() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToForwardUtkast(draft);
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testIsAllowToToCopyFromCandidateAccessDenied() {
-        when(draftAccessService.allowToCopyFromCandidate(any(), any())).thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access"));
-
-        final boolean expectedResult = false;
-        final boolean actualResult = draftAccessServiceHelper.isAllowedToCopyFromCandidate(UTKAST);
-
-        assertEquals(expectedResult, actualResult);
+    public void shallNotAllowIfNoAccessToForward() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToForwardUtkast(draft);
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testValidateAccessToCopyFromCandidateHasAccess() {
-        draftAccessServiceHelper.validateAllowToCopyFromCandidate(UTKAST);
+    public void shallAllowIfAllowAccessToForwardCertificatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testValidateAccessToCopyFromCandidateAccessDenied() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No Access")).when(accessResultExceptionHelper).throwExceptionIfDenied(any());
+    public void shallNotAllowIfNoAccessToForwardCertificatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
+    }
 
+    @Test
+    public void shallThrowExceptionIfNoAccessToCopyFromCandidate() {
         try {
-            draftAccessServiceHelper.validateAllowToCopyFromCandidate(UTKAST);
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToCopyFromCandidate(draft);
             fail();
-        } catch(Throwable th) {
-            assertEquals(WebCertServiceException.class, th.getClass());
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
         }
+    }
+
+    @Test
+    public void shallNotThrowExeptionIfAllowAccessToCopyFromCandidate() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToCopyFromCandidate(draft);
+        assertTrue(true);
+    }
+
+    @Test
+    public void shallAllowIfAllowAccessToCopyFromCandidate() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToCopyFromCandidate(draft);
+        assertTrue(actualResult);
+    }
+
+    @Test
+    public void shallNotAllowIfNoAccessToCopyFromCandidate() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper
+            .isAllowedToCopyFromCandidate(draft);
+        assertFalse(actualResult);
+    }
+
+    @Test
+    public void shallAllowIfAllowAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToCopyFromCandidate(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
+    }
+
+    @Test
+    public void shallNotAllowIfNoAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToCopyFromCandidate(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
+    }
+
+    private AccessResult createAccessResult() {
+        return AccessResult.noProblem();
+    }
+
+    private AccessResult createNoAccessResult() {
+        return AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No Access");
     }
 }

@@ -44,9 +44,9 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -63,10 +63,10 @@ public class ResourceLinkHelperImplTest {
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
-    private LockedDraftAccessService lockedDraftAccessService;
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
     @Mock
-    private CertificateAccessService certificateAccessService;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @InjectMocks
     private ResourceLinkHelperImpl resourceLinkHelper;
@@ -119,12 +119,13 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygstypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(lockedDraftAccessService).allowToPrint(intygsTyp, vardenhet, patient);
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
@@ -134,7 +135,7 @@ public class ResourceLinkHelperImplTest {
         final DraftHolder draftHolder = new DraftHolder();
         draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -144,22 +145,20 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygstypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-            .allowToPrint(intygsTyp, vardenhet, patient);
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
         final DraftHolder draftHolder = new DraftHolder();
         draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -177,21 +176,23 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygsTypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(), anyBoolean());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetQuestionAsHandled(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToApproveReceivers(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSend(any());
+        doReturn(true).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+        doReturn(true).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+        doReturn(true).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper)
+            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
@@ -210,7 +211,7 @@ public class ResourceLinkHelperImplTest {
 
         final DraftHolder draftHolder = new DraftHolder();
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -220,36 +221,29 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
+        final String intygsTypVersion = "intygsTypVersion";
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
-        doReturn(false).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToApproveReceivers(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSend(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToCreateQuestion(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToReadQuestions(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToAnswerAdminQuestion(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToAnswerComplementQuestion(any(), anyBoolean());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSetComplementAsHandled(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSetQuestionAsHandled(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToForwardQuestions(any());
+        doReturn(false).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+        doReturn(false).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+        doReturn(false).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper)
+            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
         final DraftHolder draftHolder = new DraftHolder();
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, vardenhet, patient);
+        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
         final List<ActionLink> actualLinks = draftHolder.getLinks();
 
@@ -262,21 +256,22 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToPrint(any(), anyBoolean());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReplace(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSend(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateDraftFromSignedTemplate(any());
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(), anyBoolean());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetQuestionAsHandled(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToApproveReceivers(any());
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper)
+            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
@@ -329,35 +324,21 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToRenew(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToInvalidate(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToPrint(any(), anyBoolean());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToReplace(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSend(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToCreateDraftFromSignedTemplate(any());
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToCreateQuestion(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToReadQuestions(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToAnswerAdminQuestion(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToAnswerComplementQuestion(any(), anyBoolean());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSetComplementAsHandled(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToSetQuestionAsHandled(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToForwardQuestions(any());
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToApproveReceivers(any());
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -395,8 +376,8 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_INTYG));
@@ -422,10 +403,8 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToRead(any(AccessEvaluationParameters.class));
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToRenew(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -449,7 +428,7 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any(AccessEvaluationParameters.class));
+        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
@@ -473,8 +452,7 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-            .allowToForwardQuestions(any(AccessEvaluationParameters.class));
+        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
