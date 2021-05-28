@@ -31,60 +31,59 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
 import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-/**
- * Implementation of LockedDraftAccessService.
- */
 @Service
 public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
 
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
+    private final IntygTextsService intygTextsService;
 
     @Autowired
     public LockedDraftAccessServiceImpl(final WebCertUserService webCertUserService,
         final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService) {
+        final UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
+        this.intygTextsService = intygTextsService;
     }
 
     @Override
-    public AccessResult allowToRead(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientSecrecy()
             .checkUnit(true, true)
             .evaluate();
     }
 
     @Override
-    public AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToCopy(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
             .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(false)
@@ -95,12 +94,12 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     @Override
-    public AccessResult allowedToInvalidateLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToInvalidate(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
@@ -110,12 +109,12 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     @Override
-    public AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
+    public AccessResult allowToPrint(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
             .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(careUnit)
-            .patient(patient)
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
             .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .excludeCertificateTypesForDeceased(
@@ -139,7 +138,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {
-        return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
+        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     private WebCertUser getUser() {

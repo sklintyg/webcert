@@ -47,16 +47,31 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToReadUtkastNoConditions(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastNoConditions(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToReadNotLatestMajorVersion(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToReadUtkastOnDeceasedPatient(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnDeceasedPatient(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -65,7 +80,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToReadUtkastOnInactiveUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnInactiveUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnInactiveUnit(AccessResult actualValue);
@@ -74,7 +91,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToReadUtkastOnRenewFalse(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnRenewFalse(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnRenewFalse(AccessResult actualValue);
@@ -83,7 +102,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToReadOnSekretessPatientOnSameUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadOnSekretessPatientOnSameUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -92,7 +113,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -101,7 +124,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastNoConditionsOnDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToReadUtkastNoConditionsOnDifferentUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastNoConditionsOnDifferentUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastNoConditionsOnDifferentUnit(AccessResult actualValue);
@@ -110,7 +135,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -119,7 +146,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -128,7 +157,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(accessService.allowToRead(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -137,16 +168,31 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToCopyNoConditions(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyNoConditions(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToCopyNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToCopyNotLatestMajorVersion(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToCopyNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToCopyOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToCopyOnDeceasedPatient(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnDeceasedPatient(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnDeceasedPatient(AccessResult actualValue);
@@ -155,7 +201,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToCopyOnInactiveCareUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnInactiveCareUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnInactiveCareUnit(AccessResult actualValue);
@@ -164,7 +212,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToCopyOnRenewFalse(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnRenewFalse(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnRenewFalse(AccessResult actualValue);
@@ -188,9 +238,12 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
-            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(AccessResult actualValue);
@@ -214,9 +267,12 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
-            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue);
@@ -240,8 +296,12 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
-            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(AccessResult actualValue);
@@ -250,16 +310,31 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToCopyNoConditionsDifferentUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyNoConditionsDifferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
+    public void isAllowToCopyNotLatestMajorVersionDifferentUnit() {
+        setupMocksForNotLatestMajorVersionDifferentUnit();
+
+        assertAllowToCopyNotLatestMajorVersionDIfferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToCopyNotLatestMajorVersionDIfferentUnit(AccessResult actualValue);
+
+    @Test
     public void isAllowToCopyOnDeceasedPatientDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToCopyOnDeceasedPatientDifferentUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnDeceasedPatientDifferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnDeceasedPatientDifferentUnit(AccessResult actualValue);
@@ -268,7 +343,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnInactiveUnitDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToCopyOnInactiveCareUnitDifferentUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnInactiveCareUnitDifferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnInactiveCareUnitDifferentUnit(AccessResult actualValue);
@@ -277,7 +354,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnRenewFalseDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToCopyOnRenewFalseDifferentUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnRenewFalseDifferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToCopyOnRenewFalseDifferentUnit(AccessResult actualValue);
@@ -286,7 +365,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToCopyOnSekretessPatientOnSameUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnSekretessPatientOnSameUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     protected abstract void assertAllowToCopyOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -295,7 +376,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToCopyOnSekretessPatientOnDifferentUnit(accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToCopyOnSekretessPatientOnDifferentUnit(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     protected abstract void assertAllowToCopyOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -304,16 +387,31 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToDeleteUtkastNoConditions(accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToDeleteUtkastNoConditions(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToDeleteNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToDeleteNotLatestMajorVersion(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToDeleteUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToDeleteUtkastOnDeceasedPatient(accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnDeceasedPatient(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -322,7 +420,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToDeleteUtkastOnInactiveUnit(accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnInactiveUnit(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnit(AccessResult actualValue);
@@ -331,7 +431,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToDeleteUtkastOnRenewFalse(accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnRenewFalse(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalse(AccessResult actualValue);
@@ -341,7 +443,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -351,7 +455,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -361,7 +467,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -371,7 +479,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -381,7 +491,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -391,7 +503,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToDeleteUtkastNoConditionsDifferentUnit(
-            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -400,16 +514,31 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToPrintUtkastNoConditions(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastNoConditions(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToPrintNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToPrintNotLatestMajorVersion(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToPrintNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToPrintUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToPrintUtkastOnDeceasedPatient(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnDeceasedPatient(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -418,7 +547,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToPrintUtkastOnInactiveUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnInactiveUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnInactiveUnit(AccessResult actualValue);
@@ -427,7 +558,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToPrintUtkastOnRenewFalse(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnRenewFalse(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnRenewFalse(AccessResult actualValue);
@@ -436,7 +569,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -445,7 +580,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -454,7 +591,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -463,7 +602,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -472,7 +613,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -481,7 +624,9 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToPrintUtkastNoConditionsDifferentUnit(accessService.allowToPrint(intygsTyp, vardenhet, PERSONNUMMER));
+        assertAllowToPrintUtkastNoConditionsDifferentUnit(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditionsDifferentUnit(AccessResult actualValue);

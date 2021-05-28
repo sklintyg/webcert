@@ -24,20 +24,27 @@ import se.inera.intyg.schemas.contract.Personnummer;
 public final class AccessEvaluationParameters {
 
     private final String certificateType;
+    private final String certificateTypeVersion;
     private final Vardenhet unit;
     private final Personnummer patient;
     private final boolean isTestCertificate;
 
-    private AccessEvaluationParameters(String certificateType, Vardenhet unit, Personnummer patient, boolean isTestCertificate) {
+    private AccessEvaluationParameters(String certificateType, String certificateTypeVersion, Vardenhet unit, Personnummer patient,
+        boolean isTestCertificate) {
         this.certificateType = certificateType;
+        this.certificateTypeVersion = certificateTypeVersion;
         this.unit = unit;
         this.patient = patient;
         this.isTestCertificate = isTestCertificate;
     }
 
-    public static AccessEvaluationParameters create(String certificateType, Vardenhet unit, Personnummer patient,
-        boolean isTestCertificate) {
-        return new AccessEvaluationParameters(certificateType, unit, patient, isTestCertificate);
+    public static AccessEvaluationParameters create(String intygsTyp, Personnummer patientPersonnummer) {
+        return new AccessEvaluationParameters(intygsTyp, null, null, patientPersonnummer, false);
+    }
+
+    public static AccessEvaluationParameters create(String certificateType, String certificateTypeVersion, Vardenhet unit,
+        Personnummer patient, boolean isTestCertificate) {
+        return new AccessEvaluationParameters(certificateType, certificateTypeVersion, unit, patient, isTestCertificate);
     }
 
     public String getCertificateType() {
@@ -54,5 +61,9 @@ public final class AccessEvaluationParameters {
 
     public boolean isTestCertificate() {
         return isTestCertificate;
+    }
+
+    public String getCertificateTypeVersion() {
+        return certificateTypeVersion;
     }
 }

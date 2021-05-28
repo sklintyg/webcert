@@ -60,7 +60,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -83,9 +82,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
-import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -113,7 +110,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -201,10 +197,7 @@ public class IntygServiceImpl implements IntygService {
     private ReferensService referensService;
 
     @Autowired
-    private CertificateAccessService certificateAccessService;
-
-    @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -269,7 +262,7 @@ public class IntygServiceImpl implements IntygService {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
         if (validateAccess) {
-            validateAccessToReadIntyg(intygsData.getUtlatande());
+            certificateAccessServiceHelper.validateAccessToRead(intygsData.getUtlatande());
         }
 
         if (pdlLogging) {
@@ -409,7 +402,7 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
 
-            validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployerCopy);
+            certificateAccessServiceHelper.validateAccessToPrint(intyg.getUtlatande(), isEmployerCopy);
 
             IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
                 utkastStatus, isEmployerCopy);
@@ -484,7 +477,7 @@ public class IntygServiceImpl implements IntygService {
             .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
             .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
-        validateAccessToSendIntyg(utlatande);
+        certificateAccessServiceHelper.validateAccessToSend(utlatande);
 
         if (optionalUtkast.isPresent()) {
             verifyIsNotRevoked(optionalUtkast.get(), IntygOperation.SEND);
@@ -572,7 +565,7 @@ public class IntygServiceImpl implements IntygService {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
 
-        validateAccessToInvalidateIntyg(intyg.getUtlatande());
+        certificateAccessServiceHelper.validateAccessToInvalidate(intyg.getUtlatande());
 
         verifyIsSigned(intyg, IntygOperation.REVOKE);
 
@@ -689,8 +682,9 @@ public class IntygServiceImpl implements IntygService {
      * When no draft is found in WC but there are notifications in the database, it could be of two reasons. Either the certificate
      * wasn't issued in WC (and will be found in IT) or it was removed before it got signed. This method checks the latter based
      * on what notifications exists for the draft/certificate.
+     *
      * @param notifications List of notifications for the draft/certificate.
-     * @return  True if it was a draft that has been removed before signed.
+     * @return True if it was a draft that has been removed before signed.
      */
     private boolean missingDraftWasRemoved(List<Handelse> notifications) {
         final var statusToExclude = Arrays.asList(HandelsekodEnum.SKAPAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.RADERA,
@@ -1089,54 +1083,6 @@ public class IntygServiceImpl implements IntygService {
 
     private boolean isDeceased(Personnummer personnummer) {
         return patientDetailsResolver.isAvliden(personnummer);
-    }
-
-    private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
-        final AccessResult accessResult = certificateAccessService.allowToPrint(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()), isEmployer);
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToInvalidate(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToReadIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToRead(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToSendIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToSend(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private Vardenhet getVardEnhet(Utlatande utlatande) {
-        return utlatande.getGrundData().getSkapadAv().getVardenhet();
-    }
-
-    private Personnummer getPersonnummer(Utlatande utlatande) {
-        return utlatande.getGrundData().getPatient().getPersonId();
     }
 
     public enum IntygOperation {

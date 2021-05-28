@@ -53,6 +53,12 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToCreateUtkastNotLatestMajorVersion(AccessResult actualValue) {
+        // Always creates on the latest version so it will never be an issue
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowedToCreateUtkastOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
@@ -94,6 +100,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadUtkastOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -140,6 +151,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     @Override
     protected void assertAllowToEditUtkastNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToEditUtkastNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
 
     @Override
@@ -193,6 +209,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToSignUtkastNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToSignUtkastOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -239,6 +260,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToDeleteUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -293,6 +319,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToPrintUtkastNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -340,6 +371,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     @Override
     protected void assertAllowToForwardUtkastNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToForwardUtkastNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
 
     @Override

@@ -51,13 +51,14 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links for DraftHolder.
-     *
-     * @param draftHolder DraftHolder to decorate.
+     *  @param draftHolder DraftHolder to decorate.
      * @param certificateType Certificate type to consider.
+     * @param certificateTypeVersion Certificate type version to consider.
      * @param careUnit Care Unit to consider.
      * @param patient Patient to consider.
      */
-    void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, Vardenhet careUnit, Personnummer patient);
+    void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, String certificateTypeVersion,
+        Vardenhet careUnit, Personnummer patient);
 
     /**
      * Add available action links for IntygContentHolder.
