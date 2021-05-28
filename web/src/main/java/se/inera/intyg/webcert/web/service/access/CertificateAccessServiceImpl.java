@@ -191,7 +191,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
-                newCertificate && getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
             .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
