@@ -192,7 +192,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
             .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
                 newCertificate && getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
-            .checkLatestCertificateTypeVersionIf(accessEvaluationParameters.getCertificateTypeVersion(), newCertificate)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
