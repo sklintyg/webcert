@@ -30,7 +30,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:PPServiceTest/test-context.xml")
@@ -76,25 +75,4 @@ public class PPServiceTest {
         service.getPrivatePractitioner("address", "any HSA-ID", "any PERSONNUMMER");
     }
 
-    @Test
-    public void testValidatePrivatePractitioner() {
-        final var res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
-        assertEquals(ResultCodeEnum.OK, res.getResultCode());
-    }
-
-    @Test
-    public void testValidatePrivatePractitionerError() {
-        final var res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
-        assertEquals(ResultCodeEnum.ERROR, res.getResultCode());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidatePrivatePractitionerWhenHsaIdAndPersonalIdIsNull() {
-        service.validatePrivatePractitioner("address", null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidatePrivatePractitionerWhenBothHsaIdAndPersonalIdIsSet() {
-        service.validatePrivatePractitioner("address", "any HSA-ID", "any PERSONNUMMER");
-    }
 }

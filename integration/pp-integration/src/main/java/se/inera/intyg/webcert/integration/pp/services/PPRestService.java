@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.integration.pp.services;
 
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 
-/**
- * Created by Magnus Ekstrand on 18/06/15.
- */
-public interface PPService {
+public interface PPRestService {
 
-    HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
+    ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
 
 }

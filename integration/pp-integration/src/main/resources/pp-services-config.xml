@@ -36,6 +36,7 @@
 
 
   <bean id="ppService" class="se.inera.intyg.webcert.integration.pp.services.PPServiceImpl" />
+  <bean id="ppRestService" class="se.inera.intyg.webcert.integration.pp.services.PPRestServiceImpl" />
 
   <beans profile="!dev">
     <http:conduit

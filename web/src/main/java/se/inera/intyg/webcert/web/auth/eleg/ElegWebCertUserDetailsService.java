@@ -42,9 +42,12 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
@@ -56,9 +59,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -76,6 +77,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private PPService ppService;
+
+    @Autowired
+    private PPRestService ppRestService;
 
     @Autowired
     private PUService puService;
@@ -144,16 +148,13 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
-    // - - - - - Private scope - - - - -
-
     private void assertHosPersonIsAuthorized(String personId) {
-
-        final var validationResponse = ppService.validatePrivatePractitioner(logicalAddress, null, personId);
-        if (validationResponse.getResultCode() == ResultCodeEnum.OK) {
+        final var validationResponse = ppRestService.validatePrivatePractitioner(personId);
+        if (validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.OK) {
             return;
         }
 
-        if (isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse, personId) && isMissingSubscription(personId)) {
+        if (isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse) && isMissingSubscription(personId)) {
             throw new PrivatePractitionerSubscriptionException("Private practitioner '" + personId + "' has no active subscription.");
         }
 
@@ -165,9 +166,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(personId);
     }
 
-    private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponseType validationResponse, String personId) {
-        return validationResponse.getResultCode() == ResultCodeEnum.ERROR && validationResponse.getResultText()
-            .equals("No private practitioner with personal identity number: " + personId + " exists.");
+    private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
+        return validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT;
     }
 
     private boolean isAnySubscriptionFeatureActive() {

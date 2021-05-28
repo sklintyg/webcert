@@ -41,7 +41,10 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
@@ -51,20 +54,17 @@ import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,6 +86,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private HsaPersonService hsaPersonService;
     @Mock
     private PPService ppService;
+    @Mock
+    private PPRestService ppRestService;
     @Mock
     private AvtalService avtalService;
     @Mock
@@ -115,12 +117,12 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         // Setup a servlet request
         final var request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        final var privatePractitionerResponseType = createResultType(ResultCodeEnum.OK);
+        final var validatePrivatePractitionerResponse = createResult(ValidatePrivatePractitionerResultCode.OK);
 
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
-        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
+        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
         expectedPreferences.put("some", "setting");
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
@@ -179,21 +181,17 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Test(expected = PrivatePractitionerAuthorizationException.class)
     public void testNotValidPrivatePractitionerThrowsException() {
-        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.ERROR);
+        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NOT_AUTHORIZED_IN_HOSP);
 
-        reset(ppService);
         doReturn(Boolean.FALSE).when(featuresHelper).isFeatureActive(any());
-        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
+        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
     @Test(expected = HsaServiceException.class)
     public void testNotFoundInHSAThrowsException() {
-        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.OK);
-
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
@@ -201,11 +199,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Test(expected = PrivatePractitionerSubscriptionException.class)
     public void shouldThrowSubscriptionExceptIfUnregisteredWithoutSubscription() {
-        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.ERROR);
-        privatePractitionerResponseType.setResultText("No private practitioner with personal identity number: " + null + " exists.");
+        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT);
 
-        reset(ppService);
-        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
+        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
         when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD)).thenReturn(true);
         when(subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(null)).thenReturn(true);
 
@@ -214,9 +210,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Test
     public void shouldSetSubscriptionInfo() {
-        final var privatePractitionerResponseType= createResultType(ResultCodeEnum.OK);
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(privatePractitionerResponseType);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
         when(subscriptionService.fetchSubscriptionInfo(any(WebCertUser.class)))
             .thenReturn(SubscriptionInfo.createSubscriptionInfoNoAction());
@@ -272,10 +266,10 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         return request;
     }
 
-    private ValidatePrivatePractitionerResponseType createResultType(ResultCodeEnum code) {
-        final var responseType = new ValidatePrivatePractitionerResponseType();
-        responseType.setResultCode(code);
-        responseType.setResultText("TEST_RESULT_TEXT");
-        return responseType;
+    private ValidatePrivatePractitionerResponse createResult(ValidatePrivatePractitionerResultCode resultCode) {
+        final var response = new ValidatePrivatePractitionerResponse();
+        response.setResultCode(resultCode);
+        response.setResultText("TEST_RESULT_TEXT");
+        return response;
     }
 }
