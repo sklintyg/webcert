@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,12 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -215,14 +216,20 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
+    public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() throws ModuleNotFoundException {
+        final var mockEntryPoint = mock(DoiModuleEntryPoint.class);
+        final var certificate = buildIntyg(TSBAS, "efternamn", "förnamn",
+            "fullständigt namn", "enhetsId", "enhetsnamn", true);
+
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
             .thenReturn(new HashSet<>(Collections.singletonList(Fk7263EntryPoint.MODULE_ID)));
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
-        ResultValidator result = validator
-            .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+        when(moduleRegistry.getModuleEntryPoint(TSBAS)).thenReturn(mockEntryPoint);
+        when(mockEntryPoint.getModuleName()).thenReturn(TsBasEntryPoint.MODULE_NAME);
+
+        ResultValidator result = validator.validateApplicationErrors(certificate, user);
+
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -242,35 +249,42 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void shouldIncludeModuleNameInErrorMessageWhenCreatingDbForSekretessmarkerad() {
+    public void shouldIncludeModuleNameInErrorMessageForSekretessmarkerad() throws ModuleNotFoundException {
         final var user = buildUserUnauthorized();
-        final var certificate = buildIntyg(DbModuleEntryPoint.MODULE_ID, "lastName", "firstName",
+        final var certificateType = DoiModuleEntryPoint.MODULE_ID;
+        final var certificateDisplayName = DoiModuleEntryPoint.MODULE_NAME;
+        final var certificate = buildIntyg(certificateType, "lastName", "firstName",
             "fullName", "unitId", "unitName", true);
+        final var mockEntryPoint = mock(DoiModuleEntryPoint.class);
 
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>());
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        when(moduleRegistry.getModuleEntryPoint(certificateType)).thenReturn(mockEntryPoint);
+        when(mockEntryPoint.getModuleName()).thenReturn(certificateDisplayName);
 
         final var response = validator.validateApplicationErrors(certificate, user);
 
         assertEquals(1, response.getErrorMessages().size());
-        assertTrue(response.getErrorMessages().get(0).contains(DbModuleEntryPoint.MODULE_NAME.toLowerCase()));
+        assertTrue(response.getErrorMessages().get(0).contains(certificateDisplayName));
     }
 
     @Test
-    public void shouldIncludeModuleNameInErrorMessageWhenCreatingDoiForSekretessmarkerad() {
+    public void shouldUseModuleIdInSekretessErrorMessageWhenFailureGettingName() throws ModuleNotFoundException {
         final var user = buildUserUnauthorized();
-        final var certificate = buildIntyg(DoiModuleEntryPoint.MODULE_ID, "lastName", "firstName",
+        final var certificateType = DoiModuleEntryPoint.MODULE_ID;
+        final var certificate = buildIntyg(certificateType, "lastName", "firstName",
             "fullName", "unitId", "unitName", true);
 
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>());
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        when(moduleRegistry.getModuleEntryPoint(certificateType)).thenThrow(ModuleNotFoundException.class);
 
         final var response = validator.validateApplicationErrors(certificate, user);
 
         assertEquals(1, response.getErrorMessages().size());
-        assertTrue(response.getErrorMessages().get(0).contains(DoiModuleEntryPoint.MODULE_NAME.toLowerCase()));
+        assertTrue(response.getErrorMessages().get(0).contains(certificateType));
     }
 
     private PersonSvar buildPersonSvar() {

@@ -25,8 +25,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -201,13 +199,11 @@ public abstract class BaseCreateDraftCertificateValidator {
     }
 
     private String getCertificateDisplayName(String certificateType) {
-        switch (certificateType) {
-            case DbModuleEntryPoint.MODULE_ID :
-                return DbModuleEntryPoint.MODULE_NAME.toLowerCase();
-            case DoiModuleEntryPoint.MODULE_ID :
-                return DoiModuleEntryPoint.MODULE_NAME.toLowerCase();
-            default :
-                return certificateType;
+        try {
+            return moduleRegistry.getModuleEntryPoint(certificateType).getModuleName();
+        } catch (ModuleNotFoundException e) {
+            LOG.warn("Failure getting certificate display name from module {}.", certificateType, e);
+            return certificateType;
         }
     }
 }
