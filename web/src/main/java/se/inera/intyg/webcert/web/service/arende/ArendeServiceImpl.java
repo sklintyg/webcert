@@ -21,6 +21,18 @@ package se.inera.intyg.webcert.web.service.arende;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
@@ -60,9 +71,7 @@ import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
-import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -87,15 +96,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
-
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -161,9 +162,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private IntygModuleFacade modelFacade;
     @Autowired
-    private CertificateAccessService certificateAccessService;
-    @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
     @Autowired
     private IntygService intygService;
     @Autowired
@@ -1019,46 +1018,22 @@ public class ArendeServiceImpl implements ArendeService {
 
     private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
         final Utlatande utlatande = getUtlatande(intygsId);
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()), newCertificate);
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+        certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, newCertificate);
     }
 
     private void validateAccessRightsToForwardQuestions(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
-        final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+        certificateAccessServiceHelper.validateAccessToForwardQuestions(utlatande);
     }
 
     private void validateAccessRightsToCreateQuestion(String certificateId) {
         final Utlatande utlatande = getUtlatande(certificateId);
-        final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+        certificateAccessServiceHelper.validateAccessToCreateQuestion(utlatande);
     }
 
     private void validateAccessRightsToReadArenden(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
-        final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
-            AccessEvaluationParameters.create(utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                utlatande.getGrundData().isTestIntyg()));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+        certificateAccessServiceHelper.validateAccessToReadQuestions(utlatande);
     }
 
     private Utlatande getUtlatande(String intygsId) {
@@ -1073,13 +1048,5 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Utlatande getUtlatande(Utkast utkast) {
         return modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-    }
-
-    private Vardenhet getVardenhet(Utlatande utlatande) {
-        return utlatande.getGrundData().getSkapadAv().getVardenhet();
-    }
-
-    private Personnummer getPersonnummer(Utlatande utlatande) {
-        return utlatande.getGrundData().getPatient().getPersonId();
     }
 }

@@ -56,7 +56,7 @@ public abstract class BaseCreateDraftCertificateValidator {
 
     protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
         Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);
-        if (!personnummer.isPresent()) {
+        if (personnummer.isEmpty()) {
             errors.addError("Cannot create Personnummer object with invalid personId {0}", personId);
         }
         return personnummer;
@@ -81,9 +81,7 @@ public abstract class BaseCreateDraftCertificateValidator {
         }
     }
 
-    protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors,
-        Personnummer personnummer,
-        String intygsTyp,
+    protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, Personnummer personnummer, String intygsTyp,
         IntygUser user) {
         if (personnummer != null) {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
@@ -119,12 +117,10 @@ public abstract class BaseCreateDraftCertificateValidator {
         try {
             if (moduleRegistry.getIntygModule(moduleId).isDeprecated()) {
                 errors.addError("Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
-                return;
             }
         } catch (ModuleNotFoundException n) {
             LOG.error("Module {} not found while validating module support", moduleId);
             errors.addError("Intyg {0} is not supported", moduleId);
-            return;
         }
     }
 
@@ -182,7 +178,8 @@ public abstract class BaseCreateDraftCertificateValidator {
         if (!authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp)) {
             switch (sekretessStatus) {
                 case TRUE:
-                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.", intygsTyp);
+                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.",
+                        getCertificateDisplayName(intygsTyp));
                     break;
                 case UNDEFINED:
                     errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
@@ -201,4 +198,12 @@ public abstract class BaseCreateDraftCertificateValidator {
         return list.parallelStream().allMatch(Objects::isNull);
     }
 
+    private String getCertificateDisplayName(String certificateType) {
+        try {
+            return moduleRegistry.getModuleEntryPoint(certificateType).getModuleName();
+        } catch (ModuleNotFoundException e) {
+            LOG.warn("Failure getting certificate display name from module {}.", certificateType, e);
+            return certificateType;
+        }
+    }
 }

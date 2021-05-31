@@ -24,35 +24,120 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-/**
- * @author Magnus Ekstrand on 2019-09-25.
- */
 @Component
 public final class LockedDraftAccessServiceHelper {
 
-    @Autowired
-    private LockedDraftAccessService lockedDraftAccessService;
+    private final LockedDraftAccessService lockedDraftAccessService;
+    private final AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    public LockedDraftAccessServiceHelper(LockedDraftAccessService lockedDraftAccessService,
+        AccessResultExceptionHelper accessResultExceptionHelper) {
+        this.lockedDraftAccessService = lockedDraftAccessService;
+        this.accessResultExceptionHelper = accessResultExceptionHelper;
+    }
 
+    public boolean isAllowToRead(Utkast draft) {
+        return evaluateAllowToRead(draft).isAllowed();
+    }
 
-    public void validateAccessToCopyLockedUtkast(Utkast utkast) {
-        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(
-            utkast.getIntygsTyp(),
-            UtkastUtil.getVardenhet(utkast),
-            utkast.getPatientPersonnummer());
+    public boolean isAllowToRead(AccessEvaluationParameters accessEvaluationParameters) {
+        return lockedDraftAccessService.allowToRead(accessEvaluationParameters).isAllowed();
+    }
+
+    public void validateAccessToRead(Utkast draft) {
+        final AccessResult accessResult = evaluateAllowToRead(draft);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
-    public void validateAllowToInvalidateLockedUtkast(Utkast utkast) {
-        final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(
-            utkast.getIntygsTyp(),
-            UtkastUtil.getVardenhet(utkast),
-            utkast.getPatientPersonnummer());
+    private AccessResult evaluateAllowToRead(Utkast draft) {
+        return lockedDraftAccessService.allowToRead(
+            AccessEvaluationParameters.create(
+                draft.getIntygsTyp(),
+                draft.getIntygTypeVersion(),
+                UtkastUtil.getVardenhet(draft),
+                draft.getPatientPersonnummer(),
+                draft.isTestIntyg()
+            )
+        );
+    }
+
+    public boolean isAllowToCopy(Utkast draft) {
+        return evaluateAllowToCopy(draft).isAllowed();
+    }
+
+    public boolean isAllowToCopy(AccessEvaluationParameters accessEvaluationParameters) {
+        return lockedDraftAccessService.allowToCopy(accessEvaluationParameters).isAllowed();
+    }
+
+    public void validateAccessToCopy(Utkast utkast) {
+        final AccessResult accessResult = evaluateAllowToCopy(utkast);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
+    private AccessResult evaluateAllowToCopy(Utkast utkast) {
+        return lockedDraftAccessService.allowToCopy(
+            AccessEvaluationParameters.create(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion(),
+                UtkastUtil.getVardenhet(utkast),
+                utkast.getPatientPersonnummer(),
+                utkast.isTestIntyg()
+            )
+        );
+    }
+
+    public boolean isAllowToInvalidate(Utkast draft) {
+        return evaluateAllowToInvalidate(draft).isAllowed();
+    }
+
+    public boolean isAllowToInvalidate(AccessEvaluationParameters accessEvaluationParameters) {
+        return lockedDraftAccessService.allowToInvalidate(accessEvaluationParameters).isAllowed();
+    }
+
+    public void validateAccessToInvalidate(Utkast utkast) {
+        final AccessResult accessResult = evaluateAllowToInvalidate(utkast);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private AccessResult evaluateAllowToInvalidate(Utkast utkast) {
+        return lockedDraftAccessService.allowToInvalidate(
+            AccessEvaluationParameters.create(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion(),
+                UtkastUtil.getVardenhet(utkast),
+                utkast.getPatientPersonnummer(),
+                utkast.isTestIntyg()
+            )
+        );
+    }
+
+    public boolean isAllowToPrint(Utkast draft) {
+        return evaluateAllowToPrint(draft).isAllowed();
+    }
+
+    public boolean isAllowToPrint(AccessEvaluationParameters accessEvaluationParameters) {
+        return lockedDraftAccessService.allowToPrint(accessEvaluationParameters).isAllowed();
+    }
+
+    public void validateAccessToPrint(Utkast utkast) {
+        final AccessResult accessResult = evaluateAllowToPrint(utkast);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private AccessResult evaluateAllowToPrint(Utkast utkast) {
+        return lockedDraftAccessService.allowToPrint(
+            AccessEvaluationParameters.create(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion(),
+                UtkastUtil.getVardenhet(utkast),
+                utkast.getPatientPersonnummer(),
+                utkast.isTestIntyg()
+            )
+        );
+    }
 }

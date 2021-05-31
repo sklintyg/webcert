@@ -27,4 +27,18 @@
       max-width: 100%;
     }
   }
+
+  wc-alert-message {
+    a {
+      &.external-link + i {
+        color: $wc-color-17;
+      }
+      &.external-link {
+        &:hover + i {
+          color: $wc-color-07;
+        }
+      }
+    }
+  }
+
 }

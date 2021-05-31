@@ -53,6 +53,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadUtkastOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -103,6 +108,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToCopyNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToCopyOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
@@ -138,6 +148,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToCopyNotLatestMajorVersionDIfferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToCopyOnDeceasedPatientDifferentUnit(AccessResult actualValue) {
         assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
@@ -164,6 +179,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -214,6 +234,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
