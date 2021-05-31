@@ -109,7 +109,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
+        when(draftAccessServiceHelper.isAllowToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -137,7 +137,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(false);
+        when(draftAccessServiceHelper.isAllowToEditUtkast(any(Utkast.class))).thenReturn(false);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -195,7 +195,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
-        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
+        when(draftAccessServiceHelper.isAllowToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -229,7 +229,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
+        when(draftAccessServiceHelper.isAllowToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -251,7 +251,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
+        when(draftAccessServiceHelper.isAllowToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",

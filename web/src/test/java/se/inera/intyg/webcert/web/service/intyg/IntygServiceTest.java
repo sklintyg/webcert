@@ -71,6 +71,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -211,10 +212,7 @@ public class IntygServiceTest {
     private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
 
     @Mock
-    private CertificateAccessService certificateAccessService;
-
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Mock
     SelectableVardenhet vardgivare;

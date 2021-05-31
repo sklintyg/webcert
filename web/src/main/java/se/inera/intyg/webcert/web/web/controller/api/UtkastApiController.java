@@ -19,13 +19,28 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
@@ -39,9 +54,10 @@ import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -59,13 +75,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -96,7 +105,7 @@ public class UtkastApiController extends AbstractApiController {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private DraftAccessService draftAccessService;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
@@ -135,7 +144,8 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        final AccessResult actionResult = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
+        final AccessResult actionResult = draftAccessServiceHelper.evaluateAllowToCreateUtkast(intygsTyp, request.getPatientPersonnummer());
+
         if (actionResult.isDenied()) {
             if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
                 || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
@@ -211,7 +221,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer,
-                                                   @PathParam("currentDraftId") String currentDraftId) {
+        @PathParam("currentDraftId") String currentDraftId) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
             .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
                 getWebCertUserService().getUser(), currentDraftId);
@@ -281,8 +291,8 @@ public class UtkastApiController extends AbstractApiController {
         // authorized
         Map<Personnummer, PatientDetailsResolverResponse> statusMap =
             patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
-            .map(lie -> lie.getPatientId())
-            .collect(Collectors.toList()));
+                .map(lie -> lie.getPatientId())
+                .collect(Collectors.toList()));
 
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
@@ -412,10 +422,15 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private void markForwardingAllowed(ListIntygEntry listIntygEntry) {
-        String certificateType = listIntygEntry.getIntygType();
-        Personnummer patientId = listIntygEntry.getPatientId();
-        Vardenhet careUnit = UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId());
-        boolean isForwardingAllowed = draftAccessService.allowToForwardDraft(certificateType, careUnit, patientId).isAllowed();
+        final var isForwardingAllowed = draftAccessServiceHelper.isAllowedToForwardUtkast(
+            AccessEvaluationParameters.create(
+                listIntygEntry.getIntygType(),
+                listIntygEntry.getIntygTypeVersion(),
+                UtkastUtil.getCareUnit(listIntygEntry.getVardgivarId(), listIntygEntry.getVardenhetId()),
+                listIntygEntry.getPatientId(),
+                listIntygEntry.isTestIntyg()
+            )
+        );
 
         if (isForwardingAllowed) {
             listIntygEntry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));

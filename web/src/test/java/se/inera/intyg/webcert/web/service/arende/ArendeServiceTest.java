@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -81,7 +81,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
@@ -161,13 +160,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private IntygModuleFacade modelFacade;
 
     @Mock
-    private CertificateAccessService certificateAccessService;
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Mock
     private HsatkEmployeeService hsaEmployeeService;
-
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Mock
     private IntygService intygService;
@@ -1817,22 +1813,5 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         final Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).orElse(null);
         doReturn(personnummer).when(patient).getPersonId();
-
-        switch (accessToCheck) {
-            case BESVARA_KOMPLETTERING:
-                Mockito.doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(any(),
-                    anyBoolean());
-                break;
-            case VIDAREBEFODRA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(any());
-                break;
-            case LASA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(any());
-                break;
-            case SKAPA_FRAGA:
-                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(any());
-                break;
-        }
     }
-
 }

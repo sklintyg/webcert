@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -77,6 +78,23 @@ public class DssSignatureService {
     public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success"; //TODO
     public static final String REQUESTED_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256;
     private static final String ACTIVATE_SUPPORT_FOR_SEVERAL_LOA_AND_AUTH_PROFILE = "1.4";
+    private static final String AUTHN_PROFILE = "digg_ap_hsaid_01";
+
+    private static final String REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME = "givenName";
+    private static final String REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME_REF = "2.5.4.42";
+    private static final String REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME_SAML_NAME = "http://sambi.se/attributes/1/givenName";
+
+    private static final String REQUESTED_CERT_ATTRIBUTE_SURNAME = "sn";
+    private static final String REQUESTED_CERT_ATTRIBUTE_SURNAME_REF = "2.5.4.4";
+    private static final String REQUESTED_CERT_ATTRIBUTE_SURNAME_SAML_NAME = "http://sambi.se/attributes/1/surname";
+
+    private static final String REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER = "serialNumber";
+    private static final String REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER_REF = "2.5.4.5";
+    private static final String REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER_SAML_NAME = "http://sambi.se/attributes/1/employeeHsaId";
+
+    private static final String REQUESTED_CERT_ATTRIBUTE_COMMON_NAME = "commonName";
+    private static final String REQUESTED_CERT_ATTRIBUTE_COMMON_NAME_REF = "2.5.4.3";
+    private static final String REQUESTED_CERT_ATTRIBUTE_COMMON_NAME_SAML_NAME = "urn:name";
 
     private final DssMetadataService dssMetadataService;
     private final WebCertUserService userService;
@@ -112,7 +130,7 @@ public class DssSignatureService {
     @Value("${dss.service.signmessage}")
     private String signMessage;
 
-    @Value("#{'${dss.client.approved.loa}'.split(',')}")
+    @Value("#{T(java.util.Arrays).asList('${dss.client.approved.loa:}')}")
     private List<String> approvedLoaList;
 
     @Value("${dss.client.ie.unit.whitelist:}")
@@ -246,6 +264,8 @@ public class DssSignatureService {
 
         signRequestExtensionType.setSigner(createSigner());
 
+        signRequestExtensionType.setAuthnProfile(AUTHN_PROFILE);
+
         var identityProvider = objectFactorySaml.createNameIDType();
         identityProvider.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
         identityProvider.setValue(idpUrl);
@@ -288,11 +308,9 @@ public class DssSignatureService {
         }
 
         SignMessageType signMessage = objectFactoryCsig.createSignMessageType();
-        // MimeTypeUtils.TEXT_PLAIN_VALUE = NOK
-        // MimeTypeUtils.TEXT_HTML_VALUE = OK
-        // "text" = OK
-        signMessage.setMimeType("text");
-        signMessage.setMustShow(false);
+        signMessage.setMimeType(MimeTypeUtils.TEXT_HTML_VALUE);
+        signMessage.setMustShow(true);
+        signMessage.setDisplayEntity(idpUrl);
         String message = this.signMessage.replace("{intygsTyp}", intygsTyp)
             .replace("{patientPnr}", patientPersonnummer != null ? patientPersonnummer.getPersonnummerWithDash() : "")
             .replace("{intygsId}", intygsId);
@@ -310,10 +328,14 @@ public class DssSignatureService {
 
         var requestedAttributesType = objectFactoryCsig.createRequestedAttributesType();
 
-        addMappedAttribute(requestedAttributesType, "2.5.4.42", "givenName", true, "urn:credential:givenName");
-        addMappedAttribute(requestedAttributesType, "2.5.4.4", "sn", true, "urn:credential:surname");
-        addMappedAttribute(requestedAttributesType, "2.5.4.5", "serialNumber", true, "urn:credential:personalIdentityNumber");
-        addMappedAttribute(requestedAttributesType, "2.5.4.3", "commonName", false, "urn:credential:displayName");
+        addMappedAttribute(requestedAttributesType, REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME_REF, REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME,
+            true, REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME_SAML_NAME);
+        addMappedAttribute(requestedAttributesType, REQUESTED_CERT_ATTRIBUTE_SURNAME_REF, REQUESTED_CERT_ATTRIBUTE_SURNAME,
+            true, REQUESTED_CERT_ATTRIBUTE_SURNAME_SAML_NAME);
+        addMappedAttribute(requestedAttributesType, REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER_REF, REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER,
+            true, REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER_SAML_NAME);
+        addMappedAttribute(requestedAttributesType, REQUESTED_CERT_ATTRIBUTE_COMMON_NAME_REF, REQUESTED_CERT_ATTRIBUTE_COMMON_NAME,
+            true, REQUESTED_CERT_ATTRIBUTE_COMMON_NAME_SAML_NAME);
 
         certRequestPropertiesType.setRequestedCertAttributes(requestedAttributesType);
         return certRequestPropertiesType;
@@ -339,7 +361,7 @@ public class DssSignatureService {
         var user = userService.getUser();
 
         var attributeType = objectFactorySaml.createAttributeType();
-        attributeType.setName("urn:credential:personalIdentityNumber");
+        attributeType.setName(REQUESTED_CERT_ATTRIBUTE_SERIAL_NUMBER_SAML_NAME);
         attributeType.getAttributeValue().add(user.getHsaId());
 
         var attributeStatementType = objectFactorySaml.createAttributeStatementType();
