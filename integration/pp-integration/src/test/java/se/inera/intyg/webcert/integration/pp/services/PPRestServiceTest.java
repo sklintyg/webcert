@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 
@@ -37,6 +38,7 @@ import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultC
 public class PPRestServiceTest {
 
     private final static String PERSONAL_IDENTITY_NUMBER = "19121212-1212";
+    private final static String VALIDATE_PP_REST_URL = "ppUrl/validate";
 
     @Mock
     RestTemplate restTemplate;
@@ -46,12 +48,13 @@ public class PPRestServiceTest {
 
     @Before
     public void init() {
-        ReflectionTestUtils.setField(ppRestService, "internalApiValidateUrl", "ppRestUrl/");
+        ReflectionTestUtils.setField(ppRestService, "internalApiValidatePrivatePractitionerUrl", VALIDATE_PP_REST_URL);
     }
 
     @Test
     public void testValidatePrivatePractitionerValidOk() {
-        when(restTemplate.getForObject("ppRestUrl/19121212-1212", ValidatePrivatePractitionerResponse.class))
+        final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
+        when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
             .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.OK));
 
         final var response = ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
@@ -60,7 +63,8 @@ public class PPRestServiceTest {
 
     @Test
     public void testValidatePrivatePractitionerValidInfo() {
-        when(restTemplate.getForObject("ppRestUrl/19121212-1212", ValidatePrivatePractitionerResponse.class))
+        final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
+        when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
             .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.INFO));
 
         final var response = ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
@@ -69,7 +73,8 @@ public class PPRestServiceTest {
 
     @Test
     public void testValidatePrivatePractitionerInvalid() {
-        when(restTemplate.getForObject("ppRestUrl/19121212-1212", ValidatePrivatePractitionerResponse.class))
+        final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
+        when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
             .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT));
 
         final var response = ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
@@ -83,7 +88,9 @@ public class PPRestServiceTest {
 
     @Test(expected = RestClientException.class)
     public void testValidatePrivatePractitionerWhenRestCallFails() {
-        when(restTemplate.getForObject("ppRestUrl/19121212-1212", ValidatePrivatePractitionerResponse.class)).thenReturn(null);
+        final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
+        when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
+            .thenReturn(null);
 
         ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
     }

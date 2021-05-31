@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 
@@ -33,7 +34,7 @@ public class PPRestServiceImpl implements PPRestService {
     private static final Logger LOG = LoggerFactory.getLogger(PPRestServiceImpl.class);
 
     @Value("${privatepractitioner.internalapi.validate.url}")
-    private String internalApiValidateUrl;
+    private String internalApiValidatePrivatePractitionerUrl;
 
     private RestTemplate restTemplate;
 
@@ -51,8 +52,9 @@ public class PPRestServiceImpl implements PPRestService {
     }
 
     private ValidatePrivatePractitionerResponse doValidatePrivatePractitioner(String personalIdentityNumber) {
-        final var url = internalApiValidateUrl + personalIdentityNumber;
-        final var response = restTemplate.getForObject(url, ValidatePrivatePractitionerResponse.class);
+        final var request = new ValidatePrivatePractitionerRequest(personalIdentityNumber);
+        final var response = restTemplate
+            .postForObject(internalApiValidatePrivatePractitionerUrl, request, ValidatePrivatePractitionerResponse.class);
         if (response == null) {
             throw new RestClientException("Validation failed. Validation response is null.");
         }
