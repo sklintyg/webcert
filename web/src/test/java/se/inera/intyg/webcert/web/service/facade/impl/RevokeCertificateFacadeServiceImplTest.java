@@ -72,7 +72,7 @@ class RevokeCertificateFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID);
+            .getCertificate(CERTIFICATE_ID, false);
     }
 
     @Test

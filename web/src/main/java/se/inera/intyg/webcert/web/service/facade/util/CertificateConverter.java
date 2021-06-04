@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.impl;
+package se.inera.intyg.webcert.web.service.facade.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelation;
@@ -40,40 +40,26 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateServiceImpl;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
-@Service
-public class GetCertificateServiceImpl implements GetCertificateFacadeService {
+@Component
+public class CertificateConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetCertificateServiceImpl.class);
-
-    private final UtkastService utkastService;
 
     private final IntygModuleRegistry moduleRegistry;
 
     private final CertificateRelationService certificateRelationService;
 
-    private final ResourceLinkHelper resourceLinkHelper;
-
     @Autowired
-    public GetCertificateServiceImpl(UtkastService utkastService, IntygModuleRegistry moduleRegistry,
-        CertificateRelationService certificateRelationService,
-        ResourceLinkHelper resourceLinkHelper) {
-        this.utkastService = utkastService;
+    public CertificateConverter(IntygModuleRegistry moduleRegistry, CertificateRelationService certificateRelationService) {
         this.moduleRegistry = moduleRegistry;
         this.certificateRelationService = certificateRelationService;
-        this.resourceLinkHelper = resourceLinkHelper;
     }
 
-    @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog) {
-        LOG.debug("Retrieving certificate '{}' from UtkastService", certificateId);
-        final Utkast certificate = utkastService.getDraft(certificateId, pdlLog);
-
+    public Certificate convert(Utkast certificate) {
         LOG.debug("Converting Utkast to Certificate");
         return convertToCertificate(certificate);
     }
@@ -105,9 +91,6 @@ public class GetCertificateServiceImpl implements GetCertificateFacadeService {
         certificateToReturn.getMetadata().setRelations(
             getRelations(certificateToReturn.getMetadata().getId())
         );
-
-        LOG.debug("Decorating certificate with resource links");
-        resourceLinkHelper.decorateCertificateWithValidActionLinks(certificateToReturn);
 
         return certificateToReturn;
     }

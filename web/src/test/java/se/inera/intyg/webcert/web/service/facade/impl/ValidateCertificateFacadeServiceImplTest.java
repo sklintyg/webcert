@@ -77,7 +77,7 @@ class ValidateCertificateFacadeServiceImplTest {
 
         doReturn(currentCertificate)
             .when(utkastService)
-            .getDraft(CERTIFICATE_ID);
+            .getDraft(CERTIFICATE_ID, true);
 
         final var moduleApi = mock(ModuleApi.class);
         doReturn(moduleApi)

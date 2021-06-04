@@ -33,7 +33,6 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SaveCertificateFacadeServiceImpl.class);
-    public static final boolean CREATE_PDL_LOG_EVENT = true;
 
     private final UtkastService utkastService;
     private final IntygModuleRegistry moduleRegistry;
@@ -45,16 +44,16 @@ public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeSe
     }
 
     @Override
-    public long saveCertificate(Certificate certificate) {
+    public long saveCertificate(Certificate certificate, boolean pdlLog) {
         LOG.debug("Retrieve current certificate '{}' to update", certificate.getMetadata().getId());
-        final Utkast currentCertificate = utkastService.getDraft(certificate.getMetadata().getId());
+        final Utkast currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
 
         LOG.debug("Save certificate '{}' with version '{}'", certificate.getMetadata().getId(), certificate.getMetadata().getVersion());
         final var saveDraftResponse = utkastService.saveDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getVersion(),
             getJsonFromCertificate(certificate, currentCertificate.getModel()),
-            CREATE_PDL_LOG_EVENT
+            pdlLog
         );
 
         LOG.debug("Return new version '{}' of save certificate '{}'", saveDraftResponse.getVersion(), certificate.getMetadata().getId());

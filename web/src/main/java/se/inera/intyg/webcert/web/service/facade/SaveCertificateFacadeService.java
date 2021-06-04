@@ -23,5 +23,5 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface SaveCertificateFacadeService {
 
-    long saveCertificate(Certificate certificate);
+    long saveCertificate(Certificate certificate, boolean pdlLog);
 }

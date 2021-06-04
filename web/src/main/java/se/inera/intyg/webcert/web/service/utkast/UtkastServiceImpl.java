@@ -39,7 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -461,9 +460,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId) {
+    public Utkast getDraft(String intygId, boolean pdlLog) {
         final String intygType = utkastRepository.getIntygsTyp(intygId);
-        return getDraft(intygId, intygType);
+        return getDraft(intygId, intygType, pdlLog);
     }
 
     @Override

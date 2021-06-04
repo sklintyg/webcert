@@ -88,7 +88,7 @@ class GetCertificateServiceImplTest {
     @BeforeEach
     void setupMocks() throws Exception {
         doReturn(draft)
-            .when(utkastService).getDraft(draft.getIntygsId());
+            .when(utkastService).getDraft(draft.getIntygsId(), true);
 
         final var moduleApi = mock(ModuleApi.class);
         doReturn(moduleApi)
@@ -114,7 +114,7 @@ class GetCertificateServiceImplTest {
             }).when(resourceLinkHelper)
                 .decorateCertificateWithValidActionLinks(any(Certificate.class));
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertAll(
                 () -> assertEquals(expectedResourceLinks.length, actualCertificate.getLinks().length),
@@ -131,7 +131,7 @@ class GetCertificateServiceImplTest {
         void shallIncludeCreatedDateTime() {
             final var expectedCreated = draft.getSkapad();
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCreated, actualCertificate.getMetadata().getCreated());
         }
@@ -141,7 +141,7 @@ class GetCertificateServiceImplTest {
         void shallIncludeVersion(int expectedVersion) {
             draft.setVersion(expectedVersion);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedVersion, actualCertificate.getMetadata().getVersion());
         }
@@ -151,7 +151,7 @@ class GetCertificateServiceImplTest {
         void shallIncludeForwarded(boolean expectedForwarded) {
             draft.setVidarebefordrad(expectedForwarded);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedForwarded, actualCertificate.getMetadata().isForwarded());
         }
@@ -161,7 +161,7 @@ class GetCertificateServiceImplTest {
         void shallIncludeTestCertificate(boolean expectedTestCertificate) {
             draft.setTestIntyg(expectedTestCertificate);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedTestCertificate, actualCertificate.getMetadata().isTestCertificate());
         }
@@ -172,7 +172,7 @@ class GetCertificateServiceImplTest {
 
         @Test
         void shallContainCompleteUnitData() {
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertAll(
                 () -> assertNotNull(actualCertificate.getMetadata().getUnit().getUnitId(), "UnitId should not be null"),
@@ -194,7 +194,7 @@ class GetCertificateServiceImplTest {
             final var expectedCareProviderId = "CareProviderId";
             draft.setVardgivarId(expectedCareProviderId);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCareProviderId, actualCertificate.getMetadata().getCareProvider().getUnitId());
         }
@@ -204,7 +204,7 @@ class GetCertificateServiceImplTest {
             final var expectedCareProviderName = "CareProviderName";
             draft.setVardgivarNamn(expectedCareProviderName);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCareProviderName, actualCertificate.getMetadata().getCareProvider().getUnitName());
         }
@@ -218,7 +218,7 @@ class GetCertificateServiceImplTest {
             final var expectedPersonId = "PersonId";
             draft.getSkapadAv().setHsaId(expectedPersonId);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedPersonId, actualCertificate.getMetadata().getIssuedBy().getPersonId());
         }
@@ -228,7 +228,7 @@ class GetCertificateServiceImplTest {
             final var expectedFullName = "Doctor Alpha";
             draft.getSkapadAv().setNamn(expectedFullName);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedFullName, actualCertificate.getMetadata().getIssuedBy().getFullName());
         }
@@ -243,7 +243,7 @@ class GetCertificateServiceImplTest {
             expectedPersonId.setId(draft.getPatientPersonnummer().getPersonnummer());
             expectedPersonId.setType("PERSON_NUMMER");
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertAll(
                 () -> assertEquals(expectedPersonId.getId(), actualCertificate.getMetadata().getPatient().getPersonId().getId()),
@@ -256,7 +256,7 @@ class GetCertificateServiceImplTest {
             final var expectedFirstName = "Fornamnet";
             draft.setPatientFornamn(expectedFirstName);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedFirstName, actualCertificate.getMetadata().getPatient().getFirstName());
         }
@@ -266,7 +266,7 @@ class GetCertificateServiceImplTest {
             final var expectedMiddleName = "Mellannamnet";
             draft.setPatientMellannamn(expectedMiddleName);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedMiddleName, actualCertificate.getMetadata().getPatient().getMiddleName());
         }
@@ -276,7 +276,7 @@ class GetCertificateServiceImplTest {
             final var expectedLastName = "Efternamnet";
             draft.setPatientEfternamn(expectedLastName);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedLastName, actualCertificate.getMetadata().getPatient().getLastName());
         }
@@ -287,7 +287,7 @@ class GetCertificateServiceImplTest {
             draft.setPatientFornamn("Fornamnet");
             draft.setPatientEfternamn("Efternamnet");
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedFullName, actualCertificate.getMetadata().getPatient().getFullName());
         }
@@ -299,7 +299,7 @@ class GetCertificateServiceImplTest {
             draft.setPatientMellannamn("Mellannamnet");
             draft.setPatientEfternamn("Efternamnet");
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedFullName, actualCertificate.getMetadata().getPatient().getFullName());
         }
@@ -312,7 +312,7 @@ class GetCertificateServiceImplTest {
         void shallIncludeStatusUnsigned() {
             final var expectedStatus = CertificateStatus.UNSIGNED;
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
         }
@@ -322,7 +322,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.SIGNED;
             draft.setStatus(UtkastStatus.SIGNED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
         }
@@ -333,7 +333,7 @@ class GetCertificateServiceImplTest {
             draft.setStatus(UtkastStatus.SIGNED);
             draft.setAterkalladDatum(LocalDateTime.now());
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
         }
@@ -343,7 +343,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.LOCKED;
             draft.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
         }
@@ -354,7 +354,7 @@ class GetCertificateServiceImplTest {
             draft.setStatus(UtkastStatus.DRAFT_LOCKED);
             draft.setAterkalladDatum(LocalDateTime.now());
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
         }
@@ -382,7 +382,7 @@ class GetCertificateServiceImplTest {
         void shallNotIncludeParent() {
             relations.setParent(null);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertNull(actualCertificate.getMetadata().getRelations().getParent());
         }
@@ -392,7 +392,7 @@ class GetCertificateServiceImplTest {
             final var expectedParentId = "ParentId";
             parentRelation.setIntygsId(expectedParentId);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedParentId, actualCertificate.getMetadata().getRelations().getParent().getCertificateId());
         }
@@ -402,7 +402,7 @@ class GetCertificateServiceImplTest {
             final var expectedCreatedDateTime = LocalDateTime.now();
             parentRelation.setSkapad(expectedCreatedDateTime);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCreatedDateTime, actualCertificate.getMetadata().getRelations().getParent().getCreated());
         }
@@ -412,7 +412,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.UNSIGNED;
             parentRelation.setStatus(UtkastStatus.DRAFT_COMPLETE);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -422,7 +422,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.UNSIGNED;
             parentRelation.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -432,7 +432,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.SIGNED;
             parentRelation.setStatus(UtkastStatus.SIGNED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -443,7 +443,7 @@ class GetCertificateServiceImplTest {
             parentRelation.setStatus(UtkastStatus.SIGNED);
             parentRelation.setMakulerat(true);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -453,7 +453,7 @@ class GetCertificateServiceImplTest {
             final var expectedStatus = CertificateStatus.LOCKED;
             parentRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -464,7 +464,7 @@ class GetCertificateServiceImplTest {
             parentRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
             parentRelation.setMakulerat(true);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getParent().getStatus());
         }
@@ -474,7 +474,7 @@ class GetCertificateServiceImplTest {
             final var expectedRelationsType = CertificateRelationType.REPLACED;
             parentRelation.setRelationKod(RelationKod.ERSATT);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getParent().getType());
         }
@@ -484,7 +484,7 @@ class GetCertificateServiceImplTest {
             final var expectedRelationsType = CertificateRelationType.COPIED;
             parentRelation.setRelationKod(RelationKod.KOPIA);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getParent().getType());
         }
@@ -494,7 +494,7 @@ class GetCertificateServiceImplTest {
             final var expectedRelationsType = CertificateRelationType.EXTENDED;
             parentRelation.setRelationKod(RelationKod.FRLANG);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getParent().getType());
         }
@@ -504,7 +504,7 @@ class GetCertificateServiceImplTest {
             final var expectedRelationsType = CertificateRelationType.COMPLEMENTED;
             parentRelation.setRelationKod(RelationKod.KOMPLT);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getParent().getType());
         }
@@ -561,7 +561,7 @@ class GetCertificateServiceImplTest {
         void shallNotIncludeParent() {
             relations.setParent(null);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertNull(actualCertificate.getMetadata().getRelations().getParent());
         }
@@ -573,7 +573,7 @@ class GetCertificateServiceImplTest {
             final var expectedCertificateId = childRelation.getIntygsId();
             childRelation.setIntygsId(expectedCertificateId);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCertificateId, actualCertificate.getMetadata().getRelations().getChildren()[0].getCertificateId());
         }
@@ -586,7 +586,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setSkapad(expectedCreatedDateTime);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedCreatedDateTime, actualCertificate.getMetadata().getRelations().getChildren()[0].getCreated());
         }
@@ -599,7 +599,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setStatus(UtkastStatus.DRAFT_COMPLETE);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -612,7 +612,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -625,7 +625,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setStatus(UtkastStatus.SIGNED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -639,7 +639,7 @@ class GetCertificateServiceImplTest {
             childRelation.setStatus(UtkastStatus.SIGNED);
             childRelation.setMakulerat(true);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -652,7 +652,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -666,7 +666,7 @@ class GetCertificateServiceImplTest {
             childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
             childRelation.setMakulerat(true);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getRelations().getChildren()[0].getStatus());
         }
@@ -679,7 +679,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setRelationKod(RelationKod.ERSATT);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getChildren()[0].getType());
         }
@@ -692,7 +692,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setRelationKod(RelationKod.KOPIA);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getChildren()[0].getType());
         }
@@ -705,7 +705,7 @@ class GetCertificateServiceImplTest {
             final var childRelation = getChildRelationToTest(childRelations);
             childRelation.setRelationKod(RelationKod.KOMPLT);
 
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId());
+            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
 
             assertEquals(expectedRelationsType, actualCertificate.getMetadata().getRelations().getChildren()[0].getType());
         }

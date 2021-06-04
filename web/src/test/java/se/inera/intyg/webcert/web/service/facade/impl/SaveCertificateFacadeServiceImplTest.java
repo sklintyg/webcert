@@ -80,7 +80,7 @@ class SaveCertificateFacadeServiceImplTest {
 
         doReturn(currentCertificate)
             .when(utkastService)
-            .getDraft(CERTIFICATE_ID);
+            .getDraft(CERTIFICATE_ID, true);
 
         final var moduleApi = mock(ModuleApi.class);
 
@@ -107,7 +107,7 @@ class SaveCertificateFacadeServiceImplTest {
     @Test
     void shallSaveCertificate() {
 
-        final var actualVersion = saveCertificateFacadeService.saveCertificate(certificate);
+        final var actualVersion = saveCertificateFacadeService.saveCertificate(certificate, true);
 
         assertEquals(NEW_VERSION, actualVersion);
     }

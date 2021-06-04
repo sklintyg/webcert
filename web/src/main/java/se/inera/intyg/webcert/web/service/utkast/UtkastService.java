@@ -40,9 +40,10 @@ public interface UtkastService {
      * Retrieves an utkast and always create a PDL log event.
      *
      * @param intygId utkast id
+     * @param pdlLog
      * @return Utkast
      */
-    Utkast getDraft(String intygId);
+    Utkast getDraft(String intygId, boolean pdlLog);
 
     /**
      * Retrieves an utkast and always create a PDL log event.
