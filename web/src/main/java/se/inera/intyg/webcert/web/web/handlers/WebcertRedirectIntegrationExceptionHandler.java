@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 
 
 /**
@@ -67,7 +67,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
      */
     private Response handleAuthorityException(Exception e) {
         LOG.warn("AuthValidation exception occured: ", e);
-        if (e instanceof PrivatePractitionerSubscriptionException) {
+        if (e instanceof MissingSubscriptionException) {
             return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SUBSRIPTION, e.getMessage());
         }
         return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, e.getMessage());

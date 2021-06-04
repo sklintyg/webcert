@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
@@ -85,9 +87,30 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             final var serviceCodes = getRelevantServiceCodes(webCertUser);
             final var careProviderHsaIds = getMissingSubscriptions(httpEntity, restTemplate, careProviderOrgNumbers, serviceCodes);
             final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
-            return new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod, subscriptionBlockStartDate);
+            final var subscriptionInfo = new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod,
+                subscriptionBlockStartDate);
+
+            blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.keySet(), subscriptionInfo.getUnitHsaIdList());
+
+            return subscriptionInfo;
+
         }
         return SubscriptionInfo.createSubscriptionInfoNoAction();
+    }
+
+    private void blockUsersWithoutSubscription(WebCertUser webCertUser, Set<String> allCareProviders,
+        List<String> careProvidersWithoutSubscription) {
+
+        if (isPastSubscriptionAdjustmentPeriod(webCertUser.getFeatures())
+            && missingSubscriptionOnAllCareProviders(allCareProviders, careProvidersWithoutSubscription)) {
+            throw new MissingSubscriptionException(String.format("All care providers for user %s are missing subscription",
+                webCertUser.getHsaId()));
+        }
+    }
+
+    private boolean missingSubscriptionOnAllCareProviders(Set<String> allCareProviders, List<String> careProvidersWithoutSubscription) {
+        return allCareProviders.size() == careProvidersWithoutSubscription.size()
+            && allCareProviders.containsAll(careProvidersWithoutSubscription);
     }
 
     @Override

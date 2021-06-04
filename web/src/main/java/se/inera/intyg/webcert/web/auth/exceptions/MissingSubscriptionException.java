@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.auth.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 
-public class PrivatePractitionerSubscriptionException extends AuthenticationException {
+public class MissingSubscriptionException extends AuthenticationException {
 
-    public PrivatePractitionerSubscriptionException(String message) {
+    public MissingSubscriptionException(String message) {
         super(message);
     }
 }

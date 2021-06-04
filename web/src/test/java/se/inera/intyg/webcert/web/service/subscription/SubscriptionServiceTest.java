@@ -59,6 +59,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
@@ -118,7 +119,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnSaubscriptionActionWarnWhenDuringAdjustment() {
+    public void shouldReturnSubscriptionActionWarnWhenDuringAdjustment() {
         final var webCertUser = createWebCertElegUser(true, false);
 
         setMockToReturnValue();
@@ -137,6 +138,24 @@ public class SubscriptionServiceTest {
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
         assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK, response.getSubscriptionAction());
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowExceptionIfSithsUserIsMissingSubscriptionWhenPastAdjustment() {
+        final var webCertUser = createWebCertSithsUser(false, true, 1, 1, 0);
+
+        setMockToSubscriptionOkForCareProvider("CARE_PROVIDER_ORGANIZATION_NO_1", HttpStatus.OK, "", false);
+
+        subscriptionService.fetchSubscriptionInfo(webCertUser);
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowExceptionIfElegUserIsMissingSubscriptionWhenPastAdjustment() {
+        final var webCertUser = createWebCertElegUser(false, true);
+
+        setMockToSubscriptionOkForCareProvider("121212-1212", HttpStatus.OK, "", true);
+
+        subscriptionService.fetchSubscriptionInfo(webCertUser);
     }
 
     @Test

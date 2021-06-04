@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
@@ -197,7 +197,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-    @Test(expected = PrivatePractitionerSubscriptionException.class)
+    @Test(expected = MissingSubscriptionException.class)
     public void shouldThrowSubscriptionExceptIfUnregisteredWithoutSubscription() {
         final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT);
 

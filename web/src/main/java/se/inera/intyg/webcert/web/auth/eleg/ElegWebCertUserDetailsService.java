@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerSubscriptionException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -155,7 +155,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
 
         if (isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse) && isMissingSubscription(personId)) {
-            throw new PrivatePractitionerSubscriptionException("Private practitioner '" + personId + "' has no active subscription.");
+            throw new MissingSubscriptionException("Private practitioner '" + personId + "' has no active subscription.");
         }
 
         throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private "

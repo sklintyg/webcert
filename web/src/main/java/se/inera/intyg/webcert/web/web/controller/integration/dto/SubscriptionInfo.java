@@ -32,7 +32,7 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private AuthenticationMethodEnum authenticationMethod;
     @JsonProperty
-    private List<String> unitHsaIdList;
+    private List<String> unitHsaIdList; //TODO: Rename to careProviderList or move to enhet/mottagning as hasSubscription or similar
     @JsonProperty
     private List<String> acknowledgedWarnings;
     @JsonProperty
