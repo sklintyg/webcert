@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.access;
 
 import org.mockito.Mock;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
@@ -45,7 +46,11 @@ abstract public class AccessTest {
     @Mock
     protected UtkastService utkastService;
 
+    @Mock
+    protected IntygTextsService intygTextsService;
+
     protected final String intygsTyp;
+    protected final String intygsTypVersion;
     protected final AccessServiceTestData accessServiceTestData;
 
     public static final Vardenhet vardenhet = mock(Vardenhet.class);
@@ -61,6 +66,7 @@ abstract public class AccessTest {
     public AccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
         this.intygsTyp = intygsTyp;
         this.accessServiceTestData = accessServiceTestData;
+        this.intygsTypVersion = "1.0";
     }
 
     protected void setupMocksForNoConditions() {
@@ -84,6 +90,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForNoConditionsDifferentUnit() {
@@ -107,6 +114,56 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+    }
+
+    protected void setupMocksForNotLatestMajorVersion() {
+        final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
+        doReturn(user)
+            .when(webCertUserService).getUser();
+        doReturn(false)
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+        doReturn(SekretessStatus.FALSE)
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+        doReturn(true)
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
+        doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
+        doReturn(enhetsId).when(vardenhet).getEnhetsid();
+        doReturn(vardgivare).when(vardenhet).getVardgivare();
+        doReturn(vardgivarId).when(vardgivare).getVardgivarid();
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(false).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+    }
+
+    protected void setupMocksForNotLatestMajorVersionDifferentUnit() {
+        final WebCertUser user = AccessServiceTestToolkit.createUserDifferentUnit(intygsTyp, accessServiceTestData);
+        doReturn(user)
+            .when(webCertUserService).getUser();
+        doReturn(false)
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+        doReturn(SekretessStatus.FALSE)
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+        doReturn(false)
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
+        doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user, null);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
+        doReturn(enhetsId).when(vardenhet).getEnhetsid();
+        doReturn(vardgivare).when(vardenhet).getVardgivare();
+        doReturn(vardgivarId).when(vardgivare).getVardgivarid();
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(false).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForDeceasedPatient() {
@@ -130,6 +187,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForDeceasedPatientDifferentUnit() {
@@ -153,6 +211,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForInactiveUnit() {
@@ -176,6 +235,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForInactiveUnitDifferentUnit() {
@@ -199,6 +259,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForOnRenewFalse() {
@@ -222,6 +283,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForOnRenewFalseDifferentUnit() {
@@ -245,6 +307,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForOnSekretessPatient() {
@@ -268,6 +331,7 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 
     protected void setupMocksForOnSekretessPatientDifferentUnit() {
@@ -291,5 +355,6 @@ abstract public class AccessTest {
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
+        doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
     }
 }

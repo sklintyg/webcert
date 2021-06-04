@@ -43,7 +43,7 @@ public abstract class CertificateAccessTest extends AccessTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        accessEvaluationParameters = AccessEvaluationParameters.create(intygsTyp, vardenhet, PERSONNUMMER, false);
+        accessEvaluationParameters = AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false);
     }
 
     @Test
@@ -54,6 +54,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToReadNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToReadNotLatestMajorVersion(accessService.allowToRead(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToReadOnDeceasedPatient() {
@@ -146,6 +155,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToReplaceNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReplaceNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToReplaceNotLatestMajorVersion(accessService.allowToReplace(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReplaceNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToReplaceOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -180,6 +198,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToReplaceNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReplaceNotLatestMajorVersionDifferentUnit() {
+        setupMocksForNotLatestMajorVersionDifferentUnit();
+
+        assertAllowToReplaceNotLatestMajorVersionDifferentUnit(accessService.allowToReplace(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReplaceNotLatestMajorVersionDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToReplaceOnDeceasedPatientDifferentUnit() {
@@ -234,6 +261,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToRenewNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToRenewNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToRenewNotLatestMajorVersion(accessService.allowToRenew(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToRenewNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToRenewOnDeceasedPatient() {
@@ -389,6 +425,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToDeleteNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToDeleteNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToDeleteNotLatestMajorVersion(accessService.allowToInvalidate(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToDeleteOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -485,6 +530,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToPrintNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToPrintNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToPrintNotLatestMajorVersion(accessService.allowToPrint(accessEvaluationParameters, isEmployer));
+    }
+
+    abstract protected void assertAllowToPrintNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToPrintOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -573,6 +627,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSendNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSendNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToSendNotLatestMajorVersion(accessService.allowToSend(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSendNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToSendOnDeceasedPatient() {
@@ -665,6 +728,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToCreateQuestionNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToCreateQuestionNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToCreateQuestionNotLatestMajorVersion(accessService.allowToCreateQuestion(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToCreateQuestionNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isallowToCreateQuestionOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -755,6 +827,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToAnswerComplementNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToAnswerComplementNotLatestMajorVersion(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToAnswerComplementOnDeceasedPatient() {
@@ -855,6 +936,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToAnswerQuestionNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToAnswerQuestionNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToAnswerQuestionNotLatestMajorVersion(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToAnswerQuestionOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -951,6 +1041,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToAnswerAdminQuestionNotLatestMajorVersion(accessService.allowToAnswerAdminQuestion(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToAnswerAdminQuestionOnDeceasedPatient() {
@@ -1053,6 +1152,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToSetComplementAsHandledNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToSetComplementAsHandledNotLatestMajorVersion(accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToSetComplementAsHandledOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -1151,6 +1259,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSetQuestionAsHandledNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToSetQuestionAsHandledNotLatestMajorVersion(accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToSetQuestionAsHandledOnDeceasedPatient() {
@@ -1252,6 +1369,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToReadQuestionsNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadQuestionsNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToReadQuestionsNotLatestMajorVersion(accessService.allowToReadQuestions(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReadQuestionsNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadQuestionsOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -1340,6 +1466,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToForwardQuestionsNotLatestMajorVersion(accessService.allowToForwardQuestions(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToForwardQuestionsOnDeceasedPatient() {

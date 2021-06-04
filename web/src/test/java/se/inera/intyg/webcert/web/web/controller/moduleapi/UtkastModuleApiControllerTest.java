@@ -414,12 +414,12 @@ public class UtkastModuleApiControllerTest {
 
         doThrow(
             new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, "Some error message")
-        ).when(lockedDraftAccessServiceHelper).validateAccessToCopyLockedUtkast(any(Utkast.class));
+        ).when(lockedDraftAccessServiceHelper).validateAccessToCopy(any(Utkast.class));
 
         moduleApiController.copyUtkast(intygsTyp, intygsId);
 
         verify(utkastService).getDraft(eq(intygsId), eq(intygsTyp));
-        verify(lockedDraftAccessServiceHelper).validateAccessToCopyLockedUtkast(any(Utkast.class));
+        verify(lockedDraftAccessServiceHelper).validateAccessToCopy(any(Utkast.class));
     }
 
     @Test
@@ -475,6 +475,7 @@ public class UtkastModuleApiControllerTest {
         String intygsTyp = "ag7804";
         String intygsIdCandidate = "candidate-intyg-id";
         String intygsTypCandidate = "lisjp";
+        String intygsTypVersionCandidate = "1.0";
 
         setupGrundData();
         setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
@@ -484,13 +485,13 @@ public class UtkastModuleApiControllerTest {
             .thenReturn(new Relations());
         when(utkastService.getDraft(intygsId, intygsTyp))
             .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
-        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean()))
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
             .thenReturn(Optional.of(createCandidateMetaData(intygsIdCandidate, intygsTypCandidate, INTYG_TYPE_VERSION)));
 
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertEquals(intygsIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
@@ -526,6 +527,7 @@ public class UtkastModuleApiControllerTest {
     public void verifyCandidateMetaDataWhenCandidateNotFound() throws Exception {
         String intygsId = CERTIFICATE_ID;
         String intygsTyp = "ag7804";
+        String intygsTypVersion = "1.0";
 
         setupGrundData();
         setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
@@ -535,13 +537,13 @@ public class UtkastModuleApiControllerTest {
             .thenReturn(new Relations());
         when(utkastService.getDraft(intygsId, intygsTyp))
             .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
-        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean()))
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
             .thenReturn(Optional.ofNullable(null));
 
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertNull(draftHolder.getCandidateMetaData());
