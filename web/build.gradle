@@ -86,6 +86,7 @@ test {
 }
 
 task restAssuredTest(type: Test) {
+    useJUnitPlatform()
     outputs.upToDateWhen { false }
     systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8020/"
     systemProperty "integration.tests.actuatorUrl", System.properties['actuatorUrl'] ?: "http://localhost:8120/"
