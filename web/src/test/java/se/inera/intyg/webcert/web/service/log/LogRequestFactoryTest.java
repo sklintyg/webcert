@@ -19,10 +19,13 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,11 +48,14 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactoryImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @RunWith(MockitoJUnitRunner.class
 )
@@ -195,6 +201,100 @@ public class LogRequestFactoryTest {
 
         assertNull(res.getAdditionalInfo());
     }
+
+    @Test
+    public void shallCreateLogRequestWithCareUnitFromUser() {
+        final var user = buildUser(false);
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertEquals(user.getValdVardenhet().getId(), actualLogRequest.getIntygCareUnitId());
+        assertEquals(user.getValdVardenhet().getNamn(), actualLogRequest.getIntygCareUnitName());
+
+        assertEquals(user.getValdVardgivare().getId(), actualLogRequest.getIntygCareGiverId());
+        assertEquals(user.getValdVardgivare().getNamn(), actualLogRequest.getIntygCareGiverName());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithCareProviderFromUser() {
+        final var user = buildUser(false);
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertEquals(user.getValdVardgivare().getId(), actualLogRequest.getIntygCareGiverId());
+        assertEquals(user.getValdVardgivare().getNamn(), actualLogRequest.getIntygCareGiverName());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithCoherentJournalingFromUser() {
+        final var user = buildUser(true);
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertEquals("Läsning i enlighet med sammanhållen journalföring", actualLogRequest.getAdditionalInfo());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithTestIntygFlagIfPatientIsTestIndicated() {
+        final var user = buildUser(false);
+
+        doReturn(true).when(patientDetailsResolver).isTestIndicator(any(Personnummer.class));
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertTrue("Expected isTestIntyg to be true", actualLogRequest.isTestIntyg());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithoutTestIntygFlagIfPatientIsntTestIndicated() {
+        final var user = buildUser(false);
+
+        doReturn(false).when(patientDetailsResolver).isTestIndicator(any(Personnummer.class));
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertFalse("Expected isTestIntyg to be false", actualLogRequest.isTestIntyg());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithoutPatientName() {
+        final var user = buildUser(false);
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertTrue("Expected patient name to be empty", actualLogRequest.getPatientName().isEmpty());
+    }
+
+    @Test
+    public void shallCreateLogRequestWithPatientId() {
+        final var user = buildUser(false);
+
+        final var actualLogRequest = testee.createLogRequestFromUser(user, patientId);
+
+        assertEquals(patientId, actualLogRequest.getPatientId().getOriginalPnr());
+    }
+
+    private WebCertUser buildUser(boolean coherentJournaling) {
+        final var user = mock(WebCertUser.class);
+
+        final var expectedCareUnit = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet();
+        expectedCareUnit.setId("careUnitId");
+        expectedCareUnit.setNamn("careUnitName");
+        doReturn(expectedCareUnit).when(user).getValdVardenhet();
+
+        final var expectedCareProvider = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+        expectedCareProvider.setId("careProviderId");
+        expectedCareProvider.setNamn("careProviderName");
+        doReturn(expectedCareProvider).when(user).getValdVardgivare();
+
+        if (coherentJournaling) {
+            final var parameters = IntegrationParameters
+                .of(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, false);
+            doReturn(parameters).when(user).getParameters();
+        }
+        return user;
+    }
+
 
     private Utkast buildUtkast(String intygsId, String intygsTyp, Personnummer patientPersonnummer, String patientFornamn,
         String patientMellannamn, String patientEfternamn, String enhetsid, String enhetsnamn, String vardgivarid, String vardgivarnamn) {
