@@ -23,6 +23,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALEXA_VALFRIDSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.BETA_VARDCENTRAL;
@@ -36,7 +37,6 @@ import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
-import java.io.FileNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,22 +54,19 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateReq
 public class PdlIT {
 
     @Before
-    public void setupBase() throws FileNotFoundException {
-        final var logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
+    public void setupBase() {
+        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
         RestAssured.config = RestAssured.config()
-            .logConfig(logconfig)
+            .logConfig(logConfig)
             .sessionConfig(new SessionConfig("SESSION", null));
     }
 
     @After
     public void tearDown() {
-        // Remove all utkast after each test
         given().expect().statusCode(200).when().delete("testability/intyg");
         RestAssured.reset();
     }
-
-    // TODO: Testa angående valideringsperson.
 
     @Test
     public void shallPdlLogCreateActivityWhenCreatingDraft() {
@@ -98,6 +95,45 @@ public class PdlIT {
     }
 
     @Test
+    public void shallNotPdlLogWhenWorkingWithATestIndicatedPatient() {
+        final var testSetup = TestSetup.create()
+            .clearPdlLogMessages()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .setup();
+
+        final var createUtkastRequest = new CreateUtkastRequest();
+        createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
+        createUtkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(ALEXA_VALFRIDSSON.getPersonId().getId()).get());
+        createUtkastRequest.setPatientFornamn(ALEXA_VALFRIDSSON.getFirstName());
+        createUtkastRequest.setPatientEfternamn(ALEXA_VALFRIDSSON.getLastName());
+
+        final var certificateId = given()
+            .pathParam("certificateType", LisjpEntryPoint.MODULE_ID)
+            .contentType(ContentType.JSON)
+            .body(createUtkastRequest)
+            .when()
+            .post("api/utkast/{certificateType}")
+            .then().extract().path("intygsId");
+
+        given()
+            .pathParam("certificateId", certificateId)
+            .when()
+            .get("api/certificate/{certificateId}")
+            .then()
+            .assertThat().statusCode(HttpStatus.OK.value());
+
+        given()
+            .pathParam("certificateId", certificateId)
+            .pathParam("version", 0)
+            .when()
+            .delete("api/certificate/{certificateId}/{version}")
+            .then()
+            .assertThat().statusCode(HttpStatus.OK.value());
+
+        assertNumberOfPdlMessages(0);
+    }
+
+    @Test
     public void shallPdlLogReadActivityWhenFetchingDraft() {
         final var testSetup = TestSetup.create()
             .draft(
@@ -109,6 +145,7 @@ public class PdlIT {
             )
             .clearPdlLogMessages()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .sjf()
             .setup();
 
         given()
@@ -294,6 +331,58 @@ public class PdlIT {
 
         assertNumberOfPdlMessages(1);
         assertPdlLogMessage(ActivityType.SIGN);
+    }
+
+    @Test
+    public void shallPdlLogReadActivityWhenFetchingCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ATHENA_ANDERSSON.getPersonId().getId(),
+                DR_AJLA,
+                ALFA_VARDCENTRAL
+            )
+            .clearPdlLogMessages()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .sjf()
+            .setup();
+
+        given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .when()
+            .get("api/certificate/{certificateId}")
+            .then()
+            .assertThat().statusCode(HttpStatus.OK.value());
+
+        assertNumberOfPdlMessages(1);
+        assertPdlLogMessage(ActivityType.READ);
+    }
+
+    @Test
+    public void shallPdlLogReadActivityWithSjfWhenFetchingCertificateOnDifferentCareProvider() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ATHENA_ANDERSSON.getPersonId().getId(),
+                DR_BETA,
+                BETA_VARDCENTRAL
+            )
+            .clearPdlLogMessages()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .sjf()
+            .setup();
+
+        given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .when()
+            .get("api/certificate/{certificateId}")
+            .then()
+            .assertThat().statusCode(HttpStatus.OK.value());
+
+        assertNumberOfPdlMessages(1);
+        assertPdlLogMessage(ActivityType.READ, true);
     }
 
     @Test

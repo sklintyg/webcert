@@ -39,6 +39,7 @@ public class IntegrationTest {
     public static String BETA_LAKARMOTTAGNING = "TSTNMT2321000156-BELM";
 
     public static Patient ATHENA_ANDERSSON = createPatient("191212121212", "Athena", "Andersson");
+    public static Patient ALEXA_VALFRIDSSON = createPatient("201212121212", "Alexa", "Valfridsson");
 
     private static Patient createPatient(String id, String firstName, String lastName) {
         final var personId = new PersonId();
