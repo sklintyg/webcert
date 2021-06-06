@@ -19,7 +19,11 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -29,17 +33,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -107,18 +117,7 @@ public class CertificateTestabilityController extends AbstractApiController {
 
         final var certificate = certificateConverter.convert(utkast);
 
-        createCertificateRequest.getValues().entrySet().forEach(entry -> {
-            final var certificateDataElement = certificate.getData().get(entry.getKey());
-            final var updatedCertificateDataElement = CertificateDataElement.builder()
-                .id(certificateDataElement.getId())
-                .parent(certificateDataElement.getParent())
-                .index(certificateDataElement.getIndex())
-                .config(certificateDataElement.getConfig())
-                .validation(certificateDataElement.getValidation())
-                .value(entry.getValue())
-                .build();
-            certificate.getData().put(entry.getKey(), updatedCertificateDataElement);
-        });
+        updateCertificate(createCertificateRequest, certificate);
 
         utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
 
@@ -140,6 +139,81 @@ public class CertificateTestabilityController extends AbstractApiController {
         utkastRepository.save(utkast);
 
         return certificate.getMetadata().getId();
+    }
+
+    private void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+        if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
+            return;
+        }
+
+        if (createCertificateRequest.getFillType() == CreateCertificateFillType.WITH_VALUES) {
+            updateCertificate(certificate, createCertificateRequest.getValues());
+        }
+
+        final var valueMap = createValues(createCertificateRequest);
+        updateCertificate(certificate, valueMap);
+    }
+
+    private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase("lisjp")) {
+            return createValuesLisjp();
+        }
+
+        return Collections.emptyMap();
+    }
+
+    private Map<String, CertificateDataValue> createValuesLisjp() {
+        final var values = new HashMap<String, CertificateDataValue>();
+
+        final CertificateDataValueBoolean avstangningSmittskydd = CertificateDataValueBoolean.builder()
+            .id(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27)
+            .selected(true)
+            .build();
+        values.put(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27, avstangningSmittskydd);
+
+        final CertificateDataValueDiagnosisList diagnos = CertificateDataValueDiagnosisList.builder()
+            .list(
+                Collections.singletonList(
+                    CertificateDataValueDiagnosis.builder()
+                        .id("1")
+                        .terminology("ICD_10_SE")
+                        .code("A01")
+                        .description("Tyfoidfeber och paratyfoidfeber")
+                        .build()
+                )
+            )
+            .build();
+        values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
+
+        final var bedomning = CertificateDataValueDateRangeList.builder()
+            .list(
+                Collections.singletonList(
+                    CertificateDataValueDateRange.builder()
+                        .id("HELT_NEDSATT")
+                        .from(LocalDate.now())
+                        .to(LocalDate.now().plusDays(14))
+                        .build()
+                )
+            )
+            .build();
+        values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        return values;
+    }
+
+    private void updateCertificate(Certificate certificate, Map<String, CertificateDataValue> valueMap) {
+        valueMap.entrySet().forEach(entry -> {
+            final var certificateDataElement = certificate.getData().get(entry.getKey());
+            final var updatedCertificateDataElement = CertificateDataElement.builder()
+                .id(certificateDataElement.getId())
+                .parent(certificateDataElement.getParent())
+                .index(certificateDataElement.getIndex())
+                .config(certificateDataElement.getConfig())
+                .validation(certificateDataElement.getValidation())
+                .value(entry.getValue())
+                .build();
+            certificate.getData().put(entry.getKey(), updatedCertificateDataElement);
+        });
     }
 
     private void updateJsonBeforeSigning(HoSPersonal hosPersonal, Utkast utkast, Signatur signature) {

@@ -56,6 +56,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
 
 public class PdlIT {
 
@@ -153,9 +154,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -181,9 +183,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_BETA,
-                    BETA_VARDCENTRAL
+                    BETA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -209,9 +212,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -237,9 +241,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -266,9 +271,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -306,9 +312,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.MINIMAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -335,9 +342,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.MINIMAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -363,9 +371,10 @@ public class PdlIT {
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    CreateCertificateFillType.EMPTY,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)

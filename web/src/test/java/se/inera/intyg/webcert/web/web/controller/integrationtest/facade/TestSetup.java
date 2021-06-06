@@ -28,22 +28,16 @@ import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import io.restassured.response.Response;
-import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
-import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateRequestDTO;
 
 public class TestSetup {
@@ -85,6 +79,8 @@ public class TestSetup {
 
         private String certificateType;
         private String certificateTypeVersion;
+        private CreateCertificateFillType fillType;
+        private Map<String, CertificateDataValue> values;
         private String patientId;
         private String personId;
         private String unitId;
@@ -108,10 +104,12 @@ public class TestSetup {
 
         }
 
-        public TestSetupBuilder draft(String certificateType, String certificateTypeVersion, String patientId, String personId,
-            String unitId) {
+        public TestSetupBuilder draft(String certificateType, String certificateTypeVersion, CreateCertificateFillType fillType,
+            String personId, String unitId, String patientId) {
             this.createCertificate = true;
             this.status = CertificateStatus.UNSIGNED;
+            this.fillType = fillType;
+            this.values = Collections.emptyMap();
             this.certificateType = certificateType;
             this.certificateTypeVersion = certificateTypeVersion;
             this.patientId = patientId;
@@ -124,6 +122,8 @@ public class TestSetup {
             String unitId) {
             this.createCertificate = true;
             this.status = CertificateStatus.SIGNED;
+            this.fillType = CreateCertificateFillType.MINIMAL;
+            this.values = Collections.emptyMap();
             this.certificateType = certificateType;
             this.certificateTypeVersion = certificateTypeVersion;
             this.patientId = patientId;
@@ -185,41 +185,6 @@ public class TestSetup {
         }
 
         private String createCertificate() {
-            final var values = new HashMap<String, CertificateDataValue>();
-
-            final CertificateDataValueBoolean avstangningSmittskydd = CertificateDataValueBoolean.builder()
-                .id(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27)
-                .selected(true)
-                .build();
-            values.put(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27, avstangningSmittskydd);
-
-            final CertificateDataValueDiagnosisList diagnos = CertificateDataValueDiagnosisList.builder()
-                .list(
-                    Collections.singletonList(
-                        CertificateDataValueDiagnosis.builder()
-                            .id("1")
-                            .terminology("ICD_10_SE")
-                            .code("A01")
-                            .description("Tyfoidfeber och paratyfoidfeber")
-                            .build()
-                    )
-                )
-                .build();
-            values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
-
-            final var bedomning = CertificateDataValueDateRangeList.builder()
-                .list(
-                    Collections.singletonList(
-                        CertificateDataValueDateRange.builder()
-                            .id("HELT_NEDSATT")
-                            .from(LocalDate.now())
-                            .to(LocalDate.now().plusDays(14))
-                            .build()
-                    )
-                )
-                .build();
-            values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
-
             final var certificateRequest = new CreateCertificateRequestDTO();
             certificateRequest.setCertificateType(certificateType);
             certificateRequest.setCertificateTypeVersion(certificateTypeVersion);
@@ -227,6 +192,7 @@ public class TestSetup {
             certificateRequest.setPersonId(personId);
             certificateRequest.setUnitId(unitId);
             certificateRequest.setStatus(status);
+            certificateRequest.setFillType(fillType);
             certificateRequest.setValues(values);
 
             return given()

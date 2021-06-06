@@ -31,6 +31,7 @@ public class CreateCertificateRequestDTO {
     private String personId;
     private String unitId;
     private CertificateStatus status;
+    private CreateCertificateFillType fillType;
     private Map<String, CertificateDataValue> values;
 
     public String getCertificateType() {
@@ -79,6 +80,14 @@ public class CreateCertificateRequestDTO {
 
     public void setStatus(CertificateStatus status) {
         this.status = status;
+    }
+
+    public CreateCertificateFillType getFillType() {
+        return fillType;
+    }
+
+    public void setFillType(CreateCertificateFillType fillType) {
+        this.fillType = fillType;
     }
 
     public Map<String, CertificateDataValue> getValues() {
