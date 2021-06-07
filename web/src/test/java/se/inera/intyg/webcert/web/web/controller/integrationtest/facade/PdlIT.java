@@ -112,7 +112,7 @@ public class PdlIT {
             certificateIdsToCleanAfterTest.add(certificateId);
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.CREATE);
+            assertPdlLogMessage(ActivityType.CREATE, certificateId);
         }
 
         @Test
@@ -174,7 +174,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
         }
 
         @Test
@@ -203,7 +203,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ, true);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), true);
         }
 
         @Test
@@ -262,7 +262,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.UPDATE);
+            assertPdlLogMessage(ActivityType.UPDATE, testSetup.certificateId());
         }
 
         @Test
@@ -303,7 +303,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.UPDATE);
+            assertPdlLogMessage(ActivityType.UPDATE, testSetup.certificateId());
         }
 
         @Test
@@ -333,7 +333,7 @@ public class PdlIT {
 
             // Log.activity.activityArg = "Intyg utskrivet" eller "Utkastet utskrivet"
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.PRINT);
+            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId());
         }
 
         @Test
@@ -362,7 +362,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.SIGN);
+            assertPdlLogMessage(ActivityType.SIGN, testSetup.certificateId());
         }
 
         @Test
@@ -389,7 +389,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.DELETE);
+            assertPdlLogMessage(ActivityType.DELETE, testSetup.certificateId());
         }
     }
 
@@ -422,7 +422,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
         }
 
         @Test
@@ -450,7 +450,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ, true);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), true);
         }
 
         @Disabled("Until it has been implemented")
@@ -487,7 +487,7 @@ public class PdlIT {
 
             // Log.activity.activityArg = "Intyg utskrivet" eller "Utkastet utskrivet"
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.PRINT);
+            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId());
         }
 
         @Disabled("Until it has been implemented")
@@ -533,7 +533,7 @@ public class PdlIT {
             certificateIdsToCleanAfterTest.add(certificateId);
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.CREATE);
+            assertPdlLogMessage(ActivityType.CREATE, certificateId);
         }
 
         @Test
@@ -565,15 +565,15 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.REVOKE);
+            assertPdlLogMessage(ActivityType.REVOKE, testSetup.certificateId());
         }
     }
 
-    private void assertPdlLogMessage(ActivityType expectedActivityType) {
-        assertPdlLogMessage(expectedActivityType, false);
+    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
+        assertPdlLogMessage(expectedActivityType, certificateId, false);
     }
 
-    private void assertPdlLogMessage(ActivityType expectedActivityType, boolean sjf) {
+    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId, boolean sjf) {
         final var pdlLogMessage = getPdlLogMessageFromQueue();
         assertNotNull(pdlLogMessage, "Pdl message was null!");
         assertAll(
@@ -581,6 +581,7 @@ public class PdlIT {
             () -> assertEquals("SE5565594230-B8N", pdlLogMessage.getSystemId()),
             () -> assertEquals("Webcert", pdlLogMessage.getSystemName()),
             () -> assertEquals(ActivityPurpose.CARE_TREATMENT, pdlLogMessage.getPurpose()),
+            () -> assertEquals(certificateId, pdlLogMessage.getActivityLevel()),
             () -> assertEquals("Intyg", pdlLogMessage.getPdlResourceList().get(0).getResourceType()),
             () -> {
                 if (sjf) {
