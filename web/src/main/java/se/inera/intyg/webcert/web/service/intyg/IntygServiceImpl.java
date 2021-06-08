@@ -266,7 +266,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         if (pdlLogging) {
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), checkSjf(intygsData));
 
             // Log read to PDL
             logService.logReadIntyg(logRequest);
@@ -408,7 +408,7 @@ public class IntygServiceImpl implements IntygService {
                 utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg, checkSjf(intyg), isEmployerCopy);
+            logPdfPrinting(intyg, isEmployerCopy);
 
             return intygPdf;
 
@@ -431,12 +431,12 @@ public class IntygServiceImpl implements IntygService {
      * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
      * depending the state of the intyg.
      */
-    private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling, boolean isEmployerCopy) {
+    private void logPdfPrinting(IntygContentHolder intyg, boolean isEmployerCopy) {
 
         final String intygsId = intyg.getUtlatande().getId();
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande(), coherentJournaling);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
         // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
             // Log printing of draft
