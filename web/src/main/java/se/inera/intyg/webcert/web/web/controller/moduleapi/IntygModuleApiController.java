@@ -98,8 +98,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-        WebCertUser user = getWebCertUserService().getUser();
-
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp);
