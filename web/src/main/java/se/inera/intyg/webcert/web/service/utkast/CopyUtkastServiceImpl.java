@@ -79,6 +79,9 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
+    public static final String CREATE_REPLACEMENT = "create replacement";
+    public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
+    public static final String CREATE_RENEWAL = "create renewal";
 
     @Autowired
     private IntygService intygService;
@@ -183,7 +186,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp())) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
             }
             UtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
@@ -199,7 +202,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
@@ -232,12 +235,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
             }
 
-            verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
-            verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
-            verifySigned(utlatande, "create renewal");
+            verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
+            verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
+            verifySigned(utlatande, CREATE_RENEWAL);
 
             UtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
@@ -253,7 +256,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
@@ -281,9 +284,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Can not create replacement copy - Original certificate is revoked");
             }
-            verifyNotReplaced(originalIntygId, "create replacement");
-            verifyNotComplementedWithSigned(originalIntygId, "create replacement");
-            verifySigned(utlatande, "create replacement");
+            verifyNotReplaced(originalIntygId, CREATE_REPLACEMENT);
+            verifyNotComplementedWithSigned(originalIntygId, CREATE_REPLACEMENT);
+            verifySigned(utlatande, CREATE_REPLACEMENT);
 
             UtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
@@ -299,7 +302,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
@@ -332,7 +335,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         try {
             if (intygService.isRevoked(templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp())) {
                 LOG.debug("Cannot create utkast from template. The certificate is revoked. Certificate id = '{}'", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
             }
 
             // Update patient details here instead of later in the buildUtkastFromTemplateBuilderResponse method.
@@ -365,7 +368,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
@@ -382,7 +385,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
                 LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
             }
 
             Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
@@ -400,7 +403,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             if (utkast.getAterkalladDatum() != null) {
                 LOG.debug("Cannot create utkast from utkast certificate with id '{}', the utkast is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
             }
 
             verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
@@ -417,9 +420,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
+    }
+
+    private String getErrorMessageWhenCopyingFails(String originalIntygId) {
+        return "Module exception occured when trying to make a copy of " + originalIntygId;
     }
 
     private void verifySigned(final Utlatande utlatande, final String operation) {
