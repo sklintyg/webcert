@@ -19,7 +19,20 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Strings;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import javax.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +43,24 @@ import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.mapper.Mapper;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -70,16 +91,14 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -242,8 +261,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         try {
-            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType,
-                false, true);
+            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true);
 
             String draftVersion = to.getIntygTypeVersion();
             if (draftVersion == null) {
@@ -461,9 +479,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId) {
+    public Utkast getDraft(String intygId, boolean pdlLog) {
         final String intygType = utkastRepository.getIntygsTyp(intygId);
-        return getDraft(intygId, intygType);
+        return getDraft(intygId, intygType, pdlLog);
     }
 
     @Override
@@ -480,7 +498,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         if (createPdlLogEvent) {
             // Log read to PDL
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast, shouldPdlLogSjf(utkast));
             logService.logReadIntyg(logRequest);
 
             // Log read to monitoring log
@@ -488,6 +506,19 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         return utkast;
+    }
+
+    private boolean shouldPdlLogSjf(Utkast draft) {
+        final var user = webCertUserService.getUser();
+        return isSjf(user) && isDifferentCareProvider(draft, user);
+    }
+
+    private boolean isDifferentCareProvider(Utkast draft, WebCertUser user) {
+        return !draft.getVardgivarId().equalsIgnoreCase(user.getValdVardgivare().getId());
+    }
+
+    private boolean isSjf(WebCertUser user) {
+        return user != null && user.getParameters() != null && user.getParameters().isSjf();
     }
 
     @Override
@@ -756,9 +787,10 @@ public class UtkastServiceImpl implements UtkastService {
         revokeUtkast(utkast, reason, revokeMessage);
     }
 
-    @Override public boolean isDraftCreatedFromReplacement(String certificateId) {
-       return utkastRepository.findParentRelation(certificateId).stream()
-           .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
+    @Override
+    public boolean isDraftCreatedFromReplacement(String certificateId) {
+        return utkastRepository.findParentRelation(certificateId).stream()
+            .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
     }
 
     /**

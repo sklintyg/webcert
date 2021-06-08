@@ -70,7 +70,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -96,7 +95,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -347,7 +345,7 @@ public class IntygServiceTest {
     public void testCheckSjfSameEnhetSjf() {
         setupUserAndVardgivare();
         when(intParam.isSjf()).thenReturn(true);
-        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
     }
 
@@ -355,7 +353,7 @@ public class IntygServiceTest {
     public void testCheckSjfSameEnhet() {
         setupUserAndVardgivare();
         when(intParam.isSjf()).thenReturn(false);
-        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
     }
 
@@ -364,7 +362,7 @@ public class IntygServiceTest {
         setupUserAndVardgivare();
         when(vardgivare.getId()).thenReturn("12345");
         when(intParam.isSjf()).thenReturn(true);
-        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(true));
     }
 
@@ -373,7 +371,7 @@ public class IntygServiceTest {
         setupUserAndVardgivare();
         when(vardgivare.getId()).thenReturn("12345");
         when(intParam.isSjf()).thenReturn(false);
-        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
     }
 
@@ -387,8 +385,6 @@ public class IntygServiceTest {
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
         verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
 
-        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-
         // TODO: INTYG-4086, fix this assert. The contents have been updated with the just-in-time fetched patient...
         // assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, Objects.requireNonNull(intygData.getUtlatande()).getId());
@@ -401,7 +397,7 @@ public class IntygServiceTest {
 
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenThrow(new IntygModuleFacadeException(""));
 
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
     @Test
@@ -411,8 +407,6 @@ public class IntygServiceTest {
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
         verify(utkastRepository).findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(logservice).logReadIntyg(any(LogRequest.class));
-        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
     }
 
@@ -425,8 +419,6 @@ public class IntygServiceTest {
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
         verify(utkastRepository).findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(utkastRepository).findById(CERTIFICATE_ID);
-        verify(logservice).logReadIntyg(any(LogRequest.class));
-        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
         verifyNoMoreInteractions(moduleFacade, utkastRepository, logservice, mockMonitoringService, intygRelationHelper);
     }
@@ -445,15 +437,14 @@ public class IntygServiceTest {
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
         verify(utkastRepository).findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(utkastRepository).findById(CERTIFICATE_ID);
-        verify(logservice).logReadIntyg(any(LogRequest.class));
-        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
         verifyNoMoreInteractions(moduleFacade, utkastRepository, logservice, mockMonitoringService, intygRelationHelper);
     }
 
     @Test
     public void testFetchIntygDataWithRelation() throws Exception {
-        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        setupUserAndVardgivare();
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
@@ -466,11 +457,12 @@ public class IntygServiceTest {
 
     @Test
     public void testFetchIntygDataWithRelationNotFoundInIT() throws Exception {
+        setupUserAndVardgivare();
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenThrow(new IntygModuleFacadeException(""));
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
             .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
 
-        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
@@ -484,11 +476,12 @@ public class IntygServiceTest {
 
     @Test
     public void testFetchIntygDataWithRelationITUnavailable() throws Exception {
+        setupUserAndVardgivare();
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenThrow(new WebServiceException(""));
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
             .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
 
-        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
@@ -708,7 +701,6 @@ public class IntygServiceTest {
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
         verify(moduleFacade, times(2)).getUtlatandeFromInternalModel(eq(CERTIFICATE_TYPE), anyString());
-        verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(utkastRepository).findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(utkastRepository).findById(CERTIFICATE_ID);
         verifyNoMoreInteractions(moduleFacade, logservice, utkastRepository);
@@ -727,8 +719,6 @@ public class IntygServiceTest {
 
         // ensure that correct call is made to moduleFacade
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
-        // Assert pdl log
-        verify(logservice).logReadIntyg(any(LogRequest.class));
     }
 
     @Test
@@ -747,8 +737,6 @@ public class IntygServiceTest {
 
         // ensure that correct call is made to moduleFacade
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
-        // Assert pdl log
-        verify(logservice).logReadIntyg(any(LogRequest.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -757,7 +745,7 @@ public class IntygServiceTest {
             .thenThrow(WebServiceException.class);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
         try {
-            intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+            intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
         } catch (Exception e) {
             // ensure that correct call is made to moduleFacade
             verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
@@ -1114,7 +1102,7 @@ public class IntygServiceTest {
 
     @Test
     public void testIsRevoked() {
-        boolean revoked = intygService.isRevoked(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        boolean revoked = intygService.isRevoked(CERTIFICATE_ID, CERTIFICATE_TYPE);
         assertFalse(revoked);
         verify(mockMonitoringService).logIntygRevokeStatusRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }

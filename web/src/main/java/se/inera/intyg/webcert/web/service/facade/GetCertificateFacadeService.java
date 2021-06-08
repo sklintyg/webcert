@@ -23,5 +23,5 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface GetCertificateFacadeService {
 
-    Certificate getCertificate(String certificateId);
+    Certificate getCertificate(String certificateId, boolean pdlLog);
 }

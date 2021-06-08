@@ -72,7 +72,7 @@ class ForwardCertificateFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(draft.getIntygsId());
+            .getCertificate(draft.getIntygsId(), false);
     }
 
     @Test

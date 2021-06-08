@@ -236,7 +236,7 @@ public class SrsServiceImpl implements SrsService {
      * @return
      */
     private IntygContentHolder getCertificate(String certificateId) {
-        return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID, false);
+        return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID);
     }
 
     /**

@@ -21,20 +21,9 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
-/**
- * Extends the base AbstractCreateCopyRequest with coherentJournaling.
- */
 public class CreateReplacementCopyRequest extends AbstractCreateCopyRequest {
 
-    private boolean coherentJournaling = false;
-
-    public CreateReplacementCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
-        boolean coherentJournaling) {
+    public CreateReplacementCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
-        this.coherentJournaling = coherentJournaling;
-    }
-
-    public boolean isCoherentJournaling() {
-        return coherentJournaling;
     }
 }

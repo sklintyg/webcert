@@ -210,7 +210,7 @@ public class ArendeViewConverter {
         }
         List<String> frageIds = medicinskaArenden.stream().map(MedicinsktArende::getFrageId).distinct().collect(Collectors.toList());
 
-        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
+        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp).getUtlatande();
         ModuleApi moduleApi = null;
 
         try {

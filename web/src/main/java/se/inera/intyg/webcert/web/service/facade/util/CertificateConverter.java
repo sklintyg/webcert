@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade;
+package se.inera.intyg.webcert.web.service.facade.util;
 
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-public interface SaveCertificateFacadeService {
+public interface CertificateConverter {
 
-    long saveCertificate(Certificate certificate, boolean pdlLog);
+    Certificate convert(Utkast certificate);
 }

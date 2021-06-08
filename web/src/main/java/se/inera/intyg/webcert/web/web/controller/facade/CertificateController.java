@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,6 +30,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -92,7 +96,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
-        final Certificate certificate = getCertificateFacadeService.getCertificate(certificateId);
+        final Certificate certificate = getCertificateFacadeService.getCertificate(certificateId, true);
         return Response.ok(CertificateResponseDTO.create(certificate)).build();
     }
 
@@ -101,12 +105,21 @@ public class CertificateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response saveCertificate(@RequestBody @NotNull Certificate certificate) {
+    public Response saveCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate,
+        @Context HttpServletRequest request) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getId());
         }
-        final long version = saveCertificateFacadeService.saveCertificate(certificate);
+        final var pdlLog = isFirstTimeSavedDuringSession(certificateId, request);
+        final var version = saveCertificateFacadeService.saveCertificate(certificate, pdlLog);
         return Response.ok(SaveCertificateResponseDTO.create(version)).build();
+    }
+
+    private boolean isFirstTimeSavedDuringSession(String certificateId, HttpServletRequest request) {
+        final var session = request.getSession(true);
+        final var lastSavedDraft = (String) session.getAttribute(LAST_SAVED_DRAFT);
+        session.setAttribute(LAST_SAVED_DRAFT, certificateId);
+        return !certificateId.equals(lastSavedDraft);
     }
 
     @POST

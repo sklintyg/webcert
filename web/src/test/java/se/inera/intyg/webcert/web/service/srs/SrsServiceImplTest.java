@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.times;
@@ -191,16 +190,16 @@ public class SrsServiceImplTest {
         when(diagnosService.getDiagnosisByCode(eq("F43"), eq(Diagnoskodverk.ICD_10_SE)))
                 .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
 
-        when(intygService.fetchIntygDataWithRelations(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID)))
                 .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID)))
                 .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID)))
                 .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-3"), eq(LisjpEntryPoint.MODULE_ID), eq(false)))
+        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-3"), eq(LisjpEntryPoint.MODULE_ID)))
             .thenReturn(buildIntygContentHolder("parent-intyg-id-3", "F438A", null, true));
 
         // Match dummy models to generate different utlatande

@@ -53,6 +53,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -1122,7 +1123,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.save(utkast)).thenReturn(savedUtkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(createUser());
-        when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, false, true)).thenReturn(utlatande);
+        when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true)).thenReturn(utlatande);
         when(moduleApi.getMapper()).thenReturn(Optional.of(mapper));
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
@@ -1141,6 +1142,58 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull("An DraftValidation should be returned", res);
         assertEquals("The status should still be incomplete", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
         assertTrue("The saved draft version should be greater than zero", res.getVersion() > 0);
+    }
+
+    @Test
+    public void shallReturnDraftIfItExists() {
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        final var actualDraft = utkastService.getDraft(INTYG_ID, INTYG_TYPE, false);
+        assertNotNull("Expected a draft but instead it is null", actualDraft);
+    }
+
+    @Test
+    public void shallThrowDataNotFoundIfItDoesntExists() {
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(null);
+
+        try {
+            utkastService.getDraft(INTYG_ID, INTYG_TYPE, false);
+            fail("Should have thrown an exception");
+        } catch(WebCertServiceException ex) {
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, ex.getErrorCode());
+        }
+    }
+
+    @Test
+    public void shallPdlLogReadActivityByDefault() {
+        final var expectedLogRequest = new LogRequest();
+        final var user = createUser();
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), eq(false))).thenReturn(expectedLogRequest);
+        utkastService.getDraft(INTYG_ID, INTYG_TYPE);
+        verify(logService).logReadIntyg(eq(expectedLogRequest));
+    }
+
+    @Test
+    public void shallPdlLogReadActivityWithSjfWhenDifferentCareProvider() {
+        final var expectedLogRequest = new LogRequest();
+        final var user = createUser(true);
+        utkast.setVardgivarId("Vardgivare2");
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), eq(true))).thenReturn(expectedLogRequest);
+        utkastService.getDraft(INTYG_ID, INTYG_TYPE);
+        verify(logService).logReadIntyg(eq(expectedLogRequest));
+    }
+
+    @Test
+    public void shallMonitorLogWhenPdlLogging() {
+        final var expectedLogRequest = new LogRequest();
+        final var user = createUser(true);
+        when(utkastRepository.getIntygsTyp(INTYG_ID)).thenReturn(INTYG_TYPE);
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        utkastService.getDraft(INTYG_ID, true);
+        verify(monitoringService).logUtkastRead(anyString(), anyString());
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
@@ -1190,6 +1243,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private WebCertUser createUser() {
+        return createUser(false);
+    }
+
+    private WebCertUser createUser(boolean sjf) {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         WebCertUser user = new WebCertUser();
@@ -1215,7 +1272,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardgivare.setVardenheter(Collections.singletonList(vardenhet));
         user.setVardgivare(Collections.singletonList(vardgivare));
 
-        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
+        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", sjf, false, false, true));
 
         return user;
     }

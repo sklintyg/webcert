@@ -44,17 +44,17 @@ public final class UtkastServiceHelper {
     @Autowired
     private IntygService intygService;
 
-    public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning) {
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling, pdlLoggning);
+    public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, pdlLoggning);
         return signedIntygHolder.getUtlatande();
     }
 
-    public Utlatande getUtlatandeForCandidateFromIT(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning) {
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygDataforCandidate(intygId, intygsTyp, coherentJournaling, pdlLoggning);
+    public Utlatande getUtlatandeForCandidateFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygDataforCandidate(intygId, intygsTyp, pdlLoggning);
         return signedIntygHolder.getUtlatande();
     }
 
-    public Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
+    public Utlatande getUtlatande(String intygId, String intygsTyp, boolean pdlLoggning)
         throws ModuleException, ModuleNotFoundException {
         Utlatande utlatande;
         if (utkastRepository.existsById(intygId)) {
@@ -71,7 +71,7 @@ public final class UtkastServiceHelper {
                 throw new ModuleException("Could not convert original certificate to Utlatande", e);
             }
         } else {
-            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling, true);
+            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, true);
             utlatande = signedIntygHolder.getUtlatande();
         }
 

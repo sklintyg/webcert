@@ -48,7 +48,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -121,7 +120,7 @@ public class ArendeViewConverterTest {
 
     @Before
     public void setupDefaultMocksForIntygService() {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+        when(intygService.fetchIntygData(any(String.class), any(String.class)))
             .thenReturn(
                 IntygContentHolder.builder()
                     .setContents("")

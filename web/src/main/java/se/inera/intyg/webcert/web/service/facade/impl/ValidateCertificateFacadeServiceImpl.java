@@ -47,7 +47,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     @Override
     public ValidationErrorDTO[] validate(Certificate certificate) {
-        final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId());
+        final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
 
         final var draftValidation = utkastService.validateDraft(
             certificate.getMetadata().getId(),

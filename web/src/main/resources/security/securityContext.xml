@@ -187,6 +187,7 @@
     <security:http security="none" pattern="/testability/anvandare/**"/>
     <security:http security="none" pattern="/testability/arendetest/**"/>
     <security:http security="none" pattern="/testability/utkast/**"/>
+    <security:http security="none" pattern="/testability/certificate/**"/>
 
     <!--
       This enable access to the HSA service stub

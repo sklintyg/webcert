@@ -17,11 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade;
+package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
-import se.inera.intyg.common.support.facade.model.Certificate;
-
-public interface SaveCertificateFacadeService {
-
-    long saveCertificate(Certificate certificate, boolean pdlLog);
+public enum CreateCertificateFillType {
+    EMPTY, MINIMAL, WITH_VALUES
 }

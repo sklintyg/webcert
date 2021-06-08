@@ -220,29 +220,28 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, true, true);
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp) {
+        return fetchIntygData(intygsId, intygsTyp, false, true, true);
     }
 
     @Override
-    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging, true);
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean pdlLogging) {
+        return fetchIntygData(intygsId, intygsTyp, false, pdlLogging, true);
     }
 
     @Override
-    public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling, true, true);
+    public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp) {
+        return fetchIntygData(intygId, intygsTyp, true, true, true);
     }
 
     @Override
     public IntygContentHolder fetchIntygDataForInternalUse(String certificateId, boolean includeRelations) {
-        return fetchIntygData(certificateId, null, includeRelations, false, false, false);
+        return fetchIntygData(certificateId, null, includeRelations, false, false);
     }
 
     @Override
-    public IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling,
-        boolean pdlLogging) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging, false);
+    public IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean pdlLogging) {
+        return fetchIntygData(intygsId, intygsTyp, false, pdlLogging, false);
     }
 
 
@@ -257,8 +256,8 @@ public class IntygServiceImpl implements IntygService {
      * @param validateAccess If the call should validate access for logged in user.
      * @return IntygContentHolder.
      */
-    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling,
-        boolean pdlLogging, boolean validateAccess) {
+    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean pdlLogging,
+        boolean validateAccess) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
         if (validateAccess) {
@@ -266,7 +265,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         if (pdlLogging) {
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), checkSjf(intygsData));
 
             // Log read to PDL
             logService.logReadIntyg(logRequest);
@@ -408,7 +407,7 @@ public class IntygServiceImpl implements IntygService {
                 utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg, checkSjf(intyg), isEmployerCopy);
+            logPdfPrinting(intyg, isEmployerCopy);
 
             return intygPdf;
 
@@ -431,12 +430,12 @@ public class IntygServiceImpl implements IntygService {
      * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
      * depending the state of the intyg.
      */
-    private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling, boolean isEmployerCopy) {
+    private void logPdfPrinting(IntygContentHolder intyg, boolean isEmployerCopy) {
 
         final String intygsId = intyg.getUtlatande().getId();
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande(), coherentJournaling);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
         // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
             // Log printing of draft
@@ -639,10 +638,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling) {
+    public boolean isRevoked(String intygsId, String intygsTyp) {
 
         IntygContentHolder intygData = getIntygData(intygsId, intygsTyp, false);
-        // Log read of revoke status to monitoring log
         monitoringService.logIntygRevokeStatusRead(intygsId, intygsTyp);
         return intygData.isRevoked();
     }
