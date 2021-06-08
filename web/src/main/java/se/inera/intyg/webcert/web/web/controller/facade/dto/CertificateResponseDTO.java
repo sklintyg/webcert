@@ -25,10 +25,6 @@ public class CertificateResponseDTO {
 
     private Certificate certificate;
 
-    public CertificateResponseDTO() {
-
-    }
-
     public static CertificateResponseDTO create(Certificate certificate) {
         final var responseDTO = new CertificateResponseDTO();
         responseDTO.certificate = certificate;
