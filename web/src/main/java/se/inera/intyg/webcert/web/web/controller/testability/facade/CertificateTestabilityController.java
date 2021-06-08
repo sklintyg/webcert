@@ -131,6 +131,8 @@ public class CertificateTestabilityController extends AbstractApiController {
             utkast.setSignatur(signature);
             utkast.setStatus(UtkastStatus.SIGNED);
             updateJsonBeforeSigning(hosPersonal, utkast, signature);
+        } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
+            utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
         } else {
             throw new IllegalArgumentException(
                 String.format("Status '%s' not supported when creating certificate!", createCertificateRequest.getStatus()));

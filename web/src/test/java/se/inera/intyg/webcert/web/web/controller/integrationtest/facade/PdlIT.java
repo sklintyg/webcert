@@ -54,12 +54,16 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
 
 public class PdlIT {
 
+    private final static String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
+    private final static String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
+    private final static String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
     private List<String> certificateIdsToCleanAfterTest;
 
     @BeforeEach
@@ -203,7 +207,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), true);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), ACTIVITY_ARGS_READ_SJF);
         }
 
         @Test
@@ -331,9 +335,8 @@ public class PdlIT {
                 .then()
                 .assertThat().statusCode(HttpStatus.OK.value());
 
-            // Log.activity.activityArg = "Intyg utskrivet" eller "Utkastet utskrivet"
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId());
+            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId(), ACTIVITY_ARGS_DRAFT_PRINTED);
         }
 
         @Test
@@ -403,9 +406,9 @@ public class PdlIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    ALFA_VARDCENTRAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -431,9 +434,9 @@ public class PdlIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    BETA_VARDCENTRAL,
                     DR_BETA,
-                    BETA_VARDCENTRAL
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -450,7 +453,7 @@ public class PdlIT {
                 .assertThat().statusCode(HttpStatus.OK.value());
 
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), true);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), ACTIVITY_ARGS_READ_SJF);
         }
 
         @Disabled("Until it has been implemented")
@@ -467,9 +470,9 @@ public class PdlIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    ALFA_VARDCENTRAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -485,9 +488,8 @@ public class PdlIT {
                 .then()
                 .assertThat().statusCode(HttpStatus.OK.value());
 
-            // Log.activity.activityArg = "Intyg utskrivet" eller "Utkastet utskrivet"
             assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId());
+            assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId(), ACTIVITY_ARGS_CERTIFICATE_PRINTED);
         }
 
         @Disabled("Until it has been implemented")
@@ -508,9 +510,9 @@ public class PdlIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    ALFA_VARDCENTRAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -542,9 +544,107 @@ public class PdlIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
-                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    ALFA_VARDCENTRAL,
                     DR_AJLA,
-                    ALFA_VARDCENTRAL
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
+            revokeCertificateRequest.setReason("Reason");
+            revokeCertificateRequest.setMessage("Message");
+
+            given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(revokeCertificateRequest)
+                .when().post("api/certificate/{certificateId}/revoke")
+                .then()
+                .assertThat().statusCode(HttpStatus.OK.value());
+
+            assertNumberOfPdlMessages(1);
+            assertPdlLogMessage(ActivityType.REVOKE, testSetup.certificateId());
+        }
+    }
+
+    @Nested
+    class PdlTestRelatedToLockedDraft {
+
+        @Test
+        public void shallPdlLogReadActivityWhenFetchingLockedDraft() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .sjf()
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then()
+                .assertThat().statusCode(HttpStatus.OK.value());
+
+            assertNumberOfPdlMessages(1);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
+        }
+
+        @Test
+        public void shallPdlLogCreateActivityWhenCopyLockedDraft() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
+            copyCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            copyCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(copyCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/copy")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertNumberOfPdlMessages(1);
+            assertPdlLogMessage(ActivityType.CREATE, certificateId);
+        }
+
+        @Test
+        public void shallPdlLogRevokeActivityWhenRevokeLockedDraft() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -570,10 +670,10 @@ public class PdlIT {
     }
 
     private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
-        assertPdlLogMessage(expectedActivityType, certificateId, false);
+        assertPdlLogMessage(expectedActivityType, certificateId, null);
     }
 
-    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId, boolean sjf) {
+    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId, String activityArgs) {
         final var pdlLogMessage = getPdlLogMessageFromQueue();
         assertNotNull(pdlLogMessage, "Pdl message was null!");
         assertAll(
@@ -584,8 +684,8 @@ public class PdlIT {
             () -> assertEquals(certificateId, pdlLogMessage.getActivityLevel()),
             () -> assertEquals("Intyg", pdlLogMessage.getPdlResourceList().get(0).getResourceType()),
             () -> {
-                if (sjf) {
-                    assertEquals("Läsning i enlighet med sammanhållen journalföring", pdlLogMessage.getActivityArgs());
+                if (activityArgs != null) {
+                    assertEquals(activityArgs, pdlLogMessage.getActivityArgs());
                 }
             }
         );

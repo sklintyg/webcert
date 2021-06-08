@@ -390,7 +390,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
+            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
 
             lockedDraftAccessServiceHelper.validateAccessToCopy(utkast);
 

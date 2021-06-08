@@ -118,8 +118,22 @@ public class TestSetup {
             return this;
         }
 
-        public TestSetupBuilder certificate(String certificateType, String certificateTypeVersion, String patientId, String personId,
-            String unitId) {
+        public TestSetupBuilder lockedDraft(String certificateType, String certificateTypeVersion, String personId, String unitId,
+            String patientId) {
+            this.createCertificate = true;
+            this.status = CertificateStatus.LOCKED;
+            this.fillType = CreateCertificateFillType.EMPTY;
+            this.values = Collections.emptyMap();
+            this.certificateType = certificateType;
+            this.certificateTypeVersion = certificateTypeVersion;
+            this.patientId = patientId;
+            this.personId = personId;
+            this.unitId = unitId;
+            return this;
+        }
+
+        public TestSetupBuilder certificate(String certificateType, String certificateTypeVersion, String unitId, String personId,
+            String patientId) {
             this.createCertificate = true;
             this.status = CertificateStatus.SIGNED;
             this.fillType = CreateCertificateFillType.MINIMAL;
