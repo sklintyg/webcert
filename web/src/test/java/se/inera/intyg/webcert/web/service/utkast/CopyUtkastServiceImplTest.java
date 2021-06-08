@@ -719,7 +719,7 @@ public class CopyUtkastServiceImplTest {
         utkast.setAterkalladDatum(LocalDateTime.now());
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
 
-        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
         setupMockForGettingUtlatande();
