@@ -461,9 +461,6 @@ public class CopyUtkastServiceImplTest {
     public void testCreateRenewalFailsWhenReplacedBySignedIntyg() {
 
         final String reference = "ref";
-        WebCertUser user = new WebCertUser();
-        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
-        when(userService.getUser()).thenReturn(user);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
             UtkastStatus.SIGNED, false);
