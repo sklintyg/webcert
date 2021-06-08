@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -87,8 +88,6 @@ public class CertificateController {
     @Autowired
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
 
-    public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-
     @GET
     @Path("/{certificateId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -111,17 +110,16 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getId());
         }
-
-        boolean firstSave = false;
-        HttpSession session = request.getSession(true);
-        String lastSavedDraft = (String) session.getAttribute(LAST_SAVED_DRAFT);
-        if (!certificateId.equals(lastSavedDraft)) {
-            firstSave = true;
-        }
-        session.setAttribute(LAST_SAVED_DRAFT, certificateId);
-
-        final long version = saveCertificateFacadeService.saveCertificate(certificate, firstSave);
+        final var pdlLog = isFirstTimeSavedDuringSession(certificateId, request);
+        final var version = saveCertificateFacadeService.saveCertificate(certificate, pdlLog);
         return Response.ok(SaveCertificateResponseDTO.create(version)).build();
+    }
+
+    private boolean isFirstTimeSavedDuringSession(String certificateId, HttpServletRequest request) {
+        final var session = request.getSession(true);
+        final var lastSavedDraft = (String) session.getAttribute(LAST_SAVED_DRAFT);
+        session.setAttribute(LAST_SAVED_DRAFT, certificateId);
+        return !certificateId.equals(lastSavedDraft);
     }
 
     @POST
