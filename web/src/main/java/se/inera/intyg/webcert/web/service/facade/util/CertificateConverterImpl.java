@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelat
 @Component
 public class CertificateConverterImpl implements CertificateConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateConverterImpl.class);
 
     private final IntygModuleRegistry moduleRegistry;
 
