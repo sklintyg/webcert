@@ -20,12 +20,20 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,7 +65,6 @@ class SaveCertificateFacadeServiceImplTest {
     private final static long VERSION = 100;
     private final static long NEW_VERSION = 101;
     private final static String UPDATE_JSON = "UpdatedJson";
-    private final static boolean CREATE_PDL_LOG_EVENT = true;
 
     private Certificate certificate;
 
@@ -80,7 +87,7 @@ class SaveCertificateFacadeServiceImplTest {
 
         doReturn(currentCertificate)
             .when(utkastService)
-            .getDraft(CERTIFICATE_ID, true);
+            .getDraft(CERTIFICATE_ID, false);
 
         final var moduleApi = mock(ModuleApi.class);
 
@@ -97,18 +104,32 @@ class SaveCertificateFacadeServiceImplTest {
         doReturn(saveDraftResponse)
             .when(utkastService)
             .saveDraft(
-                CERTIFICATE_ID,
-                VERSION,
-                UPDATE_JSON,
-                CREATE_PDL_LOG_EVENT
+                eq(CERTIFICATE_ID),
+                eq(VERSION),
+                eq(UPDATE_JSON),
+                anyBoolean()
             );
     }
 
     @Test
     void shallSaveCertificate() {
-
         final var actualVersion = saveCertificateFacadeService.saveCertificate(certificate, true);
-
         assertEquals(NEW_VERSION, actualVersion);
+    }
+
+    @Test
+    void shallPdlLogWhenSaving() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        saveCertificateFacadeService.saveCertificate(certificate, true);
+        verify(utkastService).saveDraft(anyString(), anyLong(), anyString(), actualPdlLogValue.capture());
+        assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+    }
+
+    @Test
+    void shallNotPdlLogWhenSaving() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        saveCertificateFacadeService.saveCertificate(certificate, false);
+        verify(utkastService).saveDraft(anyString(), anyLong(), anyString(), actualPdlLogValue.capture());
+        assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
     }
 }
