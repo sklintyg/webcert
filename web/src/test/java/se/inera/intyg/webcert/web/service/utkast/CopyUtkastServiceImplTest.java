@@ -677,7 +677,7 @@ public class CopyUtkastServiceImplTest {
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
 
-        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
         setupMockForGettingUtlatande();
@@ -705,7 +705,7 @@ public class CopyUtkastServiceImplTest {
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
 
-        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
         setupMockForGettingUtlatande();
@@ -732,7 +732,7 @@ public class CopyUtkastServiceImplTest {
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
 
-        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
         WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.KOPIA, LocalDateTime.now(),
             UtkastStatus.DRAFT_INCOMPLETE, false);

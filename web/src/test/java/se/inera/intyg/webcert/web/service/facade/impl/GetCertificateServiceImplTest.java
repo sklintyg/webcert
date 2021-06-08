@@ -21,12 +21,18 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -39,6 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -88,7 +95,7 @@ class GetCertificateServiceImplTest {
     @BeforeEach
     void setupMocks() throws Exception {
         doReturn(draft)
-            .when(utkastService).getDraft(draft.getIntygsId(), true);
+            .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
 
         final var moduleApi = mock(ModuleApi.class);
         doReturn(moduleApi)
@@ -99,6 +106,26 @@ class GetCertificateServiceImplTest {
 
         doReturn(relations)
             .when(certificateRelationService).getRelations(draft.getIntygsId());
+    }
+
+    @Nested
+    class ValidatePdlLogging {
+
+        @Test
+        void shallPdlLogIfRequired() {
+            final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+            getCertificateService.getCertificate(draft.getIntygsId(), true);
+            verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+            assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+        }
+
+        @Test
+        void shallNotPdlLogIfRequired() {
+            final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+            assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+        }
     }
 
     @Nested

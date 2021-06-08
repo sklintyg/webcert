@@ -71,7 +71,7 @@ public class GetCertificateServiceImpl implements GetCertificateFacadeService {
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog) {
-        LOG.debug("Retrieving certificate '{}' from UtkastService", certificateId);
+        LOG.debug("Retrieving certificate '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
         final Utkast certificate = utkastService.getDraft(certificateId, pdlLog);
 
         LOG.debug("Converting Utkast to Certificate");
