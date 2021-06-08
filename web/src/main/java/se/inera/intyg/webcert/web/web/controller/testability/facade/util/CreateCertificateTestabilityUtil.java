@@ -115,6 +115,15 @@ public class CreateCertificateTestabilityUtil {
 
         utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
 
+        updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
+
+        utkastRepository.save(utkast);
+
+        return certificate.getMetadata().getId();
+    }
+
+    private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
+        Utkast utkast) {
         if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
             final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getModel());
             UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
@@ -131,10 +140,6 @@ public class CreateCertificateTestabilityUtil {
             throw new IllegalArgumentException(
                 String.format("Status '%s' not supported when creating certificate!", createCertificateRequest.getStatus()));
         }
-
-        utkastRepository.save(utkast);
-
-        return certificate.getMetadata().getId();
     }
 
     private void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
