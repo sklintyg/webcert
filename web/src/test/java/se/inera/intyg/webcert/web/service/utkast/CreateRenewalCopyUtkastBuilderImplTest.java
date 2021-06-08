@@ -91,7 +91,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString())).thenReturn("1.2");
         IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
@@ -104,8 +104,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-            false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false
+        );
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -141,8 +141,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
-            false,
-            false);
+            false
+        );
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -168,7 +168,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -183,7 +183,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     public void testPopulateRenewalUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
 
@@ -192,7 +192,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());

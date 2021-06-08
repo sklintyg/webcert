@@ -57,7 +57,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -511,7 +510,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
-        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean())).thenReturn(intygContentHolder);
 
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
@@ -582,7 +581,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
-        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean())).thenReturn(intygContentHolder);
 
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
@@ -609,7 +608,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(modelFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
-        when(intygService.fetchIntygData(anyString(), any(), anyBoolean(), anyBoolean())).thenReturn(intygContentHolder);
+        when(intygService.fetchIntygData(anyString(), any(), anyBoolean())).thenReturn(intygContentHolder);
 
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
@@ -1225,7 +1224,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         when(intygService.getIntygTypeInfo(INTYG_ID, null)).thenReturn(intygTypeInfo);
         when(intygTypeInfo.getIntygType()).thenReturn(intygsTyp);
-        when(intygService.fetchIntygData(INTYG_ID, intygsTyp, true, false)).thenReturn(intygContentHolder);
+        when(intygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(intygContentHolder);
         when(intygService.fetchIntygDataForInternalUse(INTYG_ID, true)).thenReturn(intygContentHolder);
         when(intygContentHolder.getUtlatande()).thenReturn(utlatande);
 

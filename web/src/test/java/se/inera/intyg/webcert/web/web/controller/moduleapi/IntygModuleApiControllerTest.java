@@ -32,7 +32,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -197,13 +196,13 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false))).thenReturn(content);
+        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(intygContent, ((IntygContentHolder) response.getEntity()).getContents());
-        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false));
+        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp));
     }
 
     @Test
@@ -215,13 +214,13 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(true))).thenReturn(content);
+        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(intygContent, ((IntygContentHolder) response.getEntity()).getContents());
-        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(true));
+        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp));
     }
 
     @Test

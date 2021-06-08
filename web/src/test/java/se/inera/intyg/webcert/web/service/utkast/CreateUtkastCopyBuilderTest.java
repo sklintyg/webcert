@@ -91,7 +91,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
     public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE_1, false)).thenReturn(ich);
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE_1)).thenReturn(ich);
 
         CreateUtkastFromTemplateRequest createUtkastFromTemplateRequest = buildCreateUtkastFromTemplateRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
@@ -103,8 +103,8 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
-            .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
-                false);
+            .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false
+            );
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -142,8 +142,8 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
-            .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true,
-                false);
+            .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true
+            );
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());

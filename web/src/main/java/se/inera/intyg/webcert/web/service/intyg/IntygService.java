@@ -43,7 +43,7 @@ public interface IntygService {
      *
      * The call will be pdl logged.
      */
-    IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling);
+    IntygContentHolder fetchIntygData(String intygId, String typ);
 
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
@@ -53,11 +53,10 @@ public interface IntygService {
      *
      * @param intygId Certificate id.
      * @param typ Certificate type.
-     * @param coherentJournaling If coherentJournaling should be considered.
      * @param pdlLogging If the call should be logged.
      * @return IntygContentHolder.
      */
-    IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling, boolean pdlLogging);
+    IntygContentHolder fetchIntygData(String intygId, String typ, boolean pdlLogging);
 
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
@@ -69,7 +68,7 @@ public interface IntygService {
      *
      * The call will be pdl logged.
      */
-    IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ, boolean coherentJournaling);
+    IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ);
 
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
@@ -95,11 +94,10 @@ public interface IntygService {
      *
      * @param intygsId Certificate id.
      * @param intygsTyp Certificate type.
-     * @param coherentJournaling If coherentJournaling should be considered.
      * @param pdlLogging If the call should be logged.
      * @return IntygContentHolder.
      */
-    IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging);
+    IntygContentHolder fetchIntygDataforCandidate(String intygsId, String intygsTyp, boolean pdlLogging);
 
     /**
      * Returns all certificates for the given patient within all the given units.
@@ -159,10 +157,9 @@ public interface IntygService {
      *
      * @param intygsId ID of the intyg to check revoke status for.
      * @param intygsTyp Type of the intyg.
-     * @param coherentJournaling true or false.
      * @return true if the intyg is revoked, false if not.
      */
-    boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling);
+    boolean isRevoked(String intygsId, String intygsTyp);
 
     /**
      * Gathers the information required to return the list with notifications and creates a list of

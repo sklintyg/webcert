@@ -97,7 +97,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     public void testPopulateCompletionFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId("meddelandeId");
@@ -110,7 +110,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         UtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
-            true, false);
+            true);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -146,7 +146,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
-            true, false);
+            true);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -168,7 +168,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Arende arende = new Arende();
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
-        when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
+        when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.validateDraft(isNull()))
             .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         Utlatande utlatande = new Fk7263Utlatande();
@@ -182,7 +182,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
             "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
+        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
@@ -217,7 +217,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
             "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
+        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));

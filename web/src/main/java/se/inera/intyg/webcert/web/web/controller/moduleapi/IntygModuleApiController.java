@@ -99,11 +99,10 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         WebCertUser user = getWebCertUserService().getUser();
-        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
 
-        LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
+        LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
-        IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
+        IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygAsExternal);
 

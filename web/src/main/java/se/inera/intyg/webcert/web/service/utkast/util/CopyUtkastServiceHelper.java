@@ -80,9 +80,7 @@ public class CopyUtkastServiceHelper {
         final WebCertUser user = webCertUserService.getUser();
         IntegrationParameters parameters = user.getParameters();
 
-        boolean coherentJournaling = parameters != null && parameters.isSjf();
-
-        CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
+        CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
         addValuesOnRequest(req, parameters);
 

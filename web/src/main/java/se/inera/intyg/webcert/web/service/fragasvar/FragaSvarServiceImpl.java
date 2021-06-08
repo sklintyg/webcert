@@ -350,7 +350,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Fetch from Intygstjansten. Note that if Intygstjansten is unresponsive, the Intyg will be loaded from WebCert
         // if possible.
-        IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ, false);
+        IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
 
         WebCertUser user = webCertUserService.getUser();
 

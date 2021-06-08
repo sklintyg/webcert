@@ -252,7 +252,7 @@ public class ArendeServiceImpl implements ArendeService {
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
         } else {
             final var certificateTypeInformation = intygService.getIntygTypeInfo(intygId, null);
-            final var certificate = intygService.fetchIntygData(intygId, certificateTypeInformation.getIntygType(), true, false);
+            final var certificate = intygService.fetchIntygData(intygId, certificateTypeInformation.getIntygType(), false);
 
             validateArende(certificate);
 
@@ -1040,7 +1040,7 @@ public class ArendeServiceImpl implements ArendeService {
         final Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
         if (utkast == null) {
             final IntygTypeInfo intygTypInfo = intygService.getIntygTypeInfo(intygsId, null);
-            final IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygTypInfo.getIntygType(), true, false);
+            final IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygTypInfo.getIntygType(), false);
             return intygContentHolder.getUtlatande();
         }
         return getUtlatande(utkast);

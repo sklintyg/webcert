@@ -344,7 +344,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         // Setup when - given -then
 
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
@@ -385,7 +385,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
         // create mocked Utlatande from intygstjansten
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(
                 getIntygContentHolder());
 
@@ -432,7 +432,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
         // create mocked Utlatande from intygstjansten
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(
                 getIntygContentHolder());
 
@@ -457,7 +457,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
         // create mocked Utlatande from intygstjansten
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(getRevokedIntygContentHolder());
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
@@ -478,7 +478,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveFragaWsHTMLError() throws Exception {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(getIntygContentHolder());
 
         // mock error with content type html
@@ -637,7 +637,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         String intygsId = fraga.getIntygsReferens().getIntygsId();
         // Setup when - given -then
 
-        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(getUnsentIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
@@ -662,7 +662,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         String intygsId = fraga.getIntygsReferens().getIntygsId();
         // Setup when - given -then
 
-        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false))
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp()))
             .thenReturn(getRevokedIntygContentHolder());
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);

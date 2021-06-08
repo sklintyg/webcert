@@ -86,14 +86,14 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-        boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+    public UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails,
+        boolean addRelation) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String originalIntygsTyp = copyRequest.getOriginalIntygTyp();
         String intygsTyp = copyRequest.getTyp();
 
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, originalIntygsTyp, coherentJournaling);
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, originalIntygsTyp);
 
         ModuleApi orgModuleApi = moduleRegistry.getModuleApi(originalIntygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
         Utlatande orgUtlatande;
@@ -174,8 +174,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      */
     @Override
     @Transactional(readOnly = true)
-    public UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-        boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+    public UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails,
+        boolean addRelation) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 

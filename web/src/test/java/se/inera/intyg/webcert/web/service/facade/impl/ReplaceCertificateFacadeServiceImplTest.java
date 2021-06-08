@@ -36,8 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
@@ -63,8 +61,7 @@ class ReplaceCertificateFacadeServiceImplTest {
             CERTIFICATE_ID,
             CERTIFICATE_TYPE,
             null,
-            null,
-            false
+            null
         );
 
         doReturn(serviceRequest)

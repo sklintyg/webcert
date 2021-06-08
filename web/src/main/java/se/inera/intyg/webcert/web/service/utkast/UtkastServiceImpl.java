@@ -261,8 +261,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         try {
-            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType,
-                false, true);
+            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true);
 
             String draftVersion = to.getIntygTypeVersion();
             if (draftVersion == null) {
