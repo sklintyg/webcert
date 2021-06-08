@@ -157,15 +157,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
-     * dto.
-     * CreateNewDraftCopyRequest)
-     */
     @Override
     public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
         String originalIntygId = copyRequest.getOriginalIntygId();
@@ -174,8 +165,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         WebCertUser user = userService.getUser();
 
         try {
-            boolean coherentJournaling = isCoherentJournaling(user);
-
             final Utlatande utlatande = utkastServiceHelper.getUtlatande(copyRequest.getOriginalIntygId(),
                 copyRequest.getOriginalIntygTyp(),
                 false);
@@ -207,22 +196,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
-     * dto.
-     * CreateRenewalCopyRequest)
-     */
     @Override
     public CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest) {
         String originalIntygId = copyRequest.getOriginalIntygId();
 
         LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
-
-        WebCertUser user = userService.getUser();
-        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             final Utlatande utlatande = utkastServiceHelper.getUtlatande(copyRequest.getOriginalIntygId(),
@@ -242,12 +220,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
             verifySigned(utlatande, CREATE_RENEWAL);
 
-            UtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
+            UtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
 
+            final var user = userService.getUser();
             Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.FORLANGER, originalIntygId);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
@@ -329,9 +308,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         LOG.debug("Creating utkast from template (certificate). Certificate = '{}'", originalIntygId);
 
-        WebCertUser user = userService.getUser();
-        boolean coherentJournaling = isCoherentJournaling(user);
-
         try {
             if (intygService.isRevoked(templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp())) {
                 LOG.debug("Cannot create utkast from template. The certificate is revoked. Certificate id = '{}'", originalIntygId);
@@ -353,8 +329,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 
             UtkastBuilderResponse builderResponse = buildUtkastFromSignedTemplateBuilderResponse(templateRequest, patientDetails,
-                true, coherentJournaling);
+                true);
 
+            final var user = userService.getUser();
             Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
 
             monitoringService.logUtkastCreatedTemplateManual(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
@@ -378,9 +355,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         String originalIntygId = copyRequest.getOriginalIntygId();
 
         LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
-
-        WebCertUser user = userService.getUser();
-        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
@@ -408,8 +382,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
 
-            UtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
+            UtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId);
 
+            final var user = userService.getUser();
             Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOPIERATFRAN, originalIntygId);
 
             if (copyRequest.isDjupintegrerad()) {
@@ -523,15 +498,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private UtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId,
-        boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+    private UtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId)
+        throws ModuleNotFoundException, ModuleException {
 
         Person patientDetails = updatePatientDetails(copyRequest);
 
         UtkastBuilderResponse builderResponse;
         if (utkastRepository.existsById(originalIntygId)) {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true
-            );
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
         }
@@ -540,14 +514,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private UtkastBuilderResponse buildUtkastFromSignedTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-        Person patientDetails, boolean addRelation, boolean coherentJournaling)
+        Person patientDetails, boolean addRelation)
         throws ModuleNotFoundException, ModuleException {
 
         return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
     }
 
     private UtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-        String originalIntygId, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+        String originalIntygId) throws ModuleNotFoundException, ModuleException {
 
         Person patientDetails = updatePatientDetails(copyRequest);
 
@@ -664,9 +638,4 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
     }
-
-    private boolean isCoherentJournaling(WebCertUser user) {
-        return user != null && user.getParameters() != null && user.getParameters().isSjf();
-    }
-
 }
