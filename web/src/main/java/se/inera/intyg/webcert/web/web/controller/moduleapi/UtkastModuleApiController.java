@@ -336,7 +336,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         LOG.debug("Attempting to create a new certificate from certificate with type {} and id '{}'",
             intygsTyp, orgIntygsId);
 
-        Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
+        Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp, false);
 
         // Do authorization check
         lockedDraftAccessServiceHelper.validateAccessToCopy(utkast);
