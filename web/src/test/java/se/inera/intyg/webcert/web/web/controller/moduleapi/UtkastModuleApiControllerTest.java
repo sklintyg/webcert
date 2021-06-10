@@ -391,7 +391,7 @@ public class UtkastModuleApiControllerTest {
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
-        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(utkast);
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp), eq(Boolean.FALSE))).thenReturn(utkast);
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
@@ -410,7 +410,7 @@ public class UtkastModuleApiControllerTest {
         String intygsId = "intygId";
         String intygsTyp = "fk7263";
 
-        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(mock(Utkast.class));
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp), eq(Boolean.FALSE))).thenReturn(mock(Utkast.class));
 
         doThrow(
             new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, "Some error message")
@@ -437,7 +437,7 @@ public class UtkastModuleApiControllerTest {
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(createPnr("19121212-1212"));
-        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(utkast);
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp), eq(Boolean.FALSE))).thenReturn(utkast);
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
