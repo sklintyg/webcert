@@ -267,11 +267,15 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         }
         if (certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Ersätt", "Ersätter intyget", true));
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Ersätt", "Skapar en kopia av detta intyg som du kan redigera.", true));
+        }
+        if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Förnya", "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.", true));
         }
         if (certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Makulerar intyget", true));
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Öppnar ett fönster där du kan välja att makulera intyget.", true));
         }
         certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
     }
