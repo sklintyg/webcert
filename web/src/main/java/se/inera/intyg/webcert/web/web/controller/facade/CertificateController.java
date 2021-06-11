@@ -207,7 +207,7 @@ public class CertificateController {
     @PrometheusTimeMethod
     public Response renewCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Replacing certificate with id: '{}'", certificateId);
+            LOG.debug("Renewing certificate with id: '{}'", certificateId);
         }
         final var newCertificateId = renewCertificateFacadeService.renewCertificate(certificateId);
         return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();

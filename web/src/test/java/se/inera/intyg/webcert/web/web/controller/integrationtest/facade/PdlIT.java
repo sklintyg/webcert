@@ -492,10 +492,32 @@ public class PdlIT {
             assertPdlLogMessage(ActivityType.PRINT, testSetup.certificateId(), ACTIVITY_ARGS_CERTIFICATE_PRINTED);
         }
 
-        @Disabled("Until it has been implemented")
         @Test
         public void shallPdlLogCreateActivityWhenRenewCertificate() {
-            fail();
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/renew")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertNumberOfPdlMessages(1);
+            assertPdlLogMessage(ActivityType.CREATE, certificateId);
         }
 
         @Disabled("Until it has been implemented")
