@@ -183,7 +183,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     public void testNotValidPrivatePractitionerThrowsException() {
         final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NOT_AUTHORIZED_IN_HOSP);
 
-        doReturn(Boolean.FALSE).when(featuresHelper).isFeatureActive(any());
         when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
@@ -202,8 +201,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT);
 
         when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
-        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD)).thenReturn(true);
         when(subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(null)).thenReturn(true);
+        when(subscriptionService.isAnySubscriptionFeatureActive()).thenReturn(true);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }

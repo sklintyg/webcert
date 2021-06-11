@@ -154,7 +154,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             return;
         }
 
-        if (isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse) && isMissingSubscription(personId)) {
+        if (subscriptionService.isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse)
+            && isMissingSubscription(personId)) {
             throw new MissingSubscriptionException("Private practitioner '" + personId + "' has no active subscription.");
         }
 
@@ -168,11 +169,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
         return validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT;
-    }
-
-    private boolean isAnySubscriptionFeatureActive() {
-        return Boolean.TRUE.equals(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD))
-            || Boolean.TRUE.equals(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD));
     }
 
     private String resolveRequestOrigin() {
