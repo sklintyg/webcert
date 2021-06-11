@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
@@ -29,6 +31,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service
 public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacadeService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RenewCertificateFacadeServiceImpl.class);
 
     private final CopyUtkastServiceHelper copyUtkastServiceHelper;
     private final CopyUtkastService copyUtkastService;
@@ -44,15 +48,19 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
 
     @Override
     public String renewCertificate(String certificateId) {
+        LOG.debug("Get certificate '{}' that will be renewed", certificateId);
         final var certificate = utkastService.getDraft(certificateId, false);
-
         final var certificateType = certificate.getIntygsTyp();
-
         final var copyRequest = new CopyIntygRequest();
         copyRequest.setPatientPersonnummer(certificate.getPatientPersonnummer());
 
+        LOG.debug("Preparing to create a renewal for '{}' with type '{}'", certificateId, certificateType);
         final var renewalRequest = copyUtkastServiceHelper.createRenewalCopyRequest(certificateId, certificateType, copyRequest);
+
+        LOG.debug("Create a renewal for '{}' with type '{}'", renewalRequest.getOriginalIntygId(), renewalRequest.getTyp());
         final var renewalCopy = copyUtkastService.createRenewalCopy(renewalRequest);
+
+        LOG.debug("Return renewal draft '{}' ", renewalCopy.getNewDraftIntygId());
         return renewalCopy.getNewDraftIntygId();
     }
 }

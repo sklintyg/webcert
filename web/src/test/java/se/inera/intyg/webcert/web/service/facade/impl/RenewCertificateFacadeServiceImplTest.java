@@ -61,7 +61,7 @@ class RenewCertificateFacadeServiceImplTest {
     private RenewCertificateFacadeServiceImpl renewCertificateFacadeService;
 
     private final static String CERTIFICATE_ID = "certificateId";
-    private final static String RENEW_CERTIFICATE_ID = "copyCertificateId";
+    private final static String RENEW_CERTIFICATE_ID = "renewCertificateId";
     private final static String CERTIFICATE_TYPE = "certificateType";
     private final static String PATIENT_ID = "191212121212";
 
