@@ -16,24 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.subscription;
 
 import java.util.List;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
+import java.util.Map;
 
-public interface SubscriptionService {
+public interface SubscriptionRestService {
 
-    SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
+    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap);
 
-    boolean fetchSubscriptionInfoUnregisteredElegUser(String personId);
-
-    List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId);
-
-    boolean isPastSubscriptionAdjustmentPeriod();
-
-    boolean isDuringSubscriptionAdjustmentPeriod();
-
-    boolean isAnySubscriptionFeatureActive();
+    boolean isUnregisteredElegUserMissingSubscription(String organizationNumber);
 
 }

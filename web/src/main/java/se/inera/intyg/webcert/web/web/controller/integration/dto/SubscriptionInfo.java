@@ -36,15 +36,15 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private List<String> acknowledgedWarnings;
     @JsonProperty
-    private String subscriptionBlockStartDate;
+    private String requireSubscriptionStartDate;
 
     public SubscriptionInfo(SubscriptionAction subscriptionAction, List<String> unitHsaIdList,
-        AuthenticationMethodEnum authenticationMethod, String subscriptionBlockStartDate) {
+        AuthenticationMethodEnum authenticationMethod, String requireSubscriptionStartDate) {
         this.subscriptionAction = subscriptionAction;
         this.authenticationMethod = authenticationMethod;
         this.unitHsaIdList = unitHsaIdList;
         this.acknowledgedWarnings = new ArrayList<>();
-        this.subscriptionBlockStartDate = subscriptionBlockStartDate;
+        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
     public static SubscriptionInfo createSubscriptionInfoNoAction() {
@@ -83,12 +83,12 @@ public class SubscriptionInfo implements Serializable {
         this.acknowledgedWarnings = acknowledgedWarnings;
     }
 
-    public String getAdjustmentPeriodStartDate() {
-        return subscriptionBlockStartDate;
+    public String getRequireSubscriptionStartDate() {
+        return requireSubscriptionStartDate;
     }
 
-    public void setAdjustmentPeriodStartDate(String subscriptionBlockStartDate) {
-        this.subscriptionBlockStartDate = subscriptionBlockStartDate;
+    public void setRequireSubscriptionStartDate(String requireSubscriptionStartDate) {
+        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
     @Override
