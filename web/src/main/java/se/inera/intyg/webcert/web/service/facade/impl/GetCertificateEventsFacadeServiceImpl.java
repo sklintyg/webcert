@@ -177,6 +177,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.REVOKED;
             case ERSATTER:
                 return CertificateEventTypeDTO.REPLACES;
+            case FORLANGER:
+                return CertificateEventTypeDTO.EXTENDED;
             case KOPIERATFRAN:
                 return CertificateEventTypeDTO.COPIED_FROM;
             default:
@@ -207,6 +209,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     private boolean shouldDecorateWithParent(CertificateEventTypeDTO eventType) {
         final var eventTypesToDecorateWithParent = Arrays.asList(
             CertificateEventTypeDTO.REPLACES,
+            CertificateEventTypeDTO.EXTENDED,
             CertificateEventTypeDTO.COPIED_FROM
         );
         return eventTypesToDecorateWithParent.contains(eventType);

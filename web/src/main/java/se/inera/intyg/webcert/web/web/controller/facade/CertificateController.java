@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
@@ -54,6 +55,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseD
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
@@ -83,6 +85,8 @@ public class CertificateController {
     private ReplaceCertificateFacadeService replaceCertificateFacadeService;
     @Autowired
     private CopyCertificateFacadeService copyCertificateFacadeService;
+    @Autowired
+    private RenewCertificateFacadeService renewCertificateFacadeService;
     @Autowired
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
     @Autowired
@@ -195,6 +199,18 @@ public class CertificateController {
             replaceCertificate.getPatientId().getId()
         );
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/renew")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response renewCertificate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Renewing certificate with id: '{}'", certificateId);
+        }
+        final var newCertificateId = renewCertificateFacadeService.renewCertificate(certificateId);
+        return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
     }
 
     @POST
