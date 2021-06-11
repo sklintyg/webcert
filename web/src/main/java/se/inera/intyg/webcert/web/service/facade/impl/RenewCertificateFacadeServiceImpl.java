@@ -19,14 +19,40 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service
 public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacadeService {
 
+    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+    private final CopyUtkastService copyUtkastService;
+    private final UtkastService utkastService;
+
+    @Autowired
+    public RenewCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
+        CopyUtkastService copyUtkastService, UtkastService utkastService) {
+        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+        this.copyUtkastService = copyUtkastService;
+        this.utkastService = utkastService;
+    }
+
     @Override
     public String renewCertificate(String certificateId) {
-        return null;
+        final var certificate = utkastService.getDraft(certificateId, false);
+
+        final var certificateType = certificate.getIntygsTyp();
+
+        final var copyRequest = new CopyIntygRequest();
+        copyRequest.setPatientPersonnummer(certificate.getPatientPersonnummer());
+
+        final var renewalRequest = copyUtkastServiceHelper.createRenewalCopyRequest(certificateId, certificateType, copyRequest);
+        final var renewalCopy = copyUtkastService.createRenewalCopy(renewalRequest);
+        return renewalCopy.getNewDraftIntygId();
     }
 }
