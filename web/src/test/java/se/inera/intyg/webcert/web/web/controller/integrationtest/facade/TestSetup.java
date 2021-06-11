@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertif
 
 public class TestSetup {
 
-    private String certificateId;
+    private final String certificateId;
     private final Certificate certificate;
     private final String routeId;
     private final String csrfToken;
@@ -96,7 +96,7 @@ public class TestSetup {
         private String routeId;
         private String csrfToken;
 
-        private CustomObjectMapper objectMapper = new CustomObjectMapper();
+        private final CustomObjectMapper objectMapper = new CustomObjectMapper();
         private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
         private static final String FAKE_LOGIN_URI = "/fake";
 
@@ -155,7 +155,7 @@ public class TestSetup {
             this.credentials = credentials;
             return this;
         }
-        
+
         public TestSetupBuilder useDjupIntegratedOrigin() {
             this.origin = "DJUPINTEGRATION";
             return this;
@@ -244,12 +244,17 @@ public class TestSetup {
         }
 
         private Certificate getCertificate(String certificateId) {
-            return given()
+            final var certificateDTO = given()
                 .pathParam("certificateId", certificateId)
                 .expect().statusCode(200)
                 .when()
                 .get("api/certificate/{certificateId}")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            final var certificate = new Certificate();
+            certificate.setMetadata(certificateDTO.getMetadata());
+            certificate.setData(certificateDTO.getData());
+            return certificate;
         }
 
         protected void setSjf() {
@@ -265,11 +270,6 @@ public class TestSetup {
                 .pathParam("origin", newOrigin)
                 .expect().statusCode(200)
                 .when().get("authtestability/user/origin/{origin}");
-
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//            }
         }
     }
 }

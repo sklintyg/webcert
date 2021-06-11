@@ -19,21 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,22 +42,17 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.modules.support.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @ExtendWith(MockitoExtension.class)
 class GetCertificateServiceImplTest {
 
     @Mock
     private UtkastService utkastService;
-
-    @Mock
-    private ResourceLinkHelper resourceLinkHelper;
 
     @Mock
     private CertificateConverter certificateConverter;
@@ -104,29 +94,6 @@ class GetCertificateServiceImplTest {
             getCertificateService.getCertificate(draft.getIntygsId(), false);
             verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
             assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
-        }
-    }
-
-    @Nested
-    class ValidateResourceLinks {
-
-        @Test
-        void shallIncludeResourceLinks() {
-            final var expectedResourceLinks = Arrays.array(new ResourceLinkDTO(), new ResourceLinkDTO());
-
-            doAnswer(invocation -> {
-                invocation.getArgument(0, Certificate.class).setLinks(expectedResourceLinks);
-                return null;
-            }).when(resourceLinkHelper)
-                .decorateCertificateWithValidActionLinks(any(Certificate.class));
-
-            final var actualCertificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
-
-            assertAll(
-                () -> assertEquals(expectedResourceLinks.length, actualCertificate.getLinks().length),
-                () -> assertEquals(expectedResourceLinks[0], actualCertificate.getLinks()[0]),
-                () -> assertEquals(expectedResourceLinks[1], actualCertificate.getLinks()[1])
-            );
         }
     }
 

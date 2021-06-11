@@ -22,12 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.support.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.common.support.modules.support.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -201,130 +198,6 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
                 arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
             }
         }
-    }
-
-    @Override
-    public void decorateCertificateWithValidActionLinks(Certificate certificate) {
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
-        vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
-
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-            certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(), vardenhet,
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
-            certificate.getMetadata().isTestCertificate());
-
-        switch (certificate.getMetadata().getStatus()) {
-            case UNSIGNED:
-                decorateUnsignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
-                break;
-            case SIGNED:
-                decorateSignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
-                break;
-            case LOCKED:
-                decorateLockedCertificateWithValidActionLinks(certificate, accessEvaluationParameters);
-                break;
-            default:
-                certificate.setLinks(new ResourceLinkDTO[0]);
-        }
-    }
-
-    private void decorateUnsignedCertificateWithValidActionLinks(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        if (draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.EDIT_CERTIFICATE, "Ändra", "Ändrar intygsutkast", true));
-        }
-        if (draftAccessServiceHelper.isAllowToPrintUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
-        }
-        if (draftAccessServiceHelper.isAllowToDeleteUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.REMOVE_CERTIFICATE, "Radera", "Raderar intygsutkast", true));
-        }
-        if (draftAccessServiceHelper.isAllowToSign(accessEvaluationParameters, certificate.getMetadata().getId())) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera", "Signerar intygsutkast", true));
-        }
-        if (draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, "Vidarebefodra utkast",
-                "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
-                true));
-        }
-//        if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
-//            resourceLinks
-//                .add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "Skicka", "Skickar intyget", true));
-//        }
-        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
-    }
-
-    private void decorateSignedCertificateWithValidActionLinks(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        if (certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters, false)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intyget för utskrift.", true));
-        }
-        if (certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
-                    "Ersätt",
-                    "Skapar en kopia av detta intyg som du kan redigera.",
-                    true
-                )
-            );
-        }
-        if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.RENEW_CERTIFICATE,
-                    "Förnya",
-                    "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.",
-                    "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                        + " med viss information från det ursprungliga intyget.<br><br>\n"
-                        + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
-                        + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
-                        + "<ul>\n"
-                        + "<li>Sjukskrivningsperiod och grad.</li>\n"
-                        + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
-                        + "<li>Referenser som intyget baseras på.</li>\n"
-                        + "</ul>\n"
-                        + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
-                        + "Det nya utkastet skapas på den enhet du är inloggad på.",
-                    true
-                )
-            );
-        }
-        if (certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO
-                    .create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Öppnar ett fönster där du kan välja att makulera intyget.",
-                        true));
-        }
-        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
-    }
-
-    private void decorateLockedCertificateWithValidActionLinks(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
-        if (lockedDraftAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
-        }
-        if (lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO
-                    .create(ResourceLinkTypeDTO.COPY_CERTIFICATE, "Kopiera",
-                        "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.", true));
-        }
-        if (lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera",
-                    "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.", true));
-        }
-        certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
     }
 
     private List<ActionLink> getActionLinksForQuestions(AccessEvaluationParameters accessEvaluationParameters) {
