@@ -194,7 +194,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
                 arendeListItem.getIntygTyp(),
                 null,
                 careUnit,
-                Personnummer.createPersonnummer(arendeListItem.getPatientId()).get(),
+                Personnummer.createPersonnummer(arendeListItem.getPatientId()).orElseThrow(),
                 arendeListItem.isTestIntyg());
 
             if (certificateAccessServiceHelper.isAllowToForwardQuestions(accessEvaluationParameters)) {
@@ -212,7 +212,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
             certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(), vardenhet,
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get(),
+            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
             certificate.getMetadata().isTestCertificate());
 
         switch (certificate.getMetadata().getStatus()) {
@@ -248,8 +248,8 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         }
         if (draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)) {
             resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, "Vidarebefodra utkast",
-                        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
-                        true));
+                "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
+                true));
         }
 //        if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
 //            resourceLinks
@@ -267,15 +267,40 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         }
         if (certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Ersätt", "Skapar en kopia av detta intyg som du kan redigera.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
+                    "Ersätt",
+                    "Skapar en kopia av detta intyg som du kan redigera.",
+                    true
+                )
+            );
         }
         if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REPLACE_CERTIFICATE, "Förnya", "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.RENEW_CERTIFICATE,
+                    "Förnya",
+                    "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.",
+                    "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
+                        + " med viss information från det ursprungliga intyget.<br><br>\n"
+                        + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
+                        + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
+                        + "<ul>\n"
+                        + "<li>Sjukskrivningsperiod och grad.</li>\n"
+                        + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
+                        + "<li>Referenser som intyget baseras på.</li>\n"
+                        + "</ul>\n"
+                        + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
+                        + "Det nya utkastet skapas på den enhet du är inloggad på.",
+                    true
+                )
+            );
         }
         if (certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Öppnar ett fönster där du kan välja att makulera intyget.", true));
+                ResourceLinkDTO
+                    .create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Öppnar ett fönster där du kan välja att makulera intyget.",
+                        true));
         }
         certificate.setLinks(resourceLinks.toArray(new ResourceLinkDTO[0]));
     }
