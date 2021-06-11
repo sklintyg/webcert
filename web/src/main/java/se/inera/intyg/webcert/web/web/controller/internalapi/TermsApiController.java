@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 
 @Path("/terms")
 @Api(value = "/terms/approved", produces = MediaType.APPLICATION_JSON)
@@ -35,10 +36,17 @@ public class TermsApiController {
     @Autowired
     private AvtalService avtalService;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     @GET
     @Path("/approved/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean getApprovedTerms(@PathParam("hsaId") String hsaId) {
-        return avtalService.userHasApprovedLatestAvtal(hsaId);
+    public boolean getWebcertTermsApproved(@PathParam("hsaId") String hsaId) {
+        if (subscriptionService.isDuringSubscriptionAdjustmentPeriod()) {
+            return avtalService.userHasApprovedLatestAvtal(hsaId);
+        }
+
+        return !subscriptionService.isPastSubscriptionAdjustmentPeriod();
     }
 }
