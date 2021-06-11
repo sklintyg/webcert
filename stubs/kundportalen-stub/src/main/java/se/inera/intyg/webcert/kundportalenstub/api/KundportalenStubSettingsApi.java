@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.kundportalenstub.api;
 
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,7 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.kundportalenstub.service.KundportalenStubSettingsApiService;
 
@@ -34,8 +34,11 @@ import se.inera.intyg.webcert.kundportalenstub.service.KundportalenStubSettingsA
 @Path("/settings")
 public class KundportalenStubSettingsApi {
 
-    @Autowired
-    private KundportalenStubSettingsApiService stubSettingsService;
+    private final KundportalenStubSettingsApiService stubSettingsService;
+
+    public KundportalenStubSettingsApi(KundportalenStubSettingsApiService stubSettingsService) {
+        this.stubSettingsService = stubSettingsService;
+    }
 
     @GET
     @Path("/set/{returnValue}")
@@ -68,7 +71,7 @@ public class KundportalenStubSettingsApi {
     @Produces(MediaType.APPLICATION_JSON)
     public String removeActiveSubscriptions(@PathParam("orgNumber") String orgNumber) {
         stubSettingsService.removeActiveSubscriptions(orgNumber);
-        return "Removed active subscription for organization '" + orgNumber + "'.";
+        return "Removed active subscriptions for organization '" + orgNumber + "'.";
     }
 
     @GET
@@ -82,7 +85,7 @@ public class KundportalenStubSettingsApi {
     @GET
     @Path("/getactive")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, String> getActiveSubscriptions() {
+    public Map<String, List<String>> getActiveSubscriptions() {
         return stubSettingsService.getActiveSubscriptions();
     }
 }

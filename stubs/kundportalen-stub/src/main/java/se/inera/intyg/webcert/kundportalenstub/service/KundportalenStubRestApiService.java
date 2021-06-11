@@ -19,30 +19,44 @@
 
 package se.inera.intyg.webcert.kundportalenstub.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.kundportalenstub.state.KundportalenStubState;
 
 @Service
 public class KundportalenStubRestApiService {
 
-    @Autowired
-    private KundportalenStubState stubState;
+    private final KundportalenStubState stubState;
 
-    public List<Map<String, String>> getServices() {
-        return stubState.getServices();
+    public KundportalenStubRestApiService(KundportalenStubState stubState) {
+        this.stubState = stubState;
     }
 
-    public Boolean getSubscriptionInfo(String orgNumber, String serviceCode) {
+    public List<Map<String, Object>> getSubscriptionInfo(List<String> orgNumbers) {
         final var activeSubscriptions = stubState.getActiveSubscriptions();
-        if (!activeSubscriptions.isEmpty()) {
-            if (activeSubscriptions.containsKey(orgNumber)) {
-                return activeSubscriptions.get(orgNumber).equals(serviceCode);
-            }
-            return false;
+        final var subscriptionInfo = new ArrayList<Map<String, Object>>();
+
+        for (var orgNumber : orgNumbers) {
+            final var organization = new HashMap<String, Object>();
+            final var subscribedServiceCodes = getSubscribedServiceCodes(activeSubscriptions, orgNumber);
+
+            organization.put("org_no", orgNumber);
+            organization.put("service_code_subscriptions", subscribedServiceCodes);
+            subscriptionInfo.add(organization);
         }
-        return stubState.getSubscriptionReturnValue();
+        return subscriptionInfo;
+    }
+
+    private List<String> getSubscribedServiceCodes(Map<String, List<String>> activeSubscriptions, String orgNumber) {
+        if (!activeSubscriptions.isEmpty() && activeSubscriptions.containsKey(orgNumber)) {
+            return activeSubscriptions.get(orgNumber);
+        }
+        if (activeSubscriptions.isEmpty() && stubState.getSubscriptionReturnValue()) {
+            return stubState.getServiceCodeList();
+        }
+        return new ArrayList<>();
     }
 }

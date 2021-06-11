@@ -21,10 +21,7 @@ package se.inera.intyg.webcert.kundportalenstub.service;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -48,55 +45,116 @@ public class KundportalenStubRestApiServiceTest {
     KundportalenStubRestApiService kundportalenStubRestApiService;
 
     @Test
-    public void shouldReturnTrueWhenSubscriptionExists() {
+    public void shouldReturnMapWithOneActiveServiceCodeWhenOneSubscriptionExists() {
         final var activeSubscriptions = createActiveSubscriptions();
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.getSubscriptionInfo("ORGANIZATION_NUMBER_1", "SERVICE_CODE_1");
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_1"));
 
-        assertTrue(response);
+        final var serviceCodeList = castToListString(String.class, (List<?>) response.get(0).get("service_code_subscriptions"));
+        assertEquals(1, response.size());
+        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("org_no"));
+        assertTrue(serviceCodeList.contains("SERVICE_CODE_1"));
     }
 
     @Test
-    public void shouldReturnFalseWhenNoSubscriptionExists() {
+    public void shouldReturnMapWithTwoActiveServiceCodesWhenTwoSubscriptionsExists() {
         final var activeSubscriptions = createActiveSubscriptions();
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.getSubscriptionInfo("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_2"));
 
-        assertFalse(response);
+        final var serviceCodeList = castToListString(String.class, (List<?>) response.get(0).get("service_code_subscriptions"));
+        assertEquals(1, response.size());
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("org_no"));
+        assertTrue(serviceCodeList.contains("SERVICE_CODE_1"));
+        assertTrue(serviceCodeList.contains("SERVICE_CODE_2"));
     }
 
     @Test
-    public void shouldReturnSetReturnValueWhenActiveSubcriptionsIsEmpty() {
-        final var activeSubscriptions = new HashMap<String, String>();
+    public void shouldReturnEmptyListWhenNoSubscriptionExists() {
+        final var activeSubscriptions = createActiveSubscriptions();
+        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_3"));
+
+        assertEquals(1, response.size());
+        assertEquals("ORGANIZATION_NUMBER_3", response.get(0).get("org_no"));
+        assertTrue(((List<?>) response.get(0).get("service_code_subscriptions")).isEmpty());
+    }
+
+    @Test
+    public void shouldReturnTwoOrganizationsWithServiceeCodesWhenBothHaveSubscription() {
+        final var activeSubscriptions = createActiveSubscriptions();
+        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_1",
+            "ORGANIZATION_NUMBER_2"));
+
+        final var serviceCodeList1 = castToListString(String.class, (List<?>) response.get(0).get("service_code_subscriptions"));
+        final var serviceCodeList2 = castToListString(String.class, (List<?>) response.get(1).get("service_code_subscriptions"));
+        assertEquals(2, response.size());
+        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("org_no"));
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(1).get("org_no"));
+        assertEquals(1, serviceCodeList1.size());
+        assertEquals(2, serviceCodeList2.size());
+    }
+
+    @Test
+    public void shouldReturnTwoOrganizationsWhenOneHaveSubscription() {
+        final var activeSubscriptions = createActiveSubscriptions();
+        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_2",
+            "ORGANIZATION_NUMBER_3"));
+
+        assertEquals(2, response.size());
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("org_no"));
+        assertEquals("ORGANIZATION_NUMBER_3", response.get(1).get("org_no"));
+        assertEquals(2, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
+        assertTrue(((List<?>) response.get(1).get("service_code_subscriptions")).isEmpty());
+    }
+
+    @Test
+    public void shouldReturnAllServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsTrue() {
+        final var activeSubscriptions = new HashMap<String, List<String>>();
         final var setReturnValue = true;
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
+        when(stubState.getServiceCodeList()).thenReturn(List.of("SERVICE_CODE_1", "SERVICE_CODE_2", "SERVICE_CODE_3"));
 
-        final var response = kundportalenStubRestApiService.getSubscriptionInfo("ORGANIZATION_NUMBER_2", "SERVICE_CODE_1");
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_1"));
 
-        assertEquals(response, setReturnValue);
+        assertEquals(1, response.size());
+        assertEquals(3, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
     }
 
     @Test
-    public void shouldCallStubStateGetServices() {
-        final var serviceList = createServiceList();
-        when(stubState.getServices()).thenReturn(serviceList);
-        kundportalenStubRestApiService.getServices();
-        verify(stubState, times(1)).getServices();
+    public void shouldReturnNoServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsFalse() {
+        final var activeSubscriptions = new HashMap<String, List<String>>();
+        final var setReturnValue = false;
+        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+        when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
+
+        final var response = kundportalenStubRestApiService.getSubscriptionInfo(List.of("ORGANIZATION_NUMBER_1"));
+
+        assertEquals(1, response.size());
+        assertEquals(0, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
     }
 
-    private Map<String, String> createActiveSubscriptions() {
+    private Map<String, List<String>> createActiveSubscriptions() {
         return Map.of(
-            "ORGANIZATION_NUMBER_1", "SERVICE_CODE_1",
-            "ORGANIZATION_NUMBER_2", "SERVICE_CODE_1");
+            "ORGANIZATION_NUMBER_1", List.of("SERVICE_CODE_1"),
+            "ORGANIZATION_NUMBER_2", List.of("SERVICE_CODE_1", "SERVICE_CODE_2")
+        );
     }
 
-    private List<Map<String, String>> createServiceList() {
-        final var list = new ArrayList<Map<String, String>>();
-        list.add(Map.of("ORGANIZATION_NUMBER_1", "SERVICE_CODE_1"));
-        list.add(Map.of("ORGANIZATION_NUMBER_2", "SERVICE_CODE_1"));
-        return list;
+    private <T> List<T> castToListString(Class<T> clazz, List<?> collection)
+        throws ClassCastException {
+        List<T> result = new ArrayList<>(collection.size());
+        for (Object o : collection) {
+            result.add(clazz.cast(o));
+        }
+        return result;
     }
 }

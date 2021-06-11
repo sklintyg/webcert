@@ -26,7 +26,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,24 +57,38 @@ public class KundportalenStubSettingsApiServiceTest {
     }
 
     @Test
-    public void getSubscriptionReturnValue() {
+    public void testGetSubscriptionReturnValue() {
         final var response = kundportalenStubSettingsApiService.getSubscriptionReturnValue();
         assertTrue(response);
     }
 
     @Test
-    public void setActiveSubscription() {
+    public void testGetActiveSubscription() {
         final var activeSubscriptions = createActiveSubscriptions();
 
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
         kundportalenStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
 
         assertTrue(activeSubscriptions.containsKey("ORGANIZATION_NUMBER_3"));
-        assertEquals("SERVICE_CODE_1", activeSubscriptions.get("ORGANIZATION_NUMBER_3"));
+        assertEquals("SERVICE_CODE_1", activeSubscriptions.get("ORGANIZATION_NUMBER_3").get(0));
     }
 
     @Test
-    public void removeActiveSubscriptions() {
+    public void testAddActiveSubscriptionToExistingOrganization() {
+        final var activeSubscriptions = createActiveSubscriptions();
+        final var serviceCodes = new ArrayList<String>();
+        serviceCodes.add("SERVICE_CODE_1");
+        activeSubscriptions.put("ORGANIZATION_NUMBER_2", serviceCodes);
+
+        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+        kundportalenStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_2", "SERVICE_CODE_2");
+
+        assertTrue(activeSubscriptions.containsKey("ORGANIZATION_NUMBER_2"));
+        assertEquals(2, activeSubscriptions.get("ORGANIZATION_NUMBER_2").size());
+    }
+
+    @Test
+    public void testRemoveActiveSubscriptions() {
         final var activeSubscriptions = createActiveSubscriptions();
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
@@ -82,7 +98,7 @@ public class KundportalenStubSettingsApiServiceTest {
     }
 
     @Test
-    public void clearActiveSubscriptions() {
+    public void testClearActiveSubscriptions() {
         final var activeSubscriptions = createActiveSubscriptions();
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
@@ -92,7 +108,7 @@ public class KundportalenStubSettingsApiServiceTest {
     }
 
     @Test
-    public void getActiveSubscriptions() {
+    public void testGetActiveSubscriptions() {
         final var activeSubscriptions = createActiveSubscriptions();
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
@@ -101,10 +117,10 @@ public class KundportalenStubSettingsApiServiceTest {
         assertEquals(2, response.size());
     }
 
-    private Map<String, String> createActiveSubscriptions() {
-        final var map = new HashMap<String, String>();
-        map.put("ORGANIZATION_NUMBER_1", "SERVICE_CODE_1");
-        map.put("ORGANIZATION_NUMBER_2", "SERVICE_CODE_1");
+    private Map<String, List<String>> createActiveSubscriptions() {
+        final var map = new HashMap<String, List<String>>();
+        map.put("ORGANIZATION_NUMBER_1", List.of("SERVICE_CODE_1"));
+        map.put("ORGANIZATION_NUMBER_2", List.of("SERVICE_CODE_1"));
         return map;
     }
 }

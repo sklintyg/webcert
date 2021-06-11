@@ -21,42 +21,30 @@ package se.inera.intyg.webcert.kundportalenstub.api;
 
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.kundportalenstub.service.KundportalenStubRestApiService;
 
 @Controller
-@Path("/api")
+@Path("/api/v1")
 public class KundportalenStubRestApi {
 
-    @Autowired
-    private KundportalenStubRestApiService kundportalenStubRestApiService;
+    private final KundportalenStubRestApiService kundportalenStubRestApiService;
 
-    @GET
-    @Path("/customer/getcustomers")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getCustomers(@HeaderParam("Authorization") String authorization) {
-        return "/api/customer/customers - not implemented";
+    public KundportalenStubRestApi(KundportalenStubRestApiService kundportalenStubRestApiService) {
+        this.kundportalenStubRestApiService = kundportalenStubRestApiService;
     }
 
-    @GET
-    @Path("/service/getservices")
+    @POST
+    @Path("/service/subscription/Intygstjänster")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map<String, String>> getServices(@HeaderParam("Authorization") String authorization) {
-        return kundportalenStubRestApiService.getServices();
-    }
-
-    @GET
-    @Path("/service/getsubscription/{orgNo}/{serviceCode}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Boolean> getSubscription(@HeaderParam("Authorization") String authorization,
-        @PathParam("orgNo") String organizationNumber, @PathParam("serviceCode") String serviceCode) {
-        return Map.of("subscriptionActive", kundportalenStubRestApiService.getSubscriptionInfo(organizationNumber, serviceCode));
+    public List<Map<String, Object>> getSubscriptionPost(@HeaderParam("Authorization") String authorization, List<String> orgNumbers) {
+        return kundportalenStubRestApiService.getSubscriptionInfo(orgNumbers);
     }
 }

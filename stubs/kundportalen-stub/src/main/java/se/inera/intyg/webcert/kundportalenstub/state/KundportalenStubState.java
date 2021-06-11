@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class KundportalenStubState {
 
     private boolean subscriptionReturnValue = true;
-    private Map<String, String> activeSubscriptions = new HashMap<>();
+    private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
     @Value("#{${kundportalenstub.service.codes.eleg}}")
     private List<Map<String, String>> kundportalenElegServices;
@@ -51,15 +51,19 @@ public class KundportalenStubState {
         this.subscriptionReturnValue = subscriptionReturnValue;
     }
 
-    public Map<String, String> getActiveSubscriptions() {
+    public Map<String, List<String>> getActiveSubscriptions() {
         return activeSubscriptions;
     }
 
-    public void setActiveSubscriptions(Map<String, String> activeSubscriptions) {
+    public void setActiveSubscriptions(Map<String, List<String>> activeSubscriptions) {
         this.activeSubscriptions = activeSubscriptions;
     }
 
     public void clearActiveSubscriptions() {
         activeSubscriptions.clear();
+    }
+
+    public List<String> getServiceCodeList() {
+        return getServices().stream().map(i -> i.get("serviceCode")).collect(Collectors.toList());
     }
 }

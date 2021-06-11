@@ -19,16 +19,19 @@
 
 package se.inera.intyg.webcert.kundportalenstub.service;
 
+import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.kundportalenstub.state.KundportalenStubState;
 
 @Service
 public class KundportalenStubSettingsApiService {
 
-    @Autowired
-    private KundportalenStubState stubState;
+    private final KundportalenStubState stubState;
+
+    public KundportalenStubSettingsApiService(KundportalenStubState stubState) {
+        this.stubState = stubState;
+    }
 
     public void setSubscriptionReturnValue(Boolean returnValue) {
         stubState.setSubscriptionReturnValue(returnValue);
@@ -41,7 +44,14 @@ public class KundportalenStubSettingsApiService {
 
     public void setActiveSubscription(String orgNumber, String serviceCode) {
         final var activeSubscriptions = stubState.getActiveSubscriptions();
-        activeSubscriptions.put(orgNumber, serviceCode);
+        if (activeSubscriptions.containsKey(orgNumber)) {
+            final var serviceCodes = activeSubscriptions.get(orgNumber);
+            if (!serviceCodes.contains(serviceCode)) {
+                serviceCodes.add(serviceCode);
+            }
+        } else {
+            activeSubscriptions.put(orgNumber, List.of(serviceCode));
+        }
     }
 
     public void removeActiveSubscriptions(String orgNumber) {
@@ -54,7 +64,7 @@ public class KundportalenStubSettingsApiService {
         activeSubscriptions.clear();
     }
 
-    public Map<String, String> getActiveSubscriptions() {
+    public Map<String, List<String>> getActiveSubscriptions() {
         return stubState.getActiveSubscriptions();
     }
 }
