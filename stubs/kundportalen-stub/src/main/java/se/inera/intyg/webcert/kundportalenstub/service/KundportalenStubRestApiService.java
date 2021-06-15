@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.kundportalenstub.state.KundportalenStubState;
 
@@ -35,7 +37,17 @@ public class KundportalenStubRestApiService {
         this.stubState = stubState;
     }
 
-    public List<Map<String, Object>> getSubscriptionInfo(List<String> orgNumbers) {
+    public Response createSubscriptionResponse(String accessToken, List<String> orgNumbers) {
+        if (accessToken == null) {
+            return Response.status(Status.BAD_REQUEST).entity("Authorization header required by Kundportalen stub.").build();
+        } else if (stubState.getHttpErrorCode() != 0) {
+            return responseWithErrorStatusCode(stubState.getHttpErrorCode());
+        } else {
+            return getSubscriptionInfo(orgNumbers);
+        }
+    }
+
+    private Response getSubscriptionInfo(List<String> orgNumbers) {
         final var activeSubscriptions = stubState.getActiveSubscriptions();
         final var subscriptionInfo = new ArrayList<Map<String, Object>>();
 
@@ -47,7 +59,7 @@ public class KundportalenStubRestApiService {
             organization.put("service_code_subscriptions", subscribedServiceCodes);
             subscriptionInfo.add(organization);
         }
-        return subscriptionInfo;
+        return Response.ok(subscriptionInfo).build();
     }
 
     private List<String> getSubscribedServiceCodes(Map<String, List<String>> activeSubscriptions, String orgNumber) {
@@ -58,5 +70,14 @@ public class KundportalenStubRestApiService {
             return stubState.getServiceCodeList();
         }
         return new ArrayList<>();
+    }
+
+    private Response responseWithErrorStatusCode(int statusCode) {
+        try {
+            return Response.status(Status.fromStatusCode(statusCode))
+                .entity("Http error " + statusCode + " response from Kundportalen stub.").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Http error 500 response from Kundportalen stub.").build();
+        }
     }
 }

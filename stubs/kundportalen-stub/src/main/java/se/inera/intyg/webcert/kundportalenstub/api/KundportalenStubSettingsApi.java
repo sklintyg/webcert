@@ -88,4 +88,20 @@ public class KundportalenStubSettingsApi {
     public Map<String, List<String>> getActiveSubscriptions() {
         return stubSettingsService.getActiveSubscriptions();
     }
+
+    @GET
+    @Path("/seterror/{errorCode}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String setServiceError(@PathParam("errorCode") int errorCode) {
+        stubSettingsService.setHttpError(errorCode);
+        return "Set stub to return Http error with code " + errorCode + " (if it exists, else 500).";
+    }
+
+    @GET
+    @Path("/clearerror")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String setServiceError() {
+        stubSettingsService.clearHttpError();
+        return "Cleared stub Http error code.";
+    }
 }

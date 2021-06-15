@@ -117,6 +117,18 @@ public class KundportalenStubSettingsApiServiceTest {
         assertEquals(2, response.size());
     }
 
+    @Test
+    public void shouldCallStubStateWhenSettingErrorCode() {
+        kundportalenStubSettingsApiService.setHttpError(403);
+        verify(stubState, times(1)).setHttpErrorCode(403);
+    }
+
+    @Test
+    public void shouldCallStubStateWithMinusOneWhenClearingErrorCode() {
+        kundportalenStubSettingsApiService.clearHttpError();
+        verify(stubState, times(1)).setHttpErrorCode(0);
+    }
+
     private Map<String, List<String>> createActiveSubscriptions() {
         final var map = new HashMap<String, List<String>>();
         map.put("ORGANIZATION_NUMBER_1", List.of("SERVICE_CODE_1"));

@@ -67,4 +67,12 @@ public class KundportalenStubSettingsApiService {
     public Map<String, List<String>> getActiveSubscriptions() {
         return stubState.getActiveSubscriptions();
     }
+
+    public void setHttpError(int errorCode) {
+        stubState.setHttpErrorCode(errorCode);
+    }
+
+    public void clearHttpError() {
+        stubState.setHttpErrorCode(0);
+    }
 }

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 public class KundportalenStubState {
 
     private boolean subscriptionReturnValue = true;
+    private int httpErrorCode = 0;
     private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
     @Value("#{${kundportalenstub.service.codes.eleg}}")
@@ -49,6 +50,14 @@ public class KundportalenStubState {
 
     public void setSubscriptionReturnValue(boolean subscriptionReturnValue) {
         this.subscriptionReturnValue = subscriptionReturnValue;
+    }
+
+    public void setHttpErrorCode(int errorCode) {
+        this.httpErrorCode = errorCode;
+    }
+
+    public int getHttpErrorCode() {
+        return httpErrorCode;
     }
 
     public Map<String, List<String>> getActiveSubscriptions() {
