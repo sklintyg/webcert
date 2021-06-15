@@ -53,65 +53,96 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
 
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
-        vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
-
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-            certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(), vardenhet,
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
-            certificate.getMetadata().isTestCertificate());
-
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+        final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
         switch (certificate.getMetadata().getStatus()) {
             case UNSIGNED:
-                resourceLinks.addAll(decorateUnsignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters));
+                resourceLinks.addAll(
+                    getResourceLinksForDraft(certificate, accessEvaluationParameters)
+                );
                 break;
             case SIGNED:
-                resourceLinks.addAll(decorateSignedCertificateWithValidActionLinks(certificate, accessEvaluationParameters));
+                resourceLinks.addAll(
+                    getResourceLinksForCertificate(certificate, accessEvaluationParameters)
+                );
                 break;
             case LOCKED:
-                resourceLinks.addAll(decorateLockedCertificateWithValidActionLinks(certificate, accessEvaluationParameters));
+                resourceLinks.addAll(
+                    getResourceLinksForLockedDraft(certificate, accessEvaluationParameters)
+                );
                 break;
         }
         return resourceLinks.toArray(new ResourceLinkDTO[0]);
     }
 
-    private ArrayList<ResourceLinkDTO> decorateUnsignedCertificateWithValidActionLinks(Certificate certificate,
+    private ArrayList<ResourceLinkDTO> getResourceLinksForDraft(Certificate certificate,
         AccessEvaluationParameters accessEvaluationParameters) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         if (draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.EDIT_CERTIFICATE, "Ändra", "Ändrar intygsutkast", true));
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.EDIT_CERTIFICATE,
+                    "Ändra",
+                    "Ändrar intygsutkast",
+                    true
+                )
+            );
         }
         if (draftAccessServiceHelper.isAllowToPrintUtkast(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    "Skriv ut",
+                    "Laddar ned intygsutkastet för utskrift.",
+                    true
+                )
+            );
         }
         if (draftAccessServiceHelper.isAllowToDeleteUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.REMOVE_CERTIFICATE, "Radera", "Raderar intygsutkast", true));
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.REMOVE_CERTIFICATE,
+                    "Radera",
+                    "Raderar intygsutkast",
+                    true
+                )
+            );
         }
         if (draftAccessServiceHelper.isAllowToSign(accessEvaluationParameters, certificate.getMetadata().getId())) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera", "Signerar intygsutkast", true));
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
+                    "Signera",
+                    "Signerar intygsutkast",
+                    true
+                )
+            );
         }
         if (draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, "Vidarebefodra utkast",
-                "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
-                true));
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
+                    "Vidarebefodra utkast",
+                    "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
+                    true
+                )
+            );
         }
-//        if (certificateAccessService.allowToSend(accessEvaluationParameters).isAllowed()) {
-//            resourceLinks
-//                .add(ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "Skicka", "Skickar intyget", true));
-//        }
         return resourceLinks;
     }
 
-    private ArrayList<ResourceLinkDTO> decorateSignedCertificateWithValidActionLinks(Certificate certificate,
+    private ArrayList<ResourceLinkDTO> getResourceLinksForCertificate(Certificate certificate,
         AccessEvaluationParameters accessEvaluationParameters) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         if (certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters, false)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intyget för utskrift.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    "Skriv ut",
+                    "Laddar ned intyget för utskrift.",
+                    true
+                )
+            );
         }
         if (certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)) {
             resourceLinks.add(
@@ -146,31 +177,69 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
         }
         if (certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO
-                    .create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera", "Öppnar ett fönster där du kan välja att makulera intyget.",
-                        true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
+                    "Makulera",
+                    "Öppnar ett fönster där du kan välja att makulera intyget.",
+                    true
+                )
+            );
         }
         return resourceLinks;
     }
 
-    private ArrayList<ResourceLinkDTO> decorateLockedCertificateWithValidActionLinks(Certificate certificate,
+    private ArrayList<ResourceLinkDTO> getResourceLinksForLockedDraft(Certificate certificate,
         AccessEvaluationParameters accessEvaluationParameters) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         if (lockedDraftAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.PRINT_CERTIFICATE, "Skriv ut", "Laddar ned intygsutkastet för utskrift.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    "Skriv ut",
+                    "Laddar ned intygsutkastet för utskrift.",
+                    true
+                )
+            );
         }
         if (lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO
-                    .create(ResourceLinkTypeDTO.COPY_CERTIFICATE, "Kopiera",
-                        "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.", true));
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    "Kopiera",
+                    "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
+                    true
+                )
+            );
         }
         if (lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
             resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE, "Makulera",
-                    "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.", true));
+                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
+                    "Makulera",
+                    "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.",
+                    true
+                )
+            );
         }
         return resourceLinks;
+    }
+
+    private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {
+        final var unit = createUnit(certificate);
+
+        return AccessEvaluationParameters.create(
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getTypeVersion(),
+            unit,
+            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
+            certificate.getMetadata().isTestCertificate()
+        );
+    }
+
+    private Vardenhet createUnit(Certificate certificate) {
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
+        vardenhet.setVardgivare(new Vardgivare());
+        vardenhet.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
+        return vardenhet;
     }
 }
