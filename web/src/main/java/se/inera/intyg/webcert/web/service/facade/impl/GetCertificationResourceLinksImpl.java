@@ -236,10 +236,10 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
     }
 
     private Vardenhet createUnit(Certificate certificate) {
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
-        vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
-        return vardenhet;
+        final var unit = new Vardenhet();
+        unit.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
+        unit.setVardgivare(new Vardgivare());
+        unit.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
+        return unit;
     }
 }
