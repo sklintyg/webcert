@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
-class GetCertificateServiceImplTest {
+class GetCertificateFacadeServiceImplTest {
 
     @Mock
     private UtkastService utkastService;
@@ -58,7 +58,7 @@ class GetCertificateServiceImplTest {
     private CertificateConverter certificateConverter;
 
     @InjectMocks
-    private GetCertificateServiceImpl getCertificateService;
+    private GetCertificateFacadeServiceImpl getCertificateService;
 
     private final Utkast draft = createDraft();
 

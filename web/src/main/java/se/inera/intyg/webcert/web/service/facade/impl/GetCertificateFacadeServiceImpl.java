@@ -30,16 +30,16 @@ import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
-public class GetCertificateServiceImpl implements GetCertificateFacadeService {
+public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
 
     private final UtkastService utkastService;
 
     private final CertificateConverter certificateConverter;
 
     @Autowired
-    public GetCertificateServiceImpl(UtkastService utkastService, CertificateConverter certificateConverter) {
+    public GetCertificateFacadeServiceImpl(UtkastService utkastService, CertificateConverter certificateConverter) {
         this.utkastService = utkastService;
         this.certificateConverter = certificateConverter;
     }
