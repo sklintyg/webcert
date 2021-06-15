@@ -53,10 +53,6 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
 
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
-        return decorateCertificateWithValidActionLinks(certificate);
-    }
-
-    private ResourceLinkDTO[] decorateCertificateWithValidActionLinks(Certificate certificate) {
         final Vardenhet vardenhet = new Vardenhet();
         vardenhet.setEnhetsid(certificate.getMetadata().getUnit().getUnitId());
         vardenhet.setVardgivare(new Vardgivare());
