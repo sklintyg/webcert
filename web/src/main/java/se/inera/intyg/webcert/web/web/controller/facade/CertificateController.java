@@ -136,9 +136,9 @@ public class CertificateController {
     @Path("/{certificateId}/validate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response validateCertificate(@RequestBody @NotNull Certificate certificate) {
+    public Response validateCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getId());
+            LOG.debug("Validating certificate with id: '{}'", certificateId);
         }
         final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
@@ -148,9 +148,9 @@ public class CertificateController {
     @Path("/{certificateId}/sign")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response signCertificate(@RequestBody @NotNull Certificate certificate) {
+    public Response signCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getId());
+            LOG.debug("Signing certificate with id: '{}'", certificateId);
         }
         final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
         final var resourceLinks = getCertificationResourceLinks.get(signedCertificate);
