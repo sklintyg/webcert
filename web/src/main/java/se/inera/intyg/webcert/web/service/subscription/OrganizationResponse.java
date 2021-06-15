@@ -19,13 +19,30 @@
 
 package se.inera.intyg.webcert.web.service.subscription;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import java.util.Map;
 
-public interface SubscriptionRestService {
+public class OrganizationResponse {
 
-    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap);
+    @JsonProperty("org_no")
+    private String organizationNumber;
 
-    boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
+    @JsonProperty("service_code_subscriptions")
+    private List<String> serviceCodes;
 
+    public String getOrganizationNumber() {
+        return organizationNumber;
+    }
+
+    public void setOrganizationNumber(String organizationNumber) {
+        this.organizationNumber = organizationNumber;
+    }
+
+    public List<String> getServiceCodes() {
+        return serviceCodes;
+    }
+
+    public void setServiceCodes(List<String> serviceCodes) {
+        this.serviceCodes = serviceCodes;
+    }
 }

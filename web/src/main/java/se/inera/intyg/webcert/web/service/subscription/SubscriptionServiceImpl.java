@@ -62,27 +62,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public SubscriptionInfo fetchSubscriptionInfo(WebCertUser webCertUser) {
         final var missingSubscriptionAction = determineSubscriptionAction(webCertUser.getOrigin());
-        if (missingSubscriptionAction != SubscriptionAction.NONE) {
-            LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
-            final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
-            final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
-            final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
-            final var subscriptionInfo = new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod,
-                requireSubscriptionStartDate);
-
-            blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getUnitHsaIdList());
-
-            return subscriptionInfo;
-
+        if (missingSubscriptionAction == SubscriptionAction.NONE) {
+            return SubscriptionInfo.createSubscriptionInfoNoAction();
         }
-        return SubscriptionInfo.createSubscriptionInfoNoAction();
+        LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
+        final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
+        final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
+        final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
+        final var subscriptionInfo = new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod,
+            requireSubscriptionStartDate);
+
+        blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getUnitHsaIdList());
+
+        return subscriptionInfo;
     }
 
     @Override
     public boolean fetchSubscriptionInfoUnregisteredElegUser(String personId) {
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
         LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
-        return subscriptionRestService.isUnregisteredElegUserMissingSubscription(organizationNumber);
+        return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
     }
 
     @Override

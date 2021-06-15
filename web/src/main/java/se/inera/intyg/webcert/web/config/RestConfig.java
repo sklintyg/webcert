@@ -17,15 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.subscription;
+package se.inera.intyg.webcert.web.config;
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-public interface SubscriptionRestService {
+@Configuration
+public class RestConfig {
 
-    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap);
-
-    boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
-
+    @Bean(name = "subscriptionServiceRestTemplate")
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

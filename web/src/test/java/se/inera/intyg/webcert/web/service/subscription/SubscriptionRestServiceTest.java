@@ -27,7 +27,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +46,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.schemas.contract.util.HashUtility;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionRestServiceTest {
@@ -53,10 +65,15 @@ public class SubscriptionRestServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private MonitoringLogService monitoringLogService;
+
     @InjectMocks
     private SubscriptionRestServiceImpl subscriptionRestService;
 
-    private static final ParameterizedTypeReference<List<Map<String, Object>>> LIST_MAP_STRING_OBJECT_TYPE
+    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 6, 13, 22, 13, 28);
+
+    private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() { };
 
     @Before
@@ -135,10 +152,21 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenResponseHttpStatusNotOk() {
+    public void shouldReturnNoHsaIdsWhenHttpServerErrorException() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
-        setMockToReturn(HttpStatus.SERVICE_UNAVAILABLE, 2, 1, 1);
+        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnNoHsaIdsWhenHttpClientErrorException() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+
+        setMockToReturnHttpServerErrorException(HttpStatus.FORBIDDEN);
 
         final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
 
@@ -149,7 +177,7 @@ public class SubscriptionRestServiceTest {
     public void shouldReturnNoHsaIdsWhenResponseHasNoBody() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_MAP_STRING_OBJECT_TYPE)))
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
@@ -161,12 +189,34 @@ public class SubscriptionRestServiceTest {
     public void shouldReturnNoHsaIdsWhenResponseBodyIsNull() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_MAP_STRING_OBJECT_TYPE)))
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
         final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
 
         assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldMonitorlogWhenHttpServerErrorException() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+        final var queryIds = orgNoHsaIdMap.values();
+        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 500, "INTERNAL_SERVER_ERROR", "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenHttpClientErrorException() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+
+        setMockToReturnHttpClientErrorException(HttpStatus.FORBIDDEN);
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 403, "FORBIDDEN", "MESSAGE_TEXT", LOCAL_DATE_TIME);
     }
 
     @Test
@@ -179,7 +229,7 @@ public class SubscriptionRestServiceTest {
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
 
         verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(LIST_MAP_STRING_OBJECT_TYPE));
+            eq(LIST_ORGANIZATION_RESPONSE));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
@@ -189,47 +239,56 @@ public class SubscriptionRestServiceTest {
     public void shouldReturnFalseWhenUnregisteredElegUserHasSubscription() {
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
-        final var response = subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
         assertFalse(response);
     }
 
     @Test
     public void shouldReturnTrueWhenUnregisteredElegUserMissingSubscription() {
-        setMockToReturn(HttpStatus.OK, 1, 1, 0);
+        setMockToReturn(HttpStatus.ACCEPTED, 1, 1, 0);
 
-        final var response = subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
         assertTrue(response);
     }
 
     @Test
-    public void shouldReturnFalseWhenResponseHttpStatusNotOkForUnregElegUser() {
-        setMockToReturn(HttpStatus.SERVICE_UNAVAILABLE, 1, 1, 0);
+    public void shouldReturnTrueWhenHttpServerErrorExceptionForUnregElegUser() {
+        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        final var response = subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        assertFalse(response);
+        assertTrue(response);
     }
 
     @Test
-    public void shouldReturnFalseWhenResponseHasNoBodyForUnregElegUser() {
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_MAP_STRING_OBJECT_TYPE)))
+    public void shouldReturnTrueWhenHttpClientErrorExceptionForUnregElegUser() {
+        setMockToReturnHttpServerErrorException(HttpStatus.FORBIDDEN);
+
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        assertTrue(response);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenResponseHasNoBodyForUnregElegUser() {
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        final var response = subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        assertFalse(response);
+        assertTrue(response);
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenResponseBodyIsNullForUnregElegUser() {
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_MAP_STRING_OBJECT_TYPE)))
+    public void shouldReturnTrueWhenResponseBodyIsNullForUnregElegUser() {
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        final var response = subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        assertFalse(response);
+        assertTrue(response);
     }
 
     @Test
@@ -238,13 +297,55 @@ public class SubscriptionRestServiceTest {
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
-        subscriptionRestService.isUnregisteredElegUserMissingSubscription("ORG_NO_1");
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
         verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(LIST_MAP_STRING_OBJECT_TYPE));
+            eq(LIST_ORGANIZATION_RESPONSE));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
+    }
+
+    @Test
+    public void shouldMonitorlogWhenHttpServerErrorExceptionForUnregElegUser() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+
+        setMockToReturnHttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE);
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 503, "SERVICE_UNAVAILABLE", "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenHttpClientErrorExceptionForUnregElegUser() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+        setMockToReturnHttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 503, "SERVICE_UNAVAILABLE", "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldSetEmptyStatusTextInMonitorLogIfCustomErrorCode() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+
+        setMockToReturnRestClientResponseException();
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 777, "", "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientException() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+        setMockToReturnRestClientException();
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, null, null, "MESSAGE_TEXT", null);
     }
 
     private Map<String, String> createOrgNoHsaIdMap(int count) {
@@ -255,9 +356,8 @@ public class SubscriptionRestServiceTest {
         return orgNoHsaIdMap;
     }
 
-    private void setMockToReturn(HttpStatus httpStatus, int totalOrgsCount, int orgsMissingCount,
-        int serviceCodeCount) {
-        final var orgList = new ArrayList<Map<String, Object>>();
+    private void setMockToReturn(HttpStatus httpStatus, int totalOrgsCount, int orgsMissingCount, int serviceCodeCount) {
+        final var orgList = new ArrayList<OrganizationResponse>();
         orgsMissingCount = Math.min(orgsMissingCount, totalOrgsCount);
 
         for (var i = 1; i <= totalOrgsCount; i++) {
@@ -268,16 +368,47 @@ public class SubscriptionRestServiceTest {
             }
         }
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_MAP_STRING_OBJECT_TYPE)))
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(orgList, httpStatus));
     }
 
-    private Map<String, Object> createOrganization(int orgNo, int serviceCodeCount) {
-        final var orgResponseMap = new HashMap<String, Object>();
+    private void setMockToReturnRestClientException() {
+        final var e = new RestClientException("MESSAGE_TEXT");
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenThrow(e);
+    }
+
+    private void setMockToReturnRestClientResponseException() {
+        final var e = new RestClientResponseException("MESSAGE_TEXT", 777, "statusText", null,null, null);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenThrow(e);
+    }
+
+    private void setMockToReturnHttpServerErrorException(HttpStatus httpStatus) {
+        final var httpHeaders = new HttpHeaders();
+        httpHeaders.setDate(ZonedDateTime.of(LOCAL_DATE_TIME, ZoneId.of("Europe/Stockholm")));
+        final var e = new HttpServerErrorException("MESSAGE_TEXT", httpStatus, httpStatus.name(), httpHeaders, null, StandardCharsets.UTF_8);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenThrow(e);
+    }
+
+    private void setMockToReturnHttpClientErrorException(HttpStatus httpStatus) {
+        final var httpHeaders = new HttpHeaders();
+        httpHeaders.setDate(ZonedDateTime.of(LOCAL_DATE_TIME, ZoneId.of("Europe/Stockholm")));
+        final var e = new HttpClientErrorException("MESSAGE_TEXT", httpStatus, httpStatus.name(), httpHeaders, null, StandardCharsets.UTF_8);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenThrow(e);
+    }
+
+    private OrganizationResponse createOrganization(int orgNo, int serviceCodeCount) {
+        final var orgResponse = new OrganizationResponse();
         final var serviceCodeList = createServiceCodeList(serviceCodeCount);
-        orgResponseMap.put("org_no", "ORG_NO_" + orgNo);
-        orgResponseMap.put("service_code_subscriptions", serviceCodeList);
-        return orgResponseMap;
+        orgResponse.setOrganizationNumber("ORG_NO_" + orgNo);
+        orgResponse.setServiceCodes(serviceCodeList);
+        return orgResponse;
     }
 
     private List<String> createServiceCodeList(int serviceCodeCount) {

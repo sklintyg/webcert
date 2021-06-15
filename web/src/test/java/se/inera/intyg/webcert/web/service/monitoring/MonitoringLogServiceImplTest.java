@@ -27,7 +27,9 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -550,5 +552,15 @@ public class MonitoringLogServiceImplTest {
         logService.logMessageImported("CertificateId", "MessageId", "CareGiverId", "CareUnitId", "MessageType");
         verifyLog(Level.INFO,
             "MESSAGE_IMPORTED Message 'MessageId' with type 'MessageType' for certificate 'CertificateId' on caregiver 'CareGiverId' and care unit 'CareUnitId' was imported");
+    }
+
+    @Test
+    public void shouldLogSubscriptionServiceCallFailure() {
+        final var time = LocalDateTime.of(2021, 6, 13, 22, 13, 28);
+        final var ids = Collections.singleton(HSA_ID);
+        logService.logSubscriptionServiceCallFailure(ids,200, "statusText", "exceptionMessage", time);
+        verifyLog(Level.INFO,
+            "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with statusCode '200', statusText 'statusText', "
+            + "exceptionMessage 'exceptionMessage' and time '2021-06-13T22:13:28'");
     }
 }

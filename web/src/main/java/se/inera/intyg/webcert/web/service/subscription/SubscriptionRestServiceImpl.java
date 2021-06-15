@@ -19,14 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.subscription;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -36,7 +41,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.schemas.contract.util.HashUtility;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
 public class SubscriptionRestServiceImpl implements SubscriptionRestService {
@@ -49,39 +58,45 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     @Value("${kundportalen.subscriptions.url}")
     private String kundportalenSubscriptionServiceUrl;
 
-    private RestTemplate restTemplate;
-    private static final ParameterizedTypeReference<List<Map<String, Object>>> LIST_MAP_STRING_OBJECT_TYPE
+    private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() { };
 
+    private final MonitoringLogService monitoringLogService;
+    private final RestTemplate restTemplate;
 
-    @PostConstruct
-    public void init() {
-        restTemplate = new RestTemplate();
+    public SubscriptionRestServiceImpl(MonitoringLogService monitoringLogService,
+        @Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
+        this.monitoringLogService = monitoringLogService;
+        this.restTemplate = restTemplate;
     }
 
     @Override
     public List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap) {
-        final var response = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
-
-        if (subscriptionServiceCallFailure(response)) {
-            return new ArrayList<>();
+        try {
+            final var organizationInfo = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
+            return getCareProvidersMissingSubscription(Objects.requireNonNull(organizationInfo.getBody()), organizationNumberHsaIdMap);
+        } catch (Exception e) {
+            errorLogException(organizationNumberHsaIdMap.values(), e);
+            monitorLogIfServiceCallFailure(organizationNumberHsaIdMap.values(), e);
+            return Collections.emptyList();
         }
-        return getCareProvidersWithoutSubscription(organizationNumberHsaIdMap, Objects.requireNonNull(response.getBody()));
     }
 
     @Override
-    public boolean isUnregisteredElegUserMissingSubscription(String organizationNumber) {
-        final var response = getSubscriptionServiceResponse(Set.of(organizationNumber));
-
-        if (subscriptionServiceCallFailure(response)) {
-            return false;
+    public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
+        try {
+            final var organizationInfo = getSubscriptionServiceResponse(Set.of(organizationNumber));
+            return Objects.requireNonNull(organizationInfo.getBody()).get(0).getServiceCodes().isEmpty();
+        } catch (Exception e) {
+            errorLogExceptionUnregisteredElegUser(organizationNumber, e);
+            monitorLogIfServiceCallFailure(Collections.singleton(HashUtility.hash(organizationNumber)), e);
+            return true;
         }
-        return ((List<?>) Objects.requireNonNull(response.getBody()).get(0).get("service_code_subscriptions")).isEmpty();
     }
 
-    private ResponseEntity<List<Map<String, Object>>> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
+    private ResponseEntity<List<OrganizationResponse>> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var requestEntity = getRequestEntity(organizationNumbers);
-        return restTemplate.exchange(kundportalenSubscriptionServiceUrl, HttpMethod.POST, requestEntity, LIST_MAP_STRING_OBJECT_TYPE);
+        return restTemplate.exchange(kundportalenSubscriptionServiceUrl, HttpMethod.POST, requestEntity, LIST_ORGANIZATION_RESPONSE);
     }
 
     private HttpEntity<Set<String>> getRequestEntity(Set<String> organizationNumbers) {
@@ -92,21 +107,53 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
         return new HttpEntity<>(organizationNumbers, headers);
     }
 
-    private List<String> getCareProvidersWithoutSubscription(Map<String, String> orgNumberHsaIdMap, List<Map<String, Object>> response) {
-        final var careProvidersMissingSubscription = new ArrayList<String>();
-        for (var organization : response) {
-            final var organizationNumber = (String) organization.get("org_no");
-            final var activeServiceCodes = (List<?>) organization.get("service_code_subscriptions");
+    private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,
+        Map<String, String> organizationNumberHsaIdMap) {
+        final var careProvidersMissingSubscription = new  ArrayList<String>();
 
-            if (activeServiceCodes.isEmpty()) {
-                careProvidersMissingSubscription.add(orgNumberHsaIdMap.get(organizationNumber));
+        for (var organization : organizations) {
+            if (organization.getServiceCodes().isEmpty()) {
+                careProvidersMissingSubscription.add(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
             }
         }
         return careProvidersMissingSubscription;
     }
 
-    private boolean subscriptionServiceCallFailure(ResponseEntity<List<Map<String, Object>>> response) {
-        // TODO Add monitorlog failed service call (perhaps only for HttpStatus not OK).
-        return response.getStatusCode() != HttpStatus.OK || !response.hasBody() || response.getBody() == null;
+    private void errorLogException(Collection<String> hsaIds, Exception e) {
+        LOG.error("Kundportalen subscription service call failure for org numbers {}.", hsaIds, e);
+    }
+
+    private void errorLogExceptionUnregisteredElegUser(String orgNumber, Exception e) {
+        LOG.error("Kundportalen subscription service call failure for unregistered eleg user with org number {}.",
+            HashUtility.hash(orgNumber), e);
+    }
+
+    private void monitorLogIfServiceCallFailure(Collection<String> queryIds, Exception exception) {
+        if (exception instanceof RestClientException) {
+            if (exception instanceof RestClientResponseException) {
+                final var e = (RestClientResponseException) exception;
+                final var timestamp = e.getResponseHeaders() != null
+                    ? LocalDateTime.ofInstant(Instant.ofEpochMilli(e.getResponseHeaders().getDate()), ZoneId.systemDefault()) : null;
+                monitorLogRestClientException(queryIds, e.getRawStatusCode(), getStatusText(e.getRawStatusCode()), e.getMessage(),
+                    timestamp);
+            } else {
+                final var e = (RestClientException) exception;
+                monitorLogRestClientException(queryIds, null, null, e.getMessage(), null);
+            }
+        }
+    }
+
+    private void monitorLogRestClientException(Collection<String> queryIds, Integer statusCode, String statusText, String exceptionMessage,
+        LocalDateTime timestamp) {
+
+        monitoringLogService.logSubscriptionServiceCallFailure(queryIds, statusCode, statusText, exceptionMessage, timestamp);
+    }
+
+    private String getStatusText(int rawStatusCode) {
+        try {
+            return HttpStatus.valueOf(rawStatusCode).name();
+        } catch (IllegalArgumentException e) {
+            return "";
+        }
     }
 }

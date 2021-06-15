@@ -260,7 +260,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(PERSON_ID);
 
-        verify(subscriptionRestService).isUnregisteredElegUserMissingSubscription(restServiceParamCaptor.capture());
+        verify(subscriptionRestService).isMissingSubscriptionUnregisteredElegUser(restServiceParamCaptor.capture());
         assertEquals("121212-1212", restServiceParamCaptor.getValue());
     }
 
@@ -339,7 +339,7 @@ public class SubscriptionServiceTest {
     }
 
     private void setRestServiceUnregisteredElegMockToReturn(Boolean isMissingSubscription) {
-        when(subscriptionRestService.isUnregisteredElegUserMissingSubscription(any(String.class))).thenReturn(isMissingSubscription);
+        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenReturn(isMissingSubscription);
     }
 
     private void setFeaturesHelperMockToReturn(boolean duringAdjustment, boolean pastAdjustment) {
