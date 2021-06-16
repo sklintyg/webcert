@@ -52,6 +52,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     getAvailableFunctionsForLockedDraft(certificate)
                 );
                 break;
+            default:
         }
         return availableFunctions;
     }
