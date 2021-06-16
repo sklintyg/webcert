@@ -274,72 +274,15 @@
             var triggeredByLink = $location.search().forcelink;
             $location.search('forcelink', null);
 
-            var redirectToUnitSelection = function() {
-              if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
-                event.preventDefault();
-                $state.go('normal-origin-enhetsval', {destinationState: toState}, {location: false});
-                return true;
-              }
-              return false;
-            };
-
-            var termsCheck = function() {
-              // check terms if not accepted then always redirect
-              if (toState.name !== 'webcert.terms') {
-                UserModel.transitioning = false;
-              }
-              if (UserModel.isPrivatLakare() && !UserModel.termsAccepted && !UserModel.transitioning) {
-                event.preventDefault();
-                UserModel.transitioning = true;
-                $state.transitionTo('webcert.terms');
-              }
-            };
-
-            var subscriptionInfo = function() {
-              if (toState.name !== 'webcert.subscription') {
-                UserModel.transitioning = false;
-              }
-              if (!subscriptionService.hasAcknowledgedSubscriptionWarning() && !UserModel.transitioning) {
-                event.preventDefault();
-                UserModel.transitioning = true;
-                $state.transitionTo('webcert.subscription');
-              }
-            };
-
             // if we dont have a user
             if (!UserModel.user) {
-              // Make sure we send user to login state
-              if (toState.name !== 'webcert.index') {
-                event.preventDefault();
-                $state.go('webcert.index');
-              }
+              goStateWebcertIndex(event, toState);
             } else {
-              if (!redirectToUnitSelection()) {
-                if (isNotRedirectedToUnitSelection(toState.name) && !UserModel.idpConnectivityChecked) {
-                  UserModel.idpConnectivityChecked = true;
-                  idpConnectivityService.checkAndLogConnectivity();
-                }
-                if (!subscriptionService.isAnySubscriptionFeatureActive()) {
-                  termsCheck();
-                }
-                if (subscriptionService.shouldDisplaySubscriptionWarning()) {
-                  subscriptionInfo();
-                }
-
-                if (fromState.name !== 'webcert.terms' || fromState.name !== 'webcert.subscription' || !UserModel.transitioning) {
-                  // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
-                  // open, but close modal.
-                  if ($uibModalStack.getTop()) {
-                    $uibModalStack.dismissAll();
-                    //If modal closed, and we did not navigate because of click on a modal link..
-                    if (!$uibModalStack.getTop() && !triggeredByLink) {
-                      // Abort current transition that apparently happended without explicitly first
-                      // closing the active modal. Most likely because of click on Back button in browser.
-                      event.preventDefault();
-                      $state.go(fromState, fromParams);
-                    }
-                  }
-                }
+              if (!redirectToUnitSelection(event, toState)) {
+                checkAndLogConnectivity(toState);
+                termsCheck(event, toState);
+                subscriptionCheck(event, toState);
+                preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
             }
           });
@@ -386,6 +329,74 @@
           return version ? version : 'n/a';
         } catch (e) {
           return 'n/a';
+        }
+      }
+
+      function subscriptionCheck(event, toState) {
+        if (subscriptionService.shouldDisplaySubscriptionWarning()) {
+          if (toState.name !== 'webcert.subscription') {
+            UserModel.transitioning = false;
+          }
+          if (!subscriptionService.hasAcknowledgedSubscriptionWarning() && !UserModel.transitioning) {
+            event.preventDefault();
+            UserModel.transitioning = true;
+            $state.transitionTo('webcert.subscription');
+          }
+        }
+      }
+
+      function termsCheck(event, toState) {
+        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+          // check terms if not accepted then always redirect
+          if (toState.name !== 'webcert.terms') {
+            UserModel.transitioning = false;
+          }
+          if (UserModel.isPrivatLakare() && !UserModel.termsAccepted && !UserModel.transitioning) {
+            event.preventDefault();
+            UserModel.transitioning = true;
+            $state.transitionTo('webcert.terms');
+          }
+        }
+      }
+
+      function redirectToUnitSelection(event, toState) {
+        if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
+          event.preventDefault();
+          $state.go('normal-origin-enhetsval', {destinationState: toState}, {location: false});
+          return true;
+        }
+        return false;
+      }
+
+      function goStateWebcertIndex(event, toState) {
+        // Make sure we send user to login state
+        if (toState.name !== 'webcert.index') {
+          event.preventDefault();
+          $state.go('webcert.index');
+        }
+      }
+
+      function checkAndLogConnectivity(toState) {
+        if (isNotRedirectedToUnitSelection(toState.name) && !UserModel.idpConnectivityChecked) {
+          UserModel.idpConnectivityChecked = true;
+          idpConnectivityService.checkAndLogConnectivity();
+        }
+      }
+
+      function preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink) {
+        if (fromState.name !== 'webcert.terms' || fromState.name !== 'webcert.subscription' || !UserModel.transitioning) {
+          // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
+          // open, but close modal.
+          if ($uibModalStack.getTop()) {
+            $uibModalStack.dismissAll();
+            //If modal closed, and we did not navigate because of click on a modal link..
+            if (!$uibModalStack.getTop() && !triggeredByLink) {
+              // Abort current transition that apparently happended without explicitly first
+              // closing the active modal. Most likely because of click on Back button in browser.
+              event.preventDefault();
+              $state.go(fromState, fromParams);
+            }
+          }
         }
       }
 
