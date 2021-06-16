@@ -19,26 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper.createCertificate;
 
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
@@ -58,8 +55,17 @@ class GetCertificationResourceLinksImplTest {
     @Mock
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-    @InjectMocks
     private GetCertificationResourceLinksImpl getCertificationResourceLinks;
+
+    @BeforeEach
+    void setupServiceUnderTest() {
+        getCertificationResourceLinks = new GetCertificationResourceLinksImpl(
+            new GetCertificatesAvailableFunctionsImpl(),
+            draftAccessServiceHelper,
+            lockedDraftAccessServiceHelper,
+            certificateAccessServiceHelper
+        );
+    }
 
     @Nested
     class Draft {
@@ -67,71 +73,89 @@ class GetCertificationResourceLinksImplTest {
         @Test
         void shallIncludeEditCertificate() {
             doReturn(true).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.EDIT_CERTIFICATE);
         }
 
         @Test
         void shallExcludeEditCertificate() {
             doReturn(false).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.EDIT_CERTIFICATE);
         }
 
         @Test
         void shallIncludePrintCertificate() {
             doReturn(true).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallExcludePrintCertificate() {
             doReturn(false).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallIncludeDeleteCertificate() {
             doReturn(true).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.REMOVE_CERTIFICATE);
         }
 
         @Test
         void shallExcludeDeleteCertificate() {
             doReturn(false).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REMOVE_CERTIFICATE);
         }
 
         @Test
         void shallIncludeSignCertificate() {
             doReturn(true).when(draftAccessServiceHelper).isAllowToSign(any(AccessEvaluationParameters.class), anyString());
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
 
         @Test
         void shallExcludeSignCertificate() {
             doReturn(false).when(draftAccessServiceHelper).isAllowToSign(any(AccessEvaluationParameters.class), anyString());
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
 
         @Test
         void shallIncludeForwardCertificate() {
             doReturn(true).when(draftAccessServiceHelper).isAllowedToForwardUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
         }
 
         @Test
         void shallExcludeForwardCertificate() {
             doReturn(false).when(draftAccessServiceHelper).isAllowedToForwardUtkast(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.UNSIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        }
+
+
+        @Test
+        void shallIncludeFMB() {
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.FMB);
         }
     }
 
@@ -141,42 +165,48 @@ class GetCertificationResourceLinksImplTest {
         @Test
         void shallIncludePrintCertificate() {
             doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallExcludePrintCertificate() {
             doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallIncludeCopyCertificate() {
             doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.COPY_CERTIFICATE);
         }
 
         @Test
         void shallExcludeCopyCertificate() {
             doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.COPY_CERTIFICATE);
         }
 
         @Test
         void shallIncludeInvalidateCertificate() {
             doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
         }
 
         @Test
         void shallExcludeInvalidateCertificate() {
             doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.LOCKED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
         }
     }
@@ -187,56 +217,64 @@ class GetCertificationResourceLinksImplTest {
         @Test
         void shallIncludePrintCertificate() {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallExcludePrintCertificate() {
             doReturn(false).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
         }
 
         @Test
         void shallIncludeReplaceCertificate() {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
         }
 
         @Test
         void shallExcludeReplaceCertificate() {
             doReturn(false).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
         }
 
         @Test
         void shallIncludeRenewCertificate() {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
         }
 
         @Test
         void shallExcludeRenewCertificate() {
             doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
         }
 
         @Test
         void shallIncludeInvalidateCertificate() {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
         }
 
         @Test
         void shallExcludeInvalidateCertificate() {
             doReturn(false).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-            final var actualResourceLinks = getCertificationResourceLinks.get(createCertificate(CertificateStatus.SIGNED));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
         }
     }
@@ -256,49 +294,5 @@ class GetCertificationResourceLinksImplTest {
             .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
             .findFirst()
             .orElse(null);
-    }
-
-    private Certificate createCertificate(CertificateStatus status) {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id("certificateId")
-                    .type("certificateType")
-                    .typeVersion("certificateTypeVersion")
-                    .status(status)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id("191212121212")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .unit(
-                        Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .careProvider(
-                        Unit.builder()
-                            .unitId("careProviderId")
-                            .unitName("careProviderName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
     }
 }

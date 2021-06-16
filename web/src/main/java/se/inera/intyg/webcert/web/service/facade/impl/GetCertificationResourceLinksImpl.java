@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -30,6 +32,7 @@ import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -37,15 +40,18 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Service
 public class GetCertificationResourceLinksImpl implements GetCertificationResourceLinks {
 
+    private final GetCertificatesAvailableFunctions getCertificatesAvailableFunctions;
     private final DraftAccessServiceHelper draftAccessServiceHelper;
     private final LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Autowired
     public GetCertificationResourceLinksImpl(
+        GetCertificatesAvailableFunctions getCertificatesAvailableFunctions,
         DraftAccessServiceHelper draftAccessServiceHelper,
         LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper,
         CertificateAccessServiceHelper certificateAccessServiceHelper) {
+        this.getCertificatesAvailableFunctions = getCertificatesAvailableFunctions;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
         this.lockedDraftAccessServiceHelper = lockedDraftAccessServiceHelper;
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
@@ -53,175 +59,109 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
 
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
+        final var availableFunctions = getCertificatesAvailableFunctions.get(certificate);
+        final var functions = getAccessFunctions(certificate);
+        return availableFunctions.stream()
+            .filter(availableFunction -> {
+                final var accessFunction = functions.get(availableFunction.getType());
+                if (accessFunction == null) {
+                    return true;
+                }
+                return accessFunction.hasAccess(accessEvaluationParameters, certificate);
+            })
+            .toArray(ResourceLinkDTO[]::new);
+    }
+
+    private Map<ResourceLinkTypeDTO, AccessCheck> getAccessFunctions(Certificate certificate) {
         switch (certificate.getMetadata().getStatus()) {
             case UNSIGNED:
-                resourceLinks.addAll(
-                    getResourceLinksForDraft(certificate, accessEvaluationParameters)
-                );
-                break;
+                return getFunctionsForDraft();
             case SIGNED:
-                resourceLinks.addAll(
-                    getResourceLinksForCertificate(certificate, accessEvaluationParameters)
-                );
-                break;
+                return getFunctionsForCertificate();
             case LOCKED:
-                resourceLinks.addAll(
-                    getResourceLinksForLockedDraft(certificate, accessEvaluationParameters)
-                );
-                break;
+                return getFunctionsForLockedDraft();
             default:
+                return Collections.emptyMap();
         }
-        return resourceLinks.toArray(new ResourceLinkDTO[0]);
     }
 
-    private ArrayList<ResourceLinkDTO> getResourceLinksForDraft(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        if (draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.EDIT_CERTIFICATE,
-                    "Ändra",
-                    "Ändrar intygsutkast",
-                    true
-                )
-            );
-        }
-        if (draftAccessServiceHelper.isAllowToPrintUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                    "Skriv ut",
-                    "Laddar ned intygsutkastet för utskrift.",
-                    true
-                )
-            );
-        }
-        if (draftAccessServiceHelper.isAllowToDeleteUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.REMOVE_CERTIFICATE,
-                    "Radera",
-                    "Raderar intygsutkast",
-                    true
-                )
-            );
-        }
-        if (draftAccessServiceHelper.isAllowToSign(accessEvaluationParameters, certificate.getMetadata().getId())) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                    "Signera",
-                    "Signerar intygsutkast",
-                    true
-                )
-            );
-        }
-        if (draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
-                    "Vidarebefodra utkast",
-                    "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
-                    true
-                )
-            );
-        }
-        return resourceLinks;
+    private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForDraft() {
+        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+
+        functions.put(ResourceLinkTypeDTO.EDIT_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToPrintUtkast(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.REMOVE_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToDeleteUtkast(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.SIGN_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToSign(accessEvaluationParameters, certificate.getMetadata().getId())
+        );
+
+        functions.put(ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)
+        );
+
+        return functions;
     }
 
-    private ArrayList<ResourceLinkDTO> getResourceLinksForCertificate(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        if (certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters, false)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                    "Skriv ut",
-                    "Laddar ned intyget för utskrift.",
-                    true
-                )
-            );
-        }
-        if (certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
-                    "Ersätt",
-                    "Skapar en kopia av detta intyg som du kan redigera.",
-                    true
-                )
-            );
-        }
-        if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.RENEW_CERTIFICATE,
-                    "Förnya",
-                    "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.",
-                    "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                        + " med viss information från det ursprungliga intyget.<br><br>\n"
-                        + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
-                        + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
-                        + "<ul>\n"
-                        + "<li>Sjukskrivningsperiod och grad.</li>\n"
-                        + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
-                        + "<li>Referenser som intyget baseras på.</li>\n"
-                        + "</ul>\n"
-                        + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
-                        + "Det nya utkastet skapas på den enhet du är inloggad på.",
-                    true
-                )
-            );
-        }
-        if (certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
-                    "Makulera",
-                    "Öppnar ett fönster där du kan välja att makulera intyget.",
-                    true
-                )
-            );
-        }
-        return resourceLinks;
+    private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForLockedDraft() {
+        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+
+        functions.put(ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                lockedDraftAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.COPY_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)
+        );
+
+        return functions;
     }
 
-    private ArrayList<ResourceLinkDTO> getResourceLinksForLockedDraft(Certificate certificate,
-        AccessEvaluationParameters accessEvaluationParameters) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        if (lockedDraftAccessServiceHelper.isAllowToPrint(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                    "Skriv ut",
-                    "Laddar ned intygsutkastet för utskrift.",
-                    true
-                )
-            );
-        }
-        if (lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
-                    "Kopiera",
-                    "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
-                    true
-                )
-            );
-        }
-        if (lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
-                    "Makulera",
-                    "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.",
-                    true
-                )
-            );
-        }
-        return resourceLinks;
+    private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForCertificate() {
+        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+
+        functions.put(ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToPrint(accessEvaluationParameters, false)
+        );
+
+        functions.put(ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.RENEW_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)
+        );
+
+        return functions;
     }
 
     private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {
@@ -242,5 +182,10 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
         unit.setVardgivare(new Vardgivare());
         unit.getVardgivare().setVardgivarid(certificate.getMetadata().getCareProvider().getUnitId());
         return unit;
+    }
+
+    private interface AccessCheck {
+
+        boolean hasAccess(AccessEvaluationParameters accessEvaluationParameters, Certificate certificate);
     }
 }
