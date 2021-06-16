@@ -71,6 +71,7 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
                     getResourceLinksForLockedDraft(certificate, accessEvaluationParameters)
                 );
                 break;
+            default:
         }
         return resourceLinks.toArray(new ResourceLinkDTO[0]);
     }
