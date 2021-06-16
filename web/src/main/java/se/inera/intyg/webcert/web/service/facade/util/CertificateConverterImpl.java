@@ -40,7 +40,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateServiceImpl;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
@@ -207,25 +206,25 @@ public class CertificateConverterImpl implements CertificateConverter {
     }
 
     private Patient getPatient(Utkast certificate) {
-        final var patient = new Patient();
+        return Patient.builder()
+            .personId(
+                PersonId.builder()
+                    .id(certificate.getPatientPersonnummer().getPersonnummer())
+                    .type("PERSON_NUMMER")
+                    .build()
+            )
+            .firstName(certificate.getPatientFornamn())
+            .middleName(certificate.getPatientMellannamn())
+            .lastName(certificate.getPatientEfternamn())
+            .fullName(getFullName(certificate))
+            .build();
+    }
 
-        patient.setPersonId(new PersonId());
-        patient.getPersonId().setId(certificate.getPatientPersonnummer().getPersonnummer());
-        patient.getPersonId().setType("PERSON_NUMMER");
-        patient.setFirstName(certificate.getPatientFornamn());
-        patient.setMiddleName(certificate.getPatientMellannamn());
-        patient.setLastName(certificate.getPatientEfternamn());
+    private String getFullName(Utkast certificate) {
         if (Objects.nonNull(certificate.getPatientMellannamn()) && certificate.getPatientMellannamn().trim().length() > 0) {
-            patient.setFullName(
-                certificate.getPatientFornamn() + ' ' + certificate.getPatientMellannamn() + ' ' + certificate.getPatientEfternamn()
-            );
-        } else {
-            patient.setFullName(
-                certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn()
-            );
+            return certificate.getPatientFornamn() + ' ' + certificate.getPatientMellannamn() + ' ' + certificate.getPatientEfternamn();
         }
-
-        return patient;
+        return certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn();
     }
 
     private boolean isRevoked(Utkast certificate) {

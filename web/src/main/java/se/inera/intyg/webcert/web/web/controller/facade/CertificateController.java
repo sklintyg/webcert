@@ -44,12 +44,14 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
@@ -91,6 +93,8 @@ public class CertificateController {
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
     @Autowired
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
+    @Autowired
+    private GetCertificationResourceLinks getCertificationResourceLinks;
 
     @GET
     @Path("/{certificateId}")
@@ -100,8 +104,10 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
-        final Certificate certificate = getCertificateFacadeService.getCertificate(certificateId, true);
-        return Response.ok(CertificateResponseDTO.create(certificate)).build();
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, true);
+        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 
     @PUT
@@ -130,9 +136,9 @@ public class CertificateController {
     @Path("/{certificateId}/validate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response validateCertificate(@RequestBody @NotNull Certificate certificate) {
+    public Response validateCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Validating certificate with id: '{}'", certificate.getMetadata().getId());
+            LOG.debug("Validating certificate with id: '{}'", certificateId);
         }
         final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
@@ -142,12 +148,14 @@ public class CertificateController {
     @Path("/{certificateId}/sign")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response signCertificate(@RequestBody @NotNull Certificate certificate) {
+    public Response signCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Signing certificate with id: '{}'", certificate.getMetadata().getId());
+            LOG.debug("Signing certificate with id: '{}'", certificateId);
         }
         final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
-        return Response.ok(CertificateResponseDTO.create(signedCertificate)).build();
+        final var resourceLinks = getCertificationResourceLinks.get(signedCertificate);
+        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 
     @DELETE
@@ -181,7 +189,10 @@ public class CertificateController {
             revokeCertificate.getReason(),
             revokeCertificate.getMessage()
         );
-        return Response.ok(CertificateResponseDTO.create(certificate)).build();
+
+        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 
     @POST
@@ -248,7 +259,10 @@ public class CertificateController {
             version,
             forwardCertificate.isForwarded()
         );
-        return Response.ok(CertificateResponseDTO.create(certificate)).build();
+
+        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 
     @GET

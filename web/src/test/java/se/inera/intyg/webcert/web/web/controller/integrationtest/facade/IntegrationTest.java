@@ -42,14 +42,16 @@ public class IntegrationTest {
     public static Patient ALEXA_VALFRIDSSON = createPatient("194110299221", "Alexa", "Valfridsson");
 
     private static Patient createPatient(String id, String firstName, String lastName) {
-        final var personId = new PersonId();
-        personId.setId(id);
-        personId.setType("PERSONNUMMER");
-        final var patient = new Patient();
-        patient.setPersonId(personId);
-        patient.setFirstName(firstName);
-        patient.setLastName(lastName);
-        return patient;
+        return Patient.builder()
+            .personId(
+                PersonId.builder()
+                    .id(id)
+                    .type("PERSON_NUMMER")
+                    .build()
+            )
+            .firstName(firstName)
+            .lastName(lastName)
+            .build();
     }
 
     private static final List<String> LAKARE = Collections.singletonList("Läkare");

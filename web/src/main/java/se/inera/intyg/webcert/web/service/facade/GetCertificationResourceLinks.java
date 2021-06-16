@@ -17,23 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+package se.inera.intyg.webcert.web.service.facade;
 
-public class CertificateResponseDTO {
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-    private CertificateDTO certificate;
+public interface GetCertificationResourceLinks {
 
-    public static CertificateResponseDTO create(CertificateDTO certificate) {
-        final var responseDTO = new CertificateResponseDTO();
-        responseDTO.certificate = certificate;
-        return responseDTO;
-    }
-
-    public CertificateDTO getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(CertificateDTO certificate) {
-        this.certificate = certificate;
-    }
+    ResourceLinkDTO[] get(Certificate certificate);
 }

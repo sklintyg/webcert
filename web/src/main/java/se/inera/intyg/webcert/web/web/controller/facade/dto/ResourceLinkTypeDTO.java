@@ -16,24 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public class CertificateResponseDTO {
-
-    private CertificateDTO certificate;
-
-    public static CertificateResponseDTO create(CertificateDTO certificate) {
-        final var responseDTO = new CertificateResponseDTO();
-        responseDTO.certificate = certificate;
-        return responseDTO;
-    }
-
-    public CertificateDTO getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(CertificateDTO certificate) {
-        this.certificate = certificate;
-    }
+public enum ResourceLinkTypeDTO {
+    EDIT_CERTIFICATE,
+    REMOVE_CERTIFICATE,
+    FORWARD_CERTIFICATE,
+    SIGN_CERTIFICATE,
+    SEND_CERTIFICATE,
+    REVOKE_CERTIFICATE,
+    REPLACE_CERTIFICATE,
+    RENEW_CERTIFICATE,
+    PRINT_CERTIFICATE,
+    COPY_CERTIFICATE
 }

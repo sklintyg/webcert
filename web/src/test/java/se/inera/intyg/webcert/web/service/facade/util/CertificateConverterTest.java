@@ -201,9 +201,10 @@ public class CertificateConverterTest {
 
         @Test
         void shallIncludePersonId() {
-            final var expectedPersonId = new PersonId();
-            expectedPersonId.setId(draft.getPatientPersonnummer().getPersonnummer());
-            expectedPersonId.setType("PERSON_NUMMER");
+            final var expectedPersonId = PersonId.builder()
+                .id(draft.getPatientPersonnummer().getPersonnummer())
+                .type("PERSON_NUMMER")
+                .build();
 
             final var actualCertificate = certificateConverter.convert(draft);
 

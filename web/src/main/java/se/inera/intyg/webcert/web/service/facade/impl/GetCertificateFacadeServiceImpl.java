@@ -28,24 +28,19 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @Service
-public class GetCertificateServiceImpl implements GetCertificateFacadeService {
+public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
 
     private final UtkastService utkastService;
-
-    private final ResourceLinkHelper resourceLinkHelper;
 
     private final CertificateConverter certificateConverter;
 
     @Autowired
-    public GetCertificateServiceImpl(UtkastService utkastService, ResourceLinkHelper resourceLinkHelper,
-        CertificateConverter certificateConverter) {
+    public GetCertificateFacadeServiceImpl(UtkastService utkastService, CertificateConverter certificateConverter) {
         this.utkastService = utkastService;
-        this.resourceLinkHelper = resourceLinkHelper;
         this.certificateConverter = certificateConverter;
     }
 
@@ -55,11 +50,6 @@ public class GetCertificateServiceImpl implements GetCertificateFacadeService {
         final Utkast utkast = utkastService.getDraft(certificateId, pdlLog);
 
         LOG.debug("Converting Utkast to Certificate");
-        final var certificate = certificateConverter.convert(utkast);
-
-        LOG.debug("Decorating certificate with resource links");
-        resourceLinkHelper.decorateCertificateWithValidActionLinks(certificate);
-
-        return certificate;
+        return certificateConverter.convert(utkast);
     }
 }
