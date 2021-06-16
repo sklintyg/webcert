@@ -411,6 +411,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logLoginAttemptMissingSubscription(String userId, String authMethod, String organizations) {
+        logEvent(MonitoringEvent.LOGIN_ATTEMPT_MISSING_SUBSCRIPTION, userId, authMethod, organizations);
+    }
+
+    @Override
     public void logSamlStatusForFailedLogin(String issuer, String samlStatus) {
         logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
     }
@@ -545,6 +550,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SRS_MEASURES_DISPLAYED("SRS measures displayed in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
+
+        LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organization(s) '{}' due "
+            + "to missing subscription(s)"),
 
         SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with statusCode '{}', statusText '{}', "
             + "exceptionMessage '{}' and time '{}'"),

@@ -35,7 +35,9 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
@@ -49,14 +51,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Value("${require.subscription.start.date}")
     private String requireSubscriptionStartDate;
 
-    private final SubscriptionRestServiceImpl subscriptionRestService;
+    private static final String ELEG = "ELEG";
 
+    private final SubscriptionRestServiceImpl subscriptionRestService;
     private final FeaturesHelper featuresHelper;
+    private final MonitoringLogService monitoringLogService;
 
     public SubscriptionServiceImpl(SubscriptionRestServiceImpl subscriptionRestService,
-        FeaturesHelper featuresHelper) {
+        FeaturesHelper featuresHelper, MonitoringLogService monitoringLogService) {
         this.subscriptionRestService = subscriptionRestService;
         this.featuresHelper = featuresHelper;
+        this.monitoringLogService = monitoringLogService;
     }
 
     @Override
@@ -72,6 +77,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         final var subscriptionInfo = new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod,
             requireSubscriptionStartDate);
 
+        monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, subscriptionInfo.getUnitHsaIdList());
         blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getUnitHsaIdList());
 
         return subscriptionInfo;
@@ -81,7 +87,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean fetchSubscriptionInfoUnregisteredElegUser(String personId) {
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
         LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
-        return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+        final var missingSubscription = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+        monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
+        return missingSubscription;
     }
 
     @Override
@@ -98,7 +106,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         if (isPastSubscriptionAdjustmentPeriod()
             && missingSubscriptionOnAllCareProviders(allCareProviders, careProvidersWithoutSubscription)) {
-            // TODO Add monitorlog for login attempt without subscription.
             throw new MissingSubscriptionException(String.format("All care providers for user %s are missing subscription",
                 webCertUser.getHsaId()));
         }
@@ -158,6 +165,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private boolean isFristaendeWebcertUser(String origin) {
         return origin.equals(UserOriginType.NORMAL.name());
+    }
+
+    private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {
+        if (isPastSubscriptionAdjustmentPeriod() && !careProviderHsaIds.isEmpty()) {
+            monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
+        }
+    }
+
+    private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
+        if (isPastSubscriptionAdjustmentPeriod() && missingSubscription) {
+            final var optionalPersonId = Personnummer.createPersonnummer(personId);
+            final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
+            final var authMethodEleg = AuthenticationMethodEnum.fromValue(ELEG);
+            monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, authMethodEleg.name(),
+                HashUtility.hash(organizationNumber));
+        }
     }
 
     @Override

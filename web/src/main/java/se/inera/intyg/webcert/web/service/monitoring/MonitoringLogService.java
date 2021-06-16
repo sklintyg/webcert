@@ -104,6 +104,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
         String certificateVersion, String eventName, LocalDateTime eventTime, String currentUser);
     // CHECKSTYLE:ON ParameterNumber
 
+    void logLoginAttemptMissingSubscription(String userId, String authMethod, String organizations);
+
     void logSubscriptionServiceCallFailure(Collection<String> queryIds, Integer statusCode, String statusText, String exceptionMessage,
         LocalDateTime timestamp);
 

@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.subscription;
 
+import java.util.stream.Stream;
+
 public enum AuthenticationMethodEnum {
     ELEG("ELEG", "Authentication method ELEG"),
     SITHS("SITHS", "Authentication method SITHS");
@@ -37,5 +39,10 @@ public enum AuthenticationMethodEnum {
 
     public String description() {
         return this.description;
+    }
+
+    public static AuthenticationMethodEnum fromValue(String value) {
+        return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(value));
     }
 }

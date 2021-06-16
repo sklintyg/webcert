@@ -563,4 +563,12 @@ public class MonitoringLogServiceImplTest {
             "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with statusCode '200', statusText 'statusText', "
             + "exceptionMessage 'exceptionMessage' and time '2021-06-13T22:13:28'");
     }
+
+    @Test
+    public void shouldLogLoginAttemptMissingSubscription() {
+        logService.logLoginAttemptMissingSubscription("userId", "SITHS", "[HSA_ID_1, HSA_ID_2]");
+        verifyLog(Level.INFO,
+            "LOGIN_ATTEMPT_MISSING_SUBSCRIPTION User id 'userId' attempting login with 'SITHS' was denied access to "
+                + "organization(s) '[HSA_ID_1, HSA_ID_2]' due to missing subscription(s)");
+    }
 }

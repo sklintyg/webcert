@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD;
@@ -30,7 +31,6 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CL
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -47,10 +47,11 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
@@ -63,6 +64,9 @@ public class SubscriptionServiceTest {
 
     @Mock
     private FeaturesHelper featuresHelper;
+
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> restServiceParamCaptor;
@@ -79,7 +83,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnSubscriptionActionNoneWhenNotFristaende() {
-        final var webCertUser = createWebCertSithsUser(true, false, 1, 1, 0);
+        final var webCertUser = createWebCertSithsUser( 1, 1, 0);
         webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
@@ -89,7 +93,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnSubscriptionActionNoneWhenBeforeAdjustment() {
-        final var webCertUser = createWebCertSithsUser(false, false, 1, 1, 0);
+        final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
@@ -98,7 +102,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnSubscriptionActionWarnWhenDuringAdjustment() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
         setFeaturesHelperMockToReturn(true, false);
@@ -110,7 +114,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnSubscriptionActionBlockWhenPastAdjustment() {
-        final var webCertUser = createWebCertElegUser(false, true);
+        final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
         setFeaturesHelperMockToReturn(true, true);
@@ -122,7 +126,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnListWithAddedHsaIdWhenAcknowledgedWarning() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
         webCertUser.setSubscriptionInfo(SubscriptionInfo.createSubscriptionInfoNoAction());
 
         final var acknowledgedHsaId = "ACKNOWLEDGED_HSA_ID";
@@ -133,7 +137,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldAddAcknowledgedHsaIdToWebCertUser() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
         webCertUser.setSubscriptionInfo(SubscriptionInfo.createSubscriptionInfoNoAction());
 
         final var acknowledgedHsaId = "ACKNOWLEDGED_HSA_ID";
@@ -144,7 +148,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldSetRequireSubscriptionStartDateWhenWarnOrBlock() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
         setFeaturesHelperMockToReturn(true, false);
@@ -156,7 +160,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldSetAuthenticationMethod() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
         setFeaturesHelperMockToReturn(true, false);
@@ -168,7 +172,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
-        final var webCertUser = createWebCertElegUser(true, false);
+        final var webCertUser = createWebCertElegUser();
         final var personId = webCertUser.getPersonId();
         final var expectedOrganizationNumber = personId.substring(2, 8) + "-" + personId.substring(personId.length() - 4);
 
@@ -184,7 +188,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldUseCareProviderOrganizationNumberWhenSithsUser() {
-        final var webCertUser = createWebCertSithsUser(true, false, 1, 1, 1);
+        final var webCertUser = createWebCertSithsUser(1, 1, 1);
         final var expectedOrganizationNumber = "CARE_PROVIDER_ORGANIZATION_NO_1";
 
         setRestServiceMockToReturn(0);
@@ -199,7 +203,7 @@ public class SubscriptionServiceTest {
 
     @Test(expected = MissingSubscriptionException.class)
     public void shouldThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenPastAdjustment() {
-        final var webCertUser = createWebCertSithsUser(false, true, 1, 1, 0);
+        final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
         setRestServiceMockToReturn(1);
         setFeaturesHelperMockToReturn(false, true);
@@ -209,7 +213,7 @@ public class SubscriptionServiceTest {
 
     @Test(expected = MissingSubscriptionException.class)
     public void shouldThrowExceptionIfSithsUserIsMissingMultipleSubscriptionsWhenPastAdjustment() {
-        final var webCertUser = createWebCertSithsUser(false, true, 3, 1, 1);
+        final var webCertUser = createWebCertSithsUser(3, 1, 1);
 
         setRestServiceMockToReturn(3);
         setFeaturesHelperMockToReturn(false, true);
@@ -219,7 +223,7 @@ public class SubscriptionServiceTest {
 
     @Test(expected = MissingSubscriptionException.class)
     public void shouldThrowExceptionIfElegUserIsMissingSubscriptionWhenPastAdjustment() {
-        final var webCertUser = createWebCertElegUser(false, true);
+        final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(1);
         setFeaturesHelperMockToReturn(true, true);
@@ -229,7 +233,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldQueryOrgNumberForAllCareProviders() {
-        final var webCertUser = createWebCertSithsUser(false, true, 3, 1, 0);
+        final var webCertUser = createWebCertSithsUser(3, 1, 0);
 
         setRestServiceMockToReturn(1);
         setFeaturesHelperMockToReturn(true, true);
@@ -242,7 +246,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldReturnHsaIdsReceivedFromRestServiceDuringAdaptation() {
-        final var webCertUser = createWebCertSithsUser(false, true, 3, 2, 0);
+        final var webCertUser = createWebCertSithsUser(3, 2, 0);
 
         setRestServiceMockToReturn(3);
         setFeaturesHelperMockToReturn(true, false);
@@ -329,6 +333,55 @@ public class SubscriptionServiceTest {
         assertFalse(response3);
     }
 
+    @Test
+    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
+        final var webcertUser = createWebCertSithsUser(3, 1,2);
+
+        setFeaturesHelperMockToReturn(false, true);
+        setRestServiceMockToReturn(2);
+
+        subscriptionService.fetchSubscriptionInfo(webcertUser);
+
+        verify(monitoringLogService).logLoginAttemptMissingSubscription("only-for-test-use", "SITHS",
+            List.of("CARE_PROVIDER_HSA_ID_1", "CARE_PROVIDER_HSA_ID_2").toString());
+    }
+
+    @Test
+    public void shouldNotMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionAdaptation() {
+        final var webcertUser = createWebCertSithsUser(3, 1,2);
+
+        setFeaturesHelperMockToReturn(true, false);
+        setRestServiceMockToReturn(2);
+
+        subscriptionService.fetchSubscriptionInfo(webcertUser);
+
+        verifyNoInteractions(monitoringLogService);
+    }
+
+    @Test
+    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
+        final var expectedUserId = HashUtility.hash(PERSON_ID);
+        final var expectedOrg = HashUtility.hash("121212-1212");
+
+        setFeaturesHelperMockToReturn(false, true);
+        setRestServiceUnregisteredElegMockToReturn(true);
+
+        subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(PERSON_ID);
+
+        verify(monitoringLogService).logLoginAttemptMissingSubscription(expectedUserId, "ELEG", expectedOrg);
+    }
+
+    @Test
+    public void shouldNotMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptiondaptationForUnregElegUser() {
+
+        setFeaturesHelperMockToReturn(true, false);
+        setRestServiceUnregisteredElegMockToReturn(true);
+
+        subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(PERSON_ID);
+
+        verifyNoInteractions(monitoringLogService);
+    }
+
     private void setRestServiceMockToReturn(int careProviderHsaIdCount) {
         final var careProviderHsaIds = new ArrayList<String>();
 
@@ -347,8 +400,8 @@ public class SubscriptionServiceTest {
         when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD)).thenReturn(pastAdjustment);
     }
 
-    private WebCertUser createWebCertElegUser(boolean duringAdjustment, boolean pastAdjustment) {
-        final var webCertUser = createBaseWebCertUser(duringAdjustment, pastAdjustment);
+    private WebCertUser createWebCertElegUser() {
+        final var webCertUser = createBaseWebCertUser();
         webCertUser.setAuthenticationScheme(ELEG_AUTHN_CLASSES.get(2));
         webCertUser.setVardgivare(getCareProviders(1, 1, 0));
 
@@ -357,20 +410,19 @@ public class SubscriptionServiceTest {
         return webCertUser;
     }
 
-    private WebCertUser createWebCertSithsUser(boolean duringAdjustment, boolean pastAdjustment, int numCareProviders, int numCareUnits,
+    private WebCertUser createWebCertSithsUser(int numCareProviders, int numCareUnits,
         int numUnits) {
-        final var webCertUser = createBaseWebCertUser(duringAdjustment, pastAdjustment);
+        final var webCertUser = createBaseWebCertUser();
         webCertUser.setAuthenticationScheme(SITHS_AUTHN_CLASSES.get(1));
         webCertUser.setVardgivare(getCareProviders(numCareProviders, numCareUnits, numUnits));
         return webCertUser;
     }
 
-    private WebCertUser createBaseWebCertUser(boolean duringAdjustment, boolean pastAdjustment) {
+    private WebCertUser createBaseWebCertUser() {
         final var webCertUser = new WebCertUser();
         webCertUser.setPersonId(PERSON_ID);
         webCertUser.setRoles(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE, new Role()));
         webCertUser.setOrigin(UserOriginType.NORMAL.name());
-        webCertUser.setFeatures(createFeatures(duringAdjustment, pastAdjustment));
         return webCertUser;
     }
 
@@ -409,22 +461,5 @@ public class SubscriptionServiceTest {
             units.add(unit);
         }
         return units;
-    }
-
-    private Map<String, Feature> createFeatures(boolean subscriptionDuringAdjustmentPeriodActive,
-        boolean subscriptionPastAdjustmentPeriodActive) {
-
-        var featureSubscriptionDuringAdjustmentPeriod = new Feature();
-        featureSubscriptionDuringAdjustmentPeriod.setGlobal(subscriptionDuringAdjustmentPeriodActive);
-        featureSubscriptionDuringAdjustmentPeriod.setName(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD);
-
-        var featureSubscriptionPastAdjustmentPeriod = new Feature();
-        featureSubscriptionPastAdjustmentPeriod.setGlobal(subscriptionPastAdjustmentPeriodActive);
-        featureSubscriptionPastAdjustmentPeriod.setName(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD);
-
-        var features = new HashMap<String, Feature>();
-        features.put(AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD, featureSubscriptionDuringAdjustmentPeriod);
-        features.put(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD, featureSubscriptionPastAdjustmentPeriod);
-        return features;
     }
 }
