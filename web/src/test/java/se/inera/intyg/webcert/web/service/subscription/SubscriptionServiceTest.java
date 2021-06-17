@@ -159,18 +159,6 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetAuthenticationMethod() {
-        final var webCertUser = createWebCertElegUser();
-
-        setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(true, false);
-
-        final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
-
-        assertEquals(AuthenticationMethodEnum.ELEG, response.getAuthenticationMethod());
-    }
-
-    @Test
     public void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
         final var webCertUser = createWebCertElegUser();
         final var personId = webCertUser.getPersonId();

@@ -40,9 +40,4 @@ public enum AuthenticationMethodEnum {
     public String description() {
         return this.description;
     }
-
-    public static AuthenticationMethodEnum fromValue(String value) {
-        return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(value));
-    }
 }

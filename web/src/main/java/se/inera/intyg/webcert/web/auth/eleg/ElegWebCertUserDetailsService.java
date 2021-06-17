@@ -156,7 +156,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         if (subscriptionService.isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse)
             && isMissingSubscription(personId)) {
-            throw new MissingSubscriptionException("Private practitioner '" + personId + "' has no active subscription.");
+            final var pnr = Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
+            throw new MissingSubscriptionException("Private practitioner '" + pnr + "' has no active subscription.");
         }
 
         throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private "

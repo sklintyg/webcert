@@ -30,25 +30,21 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private SubscriptionState subscriptionState;
     @JsonProperty
-    private AuthenticationMethodEnum authenticationMethod;
-    @JsonProperty
     private List<String> careProviderHsaIdList;
     @JsonProperty
     private List<String> acknowledgedWarnings;
     @JsonProperty
     private String requireSubscriptionStartDate;
 
-    public SubscriptionInfo(SubscriptionState subscriptionState, List<String> careProviderHsaIdList,
-        AuthenticationMethodEnum authenticationMethod, String requireSubscriptionStartDate) {
+    public SubscriptionInfo(SubscriptionState subscriptionState, List<String> careProviderHsaIdList, String requireSubscriptionStartDate) {
         this.subscriptionState = subscriptionState;
-        this.authenticationMethod = authenticationMethod;
         this.careProviderHsaIdList = careProviderHsaIdList;
         this.acknowledgedWarnings = new ArrayList<>();
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
     public static SubscriptionInfo createSubscriptionInfoNoAction() {
-        return new SubscriptionInfo(SubscriptionState.NONE, new ArrayList<>(), null, null);
+        return new SubscriptionInfo(SubscriptionState.NONE, new ArrayList<>(),null);
     }
 
     public SubscriptionState getSubscriptionState() {
@@ -57,14 +53,6 @@ public class SubscriptionInfo implements Serializable {
 
     public void setSubscriptionState(SubscriptionState subscriptionState) {
         this.subscriptionState = subscriptionState;
-    }
-
-    public AuthenticationMethodEnum getAuthenticationMethod() {
-        return authenticationMethod;
-    }
-
-    public void setAuthenticationMethod(AuthenticationMethodEnum authenticationMethod) {
-        this.authenticationMethod = authenticationMethod;
     }
 
     public List<String> getCareProviderHsaIdList() {
@@ -102,12 +90,12 @@ public class SubscriptionInfo implements Serializable {
         SubscriptionInfo that = (SubscriptionInfo) o;
         return subscriptionState == that.subscriptionState && Objects.equals(careProviderHsaIdList, that.careProviderHsaIdList)
             && Objects.equals(acknowledgedWarnings, that.acknowledgedWarnings) && Objects.equals(requireSubscriptionStartDate,
-            that.requireSubscriptionStartDate) && Objects.equals(authenticationMethod, that.authenticationMethod);
+            that.requireSubscriptionStartDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subscriptionState, authenticationMethod, careProviderHsaIdList, acknowledgedWarnings,
+        return Objects.hash(subscriptionState, careProviderHsaIdList, acknowledgedWarnings,
             requireSubscriptionStartDate);
     }
 }

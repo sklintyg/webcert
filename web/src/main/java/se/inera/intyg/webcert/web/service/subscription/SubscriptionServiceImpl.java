@@ -74,8 +74,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
         final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
         final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
-        final var subscriptionInfo = new SubscriptionInfo(subscriptionState, careProviderHsaIds, authenticationMethod,
-            requireSubscriptionStartDate);
+        final var subscriptionInfo = new SubscriptionInfo(subscriptionState, careProviderHsaIds, requireSubscriptionStartDate);
 
         monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, subscriptionInfo.getCareProviderHsaIdList());
         blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getCareProviderHsaIdList());
@@ -86,7 +85,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public boolean fetchSubscriptionInfoUnregisteredElegUser(String personId) {
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
-        LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.", organizationNumber);
+        LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.",
+            HashUtility.hash(organizationNumber));
         final var missingSubscription = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
         monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
         return missingSubscription;
@@ -177,8 +177,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (isSubscriptionRequired() && missingSubscription) {
             final var optionalPersonId = Personnummer.createPersonnummer(personId);
             final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
-            final var authMethodEleg = AuthenticationMethodEnum.fromValue(ELEG);
-            monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, authMethodEleg.name(),
+            monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
                 HashUtility.hash(organizationNumber));
         }
     }
