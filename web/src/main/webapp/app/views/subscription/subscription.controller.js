@@ -28,8 +28,8 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
 
     $scope.modalBody = {
         info: messageService.getProperty('subscription.warning.info.text',
-            {blockStartDate: subscriptionService.getSubscriptionBlockStartDate()}),
-        eleg: subscriptionService.isElegUser() ? 'subscription.warning.eleg.text' : '',
+            {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
+        eleg: 'subscription.warning.eleg.text',
         links: 'subscription.warning.link.text'
     };
 
@@ -39,22 +39,12 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
         titleId: 'subscription.warning.title.text',
         buttons: [
             {
-                name: 'subscription.sign.agreement.now',
-                clickFn: function() {
-                    acknowledgeSubscriptionWarning(UserModel.user.valdVardgivare.id);
-                    $window.open(dynamicLinkService.getLink('kundportalenGetAccount').url);
-                },
-                text: 'subscription.sign.agreement.now.label',
-                id: 'subscriptionSignAgreementNowBtn',
-                className: 'btn-primary'
-            },
-            {
-                name: 'subscription.sign.agreement.later',
+                name: 'subscription.warning.modal.close',
                 clickFn: function() {
                     acknowledgeSubscriptionWarning(UserModel.user.valdVardgivare.id);
                 },
-                text: 'subscription.sign.agreement.later.label',
-                id: 'subscriptionSignAgreementLaterBtn',
+                text: 'common.close',
+                id: 'subscriptionWarningModalClose',
                 className: 'btn-default'
             }
       ],
