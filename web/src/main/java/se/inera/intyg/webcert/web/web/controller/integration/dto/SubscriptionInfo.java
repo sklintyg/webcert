@@ -28,35 +28,35 @@ import se.inera.intyg.webcert.web.service.subscription.AuthenticationMethodEnum;
 public class SubscriptionInfo implements Serializable {
 
     @JsonProperty
-    private SubscriptionAction subscriptionAction;
+    private SubscriptionState subscriptionState;
     @JsonProperty
     private AuthenticationMethodEnum authenticationMethod;
     @JsonProperty
-    private List<String> unitHsaIdList; //TODO: Rename to careProviderList or move to enhet/mottagning as hasSubscription or similar
+    private List<String> careProviderHsaIdList;
     @JsonProperty
     private List<String> acknowledgedWarnings;
     @JsonProperty
     private String requireSubscriptionStartDate;
 
-    public SubscriptionInfo(SubscriptionAction subscriptionAction, List<String> unitHsaIdList,
+    public SubscriptionInfo(SubscriptionState subscriptionState, List<String> careProviderHsaIdList,
         AuthenticationMethodEnum authenticationMethod, String requireSubscriptionStartDate) {
-        this.subscriptionAction = subscriptionAction;
+        this.subscriptionState = subscriptionState;
         this.authenticationMethod = authenticationMethod;
-        this.unitHsaIdList = unitHsaIdList;
+        this.careProviderHsaIdList = careProviderHsaIdList;
         this.acknowledgedWarnings = new ArrayList<>();
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
     public static SubscriptionInfo createSubscriptionInfoNoAction() {
-        return new SubscriptionInfo(SubscriptionAction.NONE, new ArrayList<>(), null, null);
+        return new SubscriptionInfo(SubscriptionState.NONE, new ArrayList<>(), null, null);
     }
 
-    public SubscriptionAction getSubscriptionAction() {
-        return subscriptionAction;
+    public SubscriptionState getSubscriptionState() {
+        return subscriptionState;
     }
 
-    public void setSubscriptionAction(SubscriptionAction subscriptionAction) {
-        this.subscriptionAction = subscriptionAction;
+    public void setSubscriptionState(SubscriptionState subscriptionState) {
+        this.subscriptionState = subscriptionState;
     }
 
     public AuthenticationMethodEnum getAuthenticationMethod() {
@@ -67,12 +67,12 @@ public class SubscriptionInfo implements Serializable {
         this.authenticationMethod = authenticationMethod;
     }
 
-    public List<String> getUnitHsaIdList() {
-        return unitHsaIdList;
+    public List<String> getCareProviderHsaIdList() {
+        return careProviderHsaIdList;
     }
 
-    public void setUnitHsaIdList(List<String> unitHsaIdList) {
-        this.unitHsaIdList = unitHsaIdList;
+    public void setCareProviderHsaIdList(List<String> careProviderHsaIdList) {
+        this.careProviderHsaIdList = careProviderHsaIdList;
     }
 
     public List<String> getAcknowledgedWarnings() {
@@ -100,12 +100,14 @@ public class SubscriptionInfo implements Serializable {
             return false;
         }
         SubscriptionInfo that = (SubscriptionInfo) o;
-        return subscriptionAction == that.subscriptionAction && Objects.equals(unitHsaIdList, that.unitHsaIdList)
-            && Objects.equals(acknowledgedWarnings, that.acknowledgedWarnings);
+        return subscriptionState == that.subscriptionState && Objects.equals(careProviderHsaIdList, that.careProviderHsaIdList)
+            && Objects.equals(acknowledgedWarnings, that.acknowledgedWarnings) && Objects.equals(requireSubscriptionStartDate,
+            that.requireSubscriptionStartDate) && Objects.equals(authenticationMethod, that.authenticationMethod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subscriptionAction, unitHsaIdList);
+        return Objects.hash(subscriptionState, authenticationMethod, careProviderHsaIdList, acknowledgedWarnings,
+            requireSubscriptionStartDate);
     }
 }

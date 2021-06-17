@@ -30,9 +30,9 @@ public interface SubscriptionService {
 
     List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId);
 
-    boolean isPastSubscriptionAdjustmentPeriod();
+    boolean isSubscriptionRequired();
 
-    boolean isDuringSubscriptionAdjustmentPeriod();
+    boolean isSubscriptionAdaptation();
 
     boolean isAnySubscriptionFeatureActive();
 

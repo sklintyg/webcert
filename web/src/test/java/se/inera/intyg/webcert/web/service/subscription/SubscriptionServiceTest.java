@@ -25,8 +25,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
@@ -53,7 +53,7 @@ import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionState;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -82,26 +82,26 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnSubscriptionActionNoneWhenNotFristaende() {
+    public void shouldReturnSubscriptionStateNoneWhenNotFristaende() {
         final var webCertUser = createWebCertSithsUser( 1, 1, 0);
         webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
-        assertEquals(SubscriptionAction.NONE, response.getSubscriptionAction());
+        assertEquals(SubscriptionState.NONE, response.getSubscriptionState());
     }
 
     @Test
-    public void shouldReturnSubscriptionActionNoneWhenBeforeAdjustment() {
+    public void shouldReturnSubscriptionStateNoneWhenNoSubscriptionFeaturesActive() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
-        assertEquals(SubscriptionAction.NONE, response.getSubscriptionAction());
+        assertEquals(SubscriptionState.NONE, response.getSubscriptionState());
     }
 
     @Test
-    public void shouldReturnSubscriptionActionWarnWhenDuringAdjustment() {
+    public void shouldReturnSubscriptionStateAdaptationWhenSubscriptionAdaptation() {
         final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
@@ -109,11 +109,11 @@ public class SubscriptionServiceTest {
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
-        assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_WARN, response.getSubscriptionAction());
+        assertEquals(SubscriptionState.SUBSCRIPTION_ADAPTATION, response.getSubscriptionState());
     }
 
     @Test
-    public void shouldReturnSubscriptionActionBlockWhenPastAdjustment() {
+    public void shouldReturnSubsciptionStateRequiredWhenFeatureRequiredIsSet() {
         final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(0);
@@ -121,7 +121,7 @@ public class SubscriptionServiceTest {
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
-        assertEquals(SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK, response.getSubscriptionAction());
+        assertEquals(SubscriptionState.SUBSCRIPTION_REQUIRED, response.getSubscriptionState());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenPastAdjustment() {
+    public void shouldThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
         setRestServiceMockToReturn(1);
@@ -212,7 +212,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowExceptionIfSithsUserIsMissingMultipleSubscriptionsWhenPastAdjustment() {
+    public void shouldThrowExceptionIfSithsUserIsMissingAllSubscriptionsWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(3, 1, 1);
 
         setRestServiceMockToReturn(3);
@@ -222,7 +222,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowExceptionIfElegUserIsMissingSubscriptionWhenPastAdjustment() {
+    public void shouldThrowExceptionIfElegUserIsMissingSubscriptionWhenSubscriptionRequired() {
         final var webCertUser = createWebCertElegUser();
 
         setRestServiceMockToReturn(1);
@@ -253,8 +253,8 @@ public class SubscriptionServiceTest {
 
         final var response = subscriptionService.fetchSubscriptionInfo(webCertUser);
 
-        assertEquals(3, response.getUnitHsaIdList().size());
-        assertTrue(response.getUnitHsaIdList().containsAll(List.of("CARE_PROVIDER_HSA_ID_1", "CARE_PROVIDER_HSA_ID_2",
+        assertEquals(3, response.getCareProviderHsaIdList().size());
+        assertTrue(response.getCareProviderHsaIdList().containsAll(List.of("CARE_PROVIDER_HSA_ID_1", "CARE_PROVIDER_HSA_ID_2",
             "CARE_PROVIDER_HSA_ID_3")));
     }
 
@@ -302,15 +302,15 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueOnlyWhenSubscriptionAdaptationIsActivated() {
+    public void shouldReturnTrueOnlyWhenSubscriptionAdaptationIsSinglyActivated() {
         setFeaturesHelperMockToReturn(true, false);
-        final var response1 = subscriptionService.isDuringSubscriptionAdjustmentPeriod();
+        final var response1 = subscriptionService.isSubscriptionAdaptation();
 
         setFeaturesHelperMockToReturn(true, true);
-        final var response2 = subscriptionService.isDuringSubscriptionAdjustmentPeriod();
+        final var response2 = subscriptionService.isSubscriptionAdaptation();
 
         setFeaturesHelperMockToReturn(false, false);
-        final var response3 = subscriptionService.isDuringSubscriptionAdjustmentPeriod();
+        final var response3 = subscriptionService.isSubscriptionAdaptation();
 
         assertTrue(response1);
         assertFalse(response2);
@@ -318,15 +318,15 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueWheneverWhenSubscriptionRequiredIsActivated() {
+    public void shouldReturnTrueWheneverSubscriptionRequiredIsActivated() {
         setFeaturesHelperMockToReturn(true, true);
-        final var response1 = subscriptionService.isPastSubscriptionAdjustmentPeriod();
+        final var response1 = subscriptionService.isSubscriptionRequired();
 
         setFeaturesHelperMockToReturn(false, true);
-        final var response2 = subscriptionService.isPastSubscriptionAdjustmentPeriod();
+        final var response2 = subscriptionService.isSubscriptionRequired();
 
         setFeaturesHelperMockToReturn(false, false);
-        final var response3 = subscriptionService.isPastSubscriptionAdjustmentPeriod();
+        final var response3 = subscriptionService.isSubscriptionRequired();
 
         assertTrue(response1);
         assertTrue(response2);
@@ -395,9 +395,9 @@ public class SubscriptionServiceTest {
         when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenReturn(isMissingSubscription);
     }
 
-    private void setFeaturesHelperMockToReturn(boolean duringAdjustment, boolean pastAdjustment) {
-        when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD)).thenReturn(duringAdjustment);
-        when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD)).thenReturn(pastAdjustment);
+    private void setFeaturesHelperMockToReturn(boolean subscriptionAdaptation, boolean subscriptionRequired) {
+        when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD)).thenReturn(subscriptionAdaptation);
+        when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED)).thenReturn(subscriptionRequired);
     }
 
     private WebCertUser createWebCertElegUser() {

@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionState;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 @Service
@@ -66,19 +66,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public SubscriptionInfo fetchSubscriptionInfo(WebCertUser webCertUser) {
-        final var missingSubscriptionAction = determineSubscriptionAction(webCertUser.getOrigin());
-        if (missingSubscriptionAction == SubscriptionAction.NONE) {
+        final var subscriptionState = determineSubscriptionState(webCertUser.getOrigin());
+        if (subscriptionState == SubscriptionState.NONE) {
             return SubscriptionInfo.createSubscriptionInfoNoAction();
         }
         LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
         final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
         final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
         final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
-        final var subscriptionInfo = new SubscriptionInfo(missingSubscriptionAction, careProviderHsaIds, authenticationMethod,
+        final var subscriptionInfo = new SubscriptionInfo(subscriptionState, careProviderHsaIds, authenticationMethod,
             requireSubscriptionStartDate);
 
-        monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, subscriptionInfo.getUnitHsaIdList());
-        blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getUnitHsaIdList());
+        monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, subscriptionInfo.getCareProviderHsaIdList());
+        blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getCareProviderHsaIdList());
 
         return subscriptionInfo;
     }
@@ -104,7 +104,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void blockUsersWithoutSubscription(WebCertUser webCertUser, Collection<String> allCareProviders,
         List<String> careProvidersWithoutSubscription) {
 
-        if (isPastSubscriptionAdjustmentPeriod()
+        if (isSubscriptionRequired()
             && missingSubscriptionOnAllCareProviders(allCareProviders, careProvidersWithoutSubscription)) {
             throw new MissingSubscriptionException(String.format("All care providers for user %s are missing subscription",
                 webCertUser.getHsaId()));
@@ -117,15 +117,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             && allCareProviders.containsAll(careProvidersWithoutSubscription);
     }
 
-    private SubscriptionAction determineSubscriptionAction(String requestOrigin) {
+    private SubscriptionState determineSubscriptionState(String requestOrigin) {
         if (isFristaendeWebcertUser(requestOrigin)) {
-            if (isPastSubscriptionAdjustmentPeriod()) {
-                return SubscriptionAction.MISSING_SUBSCRIPTION_BLOCK;
-            } else if (isDuringSubscriptionAdjustmentPeriod()) {
-                return SubscriptionAction.MISSING_SUBSCRIPTION_WARN;
+            if (isSubscriptionRequired()) {
+                return SubscriptionState.SUBSCRIPTION_REQUIRED;
+            } else if (isSubscriptionAdaptation()) {
+                return SubscriptionState.SUBSCRIPTION_ADAPTATION;
             }
         }
-        return SubscriptionAction.NONE;
+        return SubscriptionState.NONE;
     }
 
     private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
@@ -168,13 +168,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {
-        if (isPastSubscriptionAdjustmentPeriod() && !careProviderHsaIds.isEmpty()) {
+        if (isSubscriptionRequired() && !careProviderHsaIds.isEmpty()) {
             monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
         }
     }
 
     private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
-        if (isPastSubscriptionAdjustmentPeriod() && missingSubscription) {
+        if (isSubscriptionRequired() && missingSubscription) {
             final var optionalPersonId = Personnummer.createPersonnummer(personId);
             final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
             final var authMethodEleg = AuthenticationMethodEnum.fromValue(ELEG);
@@ -184,19 +184,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public boolean isPastSubscriptionAdjustmentPeriod() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD);
+    public boolean isSubscriptionRequired() {
+        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED);
     }
 
     @Override
-    public boolean isDuringSubscriptionAdjustmentPeriod() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD)
-            && !featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD);
+    public boolean isSubscriptionAdaptation() {
+        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD)
+            && !featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED);
     }
 
     @Override
     public boolean isAnySubscriptionFeatureActive() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_PAST_ADJUSTMENT_PERIOD)
-            || featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_DURING_ADJUSTMENT_PERIOD);
+        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED)
+            || featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD);
     }
 }
