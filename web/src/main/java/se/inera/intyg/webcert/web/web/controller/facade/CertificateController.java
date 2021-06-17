@@ -154,7 +154,7 @@ public class CertificateController {
         }
         final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
         final var resourceLinks = getCertificationResourceLinks.get(signedCertificate);
-        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        final var certificateDTO = CertificateDTO.create(signedCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 

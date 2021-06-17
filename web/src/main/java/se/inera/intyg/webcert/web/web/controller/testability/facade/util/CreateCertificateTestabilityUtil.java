@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
@@ -73,19 +74,23 @@ public class CreateCertificateTestabilityUtil {
 
     private final UtkastRepository utkastRepository;
 
+    private final IntygTextsService intygTextsService;
+
     private static final int DEFAULT_SICK_LEAVE_LENGTH = 14;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
-        CertificateConverter certificateConverter, UtkastRepository utkastRepository) {
+        CertificateConverter certificateConverter, UtkastRepository utkastRepository,
+        IntygTextsService intygTextsService) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
         this.certificateConverter = certificateConverter;
         this.utkastRepository = utkastRepository;
+        this.intygTextsService = intygTextsService;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -107,7 +112,7 @@ public class CreateCertificateTestabilityUtil {
             )
         );
 
-        final var utkast = utkastService.createNewDraft(createNewDraftRequest);
+        final var utkast = createNewDraft(createNewDraftRequest);
 
         final var certificate = certificateConverter.convert(utkast);
 
@@ -120,6 +125,21 @@ public class CreateCertificateTestabilityUtil {
         utkastRepository.save(utkast);
 
         return certificate.getMetadata().getId();
+    }
+
+    private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
+        final var utkast = utkastService.createNewDraft(createNewDraftRequest);
+        downgradeMinorVersionIfNecessary(createNewDraftRequest, utkast);
+        return utkast;
+    }
+
+    private void downgradeMinorVersionIfNecessary(CreateNewDraftRequest createNewDraftRequest, Utkast utkast) {
+        final var latestVersionForSameMajorVersion = intygTextsService.getLatestVersionForSameMajorVersion(
+            createNewDraftRequest.getIntygType(),
+            createNewDraftRequest.getIntygTypeVersion()
+        );
+
+        utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
     }
 
     private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
