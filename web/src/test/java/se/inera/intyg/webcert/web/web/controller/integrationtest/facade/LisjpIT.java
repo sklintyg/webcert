@@ -84,7 +84,7 @@ public class LisjpIT {
     }
 
     @Nested
-    class PreviousVersions {
+    class LisjpITPreviousVersions {
 
         @Test
         @DisplayName("Shall return certificate with version 1.0")
@@ -449,7 +449,7 @@ public class LisjpIT {
     }
 
     @Nested
-    class CurrentVersion {
+    class LisjpITCurrentVersion {
 
         @Test
         @DisplayName("Shall create draft with version current version")

@@ -19,6 +19,13 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.ARBETETS_PAVERKAN_DELSVAR_ID_41;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.ARBETETS_PAVERKAN_SVAR_JSON_ID_41;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_DELSVAR_ID_11;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_DELSVAR_ID_31;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_SVAR_JSON_ID_31;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,7 +34,9 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -176,8 +185,12 @@ public class CreateCertificateTestabilityUtil {
     }
 
     private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase("lisjp")) {
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
             return createValuesLisjp();
+        }
+
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
+            return createValuesAf00213();
         }
 
         return Collections.emptyMap();
@@ -218,6 +231,30 @@ public class CreateCertificateTestabilityUtil {
             )
             .build();
         values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        return values;
+    }
+
+    private Map<String, CertificateDataValue> createValuesAf00213() {
+        final var values = new HashMap<String, CertificateDataValue>();
+
+        final CertificateDataValueBoolean harFunktionsnedsattning = CertificateDataValueBoolean.builder()
+            .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11)
+            .selected(false)
+            .build();
+        values.put(FUNKTIONSNEDSATTNING_DELSVAR_ID_11, harFunktionsnedsattning);
+
+        final CertificateDataValueBoolean harUtredningBehandling = CertificateDataValueBoolean.builder()
+            .id(UTREDNING_BEHANDLING_SVAR_JSON_ID_31)
+            .selected(false)
+            .build();
+        values.put(UTREDNING_BEHANDLING_DELSVAR_ID_31, harUtredningBehandling);
+
+        final CertificateDataValueBoolean harArbetspaverkan = CertificateDataValueBoolean.builder()
+            .id(ARBETETS_PAVERKAN_SVAR_JSON_ID_41)
+            .selected(false)
+            .build();
+        values.put(ARBETETS_PAVERKAN_DELSVAR_ID_41, harArbetspaverkan);
 
         return values;
     }
