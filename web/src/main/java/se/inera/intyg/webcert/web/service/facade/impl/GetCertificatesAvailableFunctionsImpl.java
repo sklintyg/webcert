@@ -23,15 +23,20 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
+
+    @Autowired
+    CertificateEventService certificateEventService;
 
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
@@ -167,9 +172,25 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
                 "Makulera",
                 "Öppnar ett fönster där du kan välja att makulera intyget.",
+                "<p>Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
+                    +
+                    "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>",
                 true
             )
         );
+
+        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID) && certificateEventService
+            .isCertificateSent(certificate.getMetadata().getId())) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka intyg",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan",
+                    " ",
+                    true
+                )
+            );
+        }
 
         return resourceLinks;
     }

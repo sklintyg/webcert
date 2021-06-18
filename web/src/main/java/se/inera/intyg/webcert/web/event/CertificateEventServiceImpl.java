@@ -109,6 +109,12 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         return events;
     }
 
+    @Override
+    public boolean isCertificateSent(String certificateId) {
+        List<CertificateEvent> events = getCertificateEvents(certificateId);
+        return events.stream().anyMatch(e -> e.getEventCode() == EventCode.SKICKAT);
+    }
+
     private List<CertificateEvent> addEventsForCertificate(String certificateId) {
         List<CertificateEvent> events = new ArrayList<>();
         Utkast certificate = utkastRepository.findById(certificateId).orElse(null);

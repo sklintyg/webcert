@@ -45,10 +45,12 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateReceiversFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -95,6 +97,10 @@ public class CertificateController {
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
     private GetCertificationResourceLinks getCertificationResourceLinks;
+    @Autowired
+    private SendCertificateFacadeService sendCertificateFacadeService;
+    @Autowired
+    private GetCertificateReceiversFacadeService getCertificateReceiversFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -263,6 +269,31 @@ public class CertificateController {
         final var resourceLinks = getCertificationResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/send")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response sendCertificate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Sending certificate with id: '{}'", certificateId);
+        }
+        final var result = sendCertificateFacadeService
+            .sendCertificate(certificateId);
+        return Response.ok(result).build();
+    }
+
+    @GET
+    @Path("/{certificateId}/receivers")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getCertificateReceivers(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Retrieving receivers for certificate with id: '{}'", certificateId);
+        }
+        final var receivers = getCertificateReceiversFacadeService.getCertificateReceivers(certificateId);
+        return Response.ok().build();
     }
 
     @GET

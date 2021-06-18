@@ -67,4 +67,5 @@ public interface CertificateEventService {
      */
     List<CertificateEvent> getCertificateEvents(String certificateId);
 
+    boolean isCertificateSent(String certificateId);
 }
