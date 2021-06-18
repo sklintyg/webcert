@@ -71,6 +71,7 @@ public class CertificateConverterImpl implements CertificateConverter {
         certificateToReturn.getMetadata().setVersion(certificate.getVersion());
         certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
+        certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate)

@@ -179,8 +179,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID) && certificateEventService
-            .isCertificateSent(certificate.getMetadata().getId())) {
+        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID) && !certificate.getMetadata().isSent()) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
