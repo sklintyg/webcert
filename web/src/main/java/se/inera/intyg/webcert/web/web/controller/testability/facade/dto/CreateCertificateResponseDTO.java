@@ -17,8 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade;
+package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
-public enum CreateCertificateFillType {
-    EMPTY, MINIMAL, WITH_VALUES
+public class CreateCertificateResponseDTO {
+
+    private String certificateId;
+
+    public CreateCertificateResponseDTO(String certificateId) {
+        this.certificateId = certificateId;
+    }
+
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
 }

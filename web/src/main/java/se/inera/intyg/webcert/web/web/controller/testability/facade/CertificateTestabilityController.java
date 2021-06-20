@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,17 +30,28 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificatePatientsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateTypesResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.CreateCertificateTestabilityUtil;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedCertificateTypesUtil;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedPatientsUtil;
 
 @Path("/certificate")
 public class CertificateTestabilityController extends AbstractApiController {
 
-    @Autowired
     private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
+    private final SupportedCertificateTypesUtil supportedCertificateTypesUtil;
+    private final SupportedPatientsUtil supportedPatientsUtil;
 
-    public CertificateTestabilityController(
-        CreateCertificateTestabilityUtil createCertificateTestabilityUtil) {
+    @Autowired
+    public CertificateTestabilityController(CreateCertificateTestabilityUtil createCertificateTestabilityUtil,
+        SupportedCertificateTypesUtil supportedCertificateTypesUtil,
+        SupportedPatientsUtil supportedPatientsUtil) {
         this.createCertificateTestabilityUtil = createCertificateTestabilityUtil;
+        this.supportedCertificateTypesUtil = supportedCertificateTypesUtil;
+        this.supportedPatientsUtil = supportedPatientsUtil;
     }
 
     @POST
@@ -47,6 +59,25 @@ public class CertificateTestabilityController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/")
     public Response createCertificate(@RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
-        return Response.ok(createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest)).build();
+        final var certificateId = createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest);
+        return Response.ok(new CreateCertificateResponseDTO(certificateId)).build();
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/types")
+    public Response getSupportedCerificateTypes() {
+        final var certificateTypes = supportedCertificateTypesUtil.get();
+        return Response.ok(new CertificateTypesResponseDTO(certificateTypes)).build();
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/patients")
+    public Response getSuppportedPatients() {
+        final var patients = supportedPatientsUtil.get();
+        return Response.ok(new CertificatePatientsResponseDTO(patients)).build();
     }
 }
