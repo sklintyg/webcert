@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public class PdlIT {
 
