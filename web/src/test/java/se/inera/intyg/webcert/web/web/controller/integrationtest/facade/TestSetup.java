@@ -214,7 +214,7 @@ public class TestSetup {
                 .body(certificateRequest)
                 .expect().statusCode(200)
                 .when().post("testability/certificate")
-                .then().extract().response().body().asString();
+                .then().extract().path("certificateId").toString();
         }
 
         protected String getAuthSession(FakeCredential fakeCredential) {
