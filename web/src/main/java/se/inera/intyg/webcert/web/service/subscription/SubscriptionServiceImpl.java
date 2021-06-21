@@ -27,10 +27,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
@@ -38,9 +41,10 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionState;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 @Service
@@ -50,8 +54,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Value("${require.subscription.start.date}")
     private String requireSubscriptionStartDate;
-
-    private static final String ELEG = "ELEG";
 
     private final SubscriptionRestServiceImpl subscriptionRestService;
     private final FeaturesHelper featuresHelper;
@@ -65,25 +67,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public SubscriptionInfo fetchSubscriptionInfo(WebCertUser webCertUser) {
+    public SubscriptionInfo checkSubscriptions(WebCertUser webCertUser) {
         final var subscriptionState = determineSubscriptionState(webCertUser.getOrigin());
         if (subscriptionState == SubscriptionState.NONE) {
-            return SubscriptionInfo.createSubscriptionInfoNoAction();
+            return new SubscriptionInfo(subscriptionState, requireSubscriptionStartDate);
         }
         LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
         final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
         final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
         final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
-        final var subscriptionInfo = new SubscriptionInfo(subscriptionState, careProviderHsaIds, requireSubscriptionStartDate);
 
-        monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, subscriptionInfo.getCareProviderHsaIdList());
-        blockUsersWithoutSubscription(webCertUser, careProviderOrgNumbers.values(), subscriptionInfo.getCareProviderHsaIdList());
+        monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
+        blockUsersWithoutAnySubscription(webCertUser, careProviderOrgNumbers.values(), careProviderHsaIds);
+        setSubscriptionActions(webCertUser.getVardgivare(), careProviderHsaIds);
 
-        return subscriptionInfo;
+        return new SubscriptionInfo(subscriptionState, requireSubscriptionStartDate);
     }
 
     @Override
-    public boolean fetchSubscriptionInfoUnregisteredElegUser(String personId) {
+    public boolean checkSubscriptionUnregisteredElegUser(String personId) {
         final var organizationNumber = extractOrganizationNumberFromPersonId(personId);
         LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.",
             HashUtility.hash(organizationNumber));
@@ -93,15 +95,29 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId) {
-        final var acknowledgedWarnings = webCertUser.getSubscriptionInfo().getAcknowledgedWarnings();
-        if (!acknowledgedWarnings.contains(hsaId)) {
-            acknowledgedWarnings.add(hsaId);
-        }
-        return acknowledgedWarnings;
+    public void acknowledgeSubscriptionWarning(WebCertUser webCertUser) {
+        final var selectedCareProvider = (Vardgivare) webCertUser.getValdVardgivare();
+        selectedCareProvider.setSubscriptionAction(SubscriptionAction.NONE);
+
+        webCertUser.getVardgivare().stream().filter(cp -> cp.getId().equals(selectedCareProvider.getId())).findFirst()
+            .ifPresent(careProvider -> careProvider.setSubscriptionAction(SubscriptionAction.NONE));
     }
 
-    private void blockUsersWithoutSubscription(WebCertUser webCertUser, Collection<String> allCareProviders,
+    private void setSubscriptionActions(List<Vardgivare> careProviders, List<String> missingSubscriptions) {
+        final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
+        Supplier<Stream<Vardgivare>> careProvidersMissing = () -> careProviders.stream().filter(cp -> missingSubscriptions
+            .contains(cp.getId()));
+        careProvidersMissing.get().forEach(cp -> cp.setSubscriptionAction(action));
+
+        if (action == SubscriptionAction.BLOCK) {
+            Supplier<Stream<Vardenhet>> careUnits = () -> careProvidersMissing.get().map(Vardgivare::getVardenheter)
+                .flatMap(Collection::stream);
+            careUnits.get().forEach(cu -> cu.setSubscriptionAction(action));
+            careUnits.get().map(Vardenhet::getMottagningar).flatMap(Collection::stream).forEach(u -> u.setSubscriptionAction(action));
+        }
+    }
+
+    private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<String> allCareProviders,
         List<String> careProvidersWithoutSubscription) {
 
         if (isSubscriptionRequired()

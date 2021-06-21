@@ -281,7 +281,7 @@
               if (!redirectToUnitSelection(event, toState)) {
                 checkAndLogConnectivity(toState);
                 termsCheck(event, toState);
-                subscriptionCheck(event, toState);
+                subscriptionWarning(event, toState, fromState);
                 preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
             }
@@ -332,21 +332,16 @@
         }
       }
 
-      function subscriptionCheck(event, toState) {
-        if (subscriptionService.shouldDisplaySubscriptionWarning()) {
-          if (toState.name !== 'webcert.subscription') {
-            UserModel.transitioning = false;
-          }
-          if (!subscriptionService.hasAcknowledgedSubscriptionWarning() && !UserModel.transitioning) {
-            event.preventDefault();
-            UserModel.transitioning = true;
-            $state.transitionTo('webcert.subscription');
-          }
+      function subscriptionWarning(event, toState, fromState) {
+        if (toState.name !== 'webcert.subscription' && fromState.name !== 'webcert.subscription' &&
+            subscriptionService.shouldDisplayWarning()) {
+          event.preventDefault();
+          $state.go('webcert.subscription');
         }
       }
 
       function termsCheck(event, toState) {
-        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+        if (!subscriptionService.subscriptionFeatureActive()) {
           // check terms if not accepted then always redirect
           if (toState.name !== 'webcert.terms') {
             UserModel.transitioning = false;
@@ -384,13 +379,13 @@
       }
 
       function preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink) {
-        if (fromState.name !== 'webcert.terms' || fromState.name !== 'webcert.subscription' || !UserModel.transitioning) {
+        if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
           // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
           // open, but close modal.
           if ($uibModalStack.getTop()) {
             $uibModalStack.dismissAll();
             //If modal closed, and we did not navigate because of click on a modal link..
-            if (!$uibModalStack.getTop() && !triggeredByLink) {
+            if (!$uibModalStack.getTop() && !triggeredByLink && fromState.name !== 'webcert.subscription') {
               // Abort current transition that apparently happended without explicitly first
               // closing the active modal. Most likely because of click on Back button in browser.
               event.preventDefault();

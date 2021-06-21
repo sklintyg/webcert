@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.subscription;
+package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
@@ -29,6 +29,7 @@ public class OrganizationResponse {
 
     @JsonProperty("service_code_subscriptions")
     private List<String> serviceCodes;
+
 
     public String getOrganizationNumber() {
         return organizationNumber;

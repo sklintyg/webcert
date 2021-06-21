@@ -58,6 +58,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.subscription.dto.OrganizationResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionRestServiceTest {

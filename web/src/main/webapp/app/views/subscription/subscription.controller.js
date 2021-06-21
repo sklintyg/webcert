@@ -17,49 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$rootScope', '$scope', '$window','$sanitize', '$state',
-    '$location', 'common.UserModel', 'common.subscriptionService', 'common.dynamicLinkService', 'webcert.SubscriptionProxy',
-    'common.messageService',
-    function($log, $rootScope, $scope, $window, $sanitize, $state, $location, UserModel, subscriptionService, dynamicLinkService,
-             subscriptionProxy, messageService) {
+angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$rootScope', '$scope', '$window', '$sanitize', '$state',
+  '$location', 'common.UserModel', 'common.subscriptionService', 'common.dynamicLinkService', 'common.SubscriptionProxy',
+  'common.messageService',
+  function($log, $rootScope, $scope, $window, $sanitize, $state, $location, UserModel, subscriptionService, dynamicLinkService,
+      subscriptionProxy, messageService) {
     'use strict';
 
     UserModel.transitioning = false;
 
     $scope.modalBody = {
-        info: messageService.getProperty('subscription.warning.info.text',
-            {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
-        eleg: 'subscription.warning.eleg.text',
-        links: 'subscription.warning.link.text'
+      info: messageService.getProperty('subscription.warning.info.text',
+          {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
+      eleg: 'subscription.warning.eleg.text',
+      links: 'subscription.warning.link.text'
     };
 
     $scope.modalOptions = {
-        body: $scope.modalBody,
-        modalBodyTemplateUrl: '/app/views/subscription/subscription.body.html',
-        titleId: 'subscription.warning.title.text',
-        buttons: [
-            {
-                name: 'subscription.warning.modal.close',
-                clickFn: function() {
-                    acknowledgeSubscriptionWarning(UserModel.user.valdVardgivare.id);
-                },
-                text: 'common.close',
-                id: 'subscriptionWarningModalClose',
-                className: 'btn-default'
-            }
+      body: $scope.modalBody,
+      modalBodyTemplateUrl: '/app/views/subscription/subscription.body.html',
+      titleId: 'subscription.warning.title.text',
+      buttons: [
+        {
+          name: 'subscription.warning.modal.close',
+          clickFn: function() {
+            subscriptionService.acknowledgeWarning();
+            subscriptionProxy.acknowledgeWarning(function() {
+              $scope.modalOptions.modalInstance.close();
+              $state.go('webcert.create-index');
+            });
+          },
+          text: 'common.close',
+          id: 'subscriptionWarningModalClose',
+          className: 'btn-default'
+        }
       ],
       showClose: false
     };
-
-    function acknowledgeSubscriptionWarning(hsaId) {
-        $scope.modalOptions.modalInstance.dismiss('cancel');
-        subscriptionProxy.updateAcknowledgedWarnings(hsaId, function(acknowledgedWarnings) {
-            subscriptionService.setAcknowledgedWarnings(acknowledgedWarnings);
-            $state.transitionTo('webcert.create-index');
-        }, function() {
-            subscriptionService.addAcknowledgedWarning();
-            $state.transitionTo('webcert.create-index');
-        });
-    }
   }]
 );

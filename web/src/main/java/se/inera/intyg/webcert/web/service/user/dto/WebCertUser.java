@@ -27,7 +27,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 /**

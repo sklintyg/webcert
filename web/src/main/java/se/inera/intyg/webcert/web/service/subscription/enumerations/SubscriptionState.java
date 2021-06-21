@@ -17,22 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').factory('webcert.SubscriptionProxy', ['$http', '$log',
-    function($http, $log) {
-        'use strict';
+package se.inera.intyg.webcert.web.service.subscription.enumerations;
 
-        function _updateAcknowledgedWarnings(hsaId, onSuccess, onError) {
-            var restPath = '/api/subscription/acknowledge/' + hsaId;
-            $http.get(restPath).then(function(response) {
-                $log.debug(restPath + ' response:' + response.data);
-                onSuccess(response.data);
-            }, function(response) {
-                $log.error('error ' + response.status);
-                onError(null);
-            });
-        }
-
-        return {
-            updateAcknowledgedWarnings: _updateAcknowledgedWarnings
-        };
-    }]);
+public enum SubscriptionState {
+    NONE,
+    SUBSCRIPTION_ADAPTATION,
+    SUBSCRIPTION_REQUIRED
+}

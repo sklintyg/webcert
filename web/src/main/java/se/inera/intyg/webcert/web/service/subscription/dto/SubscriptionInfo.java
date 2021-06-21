@@ -16,35 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.integration.dto;
+package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import se.inera.intyg.webcert.web.service.subscription.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 
 public class SubscriptionInfo implements Serializable {
 
     @JsonProperty
     private SubscriptionState subscriptionState;
     @JsonProperty
-    private List<String> careProviderHsaIdList;
-    @JsonProperty
-    private List<String> acknowledgedWarnings;
-    @JsonProperty
     private String requireSubscriptionStartDate;
 
-    public SubscriptionInfo(SubscriptionState subscriptionState, List<String> careProviderHsaIdList, String requireSubscriptionStartDate) {
+    public SubscriptionInfo(SubscriptionState subscriptionState, String requireSubscriptionStartDate) {
         this.subscriptionState = subscriptionState;
-        this.careProviderHsaIdList = careProviderHsaIdList;
-        this.acknowledgedWarnings = new ArrayList<>();
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
-    }
-
-    public static SubscriptionInfo createSubscriptionInfoNoAction() {
-        return new SubscriptionInfo(SubscriptionState.NONE, new ArrayList<>(),null);
     }
 
     public SubscriptionState getSubscriptionState() {
@@ -53,22 +41,6 @@ public class SubscriptionInfo implements Serializable {
 
     public void setSubscriptionState(SubscriptionState subscriptionState) {
         this.subscriptionState = subscriptionState;
-    }
-
-    public List<String> getCareProviderHsaIdList() {
-        return careProviderHsaIdList;
-    }
-
-    public void setCareProviderHsaIdList(List<String> careProviderHsaIdList) {
-        this.careProviderHsaIdList = careProviderHsaIdList;
-    }
-
-    public List<String> getAcknowledgedWarnings() {
-        return acknowledgedWarnings;
-    }
-
-    public void setAcknowledgedWarnings(List<String> acknowledgedWarnings) {
-        this.acknowledgedWarnings = acknowledgedWarnings;
     }
 
     public String getRequireSubscriptionStartDate() {
@@ -88,14 +60,12 @@ public class SubscriptionInfo implements Serializable {
             return false;
         }
         SubscriptionInfo that = (SubscriptionInfo) o;
-        return subscriptionState == that.subscriptionState && Objects.equals(careProviderHsaIdList, that.careProviderHsaIdList)
-            && Objects.equals(acknowledgedWarnings, that.acknowledgedWarnings) && Objects.equals(requireSubscriptionStartDate,
+        return subscriptionState == that.subscriptionState && Objects.equals(requireSubscriptionStartDate,
             that.requireSubscriptionStartDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subscriptionState, careProviderHsaIdList, acknowledgedWarnings,
-            requireSubscriptionStartDate);
+        return Objects.hash(subscriptionState, requireSubscriptionStartDate);
     }
 }

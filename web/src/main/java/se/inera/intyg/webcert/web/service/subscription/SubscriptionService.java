@@ -18,22 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import java.util.List;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
 
 public interface SubscriptionService {
 
-    SubscriptionInfo fetchSubscriptionInfo(WebCertUser webcertUser);
+    SubscriptionInfo checkSubscriptions(WebCertUser webcertUser);
 
-    boolean fetchSubscriptionInfoUnregisteredElegUser(String personId);
-
-    List<String> setAcknowledgedWarning(WebCertUser webCertUser, String hsaId);
+    boolean checkSubscriptionUnregisteredElegUser(String personId);
 
     boolean isSubscriptionRequired();
 
     boolean isSubscriptionAdaptation();
 
     boolean isAnySubscriptionFeatureActive();
+
+    void acknowledgeSubscriptionWarning(WebCertUser webCertUser);
 
 }

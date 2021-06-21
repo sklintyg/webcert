@@ -20,13 +20,12 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
-import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
@@ -38,10 +37,11 @@ public class SubscriptionController extends AbstractApiController {
     private SubscriptionService subscriptionService;
 
     @GET
-    @Path("/acknowledge/{hsaId}")
+    @Path("/acknowledgeWarning")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> acknowledgeSubscriptionWarning(@PathParam("hsaId") String hsaId) {
+    public ResponseEntity<String> acknowledgeSubscriptionWarning() {
         final var webCertUser = getWebCertUserService().getUser();
-        return subscriptionService.setAcknowledgedWarning(webCertUser, hsaId);
+        subscriptionService.acknowledgeSubscriptionWarning(webCertUser);
+        return ResponseEntity.ok().build();
     }
 }

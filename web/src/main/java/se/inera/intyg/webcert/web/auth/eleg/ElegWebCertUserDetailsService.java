@@ -165,7 +165,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private boolean isMissingSubscription(String personId) {
-        return subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(personId);
+        return subscriptionService.checkSubscriptionUnregisteredElegUser(personId);
     }
 
     private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
@@ -213,7 +213,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void decorateWebcertUserWithSubscriptionInfo(WebCertUser user) {
-        final var subscriptionInfo = subscriptionService.fetchSubscriptionInfo(user);
+        final var subscriptionInfo = subscriptionService.checkSubscriptions(user);
         user.setSubscriptionInfo(subscriptionInfo);
     }
 

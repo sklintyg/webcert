@@ -39,7 +39,6 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
@@ -54,7 +53,8 @@ import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.SubscriptionInfo;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -201,7 +201,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT);
 
         when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
-        when(subscriptionService.fetchSubscriptionInfoUnregisteredElegUser(null)).thenReturn(true);
+        when(subscriptionService.checkSubscriptionUnregisteredElegUser(null)).thenReturn(true);
         when(subscriptionService.isAnySubscriptionFeatureActive()).thenReturn(true);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
@@ -211,8 +211,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     public void shouldSetSubscriptionInfo() {
         reset(ppService);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
-        when(subscriptionService.fetchSubscriptionInfo(any(WebCertUser.class)))
-            .thenReturn(SubscriptionInfo.createSubscriptionInfoNoAction());
+        when(subscriptionService.checkSubscriptions(any(WebCertUser.class)))
+            .thenReturn(new SubscriptionInfo(SubscriptionState.NONE, "reqStartTime"));
 
         final var webCertUser = (WebCertUser) testee
             .loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));

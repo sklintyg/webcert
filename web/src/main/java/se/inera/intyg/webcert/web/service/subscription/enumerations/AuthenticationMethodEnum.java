@@ -17,10 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.integration.dto;
+package se.inera.intyg.webcert.web.service.subscription.enumerations;
 
-public enum SubscriptionState {
-    NONE,
-    SUBSCRIPTION_ADAPTATION,
-    SUBSCRIPTION_REQUIRED
+public enum AuthenticationMethodEnum {
+    ELEG("ELEG", "Authentication method ELEG"),
+    SITHS("SITHS", "Authentication method SITHS");
+
+    private final String value;
+    private final String description;
+
+    AuthenticationMethodEnum(String value, String description) {
+        this.value = value;
+        this.description = description;
+    }
+
+    public String value() {
+        return this.value;
+    }
+
+    public String description() {
+        return this.description;
+    }
 }
