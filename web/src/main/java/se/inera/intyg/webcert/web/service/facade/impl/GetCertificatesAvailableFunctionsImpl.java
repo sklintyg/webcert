@@ -172,9 +172,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
                 "Makulera",
                 "Öppnar ett fönster där du kan välja att makulera intyget.",
-                "<p>Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
-                    +
-                    "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>",
                 true
             )
         );
@@ -183,9 +180,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                    "Skicka intyg",
+                    "Skicka till Försäkringskassan",
                     "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan",
-                    " ",
+                    "<p>Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
+                        +
+                        "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>",
+                    "Försäkringskassan",
                     true
                 )
             );

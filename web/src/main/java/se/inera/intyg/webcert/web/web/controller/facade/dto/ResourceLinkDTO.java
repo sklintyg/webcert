@@ -24,6 +24,7 @@ public class ResourceLinkDTO {
     private String name;
     private String description;
     private String body;
+    private String receiver;
     private boolean enabled;
 
     public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String name, String description, boolean enabled) {
@@ -42,6 +43,18 @@ public class ResourceLinkDTO {
         resourceLink.setDescription(description);
         resourceLink.setBody(body);
         resourceLink.setEnabled(enabled);
+        return resourceLink;
+    }
+
+    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String name, String description, String body, String receiver,
+        boolean enabled) {
+        final var resourceLink = new ResourceLinkDTO();
+        resourceLink.setType(type);
+        resourceLink.setName(name);
+        resourceLink.setDescription(description);
+        resourceLink.setBody(body);
+        resourceLink.setEnabled(enabled);
+        resourceLink.setReceiver(receiver);
         return resourceLink;
     }
 
@@ -83,5 +96,13 @@ public class ResourceLinkDTO {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
+
+    public String getReceiver() {
+        return receiver;
     }
 }
