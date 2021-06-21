@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,13 +29,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
-import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsApiControllerTest {
-
-    @Mock
-    private SubscriptionService subscriptionService;
 
     @Mock
     private AvtalService avtalService;
@@ -45,8 +40,7 @@ public class TermsApiControllerTest {
     private TermsApiController termsApiController;
 
     @Test
-    public void shouldReturnFetchedValueDuringAdjustment() {
-        when(subscriptionService.isDuringSubscriptionAdjustmentPeriod()).thenReturn(true);
+    public void shouldReturnFetchedValue() {
         when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(true);
 
         final var response = termsApiController.getWebcertTermsApproved("HSA_ID");
@@ -54,23 +48,4 @@ public class TermsApiControllerTest {
         assertTrue(response);
     }
 
-    @Test
-    public void shouldReturnTrueWhenBeforeAdjustmentPeriod() {
-        when(subscriptionService.isDuringSubscriptionAdjustmentPeriod()).thenReturn(false);
-        when(subscriptionService.isPastSubscriptionAdjustmentPeriod()).thenReturn(false);
-
-        final var response = termsApiController.getWebcertTermsApproved("HSA_ID");
-
-        assertTrue(response);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenPastAdjustmentPeriod() {
-        when(subscriptionService.isDuringSubscriptionAdjustmentPeriod()).thenReturn(false);
-        when(subscriptionService.isPastSubscriptionAdjustmentPeriod()).thenReturn(true);
-
-        final var response = termsApiController.getWebcertTermsApproved("HSA_ID");
-
-        assertFalse(response);
-    }
 }
