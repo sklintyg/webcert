@@ -37,8 +37,8 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 
 public class TestSetup {
 
@@ -214,7 +214,7 @@ public class TestSetup {
                 .body(certificateRequest)
                 .expect().statusCode(200)
                 .when().post("testability/certificate")
-                .then().extract().response().body().asString();
+                .then().extract().path("certificateId").toString();
         }
 
         protected String getAuthSession(FakeCredential fakeCredential) {

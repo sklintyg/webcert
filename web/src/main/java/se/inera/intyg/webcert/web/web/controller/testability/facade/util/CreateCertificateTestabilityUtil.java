@@ -65,8 +65,8 @@ import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 
 @Component
 public class CreateCertificateTestabilityUtil {
@@ -108,17 +108,19 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getUnitId()
         );
 
+        final var patient = getPatient(
+            createCertificateRequest.getPatientId(),
+            createCertificateRequest.getCertificateType(),
+            createCertificateRequest.getCertificateTypeVersion()
+        );
+
         final var createNewDraftRequest = new CreateNewDraftRequest(
             null,
             createCertificateRequest.getCertificateType(),
             createCertificateRequest.getCertificateTypeVersion(),
             null,
             hosPersonal,
-            getPatient(
-                createCertificateRequest.getPatientId(),
-                createCertificateRequest.getCertificateType(),
-                createCertificateRequest.getCertificateTypeVersion()
-            )
+            patient
         );
 
         final var utkast = createNewDraft(createNewDraftRequest);
@@ -186,17 +188,17 @@ public class CreateCertificateTestabilityUtil {
 
     private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
-            return createValuesLisjp();
+            return createMinimumValuesLisjp();
         }
 
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
-            return createValuesAf00213();
+            return createMinimumValuesAf00213();
         }
 
         return Collections.emptyMap();
     }
 
-    private Map<String, CertificateDataValue> createValuesLisjp() {
+    private Map<String, CertificateDataValue> createMinimumValuesLisjp() {
         final var values = new HashMap<String, CertificateDataValue>();
 
         final CertificateDataValueBoolean avstangningSmittskydd = CertificateDataValueBoolean.builder()
@@ -211,8 +213,8 @@ public class CreateCertificateTestabilityUtil {
                     CertificateDataValueDiagnosis.builder()
                         .id("1")
                         .terminology("ICD_10_SE")
-                        .code("A01")
-                        .description("Tyfoidfeber och paratyfoidfeber")
+                        .code("J09")
+                        .description("Influensa orsakad av identifierat zoonotiskt eller pandemiskt influensavirus")
                         .build()
                 )
             )
@@ -235,7 +237,7 @@ public class CreateCertificateTestabilityUtil {
         return values;
     }
 
-    private Map<String, CertificateDataValue> createValuesAf00213() {
+    private Map<String, CertificateDataValue> createMinimumValuesAf00213() {
         final var values = new HashMap<String, CertificateDataValue>();
 
         final CertificateDataValueBoolean harFunktionsnedsattning = CertificateDataValueBoolean.builder()
@@ -312,7 +314,7 @@ public class CreateCertificateTestabilityUtil {
         final var unit = HoSPersonHelper.createVardenhetFromIntygUser(unitId, user);
 
         final var hosPerson = new HoSPersonal();
-        hosPerson.setFullstandigtNamn("Name");
+        hosPerson.setFullstandigtNamn(user.getNamn());
         hosPerson.setPersonId(personId);
         hosPerson.setVardenhet(unit);
 
@@ -338,6 +340,17 @@ public class CreateCertificateTestabilityUtil {
     }
 
     private Patient getPatient(String patientId, String type, String typeVersion) {
-        return patientDetailsResolver.resolvePatient(Personnummer.createPersonnummer(patientId).orElseThrow(), type, typeVersion);
+        final var patient = patientDetailsResolver.resolvePatient(
+            Personnummer.createPersonnummer(patientId).orElseThrow(),
+            type,
+            typeVersion);
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(patient.getPersonId());
+        patient.setFornamn(personFromPUService.getPerson().getFornamn());
+        patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
+        patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
+        patient.setTestIndicator(personFromPUService.getPerson().isTestIndicator());
+        patient.setAvliden(personFromPUService.getPerson().isAvliden());
+        patient.setSekretessmarkering(personFromPUService.getPerson().isSekretessmarkering());
+        return patient;
     }
 }

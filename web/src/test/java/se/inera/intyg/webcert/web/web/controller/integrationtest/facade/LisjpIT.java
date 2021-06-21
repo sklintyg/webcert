@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRe
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.CreateCertificateFillType;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public class LisjpIT {
 
