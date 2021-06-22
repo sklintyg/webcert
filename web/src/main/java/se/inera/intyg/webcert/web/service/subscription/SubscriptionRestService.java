@@ -21,10 +21,11 @@ package se.inera.intyg.webcert.web.service.subscription;
 
 import java.util.List;
 import java.util.Map;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 
 public interface SubscriptionRestService {
 
-    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap);
+    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
 
     boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
 

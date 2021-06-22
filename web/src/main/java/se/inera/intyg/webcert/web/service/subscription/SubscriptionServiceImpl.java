@@ -52,7 +52,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
-    @Value("${require.subscription.start.date}")
+    @Value("${kundportalen.require.subscription.start.date}")
     private String requireSubscriptionStartDate;
 
     private final SubscriptionRestServiceImpl subscriptionRestService;
@@ -75,7 +75,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
         final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
         final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
-        final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers);
+        final var careProviderHsaIds = subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
 
         monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
         blockUsersWithoutAnySubscription(webCertUser, careProviderOrgNumbers.values(), careProviderHsaIds);

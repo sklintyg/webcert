@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.Objects;
 import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 
 public class SubscriptionInfo implements Serializable {
@@ -49,23 +48,5 @@ public class SubscriptionInfo implements Serializable {
 
     public void setRequireSubscriptionStartDate(String requireSubscriptionStartDate) {
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SubscriptionInfo that = (SubscriptionInfo) o;
-        return subscriptionState == that.subscriptionState && Objects.equals(requireSubscriptionStartDate,
-            that.requireSubscriptionStartDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(subscriptionState, requireSubscriptionStartDate);
     }
 }

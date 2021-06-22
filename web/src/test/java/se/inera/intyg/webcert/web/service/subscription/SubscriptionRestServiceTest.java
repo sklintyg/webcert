@@ -26,6 +26,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum.SITHS;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -51,7 +53,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
@@ -81,153 +82,123 @@ public class SubscriptionRestServiceTest {
     public void setup() {
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenAccessToken", "accessToken");
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "serviceUrl");
+        ReflectionTestUtils.setField(subscriptionRestService, "elegServiceCode", "Webcert e-leg");
     }
 
+
+    // TESTS FOR SITHS USER
+
     @Test
-    public void shouldReturnNoHsaIdsWhenSingleOrgHasSingleSubscription() {
+    public void shouldReturnNoHsaIdsWhenSithsUserWithSingleOrgHasAnyNonElegSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertTrue(response.isEmpty());
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenSingleOrgHasMultipleSubscription() {
+    public void shouldReturnNoHsaIdsWhenSithsUserWithSingleOrgHasMultipleSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 3);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertTrue(response.isEmpty());
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenMultipleOrgsAllHaveSubscriptions() {
+    public void shouldReturnNoHsaIdsWhenSithsUserWithMultipleOrgsWhichAllHaveSubscriptions() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertTrue(response.isEmpty());
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdWhenSingleOrgHasNoSubscription() {
+    public void shouldReturnNoHsaIdsWhenResponseBodyIsNullForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnNoHsaIdsWhenServiceCallFailureForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+
+        setMockToReturnRestClientException();
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnCorrectHsaIdWhenSithsUserWithSingleOrgHasNoSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 1, 1);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertEquals(1, response.size());
         assertEquals("HSA_ID_1", response.get(0));
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdsWhenMultipleOrgHaveNoSubscriptions() {
+    public void shouldReturnCorrectHsaIdsWhenSithsUserWithMultipleOrgsHaveNoSubscriptions() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
 
         setMockToReturn(HttpStatus.OK, 3, 3, 0);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertEquals(3, response.size());
         assertTrue(response.containsAll(List.of("HSA_ID_1", "HSA_ID_2", "HSA_ID_3")));
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdsWhenMultipleOrgsAndSomeMissingSubscription() {
+    public void shouldReturnCorrectHsaIdsWhenSithsUserHasMultipleOrgsAndSomeMissingSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(4);
 
         setMockToReturn(HttpStatus.OK, 4, 2, 1);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         assertEquals(2, response.size());
         assertTrue(response.containsAll(List.of("HSA_ID_3", "HSA_ID_4")));
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenHttpServerErrorException() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+    public void shouldReturnCorrectHsaIdWhenSithsUserHasOnlyElegServiceCode() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+        setMockToReturnElegServiceCode();
 
-        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
-
-        assertTrue(response.isEmpty());
+        assertEquals(1, response.size());
+        assertTrue(response.contains("HSA_ID_1"));
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenHttpClientErrorException() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
-
-        setMockToReturnHttpServerErrorException(HttpStatus.FORBIDDEN);
-
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
-
-        assertTrue(response.isEmpty());
-    }
-
-    @Test
-    public void shouldReturnNoHsaIdsWhenResponseHasNoBody() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
-
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(HttpStatus.OK));
-
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
-
-        assertTrue(response.isEmpty());
-    }
-
-    @Test
-    public void shouldReturnNoHsaIdsWhenResponseBodyIsNull() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
-
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
-
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
-
-        assertTrue(response.isEmpty());
-    }
-
-    @Test
-    public void shouldMonitorlogWhenHttpServerErrorException() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
-        final var queryIds = orgNoHsaIdMap.values();
-        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
-
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 500, "INTERNAL_SERVER_ERROR", "MESSAGE_TEXT", LOCAL_DATE_TIME);
-    }
-
-    @Test
-    public void shouldMonitorlogWhenHttpClientErrorException() {
-        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
-
-        setMockToReturnHttpClientErrorException(HttpStatus.FORBIDDEN);
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 403, "FORBIDDEN", "MESSAGE_TEXT", LOCAL_DATE_TIME);
-    }
-
-    @Test
-    public void shouldAddHeadersToKundportalenRestRequest() {
+    public void shouldAddHeadersToKundportalenRestRequestForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
         final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap);
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
         verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
             eq(LIST_ORGANIZATION_RESPONSE));
@@ -237,8 +208,180 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenUnregisteredElegUserHasSubscription() {
-        setMockToReturn(HttpStatus.OK, 1, 0, 1);
+    public void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
+
+        setMockToReturnRestClientException();
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), null, null, "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
+        final var statusCode = 403;
+
+        setMockToReturnRestClientResponseException(statusCode);
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), statusCode, HttpStatus.valueOf(statusCode).name(), "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
+        final var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        setMockToReturnHttpServerErrorException(httpStatus);
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), httpStatus.value(), httpStatus.name(), "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldSetEmptyStatusTextInMonitorLogIfCustomErrorCodeForSithsUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
+
+        setMockToReturnRestClientResponseExceptionCustomStatusCode();
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), 777, "", "MESSAGE_TEXT", null);
+    }
+
+
+    // TESTS FOR ELEG USER
+
+    @Test
+    public void shouldReturnNoHsaIdsWhenElegUserHasElegSubscription() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturnElegServiceCode();
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnNoHsaIdsWhenResponseBodyIsNullForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnNoHsaIdsWhenServiceCallFailureForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturnRestClientException();
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnCorrectHsaIdsWhenElegUserHasOnlyNonElegSubscriptions() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturn(HttpStatus.OK, 1, 0, 2);
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        assertEquals(1, response.size());
+        assertTrue(response.contains("HSA_ID_1"));
+    }
+
+    @Test
+    public void shouldReturnCorrectHsaIdWhenElegUserHasNoSubscription() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturn(HttpStatus.OK, 1, 1, 0);
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        assertEquals(1, response.size());
+        assertEquals("HSA_ID_1", response.get(0));
+    }
+
+    @Test
+    public void shouldAddHeadersToKundportalenRestRequestForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+        final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
+
+        setMockToReturnElegServiceCode();
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+            eq(LIST_ORGANIZATION_RESPONSE));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientExceptionForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturnRestClientException();
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), null, null, "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+        final var statusCode = 403;
+
+        setMockToReturnRestClientResponseException(statusCode);
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), statusCode, HttpStatus.valueOf(statusCode).name(), "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+        final var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        setMockToReturnHttpServerErrorException(httpStatus);
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), httpStatus.value(), httpStatus.name(), "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldSetEmptyStatusTextInMonitorLogIfCustomErrorCodeForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+
+        setMockToReturnRestClientResponseExceptionCustomStatusCode();
+
+        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(orgNoHsaIdMap.values(), 777, "", "MESSAGE_TEXT", null);
+    }
+
+
+    // TESTS FOR UNREGISTERED ELEG USER
+
+    @Test
+    public void shouldReturnFalseWhenUnregisteredElegUserHasElegServiceCode() {
+        setMockToReturnElegServiceCode();
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
@@ -246,7 +389,16 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenUnregisteredElegUserMissingSubscription() {
+    public void shouldReturnTrueWhenUnregisteredElegUserHasOnlyNonElegServiceCode() {
+        setMockToReturn(HttpStatus.ACCEPTED, 1, 1, 1);
+
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        assertTrue(response);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenUnregisteredElegUserHasNoActiveServiceCodes() {
         setMockToReturn(HttpStatus.ACCEPTED, 1, 1, 0);
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
@@ -255,35 +407,7 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenHttpServerErrorExceptionForUnregElegUser() {
-        setMockToReturnHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        assertTrue(response);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenHttpClientErrorExceptionForUnregElegUser() {
-        setMockToReturnHttpServerErrorException(HttpStatus.FORBIDDEN);
-
-        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        assertTrue(response);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenResponseHasNoBodyForUnregElegUser() {
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(HttpStatus.OK));
-
-        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        assertTrue(response);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenResponseBodyIsNullForUnregElegUser() {
+    public void shouldReturnTrueWhenResponseBodyIsNullForUnregisteredElegUser() {
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
@@ -293,7 +417,16 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldAddHeadersToKundportalenRestRequestForUnregElegUser() {
+    public void shouldReturnTrueWhenServiceCallFailureForUnregisteredElegUser() {
+        setMockToReturnRestClientException();
+
+        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        assertTrue(response);
+    }
+
+    @Test
+    public void shouldAddHeadersToKundportalenRestRequestForUnregisteredElegUser() {
         final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
@@ -308,53 +441,48 @@ public class SubscriptionRestServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenHttpServerErrorExceptionForUnregElegUser() {
-        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
-
-        setMockToReturnHttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE);
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 503, "SERVICE_UNAVAILABLE", "MESSAGE_TEXT", LOCAL_DATE_TIME);
-    }
-
-    @Test
-    public void shouldMonitorlogWhenHttpClientErrorExceptionForUnregElegUser() {
-        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
-        setMockToReturnHttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 503, "SERVICE_UNAVAILABLE", "MESSAGE_TEXT", LOCAL_DATE_TIME);
-    }
-
-    @Test
-    public void shouldSetEmptyStatusTextInMonitorLogIfCustomErrorCode() {
-        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
-
-        setMockToReturnRestClientResponseException();
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, 777, "", "MESSAGE_TEXT", null);
-    }
-
-    @Test
-    public void shouldMonitorlogWhenRestClientException() {
-        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+    public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
+        final var hashedOrgNo = Collections.singleton(HashUtility.hash("ORG_NO_1"));
         setMockToReturnRestClientException();
 
         subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, null, null, "MESSAGE_TEXT", null);
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(hashedOrgNo, null, null, "MESSAGE_TEXT", null);
     }
 
-    private Map<String, String> createOrgNoHsaIdMap(int count) {
-        final var orgNoHsaIdMap = new HashMap<String, String>();
-        for (var i = 1; i <= count; i++) {
-            orgNoHsaIdMap.put("ORG_NO_" + i, "HSA_ID_" + i);
-        }
-        return orgNoHsaIdMap;
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionForUnregisteredElegUser() {
+        final var hashedOrgNo = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+        final var statusCode = 500;
+
+        setMockToReturnRestClientResponseException(500);
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(hashedOrgNo, statusCode, HttpStatus.valueOf(statusCode).name(), "MESSAGE_TEXT", null);
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
+        final var queryIds = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+        final var httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+
+        setMockToReturnHttpServerErrorException(httpStatus);
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(queryIds, httpStatus.value(), httpStatus.name(), "MESSAGE_TEXT", LOCAL_DATE_TIME);
+    }
+
+    @Test
+    public void shouldSetEmptyStatusTextInMonitorLogIfCustomErrorCodeForUnregisteredElegUser() {
+        final var hashedOrgNo = Collections.singleton(HashUtility.hash("ORG_NO_1"));
+
+        setMockToReturnRestClientResponseExceptionCustomStatusCode();
+
+        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(hashedOrgNo, 777, "", "MESSAGE_TEXT", null);
     }
 
     private void setMockToReturn(HttpStatus httpStatus, int totalOrgsCount, int orgsMissingCount, int serviceCodeCount) {
@@ -373,13 +501,28 @@ public class SubscriptionRestServiceTest {
             .thenReturn(new ResponseEntity<>(orgList, httpStatus));
     }
 
+    private void setMockToReturnElegServiceCode() {
+        final var orgResponse = createOrganization(1, 0);
+        orgResponse.setServiceCodes(List.of("Webcert e-leg"));
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenReturn(new ResponseEntity<>(List.of(orgResponse), HttpStatus.OK));
+    }
+
     private void setMockToReturnRestClientException() {
         final var e = new RestClientException("MESSAGE_TEXT");
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenThrow(e);
     }
 
-    private void setMockToReturnRestClientResponseException() {
+    private void setMockToReturnRestClientResponseException(int httpStatusCode) {
+        final var e = new RestClientResponseException("MESSAGE_TEXT", httpStatusCode, "statusText", null,null, null);
+
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+            .thenThrow(e);
+    }
+
+    private void setMockToReturnRestClientResponseExceptionCustomStatusCode() {
         final var e = new RestClientResponseException("MESSAGE_TEXT", 777, "statusText", null,null, null);
 
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
@@ -395,13 +538,12 @@ public class SubscriptionRestServiceTest {
             .thenThrow(e);
     }
 
-    private void setMockToReturnHttpClientErrorException(HttpStatus httpStatus) {
-        final var httpHeaders = new HttpHeaders();
-        httpHeaders.setDate(ZonedDateTime.of(LOCAL_DATE_TIME, ZoneId.of("Europe/Stockholm")));
-        final var e = new HttpClientErrorException("MESSAGE_TEXT", httpStatus, httpStatus.name(), httpHeaders, null, StandardCharsets.UTF_8);
-
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenThrow(e);
+    private Map<String, String> createOrgNoHsaIdMap(int count) {
+        final var orgNoHsaIdMap = new HashMap<String, String>();
+        for (var i = 1; i <= count; i++) {
+            orgNoHsaIdMap.put("ORG_NO_" + i, "HSA_ID_" + i);
+        }
+        return orgNoHsaIdMap;
     }
 
     private OrganizationResponse createOrganization(int orgNo, int serviceCodeCount) {

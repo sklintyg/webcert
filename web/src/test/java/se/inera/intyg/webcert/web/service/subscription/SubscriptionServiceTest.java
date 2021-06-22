@@ -53,6 +53,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 
@@ -179,7 +180,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture());
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
         assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber));
         assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber));
     }
@@ -194,7 +195,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture());
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
         assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber));
         assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber));
     }
@@ -238,7 +239,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture());
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
         assertEquals(3, restServiceParamCaptor.getValue().size());
     }
 
@@ -404,7 +405,7 @@ public class SubscriptionServiceTest {
         for (var i = 1; i <= careProviderHsaIdCount; i++) {
             careProviderHsaIds.add("CARE_PROVIDER_HSA_ID_" + i);
         }
-        when(subscriptionRestService.getMissingSubscriptions(any())).thenReturn(careProviderHsaIds);
+        when(subscriptionRestService.getMissingSubscriptions(any(), any())).thenReturn(careProviderHsaIds);
     }
 
     private void setRestServiceUnregisteredElegMockToReturn(Boolean isMissingSubscription) {

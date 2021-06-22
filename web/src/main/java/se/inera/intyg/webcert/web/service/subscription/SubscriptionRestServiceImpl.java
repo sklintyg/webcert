@@ -47,6 +47,7 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.OrganizationResponse;
+import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 
 @Service
 public class SubscriptionRestServiceImpl implements SubscriptionRestService {
@@ -58,6 +59,9 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
 
     @Value("${kundportalen.subscriptions.url}")
     private String kundportalenSubscriptionServiceUrl;
+
+    @Value("${kundportalen.eleg.service.code}")
+    private String elegServiceCode;
 
     private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() { };
@@ -72,10 +76,11 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     @Override
-    public List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap) {
+    public List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         try {
-            final var organizationInfo = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
-            return getCareProvidersMissingSubscription(Objects.requireNonNull(organizationInfo.getBody()), organizationNumberHsaIdMap);
+            final var organizationResponse = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
+            final var organizationInfo = (Objects.requireNonNull(organizationResponse.getBody()));
+            return getCareProvidersMissingSubscription(organizationInfo, organizationNumberHsaIdMap, authMethod);
         } catch (Exception e) {
             errorLogException(organizationNumberHsaIdMap.values(), e);
             monitorLogIfServiceCallFailure(organizationNumberHsaIdMap.values(), e);
@@ -86,8 +91,9 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     @Override
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         try {
-            final var organizationInfo = getSubscriptionServiceResponse(Set.of(organizationNumber));
-            return Objects.requireNonNull(organizationInfo.getBody()).get(0).getServiceCodes().isEmpty();
+            final var organizationResponse = getSubscriptionServiceResponse(Set.of(organizationNumber));
+            final var organizationInfo = (Objects.requireNonNull(organizationResponse.getBody()));
+            return missingSubscription(organizationInfo.get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
         } catch (Exception e) {
             errorLogExceptionUnregisteredElegUser(organizationNumber, e);
             monitorLogIfServiceCallFailure(Collections.singleton(HashUtility.hash(organizationNumber)), e);
@@ -109,15 +115,26 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,
-        Map<String, String> organizationNumberHsaIdMap) {
+        Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var careProvidersMissingSubscription = new  ArrayList<String>();
 
         for (var organization : organizations) {
-            if (organization.getServiceCodes().isEmpty()) {
+            final var serviceCodes = organization.getServiceCodes();
+            if (missingSubscription(serviceCodes, authMethod)) {
                 careProvidersMissingSubscription.add(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
             }
         }
         return careProvidersMissingSubscription;
+    }
+
+    private boolean missingSubscription(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
+        if (activeServiceCodes.isEmpty()) {
+            return true;
+        }
+        if (authMethod == AuthenticationMethodEnum.ELEG) {
+            return !activeServiceCodes.contains(elegServiceCode);
+        }
+        return activeServiceCodes.size() == 1 && activeServiceCodes.contains(elegServiceCode);
     }
 
     private void errorLogException(Collection<String> hsaIds, Exception e) {
