@@ -456,12 +456,31 @@ public class PdlIT {
             assertPdlLogMessage(ActivityType.READ, testSetup.certificateId(), ACTIVITY_ARGS_READ_SJF);
         }
 
-        @Disabled("Until it has been implemented")
         @Test
         public void shallPdlLogSendActivityWhenSendingCertificate() {
-//        Log.activity.activityType = "Utskrift"
-//        Log.activity.activityArg = "Intyg skickat till mottagare [mottagare]"
-            fail();
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .when()
+                .get("/moduleapi/intyg/{certificateId}/send")
+                .then()
+                .assertThat().statusCode(HttpStatus.OK.value());
+
+            assertNumberOfPdlMessages(1);
+            assertPdlLogMessage(ActivityType.SEND, testSetup.certificateId());
         }
 
         @Test
