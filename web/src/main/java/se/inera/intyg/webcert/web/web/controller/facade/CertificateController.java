@@ -280,8 +280,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending certificate with id: '{}'", certificateId);
         }
-        final var result = sendCertificateFacadeService
-            .sendCertificate(certificateId);
+        final var result = sendCertificateFacadeService.sendCertificate(certificateId);
         return Response.ok(SendCertificateResponseDTO.create(certificateId, result)).build();
     }
 

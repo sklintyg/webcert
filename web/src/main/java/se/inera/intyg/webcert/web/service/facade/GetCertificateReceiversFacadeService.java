@@ -24,5 +24,5 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 public interface GetCertificateReceiversFacadeService {
 
-    List<IntygReceiver> getCertificateReceivers(String id);
+    List<IntygReceiver> getCertificateReceivers(String certificateId);
 }

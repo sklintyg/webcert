@@ -40,8 +40,8 @@ public class GetCertificateReceiversFacadeServiceImpl implements GetCertificateR
     }
 
     @Override
-    public List<IntygReceiver> getCertificateReceivers(String id) {
-        final var certificate = utkastService.getDraft(id, false);
+    public List<IntygReceiver> getCertificateReceivers(String certificateId) {
+        final var certificate = utkastService.getDraft(certificateId, false);
         return certificateReceiverService.listPossibleReceivers(certificate.getIntygsTyp());
     }
 }

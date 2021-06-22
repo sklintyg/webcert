@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +51,9 @@ public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeSe
         final var certificate = utkastService.getDraft(certificateId, false);
         final var receivers = getMainReceivers(certificate.getIntygsTyp());
 
-        List<IntygServiceResult> results = new ArrayList<>();
-        receivers.forEach((r) -> {
-            results.add(intygService.sendIntyg(certificateId, certificate.getIntygsTyp(), r.getId(), false));
-        });
-        return results.stream().allMatch(r -> r == IntygServiceResult.OK) ? IntygServiceResult.OK.toString()
-            : IntygServiceResult.FAILED.toString();
+        return receivers.stream()
+            .map(r -> intygService.sendIntyg(certificateId, certificate.getIntygsTyp(), r.getId(), false))
+            .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2).get().toString();
     }
 
     private List<IntygReceiver> getMainReceivers(String type) {

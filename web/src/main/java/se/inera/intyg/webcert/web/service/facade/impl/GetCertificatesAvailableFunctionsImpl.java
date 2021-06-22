@@ -23,20 +23,15 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
-
-    @Autowired
-    CertificateEventService certificateEventService;
 
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
