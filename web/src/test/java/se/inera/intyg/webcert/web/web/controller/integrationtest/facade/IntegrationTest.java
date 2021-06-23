@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 
 public class IntegrationTest {
 
-    public static String DR_AJLA = "TSTNMT2321000156-DRAJ";
+    public static String DR_AJLA = "TSTNMT2321000156-DRAA";
     public static String DR_BETA = "TSTNMT2321000156-DRBE";
 
     public static String ALFA_REGIONEN = "TSTNMT2321000156-ALFA";
