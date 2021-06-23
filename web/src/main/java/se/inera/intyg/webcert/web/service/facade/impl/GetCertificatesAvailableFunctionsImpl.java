@@ -171,6 +171,21 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
+        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID) && !certificate.getMetadata().isSent()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
+                        +
+                        "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
