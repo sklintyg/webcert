@@ -53,7 +53,9 @@ public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeSe
 
         return receivers.stream()
             .map(r -> intygService.sendIntyg(certificateId, certificate.getIntygsTyp(), r.getId(), false))
-            .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2).get().toString();
+            .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2)
+            .orElse(IntygServiceResult.FAILED)
+            .toString();
     }
 
     private List<IntygReceiver> getMainReceivers(String type) {
