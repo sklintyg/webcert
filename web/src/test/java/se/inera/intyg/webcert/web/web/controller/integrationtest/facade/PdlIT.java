@@ -474,8 +474,7 @@ public class PdlIT {
 
             given()
                 .pathParam("certificateId", testSetup.certificateId())
-                .when()
-                .get("api/certificate/{certificateId}/send")
+                .when().post("api/certificate/{certificateId}/send")
                 .then()
                 .assertThat().statusCode(HttpStatus.OK.value());
 
