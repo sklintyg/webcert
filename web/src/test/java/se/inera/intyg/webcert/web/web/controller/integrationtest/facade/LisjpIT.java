@@ -808,11 +808,11 @@ public class LisjpIT {
         @DisplayName("Shall be able to send certificate with current version")
         public void shallBeAbleToSendCertificateOfCurrentVersion() {
             final var testSetup = TestSetup.create()
-                .lockedDraft(
+                .certificate(
                     LisjpEntryPoint.MODULE_ID,
-                    "1.2",
-                    DR_AJLA,
+                    CURRENT_VERSION,
                     ALFA_VARDCENTRAL,
+                    DR_AJLA,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()
@@ -823,7 +823,6 @@ public class LisjpIT {
 
             final var response = given()
                 .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
                 .when().post("api/certificate/{certificateId}/send")
                 .then().extract().response();
 

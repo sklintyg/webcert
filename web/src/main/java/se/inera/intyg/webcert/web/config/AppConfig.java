@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -40,6 +41,8 @@ public class AppConfig implements TransactionManagementConfigurer {
     @Autowired
     JpaTransactionManager transactionManager;
 
+    @Value("${webcert.cookie.domain.name:}")
+    private String webcertCookieDomainName;
 
     @Override
     public PlatformTransactionManager annotationDrivenTransactionManager() {
@@ -53,7 +56,11 @@ public class AppConfig implements TransactionManagementConfigurer {
         This will not satisfy all browsers, but it works for IE, Chrome and Edge.
         Reference: https://auth0.com/blog/browser-behavior-changes-what-developers-need-to-know/
          */
-        return new IneraCookieSerializer();
+        final var ineraCookieSerializer = new IneraCookieSerializer();
+        if (!webcertCookieDomainName.isBlank()) {
+            ineraCookieSerializer.setDomainName(webcertCookieDomainName);
+        }
+        return ineraCookieSerializer;
     }
 
 }
