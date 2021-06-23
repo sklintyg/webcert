@@ -293,7 +293,7 @@ public class CertificateController {
             LOG.debug("Retrieving receivers for certificate with id: '{}'", certificateId);
         }
         final var receivers = getCertificateReceiversFacadeService.getCertificateReceivers(certificateId);
-        return Response.ok().build();
+        return Response.ok(receivers).build();
     }
 
     @GET
