@@ -66,5 +66,4 @@ public interface CertificateEventService {
      * @return List of events. Empty list if there where no events to find.
      */
     List<CertificateEvent> getCertificateEvents(String certificateId);
-
 }

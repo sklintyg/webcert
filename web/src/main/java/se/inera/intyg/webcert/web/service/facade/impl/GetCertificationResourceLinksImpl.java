@@ -161,6 +161,11 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
                 certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.SEND_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToSend(accessEvaluationParameters)
+        );
+
         return functions;
     }
 

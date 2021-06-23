@@ -803,6 +803,34 @@ public class LisjpIT {
                 () -> assertEquals(200, response.getStatusCode())
             );
         }
+
+        @Test
+        @DisplayName("Shall be able to send certificate with current version")
+        public void shallBeAbleToSendCertificateOfCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .when().post("api/certificate/{certificateId}/send")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
     }
 
     private ObjectMapper getObjectMapperForDeserialization() {
