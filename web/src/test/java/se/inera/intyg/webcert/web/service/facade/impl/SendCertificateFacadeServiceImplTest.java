@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +54,8 @@ public class SendCertificateFacadeServiceImplTest {
 
     private final static String CERTIFICATE_ID = "certificateId";
     private final static String CERTIFICATE_TYPE = "lisjp";
-    private final static String RECEIVER_ID = "FKASSA";
+    private final static String MAIN_RECEIVER_ID = "FKASSA";
+    private final static String ORDINARY_RECEIVER_ID = "RECEIVER";
 
     @BeforeEach
     void setup() {
@@ -61,21 +63,41 @@ public class SendCertificateFacadeServiceImplTest {
         draft.setIntygsId(CERTIFICATE_ID);
         draft.setIntygsTyp(CERTIFICATE_TYPE);
 
-        List<IntygReceiver> receivers = new ArrayList<>();
-        IntygReceiver receiver = new IntygReceiver();
-        receiver.setId(RECEIVER_ID);
-        receiver.setLocked(true);
-        receivers.add(receiver);
-
         when(utkastService.getDraft(eq(CERTIFICATE_ID), eq(false))).thenReturn(draft);
-        when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE))).thenReturn(receivers);
-        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(RECEIVER_ID), eq(false)))
+        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(MAIN_RECEIVER_ID), eq(false)))
             .thenReturn(IntygServiceResult.OK);
     }
 
     @Test
     void shallSendCertificate() {
+        List<IntygReceiver> receivers = new ArrayList<>();
+        IntygReceiver receiver = new IntygReceiver();
+        receiver.setId(MAIN_RECEIVER_ID);
+        receiver.setLocked(true);
+        receivers.add(receiver);
+
+        when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE))).thenReturn(receivers);
+
         sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
-        verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, RECEIVER_ID, false);
+        verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
+    }
+
+    @Test
+    void onlySendsCertificateToMainReceivers() {
+        List<IntygReceiver> receivers = new ArrayList<>();
+        IntygReceiver mainReceiver = new IntygReceiver();
+        mainReceiver.setId(MAIN_RECEIVER_ID);
+        mainReceiver.setLocked(true);
+        receivers.add(mainReceiver);
+        IntygReceiver receiver = new IntygReceiver();
+        receiver.setId(ORDINARY_RECEIVER_ID);
+        receiver.setLocked(false);
+        receivers.add(receiver);
+
+        when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE))).thenReturn(receivers);
+
+        sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
+        verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
+        verify(intygService, never()).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, ORDINARY_RECEIVER_ID, false);
     }
 }
