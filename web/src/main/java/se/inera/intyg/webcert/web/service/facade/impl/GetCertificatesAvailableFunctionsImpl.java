@@ -24,6 +24,7 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
@@ -87,14 +88,25 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                "Signera",
-                "Signerar intygsutkast",
-                true
-            )
-        );
+        if (certificate.getMetadata().getType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
+                    "Signera och skicka",
+                    "Signerar intygsutkast",
+                    true
+                )
+            );
+        } else {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
+                    "Signera intyget",
+                    "Signerar intygsutkast",
+                    true
+                )
+            );
+        }
 
         resourceLinks.add(
             ResourceLinkDTO.create(
