@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
@@ -55,12 +56,15 @@ class GetCertificationResourceLinksImplTest {
     @Mock
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+
     private GetCertificationResourceLinksImpl getCertificationResourceLinks;
 
     @BeforeEach
     void setupServiceUnderTest() {
         getCertificationResourceLinks = new GetCertificationResourceLinksImpl(
-            new GetCertificatesAvailableFunctionsImpl(),
+            new GetCertificatesAvailableFunctionsImpl(authoritiesHelper),
             draftAccessServiceHelper,
             lockedDraftAccessServiceHelper,
             certificateAccessServiceHelper

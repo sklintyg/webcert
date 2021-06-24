@@ -36,8 +36,12 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Service
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
 
+    private final AuthoritiesHelper authoritiesHelper;
+
     @Autowired
-    AuthoritiesHelper authoritiesHelper;
+    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper) {
+        this.authoritiesHelper = authoritiesHelper;
+    }
 
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
@@ -93,8 +97,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (authoritiesHelper != null && authoritiesHelper
-            .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())) {
+        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,

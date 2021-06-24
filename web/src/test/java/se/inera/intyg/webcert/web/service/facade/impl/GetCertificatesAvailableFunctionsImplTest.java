@@ -46,6 +46,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     AuthoritiesHelper authoritiesHelper;
+    
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
 
