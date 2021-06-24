@@ -23,16 +23,21 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
+
+    @Autowired
+    AuthoritiesHelper authoritiesHelper;
 
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
@@ -88,12 +93,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
+        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
                     "Signera och skicka",
-                    "Signerar intygsutkast",
+                    "Intyget skickas direkt till intygsmottagare",
                     true
                 )
             );
