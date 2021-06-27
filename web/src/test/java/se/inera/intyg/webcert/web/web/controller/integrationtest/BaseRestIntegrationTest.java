@@ -100,6 +100,9 @@ public abstract class BaseRestIntegrationTest {
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
         "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
 
+    protected static FakeCredentials STAFFAN_STAFETT = new FakeCredentials.FakeCredentialsBuilder("staffan", "")
+        .legitimeradeYrkesgrupper(LAKARE).build();
+
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
 
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();

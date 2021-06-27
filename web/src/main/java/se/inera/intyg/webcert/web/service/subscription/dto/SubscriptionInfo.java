@@ -29,6 +29,8 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private String requireSubscriptionStartDate;
 
+    public SubscriptionInfo() { }
+
     public SubscriptionInfo(SubscriptionState subscriptionState, String requireSubscriptionStartDate) {
         this.subscriptionState = subscriptionState;
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
