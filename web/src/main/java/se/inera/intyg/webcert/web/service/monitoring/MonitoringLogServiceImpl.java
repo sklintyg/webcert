@@ -551,8 +551,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
 
-        LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organization(s) '{}' due "
-            + "to missing subscription(s)"),
+        LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organizations '{}' due "
+            + "to missing subscriptions"),
 
         SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with statusCode '{}', statusText '{}', "
             + "exceptionMessage '{}' and time '{}'"),
