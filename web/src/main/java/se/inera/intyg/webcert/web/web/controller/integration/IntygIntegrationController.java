@@ -25,7 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -99,6 +99,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
+
+    @Autowired
+    private ReactPilotConfig reactPilotConfig;
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -341,7 +344,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     updateUserWithActiveFeatures(user);
 
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo, user);
                 }
 
                 // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
@@ -369,7 +372,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
                     updateUserWithActiveFeatures(user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo, user);
                 }
 
                 LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
@@ -421,22 +424,44 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
+    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
+        final var location = getRedirectUri(uriInfo, prepareRedirectToIntyg, user);
+        return Response.seeOther(location).build();
+    }
 
-        String intygId = prepareRedirectToIntyg.getIntygId();
-        String intygTyp = prepareRedirectToIntyg.getIntygTyp();
-        String intygTypeVersion = prepareRedirectToIntyg.getIntygTypeVersion();
-        boolean isUtkast = prepareRedirectToIntyg.isUtkast();
-        String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
+    private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
+        if (shouldRedirectToReactClient(user, prepareRedirectToIntyg.getIntygTyp())) {
+            return getRedirectUriForReactClient(uriInfo, prepareRedirectToIntyg);
+        }
+        return getRedirectUriForAngularClient(uriInfo, prepareRedirectToIntyg);
+    }
 
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put(PARAM_CERT_TYPE, intygTyp);
-        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
-        urlParams.put(PARAM_CERT_ID, intygId);
+    private URI getRedirectUriForReactClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
+        final var urlParams = Collections.singletonMap(PARAM_CERT_ID, prepareRedirectToIntyg.getIntygId());
+        return uriBuilder
+            .host(reactPilotConfig.getHostReactClient())
+            .path(reactPilotConfig.getUrlReactTemplate())
+            .buildFromMap(urlParams);
+    }
 
-        URI location = uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
-        return Response.temporaryRedirect(location).build();
+    private URI getRedirectUriForAngularClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
+        final var urlFragmentTemplate = prepareRedirectToIntyg.isUtkast() ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
+        final var urlParams = Map.of(
+            PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp(),
+            PARAM_CERT_TYPE_VERSION, prepareRedirectToIntyg.getIntygTypeVersion(),
+            PARAM_CERT_ID, prepareRedirectToIntyg.getIntygId()
+        );
+        return uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
+    }
+
+    private boolean shouldRedirectToReactClient(WebCertUser user, String certificateType) {
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
+        if (feature == null) {
+            return false;
+        }
+        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {

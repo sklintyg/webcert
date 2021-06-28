@@ -30,7 +30,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.BETA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BETA;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA;
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
@@ -188,7 +188,7 @@ public class PdlIT {
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
                     CreateCertificateFillType.EMPTY,
-                    DR_BETA,
+                    DR_BEATA,
                     BETA_VARDCENTRAL,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
@@ -435,7 +435,7 @@ public class PdlIT {
                     LisjpEntryPoint.MODULE_ID,
                     "1.2",
                     BETA_VARDCENTRAL,
-                    DR_BETA,
+                    DR_BEATA,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .clearPdlLogMessages()

@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 public class IntegrationTest {
 
     public static String DR_AJLA = "TSTNMT2321000156-DRAA";
-    public static String DR_BETA = "TSTNMT2321000156-DRBE";
+    public static String DR_BEATA = "TSTNMT2321000156-DRBE";
 
     public static String ALFA_REGIONEN = "TSTNMT2321000156-ALFA";
     public static String ALFA_VARDCENTRAL = "TSTNMT2321000156-ALVC";
@@ -59,7 +59,7 @@ public class IntegrationTest {
     protected static FakeCredentials DR_AJLA_ALFA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(DR_AJLA,
         ALFA_VARDCENTRAL).legitimeradeYrkesgrupper(LAKARE).build();
 
-    protected static FakeCredentials DR_BEATA_BETA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(DR_BETA,
+    protected static FakeCredentials DR_BEATA_BETA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(DR_BEATA,
         BETA_VARDCENTRAL).legitimeradeYrkesgrupper(LAKARE).build();
 
 }
