@@ -69,7 +69,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParams(pathParams)
             .and().queryParams(queryParams)
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when().get("/visa/intyg/{intygsId}")
             .then()
             .header(HttpHeaders.LOCATION, endsWith("/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"))
@@ -100,7 +100,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParams(pathParams)
             .and().queryParams(queryParams)
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when().get("/visa/intyg/{intygsTyp}/{intygsId}")
             .then()
             .header(HttpHeaders.LOCATION, endsWith("/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"))
@@ -130,7 +130,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParams(pathParams)
             .and().formParams(formParams)
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when().post("/visa/intyg/{intygsId}")
             .then().header(HttpHeaders.LOCATION, endsWith("/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
     }
@@ -151,7 +151,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParam("intygsId", intygsId)
             .and().queryParams("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER).when().get("/visa/intyg/{intygsId}").then()
             .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
     }
 
@@ -169,7 +169,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .and().pathParams(pathParams)
             .and().formParams("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsId}").then()
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER).when().post("/visa/intyg/{intygsId}").then()
             .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
     }
 
@@ -254,7 +254,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .pathParam("intygsId", utkastId)
             .queryParams(queryParams)
             .expect()
-            .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when()
             .get("/visa/intyg/{intygsId}")
             .then()
@@ -306,7 +306,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .pathParam("intygsId", utkastId)
             .queryParams(queryParams)
             .expect()
-            .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when()
             .get("/visa/intyg/{intygsId}")
             .then()
@@ -365,7 +365,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .pathParam("intygsId", utkastId)
             .queryParams(queryParams)
             .expect()
-            .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when()
             .get("/visa/intyg/{intygsId}")
             .then()
@@ -426,7 +426,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .redirects().follow(false)
             .and().pathParam("intygsId", intygsId)
             .and().queryParams(queryParams)
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER).when().get("/visa/intyg/{intygsId}")
             .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
 
         spec(100)
@@ -457,7 +457,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .redirects()
             .follow(false)
             .and().pathParam("intygsId", utkastId)
-            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .expect().statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
             .then().header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
@@ -521,7 +521,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .pathParam("intygsId", utkastId)
             .queryParams(queryParams)
             .expect()
-            .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when()
             .get("/visa/intyg/{intygsId}");
 
@@ -549,7 +549,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
             .pathParam("intygsId", utkastId)
             .queryParams(queryParams)
             .expect()
-            .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .statusCode(HttpServletResponse.SC_SEE_OTHER)
             .when()
             .get("/visa/intyg/{intygsId}");
 
