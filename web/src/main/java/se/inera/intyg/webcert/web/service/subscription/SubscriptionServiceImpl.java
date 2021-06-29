@@ -177,7 +177,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return webCertUser.isPrivatLakare();
     }
 
-    //TODO Review: Move isElegUser and WebCertUser.
     private boolean isElegUser(WebCertUser webCertUser) {
         final var authenticationScheme = webCertUser.getAuthenticationScheme();
         return authenticationScheme.equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF) || ELEG_AUTHN_CLASSES.contains(authenticationScheme);
