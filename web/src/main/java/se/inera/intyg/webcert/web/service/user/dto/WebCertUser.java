@@ -51,7 +51,7 @@ public class WebCertUser extends IntygUser {
      */
     public WebCertUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
-        this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
+        this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();
         this.personId = intygUser.getPersonId();
         this.isSekretessMarkerad = intygUser.isSekretessMarkerad();
         this.namn = intygUser.getNamn();

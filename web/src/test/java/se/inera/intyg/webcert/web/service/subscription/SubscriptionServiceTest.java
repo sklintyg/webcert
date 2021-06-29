@@ -82,6 +82,7 @@ public class SubscriptionServiceTest {
         ReflectionTestUtils.setField(subscriptionService, "requireSubscriptionStartDate", "requireSubscriptionStartDate");
     }
 
+    //TODO Review: Fix when SubscriptionInfo is removed.
     /*@Test
     public void shouldReturnSubscriptionStateNoneWhenNotFristaende() {
         final var webCertUser = createWebCertSithsUser( 1, 1, 0);
@@ -376,7 +377,6 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(webCertUser);
 
         assertEquals(SubscriptionAction.WARN, webCertUser.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(0).getVardenheter().get(0).getSubscriptionAction());
     }
 
     @Test
@@ -389,14 +389,7 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(webCertUser);
 
         assertEquals(SubscriptionAction.BLOCK, webCertUser.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.BLOCK, webCertUser.getVardgivare().get(0).getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.BLOCK, webCertUser.getVardgivare().get(0).getVardenheter().get(0).getMottagningar().get(0)
-            .getSubscriptionAction());
-
         assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(1).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(1).getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(1).getVardenheter().get(0).getMottagningar().get(0)
-            .getSubscriptionAction());
     }
 
     private void setRestServiceMockToReturn(int careProviderHsaIdCount) {

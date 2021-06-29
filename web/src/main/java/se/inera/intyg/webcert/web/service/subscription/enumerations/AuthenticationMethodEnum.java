@@ -20,22 +20,6 @@
 package se.inera.intyg.webcert.web.service.subscription.enumerations;
 
 public enum AuthenticationMethodEnum {
-    ELEG("ELEG", "Authentication method ELEG"),
-    SITHS("SITHS", "Authentication method SITHS");
-
-    private final String value;
-    private final String description;
-
-    AuthenticationMethodEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
-
-    public String value() {
-        return this.value;
-    }
-
-    public String description() {
-        return this.description;
-    }
+    ELEG,
+    SITHS
 }

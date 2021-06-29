@@ -45,7 +45,6 @@ public class PPRestServiceImpl implements PPRestService {
 
     @Override
     public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
-        LOG.debug("Validating person information from Privatläkarportalen.");
         validateIdentifier(personalIdentityNumber);
 
         return doValidatePrivatePractitioner(personalIdentityNumber);
@@ -67,17 +66,13 @@ public class PPRestServiceImpl implements PPRestService {
     private void logResult(ValidatePrivatePractitionerResponse response) {
         if (response.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT
             || response.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NOT_AUTHORIZED_IN_HOSP) {
-            LOG.error(response.getResultText());
-        }
-
-        if (response.getResultCode() == ValidatePrivatePractitionerResultCode.INFO) {
             LOG.info(response.getResultText());
         }
     }
 
     private void validateIdentifier(String personalIdentityNumber) {
         if (Strings.isNullOrEmpty(personalIdentityNumber)) {
-            throw new IllegalArgumentException("PersonalIdentityNumber är inte satt.");
+            throw new IllegalArgumentException("No PersonalIdentityNumber available.");
         }
     }
 

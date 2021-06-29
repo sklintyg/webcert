@@ -62,16 +62,6 @@ public class PPRestServiceTest {
     }
 
     @Test
-    public void testValidatePrivatePractitionerValidInfo() {
-        final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
-        when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
-            .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.INFO));
-
-        final var response = ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
-        assertEquals(ValidatePrivatePractitionerResultCode.INFO, response.getResultCode());
-    }
-
-    @Test
     public void testValidatePrivatePractitionerInvalid() {
         final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
         when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))

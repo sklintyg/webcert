@@ -79,7 +79,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     public List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         try {
             final var organizationResponse = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
-            final var organizationInfo = (Objects.requireNonNull(organizationResponse.getBody()));
+            final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
             return getCareProvidersMissingSubscription(organizationInfo, organizationNumberHsaIdMap, authMethod);
         } catch (Exception e) {
             errorLogException(organizationNumberHsaIdMap.values(), e);
@@ -92,7 +92,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         try {
             final var organizationResponse = getSubscriptionServiceResponse(Set.of(organizationNumber));
-            final var organizationInfo = (Objects.requireNonNull(organizationResponse.getBody()));
+            final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
             return missingSubscription(organizationInfo.get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
         } catch (Exception e) {
             errorLogExceptionUnregisteredElegUser(organizationNumber, e);
@@ -128,6 +128,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     private boolean missingSubscription(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
+        //TODO Review: Check both e-leg and SITHS service codes against the configured lists.
         if (activeServiceCodes.isEmpty()) {
             return true;
         }

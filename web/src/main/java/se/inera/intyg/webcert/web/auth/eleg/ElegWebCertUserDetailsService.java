@@ -208,7 +208,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
-        decorateWebcertUserWithPrivatLakareAvtalGodkand(hosPerson, user);
+        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
         decorateWebcertUserWithSubscriptionInfo(user);
 
         return user;
@@ -219,8 +219,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setSubscriptionInfo(subscriptionInfo);
     }
 
-    private void decorateWebcertUserWithPrivatLakareAvtalGodkand(HoSPersonType hosPerson, WebCertUser user) {
-            user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
+    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(HoSPersonType hosPerson, WebCertUser user) {
+        final var userTermsApprovedOrSubscriptionInUse = subscriptionService.isAnySubscriptionFeatureActive()
+            || avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension());
+        user.setUserTermsApprovedOrSubscriptionInUse(userTermsApprovedOrSubscriptionInUse);
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {

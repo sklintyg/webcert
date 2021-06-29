@@ -67,7 +67,6 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         final var careProviders = webcertUser.getVardgivare();
         assertEquals(SubscriptionAction.NONE, careProviders.get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, careProviders.get(0).getVardenheter().get(0).getSubscriptionAction());
     }
 
     @Test
@@ -89,11 +88,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         final var noSubscription = webcertUser.getVardgivare().stream().filter(cp -> !cp.getId().equals("vastmanland"))
             .findFirst().orElseThrow();
         assertEquals(SubscriptionAction.WARN, noSubscription.getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, noSubscription.getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, noSubscription.getVardenheter().get(0).getMottagningar().get(0).getSubscriptionAction());
         assertEquals(SubscriptionAction.NONE, hasSubscription.getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, hasSubscription.getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, hasSubscription.getVardenheter().get(0).getMottagningar().get(0).getSubscriptionAction());
     }
 
     @Test
@@ -157,11 +152,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         final var noSubscription = webcertUser.getVardgivare().stream().filter(cp -> !cp.getId().equals("vastmanland"))
             .findFirst().orElseThrow();
         assertEquals(SubscriptionAction.BLOCK, noSubscription.getSubscriptionAction());
-        assertEquals(SubscriptionAction.BLOCK, noSubscription.getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.BLOCK, noSubscription.getVardenheter().get(0).getMottagningar().get(0).getSubscriptionAction());
         assertEquals(SubscriptionAction.NONE, hasSubscription.getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, hasSubscription.getVardenheter().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, hasSubscription.getVardenheter().get(0).getMottagningar().get(0).getSubscriptionAction());
     }
 
     private List<Feature> createSubscriptionFeatures(boolean adjustment, boolean required) {

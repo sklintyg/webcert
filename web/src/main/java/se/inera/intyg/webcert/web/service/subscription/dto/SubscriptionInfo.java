@@ -24,12 +24,15 @@ import se.inera.intyg.webcert.web.service.subscription.enumerations.Subscription
 
 public class SubscriptionInfo implements Serializable {
 
+    //TODO Review: Remove class including SubscriptionState
     @JsonProperty
     private SubscriptionState subscriptionState;
     @JsonProperty
     private String requireSubscriptionStartDate;
 
-    public SubscriptionInfo() { }
+    public SubscriptionInfo() {
+
+    }
 
     public SubscriptionInfo(SubscriptionState subscriptionState, String requireSubscriptionStartDate) {
         this.subscriptionState = subscriptionState;

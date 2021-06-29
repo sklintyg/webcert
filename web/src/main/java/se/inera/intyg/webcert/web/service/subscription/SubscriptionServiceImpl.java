@@ -118,16 +118,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void setSubscriptionActions(List<Vardgivare> careProviders, List<String> missingSubscriptions) {
         final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
-        Supplier<Stream<Vardgivare>> careProvidersMissing = () -> careProviders.stream().filter(cp -> missingSubscriptions
-            .contains(cp.getId()));
-        careProvidersMissing.get().forEach(cp -> cp.setSubscriptionAction(action));
-
-        if (action == SubscriptionAction.BLOCK) {
-            Supplier<Stream<Vardenhet>> careUnits = () -> careProvidersMissing.get().map(Vardgivare::getVardenheter)
-                .flatMap(Collection::stream);
-            careUnits.get().forEach(cu -> cu.setSubscriptionAction(action));
-            careUnits.get().map(Vardenhet::getMottagningar).flatMap(Collection::stream).forEach(u -> u.setSubscriptionAction(action));
-        }
+        Supplier<Stream<Vardgivare>> careProvidersMissing = () -> careProviders.stream().filter(careProvider -> missingSubscriptions
+            .contains(careProvider.getId()));
+        careProvidersMissing.get().forEach(careProvider -> careProvider.setSubscriptionAction(action));
     }
 
     private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<String> allCareProviders,
@@ -199,6 +192,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return webCertUser.isPrivatLakare();
     }
 
+    //TODO Review: Move isElegUser and isFristaendeWebcertUser to WebCertUser.
     private boolean isElegUser(WebCertUser webCertUser) {
         final var authenticationScheme = webCertUser.getAuthenticationScheme();
         return authenticationScheme.equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF) || ELEG_AUTHN_CLASSES.contains(authenticationScheme);

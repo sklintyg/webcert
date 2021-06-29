@@ -262,7 +262,7 @@
       $rootScope.testModeActive = false;
 
       UserModel.setUser(user);
-      UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
+      UserModel.doNotDisplayUserTerms = user && user.userTermsApprovedOrSubscriptionInUse;
 
       messageService.addResources(wcMessages);
       dynamicLinkService.addLinks(_links);
@@ -296,7 +296,7 @@
       $rootScope.$on('$stateChangeSuccess',
           function(event, toState/*, toParams, fromState, fromParams*/) {
             $log.debug('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
-            if (!UserModel.termsAccepted && UserModel.transitioning && toState.name === 'webcert.terms') {
+            if (!UserModel.doNotDisplayUserTerms && UserModel.transitioning && toState.name === 'webcert.terms') {
               UserModel.transitioning = false;
             }
           });
@@ -341,17 +341,15 @@
       }
 
       function termsCheck(event, toState) {
-        if (!subscriptionService.subscriptionFeatureActive()) {
           // check terms if not accepted then always redirect
           if (toState.name !== 'webcert.terms') {
             UserModel.transitioning = false;
           }
-          if (UserModel.isPrivatLakare() && !UserModel.termsAccepted && !UserModel.transitioning) {
+          if (UserModel.isPrivatLakare() && !UserModel.doNotDisplayUserTerms && !UserModel.transitioning) {
             event.preventDefault();
             UserModel.transitioning = true;
             $state.transitionTo('webcert.terms');
           }
-        }
       }
 
       function redirectToUnitSelection(event, toState) {
