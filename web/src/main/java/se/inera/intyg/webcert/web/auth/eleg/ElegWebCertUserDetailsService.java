@@ -129,7 +129,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         final var hosPerson = getAuthorizedHosPerson(personId);
         final var requestOrigin = resolveRequestOrigin();
         final var role = lookupUserRole();
-        return createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
+        subscriptionService.checkSubscriptions(webCertUser);
+        return webCertUser;
     }
 
     private HoSPersonType getAuthorizedHosPerson(String personId) {
@@ -165,7 +167,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private boolean isMissingSubscription(String personId) {
-        return subscriptionService.checkSubscriptionUnregisteredElegUser(personId);
+        return subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
     }
 
     private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
@@ -213,7 +215,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void decorateWebcertUserWithSubscriptionInfo(WebCertUser user) {
-        final var subscriptionInfo = subscriptionService.checkSubscriptions(user);
+        final var subscriptionInfo = subscriptionService.getSubscriptionInfo(user);
         user.setSubscriptionInfo(subscriptionInfo);
     }
 

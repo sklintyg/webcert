@@ -23,9 +23,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface SubscriptionService {
 
-    SubscriptionInfo checkSubscriptions(WebCertUser webcertUser);
+    void checkSubscriptions(WebCertUser webcertUser);
 
-    boolean checkSubscriptionUnregisteredElegUser(String personId);
+    SubscriptionInfo getSubscriptionInfo(WebCertUser webCertUser);
+
+    boolean isUnregisteredElegUserMissingSubscription(String personId);
 
     boolean isSubscriptionRequired();
 
