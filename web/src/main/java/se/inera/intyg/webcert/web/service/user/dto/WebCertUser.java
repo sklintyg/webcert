@@ -27,7 +27,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 /**
@@ -40,7 +39,7 @@ public class WebCertUser extends IntygUser {
     private Map<String, String> anvandarPreference = new HashMap<>();
     private IntegrationParameters parameters;
     private boolean useSigningService = false;
-    private SubscriptionInfo subscriptionInfo;
+    private String requireSubscriptionStartDate;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -84,14 +83,14 @@ public class WebCertUser extends IntygUser {
             WebCertUser that = (WebCertUser) o;
             return Objects.equals(this.anvandarPreference, that.anvandarPreference)
                 && Objects.equals(this.parameters, that.parameters)
-                && Objects.equals(this.subscriptionInfo, that.subscriptionInfo);
+                && Objects.equals(this.requireSubscriptionStartDate, that.requireSubscriptionStartDate);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters, this.subscriptionInfo);
+        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters, this.requireSubscriptionStartDate);
     }
 
     public void setAnvandarPreference(Map<String, String> anvandarMetadata) {
@@ -114,12 +113,12 @@ public class WebCertUser extends IntygUser {
         this.useSigningService = useSigningService;
     }
 
-    public SubscriptionInfo getSubscriptionInfo() {
-        return subscriptionInfo;
+    public String getRequireSubscriptionStartDate() {
+        return requireSubscriptionStartDate;
     }
 
-    public void setSubscriptionInfo(SubscriptionInfo subscriptionInfo) {
-        this.subscriptionInfo = subscriptionInfo;
+    public void setRequireSubscriptionStartDate(String requireSubscriptionStartDate) {
+        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
     @JsonIgnore

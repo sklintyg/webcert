@@ -52,9 +52,7 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -207,19 +205,19 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-    //TODO Review: Update or remove
-    /*@Test
+    @Test
     public void shouldSetSubscriptionInfo() {
+        final String DATE = "2021-06-29";
         reset(ppService);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
-        when(subscriptionService.checkSubscriptions(any(WebCertUser.class)))
-            .thenReturn(new SubscriptionInfo(SubscriptionState.NONE, "reqStartTime"));
+        doNothing().when(subscriptionService).checkSubscriptions(any(WebCertUser.class));
+        when(subscriptionService.getRequireSubscriptionStartDate()).thenReturn(DATE);
 
         final var webCertUser = (WebCertUser) testee
             .loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
 
-        assertNotNull(webCertUser.getSubscriptionInfo());
-    }*/
+        assertEquals(DATE, webCertUser.getRequireSubscriptionStartDate());
+    }
 
     private HoSPersonType buildHosPerson() {
         HoSPersonType hoSPersonType = new HoSPersonType();

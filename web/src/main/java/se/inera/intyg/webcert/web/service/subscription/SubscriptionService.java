@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface SubscriptionService {
 
     void checkSubscriptions(WebCertUser webcertUser);
 
-    SubscriptionInfo getSubscriptionInfo(WebCertUser webCertUser);
+    String getRequireSubscriptionStartDate();
 
     boolean isUnregisteredElegUserMissingSubscription(String personId);
 

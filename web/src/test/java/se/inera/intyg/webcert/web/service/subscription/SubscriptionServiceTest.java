@@ -55,7 +55,6 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionServiceTest {
@@ -82,49 +81,69 @@ public class SubscriptionServiceTest {
         ReflectionTestUtils.setField(subscriptionService, "requireSubscriptionStartDate", "requireSubscriptionStartDate");
     }
 
-    //TODO Review: Fix when SubscriptionInfo is removed.
-    /*@Test
-    public void shouldReturnSubscriptionStateNoneWhenNotFristaende() {
+    @Test
+    public void shouldSetSubscriptionActionNoneWhenNotFristaende() {
         final var webCertUser = createWebCertSithsUser( 1, 1, 0);
         webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        final var subscriptionInfo = subscriptionService.checkSubscriptions(webCertUser);
+        subscriptionService.checkSubscriptions(webCertUser);
 
-        assertEquals(SubscriptionState.NONE, subscriptionInfo.getSubscriptionState());
+        for (var careProvider : webCertUser.getVardgivare()) {
+            assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
+        }
     }
 
     @Test
-    public void shouldReturnSubscriptionStateNoneWhenNoSubscriptionFeaturesActive() {
+    public void shouldSetSubscriptionActionNoneWhenNoSubscriptionFeaturesActive() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
-        final var subscriptionInfo = subscriptionService.checkSubscriptions(webCertUser);
+        subscriptionService.checkSubscriptions(webCertUser);
 
-        assertEquals(SubscriptionState.NONE, subscriptionInfo.getSubscriptionState());
+        for (var careProvider : webCertUser.getVardgivare()) {
+            assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
+        }
     }
 
     @Test
-    public void shouldReturnSubscriptionStateAdaptationWhenSubscriptionAdaptation() {
-        final var webCertUser = createWebCertElegUser();
+    public void shouldSetSubscriptionActionWarnWhenFeatureSubscriptionAdaptation() {
+        final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
-        setRestServiceMockToReturn(0);
+        setRestServiceMockToReturn(1);
         setFeaturesHelperMockToReturn(true, false);
 
-        final var subscriptionInfo = subscriptionService.checkSubscriptions(webCertUser);
+        subscriptionService.checkSubscriptions(webCertUser);
 
-        assertEquals(SubscriptionState.SUBSCRIPTION_ADAPTATION, subscriptionInfo.getSubscriptionState());
+        for (var careProvider : webCertUser.getVardgivare()) {
+            assertEquals(SubscriptionAction.WARN, careProvider.getSubscriptionAction());
+        }
     }
-
     @Test
-    public void shouldReturnSubscriptionStateRequiredWhenFeatureRequiredIsSet() {
-        final var webCertUser = createWebCertElegUser();
+    public void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
+        final var webCertUser = createWebCertSithsUser(2, 1, 0);
 
-        setRestServiceMockToReturn(0);
+        setRestServiceMockToReturn(1);
         setFeaturesHelperMockToReturn(true, true);
 
-        final var subscriptionInfo = subscriptionService.checkSubscriptions(webCertUser);
+        subscriptionService.checkSubscriptions(webCertUser);
 
-        assertEquals(SubscriptionState.SUBSCRIPTION_REQUIRED, subscriptionInfo.getSubscriptionState());
-    }*/
+        for (var careProvider : webCertUser.getVardgivare()) {
+            if (careProvider.getId().equals("CARE_PROVIDER_HSA_ID_1")) {
+                assertEquals(SubscriptionAction.BLOCK, careProvider.getSubscriptionAction());
+            } else {
+                assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
+            }
+        }
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowExceptionWhenAllCareProvidersAreMissionSubscriptionAndFeatureSubscriptionRequired() {
+        final var webCertUser = createWebCertSithsUser(2, 1, 0);
+
+        setRestServiceMockToReturn(2);
+        setFeaturesHelperMockToReturn(true, true);
+
+        subscriptionService.checkSubscriptions(webCertUser);
+    }
 
     @Test
     public void shouldSetActionNoneWhenAcknowledgedWarningElegUser() {
@@ -152,23 +171,6 @@ public class SubscriptionServiceTest {
         assertEquals(SubscriptionAction.WARN, webCertUser.getVardgivare().get(careProviderIndex + 1).getSubscriptionAction());
         assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(careProviderIndex - 1).getSubscriptionAction());
     }
-
-    /*@Test
-    public void shouldSetRequireSubscriptionStartDate() {
-        final var webCertUser = createWebCertElegUser();
-
-        setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(false, false);
-        final var response1 = subscriptionService.checkSubscriptions(webCertUser);
-        setFeaturesHelperMockToReturn(true, false);
-        final var response2 = subscriptionService.checkSubscriptions(webCertUser);
-        setFeaturesHelperMockToReturn(true, true);
-        final var response3 = subscriptionService.checkSubscriptions(webCertUser);
-
-        assertEquals("requireSubscriptionStartDate", response1.getRequireSubscriptionStartDate());
-        assertEquals("requireSubscriptionStartDate", response2.getRequireSubscriptionStartDate());
-        assertEquals("requireSubscriptionStartDate", response3.getRequireSubscriptionStartDate());
-    }*/
 
     @Test
     public void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {

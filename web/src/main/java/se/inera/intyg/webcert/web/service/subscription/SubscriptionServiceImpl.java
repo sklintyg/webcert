@@ -43,11 +43,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.SubscriptionState;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -69,9 +66,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public SubscriptionInfo getSubscriptionInfo(WebCertUser webCertUser) {
-        final var subscriptionState = determineSubscriptionState(webCertUser.getOrigin());
-        return new SubscriptionInfo(subscriptionState, requireSubscriptionStartDate);
+    public String getRequireSubscriptionStartDate() {
+        return requireSubscriptionStartDate;
     }
 
     @Override
@@ -139,17 +135,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             && allCareProviders.containsAll(careProvidersWithoutSubscription);
     }
 
-    private SubscriptionState determineSubscriptionState(String requestOrigin) {
-        if (isFristaendeWebcertUser(requestOrigin)) {
-            if (isSubscriptionRequired()) {
-                return SubscriptionState.SUBSCRIPTION_REQUIRED;
-            } else if (isSubscriptionAdaptation()) {
-                return SubscriptionState.SUBSCRIPTION_ADAPTATION;
-            }
-        }
-        return SubscriptionState.NONE;
-    }
-
     private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
         if (isPrivatePractitioner(webCertUser) && isElegUser(webCertUser)) {
             return getCareProviderOrganizationNumberForElegUser(webCertUser);
@@ -192,14 +177,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return webCertUser.isPrivatLakare();
     }
 
-    //TODO Review: Move isElegUser and isFristaendeWebcertUser to WebCertUser.
+    //TODO Review: Move isElegUser and WebCertUser.
     private boolean isElegUser(WebCertUser webCertUser) {
         final var authenticationScheme = webCertUser.getAuthenticationScheme();
         return authenticationScheme.equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF) || ELEG_AUTHN_CLASSES.contains(authenticationScheme);
-    }
-
-    private boolean isFristaendeWebcertUser(String origin) {
-        return origin.equals(UserOriginType.NORMAL.name());
     }
 
     private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {
