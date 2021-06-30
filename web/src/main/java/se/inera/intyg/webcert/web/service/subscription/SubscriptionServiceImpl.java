@@ -160,7 +160,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void getCareProviderOrganizationNumber(Vardgivare careProvider, Map<String, String> organizations) {
         try {
-            final var organizationNumber = careProvider.getVardenheter().stream().filter(u -> u.getVardgivareOrgnr() != null)
+            final var organizationNumber = careProvider.getVardenheter().stream().filter(unit -> unit.getVardgivareOrgnr() != null)
                 .findFirst().map(Vardenhet::getVardgivareOrgnr).orElseThrow();
             organizations.put(organizationNumber, careProvider.getId());
         } catch (NoSuchElementException e) {

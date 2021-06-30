@@ -82,6 +82,47 @@ public class SubscriptionServiceTest {
     }
 
     @Test
+    public void shouldReturnRequiredSubscriptionStartDate() {
+        final var startDate = subscriptionService.getRequireSubscriptionStartDate();
+
+        assertEquals("requireSubscriptionStartDate", startDate);
+    }
+
+    @Test
+    public void shouldNotCallRestServiceWhenNoOrganizationsForUnregisteredElegUser() {
+        setFeaturesHelperMockToReturn(true, true);
+
+        final var response = subscriptionService.isUnregisteredElegUserMissingSubscription(null);
+
+        verifyNoInteractions(subscriptionRestService);
+        assertTrue(response);
+    }
+
+    @Test
+    public void shouldNotCallRestServiceWhenNoOrganizationsForElegUser() {
+        final var elegUser = createWebCertElegUser();
+        elegUser.setPersonId(null);
+
+        setFeaturesHelperMockToReturn(true, true);
+
+        subscriptionService.checkSubscriptions(elegUser);
+
+        verifyNoInteractions(subscriptionRestService);
+    }
+
+    @Test
+    public void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
+        final var sithsUser = createWebCertSithsUser(1, 1, 1);
+        sithsUser.getVardgivare().get(0).getVardenheter().get(0).setVardgivareOrgnr(null);
+
+        setFeaturesHelperMockToReturn(true, true);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        verifyNoInteractions(subscriptionRestService);
+    }
+
+    @Test
     public void shouldSetSubscriptionActionNoneWhenNotFristaende() {
         final var webCertUser = createWebCertSithsUser( 1, 1, 0);
         webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
