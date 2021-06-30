@@ -39,6 +39,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
@@ -72,7 +73,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void checkSubscriptions(WebCertUser webCertUser) {
-        if (isAnySubscriptionFeatureActive()) {
+        if (isFristaendeWebcertUser(webCertUser) && isAnySubscriptionFeatureActive()) {
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
 
             if (!careProviderOrgNumbers.isEmpty()) {
@@ -180,6 +181,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private boolean isElegUser(WebCertUser webCertUser) {
         final var authenticationScheme = webCertUser.getAuthenticationScheme();
         return authenticationScheme.equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF) || ELEG_AUTHN_CLASSES.contains(authenticationScheme);
+    }
+
+    private boolean isFristaendeWebcertUser(WebCertUser webCertUser) {
+        return UserOriginType.NORMAL.name().equals(webCertUser.getOrigin());
     }
 
     private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {

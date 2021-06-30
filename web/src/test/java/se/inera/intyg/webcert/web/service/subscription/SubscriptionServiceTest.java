@@ -82,6 +82,33 @@ public class SubscriptionServiceTest {
     }
 
     @Test
+    public void shouldNotCallRestServiceWhenNotFristaendeUser() {
+        final var sithsUser = createWebCertSithsUser(1, 1, 1);
+        sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        setFeaturesHelperMockToReturn(true, true);
+        setRestServiceMockToReturn(4);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        verifyNoInteractions(subscriptionRestService);
+    }
+
+    @Test
+    public void shouldAlwaysHaveSubscriptionActionNoneWhenNotFristaendeUser() {
+        final var sithsUser = createWebCertSithsUser(2, 1, 1);
+        sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        setFeaturesHelperMockToReturn(true, true);
+        setRestServiceMockToReturn(2);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        assertEquals(SubscriptionAction.NONE, sithsUser.getVardgivare().get(0).getSubscriptionAction());
+        assertEquals(SubscriptionAction.NONE, sithsUser.getVardgivare().get(1).getSubscriptionAction());
+    }
+
+    @Test
     public void shouldReturnRequiredSubscriptionStartDate() {
         final var startDate = subscriptionService.getRequireSubscriptionStartDate();
 
