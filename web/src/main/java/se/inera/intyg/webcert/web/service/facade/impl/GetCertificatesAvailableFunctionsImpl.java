@@ -19,14 +19,21 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
+import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
+import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
 import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO.FMB;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
@@ -152,16 +159,29 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
-                "Ersätt",
-                "Skapar en kopia av detta intyg som du kan redigera.",
-                true
-            )
-        );
+        if (isReplaceCertificateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
+                    "Ersätt",
+                    "Skapar en kopia av detta intyg som du kan redigera.",
+                    true
+                )
+            );
+        }
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
+        if (isReplaceCertificateContinueAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE,
+                    "Ersätt",
+                    "Skapar en kopia av detta intyg som du kan redigera.",
+                    true
+                )
+            );
+        }
+
+        if (isRenewCertificateAvailable(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.RENEW_CERTIFICATE,
@@ -192,7 +212,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID) && !certificate.getMetadata().isSent()) {
+        if (isSendCertificateAvailable(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
@@ -239,5 +259,55 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         );
 
         return resourceLinks;
+    }
+
+    private boolean isSendCertificateAvailable(Certificate certificate) {
+        if (certificate.getMetadata().isSent()) {
+            return false;
+        }
+
+        if (isReplacementSigned(certificate)) {
+            return false;
+        }
+
+        return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+    }
+
+    private boolean isReplaceCertificateAvailable(Certificate certificate) {
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate));
+    }
+
+    private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
+        return isReplacementUnsigned(certificate);
+    }
+
+    private boolean isRenewCertificateAvailable(Certificate certificate) {
+        if (isReplacementSigned(certificate)) {
+            return false;
+        }
+
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, certificate.getMetadata().getType());
+    }
+
+    private boolean isReplacementUnsigned(Certificate certificate) {
+        return includesChildRelation(certificate.getMetadata().getRelations(), REPLACED, UNSIGNED);
+    }
+
+    private boolean isReplacementSigned(Certificate certificate) {
+        return includesChildRelation(certificate.getMetadata().getRelations(), REPLACED, SIGNED);
+    }
+
+    private boolean includesChildRelation(CertificateRelations relations, CertificateRelationType type, CertificateStatus status) {
+        if (missingChildRelations(relations)) {
+            return false;
+        }
+
+        return Arrays.stream(relations.getChildren()).anyMatch(
+            relation -> relation.getType().equals(type) && relation.getStatus().equals(status)
+        );
+    }
+
+    private boolean missingChildRelations(CertificateRelations relations) {
+        return relations == null || relations.getChildren() == null;
     }
 }

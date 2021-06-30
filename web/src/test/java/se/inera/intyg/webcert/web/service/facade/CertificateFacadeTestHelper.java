@@ -25,51 +25,68 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 
 public class CertificateFacadeTestHelper {
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status) {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id("certificateId")
-                    .type(certificateType)
-                    .typeVersion("1.2")
-                    .status(status)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id("191212121212")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .unit(
-                        Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .careProvider(
-                        Unit.builder()
-                            .unitId("careProviderId")
-                            .unitName("careProviderName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
+        return createCertificate(certificateType, status, null);
+    }
+
+    public static Certificate createCertificate(String certificateType, CertificateStatus status, CertificateRelation relation) {
+        final var metadataBuilder = CertificateMetadata.builder()
+            .id("certificateId")
+            .type(certificateType)
+            .typeVersion("1.2")
+            .status(status)
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id("191212121212")
                             .build()
                     )
                     .build()
             )
+            .unit(
+                Unit.builder()
+                    .unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            )
+            .careProvider(
+                Unit.builder()
+                    .unitId("careProviderId")
+                    .unitName("careProviderName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            );
+
+        if (relation != null) {
+            metadataBuilder.relations(
+                CertificateRelations.builder()
+                    .children(
+                        new CertificateRelation[]{
+                            relation
+                        }
+                    )
+                    .build()
+            );
+        }
+
+        return CertificateBuilder.create()
+            .metadata(metadataBuilder.build())
             .build();
     }
 }
