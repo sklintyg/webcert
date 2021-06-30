@@ -40,6 +40,7 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
@@ -285,6 +286,9 @@ class GetCertificationResourceLinksImplTest {
 
         @Test
         void shallIncludeRenewCertificate() {
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
             doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
@@ -293,6 +297,9 @@ class GetCertificationResourceLinksImplTest {
 
         @Test
         void shallExcludeRenewCertificate() {
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
             doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
