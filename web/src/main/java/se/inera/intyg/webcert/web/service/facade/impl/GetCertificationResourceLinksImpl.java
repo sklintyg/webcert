@@ -151,6 +151,11 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
                 certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToReplace(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.RENEW_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
                 certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)

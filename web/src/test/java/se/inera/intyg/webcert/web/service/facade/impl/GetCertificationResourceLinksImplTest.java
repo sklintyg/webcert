@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper.createCertificate;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +36,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -248,6 +251,36 @@ class GetCertificationResourceLinksImplTest {
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeReplaceCertificateContinue() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.UNSIGNED)
+                .type(CertificateRelationType.REPLACED)
+                .build();
+
+            doReturn(true).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE);
+        }
+
+        @Test
+        void shallExcludeReplaceCertificateContinue() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.UNSIGNED)
+                .type(CertificateRelationType.REPLACED)
+                .build();
+
+            doReturn(false).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE);
         }
 
         @Test

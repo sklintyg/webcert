@@ -28,13 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
-import se.inera.intyg.common.support.facade.model.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -113,18 +113,17 @@ public class CertificateConverterImpl implements CertificateConverter {
     }
 
     private CertificateRelations getRelations(String certificateId) {
-        final var certificateRelations = new CertificateRelations();
-
         LOG.debug("Retrieving relations for certificate");
         final var relations = certificateRelationService.getRelations(certificateId);
 
-        final var parent = getRelation(relations.getParent());
-        certificateRelations.setParent(parent);
-
-        final var childRelations = getChildRelations(relations.getLatestChildRelations());
-        certificateRelations.setChildren(childRelations);
-
-        return certificateRelations;
+        return CertificateRelations.builder()
+            .parent(
+                getRelation(relations.getParent())
+            )
+            .children(
+                getChildRelations(relations.getLatestChildRelations())
+            )
+            .build();
     }
 
     private CertificateRelation[] getChildRelations(FrontendRelations latestChildRelations) {
@@ -159,14 +158,15 @@ public class CertificateConverterImpl implements CertificateConverter {
         if (relation == null) {
             return null;
         }
-        final var certificateRelation = new CertificateRelation();
-        certificateRelation.setCertificateId(relation.getIntygsId());
-        certificateRelation.setCreated(relation.getSkapad());
-        certificateRelation.setStatus(
-            getStatus(relation.isMakulerat(), relation.getStatus())
-        );
-        certificateRelation.setType(type);
-        return certificateRelation;
+
+        return CertificateRelation.builder()
+            .certificateId(relation.getIntygsId())
+            .created(relation.getSkapad())
+            .status(
+                getStatus(relation.isMakulerat(), relation.getStatus())
+            )
+            .type(type)
+            .build();
     }
 
     private CertificateRelationType getType(RelationKod relationCode) {
