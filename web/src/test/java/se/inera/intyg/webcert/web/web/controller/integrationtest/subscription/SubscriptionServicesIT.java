@@ -22,12 +22,16 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.subscription;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -45,6 +49,13 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
     private static final String TESTABILITY_CONFIG_URI = "/testability/config";
     private static final String KUNDPORTALEN_STUB_SETTINGS_URI = "/services/stubs/kundportalenstub/settings";
 
+    private ObjectMapper objectMapper;
+
+    @Before
+    public void setup() {
+        this.objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
     @After
     public void resetStubAndFeatures() {
         given().when().get(TESTABILITY_CONFIG_URI + "/resetfeatures").then().statusCode(OK);
@@ -52,7 +63,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void shouldSetNoneOnCareProviderIfNotSubscriptionAdaptationOrRequired() {
+    public void shouldSetNoneOnCareProviderIfNotSubscriptionAdaptationOrRequired() throws JsonProcessingException {
         final var testFeatures = createSubscriptionFeatures(false, false);
         given().expect().statusCode(OK).when().get(KUNDPORTALEN_STUB_SETTINGS_URI + "/set/false");
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
@@ -60,17 +71,17 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        final var webcertUser = given()
+        final var response = given()
             .when().get(USER_API_URI)
             .then().statusCode(OK)
-            .extract().response().getBody().as(WebCertUser.class);
+            .extract().response().getBody().asString();
 
-        final var careProviders = webcertUser.getVardgivare();
+        final var careProviders = objectMapper.readValue(response, WebCertUser.class).getVardgivare();
         assertEquals(SubscriptionAction.NONE, careProviders.get(0).getSubscriptionAction());
     }
 
     @Test
-    public void shouldSetWarnOnOrgMissingAndNoneOnOrgHavingSubscriptionIfAdaptation() {
+    public void shouldSetWarnOnOrgMissingAndNoneOnOrgHavingSubscriptionIfAdaptation() throws JsonProcessingException {
         final var testFeatures = createSubscriptionFeatures(true, false);
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
             .then().statusCode(OK);
@@ -78,21 +89,21 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(STAFFAN_STAFETT);
 
-        final var webcertUser = given()
+        final var response = given()
             .when().get(USER_API_URI)
             .then().statusCode(OK)
-            .extract().response().getBody().as(WebCertUser.class);
+            .extract().response().getBody().asString();
 
-        final var hasSubscription = webcertUser.getVardgivare().stream().filter(cp -> cp.getId().equals("vastmanland"))
-            .findFirst().orElseThrow();
-        final var noSubscription = webcertUser.getVardgivare().stream().filter(cp -> !cp.getId().equals("vastmanland"))
+        final var careProviders = objectMapper.readValue(response, WebCertUser.class).getVardgivare();
+        final var hasSubscription = careProviders.stream().filter(cp -> cp.getId().equals("vastmanland")).findFirst().orElseThrow();
+        final var noSubscription = careProviders.stream().filter(cp -> !cp.getId().equals("vastmanland"))
             .findFirst().orElseThrow();
         assertEquals(SubscriptionAction.WARN, noSubscription.getSubscriptionAction());
         assertEquals(SubscriptionAction.NONE, hasSubscription.getSubscriptionAction());
     }
 
     @Test
-    public void shouldReplaceWarnWithNoneWhenWarningAcknowledged() {
+    public void shouldReplaceWarnWithNoneWhenWarningAcknowledged() throws JsonProcessingException {
         final var testFeatures = createSubscriptionFeatures(true, false);
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
             .then().statusCode(OK);
@@ -100,23 +111,25 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        final var webcertUserBefore = given()
+        final var responseBefore = given()
             .when().get(USER_API_URI)
             .then().statusCode(OK)
-            .extract().response().getBody().as(WebCertUser.class);
+            .extract().response().getBody().asString();
 
-        assertEquals(SubscriptionAction.WARN, webcertUserBefore.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.WARN, ((Vardgivare) webcertUserBefore.getValdVardgivare()).getSubscriptionAction());
+        final var webCertUserBefore = objectMapper.readValue(responseBefore, WebCertUser.class);
+        assertEquals(SubscriptionAction.WARN, webCertUserBefore.getVardgivare().get(0).getSubscriptionAction());
+        assertEquals(SubscriptionAction.WARN, ((Vardgivare) webCertUserBefore.getValdVardgivare()).getSubscriptionAction());
 
         given().expect().statusCode(OK).when().get(SUBSCRIPTION_API_URI + "/acknowledgeWarning");
 
-        final var webcertUserAfter = given()
+        final var responseAfter = given()
             .when().get(USER_API_URI)
             .then().statusCode(OK)
-            .extract().response().getBody().as(WebCertUser.class);
+            .extract().response().getBody().asString();
 
-        assertEquals(SubscriptionAction.NONE, webcertUserAfter.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, ((Vardgivare) webcertUserAfter.getValdVardgivare()).getSubscriptionAction());
+        final var webCertUserAfter = objectMapper.readValue(responseAfter, WebCertUser.class);
+        assertEquals(SubscriptionAction.NONE, webCertUserAfter.getVardgivare().get(0).getSubscriptionAction());
+        assertEquals(SubscriptionAction.NONE, ((Vardgivare) webCertUserAfter.getValdVardgivare()).getSubscriptionAction());
     }
 
     @Test
@@ -134,7 +147,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void shouldSetBlockOnOrgMissingAndNoneOnOrgHavingSubscriptionIfRequired() {
+    public void shouldSetBlockOnOrgMissingAndNoneOnOrgHavingSubscriptionIfRequired() throws JsonProcessingException {
         final var testFeatures = createSubscriptionFeatures(false, true);
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
             .then().statusCode(OK);
@@ -142,15 +155,14 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(STAFFAN_STAFETT);
 
-        final var webcertUser = given()
+        final var response = given()
             .when().get(USER_API_URI)
             .then().statusCode(OK)
-            .extract().response().getBody().as(WebCertUser.class);
+            .extract().response().getBody().asString();
 
-        final var hasSubscription = webcertUser.getVardgivare().stream().filter(cp -> cp.getId().equals("vastmanland"))
-            .findFirst().orElseThrow();
-        final var noSubscription = webcertUser.getVardgivare().stream().filter(cp -> !cp.getId().equals("vastmanland"))
-            .findFirst().orElseThrow();
+        final var careProviders = objectMapper.readValue(response, WebCertUser.class).getVardgivare();
+        final var hasSubscription = careProviders.stream().filter(cp -> cp.getId().equals("vastmanland")).findFirst().orElseThrow();
+        final var noSubscription = careProviders.stream().filter(cp -> !cp.getId().equals("vastmanland")).findFirst().orElseThrow();
         assertEquals(SubscriptionAction.BLOCK, noSubscription.getSubscriptionAction());
         assertEquals(SubscriptionAction.NONE, hasSubscription.getSubscriptionAction());
     }
