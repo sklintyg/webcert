@@ -60,8 +60,11 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     @Value("${kundportalen.subscriptions.url}")
     private String kundportalenSubscriptionServiceUrl;
 
-    @Value("${kundportalen.eleg.service.code}")
-    private String elegServiceCode;
+    @Value("#{${kundportalen.service.codes.eleg}}")
+    private List<String> elegServiceCodes;
+
+    @Value("#{${kundportalen.service.codes.siths}}")
+    private List<String> sithsServiceCodes;
 
     private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() { };
@@ -116,7 +119,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
 
     private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,
         Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var careProvidersMissingSubscription = new  ArrayList<String>();
+        final var careProvidersMissingSubscription = new ArrayList<String>();
 
         for (var organization : organizations) {
             final var serviceCodes = organization.getServiceCodes();
@@ -128,14 +131,13 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     private boolean missingSubscription(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
-        //TODO Review: Check both e-leg and SITHS service codes against the configured lists.
         if (activeServiceCodes.isEmpty()) {
             return true;
         }
         if (authMethod == AuthenticationMethodEnum.ELEG) {
-            return !activeServiceCodes.contains(elegServiceCode);
+            return activeServiceCodes.stream().noneMatch(serviceCode -> elegServiceCodes.contains(serviceCode));
         }
-        return activeServiceCodes.size() == 1 && activeServiceCodes.contains(elegServiceCode);
+        return activeServiceCodes.stream().noneMatch(serviceCode -> sithsServiceCodes.contains(serviceCode));
     }
 
     private void errorLogException(Collection<String> hsaIds, Exception e) {

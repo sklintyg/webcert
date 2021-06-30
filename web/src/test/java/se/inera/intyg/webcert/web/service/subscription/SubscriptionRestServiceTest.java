@@ -78,11 +78,18 @@ public class SubscriptionRestServiceTest {
     private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() { };
 
+    private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert e-leg");
+    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert integrerad-direktanslutning", "Webcert som agent", "Webcert",
+        "Webcert SITHS");
+
     @Before
     public void setup() {
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenAccessToken", "accessToken");
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "serviceUrl");
-        ReflectionTestUtils.setField(subscriptionRestService, "elegServiceCode", "Webcert e-leg");
+        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "elegServiceCodes",
+            ELEG_SERVICE_CODES, List.class);
+        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "sithsServiceCodes",
+            SITHS_SERVICE_CODES, List.class);
     }
 
 
@@ -503,7 +510,7 @@ public class SubscriptionRestServiceTest {
 
     private void setMockToReturnElegServiceCode() {
         final var orgResponse = createOrganization(1, 0);
-        orgResponse.setServiceCodes(List.of("Webcert e-leg"));
+        orgResponse.setServiceCodes(ELEG_SERVICE_CODES);
 
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(List.of(orgResponse), HttpStatus.OK));
@@ -548,16 +555,16 @@ public class SubscriptionRestServiceTest {
 
     private OrganizationResponse createOrganization(int orgNo, int serviceCodeCount) {
         final var orgResponse = new OrganizationResponse();
-        final var serviceCodeList = createServiceCodeList(serviceCodeCount);
+        final var serviceCodeList = createSithsServiceCodeList(serviceCodeCount);
         orgResponse.setOrganizationNumber("ORG_NO_" + orgNo);
         orgResponse.setServiceCodes(serviceCodeList);
         return orgResponse;
     }
 
-    private List<String> createServiceCodeList(int serviceCodeCount) {
+    private List<String> createSithsServiceCodeList(int serviceCodeCount) {
         final var serviceCodeList = new ArrayList<String>();
         for (var i = 1; i <= serviceCodeCount; i++) {
-            serviceCodeList.add("SERVICE_CODE_" + i);
+            serviceCodeList.add(SITHS_SERVICE_CODES.get(i));
         }
         return serviceCodeList;
     }

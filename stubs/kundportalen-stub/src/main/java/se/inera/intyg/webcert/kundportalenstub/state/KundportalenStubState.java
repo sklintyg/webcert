@@ -34,14 +34,14 @@ public class KundportalenStubState {
     private int httpErrorCode = 0;
     private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
-    @Value("#{${kundportalenstub.service.codes.eleg}}")
-    private List<Map<String, String>> kundportalenElegServices;
+    @Value("#{${kundportalen.service.codes.eleg}}")
+    private List<String> elegServiceCodes;
 
-    @Value("#{${kundportalenstub.service.codes.siths}}")
-    private List<Map<String, String>> kundportalenSithsServices;
+    @Value("#{${kundportalen.service.codes.siths}}")
+    private List<String> sithsServiceCodes;
 
-    public List<Map<String, String>> getServices() {
-        return Stream.concat(kundportalenElegServices.stream(), kundportalenSithsServices.stream()).collect(Collectors.toList());
+    public List<String> getServiceCodeList() {
+        return Stream.concat(elegServiceCodes.stream(), sithsServiceCodes.stream()).collect(Collectors.toList());
     }
 
     public boolean getSubscriptionReturnValue() {
@@ -70,9 +70,5 @@ public class KundportalenStubState {
 
     public void clearActiveSubscriptions() {
         activeSubscriptions.clear();
-    }
-
-    public List<String> getServiceCodeList() {
-        return getServices().stream().map(i -> i.get("serviceCode")).collect(Collectors.toList());
     }
 }
