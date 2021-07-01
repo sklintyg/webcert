@@ -32,8 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +55,6 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateReceiversFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
@@ -67,7 +64,6 @@ import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
@@ -108,8 +104,6 @@ public class CertificateControllerTest {
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Mock
     private GetCertificationResourceLinks getCertificationResourceLinks;
-    @Mock
-    private GetCertificateReceiversFacadeService getCertificateReceiversFacadeService;
     @Mock
     private SendCertificateFacadeService sendCertificateFacadeService;
 
@@ -455,27 +449,6 @@ public class CertificateControllerTest {
             assertEquals(certificateEvents, response.getCertificateEvents());
         }
     }
-
-    @Nested
-    class GetCertificateReceivers {
-
-        private List<IntygReceiver> receivers = new ArrayList<>();
-
-        @BeforeEach
-        void setup() {
-            receivers.add(new IntygReceiver());
-            doReturn(receivers)
-                .when(getCertificateReceiversFacadeService)
-                .getCertificateReceivers(anyString());
-        }
-
-        @Test
-        void shallReturnCertificateReceivers() {
-            final var response = certificateController.getCertificateReceivers(CERTIFICATE_ID).getEntity();
-            assertEquals(receivers, response);
-        }
-    }
-
 
     @Nested
     class SendCertificate {
