@@ -65,10 +65,10 @@ public class PPRestServiceTest {
     public void testValidatePrivatePractitionerInvalid() {
         final var request = new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER);
         when(restTemplate.postForObject(VALIDATE_PP_REST_URL, request, ValidatePrivatePractitionerResponse.class))
-            .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT));
+            .thenReturn(createReponse(ValidatePrivatePractitionerResultCode.NO_ACCOUNT));
 
         final var response = ppRestService.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
-        assertEquals(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT, response.getResultCode());
+        assertEquals(ValidatePrivatePractitionerResultCode.NO_ACCOUNT, response.getResultCode());
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -64,8 +64,8 @@ public class PPRestServiceImpl implements PPRestService {
     }
 
     private void logResult(ValidatePrivatePractitionerResponse response) {
-        if (response.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT
-            || response.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NOT_AUTHORIZED_IN_HOSP) {
+        if (response.getResultCode() == ValidatePrivatePractitionerResultCode.NO_ACCOUNT
+            || response.getResultCode() == ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP) {
             LOG.info(response.getResultText());
         }
     }
