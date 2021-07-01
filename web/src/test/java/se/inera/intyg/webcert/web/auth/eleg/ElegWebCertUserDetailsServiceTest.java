@@ -179,7 +179,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Test(expected = PrivatePractitionerAuthorizationException.class)
     public void testNotValidPrivatePractitionerThrowsException() {
-        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NOT_AUTHORIZED_IN_HOSP);
+        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
         when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
 
@@ -196,7 +196,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Test(expected = MissingSubscriptionException.class)
     public void shouldThrowSubscriptionExceptIfUnregisteredWithoutSubscription() {
-        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT);
+        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
 
         when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
         when(subscriptionService.isUnregisteredElegUserMissingSubscription(null)).thenReturn(true);

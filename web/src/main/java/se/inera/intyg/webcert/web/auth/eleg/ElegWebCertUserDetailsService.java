@@ -35,7 +35,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -95,9 +94,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Autowired
-    private FeaturesHelper featuresHelper;
 
     @Autowired(required = false)
     private Optional<UserOrigin> userOrigin;
@@ -171,7 +167,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
-        return validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.ERROR_NO_ACCOUNT;
+        return validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
     }
 
     private String resolveRequestOrigin() {
