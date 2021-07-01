@@ -20,10 +20,13 @@ package se.inera.intyg.webcert.integration.pp.stub;
 
 import java.util.List;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 /**
@@ -42,4 +45,14 @@ public class PPStubRestApi {
     public List<HoSPersonType> getAllHoSPersonType() {
         return hoSPersonStub.getAll();
     }
+
+    @POST
+    @Path("/privatepractitioner/validate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
+        final var result = new ValidatePrivatePractitionerResponse();
+        result.setResultCode(ValidatePrivatePractitionerResultCode.OK);
+        return result;
+    }
+
 }
