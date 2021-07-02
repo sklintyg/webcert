@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.security;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +55,6 @@ public class WebCertUserOrigin implements UserOrigin {
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "(/v\\d+)?/visa/intyg/.+$";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions$";
     private static final String FAKE = "/fake";
-    private static final String USER_JSON_DISPLAY = "userJsonDisplay";
     private static final String ORIGIN = "origin";
     private static final String DEV = "dev";
 
@@ -92,10 +90,8 @@ public class WebCertUserOrigin implements UserOrigin {
 
     private String extractOriginFromRequest(DefaultSavedRequest savedRequest) {
         if (isDevProfileActive()) {
-            final var mapper = new ObjectMapper();
             try {
-                final var actualObj = mapper.readTree(String.valueOf(savedRequest.getParameterMap().get(USER_JSON_DISPLAY)[0]));
-                return actualObj.get(ORIGIN).asText();
+                return UserOriginType.valueOf(savedRequest.getParameterMap().get(ORIGIN)[0]).name();
             } catch (Exception e) {
                 LOG.error("Could not get origin from fake login request.", e);
             }
