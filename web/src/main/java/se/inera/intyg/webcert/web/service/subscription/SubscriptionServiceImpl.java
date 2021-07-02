@@ -44,6 +44,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionStartDates;
 import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -51,6 +52,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
+
+    @Value("${kundportalen.subscription.adaptation.start.date}")
+    private String subscriptionAdaptationStartDate;
 
     @Value("${kundportalen.require.subscription.start.date}")
     private String requireSubscriptionStartDate;
@@ -67,8 +71,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public String getRequireSubscriptionStartDate() {
-        return requireSubscriptionStartDate;
+    public SubscriptionStartDates getSubscriptionStartDates() {
+        return new SubscriptionStartDates(subscriptionAdaptationStartDate, requireSubscriptionStartDate);
     }
 
     @Override

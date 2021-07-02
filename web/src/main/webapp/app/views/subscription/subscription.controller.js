@@ -27,10 +27,13 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
     UserModel.transitioning = false;
 
     $scope.modalBody = {
-      info: messageService.getProperty('subscription.warning.info.text',
+      infoCheck: messageService.getProperty('subscription.warning.info.check',
+          {subscriptionAdaptationStartDate: subscriptionService.getSubscriptionAdaptationStartDate()}),
+      infoGeneral: messageService.getProperty('subscription.warning.info.general',
           {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
-      eleg: 'subscription.warning.eleg.text',
-      links: 'subscription.warning.link.text'
+      infoEleg: messageService.getProperty('subscription.warning.info.eleg',
+          {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
+      infoLink: 'subscription.warning.info.link'
     };
 
     $scope.modalOptions = {

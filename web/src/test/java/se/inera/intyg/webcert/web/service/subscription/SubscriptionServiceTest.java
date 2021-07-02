@@ -78,6 +78,7 @@ public class SubscriptionServiceTest {
 
     @Before
     public void setup() {
+        ReflectionTestUtils.setField(subscriptionService, "subscriptionAdaptationStartDate", "subscriptionAdaptationStartDate");
         ReflectionTestUtils.setField(subscriptionService, "requireSubscriptionStartDate", "requireSubscriptionStartDate");
     }
 
@@ -109,10 +110,11 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnRequiredSubscriptionStartDate() {
-        final var startDate = subscriptionService.getRequireSubscriptionStartDate();
+    public void shouldReturnSubscriptionStartDates() {
+        final var startDates = subscriptionService.getSubscriptionStartDates();
 
-        assertEquals("requireSubscriptionStartDate", startDate);
+        assertEquals("subscriptionAdaptationStartDate", startDates.getSubscriptionAdaptationStartDate());
+        assertEquals("requireSubscriptionStartDate", startDates.getRequireSubscriptionStartDate());
     }
 
     @Test
