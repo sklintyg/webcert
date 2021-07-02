@@ -79,7 +79,7 @@ public class SubscriptionRestServiceTest {
         = new ParameterizedTypeReference<>() { };
 
     private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert e-leg");
-    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert integrerad-direktanslutning", "Webcert som agent", "Webcert",
+    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert integrerad-direktanslutning", "Webcert som Agent", "Webcert",
         "Webcert SITHS");
 
     @Before
