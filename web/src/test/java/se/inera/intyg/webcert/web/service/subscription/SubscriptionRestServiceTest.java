@@ -26,8 +26,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum.ELEG;
-import static se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum.SITHS;
+import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.SITHS;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -59,7 +59,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.subscription.dto.OrganizationResponse;
+import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionRestServiceTest {

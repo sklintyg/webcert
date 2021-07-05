@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.subscription;
 
 import java.util.List;
 import java.util.Map;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 
 public interface SubscriptionRestService {
 

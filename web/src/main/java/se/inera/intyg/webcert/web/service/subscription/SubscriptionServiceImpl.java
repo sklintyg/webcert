@@ -45,7 +45,7 @@ import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionStartDates;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service

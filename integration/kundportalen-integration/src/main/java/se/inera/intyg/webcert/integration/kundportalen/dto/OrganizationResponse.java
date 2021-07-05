@@ -17,9 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.subscription.enumerations;
+package se.inera.intyg.webcert.integration.kundportalen.dto;
 
-public enum AuthenticationMethodEnum {
-    ELEG,
-    SITHS
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+public class OrganizationResponse {
+
+    @JsonProperty("org_no")
+    private String organizationNumber;
+
+    @JsonProperty("service_code_subscriptions")
+    private List<String> serviceCodes;
+
+
+    public String getOrganizationNumber() {
+        return organizationNumber;
+    }
+
+    public void setOrganizationNumber(String organizationNumber) {
+        this.organizationNumber = organizationNumber;
+    }
+
+    public List<String> getServiceCodes() {
+        return serviceCodes;
+    }
+
+    public void setServiceCodes(List<String> serviceCodes) {
+        this.serviceCodes = serviceCodes;
+    }
 }

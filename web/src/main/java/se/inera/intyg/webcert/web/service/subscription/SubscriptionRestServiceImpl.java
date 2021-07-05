@@ -46,8 +46,8 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.subscription.dto.OrganizationResponse;
-import se.inera.intyg.webcert.web.service.subscription.enumerations.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
+import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 
 @Service
 public class SubscriptionRestServiceImpl implements SubscriptionRestService {
