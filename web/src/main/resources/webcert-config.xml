@@ -36,6 +36,7 @@
   <import resource="classpath:hsatk-services-config.xml" />
   <import resource="classpath:fmb-services-config.xml" />
   <import resource="classpath:tak-services-config.xml" />
+  <import resource="classpath:kundportalen-services-config.xml" />
   <import resource="classpath:basic-cache-config.xml" />
   <import resource="classpath:pu-services-config.xml" />
   <import resource="classpath:ia-services-config.xml" />

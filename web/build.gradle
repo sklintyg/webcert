@@ -178,12 +178,12 @@ dependencies {
     compile project(':fmb-integration')
     compile project(':pp-integration')
     compile project(':tak-integration')
+    compile project(':kundportalen-integration')
     compile project(':notification-sender')
     compile project(':fk-stub')
     compile project(':notification-stub')
     compile project(':intygstjanst-stub')
     compile project(':mail-stub')
-    compile project(':kundportalen-stub')
 
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
     compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
