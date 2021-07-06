@@ -56,7 +56,6 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         IntygUser user = super.buildUserPrincipal(credential);
         WebCertUser webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        webCertUser.setSubscriptionStartDates(subscriptionService.getSubscriptionStartDates());
         subscriptionService.checkSubscriptions(webCertUser);
         return webCertUser;
     }

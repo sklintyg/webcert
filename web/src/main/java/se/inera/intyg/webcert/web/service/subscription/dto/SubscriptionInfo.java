@@ -21,8 +21,16 @@ package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SubscriptionStartDates implements Serializable {
+public class SubscriptionInfo implements Serializable {
+
+    @JsonProperty
+    private SubscriptionAction subscriptionAction;
+
+    @JsonProperty
+    private List<String> careProvidersMissingSubscription;
 
     @JsonProperty
     private String subscriptionAdaptationStartDate;
@@ -30,13 +38,33 @@ public class SubscriptionStartDates implements Serializable {
     @JsonProperty
     private String requireSubscriptionStartDate;
 
-    public SubscriptionStartDates() { }
+    public SubscriptionInfo() {
 
-    public SubscriptionStartDates(String subscriptionAdaptationStartDate, String requireSubscriptionStartDate) {
-        this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
-        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
     }
 
+    public SubscriptionInfo(String subscriptionAdaptationStartDate, String requireSubscriptionStartDate) {
+        this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
+        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
+        this.subscriptionAction = SubscriptionAction.NONE;
+        this.careProvidersMissingSubscription = new ArrayList<>();
+    }
+
+    public SubscriptionAction getSubscriptionAction() {
+        return subscriptionAction;
+    }
+
+    public void setSubscriptionAction(SubscriptionAction subscriptionAction) {
+        this.subscriptionAction = subscriptionAction;
+    }
+
+    public List<String> getCareProvidersMissingSubscription() {
+        return careProvidersMissingSubscription;
+    }
+
+    public void setCareProvidersMissingSubscription(
+        List<String> careProvidersMissingSubscription) {
+        this.careProvidersMissingSubscription = careProvidersMissingSubscription;
+    }
 
     public String getSubscriptionAdaptationStartDate() {
         return subscriptionAdaptationStartDate;

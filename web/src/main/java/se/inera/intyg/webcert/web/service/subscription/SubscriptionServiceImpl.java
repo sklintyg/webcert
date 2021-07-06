@@ -29,14 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
@@ -46,7 +43,8 @@ import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionStartDates;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -73,12 +71,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public SubscriptionStartDates getSubscriptionStartDates() {
-        return new SubscriptionStartDates(subscriptionAdaptationStartDate, requireSubscriptionStartDate);
-    }
-
-    @Override
     public void checkSubscriptions(WebCertUser webCertUser) {
+        setSubscriptionStartDates(webCertUser);
+
         if (isFristaendeWebcertUser(webCertUser) && isAnySubscriptionFeatureActive()) {
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
 
@@ -89,9 +84,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
                 monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
                 blockUsersWithoutAnySubscription(webCertUser, careProviderOrgNumbers.values(), careProviderHsaIds);
-                setSubscriptionActions(webCertUser.getVardgivare(), careProviderHsaIds);
+                setSubscriptionActions(webCertUser, careProviderHsaIds);
             }
         }
+    }
+
+    public void setSubscriptionStartDates(WebCertUser webCertUser) {
+        final var subscriptionInfo = new SubscriptionInfo(subscriptionAdaptationStartDate, requireSubscriptionStartDate);
+        webCertUser.setSubscriptionInfo(subscriptionInfo);
     }
 
     @Override
@@ -111,18 +111,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void acknowledgeSubscriptionWarning(WebCertUser webCertUser) {
-        final var selectedCareProvider = (Vardgivare) webCertUser.getValdVardgivare();
-        selectedCareProvider.setSubscriptionAction(SubscriptionAction.NONE);
-
-        webCertUser.getVardgivare().stream().filter(cp -> cp.getId().equals(selectedCareProvider.getId())).findFirst()
-            .ifPresent(careProvider -> careProvider.setSubscriptionAction(SubscriptionAction.NONE));
+        final var selectedCareProvider = webCertUser.getValdVardgivare();
+        webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().remove(selectedCareProvider.getId());
     }
 
-    private void setSubscriptionActions(List<Vardgivare> careProviders, List<String> missingSubscriptions) {
+    private void setSubscriptionActions(WebCertUser webCertUser, List<String> missingSubscriptions) {
         final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
-        Supplier<Stream<Vardgivare>> careProvidersMissing = () -> careProviders.stream().filter(careProvider -> missingSubscriptions
-            .contains(careProvider.getId()));
-        careProvidersMissing.get().forEach(careProvider -> careProvider.setSubscriptionAction(action));
+        webCertUser.getSubscriptionInfo().setSubscriptionAction(action);
+        webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(missingSubscriptions);
     }
 
     private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<String> allCareProviders,

@@ -46,7 +46,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
@@ -57,6 +56,8 @@ import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -100,7 +101,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldAlwaysHaveSubscriptionActionNoneWhenNotFristaendeUser() {
+    public void shouldAlwaysHaveSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaendeUser() {
         final var sithsUser = createWebCertSithsUser(2, 1, 1);
         sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
@@ -109,16 +110,19 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        assertEquals(SubscriptionAction.NONE, sithsUser.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, sithsUser.getVardgivare().get(1).getSubscriptionAction());
+        assertEquals(SubscriptionAction.NONE, sithsUser.getSubscriptionInfo().getSubscriptionAction());
+        assertTrue(sithsUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty());
     }
 
     @Test
     public void shouldReturnSubscriptionStartDates() {
-        final var startDates = subscriptionService.getSubscriptionStartDates();
+        final var sithsUser = createWebCertSithsUser(1, 1, 1);
+        sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertEquals("subscriptionAdaptationStartDate", startDates.getSubscriptionAdaptationStartDate());
-        assertEquals("requireSubscriptionStartDate", startDates.getRequireSubscriptionStartDate());
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        assertEquals("subscriptionAdaptationStartDate", sithsUser.getSubscriptionInfo().getSubscriptionAdaptationStartDate());
+        assertEquals("requireSubscriptionStartDate", sithsUser.getSubscriptionInfo().getRequireSubscriptionStartDate());
     }
 
     @Test
@@ -156,26 +160,24 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetSubscriptionActionNoneWhenNotFristaende() {
+    public void shouldSetSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaende() {
         final var webCertUser = createWebCertSithsUser( 1, 1, 0);
         webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        for (var careProvider : webCertUser.getVardgivare()) {
-            assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
-        }
+        assertEquals(SubscriptionAction.NONE, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty());
     }
 
     @Test
-    public void shouldSetSubscriptionActionNoneWhenNoSubscriptionFeaturesActive() {
+    public void shouldSetSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNoSubscriptionFeaturesActive() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        for (var careProvider : webCertUser.getVardgivare()) {
-            assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
-        }
+        assertEquals(SubscriptionAction.NONE, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty());
     }
 
     @Test
@@ -187,9 +189,8 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        for (var careProvider : webCertUser.getVardgivare()) {
-            assertEquals(SubscriptionAction.WARN, careProvider.getSubscriptionAction());
-        }
+        assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size());
     }
     @Test
     public void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
@@ -200,13 +201,9 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        for (var careProvider : webCertUser.getVardgivare()) {
-            if (careProvider.getId().equals("CARE_PROVIDER_HSA_ID_1")) {
-                assertEquals(SubscriptionAction.BLOCK, careProvider.getSubscriptionAction());
-            } else {
-                assertEquals(SubscriptionAction.NONE, careProvider.getSubscriptionAction());
-            }
-        }
+        assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains("CARE_PROVIDER_HSA_ID_1"));
     }
 
     @Test(expected = MissingSubscriptionException.class)
@@ -220,30 +217,42 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetActionNoneWhenAcknowledgedWarningElegUser() {
+    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedWarningElegUser() {
         final var careProviderIndex = 0;
         final var webCertUser = createWebCertElegUser();
         setSelectedCareProviderWithWarning(webCertUser, careProviderIndex);
 
+        assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(webCertUser.getVardgivare()
+            .get(careProviderIndex).getId()));
+
         subscriptionService.acknowledgeSubscriptionWarning(webCertUser);
 
-        assertEquals(SubscriptionAction.NONE, ((Vardgivare)webCertUser.getValdVardgivare()).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(careProviderIndex).getSubscriptionAction());
+        assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty());
     }
 
     @Test
-    public void shouldSetActionNoneWhenAcknowledgedWarningForSithsUserWithMultipleCareProviders() {
+    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedWarningForSithsUserWithMultipleCareProviders() {
         final var careProviderIndex = 1;
-        final var webCertUser = createWebCertSithsUser(3, 2,1 );
+        final var webCertUser = createWebCertSithsUser(3, 2, 1);
         setSelectedCareProviderWithWarning(webCertUser, careProviderIndex);
-        webCertUser.getVardgivare().get(2).setSubscriptionAction(SubscriptionAction.WARN);
+        webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().add(webCertUser.getVardgivare().get(2).getId());
+
+        assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertEquals(2, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(webCertUser.getVardgivare()
+            .get(1).getId()));
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(webCertUser.getVardgivare()
+            .get(2).getId()));
 
         subscriptionService.acknowledgeSubscriptionWarning(webCertUser);
 
-        assertEquals(SubscriptionAction.NONE, ((Vardgivare)webCertUser.getValdVardgivare()).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(careProviderIndex).getSubscriptionAction());
-        assertEquals(SubscriptionAction.WARN, webCertUser.getVardgivare().get(careProviderIndex + 1).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(careProviderIndex - 1).getSubscriptionAction());
+        assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction());
+        assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size());
+        assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(webCertUser.getVardgivare()
+            .get(2).getId()));
     }
 
     @Test
@@ -444,31 +453,6 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetWarningActionOnCareProviderDuringAdaptationForElegUser() {
-        final var webCertUser = createWebCertElegUser();
-
-        setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, false);
-
-        subscriptionService.checkSubscriptions(webCertUser);
-
-        assertEquals(SubscriptionAction.WARN, webCertUser.getVardgivare().get(0).getSubscriptionAction());
-    }
-
-    @Test
-    public void shouldSetBlockActionOnAllLevelsWhenSubscriptionRequiredForSithsUser() {
-        final var webCertUser = createWebCertSithsUser(2, 1, 1);
-
-        setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(false, true);
-
-        subscriptionService.checkSubscriptions(webCertUser);
-
-        assertEquals(SubscriptionAction.BLOCK, webCertUser.getVardgivare().get(0).getSubscriptionAction());
-        assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(1).getSubscriptionAction());
-    }
-
-    @Test
     public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
         final var hashedOrgNo = Collections.singleton(HashUtility.hash("121212-1212"));
         setMockToReturnRestClientExceptionForUnregistered();
@@ -643,7 +627,12 @@ public class SubscriptionServiceTest {
     }
 
     private void setSelectedCareProviderWithWarning(WebCertUser webCertUser, int careProviderIndex) {
-        webCertUser.getVardgivare().get(careProviderIndex).setSubscriptionAction(SubscriptionAction.WARN);
+        final var subscriptionInfo = new SubscriptionInfo();
+        subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
+        final var careProviderList = new ArrayList<String>();
+        careProviderList.add(webCertUser.getVardgivare().get(careProviderIndex).getId());
+        subscriptionInfo.setCareProvidersMissingSubscription(careProviderList);
+        webCertUser.setSubscriptionInfo(subscriptionInfo);
         webCertUser.setValdVardgivare(webCertUser.getVardgivare().get(careProviderIndex));
     }
 }

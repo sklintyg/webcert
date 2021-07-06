@@ -16,22 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.subscription;
 
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+package se.inera.intyg.webcert.web.service.subscription.dto;
 
-public interface SubscriptionService {
-
-    void checkSubscriptions(WebCertUser webcertUser);
-
-    boolean isUnregisteredElegUserMissingSubscription(String personId);
-
-    boolean isSubscriptionRequired();
-
-    boolean isSubscriptionAdaptation();
-
-    boolean isAnySubscriptionFeatureActive();
-
-    void acknowledgeSubscriptionWarning(WebCertUser webCertUser);
-
+public enum SubscriptionAction {
+    NONE,
+    WARN,
+    BLOCK
 }

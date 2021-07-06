@@ -205,13 +205,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
         decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
-        decorateWebcertUserWithSubscriptionStartDates(user);
 
         return user;
-    }
-
-    private void decorateWebcertUserWithSubscriptionStartDates(WebCertUser user) {
-        user.setSubscriptionStartDates(subscriptionService.getSubscriptionStartDates());
     }
 
     private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(HoSPersonType hosPerson, WebCertUser user) {

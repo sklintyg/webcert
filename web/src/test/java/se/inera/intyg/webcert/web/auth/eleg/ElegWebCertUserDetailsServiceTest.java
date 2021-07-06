@@ -52,7 +52,6 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionStartDates;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
@@ -204,22 +203,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         when(subscriptionService.isAnySubscriptionFeatureActive()).thenReturn(true);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
-    }
-
-    @Test
-    public void shouldSetSubscriptionInfo() {
-        final String ADAPTATION_DATE = "2021-06-29";
-        final String REQUIRED_DATE = "2021-07-02";
-        reset(ppService);
-        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
-        doNothing().when(subscriptionService).checkSubscriptions(any(WebCertUser.class));
-        when(subscriptionService.getSubscriptionStartDates()).thenReturn(new SubscriptionStartDates(ADAPTATION_DATE, REQUIRED_DATE));
-
-        final var webCertUser = (WebCertUser) testee
-            .loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
-
-        assertEquals(ADAPTATION_DATE, webCertUser.getSubscriptionStartDates().getSubscriptionAdaptationStartDate());
-        assertEquals(REQUIRED_DATE, webCertUser.getSubscriptionStartDates().getRequireSubscriptionStartDate());
     }
 
     private HoSPersonType buildHosPerson() {
