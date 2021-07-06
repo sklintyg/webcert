@@ -27,7 +27,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.After;
@@ -79,7 +78,7 @@ public class MonitoringLogServiceImplTest {
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    private MonitoringLogService logService = new MonitoringLogServiceImpl();
+    private final MonitoringLogService logService = new MonitoringLogServiceImpl();
 
     @Before
     public void setup() {
@@ -569,5 +568,13 @@ public class MonitoringLogServiceImplTest {
         verifyLog(Level.INFO,
             "LOGIN_ATTEMPT_MISSING_SUBSCRIPTION User id 'userId' attempting login with 'SITHS' was denied access to "
                 + "organizations '[HSA_ID_1, HSA_ID_2]' due to missing subscriptions");
+    }
+
+    @Test
+    public void shouldLogSubscriptionWarnings() {
+        logService.logSubscriptionWarnings("userId", "SITHS", "[HSA_ID_1, HSA_ID_2]");
+        verifyLog(Level.INFO,
+            "MISSING_SUBSCRIPTION_WARNING User id 'userId' logging in with 'SITHS' received subscription warning for "
+                + "organizations '[HSA_ID_1, HSA_ID_2]'");
     }
 }

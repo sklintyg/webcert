@@ -193,15 +193,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {
-        if (isSubscriptionRequired() && !careProviderHsaIds.isEmpty()) {
+        if (!careProviderHsaIds.isEmpty()) {
+            if (isSubscriptionAdaptation()) {
+                monitoringLogService.logSubscriptionWarnings(userHsaId, authMethod.name(), careProviderHsaIds.toString());
+            }
             monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
         }
     }
 
     private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
-        if (isSubscriptionRequired() && missingSubscription) {
+        if (missingSubscription) {
             final var optionalPersonId = Personnummer.createPersonnummer(personId);
             final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
+            if (isSubscriptionAdaptation()) {
+                monitoringLogService.logSubscriptionWarnings(personIdHash, AuthenticationMethodEnum.ELEG.name(),
+                    HashUtility.hash(organizationNumber));
+            }
             monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
                 HashUtility.hash(organizationNumber));
         }

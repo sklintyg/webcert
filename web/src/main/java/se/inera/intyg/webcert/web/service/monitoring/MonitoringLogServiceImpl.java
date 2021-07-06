@@ -410,6 +410,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logSubscriptionWarnings(String userId, String authMethod, String organizations) {
+        logEvent(MonitoringEvent.MISSING_SUBSCRIPTION_WARNING, userId, authMethod, organizations);
+    }
+
+    @Override
     public void logLoginAttemptMissingSubscription(String userId, String authMethod, String organizations) {
         logEvent(MonitoringEvent.LOGIN_ATTEMPT_MISSING_SUBSCRIPTION, userId, authMethod, organizations);
     }
@@ -552,6 +557,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organizations '{}' due "
             + "to missing subscriptions"),
+
+        MISSING_SUBSCRIPTION_WARNING("User id '{}' logging in with '{}' received subscription warning for organizations '{}'"),
 
         SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with exceptionMessage '{}'"),
 
