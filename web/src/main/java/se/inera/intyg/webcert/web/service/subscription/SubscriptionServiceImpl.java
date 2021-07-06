@@ -192,8 +192,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (!careProviderHsaIds.isEmpty()) {
             if (isSubscriptionAdaptation()) {
                 monitoringLogService.logSubscriptionWarnings(userHsaId, authMethod.name(), careProviderHsaIds.toString());
+            } else {
+                monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
             }
-            monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
         }
     }
 
@@ -204,9 +205,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             if (isSubscriptionAdaptation()) {
                 monitoringLogService.logSubscriptionWarnings(personIdHash, AuthenticationMethodEnum.ELEG.name(),
                     HashUtility.hash(organizationNumber));
+            } else {
+                monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
+                    HashUtility.hash(organizationNumber));
             }
-            monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
-                HashUtility.hash(organizationNumber));
         }
     }
 
