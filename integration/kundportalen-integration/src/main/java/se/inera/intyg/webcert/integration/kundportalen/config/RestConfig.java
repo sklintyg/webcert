@@ -17,13 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.config;
+package se.inera.intyg.webcert.integration.kundportalen.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
+@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.kundportalen.service")
 public class RestConfig {
 
     @Bean(name = "subscriptionServiceRestTemplate")

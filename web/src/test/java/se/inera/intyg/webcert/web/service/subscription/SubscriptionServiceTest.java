@@ -31,6 +31,7 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CL
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -42,6 +43,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -51,6 +54,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.util.HashUtility;
+import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
@@ -464,6 +468,79 @@ public class SubscriptionServiceTest {
         assertEquals(SubscriptionAction.NONE, webCertUser.getVardgivare().get(1).getSubscriptionAction());
     }
 
+    @Test
+    public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
+        final var hashedOrgNo = Collections.singleton(HashUtility.hash("121212-1212"));
+        setMockToReturnRestClientExceptionForUnregistered();
+
+        subscriptionService.isUnregisteredElegUserMissingSubscription("191212121212");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(hashedOrgNo, "MESSAGE_TEXT");
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
+        final var hashedOrgNo = Collections.singleton(HashUtility.hash("121212-1212"));
+
+        setMockToReturnRestClientResponseExceptionForUnregistered();
+
+        subscriptionService.isUnregisteredElegUserMissingSubscription("191212121212");
+
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(hashedOrgNo, "MESSAGE_TEXT");
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientExceptionForElegUser() {
+        final var elegUser = createWebCertElegUser();
+
+        setMockToReturnRestClientException();
+        setFeaturesHelperMockToReturn(false, true);
+
+        subscriptionService.checkSubscriptions(elegUser);
+
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
+        final var elegUser = createWebCertElegUser();
+
+        setMockToReturnRestClientResponseException(503);
+        setFeaturesHelperMockToReturn(false, true);
+
+        subscriptionService.checkSubscriptions(elegUser);
+
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
+        final var sithsUser = createWebCertSithsUser(2, 2, 1);
+
+        setMockToReturnRestClientException();
+        setFeaturesHelperMockToReturn(false, true);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+    }
+
+    @Test
+    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
+        final var sithsUser = createWebCertSithsUser(1, 2, 2);
+
+        setMockToReturnRestClientResponseException(403);
+        setFeaturesHelperMockToReturn(false, true);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+    }
+
     private void setRestServiceMockToReturn(int careProviderHsaIdCount) {
         final var careProviderHsaIds = new ArrayList<String>();
 
@@ -482,9 +559,30 @@ public class SubscriptionServiceTest {
         when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED)).thenReturn(subscriptionRequired);
     }
 
+    private void setMockToReturnRestClientExceptionForUnregistered() {
+        final var e = new RestClientException("MESSAGE_TEXT");
+        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
+    }
+
+    private void setMockToReturnRestClientResponseExceptionForUnregistered() {
+        final var e = new RestClientResponseException("MESSAGE_TEXT", 500, "statusText", null,null, null);
+        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
+    }
+
+    private void setMockToReturnRestClientException() {
+        final var e = new RestClientException("MESSAGE_TEXT");
+        when(subscriptionRestService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
+    }
+
+    private void setMockToReturnRestClientResponseException(int httpStatusCode) {
+        final var e = new RestClientResponseException("MESSAGE_TEXT", httpStatusCode, "statusText", null,null, null);
+        when(subscriptionRestService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
+    }
+
     private WebCertUser createWebCertElegUser() {
         final var webCertUser = createBaseWebCertUser();
         webCertUser.setAuthenticationScheme(ELEG_AUTHN_CLASSES.get(2));
+        webCertUser.setOrigin(UserOriginType.NORMAL.name());
         webCertUser.setVardgivare(getCareProviders(1, 1, 0));
 
         final var careProvider = webCertUser.getVardgivare().get(0);
@@ -548,5 +646,4 @@ public class SubscriptionServiceTest {
         webCertUser.getVardgivare().get(careProviderIndex).setSubscriptionAction(SubscriptionAction.WARN);
         webCertUser.setValdVardgivare(webCertUser.getVardgivare().get(careProviderIndex));
     }
-
 }

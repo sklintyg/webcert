@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SubscriptionAction;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -42,6 +43,7 @@ import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
+import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionStartDates;
@@ -83,8 +85,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             if (!careProviderOrgNumbers.isEmpty()) {
                 LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
                 final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
-                final var careProviderHsaIds = subscriptionRestService
-                    .getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
+                final var careProviderHsaIds = getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
 
                 monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
                 blockUsersWithoutAnySubscription(webCertUser, careProviderOrgNumbers.values(), careProviderHsaIds);
@@ -99,7 +100,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
             LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.",
                 HashUtility.hash(organizationNumber));
-            final var missingSubscription = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+            final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
             monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
             return missingSubscription;
         } catch (NoSuchElementException e) {
@@ -203,6 +204,33 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
             monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
                 HashUtility.hash(organizationNumber));
+        }
+    }
+
+    private List<String> getMissingSubscriptions(Map<String, String> careProviderOrgNumbers, AuthenticationMethodEnum authMethod) {
+        try {
+            return subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
+        } catch (Exception e) {
+            LOG.error("Kundportalen subscription service call failure for org numbers {}.", careProviderOrgNumbers.values(), e);
+            monitorLogIfServiceCallFailure(careProviderOrgNumbers.values(), e);
+            return Collections.emptyList();
+        }
+    }
+
+    private boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
+        try {
+            return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+        } catch (Exception e) {
+            LOG.error("Kundportalen subscription service call failure for unregistered eleg user with org number {}.",
+                HashUtility.hash(organizationNumber), e);
+            monitorLogIfServiceCallFailure(Collections.singleton(HashUtility.hash(organizationNumber)), e);
+            return true;
+        }
+    }
+
+    private void monitorLogIfServiceCallFailure(Collection<String> queryIds, Exception e) {
+        if (e instanceof RestClientException) {
+            monitoringLogService.logSubscriptionServiceCallFailure(queryIds, e.getMessage());
         }
     }
 

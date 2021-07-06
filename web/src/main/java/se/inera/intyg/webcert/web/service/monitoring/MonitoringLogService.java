@@ -106,8 +106,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logLoginAttemptMissingSubscription(String userId, String authMethod, String organizations);
 
-    void logSubscriptionServiceCallFailure(Collection<String> queryIds, Integer statusCode, String statusText, String exceptionMessage,
-        LocalDateTime timestamp);
+    void logSubscriptionServiceCallFailure(Collection<String> queryIds, String exceptionMessage);
 
     void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
 

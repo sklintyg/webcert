@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.subscription;
+package se.inera.intyg.webcert.integration.kundportalen.service;
 
 import java.util.List;
 import java.util.Map;

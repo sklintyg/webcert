@@ -556,12 +556,11 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogSubscriptionServiceCallFailure() {
-        final var time = LocalDateTime.of(2021, 6, 13, 22, 13, 28);
-        final var ids = Collections.singleton(HSA_ID);
-        logService.logSubscriptionServiceCallFailure(ids,200, "statusText", "exceptionMessage", time);
+        final var hsaIds = Collections.singleton(HSA_ID);
+        logService.logSubscriptionServiceCallFailure(hsaIds,"exceptionMessage");
         verifyLog(Level.INFO,
-            "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with statusCode '200', statusText 'statusText', "
-            + "exceptionMessage 'exceptionMessage' and time '2021-06-13T22:13:28'");
+            "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with exceptionMessage "
+                + "'exceptionMessage'");
     }
 
     @Test

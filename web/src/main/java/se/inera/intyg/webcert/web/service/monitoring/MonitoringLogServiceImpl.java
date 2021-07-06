@@ -405,9 +405,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logSubscriptionServiceCallFailure(Collection<String> queryIds, Integer statusCode, String statusText,
-        String exceptionMessage, LocalDateTime timestamp) {
-        logEvent(MonitoringEvent.SUBSCRIPTION_SERVICE_CALL_FAILURE, queryIds, statusCode, statusText, exceptionMessage, timestamp);
+    public void logSubscriptionServiceCallFailure(Collection<String> queryIds, String exceptionMessage) {
+        logEvent(MonitoringEvent.SUBSCRIPTION_SERVICE_CALL_FAILURE, queryIds, exceptionMessage);
     }
 
     @Override
@@ -554,8 +553,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organizations '{}' due "
             + "to missing subscriptions"),
 
-        SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with statusCode '{}', statusText '{}', "
-            + "exceptionMessage '{}' and time '{}'"),
+        SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with exceptionMessage '{}'"),
 
         IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}"),
 
