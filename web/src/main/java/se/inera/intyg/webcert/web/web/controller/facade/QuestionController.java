@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
@@ -50,6 +51,7 @@ public class QuestionController {
     @GET
     @Path("/{certificateId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getQuestions(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);

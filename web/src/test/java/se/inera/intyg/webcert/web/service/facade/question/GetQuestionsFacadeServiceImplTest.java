@@ -21,13 +21,10 @@ package se.inera.intyg.webcert.web.service.facade.question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -65,8 +62,8 @@ public class GetQuestionsFacadeServiceImplTest {
         @BeforeEach
         void setup() {
             final var arende = new Arende();
-            arende.setId(Long.parseLong(QUESTION_ID));
-            arende.setSkickatAv(AUTHOR);
+            arende.setMeddelandeId(QUESTION_ID);
+            arende.setSigneratAvName(AUTHOR);
             arende.setRubrik(SUBJECT);
             arende.setSkickatTidpunkt(SENT);
             arende.setStatus(Status.CLOSED);

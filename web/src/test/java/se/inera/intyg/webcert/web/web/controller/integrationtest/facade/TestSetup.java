@@ -28,13 +28,18 @@ import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
@@ -46,17 +51,19 @@ public class TestSetup {
     private final Certificate certificate;
     private final String routeId;
     private final String csrfToken;
+    private final String questionId;
 
     public static TestSetupBuilder create() {
         return new TestSetupBuilder();
     }
 
     private TestSetup(String certificateId, Certificate certificate, String routeId,
-        String csrfToken) {
+        String csrfToken, String questionId) {
         this.certificateId = certificateId;
         this.certificate = certificate;
         this.routeId = routeId;
         this.csrfToken = csrfToken;
+        this.questionId = questionId;
     }
 
     public String certificateId() {
@@ -99,6 +106,9 @@ public class TestSetup {
         private final CustomObjectMapper objectMapper = new CustomObjectMapper();
         private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
         private static final String FAKE_LOGIN_URI = "/fake";
+
+        private boolean createQuestion;
+        private String questionId;
 
         private TestSetupBuilder() {
 
@@ -146,6 +156,11 @@ public class TestSetup {
             return this;
         }
 
+        public TestSetupBuilder question() {
+            this.createQuestion = true;
+            return this;
+        }
+
         public TestSetupBuilder clearPdlLogMessages() {
             this.clearPdlLogMessages = true;
             return this;
@@ -171,6 +186,10 @@ public class TestSetup {
                 certificateId = createCertificate();
             }
 
+            if (createQuestion) {
+                questionId = createQuestion(certificateId);
+            }
+
             if (credentials != null) {
                 RestAssured.sessionId = getAuthSession(credentials);
             }
@@ -191,7 +210,7 @@ public class TestSetup {
                 deletePdlLogMessagesFromQueue();
             }
 
-            return new TestSetup(certificateId, certificate, routeId, csrfToken);
+            return new TestSetup(certificateId, certificate, routeId, csrfToken, questionId);
         }
 
         private void deletePdlLogMessagesFromQueue() {
@@ -215,6 +234,35 @@ public class TestSetup {
                 .expect().statusCode(200)
                 .when().post("testability/certificate")
                 .then().extract().path("certificateId").toString();
+        }
+
+        private String createQuestion(String certificateId) {
+            final var arende = new Arende();
+            arende.setIntygsId(certificateId);
+            arende.setTimestamp(LocalDateTime.now());
+            arende.setMeddelandeId(UUID.randomUUID().toString());
+            arende.setReferensId("referens");
+            arende.setSkickatTidpunkt(LocalDateTime.now());
+            arende.setPatientPersonId(patientId);
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setRubrik(ArendeAmne.AVSTMN.getDescription());
+            arende.setMeddelande("meddelande");
+            arende.setSkickatAv("WC");
+            arende.setSigneratAv(personId);
+            arende.setSigneratAvName(personId);
+            arende.setEnhetId(unitId);
+            arende.setEnhetName(unitId);
+            arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+            arende.setSenasteHandelse(LocalDateTime.now());
+            arende.setVidarebefordrad(true);
+            arende.setVardaktorName(personId);
+            arende.setVardgivareName("TSTNMT2321000156-ALFA");
+            return given()
+                .contentType(ContentType.JSON)
+                .body(arende)
+                .expect().statusCode(200)
+                .when().post("testability/arendetest")
+                .then().extract().path("meddelandeId").toString();
         }
 
         protected String getAuthSession(FakeCredential fakeCredential) {

@@ -48,8 +48,8 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     private Question convert(Arende arende) {
         return Question.builder()
-            .id(String.valueOf(arende.getId()))
-            .author(arende.getSkickatAv())
+            .id(arende.getMeddelandeId())
+            .author(arende.getSigneratAvName())
             .subject(arende.getRubrik())
             .sent(arende.getSkickatTidpunkt())
             .isHandled(arende.getStatus() == Status.CLOSED)
