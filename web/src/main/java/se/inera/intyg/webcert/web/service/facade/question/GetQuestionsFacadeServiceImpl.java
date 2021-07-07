@@ -19,10 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
 @Service
@@ -36,15 +39,23 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
     }
 
     @Override
-    public Question[] getQuestions(String certificateId) {
+    public List<Question> getQuestions(String certificateId) {
         final var arendenInternal = arendeService.getArendenInternal(certificateId);
         return arendenInternal.stream()
-            .map(arende ->
-                Question.builder()
-                    .id(String.valueOf(arende.getId()))
-                    .build()
-            )
-            .collect(Collectors.toList())
-            .toArray(new Question[0]);
+            .map(this::convert)
+            .collect(Collectors.toList());
+    }
+
+    private Question convert(Arende arende) {
+        return Question.builder()
+            .id(String.valueOf(arende.getId()))
+            .author(arende.getSkickatAv())
+            .subject(arende.getRubrik())
+            .sent(arende.getSkickatTidpunkt())
+            .isHandled(arende.getStatus() == Status.CLOSED)
+            .isForwarded(arende.getVidarebefordrad())
+            .message(arende.getMeddelande())
+            .lastUpdate(arende.getSenasteHandelse())
+            .build();
     }
 }

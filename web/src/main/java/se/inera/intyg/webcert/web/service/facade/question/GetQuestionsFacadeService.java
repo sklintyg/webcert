@@ -19,9 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
+import java.util.List;
 import se.inera.intyg.common.support.facade.model.question.Question;
 
 public interface GetQuestionsFacadeService {
 
-    Question[] getQuestions(String certificateId);
+    List<Question> getQuestions(String certificateId);
 }
