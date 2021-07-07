@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,25 +29,34 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
 @Path("/question")
 public class QuestionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
-
     private static final String UTF_8_CHARSET = ";charset=utf-8";
+
+    private final GetQuestionsFacadeService getQuestionsFacadeService;
+
+    @Autowired
+    public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService) {
+        this.getQuestionsFacadeService = getQuestionsFacadeService;
+    }
 
     @GET
     @Path("/{certificateId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
     public Response getQuestions(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
-        return Response.ok().build();
-        //return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
+
+        List<Question> questions = getQuestionsFacadeService.getQuestions(certificateId);
+        return Response.ok(QuestionsResponseDTO.create(questions)).build();
     }
 
 }
