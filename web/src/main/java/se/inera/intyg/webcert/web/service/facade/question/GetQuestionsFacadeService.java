@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
+import se.inera.intyg.common.support.facade.model.question.Question;
 
 public interface GetQuestionsFacadeService {
 

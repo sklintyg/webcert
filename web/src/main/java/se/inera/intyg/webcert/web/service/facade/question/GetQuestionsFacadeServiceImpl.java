@@ -19,12 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
-import java.util.List;
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 
 @Service
 public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
@@ -38,8 +37,14 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     @Override
     public Question[] getQuestions(String certificateId) {
-        final List<ArendeConversationView> arendeConversationViews = arendeService.getArenden(certificateId);
-        return null;
+        final var arendenInternal = arendeService.getArendenInternal(certificateId);
+        return arendenInternal.stream()
+            .map(arende ->
+                Question.builder()
+                    .id(String.valueOf(arende.getId()))
+                    .build()
+            )
+            .collect(Collectors.toList())
+            .toArray(new Question[0]);
     }
-
 }
