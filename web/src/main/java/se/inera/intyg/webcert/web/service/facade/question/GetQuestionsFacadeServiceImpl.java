@@ -50,12 +50,22 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         return Question.builder()
             .id(arende.getMeddelandeId())
             .author(arende.getSigneratAvName())
-            .subject(arende.getRubrik())
+            .subject(getSubject(arende))
             .sent(arende.getSkickatTidpunkt())
             .isHandled(arende.getStatus() == Status.CLOSED)
             .isForwarded(arende.getVidarebefordrad())
             .message(arende.getMeddelande())
             .lastUpdate(arende.getSenasteHandelse())
             .build();
+    }
+
+    private String getSubject(Arende arende) {
+        final var subjectBuilder = new StringBuilder();
+        subjectBuilder.append(arende.getAmne().getDescription());
+        if (arende.getRubrik() != null && !arende.getRubrik().isBlank()) {
+            subjectBuilder.append(" - ");
+            subjectBuilder.append(arende.getRubrik());
+        }
+        return subjectBuilder.toString();
     }
 }

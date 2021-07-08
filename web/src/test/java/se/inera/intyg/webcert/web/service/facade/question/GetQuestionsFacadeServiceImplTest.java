@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import javax.ws.rs.HEAD;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
@@ -49,7 +51,9 @@ public class GetQuestionsFacadeServiceImplTest {
 
     private static final String QUESTION_ID = "1000";
     private static final String AUTHOR = "author";
-    private static final String SUBJECT = "subject";
+    private static final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
+    private static final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
+    private static final String HEADER = "Rubrik";
     private static final LocalDateTime SENT = LocalDateTime.now();
     private static final boolean IS_HANDLED = true;
     private static final boolean IS_FORWARDED = true;
@@ -59,12 +63,14 @@ public class GetQuestionsFacadeServiceImplTest {
     @Nested
     class Question {
 
+        private Arende arende;
+
         @BeforeEach
         void setup() {
-            final var arende = new Arende();
+            arende = new Arende();
             arende.setMeddelandeId(QUESTION_ID);
             arende.setSigneratAvName(AUTHOR);
-            arende.setRubrik(SUBJECT);
+            arende.setAmne(ArendeAmne.AVSTMN);
             arende.setSkickatTidpunkt(SENT);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
@@ -98,10 +104,19 @@ public class GetQuestionsFacadeServiceImplTest {
         }
 
         @Test
-        void shallReturnQuestionWithSubject() {
+        void shallReturnQuestionWithSubjectWithoutHeader() {
             final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-            assertEquals(SUBJECT, actualQuestions.get(0).getSubject());
+            assertEquals(SUBJECT_WITHOUT_HEADER, actualQuestions.get(0).getSubject());
+        }
+
+        @Test
+        void shallReturnQuestionWithSubjectWithHeader() {
+            arende.setRubrik(HEADER);
+
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(SUBJECT_WITH_HEADER, actualQuestions.get(0).getSubject());
         }
 
         @Test

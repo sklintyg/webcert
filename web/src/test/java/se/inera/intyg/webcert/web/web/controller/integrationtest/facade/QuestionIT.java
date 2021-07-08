@@ -79,12 +79,13 @@ public class QuestionIT {
                 DR_AJLA,
                 ATHENA_ANDERSSON.getPersonId().getId()
             )
+            .sendCertificate()
             .question()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
             .useDjupIntegratedOrigin()
             .setup();
 
-        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+//        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
         final var response = given()
             .pathParam("certificateId", testSetup.certificateId())

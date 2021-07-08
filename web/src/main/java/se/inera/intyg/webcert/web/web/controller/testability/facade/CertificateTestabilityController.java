@@ -24,6 +24,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,7 +35,10 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.Certific
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateTypesResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.CreateCertificateTestabilityUtil;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.util.CreateQuestionTestabilityUtil;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedCertificateTypesUtil;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedPatientsUtil;
 
@@ -42,14 +46,17 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.util.Support
 public class CertificateTestabilityController extends AbstractApiController {
 
     private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
+    private final CreateQuestionTestabilityUtil createQuestionTestabilityUtil;
     private final SupportedCertificateTypesUtil supportedCertificateTypesUtil;
     private final SupportedPatientsUtil supportedPatientsUtil;
 
     @Autowired
     public CertificateTestabilityController(CreateCertificateTestabilityUtil createCertificateTestabilityUtil,
+        CreateQuestionTestabilityUtil createQuestionTestabilityUtil,
         SupportedCertificateTypesUtil supportedCertificateTypesUtil,
         SupportedPatientsUtil supportedPatientsUtil) {
         this.createCertificateTestabilityUtil = createCertificateTestabilityUtil;
+        this.createQuestionTestabilityUtil = createQuestionTestabilityUtil;
         this.supportedCertificateTypesUtil = supportedCertificateTypesUtil;
         this.supportedPatientsUtil = supportedPatientsUtil;
     }
@@ -61,6 +68,16 @@ public class CertificateTestabilityController extends AbstractApiController {
     public Response createCertificate(@RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
         final var certificateId = createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest);
         return Response.ok(new CreateCertificateResponseDTO(certificateId)).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{certificateId}/question")
+    public Response createQuestion(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
+        final var questionId = createQuestionTestabilityUtil.createNewQuestion(certificateId, createQuestionRequest);
+        return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
     }
 
     @GET
