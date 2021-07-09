@@ -39,6 +39,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
@@ -99,6 +100,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
         fakeElegCredentials.setPersonId("19121212-1212");
         fakeElegCredentials.setPrivatLakare(true);
+        fakeElegCredentials.setOrigin(UserOriginType.NORMAL.name());
         fakeElegCredentials.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID.name());
 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);

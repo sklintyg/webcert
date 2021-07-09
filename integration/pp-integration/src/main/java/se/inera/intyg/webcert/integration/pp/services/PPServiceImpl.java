@@ -24,16 +24,11 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-// CHECKSTYLE:OFF LineLength
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
-import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerType;
-// CHECKSTYLE:ON LineLength
 
 /**
  * Interfaces with the get and validate private practitioner services.
@@ -47,8 +42,6 @@ public class PPServiceImpl implements PPService {
     @Autowired
     private GetPrivatePractitionerResponderInterface getPrivatePractitionerService;
 
-    @Autowired
-    private ValidatePrivatePractitionerResponderInterface validatePrivatePractitionerService;
 
     @Override
     public HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
@@ -60,35 +53,6 @@ public class PPServiceImpl implements PPService {
 
         GetPrivatePractitionerType request = createPrivatePractitionerType(hsaIdentityNumber, personalIdentityNumber);
         return getPrivatePractitioner(logicalAddress, request);
-    }
-
-    @Override
-    public boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
-        LOG.debug("Validating person information from Privatläkarportalen.");
-        validateIdentifier(hsaIdentityNumber, personalIdentityNumber);
-
-        ValidatePrivatePractitionerType request = createValidatePrivatePractitionerType(hsaIdentityNumber, personalIdentityNumber);
-        return validatePrivatePractitioner(logicalAddress, request);
-    }
-
-    private boolean validatePrivatePractitioner(String logicalAddress, ValidatePrivatePractitionerType parameters) {
-        try {
-            ValidatePrivatePractitionerResponseType response = validatePrivatePractitionerService
-                .validatePrivatePractitioner(logicalAddress, parameters);
-
-            if (response.getResultCode() == ResultCodeEnum.ERROR) {
-                LOG.error(response.getResultText());
-            }
-
-            if (response.getResultCode() == ResultCodeEnum.INFO) {
-                LOG.info(response.getResultText());
-            }
-
-            return response.getResultCode() == ResultCodeEnum.OK;
-
-        } catch (SOAPFaultException e) {
-            throw new WebServiceException(e);
-        }
     }
 
     private void validateIdentifier(String hsaIdentityNumber, String personalIdentityNumber) {
@@ -136,11 +100,4 @@ public class PPServiceImpl implements PPService {
         return ppType;
     }
 
-    private ValidatePrivatePractitionerType createValidatePrivatePractitionerType(String hsaIdentityNumber, String personalIdentityNumber) {
-        ValidatePrivatePractitionerType ppType = new ValidatePrivatePractitionerType();
-        ppType.setPersonHsaId(hsaIdentityNumber);
-        ppType.setPersonalIdentityNumber(personalIdentityNumber);
-
-        return ppType;
-    }
 }

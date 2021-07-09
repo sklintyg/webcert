@@ -20,13 +20,13 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import io.restassured.RestAssured;
 import java.util.Collections;
 import org.junit.Test;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
@@ -65,7 +65,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).origin(UserOriginType.NORMAL.name()).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to
@@ -89,7 +89,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(Collections.singletonList("Läkare")).origin(UserOriginType.NORMAL.name()).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to

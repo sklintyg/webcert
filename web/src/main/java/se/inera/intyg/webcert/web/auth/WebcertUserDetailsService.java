@@ -26,6 +26,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -40,6 +41,9 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
     @Autowired
     AnvandarPreferenceRepository anvandarMetadataRepository;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     /**
      * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
      * as Principal.
@@ -52,6 +56,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         IntygUser user = super.buildUserPrincipal(credential);
         WebCertUser webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
+        subscriptionService.checkSubscriptions(webCertUser);
         return webCertUser;
     }
 
