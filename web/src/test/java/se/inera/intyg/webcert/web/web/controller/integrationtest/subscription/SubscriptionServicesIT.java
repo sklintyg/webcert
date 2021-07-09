@@ -185,7 +185,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         final var feature = new Feature();
         feature.setName(name);
         feature.setGlobal(global);
-        feature.setDesc("Test feature" + name + "set by SubscriptionServicesIT.");
+        feature.setDesc("Test feature " + name + " set by SubscriptionServicesIT.");
         feature.setIntygstyper(Collections.emptyList());
         return feature;
     }
