@@ -24,6 +24,8 @@ public interface SubscriptionService {
 
     void checkSubscriptions(WebCertUser webcertUser);
 
+    boolean checkSubscriptionElegWebCertUser(WebCertUser webCertUser);
+
     boolean isUnregisteredElegUserMissingSubscription(String personId);
 
     boolean isSubscriptionRequired();

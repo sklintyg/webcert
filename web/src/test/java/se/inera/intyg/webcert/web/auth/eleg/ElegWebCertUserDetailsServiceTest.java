@@ -34,11 +34,9 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
@@ -80,8 +78,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
-    @Mock
-    private HsaPersonService hsaPersonService;
+
     @Mock
     private PPService ppService;
     @Mock
@@ -98,8 +95,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     @Mock
     private SubscriptionService subscriptionService;
-    @Mock
-    private FeaturesHelper featuresHelper;
 
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
@@ -115,17 +110,17 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         // Setup a servlet request
         final var request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        final var validatePrivatePractitionerResponse = createResult(ValidatePrivatePractitionerResultCode.OK);
 
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
-        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
-        when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+        setAvtalServiceMockToReturn(true);
         expectedPreferences.put("some", "setting");
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
+        when(elegAuthenticationAttributeHelper.getAttribute(any(), any())).thenReturn(PERSON_ID);
 
         WebCertUserOrigin userOrigin = mock(WebCertUserOrigin.class);
         when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
@@ -176,12 +171,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-
     @Test(expected = PrivatePractitionerAuthorizationException.class)
     public void testNotValidPrivatePractitionerThrowsException() {
-        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
-
-        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
@@ -194,13 +186,176 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-    @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowSubscriptionExceptIfUnregisteredWithoutSubscription() {
-        final var validatePrivatePractitionerResponse= createResult(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+    @Test
+    public void shouldNotCheckSubscriptionsWhenNoSubscriptionFeaturesActive() {
 
-        when(ppRestService.validatePrivatePractitioner(any())).thenReturn(validatePrivatePractitionerResponse);
-        when(subscriptionService.isUnregisteredElegUserMissingSubscription(null)).thenReturn(true);
-        when(subscriptionService.isAnySubscriptionFeatureActive()).thenReturn(true);
+        setSubscriptionFeaturesMocksToReturn(false, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        final var webcertUser = (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare,
+            REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webcertUser);
+        verify(subscriptionService, times(0)).isUnregisteredElegUserMissingSubscription(any(String.class));
+        verify(subscriptionService, times(0)).checkSubscriptions(any(WebCertUser.class));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenNoPPAccountAndNoSubscriptionFeatures() {
+        setSubscriptionFeaturesMocksToReturn(false, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenNoHospAndNoSubscriptionFeatures() {
+        setSubscriptionFeaturesMocksToReturn(false, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test
+    public void shouldAdmitUserWhenAdaptationAndHasSubscriptionAndAuthorized() {
+        setAvtalServiceMockToReturn(false);
+        setCheckSubscriptionElegMockToReturn(true);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        final var webcertUser = (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare,
+            REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webcertUser);
+        verify(subscriptionService, times(1)).checkSubscriptionElegWebCertUser(any(WebCertUser.class));
+    }
+
+    @Test
+    public void shouldAdmitUserWhenAdaptationAndApprovedTermsAndAuthorized() {
+        setAvtalServiceMockToReturn(true);
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        final var webcertUser = (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare,
+            REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webcertUser);
+        verify(subscriptionService, times(1)).checkSubscriptionElegWebCertUser(any(WebCertUser.class));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionIfAdaptationAndNoSubscriptionAndNotApprovedTerms() {
+        setAvtalServiceMockToReturn(false);
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionWhenAdaptationAndNoHospAndNoSubscriptionAndNotApprovedTerms() {
+        setAvtalServiceMockToReturn(false);
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenAdaptationAndNoHospAndHasSubscriptionAndNotApprovedTerms() {
+        setAvtalServiceMockToReturn(false);
+        setCheckSubscriptionElegMockToReturn(true);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenAdaptationAndNoHospAndNoSubscriptionAndApprovedTerms() {
+        setAvtalServiceMockToReturn(true);
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenAdaptationAndNoAccountAndHasSubscription() {
+        setUnauthorizedElegMissingSubscriptionMockToReturn(false); // -> User has subscription
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionWhenAdaptationAndNoAccountAndNoSubscription() {
+        setUnauthorizedElegMissingSubscriptionMockToReturn(true); // -> User does not have subscription
+        setSubscriptionFeaturesMocksToReturn(true, false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test
+    public void shouldAdmitUserWhenSubscriptionRequiredAndHasSubscriptionAndAuthorized() {
+        setCheckSubscriptionElegMockToReturn(true);
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        final var webcertUser = (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare,
+            REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webcertUser);
+        verify(subscriptionService, times(0)).checkSubscriptions(any(WebCertUser.class));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionWhenSubscriptionRequiredAndNoSubscriptionAndAuthorized() {
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenSubscriptionRequiredAndHasSubscriptionAndNoAccount() {
+        setUnauthorizedElegMissingSubscriptionMockToReturn(false); // -> User has subscription
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionWhenSubscriptionRequiredAndNoSubscriptionAndNoAccount() {
+        setUnauthorizedElegMissingSubscriptionMockToReturn(true); // -> User does not have subscription
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
+    public void shouldThrowAuthExceptionWhenSubscriptionRequiredAndHasSubscriptionAndNoHosp() {
+        setCheckSubscriptionElegMockToReturn(true);
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test(expected = MissingSubscriptionException.class)
+    public void shouldThrowMissingSubscriptionExceptionWhenSubscriptionRequiredAndNoSubscriptionAndNoHosp() {
+        setCheckSubscriptionElegMockToReturn(false);
+        setSubscriptionFeaturesMocksToReturn(false, true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
@@ -250,10 +405,31 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         return request;
     }
 
-    private ValidatePrivatePractitionerResponse createResult(ValidatePrivatePractitionerResultCode resultCode) {
+    private void setSubscriptionFeaturesMocksToReturn(boolean adaptation, boolean required) {
+        when(subscriptionService.isAnySubscriptionFeatureActive()).thenReturn(adaptation || required);
+
+        if (adaptation || required) {
+            when(subscriptionService.isSubscriptionAdaptation()).thenReturn(!required);
+            when(subscriptionService.isSubscriptionRequired()).thenReturn(required);
+        }
+    }
+
+    private void setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode resultCode) {
         final var response = new ValidatePrivatePractitionerResponse();
         response.setResultCode(resultCode);
-        response.setResultText("TEST_RESULT_TEXT");
-        return response;
+        response.setResultText("Test result text generated by ElegWebcertUserDetailsServiceTest");
+        when(ppRestService.validatePrivatePractitioner(any(String.class))).thenReturn(response);
+    }
+
+    private void setAvtalServiceMockToReturn(boolean approvedTerms) {
+        when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(approvedTerms);
+    }
+
+    private void setCheckSubscriptionElegMockToReturn(boolean hasSubscription) {
+        when(subscriptionService.checkSubscriptionElegWebCertUser(any(WebCertUser.class))).thenReturn(hasSubscription);
+    }
+
+    private void setUnauthorizedElegMissingSubscriptionMockToReturn(boolean missingSubscription) {
+        when(subscriptionService.isUnregisteredElegUserMissingSubscription(any(String.class))).thenReturn(missingSubscription);
     }
 }

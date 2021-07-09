@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.service.subscription;
 
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
+import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.SITHS;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
@@ -71,15 +73,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public boolean checkSubscriptionElegWebCertUser(WebCertUser webCertUser) {
+        try {
+            checkSubscriptions(webCertUser);
+            return webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty();
+        } catch (MissingSubscriptionException e) {
+            return false;
+        }
+    }
+
+    @Override
     public void checkSubscriptions(WebCertUser webCertUser) {
-        setSubscriptionStartDates(webCertUser);
+        setSubscriptionInfo(webCertUser);
 
         if (isFristaendeWebcertUser(webCertUser) && isAnySubscriptionFeatureActive()) {
             final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
 
             if (!careProviderOrgNumbers.isEmpty()) {
                 LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
-                final var authenticationMethod = isElegUser(webCertUser) ? AuthenticationMethodEnum.ELEG : AuthenticationMethodEnum.SITHS;
+                final var authenticationMethod = isElegUser(webCertUser) ? ELEG : SITHS;
                 final var careProviderHsaIds = getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
 
                 monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
@@ -89,7 +101,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    public void setSubscriptionStartDates(WebCertUser webCertUser) {
+    public void setSubscriptionInfo(WebCertUser webCertUser) {
         final var subscriptionInfo = new SubscriptionInfo(subscriptionAdaptationStartDate, requireSubscriptionStartDate);
         webCertUser.setSubscriptionInfo(subscriptionInfo);
     }
@@ -99,12 +111,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         try {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
             LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.",
-                HashUtility.hash(organizationNumber));
+                hashed(organizationNumber));
             final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
             monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
             return missingSubscription;
         } catch (NoSuchElementException e) {
-            LOG.error("Failure getting organization number for unregistered eleg user {}.", HashUtility.hash(personId), e);
+            LOG.error("Failure getting organization number for unregistered eleg user {}.", hash(personId), e);
             return true;
         }
     }
@@ -139,7 +151,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
         if (isPrivatePractitioner(webCertUser) && isElegUser(webCertUser)) {
-            return getCareProviderOrganizationNumberForElegUser(webCertUser);
+            return getOrganizationNumberForElegUser(webCertUser);
         } else {
             final var careProviderOrgNumbers = new HashMap<String, String>();
             for (var careProvider : webCertUser.getVardgivare()) {
@@ -149,13 +161,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private Map<String, String> getCareProviderOrganizationNumberForElegUser(WebCertUser webCertUser) {
+    private Map<String, String> getOrganizationNumberForElegUser(WebCertUser webCertUser) {
         try {
             final var careProvider = webCertUser.getVardgivare().stream().findFirst().map(Vardgivare::getId).orElseThrow();
             final var orgNumber = createOrganizationNumberFromPersonId(webCertUser.getPersonId());
             return Map.of(orgNumber, careProvider);
         } catch (NoSuchElementException e) {
-            LOG.error("Failure getting organization number for private practitioner {}.", HashUtility.hash(webCertUser.getPersonId()), e);
+            LOG.error("Failure getting organization number for private practitioner {}.", hash(webCertUser.getPersonId()), e);
             return Collections.emptyMap();
         }
     }
@@ -200,14 +212,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
         if (missingSubscription) {
-            final var optionalPersonId = Personnummer.createPersonnummer(personId);
-            final var personIdHash = optionalPersonId.map(Personnummer::getPersonnummerHash).orElse(null);
             if (isSubscriptionAdaptation()) {
-                monitoringLogService.logSubscriptionWarnings(personIdHash, AuthenticationMethodEnum.ELEG.name(),
-                    HashUtility.hash(organizationNumber));
+                monitoringLogService.logSubscriptionWarnings(hash(personId), ELEG.name(), hashed(organizationNumber));
             } else {
-                monitoringLogService.logLoginAttemptMissingSubscription(personIdHash, AuthenticationMethodEnum.ELEG.name(),
-                    HashUtility.hash(organizationNumber));
+                monitoringLogService.logLoginAttemptMissingSubscription(hash(personId), ELEG.name(), hashed(organizationNumber));
             }
         }
     }
@@ -227,9 +235,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
         } catch (Exception e) {
             LOG.error("Kundportalen subscription service call failure for unregistered eleg user with org number {}.",
-                HashUtility.hash(organizationNumber), e);
-            monitorLogIfServiceCallFailure(Collections.singleton(HashUtility.hash(organizationNumber)), e);
-            return true;
+                hashed(organizationNumber), e);
+            monitorLogIfServiceCallFailure(Collections.singleton(hashed(organizationNumber)), e);
+            return false;
         }
     }
 
@@ -237,6 +245,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (e instanceof RestClientException) {
             monitoringLogService.logSubscriptionServiceCallFailure(queryIds, e.getMessage());
         }
+    }
+
+    private String hash(String personId) {
+        return Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
+    }
+
+    private String hashed(String organizationNumber) {
+        return HashUtility.hash(organizationNumber);
     }
 
     @Override

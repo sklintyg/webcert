@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP;
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.OK;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +45,6 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
-import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -120,14 +123,108 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     protected WebCertUser createUser(SAMLCredential samlCredential) {
         final var personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
-        assertHosPersonIsAuthorized(personId);
+        final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
+        redirectUnregisteredUsers(personId, ppAuthStatus);
 
         final var hosPerson = getAuthorizedHosPerson(personId);
         final var requestOrigin = resolveRequestOrigin();
         final var role = lookupUserRole();
         final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
-        subscriptionService.checkSubscriptions(webCertUser);
+        assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
+
         return webCertUser;
+    }
+
+    private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+
+        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+            redirectWhenNoActiveSubscriptionFeatures(personId, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionAdaptation()) {
+            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionRequired()) {
+            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
+        }
+    }
+
+    private void redirectWhenNoActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == NO_ACCOUNT) {
+            throw privatePractitionerAuthorizationException(hashed(personId));
+        }
+    }
+
+    private void redirectWhenActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == NO_ACCOUNT) {
+            final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
+            if (hasSubscription) {
+                throw privatePractitionerAuthorizationException(hashed(personId));
+            }
+            throw missingSubscriptionException(hashed(personId));
+        }
+    }
+
+    private void assertWebCertUserIsAuthorized(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+
+        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+            authorizeWhenNoActiveSubscriptionFeatures(webCertUser, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionAdaptation()) {
+            authorizeWhenSubscriptionAdaptation(webCertUser, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionRequired()) {
+            authorizeWhenSubscriptionRequired(webCertUser, ppAuthStatus);
+        }
+    }
+
+    private void authorizeWhenNoActiveSubscriptionFeatures(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == OK) {
+            return;
+        }
+        throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+    }
+
+    private void authorizeWhenSubscriptionAdaptation(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+        final var acceptedTerms = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
+
+        if (ppAuthStatus == OK && (acceptedTerms || hasSubscription)) {
+            return;
+        }
+        if (ppAuthStatus == NOT_AUTHORIZED_IN_HOSP && (acceptedTerms || hasSubscription)) {
+            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+        }
+        throw missingSubscriptionException(webCertUser.getHsaId());
+    }
+
+    private void authorizeWhenSubscriptionRequired(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+
+        if (ppAuthStatus == OK && hasSubscription) {
+            return;
+        }
+        if (hasSubscription) {
+            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+        }
+        throw missingSubscriptionException(webCertUser.getHsaId());
+    }
+
+    private String hashed(String personId) {
+        return Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
+    }
+
+    private PrivatePractitionerAuthorizationException privatePractitionerAuthorizationException(String hashedPersonIdOrHsaId) {
+        return new PrivatePractitionerAuthorizationException("User '" + hashedPersonIdOrHsaId + "' is not authorized to access webcert "
+            + "according to private practitioner portal");
+    }
+
+    private MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {
+        return new MissingSubscriptionException("Private practitioner '" + hashedPersonIdOrHsaId + "' was denied access to Webcert due to "
+            + "missing subscription.");
     }
 
     private HoSPersonType getAuthorizedHosPerson(String personId) {
@@ -144,30 +241,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      */
     Role lookupUserRole() {
         return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
-    }
-
-    private void assertHosPersonIsAuthorized(String personId) {
-        final var validationResponse = ppRestService.validatePrivatePractitioner(personId);
-        if (validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.OK) {
-            return;
-        }
-
-        if (subscriptionService.isAnySubscriptionFeatureActive() && isUnregisteredElegUser(validationResponse)
-            && isMissingSubscription(personId)) {
-            final var pnr = Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
-            throw new MissingSubscriptionException("Private practitioner '" + pnr + "' has no active subscription.");
-        }
-
-        throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private "
-            + "practitioner portal");
-    }
-
-    private boolean isMissingSubscription(String personId) {
-        return subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
-    }
-
-    private boolean isUnregisteredElegUser(ValidatePrivatePractitionerResponse validationResponse) {
-        return validationResponse.getResultCode() == ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
     }
 
     private String resolveRequestOrigin() {
@@ -205,7 +278,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
         decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
-
         return user;
     }
 

@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SubscriptionInfo implements Serializable {
@@ -46,7 +46,7 @@ public class SubscriptionInfo implements Serializable {
         this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
         this.subscriptionAction = SubscriptionAction.NONE;
-        this.careProvidersMissingSubscription = new ArrayList<>();
+        this.careProvidersMissingSubscription = Collections.emptyList();
     }
 
     public SubscriptionAction getSubscriptionAction() {

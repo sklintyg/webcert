@@ -310,7 +310,7 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response);
     }
 
-    @Test( expected = RestClientException.class)
+    @Test(expected = RestClientException.class)
     public void shouldThrowRestClientExceptionWhenServiceCallFailureForUnregisteredElegUser() {
         setMockToReturnRestClientException();
 
