@@ -165,6 +165,10 @@ public class CreateCertificateTestabilityUtil {
             utkast.setSignatur(signature);
             utkast.setStatus(UtkastStatus.SIGNED);
             updateJsonBeforeSigning(hosPersonal, utkast, signature);
+            if (createCertificateRequest.isSent()) {
+                utkast.setSkickadTillMottagare("FKASSA");
+                utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+            }
         } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
             utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
         } else {

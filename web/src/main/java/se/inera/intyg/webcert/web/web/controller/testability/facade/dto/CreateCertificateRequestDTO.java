@@ -30,6 +30,7 @@ public class CreateCertificateRequestDTO {
     private String patientId;
     private String personId;
     private String unitId;
+    private boolean isSent;
     private CertificateStatus status;
     private CreateCertificateFillType fillType;
     private Map<String, CertificateDataValue> values;
@@ -72,6 +73,14 @@ public class CreateCertificateRequestDTO {
 
     public void setUnitId(String unitId) {
         this.unitId = unitId;
+    }
+
+    public boolean isSent() {
+        return isSent;
+    }
+
+    public void setSent(boolean sent) {
+        isSent = sent;
     }
 
     public CertificateStatus getStatus() {

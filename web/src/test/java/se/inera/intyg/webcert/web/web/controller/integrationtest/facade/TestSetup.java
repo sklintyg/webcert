@@ -39,6 +39,8 @@ import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.QuestionType;
 
 public class TestSetup {
 
@@ -46,17 +48,19 @@ public class TestSetup {
     private final Certificate certificate;
     private final String routeId;
     private final String csrfToken;
+    private final String questionId;
 
     public static TestSetupBuilder create() {
         return new TestSetupBuilder();
     }
 
     private TestSetup(String certificateId, Certificate certificate, String routeId,
-        String csrfToken) {
+        String csrfToken, String questionId) {
         this.certificateId = certificateId;
         this.certificate = certificate;
         this.routeId = routeId;
         this.csrfToken = csrfToken;
+        this.questionId = questionId;
     }
 
     public String certificateId() {
@@ -84,6 +88,7 @@ public class TestSetup {
         private String patientId;
         private String personId;
         private String unitId;
+        private boolean isSent;
         private CertificateStatus status;
         private boolean clearPdlLogMessages;
         private boolean createCertificate;
@@ -92,6 +97,7 @@ public class TestSetup {
         private boolean sjf;
 
         private String certificateId;
+        private String questionId;
         private Certificate certificate;
         private String routeId;
         private String csrfToken;
@@ -99,6 +105,8 @@ public class TestSetup {
         private final CustomObjectMapper objectMapper = new CustomObjectMapper();
         private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
         private static final String FAKE_LOGIN_URI = "/fake";
+
+        private boolean createQuestion;
 
         private TestSetupBuilder() {
 
@@ -115,6 +123,7 @@ public class TestSetup {
             this.patientId = patientId;
             this.personId = personId;
             this.unitId = unitId;
+            this.isSent = false;
             return this;
         }
 
@@ -129,6 +138,7 @@ public class TestSetup {
             this.patientId = patientId;
             this.personId = personId;
             this.unitId = unitId;
+            this.isSent = false;
             return this;
         }
 
@@ -143,6 +153,16 @@ public class TestSetup {
             this.patientId = patientId;
             this.personId = personId;
             this.unitId = unitId;
+            return this;
+        }
+
+        public TestSetupBuilder sendCertificate() {
+            this.isSent = true;
+            return this;
+        }
+
+        public TestSetupBuilder question() {
+            this.createQuestion = true;
             return this;
         }
 
@@ -171,6 +191,10 @@ public class TestSetup {
                 certificateId = createCertificate();
             }
 
+            if (createQuestion) {
+                questionId = createQuestion(certificateId);
+            }
+
             if (credentials != null) {
                 RestAssured.sessionId = getAuthSession(credentials);
             }
@@ -191,7 +215,7 @@ public class TestSetup {
                 deletePdlLogMessagesFromQueue();
             }
 
-            return new TestSetup(certificateId, certificate, routeId, csrfToken);
+            return new TestSetup(certificateId, certificate, routeId, csrfToken, questionId);
         }
 
         private void deletePdlLogMessagesFromQueue() {
@@ -208,6 +232,7 @@ public class TestSetup {
             certificateRequest.setStatus(status);
             certificateRequest.setFillType(fillType);
             certificateRequest.setValues(values);
+            certificateRequest.setSent(isSent);
 
             return given()
                 .contentType(ContentType.JSON)
@@ -215,6 +240,20 @@ public class TestSetup {
                 .expect().statusCode(200)
                 .when().post("testability/certificate")
                 .then().extract().path("certificateId").toString();
+        }
+
+        private String createQuestion(String certificateId) {
+            final var questionRequest = new CreateQuestionRequestDTO();
+            questionRequest.setType(QuestionType.COORDINATION);
+            questionRequest.setMessage("Det här är ett meddelande!");
+
+            return given()
+                .pathParam("certificateId", certificateId)
+                .contentType(ContentType.JSON)
+                .body(questionRequest)
+                .expect().statusCode(200)
+                .when().post("testability/certificate/{certificateId}/question")
+                .then().extract().path("questionId").toString();
         }
 
         protected String getAuthSession(FakeCredential fakeCredential) {
