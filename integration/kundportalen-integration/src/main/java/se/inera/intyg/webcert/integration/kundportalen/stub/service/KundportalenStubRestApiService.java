@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.integration.kundportalen.stub.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class KundportalenStubRestApiService {
         if (activeSubscriptions.isEmpty() && stubState.getSubscriptionReturnValue()) {
             return stubState.getServiceCodeList();
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     private Response responseWithErrorStatusCode(int statusCode) {
