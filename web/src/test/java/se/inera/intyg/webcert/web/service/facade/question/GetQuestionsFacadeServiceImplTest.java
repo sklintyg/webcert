@@ -49,19 +49,21 @@ public class GetQuestionsFacadeServiceImplTest {
 
     private final static String CERTIFICATE_ID = "certificateId";
 
-    private static final String QUESTION_ID = "1000";
-    private static final String AUTHOR = "author";
-    private static final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-    private static final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-    private static final String HEADER = "Rubrik";
-    private static final LocalDateTime SENT = LocalDateTime.now();
-    private static final boolean IS_HANDLED = true;
-    private static final boolean IS_FORWARDED = true;
-    private static final String MESSAGE = "message";
-    private static final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
-
     @Nested
     class Question {
+
+        private final String QUESTION_ID = "1000";
+        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
+        private final String AUTHOR = "author";
+        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
+        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
+        private final String HEADER = "Rubrik";
+        private final LocalDateTime SENT = LocalDateTime.now();
+        private final String SENT_BY_FK = "FK";
+        private final boolean IS_HANDLED = true;
+        private final boolean IS_FORWARDED = true;
+        private final String MESSAGE = "message";
+        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
 
         private Arende arende;
 
@@ -72,6 +74,7 @@ public class GetQuestionsFacadeServiceImplTest {
             arende.setSigneratAvName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
             arende.setSkickatTidpunkt(SENT);
+            arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
@@ -97,7 +100,16 @@ public class GetQuestionsFacadeServiceImplTest {
         }
 
         @Test
-        void shallReturnQuestionWithAuthor() {
+        void shallReturnReceivedQuestionWithAuthor() {
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(AUTHOR_CERTIFICATE_RECEIVER, actualQuestions.get(0).getAuthor());
+        }
+
+        @Test
+        void shallReturnSentQuestionWithAuthor() {
+            arende.setSkickatAv("WC");
+
             final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
             assertEquals(AUTHOR, actualQuestions.get(0).getAuthor());

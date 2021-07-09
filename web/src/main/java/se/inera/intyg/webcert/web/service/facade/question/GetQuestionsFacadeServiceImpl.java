@@ -49,7 +49,7 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
     private Question convert(Arende arende) {
         return Question.builder()
             .id(arende.getMeddelandeId())
-            .author(arende.getSigneratAvName())
+            .author(getAuthor(arende))
             .subject(getSubject(arende))
             .sent(arende.getSkickatTidpunkt())
             .isHandled(arende.getStatus() == Status.CLOSED)
@@ -57,6 +57,13 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .message(arende.getMeddelande())
             .lastUpdate(arende.getSenasteHandelse())
             .build();
+    }
+
+    private String getAuthor(Arende arende) {
+        if (arende.getSkickatAv().equalsIgnoreCase("FK")) {
+            return "Försäkringskassan";
+        }
+        return arende.getSigneratAvName();
     }
 
     private String getSubject(Arende arende) {
