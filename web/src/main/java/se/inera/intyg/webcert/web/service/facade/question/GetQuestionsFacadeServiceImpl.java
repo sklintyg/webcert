@@ -63,7 +63,7 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         if (arende.getSkickatAv().equalsIgnoreCase("FK")) {
             return "Försäkringskassan";
         }
-        return arende.getSigneratAvName();
+        return arende.getVardaktorName();
     }
 
     private String getSubject(Arende arende) {

@@ -71,7 +71,7 @@ public class GetQuestionsFacadeServiceImplTest {
         void setup() {
             arende = new Arende();
             arende.setMeddelandeId(QUESTION_ID);
-            arende.setSigneratAvName(AUTHOR);
+            arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
             arende.setSkickatTidpunkt(SENT);
             arende.setSkickatAv(SENT_BY_FK);
