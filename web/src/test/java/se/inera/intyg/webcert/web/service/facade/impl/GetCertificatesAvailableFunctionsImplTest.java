@@ -23,12 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper.createCertificate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -330,6 +333,80 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE);
+        }
+    }
+
+    @Nested
+    class Questions {
+
+        @BeforeEach
+        void handleMockingIssue() {
+            doReturn(false)
+                .when(authoritiesHelper)
+                .isFeatureActive(eq(AuthoritiesConstants.FEATURE_FORNYA_INTYG), anyString());
+        }
+
+        @Test
+        void shallIncludeQuestionsWhenCertificateIsSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            certificate.getMetadata().setSent(true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, LisjpEntryPoint.MODULE_ID);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+
+        @Test
+        void shallExcludeQuestionsWhenCertificateIsNotSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+
+        @Test
+        void shallExcludeQuestionsWhenCertificateDoesntSupportQuestions() {
+            final var certificate = createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            certificate.getMetadata().setSent(true);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+
+        @Test
+        void shallIncludeQuestionsNotAvailableWhenCertificateIsNotSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, LisjpEntryPoint.MODULE_ID);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
+        }
+
+        @Test
+        void shallExcludeQuestionsNotAvailableWhenCertificateIsSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            certificate.getMetadata().setSent(true);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
+        }
+
+        @Test
+        void shallExcludeQuestionsNotAvailableWhenCertificateDoesntSupportQuestions() {
+            final var certificate = createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
         }
     }
 

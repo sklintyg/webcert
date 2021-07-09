@@ -171,6 +171,16 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
                 certificateAccessServiceHelper.isAllowToSend(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.QUESTIONS,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)
+        );
+
         return functions;
     }
 

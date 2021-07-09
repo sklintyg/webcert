@@ -227,6 +227,28 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (isMessagingAvailable(certificate)) {
+            if (certificate.getMetadata().isSent()) {
+                resourceLinks.add(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.QUESTIONS,
+                        "Ärendekommunikation",
+                        "Hantera kompletteringsbegäran, frågor och svar",
+                        true
+                    )
+                );
+            } else {
+                resourceLinks.add(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
+                        "Ärendekommunikation",
+                        "Hantera kompletteringsbegäran, frågor och svar",
+                        true
+                    )
+                );
+            }
+        }
+
         return resourceLinks;
     }
 
@@ -309,5 +331,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean missingChildRelations(CertificateRelations relations) {
         return relations == null || relations.getChildren() == null;
+    }
+
+    private boolean isMessagingAvailable(Certificate certificate) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
     }
 }

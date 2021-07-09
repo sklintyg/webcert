@@ -30,5 +30,7 @@ public enum ResourceLinkTypeDTO {
     RENEW_CERTIFICATE,
     PRINT_CERTIFICATE,
     COPY_CERTIFICATE,
-    FMB
+    FMB,
+    QUESTIONS,
+    QUESTIONS_NOT_AVAILABLE
 }
