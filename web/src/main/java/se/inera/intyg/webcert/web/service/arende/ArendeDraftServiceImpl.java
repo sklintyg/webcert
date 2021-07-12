@@ -48,6 +48,11 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
     }
 
     @Override
+    public void saveDraft(ArendeDraft arendeDraft) {
+        arendeDraftRepository.save(arendeDraft);
+    }
+
+    @Override
     public boolean delete(String intygId, String questionId) {
         ArendeDraft draft = arendeDraftRepository.findByIntygIdAndQuestionId(intygId, questionId);
         if (draft != null) {

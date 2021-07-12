@@ -36,9 +36,13 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class QuestionControllerTest {
@@ -51,6 +55,12 @@ class QuestionControllerTest {
 
     @Mock
     private CreateQuestionFacadeService createQuestionFacadeService;
+
+    @Mock
+    private SaveQuestionFacadeService saveQuestionFacadeService;
+
+    @Mock
+    private SendQuestionFacadeService sendQuestionFacadeService;
 
     @InjectMocks
     private QuestionController questionController;
@@ -88,5 +98,31 @@ class QuestionControllerTest {
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
 
         verify(deleteQuestionFacadeService).delete("test");
+    }
+
+    @Test
+    void shallSaveQuestion() {
+        final var saveQuestionRequestDTO = new SaveQuestionRequestDTO();
+        final var question = Question.builder().build();
+        saveQuestionRequestDTO.setQuestion(question);
+
+        final var actualResponse = questionController.saveQuestion(saveQuestionRequestDTO.getQuestion().getId(), saveQuestionRequestDTO);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+
+        verify(saveQuestionFacadeService).save(question);
+    }
+
+    @Test
+    void shallSendQuestion() {
+        final var sendQuestionRequestDTO = new SendQuestionRequestDTO();
+        final var question = Question.builder().build();
+        sendQuestionRequestDTO.setQuestion(question);
+
+        final var actualResponse = questionController.sendQuestion(sendQuestionRequestDTO.getQuestion().getId(), sendQuestionRequestDTO);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+
+        verify(sendQuestionFacadeService).send(question);
     }
 }

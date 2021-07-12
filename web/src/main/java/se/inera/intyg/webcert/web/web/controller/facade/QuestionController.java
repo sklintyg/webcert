@@ -37,9 +37,13 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
 @Path("/question")
 public class QuestionController {
@@ -50,14 +54,20 @@ public class QuestionController {
     private final GetQuestionsFacadeService getQuestionsFacadeService;
     private final DeleteQuestionFacadeService deleteQuestionFacadeService;
     private final CreateQuestionFacadeService createQuestionFacadeService;
+    private final SaveQuestionFacadeService saveQuestionFacadeService;
+    private final SendQuestionFacadeService sendQuestionFacadeService;
 
     @Autowired
     public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService,
         DeleteQuestionFacadeService deleteQuestionFacadeService,
-        CreateQuestionFacadeService createQuestionFacadeService) {
+        CreateQuestionFacadeService createQuestionFacadeService,
+        SaveQuestionFacadeService saveQuestionFacadeService,
+        SendQuestionFacadeService sendQuestionFacadeService) {
         this.getQuestionsFacadeService = getQuestionsFacadeService;
         this.deleteQuestionFacadeService = deleteQuestionFacadeService;
         this.createQuestionFacadeService = createQuestionFacadeService;
+        this.saveQuestionFacadeService = saveQuestionFacadeService;
+        this.sendQuestionFacadeService = sendQuestionFacadeService;
     }
 
     @GET
@@ -103,5 +113,34 @@ public class QuestionController {
 
         return Response.ok(QuestionResponseDTO.create(question)).build();
     }
+
+    @POST
+    @Path("/{questionId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response saveQuestion(@PathParam("questionId") @NotNull String questionId, SaveQuestionRequestDTO saveQuestionRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
+        }
+
+        saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
+
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{questionId}/send")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response sendQuestion(@PathParam("questionId") @NotNull String questionId, SendQuestionRequestDTO sendQuestionRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Sending question with id: '{}'", questionId);
+        }
+
+        sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
+
+        return Response.ok().build();
+    }
+
 
 }

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
@@ -47,6 +48,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 
 public class QuestionIT {
 
@@ -206,6 +208,51 @@ public class QuestionIT {
 
         assertAll(
             () -> assertTrue(!question.getId().isEmpty(), "Expect to have a question id")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall save question for certificate")
+    void shallSaveQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var saveQuestionRequestDTO = new SaveQuestionRequestDTO();
+        saveQuestionRequestDTO.setQuestion(Question.builder()
+            .type(QuestionType.COORDINATION)
+            .message("message")
+            .build());
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(saveQuestionRequestDTO)
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{certificateId}");
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertEquals("message", response.get(0).getMessage(), "Expect to contain question with updated message")
         );
     }
 

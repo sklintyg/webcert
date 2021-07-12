@@ -269,6 +269,11 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
+    public ArendeConversationView createMessage(ArendeDraft arendeDraft, ArendeAmne amne) {
+        return createMessage(arendeDraft.getIntygId(), amne, amne.getDescription(), arendeDraft.getText());
+    }
+
+    @Override
     public ArendeConversationView answer(String svarPaMeddelandeId, String meddelande) {
         if (Strings.isNullOrEmpty(meddelande)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -527,7 +532,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         results.stream().forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())));
 
-
         response.setTotalCount(results.size());
 
         if (originalStartFrom >= results.size()) {
@@ -640,7 +644,7 @@ public class ArendeServiceImpl implements ArendeService {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified();
         }
-}
+    }
 
     @Override
     @Transactional
