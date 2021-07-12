@@ -31,6 +31,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
 import io.restassured.config.SessionConfig;
+import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import java.util.ArrayList;
@@ -40,7 +41,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
 public class QuestionIT {
@@ -132,8 +137,8 @@ public class QuestionIT {
     }
 
     @Test
-    @DisplayName("Shall delete question draft for certificate")
-    void shallDeleteQuestionDraftForCertificate() {
+    @DisplayName("Shall delete question for certificate")
+    void shallDeleteQuestionForCertificate() {
         final var testSetup = TestSetup.create()
             .certificate(
                 LisjpEntryPoint.MODULE_ID,
@@ -151,10 +156,10 @@ public class QuestionIT {
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
         given()
-            .pathParam("certificateId", testSetup.certificateId())
+            .pathParam("questionId", testSetup.questionDraftId())
             .expect().statusCode(200)
             .when()
-            .delete("api/question/{certificateId}");
+            .delete("api/question/{questionId}");
 
         final var response = given()
             .pathParam("certificateId", testSetup.certificateId())
@@ -165,6 +170,42 @@ public class QuestionIT {
 
         assertAll(
             () -> assertTrue(response.isEmpty(), "Expect to not contain question")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall create question for certificate")
+    void shallCreateQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var createQuestionRequestDTO = new CreateQuestionRequestDTO();
+        createQuestionRequestDTO.setMessage("Message");
+        createQuestionRequestDTO.setCertificateId(testSetup.certificateId());
+        createQuestionRequestDTO.setType(QuestionType.COORDINATION);
+
+        final var question = given()
+            .contentType(ContentType.JSON)
+            .body(createQuestionRequestDTO)
+            .expect().statusCode(200)
+            .when()
+            .post("api/question")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertTrue(!question.getId().isEmpty(), "Expect to have a question id")
         );
     }
 

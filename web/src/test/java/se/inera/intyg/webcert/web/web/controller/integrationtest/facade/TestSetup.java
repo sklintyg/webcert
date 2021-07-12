@@ -73,6 +73,10 @@ public class TestSetup {
         return certificate;
     }
 
+    public String questionDraftId() {
+        return questionDraftId;
+    }
+
     public String routeId() {
         return routeId;
     }
@@ -205,7 +209,7 @@ public class TestSetup {
             }
 
             if (createQuestionDraft) {
-                createQuestionDraft(certificateId);
+                questionDraftId = createQuestionDraft(certificateId);
             }
 
             if (credentials != null) {
@@ -269,17 +273,18 @@ public class TestSetup {
                 .then().extract().path("questionId").toString();
         }
 
-        private void createQuestionDraft(String certificateId) {
+        private String createQuestionDraft(String certificateId) {
             final var questionRequest = new CreateQuestionRequestDTO();
             questionRequest.setType(QuestionType.COORDINATION);
             questionRequest.setMessage("Det här är ett meddelande!");
 
-            given()
+            return given()
                 .pathParam("certificateId", certificateId)
                 .contentType(ContentType.JSON)
                 .body(questionRequest)
                 .expect().statusCode(200)
-                .when().post("testability/certificate/{certificateId}/questionDraft");
+                .when().post("testability/certificate/{certificateId}/questionDraft")
+                .then().extract().path("questionId").toString();
         }
 
         protected String getAuthSession(FakeCredential fakeCredential) {

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,8 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionDraftFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
 @Path("/question")
@@ -44,13 +48,16 @@ public class QuestionController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final GetQuestionsFacadeService getQuestionsFacadeService;
-    private final DeleteQuestionDraftFacadeService deleteQuestionDraftFacadeService;
+    private final DeleteQuestionFacadeService deleteQuestionFacadeService;
+    private final CreateQuestionFacadeService createQuestionFacadeService;
 
     @Autowired
     public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService,
-        DeleteQuestionDraftFacadeService deleteQuestionDraftFacadeService) {
+        DeleteQuestionFacadeService deleteQuestionFacadeService,
+        CreateQuestionFacadeService createQuestionFacadeService) {
         this.getQuestionsFacadeService = getQuestionsFacadeService;
-        this.deleteQuestionDraftFacadeService = deleteQuestionDraftFacadeService;
+        this.deleteQuestionFacadeService = deleteQuestionFacadeService;
+        this.createQuestionFacadeService = createQuestionFacadeService;
     }
 
     @GET
@@ -67,16 +74,34 @@ public class QuestionController {
     }
 
     @DELETE
-    @Path("/{certificateId}")
+    @Path("/{questionId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response deleteQuestionDraft(@PathParam("certificateId") @NotNull String certificateId) {
+    public Response deleteQuestion(@PathParam("questionId") @NotNull String questionId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting draft for certificate with id: '{}'", certificateId);
+            LOG.debug("Deleting question with id: '{}'", questionId);
         }
 
-        deleteQuestionDraftFacadeService.delete(certificateId);
+        deleteQuestionFacadeService.delete(questionId);
         return Response.ok().build();
+    }
+
+    @POST
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response createQuestion(CreateQuestionRequestDTO createQuestionRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating question for certificate with id: '{}'", createQuestionRequest.getCertificateId());
+        }
+
+        final var question = createQuestionFacadeService.create(
+            createQuestionRequest.getCertificateId(),
+            createQuestionRequest.getType(),
+            createQuestionRequest.getMessage()
+        );
+
+        return Response.ok(QuestionResponseDTO.create(question)).build();
     }
 
 }

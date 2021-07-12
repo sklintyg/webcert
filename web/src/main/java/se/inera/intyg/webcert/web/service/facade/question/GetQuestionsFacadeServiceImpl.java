@@ -72,7 +72,7 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     private Question convert(ArendeDraft questionDraft) {
         return Question.builder()
-            .id(questionDraft.getQuestionId())
+            .id(Long.toString(questionDraft.getId()))
             .type(getType(questionDraft.getAmne()))
             .message(questionDraft.getText())
             .build();

@@ -19,30 +19,50 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteQuestionDraftFacadeServiceImplTest {
+class DeleteQuestionFacadeServiceImplTest {
 
     private final String CERTIFICATE_ID = "certificateId";
+    private final String QUESTION_ID = "questionId";
+    private final String ID_AS_STRING = "1000";
+    private final long ID_AS_LONG = 1000L;
 
     @Mock
     ArendeDraftService arendeDraftService;
 
     @InjectMocks
-    private DeleteQuestionDraftFacadeServiceImpl deleteQuestionDraftFacadeService;
+    private DeleteQuestionFacadeServiceImpl deleteQuestionDraftFacadeService;
+
+    private ArendeDraft arendeDraft;
+
+    @BeforeEach
+    void setup() {
+        arendeDraft = new ArendeDraft();
+        arendeDraft.setIntygId(CERTIFICATE_ID);
+        arendeDraft.setQuestionId(QUESTION_ID);
+        arendeDraft.setId(ID_AS_LONG);
+
+        doReturn(arendeDraft)
+            .when(arendeDraftService)
+            .getQuestionDraftById(ID_AS_LONG);
+    }
 
     @Test
     void shallDeleteDraftForCertificate() {
-        deleteQuestionDraftFacadeService.delete(CERTIFICATE_ID);
-        verify(arendeDraftService).delete(CERTIFICATE_ID, null);
+        deleteQuestionDraftFacadeService.delete(ID_AS_STRING);
+        verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
     }
 
 }

@@ -17,9 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public interface DeleteQuestionDraftFacadeService {
+import se.inera.intyg.common.support.facade.model.question.Question;
 
-    void delete(String certificateId);
+public class QuestionResponseDTO {
+
+    private Question question;
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public static QuestionResponseDTO create(Question questions) {
+        final var questionsResponseDTO = new QuestionResponseDTO();
+        questionsResponseDTO.setQuestion(questions);
+        return questionsResponseDTO;
+    }
 }

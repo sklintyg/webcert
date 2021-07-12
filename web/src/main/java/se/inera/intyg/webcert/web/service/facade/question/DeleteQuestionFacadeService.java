@@ -19,23 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+public interface DeleteQuestionFacadeService {
 
-@Service
-public class DeleteQuestionDraftFacadeServiceImpl implements
-    DeleteQuestionDraftFacadeService {
-
-    private final ArendeDraftService arendeDraftService;
-
-    @Autowired
-    public DeleteQuestionDraftFacadeServiceImpl(ArendeDraftService arendeDraftService) {
-        this.arendeDraftService = arendeDraftService;
-    }
-
-    @Override
-    public void delete(String certificateId) {
-        arendeDraftService.delete(certificateId, null);
-    }
+    void delete(String certificateId);
 }

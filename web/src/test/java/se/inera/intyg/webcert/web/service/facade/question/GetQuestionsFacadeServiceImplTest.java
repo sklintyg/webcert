@@ -69,7 +69,7 @@ public class GetQuestionsFacadeServiceImplTest {
     @Nested
     class SendAdministrativeQuestions {
 
-        private final String QUESTION_ID = "questionId";
+        private final long QUESTION_ID = 1000L;
         private final QuestionType TYPE = QuestionType.COORDINATION;
         private final ArendeAmne ARENDE_AMNE = ArendeAmne.AVSTMN;
         private final String MESSAGE = "message";
@@ -80,7 +80,7 @@ public class GetQuestionsFacadeServiceImplTest {
         @BeforeEach
         void setup() {
             arendeDraft = new ArendeDraft();
-            arendeDraft.setQuestionId(QUESTION_ID);
+            arendeDraft.setId(QUESTION_ID);
             arendeDraft.setAmne(ARENDE_AMNE.toString());
             arendeDraft.setText(MESSAGE);
 
@@ -100,7 +100,7 @@ public class GetQuestionsFacadeServiceImplTest {
         void shallReturnQuestionWithId() {
             final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-            assertEquals(QUESTION_ID, actualQuestions.get(0).getId());
+            assertEquals(Long.toString(QUESTION_ID), actualQuestions.get(0).getId());
         }
 
         @Test

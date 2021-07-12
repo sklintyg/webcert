@@ -62,8 +62,8 @@ public class CreateQuestionTestabilityUtil {
         questionDraft.setText(createQuestionRequest.getMessage());
         questionDraft.setAmne(getAmne(createQuestionRequest.getType()));
         questionDraft.setIntygId(certificateId);
-        arendeDraftRepository.save(questionDraft);
-        return questionDraft.getQuestionId();
+        final var createdQuestionDraft = arendeDraftRepository.save(questionDraft);
+        return Long.toString(createdQuestionDraft.getId());
     }
 
     private String getAmne(QuestionType type) {
