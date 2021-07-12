@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionDraftFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
@@ -42,10 +44,13 @@ public class QuestionController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final GetQuestionsFacadeService getQuestionsFacadeService;
+    private final DeleteQuestionDraftFacadeService deleteQuestionDraftFacadeService;
 
     @Autowired
-    public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService) {
+    public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService,
+        DeleteQuestionDraftFacadeService deleteQuestionDraftFacadeService) {
         this.getQuestionsFacadeService = getQuestionsFacadeService;
+        this.deleteQuestionDraftFacadeService = deleteQuestionDraftFacadeService;
     }
 
     @GET
@@ -59,6 +64,19 @@ public class QuestionController {
 
         List<Question> questions = getQuestionsFacadeService.getQuestions(certificateId);
         return Response.ok(QuestionsResponseDTO.create(questions)).build();
+    }
+
+    @DELETE
+    @Path("/{certificateId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response deleteQuestionDraft(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting draft for certificate with id: '{}'", certificateId);
+        }
+
+        deleteQuestionDraftFacadeService.delete(certificateId);
+        return Response.ok().build();
     }
 
 }

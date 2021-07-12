@@ -80,6 +80,16 @@ public class CertificateTestabilityController extends AbstractApiController {
         return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{certificateId}/questionDraft")
+    public Response createQuestionDraft(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
+        final var questionId = createQuestionTestabilityUtil.createNewQuestionDraft(certificateId, createQuestionRequest);
+        return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
+    }
+
     @GET
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)

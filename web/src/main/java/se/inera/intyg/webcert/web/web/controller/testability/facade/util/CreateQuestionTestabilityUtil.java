@@ -24,26 +24,30 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.QuestionType;
 
 @Component
 public class CreateQuestionTestabilityUtil {
 
     private final UtkastService utkastService;
     private final ArendeRepository arendeRepository;
+    private final ArendeDraftRepository arendeDraftRepository;
 
     @Autowired
     public CreateQuestionTestabilityUtil(UtkastService utkastService,
-        ArendeRepository arendeRepository) {
+        ArendeRepository arendeRepository, ArendeDraftRepository arendeDraftRepository) {
         this.utkastService = utkastService;
         this.arendeRepository = arendeRepository;
+        this.arendeDraftRepository = arendeDraftRepository;
     }
 
     public String createNewQuestion(@NotNull String certificateId, CreateQuestionRequestDTO createQuestionRequest) {
@@ -51,6 +55,28 @@ public class CreateQuestionTestabilityUtil {
         final var arende = createArende(createQuestionRequest, draft);
         arendeRepository.save(arende);
         return arende.getMeddelandeId();
+    }
+
+    public String createNewQuestionDraft(String certificateId, CreateQuestionRequestDTO createQuestionRequest) {
+        final var questionDraft = new ArendeDraft();
+        questionDraft.setText(createQuestionRequest.getMessage());
+        questionDraft.setAmne(getAmne(createQuestionRequest.getType()));
+        questionDraft.setIntygId(certificateId);
+        arendeDraftRepository.save(questionDraft);
+        return questionDraft.getQuestionId();
+    }
+
+    private String getAmne(QuestionType type) {
+        switch (type) {
+            case COORDINATION:
+                return ArendeAmne.AVSTMN.toString();
+            case CONTACT:
+                return ArendeAmne.KONTKT.toString();
+            case OTHER:
+                return ArendeAmne.OVRIGT.toString();
+            default:
+                throw new IllegalArgumentException("Type not supported: " + type);
+        }
     }
 
     private Arende createArende(CreateQuestionRequestDTO createQuestionRequest, Utkast draft) {

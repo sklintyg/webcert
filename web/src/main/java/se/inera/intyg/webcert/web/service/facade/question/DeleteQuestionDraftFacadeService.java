@@ -17,28 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
+package se.inera.intyg.webcert.web.service.facade.question;
 
-import se.inera.intyg.common.support.facade.model.question.QuestionType;
+public interface DeleteQuestionDraftFacadeService {
 
-public class CreateQuestionRequestDTO {
-
-    private QuestionType type;
-    private String message;
-
-    public QuestionType getType() {
-        return type;
-    }
-
-    public void setType(QuestionType type) {
-        this.type = type;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    void delete(String certificateId);
 }

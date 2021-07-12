@@ -17,8 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
+package se.inera.intyg.webcert.web.service.facade.question;
 
-public enum QuestionType {
-    COORDINATION, CONTACT, OTHER
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+
+@Service
+public class DeleteQuestionDraftFacadeServiceImpl implements
+    DeleteQuestionDraftFacadeService {
+
+    private final ArendeDraftService arendeDraftService;
+
+    @Autowired
+    public DeleteQuestionDraftFacadeServiceImpl(ArendeDraftService arendeDraftService) {
+        this.arendeDraftService = arendeDraftService;
+    }
+
+    @Override
+    public void delete(String certificateId) {
+        arendeDraftService.delete(certificateId, null);
+    }
 }
