@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.service.facade.question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import javax.ws.rs.HEAD;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,9 +33,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,13 +47,79 @@ public class GetQuestionsFacadeServiceImplTest {
     @Mock
     private ArendeService arendeService;
 
+    @Mock
+    private ArendeDraftService arendeDraftService;
+
     @InjectMocks
     private GetQuestionsFacadeServiceImpl getQuestionsFacadeService;
 
     private final static String CERTIFICATE_ID = "certificateId";
 
+    @Test
+    void shallReturnEmptyQuestionsIfNoQuestionDraft() {
+        doReturn(null)
+            .when(arendeDraftService)
+            .getQuestionDraft(CERTIFICATE_ID);
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
+    }
+
     @Nested
-    class Question {
+    class SendAdministrativeQuestions {
+
+        private final String QUESTION_ID = "questionId";
+        private final QuestionType TYPE = QuestionType.COORDINATION;
+        private final ArendeAmne ARENDE_AMNE = ArendeAmne.AVSTMN;
+        private final String MESSAGE = "message";
+
+
+        private ArendeDraft arendeDraft;
+
+        @BeforeEach
+        void setup() {
+            arendeDraft = new ArendeDraft();
+            arendeDraft.setQuestionId(QUESTION_ID);
+            arendeDraft.setAmne(ARENDE_AMNE.toString());
+            arendeDraft.setText(MESSAGE);
+
+            doReturn(arendeDraft)
+                .when(arendeDraftService)
+                .getQuestionDraft(CERTIFICATE_ID);
+        }
+
+        @Test
+        void shallReturnQuestionDraft() {
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertFalse(actualQuestions.isEmpty(), "Expect a question");
+        }
+
+        @Test
+        void shallReturnQuestionWithId() {
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(QUESTION_ID, actualQuestions.get(0).getId());
+        }
+
+        @Test
+        void shallReturnQuestionWithType() {
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(TYPE, actualQuestions.get(0).getType());
+        }
+
+        @Test
+        void shallReturnQuestionWithMessage() {
+            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(MESSAGE, actualQuestions.get(0).getMessage());
+        }
+    }
+
+    @Nested
+    class ReceivedAdministativeQuestions {
 
         private final String QUESTION_ID = "1000";
         private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";

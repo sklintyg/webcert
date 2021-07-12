@@ -24,8 +24,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
 @Service
@@ -33,17 +37,59 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     private final ArendeService arendeService;
 
+    private final ArendeDraftService arendeDraftService;
+
     @Autowired
-    public GetQuestionsFacadeServiceImpl(ArendeService arendeService) {
+    public GetQuestionsFacadeServiceImpl(ArendeService arendeService,
+        ArendeDraftService arendeDraftService) {
         this.arendeService = arendeService;
+        this.arendeDraftService = arendeDraftService;
     }
 
     @Override
     public List<Question> getQuestions(String certificateId) {
         final var arendenInternal = arendeService.getArendenInternal(certificateId);
-        return arendenInternal.stream()
+
+        final var questionList = arendenInternal.stream()
             .map(this::convert)
             .collect(Collectors.toList());
+
+        final var questionDraft = getQuestionDraft(certificateId);
+        if (questionDraft != null) {
+            questionList.add(questionDraft);
+        }
+
+        return questionList;
+    }
+
+    private Question getQuestionDraft(String certificateId) {
+        final var questionDraft = arendeDraftService.getQuestionDraft(certificateId);
+        if (questionDraft != null) {
+            return convert(questionDraft);
+        }
+        return null;
+    }
+
+    private Question convert(ArendeDraft questionDraft) {
+        return Question.builder()
+            .id(questionDraft.getQuestionId())
+            .type(getType(questionDraft.getAmne()))
+            .message(questionDraft.getText())
+            .build();
+    }
+
+    private QuestionType getType(String amne) {
+        final var arendeAmne = ArendeAmne.valueOf(amne);
+        switch (arendeAmne) {
+            case AVSTMN:
+                return QuestionType.COORDINATION;
+            case KONTKT:
+                return QuestionType.CONTACT;
+            case OVRIGT:
+                return QuestionType.OTHER;
+            default:
+                throw new IllegalArgumentException("The type is not yet supported: " + arendeAmne);
+        }
     }
 
     private Question convert(Arende arende) {
