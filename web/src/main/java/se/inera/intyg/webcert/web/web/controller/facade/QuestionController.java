@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +31,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
@@ -79,7 +77,7 @@ public class QuestionController {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
 
-        List<Question> questions = getQuestionsFacadeService.getQuestions(certificateId);
+        final var questions = getQuestionsFacadeService.getQuestions(certificateId);
         return Response.ok(QuestionsResponseDTO.create(questions)).build();
     }
 
@@ -124,7 +122,6 @@ public class QuestionController {
         }
 
         saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
-
         return Response.ok().build();
     }
 
@@ -137,10 +134,7 @@ public class QuestionController {
             LOG.debug("Sending question with id: '{}'", questionId);
         }
 
-        Question question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
-
+        final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
         return Response.ok(QuestionResponseDTO.create(question)).build();
     }
-
-
 }

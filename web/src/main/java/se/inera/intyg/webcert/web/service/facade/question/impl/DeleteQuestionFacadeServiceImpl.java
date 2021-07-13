@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 
 @Service
-public class DeleteQuestionFacadeServiceImpl implements
-    DeleteQuestionFacadeService {
+public class DeleteQuestionFacadeServiceImpl implements DeleteQuestionFacadeService {
 
     private final ArendeDraftService arendeDraftService;
 

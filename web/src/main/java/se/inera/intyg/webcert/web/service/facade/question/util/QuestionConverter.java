@@ -17,9 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.service.facade.question.util;
 
-public interface DeleteQuestionFacadeService {
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
-    void delete(String questionId);
+public interface QuestionConverter {
+
+    Question convert(Arende arende);
+
+    Question convert(ArendeDraft arendeDraft);
 }

@@ -38,7 +38,7 @@ public interface ArendeService {
 
     ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande);
 
-    Arende createMessage(ArendeDraft arendeDraft, ArendeAmne amne);
+    Arende sendMessage(ArendeDraft arendeDraft);
 
     ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 

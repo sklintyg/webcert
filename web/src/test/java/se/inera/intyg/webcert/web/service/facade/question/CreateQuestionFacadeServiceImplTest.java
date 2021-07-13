@@ -28,10 +28,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.service.facade.question.impl.CreateQuestionFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
 class CreateQuestionFacadeServiceImplTest {
@@ -43,19 +46,25 @@ class CreateQuestionFacadeServiceImplTest {
     @Mock
     private ArendeDraftService arendeDraftService;
 
+    @Mock
+    private QuestionConverter questionConverter;
+
     @InjectMocks
     private CreateQuestionFacadeServiceImpl createQuestionFacadeService;
-    private ArendeDraft questionDraft;
 
     @BeforeEach
     void setUp() {
-        questionDraft = new ArendeDraft();
-        questionDraft.setId(1000L);
-        questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
+        final var arendeDraft = new ArendeDraft();
+        arendeDraft.setId(1000L);
+        arendeDraft.setAmne(ArendeAmne.AVSTMN.toString());
 
-        doReturn(questionDraft)
+        doReturn(arendeDraft)
             .when(arendeDraftService)
             .create(CERTIFICATE_ID, ArendeAmne.AVSTMN, MESSAGE);
+
+        doReturn(Question.builder().build())
+            .when(questionConverter)
+            .convert(arendeDraft);
     }
 
     @Test

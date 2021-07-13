@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.service.facade.question.impl.DeleteQuestionFacadeServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteQuestionFacadeServiceImplTest {
@@ -64,5 +65,4 @@ class DeleteQuestionFacadeServiceImplTest {
         deleteQuestionDraftFacadeService.delete(ID_AS_STRING);
         verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
     }
-
 }

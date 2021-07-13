@@ -20,26 +20,24 @@
 package se.inera.intyg.webcert.web.service.facade.question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
-import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.question.impl.GetQuestionsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
 public class GetQuestionsFacadeServiceImplTest {
@@ -49,6 +47,9 @@ public class GetQuestionsFacadeServiceImplTest {
 
     @Mock
     private ArendeDraftService arendeDraftService;
+
+    @Mock
+    private QuestionConverter questionConverter;
 
     @InjectMocks
     private GetQuestionsFacadeServiceImpl getQuestionsFacadeService;
@@ -66,173 +67,63 @@ public class GetQuestionsFacadeServiceImplTest {
         assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
     }
 
-    @Nested
-    class SendAdministrativeQuestions {
+    @Test
+    void shallReturnOneQuestionIfQuestionDraft() {
+        setupMockToReturnQuestionDraft();
 
-        private final long QUESTION_ID = 1000L;
-        private final QuestionType TYPE = QuestionType.COORDINATION;
-        private final ArendeAmne ARENDE_AMNE = ArendeAmne.AVSTMN;
-        private final String MESSAGE = "message";
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-
-        private ArendeDraft arendeDraft;
-
-        @BeforeEach
-        void setup() {
-            arendeDraft = new ArendeDraft();
-            arendeDraft.setId(QUESTION_ID);
-            arendeDraft.setAmne(ARENDE_AMNE.toString());
-            arendeDraft.setText(MESSAGE);
-
-            doReturn(arendeDraft)
-                .when(arendeDraftService)
-                .getQuestionDraft(CERTIFICATE_ID);
-        }
-
-        @Test
-        void shallReturnQuestionDraft() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertFalse(actualQuestions.isEmpty(), "Expect a question");
-        }
-
-        @Test
-        void shallReturnQuestionWithId() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(Long.toString(QUESTION_ID), actualQuestions.get(0).getId());
-        }
-
-        @Test
-        void shallReturnQuestionWithType() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(TYPE, actualQuestions.get(0).getType());
-        }
-
-        @Test
-        void shallReturnQuestionWithMessage() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(MESSAGE, actualQuestions.get(0).getMessage());
-        }
+        assertEquals(1, actualQuestions.size(), "Expect one question to be returned");
     }
 
-    @Nested
-    class ReceivedAdministativeQuestions {
+    @Test
+    void shallReturnEmptyQuestionsIfQuestions() {
+        doReturn(Collections.emptyList())
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
 
-        private final String QUESTION_ID = "1000";
-        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
-        private final String AUTHOR = "author";
-        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-        private final String HEADER = "Rubrik";
-        private final LocalDateTime SENT = LocalDateTime.now();
-        private final String SENT_BY_FK = "FK";
-        private final boolean IS_HANDLED = true;
-        private final boolean IS_FORWARDED = true;
-        private final String MESSAGE = "message";
-        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-        private Arende arende;
+        assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
+    }
 
-        @BeforeEach
-        void setup() {
-            arende = new Arende();
-            arende.setMeddelandeId(QUESTION_ID);
-            arende.setVardaktorName(AUTHOR);
-            arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setSkickatTidpunkt(SENT);
-            arende.setSkickatAv(SENT_BY_FK);
-            arende.setStatus(Status.CLOSED);
-            arende.setVidarebefordrad(IS_FORWARDED);
-            arende.setMeddelande(MESSAGE);
-            arende.setSenasteHandelse(LAST_UPDATE);
+    @Test
+    void shallReturnQuestionsIfQuestions() {
+        setupMockToReturnQuestions();
 
-            doReturn(Collections.singletonList(arende))
-                .when(arendeService)
-                .getArendenInternal(CERTIFICATE_ID);
-        }
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-        @Test
-        void shallGetQuestionForCertificate() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+        assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
+    }
 
-            assertFalse(actualQuestions.isEmpty(), "Expect a question");
-        }
+    @Test
+    void shallReturnQuestionsIfQuestionsAndQuestionDraft() {
+        setupMockToReturnQuestions();
 
-        @Test
-        void shallReturnQuestionWithId() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+        setupMockToReturnQuestionDraft();
 
-            assertEquals(QUESTION_ID, actualQuestions.get(0).getId());
-        }
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
 
-        @Test
-        void shallReturnReceivedQuestionWithAuthor() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+        assertEquals(4, actualQuestions.size(), "Expect four question to be returned");
+    }
 
-            assertEquals(AUTHOR_CERTIFICATE_RECEIVER, actualQuestions.get(0).getAuthor());
-        }
+    private void setupMockToReturnQuestionDraft() {
+        doReturn(new ArendeDraft())
+            .when(arendeDraftService)
+            .getQuestionDraft(CERTIFICATE_ID);
 
-        @Test
-        void shallReturnSentQuestionWithAuthor() {
-            arende.setSkickatAv("WC");
+        doReturn(Question.builder().build())
+            .when(questionConverter)
+            .convert(any(ArendeDraft.class));
+    }
 
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+    private void setupMockToReturnQuestions() {
+        doReturn(List.of(new Arende(), new Arende(), new Arende()))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
 
-            assertEquals(AUTHOR, actualQuestions.get(0).getAuthor());
-        }
-
-        @Test
-        void shallReturnQuestionWithSubjectWithoutHeader() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(SUBJECT_WITHOUT_HEADER, actualQuestions.get(0).getSubject());
-        }
-
-        @Test
-        void shallReturnQuestionWithSubjectWithHeader() {
-            arende.setRubrik(HEADER);
-
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(SUBJECT_WITH_HEADER, actualQuestions.get(0).getSubject());
-        }
-
-        @Test
-        void shallReturnQuestionWithSent() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(SENT, actualQuestions.get(0).getSent());
-        }
-
-        @Test
-        void shallReturnQuestionWithHandled() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(IS_HANDLED, actualQuestions.get(0).isHandled());
-        }
-
-        @Test
-        void shallReturnQuestionWithForwarded() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(IS_FORWARDED, actualQuestions.get(0).isForwarded());
-        }
-
-        @Test
-        void shallReturnQuestionWithMessage() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(MESSAGE, actualQuestions.get(0).getMessage());
-        }
-
-        @Test
-        void shallReturnQuestionWithLastUpdate() {
-            final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
-
-            assertEquals(LAST_UPDATE, actualQuestions.get(0).getLastUpdate());
-        }
+        doReturn(Question.builder().build())
+            .when(questionConverter)
+            .convert(any(Arende.class));
     }
 }

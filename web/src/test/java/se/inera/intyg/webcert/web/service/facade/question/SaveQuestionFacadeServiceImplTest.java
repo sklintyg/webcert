@@ -33,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.service.facade.question.impl.SaveQuestionFacadeServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class SaveQuestionFacadeServiceImplTest {

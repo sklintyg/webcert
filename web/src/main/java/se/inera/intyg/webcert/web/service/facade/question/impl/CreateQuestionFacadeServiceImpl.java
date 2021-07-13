@@ -17,59 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.service.facade.question.impl;
+
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service
 public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeService {
 
     private final ArendeDraftService arendeDraftService;
+    private final QuestionConverter questionConverter;
 
     @Autowired
-    public CreateQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService) {
+    public CreateQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
+        QuestionConverter questionConverter) {
         this.arendeDraftService = arendeDraftService;
+        this.questionConverter = questionConverter;
     }
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
         final var questionDraft = arendeDraftService.create(certificateId, getSubject(type), message);
-        return Question.builder()
-            .id(Long.toString(questionDraft.getId()))
-            .type(getType(questionDraft.getAmne()))
-            .message(questionDraft.getText())
-            .build();
-    }
-
-    private QuestionType getType(String amne) {
-        final var arendeAmne = ArendeAmne.valueOf(amne);
-        switch (arendeAmne) {
-            case AVSTMN:
-                return QuestionType.COORDINATION;
-            case KONTKT:
-                return QuestionType.CONTACT;
-            case OVRIGT:
-                return QuestionType.OTHER;
-            default:
-                throw new IllegalArgumentException("The type is not yet supported: " + arendeAmne);
-        }
-    }
-
-    private ArendeAmne getSubject(QuestionType type) {
-        switch (type) {
-            case COORDINATION:
-                return ArendeAmne.AVSTMN;
-            case CONTACT:
-                return ArendeAmne.KONTKT;
-            case OTHER:
-                return ArendeAmne.OVRIGT;
-            default:
-                throw new IllegalArgumentException("Type not supported: " + type);
-        }
+        return questionConverter.convert(questionDraft);
     }
 }

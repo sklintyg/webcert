@@ -274,7 +274,8 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public Arende createMessage(ArendeDraft arendeDraft, ArendeAmne amne) {
+    public Arende sendMessage(ArendeDraft arendeDraft) {
+        final var amne = ArendeAmne.valueOf(arendeDraft.getAmne());
         return internalCreateMessage(arendeDraft.getIntygId(), amne, amne.getDescription(), arendeDraft.getText());
     }
 
