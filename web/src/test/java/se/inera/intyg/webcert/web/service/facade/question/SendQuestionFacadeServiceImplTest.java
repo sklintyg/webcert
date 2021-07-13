@@ -19,9 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,18 +32,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
 @ExtendWith(MockitoExtension.class)
 class SendQuestionFacadeServiceImplTest {
-
-    public static final String CERTIFICATE_ID = "certificateId";
-    public static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
-    public static final String MESSAGE = "message";
-    public static final Long QUESTION_ID = 1000L;
 
     @Mock
     private ArendeDraftService arendeDraftService;
@@ -53,23 +52,61 @@ class SendQuestionFacadeServiceImplTest {
     private SendQuestionFacadeServiceImpl sendQuestionFacadeService;
 
     private ArendeDraft questionDraft;
+    private Arende arende;
+
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
+    private final ArendeAmne QUESTION_AMNE = ArendeAmne.AVSTMN;
+    public static final Long QUESTION_ID_AS_LONG = 1000L;
+    private final String QUESTION_ID_AS_STRING = Long.toString(QUESTION_ID_AS_LONG);
+    private final String MESSAGE = "message";
+    private final String AUTHOR = "author";
+    private final String SUBJECT = "subject";
+    private final LocalDateTime SENT = LocalDateTime.now();
+    private final LocalDateTime LAST_UPDATE = LocalDateTime.now().minusMinutes(100);
+
 
     @BeforeEach
     void setUp() {
         questionDraft = new ArendeDraft();
-        questionDraft.setId(QUESTION_ID);
+        questionDraft.setId(QUESTION_ID_AS_LONG);
         questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
-        doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID);
+        doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID_AS_LONG);
+
+        arende = new Arende();
+        arende.setMeddelandeId(QUESTION_ID_AS_STRING);
+        arende.setMeddelande(MESSAGE);
+        arende.setSigneratAvName(AUTHOR);
+        arende.setVidarebefordrad(false);
+        arende.setStatus(Status.CLOSED);
+        arende.setSenasteHandelse(LAST_UPDATE);
+        arende.setSkickatTidpunkt(SENT);
+        arende.setRubrik(SUBJECT);
+        arende.setIntygsId(CERTIFICATE_ID);
+        arende.setSkickatAv(AUTHOR);
+        arende.setAmne(ArendeAmne.AVSTMN);
+        doReturn(arende).when(arendeService).createMessage(questionDraft, QUESTION_AMNE);
     }
 
     @Test
     void shallSendQuestion() {
         Question question = Question.builder()
-            .id(Long.toString(QUESTION_ID))
+            .id(QUESTION_ID_AS_STRING)
             .message(MESSAGE)
             .type(QUESTION_TYPE)
             .build();
         sendQuestionFacadeService.send(question);
-        verify(arendeService).createMessage(questionDraft, ArendeAmne.AVSTMN);
+        verify(arendeService).createMessage(questionDraft, QUESTION_AMNE);
+    }
+
+    @Test
+    void shallReturnQuestion() {
+        Question question = Question.builder()
+            .id(QUESTION_ID_AS_STRING)
+            .message(MESSAGE)
+            .type(QUESTION_TYPE)
+            .build();
+        Question receivedQuestion = sendQuestionFacadeService.send(question);
+        assertNotNull(receivedQuestion);
     }
 }

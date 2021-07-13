@@ -119,10 +119,15 @@ class QuestionControllerTest {
         final var question = Question.builder().build();
         sendQuestionRequestDTO.setQuestion(question);
 
+        doReturn(Question.builder().build())
+            .when(sendQuestionFacadeService)
+            .send(question);
+
         final var actualResponse = questionController.sendQuestion(sendQuestionRequestDTO.getQuestion().getId(), sendQuestionRequestDTO);
 
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
 
         verify(sendQuestionFacadeService).send(question);
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
     }
 }

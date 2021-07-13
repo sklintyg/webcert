@@ -49,6 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionReques
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
 public class QuestionIT {
 
@@ -234,6 +235,7 @@ public class QuestionIT {
         saveQuestionRequestDTO.setQuestion(Question.builder()
             .type(QuestionType.COORDINATION)
             .message("message")
+            .id(testSetup.questionDraftId())
             .build());
 
         given()
@@ -253,6 +255,49 @@ public class QuestionIT {
 
         assertAll(
             () -> assertEquals("message", response.get(0).getMessage(), "Expect to contain question with updated message")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall send question for certificate")
+    void shallSendQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var sendQuestionRequestDTO = new SendQuestionRequestDTO();
+        Question question = Question.builder()
+            .id(testSetup.questionDraftId())
+            .message("message")
+            .subject("subject")
+            .type(QuestionType.COORDINATION)
+            .build();
+
+        sendQuestionRequestDTO.setQuestion(question);
+
+        final var receivedQuestion = given()
+            .contentType(ContentType.JSON)
+            .body(sendQuestionRequestDTO)
+            .pathParam("questionId", testSetup.questionDraftId())
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{questionId}/send")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertTrue(!receivedQuestion.getId().isEmpty(), "Expect to have a question id")
         );
     }
 

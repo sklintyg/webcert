@@ -22,7 +22,9 @@ package se.inera.intyg.webcert.web.service.facade.question;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
@@ -39,10 +41,56 @@ public class SendQuestionFacadeServiceImpl implements SendQuestionFacadeService 
     }
 
     @Override
-    public void send(Question question) {
+    public Question send(Question question) {
         final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
         questionDraft.setText(question.getMessage());
-        arendeService.createMessage(questionDraft, getSubject(question.getType()));
+        Arende arende = arendeService.createMessage(questionDraft, getSubject(question.getType()));
+        return convert(arende);
+    }
+
+    private Question convert(Arende arende) {
+        return Question.builder()
+            .id(arende.getMeddelandeId())
+            .author(getAuthor(arende))
+            .subject(getSubject(arende))
+            .sent(arende.getSkickatTidpunkt())
+            .isHandled(arende.getStatus() == Status.CLOSED)
+            .isForwarded(arende.getVidarebefordrad())
+            .message(arende.getMeddelande())
+            .lastUpdate(arende.getSenasteHandelse())
+            .type(getType(arende.getAmne().toString()))
+            .build();
+    }
+
+    private String getAuthor(Arende arende) {
+        if (arende.getSkickatAv().equalsIgnoreCase("FK")) {
+            return "Försäkringskassan";
+        }
+        return arende.getVardaktorName();
+    }
+
+    private String getSubject(Arende arende) {
+        final var subjectBuilder = new StringBuilder();
+        subjectBuilder.append(arende.getAmne().getDescription());
+        if (arende.getRubrik() != null && !arende.getRubrik().isBlank()) {
+            subjectBuilder.append(" - ");
+            subjectBuilder.append(arende.getRubrik());
+        }
+        return subjectBuilder.toString();
+    }
+
+    private QuestionType getType(String amne) {
+        final var arendeAmne = ArendeAmne.valueOf(amne);
+        switch (arendeAmne) {
+            case AVSTMN:
+                return QuestionType.COORDINATION;
+            case KONTKT:
+                return QuestionType.CONTACT;
+            case OVRIGT:
+                return QuestionType.OTHER;
+            default:
+                throw new IllegalArgumentException("The type is not yet supported: " + arendeAmne);
+        }
     }
 
     private ArendeAmne getSubject(QuestionType type) {

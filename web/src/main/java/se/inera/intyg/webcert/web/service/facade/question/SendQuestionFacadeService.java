@@ -23,5 +23,5 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 
 public interface SendQuestionFacadeService {
 
-    void send(Question question);
+    Question send(Question question);
 }

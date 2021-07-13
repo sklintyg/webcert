@@ -235,6 +235,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
+        Arende saved = internalCreateMessage(intygId, amne, rubrik, meddelande);
+        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
+    }
+
+    private Arende internalCreateMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
         if (!VALID_VARD_AMNEN.contains(amne)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                 + " for new question from vard!");
@@ -265,12 +270,12 @@ public class ArendeServiceImpl implements ArendeService {
         logService.logCreateMessage(webcertUserService.getUser(), saved);
 
         arendeDraftService.delete(intygId, null);
-        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
+        return saved;
     }
 
     @Override
-    public ArendeConversationView createMessage(ArendeDraft arendeDraft, ArendeAmne amne) {
-        return createMessage(arendeDraft.getIntygId(), amne, amne.getDescription(), arendeDraft.getText());
+    public Arende createMessage(ArendeDraft arendeDraft, ArendeAmne amne) {
+        return internalCreateMessage(arendeDraft.getIntygId(), amne, amne.getDescription(), arendeDraft.getText());
     }
 
     @Override

@@ -137,9 +137,9 @@ public class QuestionController {
             LOG.debug("Sending question with id: '{}'", questionId);
         }
 
-        sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
+        Question question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
 
-        return Response.ok().build();
+        return Response.ok(QuestionResponseDTO.create(question)).build();
     }
 
 
