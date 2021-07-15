@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 
@@ -45,11 +44,6 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
         }
         arendeDraftRepository.save(draft);
         return true;
-    }
-
-    @Override
-    public void saveDraft(ArendeDraft arendeDraft) {
-        arendeDraftRepository.save(arendeDraft);
     }
 
     @Override
@@ -79,8 +73,13 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
     }
 
     @Override
-    public ArendeDraft create(String certificateId, ArendeAmne subject, String message) {
-        final var arendeDraft = createDraft(certificateId, null, message, subject.toString());
+    public ArendeDraft create(String certificateId, String subject, String message) {
+        final var arendeDraft = createDraft(certificateId, null, message, subject);
+        return arendeDraftRepository.save(arendeDraft);
+    }
+
+    @Override
+    public ArendeDraft save(ArendeDraft arendeDraft) {
         return arendeDraftRepository.save(arendeDraft);
     }
 

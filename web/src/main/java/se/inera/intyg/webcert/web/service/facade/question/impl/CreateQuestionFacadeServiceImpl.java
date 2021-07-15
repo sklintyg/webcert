@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubjectAsString;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,12 @@ public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeServ
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
-        final var questionDraft = arendeDraftService.create(certificateId, getSubject(type), message);
+        final var questionDraft = arendeDraftService.create(
+            certificateId,
+            getSubjectAsString(type),
+            message
+        );
+
         return questionConverter.convert(questionDraft);
     }
 }

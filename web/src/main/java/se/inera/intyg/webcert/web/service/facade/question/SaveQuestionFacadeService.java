@@ -23,5 +23,5 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 
 public interface SaveQuestionFacadeService {
 
-    void save(Question question);
+    Question save(Question question);
 }

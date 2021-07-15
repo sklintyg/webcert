@@ -80,6 +80,31 @@ class QuestionConverterImplTest {
         }
 
         @Test
+        void shallReturnQuestionWithTypeCoordination() {
+            final var actualQuestion = questionConverter.convert(arende);
+
+            assertEquals(QuestionType.COORDINATION, actualQuestion.getType());
+        }
+
+        @Test
+        void shallReturnQuestionWithTypeContact() {
+            arende.setAmne(ArendeAmne.KONTKT);
+
+            final var actualQuestion = questionConverter.convert(arende);
+
+            assertEquals(QuestionType.CONTACT, actualQuestion.getType());
+        }
+
+        @Test
+        void shallReturnQuestionWithTypeOther() {
+            arende.setAmne(ArendeAmne.OVRIGT);
+
+            final var actualQuestion = questionConverter.convert(arende);
+
+            assertEquals(QuestionType.OTHER, actualQuestion.getType());
+        }
+
+        @Test
         void shallReturnReceivedQuestionWithAuthor() {
             final var actualQuestion = questionConverter.convert(arende);
 
@@ -196,6 +221,15 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter.convert(arendeDraft);
 
             assertEquals(QuestionType.OTHER, actualQuestion.getType());
+        }
+
+        @Test
+        void shallReturnQuestionWithTypeMissing() {
+            arendeDraft.setAmne("");
+
+            final var actualQuestion = questionConverter.convert(arendeDraft);
+
+            assertEquals(QuestionType.MISSING, actualQuestion.getType());
         }
 
         @Test

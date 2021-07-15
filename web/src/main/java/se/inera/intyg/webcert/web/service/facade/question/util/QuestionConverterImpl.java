@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.question.util;
 
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getType;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getTypeFromAmneAsString;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -35,6 +36,7 @@ public class QuestionConverterImpl implements QuestionConverter {
     public Question convert(Arende arende) {
         return Question.builder()
             .id(arende.getMeddelandeId())
+            .type(getType(arende.getAmne()))
             .author(getAuthor(arende))
             .subject(getSubject(arende))
             .sent(arende.getSkickatTidpunkt())
@@ -49,7 +51,7 @@ public class QuestionConverterImpl implements QuestionConverter {
     public Question convert(ArendeDraft arendeDraft) {
         return Question.builder()
             .id(Long.toString(arendeDraft.getId()))
-            .type(getType(arendeDraft.getAmne()))
+            .type(getTypeFromAmneAsString(arendeDraft.getAmne()))
             .message(arendeDraft.getText())
             .build();
     }

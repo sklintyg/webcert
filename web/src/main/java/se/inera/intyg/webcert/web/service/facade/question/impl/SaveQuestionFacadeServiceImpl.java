@@ -19,29 +19,36 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubjectAsString;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service
 public class SaveQuestionFacadeServiceImpl implements SaveQuestionFacadeService {
 
     private final ArendeDraftService arendeDraftService;
+    private final QuestionConverter questionConverter;
 
     @Autowired
-    public SaveQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService) {
+    public SaveQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
+        QuestionConverter questionConverter) {
         this.arendeDraftService = arendeDraftService;
+        this.questionConverter = questionConverter;
     }
 
     @Override
-    public void save(Question question) {
-        var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
+    public Question save(Question question) {
+        final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
         questionDraft.setText(question.getMessage());
-        questionDraft.setAmne(getSubject(question.getType()).toString());
-        arendeDraftService.saveDraft(questionDraft);
+        questionDraft.setAmne(getSubjectAsString(question.getType()));
+
+        final var savedQuestionDraft = arendeDraftService.save(questionDraft);
+
+        return questionConverter.convert(savedQuestionDraft);
     }
 }

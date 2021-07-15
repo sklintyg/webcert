@@ -19,14 +19,11 @@
 package se.inera.intyg.webcert.web.service.arende;
 
 import java.util.List;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public interface ArendeDraftService {
 
     boolean saveDraft(String intygId, String questionId, String text, String amne);
-
-    void saveDraft(ArendeDraft arendeDraft);
 
     boolean delete(String intygId, String questionId);
 
@@ -36,5 +33,7 @@ public interface ArendeDraftService {
 
     ArendeDraft getQuestionDraftById(long id);
 
-    ArendeDraft create(String certificateId, ArendeAmne subject, String message);
+    ArendeDraft create(String certificateId, String subject, String message);
+
+    ArendeDraft save(ArendeDraft arendeDraft);
 }

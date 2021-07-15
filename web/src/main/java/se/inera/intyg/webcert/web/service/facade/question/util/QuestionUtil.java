@@ -28,8 +28,15 @@ public final class QuestionUtil {
     private QuestionUtil() {
     }
 
-    public static QuestionType getType(String amne) {
+    public static QuestionType getTypeFromAmneAsString(String amne) {
+        if (amne.isBlank()) {
+            return QuestionType.MISSING;
+        }
         final var arendeAmne = ArendeAmne.valueOf(amne);
+        return getType(arendeAmne);
+    }
+
+    public static QuestionType getType(ArendeAmne arendeAmne) {
         switch (arendeAmne) {
             case AVSTMN:
                 return QuestionType.COORDINATION;
@@ -50,6 +57,14 @@ public final class QuestionUtil {
             subjectBuilder.append(arende.getRubrik());
         }
         return subjectBuilder.toString();
+    }
+
+    public static String getSubjectAsString(QuestionType type) {
+        if (QuestionType.MISSING.equals(type)) {
+            return "";
+        }
+
+        return getSubject(type).toString();
     }
 
     public static ArendeAmne getSubject(QuestionType type) {

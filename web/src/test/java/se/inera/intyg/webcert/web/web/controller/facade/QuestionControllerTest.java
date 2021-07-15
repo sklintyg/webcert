@@ -106,11 +106,16 @@ class QuestionControllerTest {
         final var question = Question.builder().build();
         saveQuestionRequestDTO.setQuestion(question);
 
+        doReturn(Question.builder().build())
+            .when(saveQuestionFacadeService)
+            .save(question);
+
         final var actualResponse = questionController.saveQuestion(saveQuestionRequestDTO.getQuestion().getId(), saveQuestionRequestDTO);
 
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
 
         verify(saveQuestionFacadeService).save(question);
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
     }
 
     @Test

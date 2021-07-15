@@ -121,8 +121,9 @@ public class QuestionController {
             LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
         }
 
-        saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
-        return Response.ok().build();
+        final var savedQuestion = saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
+
+        return Response.ok(QuestionResponseDTO.create(savedQuestion)).build();
     }
 
     @POST

@@ -52,16 +52,10 @@ class CreateQuestionFacadeServiceImplTest {
     @InjectMocks
     private CreateQuestionFacadeServiceImpl createQuestionFacadeService;
 
+    private ArendeDraft arendeDraft = new ArendeDraft();
+
     @BeforeEach
     void setUp() {
-        final var arendeDraft = new ArendeDraft();
-        arendeDraft.setId(1000L);
-        arendeDraft.setAmne(ArendeAmne.AVSTMN.toString());
-
-        doReturn(arendeDraft)
-            .when(arendeDraftService)
-            .create(CERTIFICATE_ID, ArendeAmne.AVSTMN, MESSAGE);
-
         doReturn(Question.builder().build())
             .when(questionConverter)
             .convert(arendeDraft);
@@ -69,7 +63,21 @@ class CreateQuestionFacadeServiceImplTest {
 
     @Test
     void shallReturnCreatedQuestion() {
+        doReturn(arendeDraft)
+            .when(arendeDraftService)
+            .create(CERTIFICATE_ID, ArendeAmne.AVSTMN.toString(), MESSAGE);
+
         final var actualQuestion = createQuestionFacadeService.create(CERTIFICATE_ID, QUESTION_TYPE, MESSAGE);
+        assertNotNull(actualQuestion, "Should return created question");
+    }
+
+    @Test
+    void shallAllowToCreateQuestionWithoutQuestionType() {
+        doReturn(arendeDraft)
+            .when(arendeDraftService)
+            .create(CERTIFICATE_ID, "", MESSAGE);
+
+        final var actualQuestion = createQuestionFacadeService.create(CERTIFICATE_ID, QuestionType.MISSING, MESSAGE);
         assertNotNull(actualQuestion, "Should return created question");
     }
 }

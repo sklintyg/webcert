@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.facade.question;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.facade.question.impl.SaveQuestionFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
 class SaveQuestionFacadeServiceImplTest {
@@ -46,6 +47,9 @@ class SaveQuestionFacadeServiceImplTest {
     @Mock
     private ArendeDraftService arendeDraftService;
 
+    @Mock
+    private QuestionConverter questionConverter;
+
     @InjectMocks
     private SaveQuestionFacadeServiceImpl saveQuestionFacadeService;
 
@@ -56,17 +60,43 @@ class SaveQuestionFacadeServiceImplTest {
         questionDraft = new ArendeDraft();
         questionDraft.setId(QUESTION_ID);
         questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
-        doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID);
+
+        doReturn(questionDraft)
+            .when(arendeDraftService)
+            .getQuestionDraftById(QUESTION_ID);
+
+        doReturn(questionDraft)
+            .when(arendeDraftService)
+            .save(questionDraft);
+
+        doReturn(Question.builder().build())
+            .when(questionConverter)
+            .convert(questionDraft);
     }
 
     @Test
     void shallSaveQuestion() {
-        Question question = Question.builder()
+        final var question = Question.builder()
             .id(Long.toString(QUESTION_ID))
             .message(MESSAGE)
             .type(QUESTION_TYPE)
             .build();
-        saveQuestionFacadeService.save(question);
-        verify(arendeDraftService).saveDraft(questionDraft);
+
+        final var actualQuestion = saveQuestionFacadeService.save(question);
+
+        assertNotNull(actualQuestion, "Should return saved question");
+    }
+
+    @Test
+    void shallAllowToSaveQuestionWithoutQuestionType() {
+        final var question = Question.builder()
+            .id(Long.toString(QUESTION_ID))
+            .message(MESSAGE)
+            .type(QuestionType.MISSING)
+            .build();
+
+        final var actualQuestion = saveQuestionFacadeService.save(question);
+
+        assertNotNull(actualQuestion, "Should return saved question");
     }
 }
