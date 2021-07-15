@@ -249,6 +249,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             }
         }
 
+        if (isMessagingAvailable(certificate) && certificate.getMetadata().isSent()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_QUESTIONS,
+                    "Ny fråga",
+                    "Här kan du ställa en ny fråga till Försäkringskassan.",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
