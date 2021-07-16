@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question.util;
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+public class AnswerRequestDTO {
 
-public interface QuestionConverter {
+    private String message;
 
-    Question convert(Arende arende);
+    public String getMessage() {
+        return message;
+    }
 
-    Question convert(ArendeDraft arendeDraft);
-
-    Question convert(Arende arende, String answer);
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

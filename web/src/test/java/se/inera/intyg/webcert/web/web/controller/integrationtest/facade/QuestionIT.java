@@ -45,6 +45,7 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
@@ -298,6 +299,42 @@ public class QuestionIT {
 
         assertAll(
             () -> assertTrue(!receivedQuestion.getId().isEmpty(), "Expect to have a question id")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall save answer for question")
+    void shallSaveAnswerForQuestion() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .question()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var answerRequestDTO = new AnswerRequestDTO();
+        answerRequestDTO.setMessage("Det här är vårt svar!");
+
+        final var response = given()
+            .pathParam("questionId", testSetup.questionId())
+            .contentType(ContentType.JSON)
+            .body(answerRequestDTO)
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{questionId}/saveanswer")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertEquals(response.getAnswer().getMessage(), answerRequestDTO.getMessage())
         );
     }
 

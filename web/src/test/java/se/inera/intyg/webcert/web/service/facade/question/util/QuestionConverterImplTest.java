@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -237,6 +238,35 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter.convert(arendeDraft);
 
             assertEquals(MESSAGE, actualQuestion.getMessage());
+        }
+    }
+
+    @Nested
+    class AnswerForAdministrativeQuestion {
+
+        private Arende arende;
+
+        @BeforeEach
+        void setup() {
+            arende = new Arende();
+            arende.setMeddelandeId("questionId");
+            arende.setVardaktorName("author");
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setSkickatTidpunkt(LocalDateTime.now());
+            arende.setSkickatAv("FK");
+            arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+            arende.setVidarebefordrad(false);
+            arende.setMeddelande("Här är det en fråga");
+            arende.setSenasteHandelse(arende.getSkickatTidpunkt());
+        }
+
+        @Test
+        void shallIncludeAnswer() {
+            final var answer = "Här är vårat svar";
+
+            final var actualQuestion = questionConverter.convert(arende, answer);
+
+            assertEquals(actualQuestion.getAnswer().getMessage(), answer);
         }
     }
 }

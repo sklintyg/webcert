@@ -36,8 +36,10 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
@@ -61,6 +63,9 @@ class QuestionControllerTest {
 
     @Mock
     private SendQuestionFacadeService sendQuestionFacadeService;
+
+    @Mock
+    private SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService;
 
     @InjectMocks
     private QuestionController questionController;
@@ -133,6 +138,22 @@ class QuestionControllerTest {
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
 
         verify(sendQuestionFacadeService).send(question);
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    }
+
+    @Test
+    void shallSaveAnswerForQuestion() {
+        final var questionId = "questionId";
+        final var answerRequestDTO = new AnswerRequestDTO();
+        answerRequestDTO.setMessage("Det här är ett svar!");
+
+        doReturn(Question.builder().build())
+            .when(saveQuestionAnswerFacadeService)
+            .save(questionId, answerRequestDTO.getMessage());
+
+        final var actualResponse = questionController.saveQuestionAnswer(questionId, answerRequestDTO);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
         assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
     }
 }

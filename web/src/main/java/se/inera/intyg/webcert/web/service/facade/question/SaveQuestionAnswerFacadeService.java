@@ -17,17 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question.util;
+package se.inera.intyg.webcert.web.service.facade.question;
 
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
-public interface QuestionConverter {
+public interface SaveQuestionAnswerFacadeService {
 
-    Question convert(Arende arende);
-
-    Question convert(ArendeDraft arendeDraft);
-
-    Question convert(Arende arende, String answer);
+    Question save(String questionId, String message);
 }

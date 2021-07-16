@@ -72,6 +72,10 @@ public class TestSetup {
     public Certificate certificate() {
         return certificate;
     }
+    
+    public String questionId() {
+        return questionId;
+    }
 
     public String questionDraftId() {
         return questionDraftId;

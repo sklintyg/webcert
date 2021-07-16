@@ -35,8 +35,10 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
@@ -54,18 +56,21 @@ public class QuestionController {
     private final CreateQuestionFacadeService createQuestionFacadeService;
     private final SaveQuestionFacadeService saveQuestionFacadeService;
     private final SendQuestionFacadeService sendQuestionFacadeService;
+    private final SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService;
 
     @Autowired
     public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService,
         DeleteQuestionFacadeService deleteQuestionFacadeService,
         CreateQuestionFacadeService createQuestionFacadeService,
         SaveQuestionFacadeService saveQuestionFacadeService,
-        SendQuestionFacadeService sendQuestionFacadeService) {
+        SendQuestionFacadeService sendQuestionFacadeService,
+        SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService) {
         this.getQuestionsFacadeService = getQuestionsFacadeService;
         this.deleteQuestionFacadeService = deleteQuestionFacadeService;
         this.createQuestionFacadeService = createQuestionFacadeService;
         this.saveQuestionFacadeService = saveQuestionFacadeService;
         this.sendQuestionFacadeService = sendQuestionFacadeService;
+        this.saveQuestionAnswerFacadeService = saveQuestionAnswerFacadeService;
     }
 
     @GET
@@ -137,5 +142,18 @@ public class QuestionController {
 
         final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
         return Response.ok(QuestionResponseDTO.create(question)).build();
+    }
+
+    @POST
+    @Path("/{questionId}/saveanswer")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response saveQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving answer for question with id: '{}'", questionId);
+        }
+
+        final var questionWithSavedAnswer = saveQuestionAnswerFacadeService.save(questionId, answerRequestDTO.getMessage());
+        return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer)).build();
     }
 }
