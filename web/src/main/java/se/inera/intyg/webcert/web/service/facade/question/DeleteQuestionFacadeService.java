@@ -16,24 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.arende;
 
-import java.util.List;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+package se.inera.intyg.webcert.web.service.facade.question;
 
-public interface ArendeDraftService {
+public interface DeleteQuestionFacadeService {
 
-    boolean saveDraft(String intygId, String questionId, String text, String amne);
-
-    boolean delete(String intygId, String questionId);
-
-    List<ArendeDraft> listAnswerDrafts(String intygId);
-
-    ArendeDraft getQuestionDraft(String intygId);
-
-    ArendeDraft getQuestionDraftById(long id);
-
-    ArendeDraft create(String certificateId, String subject, String message);
-
-    ArendeDraft save(ArendeDraft arendeDraft);
+    void delete(String questionId);
 }

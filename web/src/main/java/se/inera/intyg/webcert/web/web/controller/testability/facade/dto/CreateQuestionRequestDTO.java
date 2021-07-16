@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+
 public class CreateQuestionRequestDTO {
 
     private QuestionType type;

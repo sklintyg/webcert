@@ -67,6 +67,22 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
         return arendeDraftRepository.findByIntygIdAndQuestionId(intygId, null);
     }
 
+    @Override
+    public ArendeDraft getQuestionDraftById(long id) {
+        return arendeDraftRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public ArendeDraft create(String certificateId, String subject, String message) {
+        final var arendeDraft = createDraft(certificateId, null, message, subject);
+        return arendeDraftRepository.save(arendeDraft);
+    }
+
+    @Override
+    public ArendeDraft save(ArendeDraft arendeDraft) {
+        return arendeDraftRepository.save(arendeDraft);
+    }
+
     private ArendeDraft createDraft(String intygId, String questionId, String text, String amne) {
         ArendeDraft draft;
         draft = new ArendeDraft();

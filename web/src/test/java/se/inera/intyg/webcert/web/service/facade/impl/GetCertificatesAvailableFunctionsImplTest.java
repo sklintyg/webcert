@@ -408,6 +408,38 @@ class GetCertificatesAvailableFunctionsImplTest {
 
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
         }
+
+        @Test
+        void shallIncludeCreateQuestionsWhenCertificateIsSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            certificate.getMetadata().setSent(true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, LisjpEntryPoint.MODULE_ID);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_QUESTIONS);
+        }
+
+        @Test
+        void shallExcludeCreateQuestionsWhenCertificateIsNotSent() {
+            final var certificate = createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_QUESTIONS);
+        }
+
+        @Test
+        void shallExcludeCreateQuestionsWhenCertificateDoesntSupportQuestions() {
+            final var certificate = createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            certificate.getMetadata().setSent(true);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_QUESTIONS);
+        }
     }
 
     private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {

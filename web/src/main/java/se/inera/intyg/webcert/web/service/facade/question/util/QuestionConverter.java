@@ -17,8 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
+package se.inera.intyg.webcert.web.service.facade.question.util;
 
-public enum QuestionType {
-    COORDINATION, CONTACT, OTHER
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+
+public interface QuestionConverter {
+
+    Question convert(Arende arende);
+
+    Question convert(ArendeDraft arendeDraft);
 }

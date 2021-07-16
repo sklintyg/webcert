@@ -17,38 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.service.facade.question.util;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getType;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getTypeFromAmneAsString;
+
+import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.service.arende.ArendeService;
 
-@Service
-public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
-
-    private final ArendeService arendeService;
-
-    @Autowired
-    public GetQuestionsFacadeServiceImpl(ArendeService arendeService) {
-        this.arendeService = arendeService;
-    }
+@Component
+public class QuestionConverterImpl implements QuestionConverter {
 
     @Override
-    public List<Question> getQuestions(String certificateId) {
-        final var arendenInternal = arendeService.getArendenInternal(certificateId);
-        return arendenInternal.stream()
-            .map(this::convert)
-            .collect(Collectors.toList());
-    }
-
-    private Question convert(Arende arende) {
+    public Question convert(Arende arende) {
         return Question.builder()
             .id(arende.getMeddelandeId())
+            .type(getType(arende.getAmne()))
             .author(getAuthor(arende))
             .subject(getSubject(arende))
             .sent(arende.getSkickatTidpunkt())
@@ -59,20 +47,19 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .build();
     }
 
+    @Override
+    public Question convert(ArendeDraft arendeDraft) {
+        return Question.builder()
+            .id(Long.toString(arendeDraft.getId()))
+            .type(getTypeFromAmneAsString(arendeDraft.getAmne()))
+            .message(arendeDraft.getText())
+            .build();
+    }
+
     private String getAuthor(Arende arende) {
         if (arende.getSkickatAv().equalsIgnoreCase("FK")) {
             return "Försäkringskassan";
         }
         return arende.getVardaktorName();
-    }
-
-    private String getSubject(Arende arende) {
-        final var subjectBuilder = new StringBuilder();
-        subjectBuilder.append(arende.getAmne().getDescription());
-        if (arende.getRubrik() != null && !arende.getRubrik().isBlank()) {
-            subjectBuilder.append(" - ");
-            subjectBuilder.append(arende.getRubrik());
-        }
-        return subjectBuilder.toString();
     }
 }

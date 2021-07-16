@@ -19,9 +19,10 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.util.List;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,10 +31,17 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
 @Path("/question")
 public class QuestionController {
@@ -42,10 +50,22 @@ public class QuestionController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final GetQuestionsFacadeService getQuestionsFacadeService;
+    private final DeleteQuestionFacadeService deleteQuestionFacadeService;
+    private final CreateQuestionFacadeService createQuestionFacadeService;
+    private final SaveQuestionFacadeService saveQuestionFacadeService;
+    private final SendQuestionFacadeService sendQuestionFacadeService;
 
     @Autowired
-    public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService) {
+    public QuestionController(GetQuestionsFacadeService getQuestionsFacadeService,
+        DeleteQuestionFacadeService deleteQuestionFacadeService,
+        CreateQuestionFacadeService createQuestionFacadeService,
+        SaveQuestionFacadeService saveQuestionFacadeService,
+        SendQuestionFacadeService sendQuestionFacadeService) {
         this.getQuestionsFacadeService = getQuestionsFacadeService;
+        this.deleteQuestionFacadeService = deleteQuestionFacadeService;
+        this.createQuestionFacadeService = createQuestionFacadeService;
+        this.saveQuestionFacadeService = saveQuestionFacadeService;
+        this.sendQuestionFacadeService = sendQuestionFacadeService;
     }
 
     @GET
@@ -57,8 +77,65 @@ public class QuestionController {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
 
-        List<Question> questions = getQuestionsFacadeService.getQuestions(certificateId);
+        final var questions = getQuestionsFacadeService.getQuestions(certificateId);
         return Response.ok(QuestionsResponseDTO.create(questions)).build();
     }
 
+    @DELETE
+    @Path("/{questionId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response deleteQuestion(@PathParam("questionId") @NotNull String questionId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting question with id: '{}'", questionId);
+        }
+
+        deleteQuestionFacadeService.delete(questionId);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response createQuestion(CreateQuestionRequestDTO createQuestionRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating question for certificate with id: '{}'", createQuestionRequest.getCertificateId());
+        }
+
+        final var question = createQuestionFacadeService.create(
+            createQuestionRequest.getCertificateId(),
+            createQuestionRequest.getType(),
+            createQuestionRequest.getMessage()
+        );
+
+        return Response.ok(QuestionResponseDTO.create(question)).build();
+    }
+
+    @POST
+    @Path("/{questionId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response saveQuestion(@PathParam("questionId") @NotNull String questionId, SaveQuestionRequestDTO saveQuestionRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
+        }
+
+        final var savedQuestion = saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
+
+        return Response.ok(QuestionResponseDTO.create(savedQuestion)).build();
+    }
+
+    @POST
+    @Path("/{questionId}/send")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response sendQuestion(@PathParam("questionId") @NotNull String questionId, SendQuestionRequestDTO sendQuestionRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Sending question with id: '{}'", questionId);
+        }
+
+        final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
+        return Response.ok(QuestionResponseDTO.create(question)).build();
+    }
 }

@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
@@ -30,6 +32,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
 import io.restassured.config.SessionConfig;
+import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import java.util.ArrayList;
@@ -39,8 +42,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
 public class QuestionIT {
 
@@ -85,7 +94,7 @@ public class QuestionIT {
             .useDjupIntegratedOrigin()
             .setup();
 
-//        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
         final var response = given()
             .pathParam("certificateId", testSetup.certificateId())
@@ -96,6 +105,199 @@ public class QuestionIT {
 
         assertAll(
             () -> assertFalse(response.isEmpty(), "Expect to contain question")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall get question draft for certificate")
+    void shallGetQuestionDraftForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertFalse(response.isEmpty(), "Expect to contain question")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall delete question for certificate")
+    void shallDeleteQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        given()
+            .pathParam("questionId", testSetup.questionDraftId())
+            .expect().statusCode(200)
+            .when()
+            .delete("api/question/{questionId}");
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertTrue(response.isEmpty(), "Expect to not contain question")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall create question for certificate")
+    void shallCreateQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var createQuestionRequestDTO = new CreateQuestionRequestDTO();
+        createQuestionRequestDTO.setMessage("Message");
+        createQuestionRequestDTO.setCertificateId(testSetup.certificateId());
+        createQuestionRequestDTO.setType(QuestionType.COORDINATION);
+
+        final var question = given()
+            .contentType(ContentType.JSON)
+            .body(createQuestionRequestDTO)
+            .expect().statusCode(200)
+            .when()
+            .post("api/question")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertTrue(!question.getId().isEmpty(), "Expect to have a question id")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall save question for certificate")
+    void shallSaveQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var saveQuestionRequestDTO = new SaveQuestionRequestDTO();
+        saveQuestionRequestDTO.setQuestion(Question.builder()
+            .type(QuestionType.COORDINATION)
+            .message("message")
+            .id(testSetup.questionDraftId())
+            .build());
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(saveQuestionRequestDTO)
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{certificateId}");
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertEquals("message", response.get(0).getMessage(), "Expect to contain question with updated message")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall send question for certificate")
+    void shallSendQuestionForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var sendQuestionRequestDTO = new SendQuestionRequestDTO();
+        Question question = Question.builder()
+            .id(testSetup.questionDraftId())
+            .message("message")
+            .subject("subject")
+            .type(QuestionType.COORDINATION)
+            .build();
+
+        sendQuestionRequestDTO.setQuestion(question);
+
+        final var receivedQuestion = given()
+            .contentType(ContentType.JSON)
+            .body(sendQuestionRequestDTO)
+            .pathParam("questionId", testSetup.questionDraftId())
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{questionId}/send")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertTrue(!receivedQuestion.getId().isEmpty(), "Expect to have a question id")
         );
     }
 

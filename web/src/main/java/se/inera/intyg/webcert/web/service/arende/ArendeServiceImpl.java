@@ -235,6 +235,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
+        Arende saved = internalCreateMessage(intygId, amne, rubrik, meddelande);
+        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
+    }
+
+    private Arende internalCreateMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
         if (!VALID_VARD_AMNEN.contains(amne)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                 + " for new question from vard!");
@@ -265,7 +270,13 @@ public class ArendeServiceImpl implements ArendeService {
         logService.logCreateMessage(webcertUserService.getUser(), saved);
 
         arendeDraftService.delete(intygId, null);
-        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
+        return saved;
+    }
+
+    @Override
+    public Arende sendMessage(ArendeDraft arendeDraft) {
+        final var amne = ArendeAmne.valueOf(arendeDraft.getAmne());
+        return internalCreateMessage(arendeDraft.getIntygId(), amne, "", arendeDraft.getText());
     }
 
     @Override
@@ -527,7 +538,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         results.stream().forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())));
 
-
         response.setTotalCount(results.size());
 
         if (originalStartFrom >= results.size()) {
@@ -640,7 +650,7 @@ public class ArendeServiceImpl implements ArendeService {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified();
         }
-}
+    }
 
     @Override
     @Transactional
