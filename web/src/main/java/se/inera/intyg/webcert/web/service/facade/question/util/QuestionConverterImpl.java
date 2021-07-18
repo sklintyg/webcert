@@ -58,6 +58,39 @@ public class QuestionConverterImpl implements QuestionConverter {
             .build();
     }
 
+    @Override
+    public Question convert(Arende arende, Arende answer) {
+        if (answer == null) {
+            return convert(arende);
+        }
+
+        return startConvert(arende)
+            .answer(
+                Answer.builder()
+                    .id(answer.getMeddelandeId())
+                    .message(answer.getMeddelande())
+                    .author(answer.getVardaktorName())
+                    .sent(answer.getSkickatTidpunkt())
+                    .build()
+            )
+            .build();
+    }
+
+    @Override
+    public Question convert(Arende arende, ArendeDraft answerDraft) {
+        if (answerDraft == null) {
+            return convert(arende);
+        }
+
+        return startConvert(arende)
+            .answer(
+                Answer.builder()
+                    .message(answerDraft.getText())
+                    .build()
+            )
+            .build();
+    }
+
     private Question.QuestionBuilder startConvert(Arende arende) {
         return Question.builder()
             .id(arende.getMeddelandeId())

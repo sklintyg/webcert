@@ -23,6 +23,8 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
@@ -41,6 +43,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
@@ -334,7 +337,76 @@ public class QuestionIT {
             .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
 
         assertAll(
-            () -> assertEquals(response.getAnswer().getMessage(), answerRequestDTO.getMessage())
+            () -> assertEquals(response.getAnswer().getMessage(), answerRequestDTO.getMessage(), "Answer should have been saved.")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall delete answer for question")
+    void shallDeleteAnswerForQuestion() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionWithAnswerDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .pathParam("questionId", testSetup.questionId())
+            .expect().statusCode(200)
+            .when()
+            .delete("api/question/{questionId}/answer")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertNull(response.getAnswer(), "Answer should have been deleted.")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall send answer for question")
+    void shallSendAnswerForQuestion() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionWithAnswerDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var answerRequestDTO = new AnswerRequestDTO();
+        answerRequestDTO.setMessage("Det här är vårt svar!");
+
+        final var response = given()
+            .pathParam("questionId", testSetup.questionId())
+            .contentType(ContentType.JSON)
+            .body(answerRequestDTO)
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{questionId}/sendanswer")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertEquals(response.getAnswer().getMessage(), answerRequestDTO.getMessage(),
+                "Answer should have been saved before sent."),
+            () -> assertNotNull(response.getAnswer().getSent(), "Answer should have been sent.")
         );
     }
 

@@ -30,60 +30,42 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 
 @ExtendWith(MockitoExtension.class)
-class SaveQuestionAnswerFacadeServiceImplTest {
+class SendQuestionAnswerFacadeServiceImplTest {
 
     @Mock
     private ArendeService arendeService;
 
     @Mock
-    private ArendeDraftService arendeDraftService;
-
-    @Mock
     private GetQuestionFacadeService getQuestionFacadeService;
 
     @InjectMocks
-    private SaveQuestionAnswerFacadeServiceImpl saveQuestionAnswerFacadeService;
+    private SendQuestionAnswerFacadeServiceImpl sendQuestionAnswerFacadeService;
 
-    private String certificateId;
-    private String questionId;
-    private String message;
+    private String questionId = "questionId";
+    private String message = "Det här är ett svar!";
 
     @BeforeEach
     void setUp() {
-        certificateId = "certificateId";
-        questionId = "questionId";
-        message = "Det här är ett svar";
-
-        final var arende = new Arende();
-        arende.setMeddelandeId(questionId);
-        arende.setIntygsId(certificateId);
-
-        doReturn(arende)
-            .when(arendeService)
-            .getArende(questionId);
-
         doReturn(Question.builder().build())
             .when(getQuestionFacadeService)
             .get(questionId);
     }
 
     @Test
-    void shallReturnSavedAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
+    void shallSendAnswer() {
+        sendQuestionAnswerFacadeService.send(questionId, message);
 
-        assertNotNull(actualQuestion, "Should return the question that we answered");
+        verify(arendeService).answer(questionId, message);
     }
 
     @Test
-    void shallSaveAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
+    void shallReturnQuestionWhenSendingAnswer() {
+        final var actualQuestion = sendQuestionAnswerFacadeService.send(questionId, message);
 
-        verify(arendeDraftService).saveDraft(certificateId, questionId, message, null);
+        assertNotNull(actualQuestion, "Should return the question that was answers");
     }
 }

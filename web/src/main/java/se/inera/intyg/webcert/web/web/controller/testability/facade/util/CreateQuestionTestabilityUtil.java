@@ -54,7 +54,19 @@ public class CreateQuestionTestabilityUtil {
         final var draft = utkastService.getDraft(certificateId, false);
         final var arende = createArende(createQuestionRequest, draft);
         arendeRepository.save(arende);
+        if (shouldCreateAnswerDraft(createQuestionRequest)) {
+            final var questionDraft = new ArendeDraft();
+            questionDraft.setIntygId(certificateId);
+            questionDraft.setText(createQuestionRequest.getAnswer());
+            questionDraft.setQuestionId(arende.getMeddelandeId());
+            arendeDraftRepository.save(questionDraft);
+        }
         return arende.getMeddelandeId();
+    }
+
+    private boolean shouldCreateAnswerDraft(CreateQuestionRequestDTO createQuestionRequest) {
+        return createQuestionRequest.getAnswer() != null && !createQuestionRequest.getAnswer().isBlank() &&
+            createQuestionRequest.isAnswerAsDraft();
     }
 
     public String createNewQuestionDraft(String certificateId, CreateQuestionRequestDTO createQuestionRequest) {

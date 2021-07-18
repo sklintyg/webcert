@@ -19,42 +19,71 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service
-public class SaveQuestionAnswerFacadeServiceImpl implements SaveQuestionAnswerFacadeService {
+public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
 
     private final ArendeService arendeService;
     private final ArendeDraftService arendeDraftService;
-    private final GetQuestionFacadeService getQuestionFacadeService;
+    private final QuestionConverter questionConverter;
 
     @Autowired
-    public SaveQuestionAnswerFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, GetQuestionFacadeService getQuestionFacadeService) {
+    public GetQuestionFacadeServiceImpl(ArendeService arendeService,
+        ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
         this.arendeService = arendeService;
         this.arendeDraftService = arendeDraftService;
-        this.getQuestionFacadeService = getQuestionFacadeService;
+        this.questionConverter = questionConverter;
     }
 
     @Override
-    public Question save(String questionId, String message) {
+    public Question get(String questionId) {
         final var question = getQuestion(questionId);
-        saveAnswerDraftForQuestion(question, message);
-        return getQuestionFacadeService.get(questionId);
+        final var relatedArenden = arendeService.getRelatedArenden(questionId);
+
+        final var answer = getAnswer(questionId, relatedArenden);
+        if (hasAnswer(answer)) {
+            return questionConverter.convert(question, answer);
+        }
+
+        final var answerDraft = getAnswerDraft(questionId, question);
+        if (hasAnswerDraft(answerDraft)) {
+            return questionConverter.convert(question, answerDraft);
+        }
+
+        return questionConverter.convert(question);
     }
 
-    private void saveAnswerDraftForQuestion(Arende question, String message) {
-        arendeDraftService.saveDraft(question.getIntygsId(), question.getMeddelandeId(), message, null);
-    }
 
     private Arende getQuestion(String questionId) {
         return arendeService.getArende(questionId);
+    }
+
+    private Arende getAnswer(String questionId, List<Arende> relatedArenden) {
+        return relatedArenden.stream()
+            .filter(relatedArende -> questionId.equalsIgnoreCase(relatedArende.getSvarPaId()))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private ArendeDraft getAnswerDraft(String questionId, Arende question) {
+        return arendeDraftService.getAnswerDraft(question.getIntygsId(), questionId);
+    }
+
+    private boolean hasAnswerDraft(ArendeDraft answerDraft) {
+        return answerDraft != null;
+    }
+
+    private boolean hasAnswer(Arende arendeSvar) {
+        return arendeSvar != null;
     }
 }

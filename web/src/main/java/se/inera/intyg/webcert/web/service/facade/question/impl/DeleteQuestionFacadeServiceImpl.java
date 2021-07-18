@@ -37,6 +37,6 @@ public class DeleteQuestionFacadeServiceImpl implements DeleteQuestionFacadeServ
     @Override
     public void delete(String questionId) {
         final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(questionId));
-        arendeDraftService.delete(questionDraft.getIntygId(), questionDraft.getQuestionId());
+        arendeDraftService.delete(questionDraft.getIntygId(), null);
     }
 }

@@ -30,4 +30,8 @@ public interface QuestionConverter {
     Question convert(ArendeDraft arendeDraft);
 
     Question convert(Arende arende, String answer);
+
+    Question convert(Arende arende, Arende answer);
+
+    Question convert(Arende arende, ArendeDraft answerDraft);
 }

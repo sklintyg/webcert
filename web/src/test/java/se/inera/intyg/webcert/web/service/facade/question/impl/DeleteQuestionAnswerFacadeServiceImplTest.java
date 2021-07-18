@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -36,54 +36,50 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 
 @ExtendWith(MockitoExtension.class)
-class SaveQuestionAnswerFacadeServiceImplTest {
+class DeleteQuestionAnswerFacadeServiceImplTest {
+
+    private final String CERTIFICATE_ID = "certificateId";
+    private final String QUESTION_ID = "questionId";
 
     @Mock
-    private ArendeService arendeService;
+    ArendeService arendeService;
 
     @Mock
-    private ArendeDraftService arendeDraftService;
+    ArendeDraftService arendeDraftService;
 
     @Mock
-    private GetQuestionFacadeService getQuestionFacadeService;
+    GetQuestionFacadeService getQuestionFacadeService;
 
     @InjectMocks
-    private SaveQuestionAnswerFacadeServiceImpl saveQuestionAnswerFacadeService;
+    private DeleteQuestionAnswerFacadeServiceImpl deleteQuestionAnswerFacadeService;
 
-    private String certificateId;
-    private String questionId;
-    private String message;
+    private Arende arende;
 
     @BeforeEach
-    void setUp() {
-        certificateId = "certificateId";
-        questionId = "questionId";
-        message = "Det här är ett svar";
-
-        final var arende = new Arende();
-        arende.setMeddelandeId(questionId);
-        arende.setIntygsId(certificateId);
+    void setup() {
+        arende = new Arende();
+        arende.setIntygsId(CERTIFICATE_ID);
+        arende.setMeddelandeId(QUESTION_ID);
 
         doReturn(arende)
             .when(arendeService)
-            .getArende(questionId);
+            .getArende(QUESTION_ID);
 
         doReturn(Question.builder().build())
             .when(getQuestionFacadeService)
-            .get(questionId);
+            .get(QUESTION_ID);
     }
 
     @Test
-    void shallReturnSavedAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
-
-        assertNotNull(actualQuestion, "Should return the question that we answered");
+    void shallDeleteDraftForQuestion() {
+        deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
+        // When deleting a question answer draft you pass the questions ID.
+        verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
     }
 
     @Test
-    void shallSaveAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
-
-        verify(arendeDraftService).saveDraft(certificateId, questionId, message, null);
+    void shallQuestionWhenDeletingAnswerDraft() {
+        final var actualQuestion = deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
+        assertNull(actualQuestion.getAnswer(), "Answer should be null after deleting the answer draft");
     }
 }

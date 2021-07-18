@@ -34,10 +34,12 @@ import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
@@ -66,6 +68,12 @@ class QuestionControllerTest {
 
     @Mock
     private SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService;
+
+    @Mock
+    private DeleteQuestionAnswerFacadeService deleteQuestionAnswerFacadeService;
+
+    @Mock
+    private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
 
     @InjectMocks
     private QuestionController questionController;
@@ -152,6 +160,34 @@ class QuestionControllerTest {
             .save(questionId, answerRequestDTO.getMessage());
 
         final var actualResponse = questionController.saveQuestionAnswer(questionId, answerRequestDTO);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    }
+
+    @Test
+    void shallDeleteAnswerForQuestion() {
+        final var questionId = "questionId";
+
+        final var actualResponse = questionController.deleteQuestionAnswer(questionId);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+
+        verify(deleteQuestionAnswerFacadeService).delete(questionId);
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    }
+
+    @Test
+    void shallSendAnswerForQuestion() {
+        final var questionId = "questionId";
+        final var answerRequestDTO = new AnswerRequestDTO();
+        answerRequestDTO.setMessage("Det här är ett svar!");
+
+        doReturn(Question.builder().build())
+            .when(sendQuestionAnswerFacadeService)
+            .send(questionId, answerRequestDTO.getMessage());
+
+        final var actualResponse = questionController.sendQuestionAnswer(questionId, answerRequestDTO);
 
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
         assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());

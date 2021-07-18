@@ -25,36 +25,37 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 
 @Service
-public class SaveQuestionAnswerFacadeServiceImpl implements SaveQuestionAnswerFacadeService {
+public class DeleteQuestionAnswerFacadeServiceImpl implements DeleteQuestionAnswerFacadeService {
 
     private final ArendeService arendeService;
     private final ArendeDraftService arendeDraftService;
     private final GetQuestionFacadeService getQuestionFacadeService;
 
     @Autowired
-    public SaveQuestionAnswerFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, GetQuestionFacadeService getQuestionFacadeService) {
+    public DeleteQuestionAnswerFacadeServiceImpl(ArendeService arendeService,
+        ArendeDraftService arendeDraftService,
+        GetQuestionFacadeService getQuestionFacadeService) {
         this.arendeService = arendeService;
         this.arendeDraftService = arendeDraftService;
         this.getQuestionFacadeService = getQuestionFacadeService;
     }
 
     @Override
-    public Question save(String questionId, String message) {
+    public Question delete(String questionId) {
         final var question = getQuestion(questionId);
-        saveAnswerDraftForQuestion(question, message);
+        deleteAnswerDraftOnQuestion(question);
         return getQuestionFacadeService.get(questionId);
-    }
-
-    private void saveAnswerDraftForQuestion(Arende question, String message) {
-        arendeDraftService.saveDraft(question.getIntygsId(), question.getMeddelandeId(), message, null);
     }
 
     private Arende getQuestion(String questionId) {
         return arendeService.getArende(questionId);
+    }
+
+    private void deleteAnswerDraftOnQuestion(Arende question) {
+        arendeDraftService.delete(question.getIntygsId(), question.getMeddelandeId());
     }
 }

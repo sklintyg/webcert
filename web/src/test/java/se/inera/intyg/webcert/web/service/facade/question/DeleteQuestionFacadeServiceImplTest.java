@@ -36,7 +36,6 @@ import se.inera.intyg.webcert.web.service.facade.question.impl.DeleteQuestionFac
 class DeleteQuestionFacadeServiceImplTest {
 
     private final String CERTIFICATE_ID = "certificateId";
-    private final String QUESTION_ID = "questionId";
     private final String ID_AS_STRING = "1000";
     private final long ID_AS_LONG = 1000L;
 
@@ -52,7 +51,6 @@ class DeleteQuestionFacadeServiceImplTest {
     void setup() {
         arendeDraft = new ArendeDraft();
         arendeDraft.setIntygId(CERTIFICATE_ID);
-        arendeDraft.setQuestionId(QUESTION_ID);
         arendeDraft.setId(ID_AS_LONG);
 
         doReturn(arendeDraft)
@@ -63,6 +61,8 @@ class DeleteQuestionFacadeServiceImplTest {
     @Test
     void shallDeleteDraftForCertificate() {
         deleteQuestionDraftFacadeService.delete(ID_AS_STRING);
-        verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
+        // Delete should always be called with questionId as null, because question drafts don't have an id. They will get it at the
+        // time the question is sent
+        verify(arendeDraftService).delete(CERTIFICATE_ID, null);
     }
 }

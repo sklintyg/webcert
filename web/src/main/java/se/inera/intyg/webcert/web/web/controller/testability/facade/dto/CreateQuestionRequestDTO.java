@@ -25,6 +25,8 @@ public class CreateQuestionRequestDTO {
 
     private QuestionType type;
     private String message;
+    private String answer;
+    private boolean answerAsDraft;
 
     public QuestionType getType() {
         return type;
@@ -40,5 +42,21 @@ public class CreateQuestionRequestDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public boolean isAnswerAsDraft() {
+        return answerAsDraft;
+    }
+
+    public void setAnswerAsDraft(boolean answerAsDraft) {
+        this.answerAsDraft = answerAsDraft;
     }
 }
