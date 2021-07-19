@@ -43,7 +43,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
@@ -306,6 +305,71 @@ public class QuestionIT {
     }
 
     @Test
+    @DisplayName("Shall get question with answer draft for certificate")
+    void shallGetQuestionWithAnswerDraftForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionWithAnswerDraft()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertNotNull(response.get(0).getAnswer().getMessage(), "Expect question to have an answer")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall get question with answer for certificate")
+    void shallGetQuestionWithAnswerForCertificate() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .questionWithAnswer()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertNotNull(response.get(0).getAnswer().getId(), "Expect question to have an answer id"),
+            () -> assertNotNull(response.get(0).getAnswer().getAuthor(), "Expect question to have an answer author"),
+            () -> assertNotNull(response.get(0).getAnswer().getSent(), "Expect question to have an answer sent"),
+            () -> assertNotNull(response.get(0).getAnswer().getMessage(), "Expect question to have an answer message")
+        );
+    }
+
+    @Test
     @DisplayName("Shall save answer for question")
     void shallSaveAnswerForQuestion() {
         final var testSetup = TestSetup.create()
@@ -337,7 +401,7 @@ public class QuestionIT {
             .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
 
         assertAll(
-            () -> assertEquals(response.getAnswer().getMessage(), answerRequestDTO.getMessage(), "Answer should have been saved.")
+            () -> assertEquals(answerRequestDTO.getMessage(), response.getAnswer().getMessage(), "Answer should have been saved.")
         );
     }
 
