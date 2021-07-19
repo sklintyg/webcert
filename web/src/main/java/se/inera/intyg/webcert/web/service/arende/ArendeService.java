@@ -91,4 +91,6 @@ public interface ArendeService {
     List<Arende> getArendenExternal(List<String> intygsIds);
 
     List<Arende> getArendenInternal(String intygsId);
+
+    List<Arende> getRelatedArenden(String questionId);
 }

@@ -766,6 +766,11 @@ public class ArendeServiceImpl implements ArendeService {
         return arendeRepository.findByIntygsId(intygsId);
     }
 
+    @Override
+    public List<Arende> getRelatedArenden(String questionId) {
+        return arendeRepository.findBySvarPaId(questionId);
+    }
+
     @VisibleForTesting
     void setMockSystemClock(Clock systemClock) {
         this.systemClock = systemClock;

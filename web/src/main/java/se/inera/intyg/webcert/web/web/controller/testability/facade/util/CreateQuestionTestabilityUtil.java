@@ -54,7 +54,29 @@ public class CreateQuestionTestabilityUtil {
         final var draft = utkastService.getDraft(certificateId, false);
         final var arende = createArende(createQuestionRequest, draft);
         arendeRepository.save(arende);
+        if (shouldCreateAnswerDraft(createQuestionRequest)) {
+            final var questionDraft = new ArendeDraft();
+            questionDraft.setIntygId(certificateId);
+            questionDraft.setText(createQuestionRequest.getAnswer());
+            questionDraft.setQuestionId(arende.getMeddelandeId());
+            arendeDraftRepository.save(questionDraft);
+        }
+
+        if (shouldCreateAnswer(createQuestionRequest)) {
+            final var arendeSvar = createArendeSvar(arende, createQuestionRequest.getAnswer(), draft.getSkapadAv().getNamn());
+            arendeRepository.save(arendeSvar);
+        }
         return arende.getMeddelandeId();
+    }
+
+    private boolean shouldCreateAnswer(CreateQuestionRequestDTO createQuestionRequest) {
+        return createQuestionRequest.getAnswer() != null && !createQuestionRequest.getAnswer().isBlank()
+            && !createQuestionRequest.isAnswerAsDraft();
+    }
+
+    private boolean shouldCreateAnswerDraft(CreateQuestionRequestDTO createQuestionRequest) {
+        return createQuestionRequest.getAnswer() != null && !createQuestionRequest.getAnswer().isBlank()
+            && createQuestionRequest.isAnswerAsDraft();
     }
 
     public String createNewQuestionDraft(String certificateId, CreateQuestionRequestDTO createQuestionRequest) {
@@ -114,6 +136,46 @@ public class CreateQuestionTestabilityUtil {
         // TODO: When FK then no vardaktorName. When WC then it is the sending persons name.
         arende.setSkickatAv("FK");
         // arende.setVardaktorName(draft.getSkapadAv().getNamn());
+
+        return arende;
+    }
+
+    private Arende createArendeSvar(Arende question, String answer, String author) {
+        final var arende = new Arende();
+        arende.setIntygsId(question.getIntygsId());
+        arende.setIntygTyp(question.getIntygTyp());
+        arende.setMeddelandeId(UUID.randomUUID().toString());
+
+        arende.setPatientPersonId(question.getPatientPersonId());
+
+        arende.setSigneratAv(question.getSigneratAv());
+        arende.setSigneratAvName(question.getSigneratAvName());
+
+        arende.setTimestamp(LocalDateTime.now());
+        arende.setSkickatTidpunkt(LocalDateTime.now());
+        arende.setSenasteHandelse(LocalDateTime.now());
+
+        // TODO: Don't have to set subject. No subject will use the "Amne-description" by default
+//        arende.setRubrik(arende.getAmne().getDescription());
+
+        // TODO: No need to set reference. Can probably skip this completely.
+//        arende.setReferensId("referens");
+        arende.setMeddelande(answer);
+
+        arende.setSvarPaId(question.getMeddelandeId());
+
+        arende.setEnhetId(question.getEnhetId());
+        arende.setEnhetName(question.getEnhetName());
+        arende.setVardgivareName(question.getVardgivareName());
+
+        arende.setVidarebefordrad(false);
+
+        arende.setStatus(Status.CLOSED);
+
+        // TODO: When receiving a question, the skickadAv is FK. If sending a question the skickadAv is WC.
+        // TODO: When FK then no vardaktorName. When WC then it is the sending persons name.
+        arende.setSkickatAv("WC");
+        arende.setVardaktorName(author);
 
         return arende;
     }

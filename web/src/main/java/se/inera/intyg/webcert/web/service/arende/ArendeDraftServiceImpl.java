@@ -68,6 +68,11 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
     }
 
     @Override
+    public ArendeDraft getAnswerDraft(String certificateId, String questionId) {
+        return arendeDraftRepository.findByIntygIdAndQuestionId(certificateId, questionId);
+    }
+
+    @Override
     public ArendeDraft getQuestionDraftById(long id) {
         return arendeDraftRepository.findById(id).orElseThrow();
     }

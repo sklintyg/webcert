@@ -20,11 +20,13 @@
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -173,6 +175,105 @@ class QuestionConverterImplTest {
     }
 
     @Nested
+    class AnswerOnReceivedAdministativeQuestions {
+
+        private final String QUESTION_ID = "1000";
+        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
+        private final String AUTHOR = "author";
+        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
+        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
+        private final String HEADER = "Rubrik";
+        private final LocalDateTime SENT = LocalDateTime.now();
+        private final String SENT_BY_FK = "FK";
+        private final boolean IS_HANDLED = true;
+        private final boolean IS_FORWARDED = true;
+        private final String MESSAGE = "message";
+        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+
+        private final String ANSWER_AUTHOR = "answer author";
+        private final String ANSWER_ID = "answerId";
+        private final LocalDateTime ANSWER_SENT = LocalDateTime.now();
+        private final String ANSWER_MESSAGE = "answer message";
+
+        private Arende arende;
+        private Arende arendeSvar;
+        private ArendeDraft arendeSvarDraft;
+
+        @BeforeEach
+        void setup() {
+            arende = new Arende();
+            arende.setMeddelandeId(QUESTION_ID);
+            arende.setVardaktorName(AUTHOR);
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setSkickatTidpunkt(SENT);
+            arende.setSkickatAv(SENT_BY_FK);
+            arende.setStatus(Status.CLOSED);
+            arende.setVidarebefordrad(IS_FORWARDED);
+            arende.setMeddelande(MESSAGE);
+            arende.setSenasteHandelse(LAST_UPDATE);
+
+            arendeSvar = new Arende();
+            arendeSvar.setMeddelandeId(ANSWER_ID);
+            arendeSvar.setVardaktorName(ANSWER_AUTHOR);
+            arendeSvar.setSkickatTidpunkt(ANSWER_SENT);
+            arendeSvar.setMeddelande(ANSWER_MESSAGE);
+
+            arendeSvarDraft = new ArendeDraft();
+            arendeSvarDraft.setQuestionId(QUESTION_ID);
+            arendeSvarDraft.setText(ANSWER_MESSAGE);
+        }
+
+        @Test
+        void shallReturnAnswerWithId() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar);
+
+            assertEquals(ANSWER_ID, actualQuestion.getAnswer().getId());
+        }
+
+        @Test
+        void shallReturnAnswerWithAuthor() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar);
+
+            assertEquals(ANSWER_AUTHOR, actualQuestion.getAnswer().getAuthor());
+        }
+
+        @Test
+        void shallReturnAnswerWithMessage() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar);
+
+            assertEquals(ANSWER_MESSAGE, actualQuestion.getAnswer().getMessage());
+        }
+
+        @Test
+        void shallReturnAnswerWithSent() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar);
+
+            assertEquals(ANSWER_SENT, actualQuestion.getAnswer().getSent());
+        }
+
+        @Test
+        void shallReturnQuestionWithoutAnswerIfAnswerIsNull() {
+            final var actualQuestion = questionConverter.convert(arende, (Arende) null);
+
+            assertNull(actualQuestion.getAnswer(), "Answer should be null");
+        }
+
+        @Test
+        void shallReturnAnswerDraftWithMessage() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvarDraft);
+
+            assertEquals(ANSWER_MESSAGE, actualQuestion.getAnswer().getMessage());
+        }
+
+        @Test
+        void shallReturnQuestionWithoutAnswerIfAnswerDraftIsNull() {
+            final var actualQuestion = questionConverter.convert(arende, (ArendeDraft) null);
+
+            assertNull(actualQuestion.getAnswer(), "Answer should be null");
+        }
+    }
+
+    @Nested
     class SendAdministrativeQuestions {
 
         private final long QUESTION_ID = 1000L;
@@ -237,6 +338,35 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter.convert(arendeDraft);
 
             assertEquals(MESSAGE, actualQuestion.getMessage());
+        }
+    }
+
+    @Nested
+    class AnswerForAdministrativeQuestion {
+
+        private Arende arende;
+
+        @BeforeEach
+        void setup() {
+            arende = new Arende();
+            arende.setMeddelandeId("questionId");
+            arende.setVardaktorName("author");
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setSkickatTidpunkt(LocalDateTime.now());
+            arende.setSkickatAv("FK");
+            arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+            arende.setVidarebefordrad(false);
+            arende.setMeddelande("Här är det en fråga");
+            arende.setSenasteHandelse(arende.getSkickatTidpunkt());
+        }
+
+        @Test
+        void shallIncludeAnswer() {
+            final var answer = "Här är vårat svar";
+
+            final var actualQuestion = questionConverter.convert(arende, answer);
+
+            assertEquals(actualQuestion.getAnswer().getMessage(), answer);
         }
     }
 }

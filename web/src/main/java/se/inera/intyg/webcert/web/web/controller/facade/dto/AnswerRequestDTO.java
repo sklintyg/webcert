@@ -17,24 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.question.QuestionType;
+public class AnswerRequestDTO {
 
-public class CreateQuestionRequestDTO {
-
-    private QuestionType type;
     private String message;
-    private String answer;
-    private boolean answerAsDraft;
-
-    public QuestionType getType() {
-        return type;
-    }
-
-    public void setType(QuestionType type) {
-        this.type = type;
-    }
 
     public String getMessage() {
         return message;
@@ -42,21 +29,5 @@ public class CreateQuestionRequestDTO {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public boolean isAnswerAsDraft() {
-        return answerAsDraft;
-    }
-
-    public void setAnswerAsDraft(boolean answerAsDraft) {
-        this.answerAsDraft = answerAsDraft;
     }
 }

@@ -72,6 +72,10 @@ public class TestSetup {
     public Certificate certificate() {
         return certificate;
     }
+    
+    public String questionId() {
+        return questionId;
+    }
 
     public String questionDraftId() {
         return questionDraftId;
@@ -115,6 +119,8 @@ public class TestSetup {
 
         private boolean createQuestion;
         private boolean createQuestionDraft;
+        private boolean createAnswerDraft;
+        private boolean createAnswer;
 
         private TestSetupBuilder() {
 
@@ -171,6 +177,18 @@ public class TestSetup {
 
         public TestSetupBuilder question() {
             this.createQuestion = true;
+            return this;
+        }
+
+        public TestSetupBuilder questionWithAnswer() {
+            this.createQuestion = true;
+            this.createAnswer = true;
+            return this;
+        }
+
+        public TestSetupBuilder questionWithAnswerDraft() {
+            this.createQuestion = true;
+            this.createAnswerDraft = true;
             return this;
         }
 
@@ -263,6 +281,11 @@ public class TestSetup {
             final var questionRequest = new CreateQuestionRequestDTO();
             questionRequest.setType(QuestionType.COORDINATION);
             questionRequest.setMessage("Det här är ett meddelande!");
+
+            if (createAnswer || createAnswerDraft) {
+                questionRequest.setAnswer("Det här är ett svar!");
+                questionRequest.setAnswerAsDraft(createAnswerDraft);
+            }
 
             return given()
                 .pathParam("certificateId", certificateId)
