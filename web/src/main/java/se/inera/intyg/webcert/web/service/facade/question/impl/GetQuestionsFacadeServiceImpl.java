@@ -68,6 +68,19 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         return questionList;
     }
 
+
+    private Map<String, ArendeDraft> getAnswersDraftMap(List<ArendeDraft> arendeDraft) {
+        return arendeDraft.stream()
+            .collect(Collectors.toMap(ArendeDraft::getQuestionId, Function.identity()));
+    }
+
+
+    private Map<String, Arende> getAnswersMap(List<Arende> arendenInternal) {
+        return arendenInternal.stream()
+            .filter(isAnswer())
+            .collect(Collectors.toMap(Arende::getSvarPaId, Function.identity()));
+    }
+
     private List<Question> getQuestionList(List<Arende> questions, Map<String, Arende> answersMap,
         Map<String, ArendeDraft> answersDraftMap) {
         return questions.stream()
@@ -78,21 +91,6 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
                 answersMap.get(question.getMeddelandeId()))
             )
             .collect(Collectors.toList());
-    }
-
-    private Map<String, ArendeDraft> getAnswersDraftMap(List<ArendeDraft> arendeDraft) {
-        return arendeDraft.stream()
-            .collect(Collectors.toMap(ArendeDraft::getQuestionId, Function.identity()));
-    }
-
-    private Map<String, Arende> getAnswersMap(List<Arende> arendenInternal) {
-        return arendenInternal.stream()
-            .filter(isAnswer())
-            .collect(Collectors.toMap(Arende::getSvarPaId, Function.identity()));
-    }
-
-    private Predicate<ArendeDraft> isAnswerDraft() {
-        return arendeDraft -> arendeDraft.getQuestionId() != null && !arendeDraft.getQuestionId().isBlank();
     }
 
     private Question convertQuestion(Arende question, ArendeDraft answerDraft, Arende answer) {
@@ -107,19 +105,24 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         return questionConverter.convert(question);
     }
 
-    private Predicate<Arende> isAnswer() {
-        return arende -> arende.getSvarPaId() != null && !arende.getSvarPaId().isBlank();
-    }
-
-    private Predicate<Arende> isQuestion() {
-        return arende -> arende.getSvarPaId() == null || arende.getSvarPaId().isBlank();
-    }
-
     private Question getQuestionDraft(String certificateId) {
         final var questionDraft = arendeDraftService.getQuestionDraft(certificateId);
         if (questionDraft != null) {
             return questionConverter.convert(questionDraft);
         }
         return null;
+    }
+
+
+    private Predicate<Arende> isQuestion() {
+        return arende -> arende.getSvarPaId() == null || arende.getSvarPaId().isBlank();
+    }
+
+    private Predicate<ArendeDraft> isAnswerDraft() {
+        return arendeDraft -> arendeDraft.getQuestionId() != null && !arendeDraft.getQuestionId().isBlank();
+    }
+
+    private Predicate<Arende> isAnswer() {
+        return arende -> arende.getSvarPaId() != null && !arende.getSvarPaId().isBlank();
     }
 }
