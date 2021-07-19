@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -107,6 +109,26 @@ public class GetQuestionsFacadeServiceImplTest {
         assertEquals(4, actualQuestions.size(), "Expect four question to be returned");
     }
 
+    @Test
+    void shallReturnQuestionWithAnswer() {
+        setupMockToReturnQuestionWithAnswer();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getAnswer(), "Expect an answer for the question");
+    }
+
+    @Test
+    void shallReturnQuestionWithAnswerDraft() {
+        setupMockToReturnQuestionWithAnswerDraft();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getAnswer(), "Expect an answer for the question");
+    }
+
     private void setupMockToReturnQuestionDraft() {
         doReturn(new ArendeDraft())
             .when(arendeDraftService)
@@ -125,5 +147,42 @@ public class GetQuestionsFacadeServiceImplTest {
         doReturn(Question.builder().build())
             .when(questionConverter)
             .convert(any(Arende.class));
+    }
+
+    private void setupMockToReturnQuestionWithAnswer() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+
+        final var answer = new Arende();
+        answer.setMeddelandeId("answerId");
+        answer.setSvarPaId("questionId");
+
+        doReturn(List.of(question, answer))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        doReturn(Question.builder().answer(Answer.builder().build()).build())
+            .when(questionConverter)
+            .convert(question, answer);
+    }
+
+    private void setupMockToReturnQuestionWithAnswerDraft() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+
+        final var answer = new ArendeDraft();
+        answer.setQuestionId("questionId");
+
+        doReturn(List.of(question))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        doReturn(List.of(answer))
+            .when(arendeDraftService)
+            .listAnswerDrafts(CERTIFICATE_ID);
+
+        doReturn(Question.builder().answer(Answer.builder().build()).build())
+            .when(questionConverter)
+            .convert(question, answer);
     }
 }

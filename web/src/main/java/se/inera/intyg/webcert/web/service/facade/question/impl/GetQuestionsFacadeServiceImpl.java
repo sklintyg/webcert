@@ -20,10 +20,15 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
@@ -47,10 +52,13 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
     @Override
     public List<Question> getQuestions(String certificateId) {
         final var arendenInternal = arendeService.getArendenInternal(certificateId);
+        final var arendeDraft = arendeDraftService.listAnswerDrafts(certificateId);
 
-        final var questionList = arendenInternal.stream()
-            .map(questionConverter::convert)
-            .collect(Collectors.toList());
+        final var answersMap = getAnswersMap(arendenInternal);
+
+        final var answersDraftMap = getAnswersDraftMap(arendeDraft);
+
+        final var questionList = getQuestionList(arendenInternal, answersMap, answersDraftMap);
 
         final var questionDraft = getQuestionDraft(certificateId);
         if (questionDraft != null) {
@@ -58,6 +66,53 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         }
 
         return questionList;
+    }
+
+    private List<Question> getQuestionList(List<Arende> questions, Map<String, Arende> answersMap,
+        Map<String, ArendeDraft> answersDraftMap) {
+        return questions.stream()
+            .filter(isQuestion())
+            .map(question -> convertQuestion(
+                question,
+                answersDraftMap.get(question.getMeddelandeId()),
+                answersMap.get(question.getMeddelandeId()))
+            )
+            .collect(Collectors.toList());
+    }
+
+    private Map<String, ArendeDraft> getAnswersDraftMap(List<ArendeDraft> arendeDraft) {
+        return arendeDraft.stream()
+            .collect(Collectors.toMap(ArendeDraft::getQuestionId, Function.identity()));
+    }
+
+    private Map<String, Arende> getAnswersMap(List<Arende> arendenInternal) {
+        return arendenInternal.stream()
+            .filter(isAnswer())
+            .collect(Collectors.toMap(Arende::getSvarPaId, Function.identity()));
+    }
+
+    private Predicate<ArendeDraft> isAnswerDraft() {
+        return arendeDraft -> arendeDraft.getQuestionId() != null && !arendeDraft.getQuestionId().isBlank();
+    }
+
+    private Question convertQuestion(Arende question, ArendeDraft answerDraft, Arende answer) {
+        if (answer != null) {
+            return questionConverter.convert(question, answer);
+        }
+
+        if (answerDraft != null) {
+            return questionConverter.convert(question, answerDraft);
+        }
+
+        return questionConverter.convert(question);
+    }
+
+    private Predicate<Arende> isAnswer() {
+        return arende -> arende.getSvarPaId() != null && !arende.getSvarPaId().isBlank();
+    }
+
+    private Predicate<Arende> isQuestion() {
+        return arende -> arende.getSvarPaId() == null || arende.getSvarPaId().isBlank();
     }
 
     private Question getQuestionDraft(String certificateId) {
