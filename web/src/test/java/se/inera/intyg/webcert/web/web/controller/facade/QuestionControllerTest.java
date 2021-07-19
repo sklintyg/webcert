@@ -169,11 +169,13 @@ class QuestionControllerTest {
     void shallDeleteAnswerForQuestion() {
         final var questionId = "questionId";
 
+        doReturn(Question.builder().build())
+            .when(deleteQuestionAnswerFacadeService)
+            .delete(questionId);
+
         final var actualResponse = questionController.deleteQuestionAnswer(questionId);
 
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-
-        verify(deleteQuestionAnswerFacadeService).delete(questionId);
         assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
     }
 
