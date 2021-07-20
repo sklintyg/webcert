@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeSe
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -73,6 +74,8 @@ public class QuestionController {
     private DeleteQuestionAnswerFacadeService deleteQuestionAnswerFacadeService;
     @Autowired
     private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
+    @Autowired
+    private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     @GET
     @Path("/{certificateId}")
@@ -144,6 +147,49 @@ public class QuestionController {
         }
 
         final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
-        return Response.ok(QuestionResponseDTO.create(question)).build();
+        final var links = getQuestionsResourceLinkService.get(question);
+        return Response.ok(QuestionResponseDTO.create(question, links)).build();
+    }
+
+    @POST
+    @Path("/{questionId}/saveanswer")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response saveQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving answer for question with id: '{}'", questionId);
+        }
+
+        final var questionWithSavedAnswer = saveQuestionAnswerFacadeService.save(questionId, answerRequestDTO.getMessage());
+        final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer);
+        return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer, links)).build();
+    }
+
+    @DELETE
+    @Path("/{questionId}/answer")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response deleteQuestionAnswer(@PathParam("questionId") @NotNull String questionId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting answer for question with id: '{}'", questionId);
+        }
+
+        final var questionWithDeletedAnswer = deleteQuestionAnswerFacadeService.delete(questionId);
+        final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
+        return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
+    }
+
+    @POST
+    @Path("/{questionId}/sendanswer")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response sendQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Send answer for question with id: '{}'", questionId);
+        }
+
+        final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
+        final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
+        return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
     }
 }
