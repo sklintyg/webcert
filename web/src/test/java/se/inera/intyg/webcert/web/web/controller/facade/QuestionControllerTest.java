@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeSe
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -74,6 +75,9 @@ class QuestionControllerTest {
 
     @Mock
     private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
+
+    @Mock
+    private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     @InjectMocks
     private QuestionController questionController;
