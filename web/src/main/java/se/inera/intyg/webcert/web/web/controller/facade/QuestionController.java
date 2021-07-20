@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -31,6 +33,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
@@ -44,6 +47,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
@@ -80,7 +84,8 @@ public class QuestionController {
         }
 
         final var questions = getQuestionsFacadeService.getQuestions(certificateId);
-        return Response.ok(QuestionsResponseDTO.create(questions)).build();
+        final var links = getQuestionsResourceLinkService.get(questions);
+        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
     }
 
     @DELETE
@@ -111,7 +116,8 @@ public class QuestionController {
             createQuestionRequest.getMessage()
         );
 
-        return Response.ok(QuestionResponseDTO.create(question)).build();
+        final var links = getQuestionsResourceLinkService.get(question);
+        return Response.ok(QuestionResponseDTO.create(question, links)).build();
     }
 
     @POST
@@ -124,8 +130,8 @@ public class QuestionController {
         }
 
         final var savedQuestion = saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
-
-        return Response.ok(QuestionResponseDTO.create(savedQuestion)).build();
+        final var links = getQuestionsResourceLinkService.get(savedQuestion);
+        return Response.ok(QuestionResponseDTO.create(savedQuestion, links)).build();
     }
 
     @POST
@@ -139,44 +145,5 @@ public class QuestionController {
 
         final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
         return Response.ok(QuestionResponseDTO.create(question)).build();
-    }
-
-    @POST
-    @Path("/{questionId}/saveanswer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response saveQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Saving answer for question with id: '{}'", questionId);
-        }
-
-        final var questionWithSavedAnswer = saveQuestionAnswerFacadeService.save(questionId, answerRequestDTO.getMessage());
-        return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer)).build();
-    }
-
-    @DELETE
-    @Path("/{questionId}/answer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response deleteQuestionAnswer(@PathParam("questionId") @NotNull String questionId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting answer for question with id: '{}'", questionId);
-        }
-
-        final var questionWithDeletedAnswer = deleteQuestionAnswerFacadeService.delete(questionId);
-        return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer)).build();
-    }
-
-    @POST
-    @Path("/{questionId}/sendanswer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response sendQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Send answer for question with id: '{}'", questionId);
-        }
-
-        final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
-        return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer)).build();
     }
 }

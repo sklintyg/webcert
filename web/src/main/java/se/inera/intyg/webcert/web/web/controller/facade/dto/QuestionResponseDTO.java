@@ -19,23 +19,24 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import java.util.List;
 import se.inera.intyg.common.support.facade.model.question.Question;
 
 public class QuestionResponseDTO {
 
-    private Question question;
+    private QuestionDTO question;
 
-    public Question getQuestion() {
+    public QuestionDTO getQuestion() {
         return question;
     }
 
-    public void setQuestion(Question question) {
+    public void setQuestion(QuestionDTO question) {
         this.question = question;
     }
 
-    public static QuestionResponseDTO create(Question questions) {
+    public static QuestionResponseDTO create(Question questions, List<ResourceLinkDTO> links) {
         final var questionsResponseDTO = new QuestionResponseDTO();
-        questionsResponseDTO.setQuestion(questions);
+        questionsResponseDTO.setQuestion(QuestionDTO.create(questions, links));
         return questionsResponseDTO;
     }
 }

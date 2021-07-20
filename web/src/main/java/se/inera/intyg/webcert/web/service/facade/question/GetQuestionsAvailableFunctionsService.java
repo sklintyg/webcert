@@ -16,24 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
+package se.inera.intyg.webcert.web.service.facade.question;
+
+import java.util.List;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+
+public interface GetQuestionsAvailableFunctionsService {
+
+    List<ResourceLinkDTO> get(Question question);
 }
