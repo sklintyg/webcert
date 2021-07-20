@@ -71,8 +71,6 @@ class HandleQuestionFacadeServiceImplTest {
         void shallSetQuestionAsHandled() {
             final var isHandled = true;
 
-
-
             final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
 
             verify(arendeService).closeArendeAsHandled(questionId, certificateType);
