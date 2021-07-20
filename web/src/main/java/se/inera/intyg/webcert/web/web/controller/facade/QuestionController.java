@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.util.List;
-import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,22 +31,22 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
+import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
@@ -76,6 +74,8 @@ public class QuestionController {
     private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
     @Autowired
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
+    @Autowired
+    private HandleQuestionFacadeService handleQuestionFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -191,5 +191,19 @@ public class QuestionController {
         final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
         final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
+    }
+
+    @POST
+    @Path("/{questionId}/handle")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response handleQuestion(@PathParam("questionId") @NotNull String questionId, HandleQuestionRequestDTO handleQuestionRequestDTO) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Send answer for question with id: '{}'", questionId);
+        }
+
+        final var handledQuestion = handleQuestionFacadeService.handle(questionId, handleQuestionRequestDTO.isHandled());
+        final var links = getQuestionsResourceLinkService.get(handledQuestion);
+        return Response.ok(QuestionResponseDTO.create(handledQuestion, links)).build();
     }
 }

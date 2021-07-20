@@ -38,12 +38,14 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFa
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
+import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
@@ -78,6 +80,9 @@ class QuestionControllerTest {
 
     @Mock
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
+
+    @Mock
+    private HandleQuestionFacadeService handleQuestionFacadeService;
 
     @InjectMocks
     private QuestionController questionController;
@@ -194,6 +199,22 @@ class QuestionControllerTest {
             .send(questionId, answerRequestDTO.getMessage());
 
         final var actualResponse = questionController.sendQuestionAnswer(questionId, answerRequestDTO);
+
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    }
+
+    @Test
+    void shallHandleQuestion() {
+        final var questionId = "questionId";
+        final var handleRequestDTO = new HandleQuestionRequestDTO();
+        handleRequestDTO.setHandled(true);
+
+        doReturn(Question.builder().build())
+            .when(handleQuestionFacadeService)
+            .handle(questionId, handleRequestDTO.isHandled());
+
+        final var actualResponse = questionController.handleQuestion(questionId, handleRequestDTO);
 
         assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
         assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
