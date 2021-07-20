@@ -199,7 +199,7 @@ public class QuestionController {
     @PrometheusTimeMethod
     public Response handleQuestion(@PathParam("questionId") @NotNull String questionId, HandleQuestionRequestDTO handleQuestionRequestDTO) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Send answer for question with id: '{}'", questionId);
+            LOG.debug("Handle question with id: '{}'", questionId);
         }
 
         final var handledQuestion = handleQuestionFacadeService.handle(questionId, handleQuestionRequestDTO.isHandled());
