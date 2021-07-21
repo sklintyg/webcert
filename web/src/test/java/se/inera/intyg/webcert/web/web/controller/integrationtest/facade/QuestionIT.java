@@ -547,8 +547,42 @@ public class QuestionIT {
         );
     }
 
+    @Test
+    @DisplayName("Shall get question with reminder")
+    void shallGetQuestionWithReminder() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .question()
+            .reminder()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertNotNull(response.get(0).getReminders()[0].getId(), "Expect question to have a reminder with id"),
+            () -> assertNotNull(response.get(0).getReminders()[0].getAuthor(), "Expect question to have a reminder with author"),
+            () -> assertNotNull(response.get(0).getReminders()[0].getSent(), "Expect question to have a reminder with sent"),
+            () -> assertNotNull(response.get(0).getReminders()[0].getMessage(), "Expect question to have a reminder with message")
+        );
+    }
+
     private ObjectMapper getObjectMapperForDeserialization() {
         return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
     }
-
 }

@@ -23,17 +23,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
@@ -99,6 +102,17 @@ public class GetQuestionsFacadeServiceImplTest {
     }
 
     @Test
+    void shallReturnQuestionsIfQuestionWithReminder() {
+        final var remindersArgCaptor = setupMockToReturnQuestionsWithReminder();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getReminders()[0], "Expect a reminder for the question");
+        assertNotNull(remindersArgCaptor.getValue().get(0), "Expect a reminder to be converted");
+    }
+
+    @Test
     void shallReturnQuestionsIfQuestionsAndQuestionDraft() {
         setupMockToReturnQuestions();
 
@@ -120,6 +134,17 @@ public class GetQuestionsFacadeServiceImplTest {
     }
 
     @Test
+    void shallReturnQuestionWithAnswerAndReminder() {
+        final var remindersArgCaptor = setupMockToReturnQuestionWithAnswerAndReminder();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getReminders()[0], "Expect a reminder for the question");
+        assertNotNull(remindersArgCaptor.getValue().get(0), "Expect a reminder to be converted");
+    }
+
+    @Test
     void shallReturnQuestionWithAnswerDraft() {
         setupMockToReturnQuestionWithAnswerDraft();
 
@@ -127,6 +152,17 @@ public class GetQuestionsFacadeServiceImplTest {
 
         assertEquals(1, actualQuestions.size(), "Expect one question");
         assertNotNull(actualQuestions.get(0).getAnswer(), "Expect an answer for the question");
+    }
+
+    @Test
+    void shallReturnQuestionWithReminder() {
+        final var remindersArgCaptor = setupMockToReturnQuestionWithReminder();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getReminders()[0], "Expect a reminder for the question");
+        assertNotNull(remindersArgCaptor.getValue().get(0), "Expect a reminder to be converted");
     }
 
     private void setupMockToReturnQuestionDraft() {
@@ -146,7 +182,28 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().build())
             .when(questionConverter)
-            .convert(any(Arende.class));
+            .convert(any(Arende.class), any(List.class));
+    }
+
+    private ArgumentCaptor<List> setupMockToReturnQuestionsWithReminder() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+
+        final var reminder = new Arende();
+        reminder.setMeddelandeId("reminderId");
+        reminder.setPaminnelseMeddelandeId("questionId");
+
+        doReturn(List.of(question, reminder))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+        doReturn(Question.builder()
+            .reminders(new Reminder[]{Reminder.builder().build()})
+            .build())
+            .when(questionConverter)
+            .convert(eq(question), remindersArgCaptor.capture());
+        return remindersArgCaptor;
     }
 
     private void setupMockToReturnQuestionWithAnswer() {
@@ -163,7 +220,33 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(question, answer);
+            .convert(eq(question), eq(answer), any(List.class));
+    }
+
+    private ArgumentCaptor<List> setupMockToReturnQuestionWithAnswerAndReminder() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+
+        final var answer = new Arende();
+        answer.setMeddelandeId("answerId");
+        answer.setSvarPaId("questionId");
+
+        final var reminder = new Arende();
+        reminder.setMeddelandeId("reminderId");
+        reminder.setPaminnelseMeddelandeId("questionId");
+
+        doReturn(List.of(question, answer, reminder))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+        doReturn(Question.builder()
+            .answer(Answer.builder().build())
+            .reminders(new Reminder[]{Reminder.builder().build()})
+            .build())
+            .when(questionConverter)
+            .convert(eq(question), eq(answer), remindersArgCaptor.capture());
+        return remindersArgCaptor;
     }
 
     private void setupMockToReturnQuestionWithAnswerDraft() {
@@ -183,6 +266,28 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(question, answer);
+            .convert(eq(question), eq(answer), any(List.class));
+    }
+
+    private ArgumentCaptor<List> setupMockToReturnQuestionWithReminder() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+
+        final var reminder = new Arende();
+        reminder.setMeddelandeId("reminderId");
+        reminder.setPaminnelseMeddelandeId("questionId");
+
+        doReturn(List.of(question, reminder))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+        doReturn(
+            Question.builder()
+                .reminders(new Reminder[]{Reminder.builder().build()})
+                .build())
+            .when(questionConverter)
+            .convert(eq(question), remindersArgCaptor.capture());
+        return remindersArgCaptor;
     }
 }

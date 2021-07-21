@@ -27,6 +27,7 @@ public class CreateQuestionRequestDTO {
     private String message;
     private String answer;
     private boolean answerAsDraft;
+    private boolean reminded;
 
     public QuestionType getType() {
         return type;
@@ -58,5 +59,13 @@ public class CreateQuestionRequestDTO {
 
     public void setAnswerAsDraft(boolean answerAsDraft) {
         this.answerAsDraft = answerAsDraft;
+    }
+
+    public boolean isReminded() {
+        return reminded;
+    }
+
+    public void setReminded(boolean reminded) {
+        this.reminded = reminded;
     }
 }

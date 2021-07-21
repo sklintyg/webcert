@@ -23,7 +23,6 @@ import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUt
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;

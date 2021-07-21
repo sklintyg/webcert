@@ -21,12 +21,13 @@ package se.inera.intyg.webcert.web.service.facade.question.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -274,6 +275,117 @@ class QuestionConverterImplTest {
     }
 
     @Nested
+    class ReminderOnReceivedAdministativeQuestions {
+
+        private final String QUESTION_ID = "1000";
+        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
+        private final String AUTHOR = "author";
+        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
+        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
+        private final String HEADER = "Rubrik";
+        private final LocalDateTime SENT = LocalDateTime.now();
+        private final String SENT_BY_FK = "FK";
+        private final boolean IS_HANDLED = true;
+        private final boolean IS_FORWARDED = true;
+        private final String MESSAGE = "message";
+        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+
+        private final String ANSWER_AUTHOR = "answer author";
+        private final String ANSWER_ID = "answerId";
+        private final LocalDateTime ANSWER_SENT = LocalDateTime.now();
+        private final String ANSWER_MESSAGE = "answer message";
+
+        private final String REMINDER_AUTHOR = "Försäkringskassan";
+        private String REMINDER_ID = "reminderId";
+        private String REMINDER_MESSAGE = "reminderMessage";
+        private LocalDateTime REMINDER_SENT = LocalDateTime.now();
+
+        private Arende arende;
+        private Arende arendeSvar;
+        private ArendeDraft arendeSvarDraft;
+        private Arende arendePaminnelse;
+
+        @BeforeEach
+        void setup() {
+            arende = new Arende();
+            arende.setMeddelandeId(QUESTION_ID);
+            arende.setVardaktorName(AUTHOR);
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setSkickatTidpunkt(SENT);
+            arende.setSkickatAv(SENT_BY_FK);
+            arende.setStatus(Status.CLOSED);
+            arende.setVidarebefordrad(IS_FORWARDED);
+            arende.setMeddelande(MESSAGE);
+            arende.setSenasteHandelse(LAST_UPDATE);
+
+            arendeSvar = new Arende();
+            arendeSvar.setMeddelandeId(ANSWER_ID);
+            arendeSvar.setVardaktorName(ANSWER_AUTHOR);
+            arendeSvar.setSkickatTidpunkt(ANSWER_SENT);
+            arendeSvar.setMeddelande(ANSWER_MESSAGE);
+
+            arendeSvarDraft = new ArendeDraft();
+            arendeSvarDraft.setQuestionId(QUESTION_ID);
+            arendeSvarDraft.setText(ANSWER_MESSAGE);
+
+            arendePaminnelse = new Arende();
+            arendePaminnelse.setMeddelandeId(REMINDER_ID);
+            arendePaminnelse.setMeddelande(REMINDER_MESSAGE);
+            arendePaminnelse.setSkickatTidpunkt(REMINDER_SENT);
+            arendePaminnelse.setSkickatAv(SENT_BY_FK);
+        }
+
+        @Test
+        void shallReturnReminderWithId() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(REMINDER_ID, actualQuestion.getReminders()[0].getId());
+        }
+
+        @Test
+        void shallReturnReminderWithAuthor() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(REMINDER_AUTHOR, actualQuestion.getReminders()[0].getAuthor());
+        }
+
+        @Test
+        void shallReturnReminderWithMessage() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(REMINDER_MESSAGE, actualQuestion.getReminders()[0].getMessage());
+        }
+
+        @Test
+        void shallReturnReminderWithSent() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvar, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(REMINDER_SENT, actualQuestion.getReminders()[0].getSent());
+        }
+
+        @Test
+        void shallReturnQuestionWithoutRemindersIfAnswerIsNull() {
+            final var actualQuestion = questionConverter.convert(arende, (Arende) null, Collections.emptyList());
+
+            assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
+        }
+
+        @Test
+        void shallReturnAnswerDraftWithReminder() {
+            final var actualQuestion = questionConverter.convert(arende, arendeSvarDraft, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(REMINDER_MESSAGE, actualQuestion.getReminders()[0].getMessage());
+        }
+
+        @Test
+        void shallReturnQuestionWithoutRemindersIfAnswerDraftIsNull() {
+            final var actualQuestion = questionConverter.convert(arende, (ArendeDraft) null, Collections.emptyList());
+
+            assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
+        }
+    }
+
+    @Nested
     class SendAdministrativeQuestions {
 
         private final long QUESTION_ID = 1000L;
@@ -338,35 +450,6 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter.convert(arendeDraft);
 
             assertEquals(MESSAGE, actualQuestion.getMessage());
-        }
-    }
-
-    @Nested
-    class AnswerForAdministrativeQuestion {
-
-        private Arende arende;
-
-        @BeforeEach
-        void setup() {
-            arende = new Arende();
-            arende.setMeddelandeId("questionId");
-            arende.setVardaktorName("author");
-            arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setSkickatTidpunkt(LocalDateTime.now());
-            arende.setSkickatAv("FK");
-            arende.setStatus(Status.PENDING_INTERNAL_ACTION);
-            arende.setVidarebefordrad(false);
-            arende.setMeddelande("Här är det en fråga");
-            arende.setSenasteHandelse(arende.getSkickatTidpunkt());
-        }
-
-        @Test
-        void shallIncludeAnswer() {
-            final var answer = "Här är vårat svar";
-
-            final var actualQuestion = questionConverter.convert(arende, answer);
-
-            assertEquals(actualQuestion.getAnswer().getMessage(), answer);
         }
     }
 }

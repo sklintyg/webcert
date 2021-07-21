@@ -25,6 +25,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -768,7 +770,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<Arende> getRelatedArenden(String questionId) {
-        return arendeRepository.findBySvarPaId(questionId);
+        final var answers = arendeRepository.findBySvarPaId(questionId);
+        final var reminders = arendeRepository.findByPaminnelseMeddelandeId(questionId);
+        return Stream.of(answers, reminders).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     @VisibleForTesting
