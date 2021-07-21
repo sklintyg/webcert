@@ -19,10 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isAnswer;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isQuestion;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isReminder;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +64,9 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
         final var answersDraftMap = getAnswersDraftMap(arendeDraft);
 
-        final var questionList = getQuestionList(arendenInternal, answersMap, answersDraftMap);
+        final var remindersMap = getRemindersMap(arendenInternal);
+
+        final var questionList = getQuestionList(arendenInternal, answersMap, answersDraftMap, remindersMap);
 
         final var questionDraft = getQuestionDraft(certificateId);
         if (questionDraft != null) {
@@ -68,12 +76,10 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         return questionList;
     }
 
-
     private Map<String, ArendeDraft> getAnswersDraftMap(List<ArendeDraft> arendeDraft) {
         return arendeDraft.stream()
             .collect(Collectors.toMap(ArendeDraft::getQuestionId, Function.identity()));
     }
-
 
     private Map<String, Arende> getAnswersMap(List<Arende> arendenInternal) {
         return arendenInternal.stream()
@@ -81,28 +87,37 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .collect(Collectors.toMap(Arende::getSvarPaId, Function.identity()));
     }
 
+    private Map<String, List<Arende>> getRemindersMap(List<Arende> arendenInternal) {
+        return arendenInternal.stream()
+            .filter(isReminder())
+            .collect(Collectors.groupingBy(Arende::getPaminnelseMeddelandeId, HashMap::new, Collectors.toCollection(ArrayList::new)));
+    }
+
     private List<Question> getQuestionList(List<Arende> questions, Map<String, Arende> answersMap,
-        Map<String, ArendeDraft> answersDraftMap) {
+        Map<String, ArendeDraft> answersDraftMap, Map<String, List<Arende>> remindersMap) {
         return questions.stream()
             .filter(isQuestion())
-            .map(question -> convertQuestion(
-                question,
-                answersDraftMap.get(question.getMeddelandeId()),
-                answersMap.get(question.getMeddelandeId()))
+            .map(question ->
+                convertQuestion(
+                    question,
+                    answersDraftMap.get(question.getMeddelandeId()),
+                    answersMap.get(question.getMeddelandeId()),
+                    remindersMap.getOrDefault(question.getMeddelandeId(), Collections.emptyList())
+                )
             )
             .collect(Collectors.toList());
     }
 
-    private Question convertQuestion(Arende question, ArendeDraft answerDraft, Arende answer) {
+    private Question convertQuestion(Arende question, ArendeDraft answerDraft, Arende answer, List<Arende> reminders) {
         if (answer != null) {
-            return questionConverter.convert(question, answer);
+            return questionConverter.convert(question, answer, reminders);
         }
 
         if (answerDraft != null) {
-            return questionConverter.convert(question, answerDraft);
+            return questionConverter.convert(question, answerDraft, reminders);
         }
 
-        return questionConverter.convert(question);
+        return questionConverter.convert(question, reminders);
     }
 
     private Question getQuestionDraft(String certificateId) {
@@ -111,18 +126,5 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             return questionConverter.convert(questionDraft);
         }
         return null;
-    }
-
-
-    private Predicate<Arende> isQuestion() {
-        return arende -> arende.getSvarPaId() == null || arende.getSvarPaId().isBlank();
-    }
-
-    private Predicate<ArendeDraft> isAnswerDraft() {
-        return arendeDraft -> arendeDraft.getQuestionId() != null && !arendeDraft.getQuestionId().isBlank();
-    }
-
-    private Predicate<Arende> isAnswer() {
-        return arende -> arende.getSvarPaId() != null && !arende.getSvarPaId().isBlank();
     }
 }

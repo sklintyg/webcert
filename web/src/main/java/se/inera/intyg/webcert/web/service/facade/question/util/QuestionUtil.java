@@ -19,9 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
+import java.util.function.Predicate;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public final class QuestionUtil {
 
@@ -78,5 +80,22 @@ public final class QuestionUtil {
             default:
                 throw new IllegalArgumentException("Type not supported: " + type);
         }
+    }
+
+    public static Predicate<Arende> isQuestion() {
+        return arende -> (arende.getSvarPaId() == null || arende.getSvarPaId().isBlank())
+            && (arende.getPaminnelseMeddelandeId() == null || arende.getPaminnelseMeddelandeId().isBlank());
+    }
+
+    public static Predicate<ArendeDraft> isAnswerDraft() {
+        return arendeDraft -> arendeDraft.getQuestionId() != null && !arendeDraft.getQuestionId().isBlank();
+    }
+
+    public static Predicate<Arende> isAnswer() {
+        return arende -> arende.getSvarPaId() != null && !arende.getSvarPaId().isBlank();
+    }
+
+    public static Predicate<Arende> isReminder() {
+        return arende -> arende.getPaminnelseMeddelandeId() != null && !arende.getPaminnelseMeddelandeId().isBlank();
     }
 }

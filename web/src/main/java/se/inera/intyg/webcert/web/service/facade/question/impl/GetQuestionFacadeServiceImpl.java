@@ -19,7 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isAnswer;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isReminder;
+
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -50,27 +54,34 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
         final var question = getQuestion(questionId);
         final var relatedArenden = arendeService.getRelatedArenden(questionId);
 
-        final var answer = getAnswer(questionId, relatedArenden);
+        final var reminders = getReminders(relatedArenden);
+
+        final var answer = getAnswer(relatedArenden);
         if (hasAnswer(answer)) {
-            return questionConverter.convert(question, answer);
+            return questionConverter.convert(question, answer, reminders);
         }
 
         final var answerDraft = getAnswerDraft(questionId, question);
         if (hasAnswerDraft(answerDraft)) {
-            return questionConverter.convert(question, answerDraft);
+            return questionConverter.convert(question, answerDraft, reminders);
         }
 
-        return questionConverter.convert(question);
+        return questionConverter.convert(question, reminders);
     }
-
 
     private Arende getQuestion(String questionId) {
         return arendeService.getArende(questionId);
     }
 
-    private Arende getAnswer(String questionId, List<Arende> relatedArenden) {
+    private List<Arende> getReminders(List<Arende> relatedArenden) {
         return relatedArenden.stream()
-            .filter(relatedArende -> questionId.equalsIgnoreCase(relatedArende.getSvarPaId()))
+            .filter(isReminder())
+            .collect(Collectors.toList());
+    }
+
+    private Arende getAnswer(List<Arende> relatedArenden) {
+        return relatedArenden.stream()
+            .filter(isAnswer())
             .findFirst()
             .orElse(null);
     }

@@ -54,6 +54,7 @@ public class CreateQuestionTestabilityUtil {
         final var draft = utkastService.getDraft(certificateId, false);
         final var arende = createArende(createQuestionRequest, draft);
         arendeRepository.save(arende);
+
         if (shouldCreateAnswerDraft(createQuestionRequest)) {
             final var questionDraft = new ArendeDraft();
             questionDraft.setIntygId(certificateId);
@@ -66,7 +67,17 @@ public class CreateQuestionTestabilityUtil {
             final var arendeSvar = createArendeSvar(arende, createQuestionRequest.getAnswer(), draft.getSkapadAv().getNamn());
             arendeRepository.save(arendeSvar);
         }
+
+        if (shouldCreateReminder(createQuestionRequest)) {
+            final var arendePaminnelse = createArendePaminnelse(arende);
+            arendeRepository.save(arendePaminnelse);
+        }
+
         return arende.getMeddelandeId();
+    }
+
+    private boolean shouldCreateReminder(CreateQuestionRequestDTO createQuestionRequest) {
+        return createQuestionRequest.isReminded();
     }
 
     private boolean shouldCreateAnswer(CreateQuestionRequestDTO createQuestionRequest) {
@@ -176,6 +187,38 @@ public class CreateQuestionTestabilityUtil {
         // TODO: When FK then no vardaktorName. When WC then it is the sending persons name.
         arende.setSkickatAv("WC");
         arende.setVardaktorName(author);
+
+        return arende;
+    }
+
+    private Arende createArendePaminnelse(Arende question) {
+        final var arende = new Arende();
+        arende.setIntygsId(question.getIntygsId());
+        arende.setIntygTyp(question.getIntygTyp());
+        arende.setMeddelandeId(UUID.randomUUID().toString());
+
+        arende.setPatientPersonId(question.getPatientPersonId());
+
+        arende.setSigneratAv(question.getSigneratAv());
+        arende.setSigneratAvName(question.getSigneratAvName());
+
+        arende.setTimestamp(LocalDateTime.now());
+        arende.setSkickatTidpunkt(LocalDateTime.now());
+        arende.setSenasteHandelse(LocalDateTime.now());
+
+        arende.setMeddelande("Detta är en påminnelse!");
+
+        arende.setPaminnelseMeddelandeId(question.getMeddelandeId());
+
+        arende.setEnhetId(question.getEnhetId());
+        arende.setEnhetName(question.getEnhetName());
+        arende.setVardgivareName(question.getVardgivareName());
+
+        arende.setVidarebefordrad(false);
+
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+
+        arende.setSkickatAv("FK");
 
         return arende;
     }

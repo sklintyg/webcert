@@ -121,6 +121,7 @@ public class TestSetup {
         private boolean createQuestionDraft;
         private boolean createAnswerDraft;
         private boolean createAnswer;
+        private boolean createReminder;
 
         private TestSetupBuilder() {
 
@@ -177,6 +178,11 @@ public class TestSetup {
 
         public TestSetupBuilder question() {
             this.createQuestion = true;
+            return this;
+        }
+
+        public TestSetupBuilder reminder() {
+            this.createReminder = true;
             return this;
         }
 
@@ -281,6 +287,7 @@ public class TestSetup {
             final var questionRequest = new CreateQuestionRequestDTO();
             questionRequest.setType(QuestionType.COORDINATION);
             questionRequest.setMessage("Det här är ett meddelande!");
+            questionRequest.setReminded(createReminder);
 
             if (createAnswer || createAnswerDraft) {
                 questionRequest.setAnswer("Det här är ett svar!");
