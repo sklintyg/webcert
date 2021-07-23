@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +84,12 @@ public class ComplementConverterImpl implements ComplementConverter {
                     getComplements(complementQuestion, certificateAsUtlatande, certificateTextProvider)
                 )
             )
-            .reduce((stringMap, stringMap2) -> {
-                stringMap.putAll(stringMap2);
-                return stringMap;
-            })
+            .reduce((complementMap, complementMap2) ->
+                ImmutableMap.<String, Complement[]>builder()
+                    .putAll(complementMap)
+                    .putAll(complementMap2)
+                    .build()
+            )
             .orElse(Collections.emptyMap());
     }
 

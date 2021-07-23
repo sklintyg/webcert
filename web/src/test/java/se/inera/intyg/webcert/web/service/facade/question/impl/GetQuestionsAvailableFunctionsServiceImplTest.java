@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Question.QuestionBuilder;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -85,6 +86,15 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
         void shallExcludeAnswerQuestionIfQuestionIsHandled() {
             final var question = questionBuilder
                 .isHandled(true)
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+        }
+
+        @Test
+        void shallExcludeAnswerQuestionIfQuestionIsComplement() {
+            final var question = questionBuilder
+                .type(QuestionType.COMPLEMENT)
                 .build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
