@@ -23,11 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -35,13 +37,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.impl.GetQuestionsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +61,9 @@ public class GetQuestionsFacadeServiceImplTest {
 
     @Mock
     private QuestionConverter questionConverter;
+
+    @Mock
+    private ComplementConverter complementConverter;
 
     @InjectMocks
     private GetQuestionsFacadeServiceImpl getQuestionsFacadeService;
@@ -165,6 +174,17 @@ public class GetQuestionsFacadeServiceImplTest {
         assertNotNull(remindersArgCaptor.getValue().get(0), "Expect a reminder to be converted");
     }
 
+    @Test
+    void shallReturnQuestionWithComplement() {
+        final var complementArgCaptor = setupMockToReturnQuestionsWithComplement();
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getComplements()[0], "Expect a complement for the question");
+        assertNotNull(complementArgCaptor.getValue().get(0), "Expect a complement to be converted");
+    }
+
     private void setupMockToReturnQuestionDraft() {
         doReturn(new ArendeDraft())
             .when(arendeDraftService)
@@ -182,7 +202,33 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().build())
             .when(questionConverter)
-            .convert(any(Arende.class), any(List.class));
+            .convert(any(Arende.class), any(Complement[].class), any(List.class));
+    }
+
+    private ArgumentCaptor<List> setupMockToReturnQuestionsWithComplement() {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+        question.setAmne(ArendeAmne.KOMPLT);
+        question.setKomplettering(List.of(new MedicinsktArende()));
+
+        doReturn(List.of(question))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        final var complement = Complement.builder().build();
+        final var complements = new Complement[]{complement};
+        final var complementArgCaptor = ArgumentCaptor.forClass(List.class);
+        doReturn(Map.of(question.getMeddelandeId(), complements))
+            .when(complementConverter)
+            .convert(complementArgCaptor.capture());
+
+        doReturn(Question.builder()
+            .complements(complements)
+            .build())
+            .when(questionConverter)
+            .convert(eq(question), eq(complements), anyList());
+
+        return complementArgCaptor;
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionsWithReminder() {
@@ -202,7 +248,7 @@ public class GetQuestionsFacadeServiceImplTest {
             .reminders(new Reminder[]{Reminder.builder().build()})
             .build())
             .when(questionConverter)
-            .convert(eq(question), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 
@@ -220,7 +266,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(eq(question), eq(answer), any(List.class));
+            .convert(eq(question),  any(Complement[].class), eq(answer), any(List.class));
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionWithAnswerAndReminder() {
@@ -245,7 +291,7 @@ public class GetQuestionsFacadeServiceImplTest {
             .reminders(new Reminder[]{Reminder.builder().build()})
             .build())
             .when(questionConverter)
-            .convert(eq(question), eq(answer), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), eq(answer), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 
@@ -266,7 +312,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(eq(question), eq(answer), any(List.class));
+            .convert(eq(question), any(Complement[].class), eq(answer), any(List.class));
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionWithReminder() {
@@ -287,7 +333,7 @@ public class GetQuestionsFacadeServiceImplTest {
                 .reminders(new Reminder[]{Reminder.builder().build()})
                 .build())
             .when(questionConverter)
-            .convert(eq(question), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 }

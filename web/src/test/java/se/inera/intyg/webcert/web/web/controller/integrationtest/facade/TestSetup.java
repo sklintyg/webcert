@@ -72,7 +72,7 @@ public class TestSetup {
     public Certificate certificate() {
         return certificate;
     }
-    
+
     public String questionId() {
         return questionId;
     }
@@ -122,6 +122,7 @@ public class TestSetup {
         private boolean createAnswerDraft;
         private boolean createAnswer;
         private boolean createReminder;
+        private QuestionType createQuestionType;
 
         private TestSetupBuilder() {
 
@@ -178,6 +179,12 @@ public class TestSetup {
 
         public TestSetupBuilder question() {
             this.createQuestion = true;
+            return this;
+        }
+
+        public TestSetupBuilder complementQuestion() {
+            this.createQuestion = true;
+            this.createQuestionType = QuestionType.COMPLEMENT;
             return this;
         }
 
@@ -285,7 +292,7 @@ public class TestSetup {
 
         private String createQuestion(String certificateId) {
             final var questionRequest = new CreateQuestionRequestDTO();
-            questionRequest.setType(QuestionType.COORDINATION);
+            questionRequest.setType(createQuestionType != null ? createQuestionType : QuestionType.COORDINATION);
             questionRequest.setMessage("Det här är ett meddelande!");
             questionRequest.setReminded(createReminder);
 

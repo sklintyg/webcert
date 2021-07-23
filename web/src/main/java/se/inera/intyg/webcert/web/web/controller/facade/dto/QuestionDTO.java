@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
@@ -34,6 +35,7 @@ public class QuestionDTO {
     private String message;
     private String author;
     private LocalDateTime sent;
+    private Complement[] complements;
     private boolean isHandled;
     private boolean isForwarded;
     private Answer answer;
@@ -49,6 +51,7 @@ public class QuestionDTO {
         questionDTO.message = question.getMessage();
         questionDTO.author = question.getAuthor();
         questionDTO.sent = question.getSent();
+        questionDTO.complements = question.getComplements();
         questionDTO.isHandled = question.isHandled();
         questionDTO.isForwarded = question.isForwarded();
         questionDTO.answer = question.getAnswer();
@@ -104,6 +107,14 @@ public class QuestionDTO {
 
     public void setSent(LocalDateTime sent) {
         this.sent = sent;
+    }
+
+    public Complement[] getComplements() {
+        return complements;
+    }
+
+    public void setComplements(Complement[] complements) {
+        this.complements = complements;
     }
 
     public boolean isHandled() {

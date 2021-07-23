@@ -26,12 +26,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service
@@ -40,13 +43,16 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
     private final ArendeService arendeService;
     private final ArendeDraftService arendeDraftService;
     private final QuestionConverter questionConverter;
+    private final ComplementConverter complementConverter;
 
     @Autowired
     public GetQuestionFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
+        ArendeDraftService arendeDraftService, QuestionConverter questionConverter,
+        ComplementConverter complementConverter) {
         this.arendeService = arendeService;
         this.arendeDraftService = arendeDraftService;
         this.questionConverter = questionConverter;
+        this.complementConverter = complementConverter;
     }
 
     @Override
@@ -54,23 +60,33 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
         final var question = getQuestion(questionId);
         final var relatedArenden = arendeService.getRelatedArenden(questionId);
 
+        final var complements = getComplements(question);
+
         final var reminders = getReminders(relatedArenden);
 
         final var answer = getAnswer(relatedArenden);
         if (hasAnswer(answer)) {
-            return questionConverter.convert(question, answer, reminders);
+            return questionConverter.convert(question, complements, answer, reminders);
         }
 
         final var answerDraft = getAnswerDraft(questionId, question);
         if (hasAnswerDraft(answerDraft)) {
-            return questionConverter.convert(question, answerDraft, reminders);
+            return questionConverter.convert(question, complements, answerDraft, reminders);
         }
 
-        return questionConverter.convert(question, reminders);
+        return questionConverter.convert(question, complements, reminders);
     }
 
     private Arende getQuestion(String questionId) {
         return arendeService.getArende(questionId);
+    }
+
+    private Complement[] getComplements(Arende question) {
+        if (question.getAmne() != ArendeAmne.KOMPLT || question.getKomplettering().size() == 0) {
+            return new Complement[0];
+        }
+
+        return complementConverter.convert(question);
     }
 
     private List<Arende> getReminders(List<Arende> relatedArenden) {

@@ -17,20 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.certificate;
+package se.inera.intyg.webcert.web.service.facade.question.util;
 
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import java.util.List;
+import java.util.Map;
+import se.inera.intyg.common.support.facade.model.question.Complement;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
-public interface GetCertificateService {
+public interface ComplementConverter {
 
-    /**
-     * Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst.
-     */
-    Intyg getCertificateAsIntyg(String certificateId, String certificateType);
+    Complement[] convert(Arende complementQuestion);
 
-    /**
-     * Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst.
-     */
-    Utlatande getCertificateAsUtlatande(String certificateId, String certificateType);
+    Map<String, Complement[]> convert(List<Arende> complementQuestions);
 }

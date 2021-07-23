@@ -46,8 +46,10 @@ public final class QuestionUtil {
                 return QuestionType.CONTACT;
             case OVRIGT:
                 return QuestionType.OTHER;
+            case KOMPLT:
+                return QuestionType.COMPLEMENT;
             default:
-                throw new IllegalArgumentException("The type is not yet supported: " + arendeAmne);
+                throw new IllegalArgumentException("The type is not supported: " + arendeAmne);
         }
     }
 
@@ -85,6 +87,10 @@ public final class QuestionUtil {
     public static Predicate<Arende> isQuestion() {
         return arende -> (arende.getSvarPaId() == null || arende.getSvarPaId().isBlank())
             && (arende.getPaminnelseMeddelandeId() == null || arende.getPaminnelseMeddelandeId().isBlank());
+    }
+
+    public static Predicate<Arende> isComplementQuestion() {
+        return arende -> arende.getAmne() == ArendeAmne.KOMPLT;
     }
 
     public static Predicate<ArendeDraft> isAnswerDraft() {

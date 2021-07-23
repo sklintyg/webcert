@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -35,16 +36,6 @@ import se.inera.intyg.webcert.persistence.model.Status;
 
 @Component
 public class QuestionConverterImpl implements QuestionConverter {
-
-    @Override
-    public Question convert(Arende arende) {
-        return startConvert(arende).build();
-    }
-
-    @Override
-    public Question convert(Arende arende, List<Arende> reminders) {
-        return startConvert(arende, reminders).build();
-    }
 
     @Override
     public Question convert(ArendeDraft arendeDraft) {
@@ -56,17 +47,27 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     @Override
-    public Question convert(Arende arende, Arende answer) {
-        return convert(arende, answer, Collections.emptyList());
+    public Question convert(Arende arende) {
+        return startConvert(arende, new Complement[0]).build();
     }
 
     @Override
-    public Question convert(Arende arende, Arende answer, List<Arende> reminders) {
+    public Question convert(Arende arende, Complement[] complements) {
+        return startConvert(arende, complements).build();
+    }
+
+    @Override
+    public Question convert(Arende arende, Complement[] complements, List<Arende> reminders) {
+        return startConvert(arende, complements, reminders).build();
+    }
+
+    @Override
+    public Question convert(Arende arende, Complement[] complements, Arende answer, List<Arende> reminders) {
         if (answer == null) {
-            return convert(arende, reminders);
+            return convert(arende, complements, reminders);
         }
 
-        return startConvert(arende, reminders)
+        return startConvert(arende, complements, reminders)
             .answer(
                 Answer.builder()
                     .id(answer.getMeddelandeId())
@@ -79,17 +80,12 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     @Override
-    public Question convert(Arende arende, ArendeDraft answerDraft) {
-        return convert(arende, answerDraft, Collections.emptyList());
-    }
-
-    @Override
-    public Question convert(Arende arende, ArendeDraft answerDraft, List<Arende> reminders) {
+    public Question convert(Arende arende, Complement[] complements, ArendeDraft answerDraft, List<Arende> reminders) {
         if (answerDraft == null) {
-            return convert(arende, reminders);
+            return convert(arende, complements, reminders);
         }
 
-        return startConvert(arende, reminders)
+        return startConvert(arende, complements, reminders)
             .answer(
                 Answer.builder()
                     .message(answerDraft.getText())
@@ -98,11 +94,11 @@ public class QuestionConverterImpl implements QuestionConverter {
             .build();
     }
 
-    private Question.QuestionBuilder startConvert(Arende arende) {
-        return startConvert(arende, Collections.emptyList());
+    private Question.QuestionBuilder startConvert(Arende arende, Complement[] complements) {
+        return startConvert(arende, complements, Collections.emptyList());
     }
 
-    private Question.QuestionBuilder startConvert(Arende arende, List<Arende> reminders) {
+    private Question.QuestionBuilder startConvert(Arende arende, Complement[] complements, List<Arende> reminders) {
         final var remindersToAdd = reminders.stream()
             .map(reminder ->
                 Reminder.builder()
@@ -124,7 +120,8 @@ public class QuestionConverterImpl implements QuestionConverter {
             .isForwarded(arende.getVidarebefordrad())
             .message(arende.getMeddelande())
             .lastUpdate(arende.getSenasteHandelse())
-            .reminders(remindersToAdd);
+            .reminders(remindersToAdd)
+            .complements(complements);
     }
 
     private String getAuthor(Arende arende) {

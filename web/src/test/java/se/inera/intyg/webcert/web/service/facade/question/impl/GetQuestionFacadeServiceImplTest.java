@@ -35,12 +35,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +59,9 @@ class GetQuestionFacadeServiceImplTest {
     @Mock
     private QuestionConverter questionConverter;
 
+    @Mock
+    private ComplementConverter complementConverter;
+
     @InjectMocks
     private GetQuestionFacadeServiceImpl getQuestionFacadeService;
 
@@ -64,12 +71,14 @@ class GetQuestionFacadeServiceImplTest {
     private Arende arendeSvar;
     private Arende arendePaminnelse;
     private List<Arende> relatedArenden;
+    private List<MedicinsktArende> kompletteringar = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
         arende = new Arende();
         arende.setMeddelandeId(questionId);
         arende.setIntygsId(certificateId);
+        arende.setKomplettering(kompletteringar);
 
         arendeSvar = new Arende();
         arendeSvar.setMeddelandeId("arendeSvarId");
@@ -97,7 +106,7 @@ class GetQuestionFacadeServiceImplTest {
                 .answer(Answer.builder().build())
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), any(List.class));
+            .convert(eq(arende), any(Complement[].class), any(List.class));
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion, "Shall return a question");
@@ -112,7 +121,7 @@ class GetQuestionFacadeServiceImplTest {
                 .reminders(new Reminder[]{Reminder.builder().build()})
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), remindersArgCaptor.capture());
+            .convert(eq(arende), any(Complement[].class), remindersArgCaptor.capture());
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
@@ -127,7 +136,7 @@ class GetQuestionFacadeServiceImplTest {
                 .answer(Answer.builder().build())
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), eq(arendeSvar), any(List.class));
+            .convert(eq(arende), any(Complement[].class), eq(arendeSvar), any(List.class));
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
@@ -144,7 +153,7 @@ class GetQuestionFacadeServiceImplTest {
                 .reminders(new Reminder[]{Reminder.builder().build()})
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), eq(arendeSvar), remindersArgCaptor.capture());
+            .convert(eq(arende), any(Complement[].class), eq(arendeSvar), remindersArgCaptor.capture());
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
@@ -163,7 +172,7 @@ class GetQuestionFacadeServiceImplTest {
                 .answer(Answer.builder().build())
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), eq(answerDraft), any(List.class));
+            .convert(eq(arende), any(Complement[].class), eq(answerDraft), any(List.class));
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
@@ -183,10 +192,33 @@ class GetQuestionFacadeServiceImplTest {
                 .reminders(new Reminder[]{Reminder.builder().build()})
                 .build())
             .when(questionConverter)
-            .convert(eq(arende), eq(answerDraft), remindersArgCaptor.capture());
+            .convert(eq(arende), any(Complement[].class), eq(answerDraft), remindersArgCaptor.capture());
 
         final var actualQuestion = getQuestionFacadeService.get(questionId);
         assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
         assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+    }
+
+    @Test
+    void shallReturnQuestionWithComplements() {
+        final var complements = new Complement[]{Complement.builder().build()};
+        kompletteringar.add(new MedicinsktArende());
+        arende.setAmne(ArendeAmne.KOMPLT);
+
+        doReturn(complements)
+            .when(complementConverter)
+            .convert(arende);
+
+        doReturn(
+            Question.builder()
+                .answer(Answer.builder().build())
+                .complements(complements)
+                .build())
+            .when(questionConverter)
+            .convert(eq(arende), eq(complements), any(List.class));
+
+        final var actualQuestion = getQuestionFacadeService.get(questionId);
+        assertNotNull(actualQuestion, "Shall return a question");
+        assertEquals(complements, actualQuestion.getComplements());
     }
 }
