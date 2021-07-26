@@ -47,7 +47,8 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
             );
         }
 
-        if (isQuestionSent(question) || isQuestionUnanswered(question)) {
+        if ((isQuestionSent(question) || isQuestionUnanswered(question))
+            && (isQuestionUnhandled(question) || isAdministrativeQuestion(question))) {
             availableFunctions.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.HANDLE_QUESTION,

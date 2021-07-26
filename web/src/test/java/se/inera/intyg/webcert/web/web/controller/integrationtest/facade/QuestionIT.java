@@ -616,6 +616,42 @@ public class QuestionIT {
         );
     }
 
+    @Test
+    @DisplayName("Shall set complement question as handled")
+    void shallSetComplementQuestionAsHandled() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .complementQuestion()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var handleQuestionRequestDTO = new HandleQuestionRequestDTO();
+        handleQuestionRequestDTO.setHandled(true);
+
+        final var response = given()
+            .pathParam("questionId", testSetup.questionId())
+            .contentType(ContentType.JSON)
+            .body(handleQuestionRequestDTO)
+            .expect().statusCode(200)
+            .when()
+            .post("api/question/{questionId}/handle")
+            .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
+
+        assertAll(
+            () -> assertTrue(response.isHandled(), "Question should be handled")
+        );
+    }
+
     private ObjectMapper getObjectMapperForDeserialization() {
         return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
     }
