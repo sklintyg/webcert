@@ -32,7 +32,7 @@ public class CreateQuestionRequestDTO {
     public QuestionType getType() {
         return type;
     }
-
+    
     public void setType(QuestionType type) {
         this.type = type;
     }

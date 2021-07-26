@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -34,7 +35,8 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
     public List<ResourceLinkDTO> get(Question question) {
         final var availableFunctions = new ArrayList<ResourceLinkDTO>();
 
-        if (isQuestionRecieved(question) && isQuestionUnanswered(question) && isQuestionUnhandled(question)) {
+        if (isQuestionRecieved(question) && isAdministrativeQuestion(question) && isQuestionUnanswered(question)
+            && isQuestionUnhandled(question)) {
             availableFunctions.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.ANSWER_QUESTION,
@@ -57,6 +59,10 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
         }
 
         return availableFunctions;
+    }
+
+    private boolean isAdministrativeQuestion(Question question) {
+        return question.getType() != QuestionType.COMPLEMENT;
     }
 
     private boolean isQuestionUnhandled(Question question) {

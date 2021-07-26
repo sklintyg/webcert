@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isAnswer;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isComplementQuestion;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isQuestion;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isReminder;
 
@@ -32,12 +33,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service
@@ -46,13 +49,16 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
     private final ArendeService arendeService;
     private final ArendeDraftService arendeDraftService;
     private final QuestionConverter questionConverter;
+    private final ComplementConverter complementConverter;
 
     @Autowired
     public GetQuestionsFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
+        ArendeDraftService arendeDraftService, QuestionConverter questionConverter,
+        ComplementConverter complementConverter) {
         this.arendeService = arendeService;
         this.arendeDraftService = arendeDraftService;
         this.questionConverter = questionConverter;
+        this.complementConverter = complementConverter;
     }
 
     @Override
@@ -60,13 +66,15 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         final var arendenInternal = arendeService.getArendenInternal(certificateId);
         final var arendeDraft = arendeDraftService.listAnswerDrafts(certificateId);
 
+        final var complementsMap = getComplementsMap(arendenInternal);
+
         final var answersMap = getAnswersMap(arendenInternal);
 
         final var answersDraftMap = getAnswersDraftMap(arendeDraft);
 
         final var remindersMap = getRemindersMap(arendenInternal);
 
-        final var questionList = getQuestionList(arendenInternal, answersMap, answersDraftMap, remindersMap);
+        final var questionList = getQuestionList(arendenInternal, complementsMap, answersMap, remindersMap, answersDraftMap);
 
         final var questionDraft = getQuestionDraft(certificateId);
         if (questionDraft != null) {
@@ -81,6 +89,18 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .collect(Collectors.toMap(ArendeDraft::getQuestionId, Function.identity()));
     }
 
+    private Map<String, Complement[]> getComplementsMap(List<Arende> arendenInternal) {
+        final var complementQuestions = arendenInternal.stream()
+            .filter(isComplementQuestion())
+            .collect(Collectors.toList());
+
+        if (complementQuestions.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        return complementConverter.convert(complementQuestions);
+    }
+
     private Map<String, Arende> getAnswersMap(List<Arende> arendenInternal) {
         return arendenInternal.stream()
             .filter(isAnswer())
@@ -93,13 +113,14 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .collect(Collectors.groupingBy(Arende::getPaminnelseMeddelandeId, HashMap::new, Collectors.toCollection(ArrayList::new)));
     }
 
-    private List<Question> getQuestionList(List<Arende> questions, Map<String, Arende> answersMap,
-        Map<String, ArendeDraft> answersDraftMap, Map<String, List<Arende>> remindersMap) {
+    private List<Question> getQuestionList(List<Arende> questions, Map<String, Complement[]> complementsMap, Map<String, Arende> answersMap,
+        Map<String, List<Arende>> remindersMap, Map<String, ArendeDraft> answersDraftMap) {
         return questions.stream()
             .filter(isQuestion())
             .map(question ->
                 convertQuestion(
                     question,
+                    complementsMap.getOrDefault(question.getMeddelandeId(), new Complement[0]),
                     answersDraftMap.get(question.getMeddelandeId()),
                     answersMap.get(question.getMeddelandeId()),
                     remindersMap.getOrDefault(question.getMeddelandeId(), Collections.emptyList())
@@ -108,16 +129,17 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
             .collect(Collectors.toList());
     }
 
-    private Question convertQuestion(Arende question, ArendeDraft answerDraft, Arende answer, List<Arende> reminders) {
+    private Question convertQuestion(Arende question, Complement[] complements, ArendeDraft answerDraft, Arende answer,
+        List<Arende> reminders) {
         if (answer != null) {
-            return questionConverter.convert(question, answer, reminders);
+            return questionConverter.convert(question, complements, answer, reminders);
         }
 
         if (answerDraft != null) {
-            return questionConverter.convert(question, answerDraft, reminders);
+            return questionConverter.convert(question, complements, answerDraft, reminders);
         }
 
-        return questionConverter.convert(question, reminders);
+        return questionConverter.convert(question, complements, reminders);
     }
 
     private Question getQuestionDraft(String certificateId) {

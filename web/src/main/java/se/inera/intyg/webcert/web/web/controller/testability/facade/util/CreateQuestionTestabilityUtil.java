@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -148,6 +150,14 @@ public class CreateQuestionTestabilityUtil {
         arende.setSkickatAv("FK");
         // arende.setVardaktorName(draft.getSkapadAv().getNamn());
 
+        if (createQuestionRequest.getType() == QuestionType.COMPLEMENT) {
+            final var medicinsktArende = new MedicinsktArende();
+            medicinsktArende.setText("Kan ni komplettera detta?");
+            medicinsktArende.setFrageId("6");
+            medicinsktArende.setInstans(0);
+            arende.setKomplettering(Collections.singletonList(medicinsktArende));
+        }
+
         return arende;
     }
 
@@ -229,6 +239,8 @@ public class CreateQuestionTestabilityUtil {
                 return ArendeAmne.AVSTMN;
             case CONTACT:
                 return ArendeAmne.KONTKT;
+            case COMPLEMENT:
+                return ArendeAmne.KOMPLT;
             case OTHER:
             default:
                 return ArendeAmne.OVRIGT;

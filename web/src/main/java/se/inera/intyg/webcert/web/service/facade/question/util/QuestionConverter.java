@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
 import java.util.List;
+import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -30,13 +31,11 @@ public interface QuestionConverter {
 
     Question convert(Arende arende);
 
-    Question convert(Arende arende, List<Arende> reminders);
+    Question convert(Arende arende, Complement[] complements);
 
-    Question convert(Arende arende, Arende answer);
+    Question convert(Arende arende, Complement[] complements, List<Arende> reminders);
 
-    Question convert(Arende arende, Arende answer, List<Arende> reminders);
+    Question convert(Arende arende, Complement[] complements, Arende answer, List<Arende> reminders);
 
-    Question convert(Arende arende, ArendeDraft answerDraft);
-
-    Question convert(Arende arende, ArendeDraft answerDraft, List<Arende> reminders);
+    Question convert(Arende arende, Complement[] complements, ArendeDraft answerDraft, List<Arende> reminders);
 }
