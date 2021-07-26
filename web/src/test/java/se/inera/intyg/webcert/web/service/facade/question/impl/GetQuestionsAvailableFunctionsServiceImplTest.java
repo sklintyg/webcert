@@ -45,13 +45,14 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
     }
 
     @Nested
-    class RecievedQuestions {
+    class RecievedAdministrativeQuestions {
 
         private QuestionBuilder questionBuilder;
 
         @BeforeEach
         void setUp() {
             questionBuilder = Question.builder()
+                .type(QuestionType.COORDINATION)
                 .author("Försäkringskassan");
         }
 
@@ -92,15 +93,6 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
         }
 
         @Test
-        void shallExcludeAnswerQuestionIfQuestionIsComplement() {
-            final var question = questionBuilder
-                .type(QuestionType.COMPLEMENT)
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
         void shallIncludeHandleQuestionIfMissingAnswer() {
             final var question = questionBuilder.build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
@@ -122,6 +114,42 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
                 .answer(Answer.builder()
                     .sent(LocalDateTime.now())
                     .build())
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+    }
+
+    @Nested
+    class RecievedComplementQuestions {
+
+        private QuestionBuilder questionBuilder;
+
+        @BeforeEach
+        void setUp() {
+            questionBuilder = Question.builder()
+                .type(QuestionType.COMPLEMENT)
+                .author("Försäkringskassan");
+        }
+
+        @Test
+        void shallExcludeAnswerQuestionIfQuestionIsComplement() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+        }
+
+        @Test
+        void shallIncludeHandleQuestionIfNotHandled() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallExcludeHandleQuestionIfHandled() {
+            final var question = questionBuilder
+                .isHandled(true)
                 .build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
