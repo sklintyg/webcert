@@ -68,6 +68,7 @@ import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeServic
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
@@ -374,14 +375,18 @@ public class CertificateControllerTest {
 
         private Certificate certificate;
         private ResourceLinkDTO[] resourceLinks;
+        private ComplementCertificateRequestDTO complementCertificateRequest;
 
         @BeforeEach
         void setup() {
             certificate = createCertificate();
 
+            complementCertificateRequest = new ComplementCertificateRequestDTO();
+            complementCertificateRequest.setMessage("Message");
+
             doReturn(certificate)
                 .when(complementCertificateFacadeService)
-                .complement(anyString());
+                .complement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
 
             resourceLinks = new ResourceLinkDTO[0];
 
@@ -392,14 +397,58 @@ public class CertificateControllerTest {
 
         @Test
         void shallReturnCertificate() {
-            final var response = (CertificateResponseDTO) certificateController.complementCertificate(CERTIFICATE_ID).getEntity();
+            final var response = (CertificateResponseDTO) certificateController
+                .complementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
 
             assertNotNull(response.getCertificate());
         }
 
         @Test
         void shallReturnResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController.complementCertificate(CERTIFICATE_ID).getEntity();
+            final var response = (CertificateResponseDTO) certificateController
+                .complementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
+
+            assertEquals(resourceLinks, response.getCertificate().getLinks());
+        }
+    }
+
+    @Nested
+    class AnswerComplementCertificate {
+
+        private Certificate certificate;
+        private ResourceLinkDTO[] resourceLinks;
+        private ComplementCertificateRequestDTO complementCertificateRequest;
+
+        @BeforeEach
+        void setup() {
+            certificate = createCertificate();
+
+            complementCertificateRequest = new ComplementCertificateRequestDTO();
+            complementCertificateRequest.setMessage("Det går inte att komplettera");
+
+            doReturn(certificate)
+                .when(complementCertificateFacadeService)
+                .answerComplement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
+
+            resourceLinks = new ResourceLinkDTO[0];
+
+            doReturn(resourceLinks)
+                .when(getCertificationResourceLinks)
+                .get(certificate);
+        }
+
+        @Test
+        void shallReturnCertificate() {
+            final var response = (CertificateResponseDTO) certificateController
+                .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
+
+            assertNotNull(response.getCertificate());
+        }
+
+        @Test
+        void shallReturnResourceLinks() {
+            final var response = (CertificateResponseDTO) certificateController
+                .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
 
             assertEquals(resourceLinks, response.getCertificate().getLinks());
         }

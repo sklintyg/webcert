@@ -189,6 +189,33 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
+
+        @Test
+        void shallIncludeCannotComplementCertificateIfNotHandled() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCannotComplementCertificateIfHandled() {
+            final var question = questionBuilder
+                .isHandled(true)
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCannotComplementCertificateIfHasAnswerByCertificate() {
+            final var question = questionBuilder
+                .answeredByCertificate(
+                    CertificateRelation.builder().build()
+                )
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
     }
 
     @Nested

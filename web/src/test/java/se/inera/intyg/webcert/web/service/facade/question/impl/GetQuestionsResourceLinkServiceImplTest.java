@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
@@ -148,6 +149,51 @@ class GetQuestionsResourceLinkServiceImplTest {
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
+
+
+        @Test
+        void shallIncludeComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            doReturn(true).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            doReturn(false).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeCannotComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            doReturn(true).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCannotComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            doReturn(false).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
     }
 
     @Nested
@@ -216,6 +262,50 @@ class GetQuestionsResourceLinkServiceImplTest {
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallIncludeComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            doReturn(true).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            doReturn(false).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeCannotComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            doReturn(true).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCannotComplementCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            doReturn(false).when(certificateAccessServiceHelper)
+                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
     }
 
