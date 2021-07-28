@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import java.util.Collections;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -89,6 +90,19 @@ public class QuestionController {
         final var questions = getQuestionsFacadeService.getQuestions(certificateId);
         final var links = getQuestionsResourceLinkService.get(questions);
         return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+    }
+
+    @GET
+    @Path("/{certificateId}/complements")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getComplementQuestions(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
+        }
+
+        final var questions = getQuestionsFacadeService.getComplementQuestions(certificateId);
+        return Response.ok(QuestionsResponseDTO.create(questions, Collections.emptyMap())).build();
     }
 
     @DELETE

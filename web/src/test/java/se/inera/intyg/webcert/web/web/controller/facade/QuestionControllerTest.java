@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -95,6 +96,17 @@ class QuestionControllerTest {
         final var actualResponse = questionController.getQuestions("test");
 
         assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+    }
+
+    @Test
+    void shallReturnQuestionResponseWithoutResourceLinks() {
+        doReturn(Collections.singletonList(Question.builder().build()))
+            .when(getQuestionsFacadeService)
+            .getComplementQuestions("test");
+        final var actualResponse = questionController.getComplementQuestions("test");
+
+        assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+        assertTrue(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0).getLinks().isEmpty());
     }
 
     @Test

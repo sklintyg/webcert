@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
@@ -99,6 +100,8 @@ public class CertificateController {
     private GetCertificationResourceLinks getCertificationResourceLinks;
     @Autowired
     private SendCertificateFacadeService sendCertificateFacadeService;
+    @Autowired
+    private ComplementCertificateFacadeService complementCertificateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -226,6 +229,20 @@ public class CertificateController {
         }
         final var newCertificateId = renewCertificateFacadeService.renewCertificate(certificateId);
         return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/complement")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response complementCertificate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Complementing certificate with id: '{}'", certificateId);
+        }
+        final var complementCertificate = complementCertificateFacadeService.complement(certificateId);
+        final var resourceLinks = getCertificationResourceLinks.get(complementCertificate);
+        final var certificateDTO = CertificateDTO.create(complementCertificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
 
     @POST

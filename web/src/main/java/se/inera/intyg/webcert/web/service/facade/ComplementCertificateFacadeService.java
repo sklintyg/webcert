@@ -17,15 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.question;
+package se.inera.intyg.webcert.web.service.facade;
 
-import java.util.List;
-import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.Certificate;
 
-public interface GetQuestionsFacadeService {
+public interface ComplementCertificateFacadeService {
 
-    List<Question> getComplementQuestions(String certificateId);
-
-    List<Question> getQuestions(String certificateId);
-
+    Certificate complement(String certificateId);
 }

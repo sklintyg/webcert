@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
@@ -104,7 +105,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())) {
+        if (isSignedAndSendDirectly(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
@@ -119,6 +120,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
                     "Signera intyget",
                     "Signerar intygsutkast",
+                    true
+                )
+            );
+        }
+
+        if (isMessagingAvailable(certificate) && isComplementingCertificate(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.QUESTIONS,
+                    "Ärendekommunikation",
+                    "Hantera kompletteringsbegäran, frågor och svar",
                     true
                 )
             );
@@ -228,7 +240,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         if (isMessagingAvailable(certificate)) {
-            if (certificate.getMetadata().isSent()) {
+            if (isSent(certificate)) {
                 resourceLinks.add(
                     ResourceLinkDTO.create(
                         ResourceLinkTypeDTO.QUESTIONS,
@@ -249,7 +261,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             }
         }
 
-        if (isMessagingAvailable(certificate) && certificate.getMetadata().isSent()) {
+        if (isMessagingAvailable(certificate) && isSent(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_QUESTIONS,
@@ -294,8 +306,22 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return resourceLinks;
     }
 
+    private boolean isSent(Certificate certificate) {
+        return certificate.getMetadata().isSent();
+    }
+
+    private boolean isSignedAndSendDirectly(Certificate certificate) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())
+            || isComplementingCertificate(certificate);
+    }
+
+    private boolean isComplementingCertificate(Certificate certificate) {
+        return certificate.getMetadata().getRelations() != null && certificate.getMetadata().getRelations().getParent() != null
+            && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
+    }
+
     private boolean isSendCertificateAvailable(Certificate certificate) {
-        if (certificate.getMetadata().isSent()) {
+        if (isSent(certificate)) {
             return false;
         }
 

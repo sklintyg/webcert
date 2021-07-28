@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -50,6 +51,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
@@ -106,6 +108,8 @@ public class CertificateControllerTest {
     private GetCertificationResourceLinks getCertificationResourceLinks;
     @Mock
     private SendCertificateFacadeService sendCertificateFacadeService;
+    @Mock
+    private ComplementCertificateFacadeService complementCertificateFacadeService;
 
     @InjectMocks
     private CertificateController certificateController;
@@ -362,6 +366,42 @@ public class CertificateControllerTest {
             final var response = (RenewCertificateResponseDTO) certificateController.renewCertificate(CERTIFICATE_ID).getEntity();
 
             assertEquals(expectedId, response.getCertificateId());
+        }
+    }
+
+    @Nested
+    class ComplementCertificate {
+
+        private Certificate certificate;
+        private ResourceLinkDTO[] resourceLinks;
+
+        @BeforeEach
+        void setup() {
+            certificate = createCertificate();
+
+            doReturn(certificate)
+                .when(complementCertificateFacadeService)
+                .complement(anyString());
+
+            resourceLinks = new ResourceLinkDTO[0];
+
+            doReturn(resourceLinks)
+                .when(getCertificationResourceLinks)
+                .get(certificate);
+        }
+
+        @Test
+        void shallReturnCertificate() {
+            final var response = (CertificateResponseDTO) certificateController.complementCertificate(CERTIFICATE_ID).getEntity();
+
+            assertNotNull(response.getCertificate());
+        }
+
+        @Test
+        void shallReturnResourceLinks() {
+            final var response = (CertificateResponseDTO) certificateController.complementCertificate(CERTIFICATE_ID).getEntity();
+
+            assertEquals(resourceLinks, response.getCertificate().getLinks());
         }
     }
 

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -40,7 +41,7 @@ public class QuestionsResponseDTO {
         final var questionsResponseDTO = new QuestionsResponseDTO();
         final var questionDTOList = new ArrayList<QuestionDTO>();
         questions.stream().forEach(
-            question -> questionDTOList.add(QuestionDTO.create(question, links.get(question)))
+            question -> questionDTOList.add(QuestionDTO.create(question, links.getOrDefault(question, Collections.emptyList())))
         );
         questionsResponseDTO.setQuestions(questionDTOList);
         return questionsResponseDTO;
