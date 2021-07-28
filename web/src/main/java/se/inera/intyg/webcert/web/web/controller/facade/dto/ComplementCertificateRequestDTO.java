@@ -17,13 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade;
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.Certificate;
+public class ComplementCertificateRequestDTO {
 
-public interface ComplementCertificateFacadeService {
+    private String message;
 
-    Certificate complement(String certificateId, String message);
+    public String getMessage() {
+        return message;
+    }
 
-    Certificate answerComplement(String certificateId, String message);
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

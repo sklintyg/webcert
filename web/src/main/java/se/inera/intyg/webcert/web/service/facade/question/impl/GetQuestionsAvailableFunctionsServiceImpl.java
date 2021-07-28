@@ -68,6 +68,15 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
                     true
                 )
             );
+
+            availableFunctions.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
+                    "Kan ej komplettera",
+                    "Öppnar en dialogruta med mer information.",
+                    true
+                )
+            );
         }
 
         return availableFunctions;

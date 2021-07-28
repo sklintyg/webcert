@@ -49,17 +49,24 @@ public class ComplementCertificateFacadeServiceImpl implements ComplementCertifi
     }
 
     @Override
-    public Certificate complement(String certificateId) {
+    public Certificate complement(String certificateId, String message) {
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
 
-        final var newCertificateId = complement(certificate);
+        final var newCertificateId = complement(certificate, message);
         return getCertificateFacadeService.getCertificate(newCertificateId, true);
     }
 
-    private String complement(Certificate certificate) {
+    @Override
+    public Certificate answerComplement(String certificateId, String message) {
+        arendeService.answerKomplettering(certificateId, message);
+        return getCertificateFacadeService.getCertificate(certificateId, false);
+    }
+
+    private String complement(Certificate certificate, String message) {
         final var latestComplementQuestionId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(certificate.getMetadata().getId());
 
         final var copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setKommentar(message);
         copyIntygRequest.setPatientPersonnummer(
             Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow()
         );

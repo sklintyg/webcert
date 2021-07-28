@@ -106,6 +106,15 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
             certificateAccessServiceHelper::isAllowToSetQuestionAsHandled
         );
 
+        functions.put(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
+            (accessEvaluationParameters) -> certificateAccessServiceHelper
+                .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
+        );
+
+        functions.put(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
+            (accessEvaluationParameters) -> certificateAccessServiceHelper
+                .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
+        );
         return functions;
     }
 

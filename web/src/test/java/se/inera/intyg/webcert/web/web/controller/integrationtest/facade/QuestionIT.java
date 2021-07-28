@@ -49,6 +49,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
@@ -675,6 +676,8 @@ public class QuestionIT {
 
         final var newCertificate = given()
             .pathParam("certificateId", testSetup.certificateId())
+            .contentType(ContentType.JSON)
+            .body(new ComplementCertificateRequestDTO())
             .expect().statusCode(200)
             .when().post("api/certificate/{certificateId}/complement")
             .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -715,6 +718,8 @@ public class QuestionIT {
 
         final var newCertificate = given()
             .pathParam("certificateId", testSetup.certificateId())
+            .contentType(ContentType.JSON)
+            .body(new ComplementCertificateRequestDTO())
             .expect().statusCode(200)
             .when().post("api/certificate/{certificateId}/complement")
             .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -731,6 +736,47 @@ public class QuestionIT {
         assertAll(
             () -> assertEquals(QuestionType.COMPLEMENT, response.get(0).getType(),
                 "Expect the complement draft to contain the complement question")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall return complement question with answer")
+    void shallReturnComplementQuestionWithAnswer() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .complementQuestion()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+        complementCertificateRequestDTO.setMessage("Det går inte att komplettera detta intyg");
+
+        given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .contentType(ContentType.JSON)
+            .body(complementCertificateRequestDTO)
+            .expect().statusCode(200)
+            .when().post("api/certificate/{certificateId}/answercomplement");
+
+        final var response = given()
+            .pathParam("certificateId", testSetup.certificateId())
+            .expect().statusCode(200)
+            .when()
+            .get("api/question/{certificateId}")
+            .then().extract().response().as(QuestionsResponseDTO.class, getObjectMapperForDeserialization()).getQuestions();
+
+        assertAll(
+            () -> assertEquals(complementCertificateRequestDTO.getMessage(), response.get(0).getAnswer().getMessage())
         );
     }
 
