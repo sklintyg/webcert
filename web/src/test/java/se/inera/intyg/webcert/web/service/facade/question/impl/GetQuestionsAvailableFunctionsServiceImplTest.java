@@ -27,6 +27,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Question.QuestionBuilder;
@@ -118,6 +119,13 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
+
+        @Test
+        void shallExcludeComplementCertificate() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
     }
 
     @Nested
@@ -153,6 +161,33 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
                 .build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallIncludeComplementCertificateIfNotHandled() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeComplementCertificateIfHandled() {
+            final var question = questionBuilder
+                .isHandled(true)
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeComplementCertificateIfHasAnswerByCertificate() {
+            final var question = questionBuilder
+                .answeredByCertificate(
+                    CertificateRelation.builder().build()
+                )
+                .build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
     }
 
@@ -199,6 +234,13 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
                 .build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallExcludeComplementCertificate() {
+            final var question = questionBuilder.build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
     }
 

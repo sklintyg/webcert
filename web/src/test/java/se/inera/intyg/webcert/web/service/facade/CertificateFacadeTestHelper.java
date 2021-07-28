@@ -32,10 +32,11 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 public class CertificateFacadeTestHelper {
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status) {
-        return createCertificate(certificateType, status, null);
+        return createCertificateWithChildRelation(certificateType, status, null);
     }
 
-    public static Certificate createCertificate(String certificateType, CertificateStatus status, CertificateRelation relation) {
+    public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
+        CertificateRelation relation) {
         final var metadataBuilder = CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
@@ -81,6 +82,58 @@ public class CertificateFacadeTestHelper {
                             relation
                         }
                     )
+                    .build()
+            );
+        }
+
+        return CertificateBuilder.create()
+            .metadata(metadataBuilder.build())
+            .build();
+    }
+
+    public static Certificate createCertificateWithParentRelation(String certificateType, CertificateStatus status,
+        CertificateRelation parent) {
+        final var metadataBuilder = CertificateMetadata.builder()
+            .id("certificateId")
+            .type(certificateType)
+            .typeVersion("1.2")
+            .status(status)
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id("191212121212")
+                            .build()
+                    )
+                    .build()
+            )
+            .unit(
+                Unit.builder()
+                    .unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            )
+            .careProvider(
+                Unit.builder()
+                    .unitId("careProviderId")
+                    .unitName("careProviderName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            );
+
+        if (parent != null) {
+            metadataBuilder.relations(
+                CertificateRelations.builder()
+                    .parent(parent)
                     .build()
             );
         }

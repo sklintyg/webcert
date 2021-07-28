@@ -19,13 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import static java.util.Comparator.comparing;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isAnswer;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.isReminder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -33,6 +37,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
@@ -44,15 +49,18 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
     private final ArendeDraftService arendeDraftService;
     private final QuestionConverter questionConverter;
     private final ComplementConverter complementConverter;
+    private final GetCertificateFacadeService getCertificateFacadeService;
 
     @Autowired
     public GetQuestionFacadeServiceImpl(ArendeService arendeService,
         ArendeDraftService arendeDraftService, QuestionConverter questionConverter,
-        ComplementConverter complementConverter) {
+        ComplementConverter complementConverter,
+        GetCertificateFacadeService getCertificateFacadeService) {
         this.arendeService = arendeService;
         this.arendeDraftService = arendeDraftService;
         this.questionConverter = questionConverter;
         this.complementConverter = complementConverter;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
@@ -62,19 +70,45 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
 
         final var complements = getComplements(question);
 
+        final var answeredByCertificate = getAnsweredByCertificate(question, complements);
+
         final var reminders = getReminders(relatedArenden);
 
         final var answer = getAnswer(relatedArenden);
         if (hasAnswer(answer)) {
-            return questionConverter.convert(question, complements, answer, reminders);
+            return questionConverter.convert(question, complements, answeredByCertificate, answer, reminders);
         }
 
         final var answerDraft = getAnswerDraft(questionId, question);
         if (hasAnswerDraft(answerDraft)) {
-            return questionConverter.convert(question, complements, answerDraft, reminders);
+            return questionConverter.convert(question, complements, answeredByCertificate, answerDraft, reminders);
         }
 
-        return questionConverter.convert(question, complements, reminders);
+        return questionConverter.convert(question, complements, answeredByCertificate, reminders);
+    }
+
+    private CertificateRelation getAnsweredByCertificate(Arende question, Complement[] complements) {
+        if (complements.length == 0) {
+            return null;
+        }
+
+        final var certificate = getCertificateFacadeService.getCertificate(question.getIntygsId(), false);
+        final var relations = certificate.getMetadata().getRelations();
+        if (relations == null) {
+            return null;
+        }
+
+        final var children = relations.getChildren();
+        if (children == null || children.length == 0) {
+            return null;
+        }
+
+        return Stream.of(children)
+            .filter(certificateRelation ->
+                certificateRelation.getType() == CertificateRelationType.COMPLEMENTED
+                    && certificateRelation.getCreated().isAfter(question.getSkickatTidpunkt()))
+            .min(comparing(CertificateRelation::getCreated))
+            .orElse(null);
     }
 
     private Arende getQuestion(String questionId) {

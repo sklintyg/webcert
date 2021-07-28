@@ -26,6 +26,7 @@ import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUt
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -52,22 +53,23 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     @Override
-    public Question convert(Arende arende, Complement[] complements) {
+    public Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate) {
         return startConvert(arende, complements).build();
     }
 
     @Override
-    public Question convert(Arende arende, Complement[] complements, List<Arende> reminders) {
-        return startConvert(arende, complements, reminders).build();
+    public Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, List<Arende> reminders) {
+        return startConvert(arende, complements, answeredByCertificate, reminders).build();
     }
 
     @Override
-    public Question convert(Arende arende, Complement[] complements, Arende answer, List<Arende> reminders) {
+    public Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, Arende answer,
+        List<Arende> reminders) {
         if (answer == null) {
-            return convert(arende, complements, reminders);
+            return convert(arende, complements, answeredByCertificate, reminders);
         }
 
-        return startConvert(arende, complements, reminders)
+        return startConvert(arende, complements, answeredByCertificate, reminders)
             .answer(
                 Answer.builder()
                     .id(answer.getMeddelandeId())
@@ -80,12 +82,13 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     @Override
-    public Question convert(Arende arende, Complement[] complements, ArendeDraft answerDraft, List<Arende> reminders) {
+    public Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, ArendeDraft answerDraft,
+        List<Arende> reminders) {
         if (answerDraft == null) {
-            return convert(arende, complements, reminders);
+            return convert(arende, complements, answeredByCertificate, reminders);
         }
 
-        return startConvert(arende, complements, reminders)
+        return startConvert(arende, complements, answeredByCertificate, reminders)
             .answer(
                 Answer.builder()
                     .message(answerDraft.getText())
@@ -95,10 +98,11 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     private Question.QuestionBuilder startConvert(Arende arende, Complement[] complements) {
-        return startConvert(arende, complements, Collections.emptyList());
+        return startConvert(arende, complements, null, Collections.emptyList());
     }
 
-    private Question.QuestionBuilder startConvert(Arende arende, Complement[] complements, List<Arende> reminders) {
+    private Question.QuestionBuilder startConvert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate,
+        List<Arende> reminders) {
         final var remindersToAdd = reminders.stream()
             .map(reminder ->
                 Reminder.builder()
@@ -121,7 +125,8 @@ public class QuestionConverterImpl implements QuestionConverter {
             .message(arende.getMeddelande())
             .lastUpdate(arende.getSenasteHandelse())
             .reminders(remindersToAdd)
-            .complements(complements);
+            .complements(complements)
+            .answeredByCertificate(answeredByCertificate);
     }
 
     private String getAuthor(Arende arende) {

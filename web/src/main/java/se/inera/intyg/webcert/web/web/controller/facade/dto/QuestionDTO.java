@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -39,6 +40,7 @@ public class QuestionDTO {
     private boolean isHandled;
     private boolean isForwarded;
     private Answer answer;
+    private CertificateRelation answeredByCertificate;
     private Reminder[] reminders;
     private LocalDateTime lastUpdate;
     private List<ResourceLinkDTO> links;
@@ -55,6 +57,7 @@ public class QuestionDTO {
         questionDTO.isHandled = question.isHandled();
         questionDTO.isForwarded = question.isForwarded();
         questionDTO.answer = question.getAnswer();
+        questionDTO.answeredByCertificate = question.getAnsweredByCertificate();
         questionDTO.reminders = question.getReminders();
         questionDTO.lastUpdate = question.getLastUpdate();
         questionDTO.links = links;
@@ -139,6 +142,14 @@ public class QuestionDTO {
 
     public void setAnswer(Answer answer) {
         this.answer = answer;
+    }
+
+    public CertificateRelation getAnsweredByCertificate() {
+        return answeredByCertificate;
+    }
+
+    public void setAnsweredByCertificate(CertificateRelation answeredByCertificate) {
+        this.answeredByCertificate = answeredByCertificate;
     }
 
     public Reminder[] getReminders() {

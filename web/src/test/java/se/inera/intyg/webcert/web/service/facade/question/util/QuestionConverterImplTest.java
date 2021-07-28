@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -194,6 +195,7 @@ class QuestionConverterImplTest {
 
         private Arende arende;
         private Complement[] expectedComplements;
+        private CertificateRelation expectedAnswerByCertificate;
 
         @BeforeEach
         void setup() {
@@ -209,27 +211,37 @@ class QuestionConverterImplTest {
             arende.setSenasteHandelse(LAST_UPDATE);
 
             expectedComplements = new Complement[]{Complement.builder().build()};
+            expectedAnswerByCertificate = CertificateRelation.builder().build();
         }
 
         @Test
         void shallReturnQuestionWithComplement() {
-            final var actualQuestion = questionConverter.convert(arende, expectedComplements);
+            final var actualQuestion = questionConverter.convert(arende, expectedComplements, null);
 
             assertEquals(expectedComplements, actualQuestion.getComplements());
         }
 
         @Test
         void shallReturnQuestionWithComplementThatHasAnswer() {
-            final var actualQuestion = questionConverter.convert(arende, expectedComplements, new Arende(), Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, expectedComplements, null, new Arende(), Collections.emptyList());
 
             assertEquals(expectedComplements, actualQuestion.getComplements());
         }
 
         @Test
         void shallReturnQuestionWithComplementThatHasAnswerDraft() {
-            final var actualQuestion = questionConverter.convert(arende, expectedComplements, new ArendeDraft(), Collections.emptyList());
+            final var actualQuestion = questionConverter
+                .convert(arende, expectedComplements, null, new ArendeDraft(), Collections.emptyList());
 
             assertEquals(expectedComplements, actualQuestion.getComplements());
+        }
+
+        @Test
+        void shallReturnQuestionWithComplementThatHasAnswerByCertificate() {
+            final var actualQuestion = questionConverter
+                .convert(arende, expectedComplements, expectedAnswerByCertificate, new ArendeDraft(), Collections.emptyList());
+
+            assertEquals(expectedAnswerByCertificate, actualQuestion.getAnsweredByCertificate());
         }
     }
 
@@ -284,49 +296,50 @@ class QuestionConverterImplTest {
 
         @Test
         void shallReturnAnswerWithId() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], arendeSvar, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvar, Collections.emptyList());
 
             assertEquals(ANSWER_ID, actualQuestion.getAnswer().getId());
         }
 
         @Test
         void shallReturnAnswerWithAuthor() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], arendeSvar, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvar, Collections.emptyList());
 
             assertEquals(ANSWER_AUTHOR, actualQuestion.getAnswer().getAuthor());
         }
 
         @Test
         void shallReturnAnswerWithMessage() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], arendeSvar, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvar, Collections.emptyList());
 
             assertEquals(ANSWER_MESSAGE, actualQuestion.getAnswer().getMessage());
         }
 
         @Test
         void shallReturnAnswerWithSent() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], arendeSvar, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvar, Collections.emptyList());
 
             assertEquals(ANSWER_SENT, actualQuestion.getAnswer().getSent());
         }
 
         @Test
         void shallReturnQuestionWithoutAnswerIfAnswerIsNull() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], (Arende) null, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, (Arende) null, Collections.emptyList());
 
             assertNull(actualQuestion.getAnswer(), "Answer should be null");
         }
 
         @Test
         void shallReturnAnswerDraftWithMessage() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], arendeSvarDraft, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvarDraft, Collections.emptyList());
 
             assertEquals(ANSWER_MESSAGE, actualQuestion.getAnswer().getMessage());
         }
 
         @Test
         void shallReturnQuestionWithoutAnswerIfAnswerDraftIsNull() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], (ArendeDraft) null, Collections.emptyList());
+            final var actualQuestion = questionConverter
+                .convert(arende, new Complement[0], null, (ArendeDraft) null, Collections.emptyList());
 
             assertNull(actualQuestion.getAnswer(), "Answer should be null");
         }
@@ -396,7 +409,7 @@ class QuestionConverterImplTest {
         @Test
         void shallReturnReminderWithId() {
             final var actualQuestion = questionConverter
-                .convert(arende, new Complement[0], arendeSvar, Collections.singletonList(arendePaminnelse));
+                .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
             assertEquals(REMINDER_ID, actualQuestion.getReminders()[0].getId());
         }
@@ -404,7 +417,7 @@ class QuestionConverterImplTest {
         @Test
         void shallReturnReminderWithAuthor() {
             final var actualQuestion = questionConverter
-                .convert(arende, new Complement[0], arendeSvar, Collections.singletonList(arendePaminnelse));
+                .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
             assertEquals(REMINDER_AUTHOR, actualQuestion.getReminders()[0].getAuthor());
         }
@@ -412,7 +425,7 @@ class QuestionConverterImplTest {
         @Test
         void shallReturnReminderWithMessage() {
             final var actualQuestion = questionConverter
-                .convert(arende, new Complement[0], arendeSvar, Collections.singletonList(arendePaminnelse));
+                .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
             assertEquals(REMINDER_MESSAGE, actualQuestion.getReminders()[0].getMessage());
         }
@@ -420,14 +433,14 @@ class QuestionConverterImplTest {
         @Test
         void shallReturnReminderWithSent() {
             final var actualQuestion = questionConverter
-                .convert(arende, new Complement[0], arendeSvar, Collections.singletonList(arendePaminnelse));
+                .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
             assertEquals(REMINDER_SENT, actualQuestion.getReminders()[0].getSent());
         }
 
         @Test
         void shallReturnQuestionWithoutRemindersIfAnswerIsNull() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], (Arende) null, Collections.emptyList());
+            final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, (Arende) null, Collections.emptyList());
 
             assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
         }
@@ -435,14 +448,15 @@ class QuestionConverterImplTest {
         @Test
         void shallReturnAnswerDraftWithReminder() {
             final var actualQuestion = questionConverter
-                .convert(arende, new Complement[0], arendeSvarDraft, Collections.singletonList(arendePaminnelse));
+                .convert(arende, new Complement[0], null, arendeSvarDraft, Collections.singletonList(arendePaminnelse));
 
             assertEquals(REMINDER_MESSAGE, actualQuestion.getReminders()[0].getMessage());
         }
 
         @Test
         void shallReturnQuestionWithoutRemindersIfAnswerDraftIsNull() {
-            final var actualQuestion = questionConverter.convert(arende, new Complement[0], (ArendeDraft) null, Collections.emptyList());
+            final var actualQuestion = questionConverter
+                .convert(arende, new Complement[0], null, (ArendeDraft) null, Collections.emptyList());
 
             assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
         }

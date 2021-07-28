@@ -59,11 +59,30 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
             );
         }
 
+        if (isComplementQuestion(question) && isQuestionUnhandled(question) && isNotAnsweredByCertificate(question)) {
+            availableFunctions.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
+                    "Komplettera",
+                    "Öppnar ett nytt intygsutkast.",
+                    true
+                )
+            );
+        }
+
         return availableFunctions;
+    }
+
+    private boolean isNotAnsweredByCertificate(Question question) {
+        return question.getAnsweredByCertificate() == null;
     }
 
     private boolean isAdministrativeQuestion(Question question) {
         return question.getType() != QuestionType.COMPLEMENT;
+    }
+
+    private boolean isComplementQuestion(Question question) {
+        return question.getType() == QuestionType.COMPLEMENT;
     }
 
     private boolean isQuestionUnhandled(Question question) {

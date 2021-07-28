@@ -21,12 +21,15 @@ package se.inera.intyg.webcert.web.service.facade.question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +39,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -46,6 +55,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.impl.GetQuestionsFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
@@ -65,10 +75,14 @@ public class GetQuestionsFacadeServiceImplTest {
     @Mock
     private ComplementConverter complementConverter;
 
+    @Mock
+    private GetCertificateFacadeService getCertificateFacadeService;
+
     @InjectMocks
     private GetQuestionsFacadeServiceImpl getQuestionsFacadeService;
 
     private final static String CERTIFICATE_ID = "certificateId";
+    private Certificate certificate;
 
     @Test
     void shallReturnEmptyQuestionsIfNoQuestionDraft() {
@@ -185,6 +199,96 @@ public class GetQuestionsFacadeServiceImplTest {
         assertNotNull(complementArgCaptor.getValue().get(0), "Expect a complement to be converted");
     }
 
+    @Test
+    void shallReturnOnlyQuestionWithComplement() {
+        final var complementArgCaptor = setupMockToReturnQuestionsWithComplement();
+
+        final var actualQuestions = getQuestionsFacadeService.getComplementQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNotNull(actualQuestions.get(0).getComplements()[0], "Expect a complement for the question");
+        assertNotNull(complementArgCaptor.getValue().get(0), "Expect a complement to be converted");
+    }
+
+    @Test
+    void shallReturnQuestionWithComplementAndAnsweredByCertificate() {
+        final var answeredByCertificate = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificateArgCaptor =
+            setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(new CertificateRelation[]{answeredByCertificate});
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertEquals(answeredByCertificate, answeredByCertificateArgCaptor.getValue());
+    }
+
+    @Test
+    void shallReturnQuestionWithAnsweredByCertificateAfterQuestionSent() {
+        final var answeredByCertificateBeforeQuestion = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificate = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificateArgCaptor =
+            setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(new CertificateRelation[]{answeredByCertificateBeforeQuestion, answeredByCertificate});
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertEquals(answeredByCertificate, answeredByCertificateArgCaptor.getValue());
+    }
+
+    @Test
+    void shallReturnQuestionWithFirstAnsweredByCertificateAfterQuestionSent() {
+        final var answeredByCertificateFirst = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificateSecond = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().plus(2, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificateArgCaptor =
+            setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(new CertificateRelation[]{answeredByCertificateFirst, answeredByCertificateSecond});
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertEquals(answeredByCertificateFirst, answeredByCertificateArgCaptor.getValue());
+    }
+
+    @Test
+    void shallNotReturnQuestionWithAnsweredByCertificateIfNoRelationFound() {
+        final var copiedRelation = CertificateRelation.builder()
+            .type(CertificateRelationType.COPIED)
+            .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var replacedRelation = CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+            .build();
+
+        final var answeredByCertificateArgCaptor =
+            setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(new CertificateRelation[]{copiedRelation, replacedRelation});
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNull(answeredByCertificateArgCaptor.getValue());
+    }
+
     private void setupMockToReturnQuestionDraft() {
         doReturn(new ArendeDraft())
             .when(arendeDraftService)
@@ -202,7 +306,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().build())
             .when(questionConverter)
-            .convert(any(Arende.class), any(Complement[].class), any(List.class));
+            .convert(any(Arende.class), any(Complement[].class), any(), any(List.class));
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionsWithComplement() {
@@ -222,13 +326,68 @@ public class GetQuestionsFacadeServiceImplTest {
             .when(complementConverter)
             .convert(complementArgCaptor.capture());
 
+        certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .relations(
+                    CertificateRelations.builder().build()
+                )
+                .build()
+        );
+        doReturn(certificate)
+            .when(getCertificateFacadeService)
+            .getCertificate(CERTIFICATE_ID, false);
+
+        doReturn(Question.builder()
+            .complements(complements)
+            .type(QuestionType.COMPLEMENT)
+            .build())
+            .when(questionConverter)
+            .convert(eq(question), eq(complements), any(), anyList());
+
+        return complementArgCaptor;
+    }
+
+    private ArgumentCaptor<CertificateRelation> setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(
+        CertificateRelation[] certificateRelations) {
+        final var question = new Arende();
+        question.setMeddelandeId("questionId");
+        question.setAmne(ArendeAmne.KOMPLT);
+        question.setKomplettering(List.of(new MedicinsktArende()));
+        question.setSkickatTidpunkt(LocalDateTime.now());
+
+        doReturn(List.of(question))
+            .when(arendeService)
+            .getArendenInternal(CERTIFICATE_ID);
+
+        final var complement = Complement.builder().build();
+        final var complements = new Complement[]{complement};
+        doReturn(Map.of(question.getMeddelandeId(), complements))
+            .when(complementConverter)
+            .convert(anyList());
+
+        certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .relations(
+                    CertificateRelations.builder()
+                        .children(certificateRelations)
+                        .build()
+                )
+                .build()
+        );
+        doReturn(certificate)
+            .when(getCertificateFacadeService)
+            .getCertificate(CERTIFICATE_ID, false);
+
+        final var answeredByCertificateArgCaptor = ArgumentCaptor.forClass(CertificateRelation.class);
         doReturn(Question.builder()
             .complements(complements)
             .build())
             .when(questionConverter)
-            .convert(eq(question), eq(complements), anyList());
+            .convert(eq(question), eq(complements), answeredByCertificateArgCaptor.capture(), anyList());
 
-        return complementArgCaptor;
+        return answeredByCertificateArgCaptor;
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionsWithReminder() {
@@ -248,7 +407,7 @@ public class GetQuestionsFacadeServiceImplTest {
             .reminders(new Reminder[]{Reminder.builder().build()})
             .build())
             .when(questionConverter)
-            .convert(eq(question), any(Complement[].class), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), any(), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 
@@ -266,7 +425,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(eq(question),  any(Complement[].class), eq(answer), any(List.class));
+            .convert(eq(question), any(Complement[].class), any(), eq(answer), any(List.class));
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionWithAnswerAndReminder() {
@@ -291,7 +450,7 @@ public class GetQuestionsFacadeServiceImplTest {
             .reminders(new Reminder[]{Reminder.builder().build()})
             .build())
             .when(questionConverter)
-            .convert(eq(question), any(Complement[].class), eq(answer), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), any(), eq(answer), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 
@@ -312,7 +471,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
         doReturn(Question.builder().answer(Answer.builder().build()).build())
             .when(questionConverter)
-            .convert(eq(question), any(Complement[].class), eq(answer), any(List.class));
+            .convert(eq(question), any(Complement[].class), any(), eq(answer), any(List.class));
     }
 
     private ArgumentCaptor<List> setupMockToReturnQuestionWithReminder() {
@@ -333,7 +492,7 @@ public class GetQuestionsFacadeServiceImplTest {
                 .reminders(new Reminder[]{Reminder.builder().build()})
                 .build())
             .when(questionConverter)
-            .convert(eq(question), any(Complement[].class), remindersArgCaptor.capture());
+            .convert(eq(question), any(Complement[].class), any(), remindersArgCaptor.capture());
         return remindersArgCaptor;
     }
 }
