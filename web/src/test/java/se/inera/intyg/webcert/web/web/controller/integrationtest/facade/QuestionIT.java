@@ -214,7 +214,7 @@ public class QuestionIT {
             .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
 
         assertAll(
-            () -> assertTrue(!question.getId().isEmpty(), "Expect to have a question id")
+            () -> assertFalse(question.getId().isEmpty(), "Expect to have a question id")
         );
     }
 
@@ -303,7 +303,7 @@ public class QuestionIT {
             .then().extract().response().as(QuestionResponseDTO.class, getObjectMapperForDeserialization()).getQuestion();
 
         assertAll(
-            () -> assertTrue(!receivedQuestion.getId().isEmpty(), "Expect to have a question id")
+            () -> assertFalse(receivedQuestion.getId().isEmpty(), "Expect to have a question id")
         );
     }
 
@@ -674,10 +674,13 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
+        final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+        complementCertificateRequestDTO.setMessage("");
+
         final var newCertificate = given()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON)
-            .body(new ComplementCertificateRequestDTO())
+            .body(complementCertificateRequestDTO)
             .expect().statusCode(200)
             .when().post("api/certificate/{certificateId}/complement")
             .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -693,7 +696,8 @@ public class QuestionIT {
 
         assertAll(
             () -> assertEquals(newCertificate.getCertificate().getMetadata().getId(),
-                response.get(0).getAnsweredByCertificate().getCertificateId())
+                response.get(0).getAnsweredByCertificate().getCertificateId(),
+                () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
         );
     }
 
