@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 @Path("/question")
 public class QuestionController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
