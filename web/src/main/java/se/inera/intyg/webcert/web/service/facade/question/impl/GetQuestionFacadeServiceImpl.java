@@ -116,7 +116,7 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
     }
 
     private Complement[] getComplements(Arende question) {
-        if (question.getAmne() != ArendeAmne.KOMPLT || question.getKomplettering().size() == 0) {
+        if (question.getAmne() != ArendeAmne.KOMPLT || question.getKomplettering().isEmpty()) {
             return new Complement[0];
         }
 
