@@ -69,7 +69,7 @@ public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeSe
 
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 }
