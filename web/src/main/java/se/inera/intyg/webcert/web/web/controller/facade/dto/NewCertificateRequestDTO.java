@@ -16,13 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-package se.inera.intyg.webcert.web.service.facade;
+import se.inera.intyg.common.support.facade.model.PersonId;
 
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+public class NewCertificateRequestDTO {
 
-public interface GetCertificationResourceLinks {
+    private PersonId patientId;
+    private String certificateType;
 
-    ResourceLinkDTO[] get(Certificate certificate);
+    public PersonId getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(PersonId patientId) {
+        this.patientId = patientId;
+    }
+
+    public String getCertificateType() {
+        return certificateType;
+    }
+
+    public void setCertificateType(String certificateType) {
+        this.certificateType = certificateType;
+    }
 }

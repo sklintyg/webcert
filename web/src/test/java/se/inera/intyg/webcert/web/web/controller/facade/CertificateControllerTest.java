@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -69,11 +69,10 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
@@ -83,6 +82,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateR
 @ExtendWith(MockitoExtension.class)
 public class CertificateControllerTest {
 
+    private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
+    private static final long CERTIFICATE_VERSION = 1L;
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
     @Mock
@@ -106,17 +107,56 @@ public class CertificateControllerTest {
     @Mock
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Mock
-    private GetCertificationResourceLinks getCertificationResourceLinks;
+    private GetCertificateResourceLinks getCertificateResourceLinks;
     @Mock
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Mock
     private ComplementCertificateFacadeService complementCertificateFacadeService;
-
     @InjectMocks
     private CertificateController certificateController;
 
-    private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
-    private static final long CERTIFICATE_VERSION = 1L;
+    private Certificate createCertificate() {
+        return CertificateBuilder.create()
+            .metadata(
+                CertificateMetadata.builder()
+                    .id("certificateId")
+                    .type("certificateType")
+                    .typeVersion("certificateTypeVersion")
+                    .patient(
+                        Patient.builder()
+                            .personId(
+                                PersonId.builder()
+                                    .id("191212121212")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .unit(
+                        Unit.builder()
+                            .unitId("unitId")
+                            .unitName("unitName")
+                            .address("address")
+                            .zipCode("zipCode")
+                            .city("city")
+                            .email("email")
+                            .phoneNumber("phoneNumber")
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitId("careProviderId")
+                            .unitName("careProviderName")
+                            .address("address")
+                            .zipCode("zipCode")
+                            .city("city")
+                            .email("email")
+                            .phoneNumber("phoneNumber")
+                            .build()
+                    )
+                    .build()
+            )
+            .build();
+    }
 
     @Nested
     class GetCertificate {
@@ -135,7 +175,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -254,7 +294,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -299,7 +339,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -334,12 +374,12 @@ public class CertificateControllerTest {
                 .when(replaceCertificateFacadeService)
                 .replaceCertificate(anyString(), anyString(), anyString());
 
-            final var replaceCertificateRequestDTO = new ReplaceCertificateRequestDTO();
-            replaceCertificateRequestDTO.setCertificateType("certificateType");
-            replaceCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setCertificateType("certificateType");
+            newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
 
             final var response = (ReplaceCertificateResponseDTO) certificateController
-                .replaceCertificate(CERTIFICATE_ID, replaceCertificateRequestDTO)
+                .replaceCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
                 .getEntity();
 
             assertEquals(expectedId, response.getCertificateId());
@@ -391,7 +431,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -433,7 +473,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -472,12 +512,12 @@ public class CertificateControllerTest {
                 .when(copyCertificateFacadeService)
                 .copyCertificate(anyString(), anyString(), anyString());
 
-            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
-            copyCertificateRequestDTO.setCertificateType("certificateType");
-            copyCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setCertificateType("certificateType");
+            newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
 
             final var response = (CopyCertificateResponseDTO) certificateController
-                .copyCertificate(CERTIFICATE_ID, copyCertificateRequestDTO)
+                .copyCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
                 .getEntity();
 
             assertEquals(expectedId, response.getCertificateId());
@@ -501,7 +541,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -554,48 +594,5 @@ public class CertificateControllerTest {
             assertEquals(result.getResult(), IntygServiceResult.OK.toString());
             assertEquals(result.getCertificateId(), CERTIFICATE_ID);
         }
-    }
-
-    private Certificate createCertificate() {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id("certificateId")
-                    .type("certificateType")
-                    .typeVersion("certificateTypeVersion")
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id("191212121212")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .unit(
-                        Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .careProvider(
-                        Unit.builder()
-                            .unitId("careProviderId")
-                            .unitName("careProviderName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
     }
 }

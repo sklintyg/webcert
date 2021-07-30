@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -96,7 +96,7 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     }
 
     private Map<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck> getAccessFunctions() {
-        final var functions = new HashMap<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck>();
+        final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
         functions.put(ResourceLinkTypeDTO.ANSWER_QUESTION,
             certificateAccessServiceHelper::isAllowToAnswerAdminQuestion
@@ -107,12 +107,12 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
         );
 
         functions.put(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
-            (accessEvaluationParameters) -> certificateAccessServiceHelper
+            accessEvaluationParameters -> certificateAccessServiceHelper
                 .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
         );
 
         functions.put(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
-            (accessEvaluationParameters) -> certificateAccessServiceHelper
+            accessEvaluationParameters -> certificateAccessServiceHelper
                 .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
         );
         return functions;

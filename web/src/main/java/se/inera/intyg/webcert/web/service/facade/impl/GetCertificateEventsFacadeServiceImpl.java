@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
 @Service
@@ -58,10 +59,18 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
 
     @Override
     public CertificateEventDTO[] getCertificateEvents(String certificateId) {
+        LOG.debug("Retrieve events to convert for certificate '{}'", certificateId);
         final var eventsToConvert = certificateEventService.getCertificateEvents(certificateId);
 
+        LOG.debug("Retrieve relations to other certificates for certificate '{}'", certificateId);
         final var relations = certificateRelationService.getRelations(certificateId);
 
+        LOG.debug("Convert events for certificate '{}'", certificateId);
+        return convert(certificateId, eventsToConvert, relations);
+    }
+
+    private CertificateEventDTO[] convert(String certificateId, List<CertificateEvent> eventsToConvert,
+        Relations relations) {
         final var events = getCertificateEvents(eventsToConvert);
 
         decorateCertificateEventsWithParentInfo(events, relations.getParent());
