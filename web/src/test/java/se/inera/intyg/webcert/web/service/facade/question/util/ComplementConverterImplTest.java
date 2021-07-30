@@ -56,6 +56,7 @@ class ComplementConverterImplTest {
     private ComplementConverterImpl complementConverter;
 
     private Arende complementQuestion;
+    private Arende anotherComplementQuestion;
     private List<MedicinsktArende> kompletteringar = new ArrayList<>();
 
     @BeforeEach
@@ -69,6 +70,12 @@ class ComplementConverterImplTest {
         complementQuestion.setIntygsId(certificateId);
         complementQuestion.setIntygTyp(certificateType);
         complementQuestion.setKomplettering(kompletteringar);
+
+        anotherComplementQuestion = new Arende();
+        anotherComplementQuestion.setMeddelandeId("anotherComplementQuestionId");
+        anotherComplementQuestion.setIntygsId(certificateId);
+        anotherComplementQuestion.setIntygTyp(certificateType);
+        anotherComplementQuestion.setKomplettering(kompletteringar);
 
         final var certificateAsUtlatande = mock(Utlatande.class);
         doReturn(certificateAsUtlatande)
@@ -165,9 +172,10 @@ class ComplementConverterImplTest {
         medicinsktArende.setFrageId("questionId");
         kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion));
+        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
         assertTrue(actualComplements.get("complementQuestionId").length == 1, "Should contain one converted complement");
+        assertTrue(actualComplements.get("anotherComplementQuestionId").length == 1, "Should contain one converted complement");
     }
 
     @Test
@@ -176,9 +184,10 @@ class ComplementConverterImplTest {
         medicinsktArende.setFrageId("questionId");
         kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion));
+        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
         assertEquals(medicinsktArende.getFrageId(), actualComplements.get("complementQuestionId")[0].getQuestionId());
+        assertEquals(medicinsktArende.getFrageId(), actualComplements.get("anotherComplementQuestionId")[0].getQuestionId());
     }
 
     @Test
@@ -187,9 +196,10 @@ class ComplementConverterImplTest {
         medicinsktArende.setFrageId("questionId");
         kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion));
+        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
         assertEquals("questionText", actualComplements.get("complementQuestionId")[0].getQuestionText());
+        assertEquals("questionText", actualComplements.get("anotherComplementQuestionId")[0].getQuestionText());
     }
 
     @Test
@@ -198,9 +208,10 @@ class ComplementConverterImplTest {
         medicinsktArende.setFrageId("questionId");
         kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion));
+        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
         assertEquals("jsonProperty", actualComplements.get("complementQuestionId")[0].getValueId());
+        assertEquals("jsonProperty", actualComplements.get("anotherComplementQuestionId")[0].getValueId());
     }
 
     @Test
@@ -210,8 +221,9 @@ class ComplementConverterImplTest {
         medicinsktArende.setText("Meddelande till kompletteringen");
         kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion));
+        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
         assertEquals(medicinsktArende.getText(), actualComplements.get("complementQuestionId")[0].getMessage());
+        assertEquals(medicinsktArende.getText(), actualComplements.get("anotherComplementQuestionId")[0].getMessage());
     }
 }
