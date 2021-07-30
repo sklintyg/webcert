@@ -239,7 +239,7 @@ public class CertificateConverterImpl implements CertificateConverter {
             LOG.debug("Retrieving Certificate from Json");
             return moduleApi.getCertificateFromJson(certificate.getModel());
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 }
