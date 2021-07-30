@@ -48,6 +48,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
@@ -245,8 +246,13 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
             final var newCertificate = given()
                 .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/complement")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -254,7 +260,8 @@ public class LisjpIT {
             certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
 
             assertAll(
-                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion())
+                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
             );
         }
 
@@ -455,8 +462,13 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
             final var newCertificate = given()
                 .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/complement")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -464,7 +476,8 @@ public class LisjpIT {
             certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
 
             assertAll(
-                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion())
+                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
             );
         }
 
@@ -819,8 +832,13 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
             final var newCertificate = given()
                 .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/complement")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
@@ -829,7 +847,8 @@ public class LisjpIT {
 
             assertAll(
                 () -> assertEquals(testSetup.certificateId(),
-                    newCertificate.getCertificate().getMetadata().getRelations().getParent().getCertificateId())
+                    newCertificate.getCertificate().getMetadata().getRelations().getParent().getCertificateId(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
             );
         }
 

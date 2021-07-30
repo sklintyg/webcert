@@ -43,6 +43,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,8 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
@@ -586,6 +589,41 @@ public class PdlIT {
         @Test
         public void shallPdlLogCreateActivityWhenCopyFromCertificate() {
             fail();
+        }
+
+        @Test
+        void shallPdlLogCreateActivityWhenComplementCertificate() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertNumberOfPdlMessages(2);
+            assertPdlLogMessage(ActivityType.CREATE, newCertificate.getCertificate().getMetadata().getId());
+            assertPdlLogMessage(ActivityType.READ, newCertificate.getCertificate().getMetadata().getId());
         }
 
         @Test
