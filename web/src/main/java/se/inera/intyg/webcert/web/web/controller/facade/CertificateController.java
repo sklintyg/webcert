@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -97,7 +97,7 @@ public class CertificateController {
     @Autowired
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
-    private GetCertificationResourceLinks getCertificationResourceLinks;
+    private GetCertificateResourceLinks getCertificateResourceLinks;
     @Autowired
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Autowired
@@ -112,7 +112,7 @@ public class CertificateController {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, true);
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -160,7 +160,7 @@ public class CertificateController {
             LOG.debug("Signing certificate with id: '{}'", certificateId);
         }
         final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
-        final var resourceLinks = getCertificationResourceLinks.get(signedCertificate);
+        final var resourceLinks = getCertificateResourceLinks.get(signedCertificate);
         final var certificateDTO = CertificateDTO.create(signedCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -197,7 +197,7 @@ public class CertificateController {
             revokeCertificate.getMessage()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -245,7 +245,7 @@ public class CertificateController {
             complementCertificateRequest.getMessage()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(complementCertificate);
+        final var resourceLinks = getCertificateResourceLinks.get(complementCertificate);
         final var certificateDTO = CertificateDTO.create(complementCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -264,7 +264,7 @@ public class CertificateController {
             complementCertificateRequest.getMessage()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(answeredComplementCertificate);
+        final var resourceLinks = getCertificateResourceLinks.get(answeredComplementCertificate);
         final var certificateDTO = CertificateDTO.create(answeredComplementCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -305,7 +305,7 @@ public class CertificateController {
             forwardCertificate.isForwarded()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }

@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -107,7 +107,7 @@ public class CertificateControllerTest {
     @Mock
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Mock
-    private GetCertificationResourceLinks getCertificationResourceLinks;
+    private GetCertificateResourceLinks getCertificateResourceLinks;
     @Mock
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Mock
@@ -175,7 +175,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -294,7 +294,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -339,7 +339,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -431,7 +431,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -473,7 +473,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 
@@ -541,7 +541,7 @@ public class CertificateControllerTest {
             resourceLinks = new ResourceLinkDTO[0];
 
             doReturn(resourceLinks)
-                .when(getCertificationResourceLinks)
+                .when(getCertificateResourceLinks)
                 .get(certificate);
         }
 

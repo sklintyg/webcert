@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
-class GetCertificationResourceLinksImplTest {
+class GetCertificateResourceLinksImplTest {
 
     @Mock
     private GetCertificatesAvailableFunctions certificatesAvailableFunctions;
@@ -63,7 +63,7 @@ class GetCertificationResourceLinksImplTest {
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @InjectMocks
-    private GetCertificationResourceLinksImpl getCertificationResourceLinks;
+    private GetCertificateResourceLinksImpl getCertificationResourceLinks;
 
     private ResourceLinkDTO resourceLinkDTO;
 
@@ -74,6 +74,23 @@ class GetCertificationResourceLinksImplTest {
         doReturn(Collections.singletonList(resourceLinkDTO))
             .when(certificatesAvailableFunctions)
             .get(any(Certificate.class));
+    }
+
+    private void assertInclude(ResourceLinkDTO[] actualResourceLinks, ResourceLinkTypeDTO type) {
+        final var actualResourceLink = get(actualResourceLinks, type);
+        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
+    }
+
+    private void assertExclude(ResourceLinkDTO[] actualResourceLinks, ResourceLinkTypeDTO type) {
+        final var actualResourceLink = get(actualResourceLinks, type);
+        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
+    }
+
+    private ResourceLinkDTO get(ResourceLinkDTO[] resourceLinks, ResourceLinkTypeDTO type) {
+        return Stream.of(resourceLinks)
+            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
+            .findFirst()
+            .orElse(null);
     }
 
     @Nested
@@ -383,22 +400,5 @@ class GetCertificationResourceLinksImplTest {
                 .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.CREATE_QUESTIONS);
         }
-    }
-
-    private void assertInclude(ResourceLinkDTO[] actualResourceLinks, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(actualResourceLinks, type);
-        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
-    }
-
-    private void assertExclude(ResourceLinkDTO[] actualResourceLinks, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(actualResourceLinks, type);
-        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
-    }
-
-    private ResourceLinkDTO get(ResourceLinkDTO[] resourceLinks, ResourceLinkTypeDTO type) {
-        return Stream.of(resourceLinks)
-            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-            .findFirst()
-            .orElse(null);
     }
 }
