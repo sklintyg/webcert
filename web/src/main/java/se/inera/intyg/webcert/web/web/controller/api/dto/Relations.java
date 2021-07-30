@@ -30,6 +30,29 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
  */
 public class Relations {
 
+    private WebcertCertificateRelation parent;
+    private FrontendRelations latestChildRelations;
+
+    public Relations() {
+        this.latestChildRelations = new FrontendRelations();
+    }
+
+    public WebcertCertificateRelation getParent() {
+        return parent;
+    }
+
+    public void setParent(WebcertCertificateRelation parent) {
+        this.parent = parent;
+    }
+
+    public FrontendRelations getLatestChildRelations() {
+        return latestChildRelations;
+    }
+
+    public void setLatestChildRelations(FrontendRelations latestChildRelations) {
+        this.latestChildRelations = latestChildRelations;
+    }
+
     public static class FrontendRelations {
 
         WebcertCertificateRelation replacedByUtkast;
@@ -96,30 +119,7 @@ public class Relations {
             if (this.utkastCopy != null) {
                 list.add(utkastCopy.toString());
             }
-            return list.size() > 0 ? list.toString() : "Empty FrontendRelations";
+            return !list.isEmpty() ? list.toString() : "Empty FrontendRelations";
         }
-    }
-
-    private WebcertCertificateRelation parent;
-    private FrontendRelations latestChildRelations;
-
-    public Relations() {
-        this.latestChildRelations = new FrontendRelations();
-    }
-
-    public WebcertCertificateRelation getParent() {
-        return parent;
-    }
-
-    public void setParent(WebcertCertificateRelation parent) {
-        this.parent = parent;
-    }
-
-    public FrontendRelations getLatestChildRelations() {
-        return latestChildRelations;
-    }
-
-    public void setLatestChildRelations(FrontendRelations latestChildRelations) {
-        this.latestChildRelations = latestChildRelations;
     }
 }
