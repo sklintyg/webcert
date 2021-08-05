@@ -23,6 +23,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
@@ -57,22 +60,26 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
+import se.inera.intyg.webcert.web.web.controller.integration.ReactPilotConfig;
 
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
-
-    private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-
     public static final String SIGNATUR_API_CONTEXT_PATH = "/api/signature";
     public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
     public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
+    private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
+    private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
+    private static final String PARAM_CERT_ID = "certId";
+
+    @Autowired
+    private ReactPilotConfig reactPilotConfig;
 
     @Autowired
     private UnderskriftService underskriftService;
@@ -91,6 +98,9 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired
     private DssSignMessageService dssSignMessageService;
+
+    @Autowired
+    private UtkastRepository utkastRepository;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -142,7 +152,8 @@ public class SignatureApiController extends AbstractApiController {
     @POST
     @Path(SIGN_SERVICE_RESPONSE_PATH)
     @PrometheusTimeMethod
-    public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
+    public Response signServiceResponse(@Context UriInfo uriInfo, @FormParam("RelayState") String relayState,
+        @FormParam("EidSignResponse") String eidSignResponse) {
         SignaturBiljett signaturBiljett;
         monitoringLogService.logSignResponseReceived(relayState);
 
@@ -153,7 +164,7 @@ public class SignatureApiController extends AbstractApiController {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
                 "Could not decode sign response: " + e.getMessage());
-            return getRedirectResponseWithReturnUrl(signaturBiljett);
+            return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
         }
 
         var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponseString);
@@ -162,14 +173,14 @@ public class SignatureApiController extends AbstractApiController {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
                 "Validation of sign response signature failed!");
-            return getRedirectResponseWithReturnUrl(signaturBiljett);
+            return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
         }
 
         signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
         logIfSuccess(relayState, signaturBiljett);
 
-        return getRedirectResponseWithReturnUrl(signaturBiljett);
+        return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
     }
 
     private void logIfSuccess(String relayState, SignaturBiljett signaturBiljett) {
@@ -178,16 +189,44 @@ public class SignatureApiController extends AbstractApiController {
         }
     }
 
-    private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett) {
+    private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
+        URI returnUrl;
+
+        final var certificate = utkastRepository.findById(signaturBiljett.getIntygsId()).orElseThrow();
+        if (shouldRedirectToReactClient(getWebCertUserService().getUser(), certificate.getIntygsTyp())) {
+            returnUrl = getRedirectUriForReactClient(uriInfo, signaturBiljett.getIntygsId());
+        } else {
+            returnUrl = getRedirectUriForAngularClient(signaturBiljett);
+        }
+
+        return Response.seeOther(returnUrl).build();
+    }
+
+    private URI getRedirectUriForAngularClient(SignaturBiljett signaturBiljett) {
         String returnUrl;
         if (SignaturStatus.ERROR.equals(signaturBiljett.getStatus())) {
             returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId(), signaturBiljett.getTicketId());
         } else {
             returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
         }
+        return URI.create(returnUrl);
+    }
 
-        // This will give HTTP-status 307.
-        return Response.temporaryRedirect(URI.create(returnUrl)).build();
+    private URI getRedirectUriForReactClient(UriInfo uriInfo, String certificateId) {
+        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
+        final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
+        return uriBuilder
+            .host(reactPilotConfig.getHostReactClient())
+            .path(reactPilotConfig.getUrlReactTemplate())
+            .buildFromMap(urlParams);
+    }
+
+    private boolean shouldRedirectToReactClient(WebCertUser user, String certificateType) {
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
+        if (feature == null) {
+            return false;
+        }
+        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
