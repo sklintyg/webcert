@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.user.LoginMethod;
+import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
@@ -47,19 +47,20 @@ public class UserServiceImpl implements UserService {
             .role(getRole(webCertUser))
             .loggedInUnit(webCertUser.getValdVardenhet().getNamn())
             .loggedInCareProvider(webCertUser.getValdVardgivare().getNamn())
-            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .build();
     }
 
-    private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
+    private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {
         switch (authenticationMethod) {
             case FAKE:
-                return LoginMethod.FAKE;
+                return SigningMethod.FAKE;
             case SITHS:
             case NET_ID:
-                return LoginMethod.SITHS;
+                return SigningMethod.DSS;
             default:
-                throw new IllegalArgumentException(String.format("Login method '%s' not yet supported", authenticationMethod));
+                throw new IllegalArgumentException(
+                    String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
         }
     }
 
