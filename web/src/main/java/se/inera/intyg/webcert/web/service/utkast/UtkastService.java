@@ -36,11 +36,12 @@ public interface UtkastService {
 
     Utkast createNewDraft(CreateNewDraftRequest request);
 
+    String getCertificateType(String certificateId);
+
     /**
      * Retrieves an utkast and always create a PDL log event.
      *
      * @param intygId utkast id
-     * @param pdlLog
      * @return Utkast
      */
     Utkast getDraft(String intygId, boolean pdlLog);
@@ -119,8 +120,8 @@ public interface UtkastService {
      * @param currentDraftId id of current draft if one exists
      */
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer,
-                                                                          IntygUser user,
-                                                                          String currentDraftId);
+        IntygUser user,
+        String currentDraftId);
 
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
 
@@ -128,7 +129,7 @@ public interface UtkastService {
 
     /**
      * Check if draft has been created through the replacement function.
-     * @param certificateId
+     *
      * @return true or false value if draft has been created through a replacement of another certificate.
      */
     boolean isDraftCreatedFromReplacement(String certificateId);
