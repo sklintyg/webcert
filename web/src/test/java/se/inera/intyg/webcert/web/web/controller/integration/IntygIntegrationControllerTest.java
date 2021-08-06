@@ -64,6 +64,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
@@ -93,7 +95,10 @@ public class IntygIntegrationControllerTest {
     private IntygModuleRegistry moduleRegistry;
 
     @Spy
-    private ReactPilotConfig reactPilotConfig;
+    private ReactUriFactory reactUriFactory;
+
+    @Spy
+    private ReactPilotUtil reactPilotUtil;
 
     @InjectMocks
     private IntygIntegrationController intygIntegrationController;
@@ -185,6 +190,89 @@ public class IntygIntegrationControllerTest {
         );
     }
 
+    private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
+        PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
+        redirect.setIntygId(INTYGSID);
+        redirect.setIntygTyp(INTYGSTYP);
+        redirect.setIntygTypeVersion(INTYGSTYPVERSION);
+        redirect.setUtkast(true);
+        return redirect;
+    }
+
+    private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
+        RequestOrigin o = new RequestOrigin();
+        o.setName(name);
+        o.setIntygstyper(intygstyper);
+        return o;
+    }
+
+    private Privilege createPrivilege(String name, List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
+        Privilege p = new Privilege();
+        p.setName(name);
+        p.setIntygstyper(intygsTyper);
+        p.setRequestOrigins(requestOrigins);
+        return p;
+    }
+
+    private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
+        WebCertUser user = new WebCertUser();
+
+        HashMap<String, Privilege> pMap = new HashMap<>();
+        pMap.put(p.getName(), p);
+        user.setAuthorities(pMap);
+
+        user.setOrigin(origin);
+        user.setFeatures(features);
+
+        HashMap<String, Role> rMap = new HashMap<>();
+        Role role = new Role();
+        role.setName(roleName);
+        rMap.put(roleName, role);
+
+        user.setRoles(rMap);
+
+        Vardgivare vg = new Vardgivare();
+        vg.setId("vg1");
+        Vardenhet ve = new Vardenhet();
+        ve.setVardgivareHsaId("vg1");
+        ve.setId(ENHETSID);
+        vg.setVardenheter(Arrays.asList(ve));
+        user.setVardgivare(Arrays.asList(vg));
+        return user;
+    }
+
+    private WebCertUser createDefaultUser() {
+        return createUser(AuthoritiesConstants.ROLE_LAKARE,
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+                Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
+                Arrays.asList(
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+            Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
+                .collect(Collectors.toMap(Function.identity(), s -> {
+                    Feature feature = new Feature();
+                    feature.setName(s);
+                    feature.setIntygstyper(Arrays.asList("lisjp"));
+                    return feature;
+                })),
+            UserOriginType.DJUPINTEGRATION.name());
+    }
+
+    private WebCertUser createDefaultUserWithIntegrationParameters() {
+        final var user = createDefaultUser();
+        user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
+            null, null, false, false, false, false));
+        return user;
+    }
+
+    private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
+        final var feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
+        feature.setIntygstyper(certificateTypes);
+        feature.setGlobal(global);
+        return feature;
+    }
+
     @Nested
     class RedirectToCertificateReact {
 
@@ -202,8 +290,8 @@ public class IntygIntegrationControllerTest {
             intygIntegrationController.setUrlIntygFragmentTemplate("/intyg/{certType}/{certTypeVersion}/{certId}/");
             intygIntegrationController.setUrlUtkastFragmentTemplate("/{certType}/{certTypeVersion}/edit/{certId}/");
 
-            ReflectionTestUtils.setField(reactPilotConfig, "hostReactClient", "wc2.wc.localtest.me");
-            ReflectionTestUtils.setField(reactPilotConfig, "urlReactTemplate", "/certificate/{certId}");
+            ReflectionTestUtils.setField(reactUriFactory, "hostReactClient", "wc2.wc.localtest.me");
+            ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
         }
 
         @Test
@@ -319,88 +407,5 @@ public class IntygIntegrationControllerTest {
             assertEquals("https://wc.localtest.me/#/" + INTYGSTYP + "/" + INTYGSTYPVERSION + "/edit/" + INTYGSID + "/",
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
         }
-    }
-
-    private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
-        PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
-        redirect.setIntygId(INTYGSID);
-        redirect.setIntygTyp(INTYGSTYP);
-        redirect.setIntygTypeVersion(INTYGSTYPVERSION);
-        redirect.setUtkast(true);
-        return redirect;
-    }
-
-    private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
-        RequestOrigin o = new RequestOrigin();
-        o.setName(name);
-        o.setIntygstyper(intygstyper);
-        return o;
-    }
-
-    private Privilege createPrivilege(String name, List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
-        Privilege p = new Privilege();
-        p.setName(name);
-        p.setIntygstyper(intygsTyper);
-        p.setRequestOrigins(requestOrigins);
-        return p;
-    }
-
-    private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
-        WebCertUser user = new WebCertUser();
-
-        HashMap<String, Privilege> pMap = new HashMap<>();
-        pMap.put(p.getName(), p);
-        user.setAuthorities(pMap);
-
-        user.setOrigin(origin);
-        user.setFeatures(features);
-
-        HashMap<String, Role> rMap = new HashMap<>();
-        Role role = new Role();
-        role.setName(roleName);
-        rMap.put(roleName, role);
-
-        user.setRoles(rMap);
-
-        Vardgivare vg = new Vardgivare();
-        vg.setId("vg1");
-        Vardenhet ve = new Vardenhet();
-        ve.setVardgivareHsaId("vg1");
-        ve.setId(ENHETSID);
-        vg.setVardenheter(Arrays.asList(ve));
-        user.setVardgivare(Arrays.asList(vg));
-        return user;
-    }
-
-    private WebCertUser createDefaultUser() {
-        return createUser(AuthoritiesConstants.ROLE_LAKARE,
-            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
-                Arrays.asList(
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-            Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
-                .collect(Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Arrays.asList("lisjp"));
-                    return feature;
-                })),
-            UserOriginType.DJUPINTEGRATION.name());
-    }
-
-    private WebCertUser createDefaultUserWithIntegrationParameters() {
-        final var user = createDefaultUser();
-        user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false));
-        return user;
-    }
-
-    private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
-        final var feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        feature.setIntygstyper(certificateTypes);
-        feature.setGlobal(global);
-        return feature;
     }
 }

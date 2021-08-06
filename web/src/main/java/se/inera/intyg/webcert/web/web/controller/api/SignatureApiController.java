@@ -23,7 +23,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
@@ -50,7 +49,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
@@ -60,12 +58,13 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.integration.ReactPilotConfig;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 
 @Path("/signature")
@@ -79,7 +78,10 @@ public class SignatureApiController extends AbstractApiController {
     private static final String PARAM_CERT_ID = "certId";
 
     @Autowired
-    private ReactPilotConfig reactPilotConfig;
+    private ReactUriFactory reactUriFactory;
+
+    @Autowired
+    private ReactPilotUtil reactPilotUtil;
 
     @Autowired
     private UnderskriftService underskriftService;
@@ -100,7 +102,7 @@ public class SignatureApiController extends AbstractApiController {
     private DssSignMessageService dssSignMessageService;
 
     @Autowired
-    private UtkastRepository utkastRepository;
+    private UtkastService utkastService;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -190,16 +192,17 @@ public class SignatureApiController extends AbstractApiController {
     }
 
     private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
-        URI returnUrl;
+        final var redirectUri = getRedirectUri(signaturBiljett, uriInfo);
+        return Response.seeOther(redirectUri).build();
+    }
 
-        final var certificate = utkastRepository.findById(signaturBiljett.getIntygsId()).orElseThrow();
-        if (shouldRedirectToReactClient(getWebCertUserService().getUser(), certificate.getIntygsTyp())) {
-            returnUrl = getRedirectUriForReactClient(uriInfo, signaturBiljett.getIntygsId());
-        } else {
-            returnUrl = getRedirectUriForAngularClient(signaturBiljett);
+    private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
+        final var certificateType = utkastService.getCertificateType(signaturBiljett.getIntygsId());
+        if (reactPilotUtil.useReactClient(getWebCertUserService().getUser(), certificateType)) {
+            return reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
         }
 
-        return Response.seeOther(returnUrl).build();
+        return getRedirectUriForAngularClient(signaturBiljett);
     }
 
     private URI getRedirectUriForAngularClient(SignaturBiljett signaturBiljett) {
@@ -210,23 +213,6 @@ public class SignatureApiController extends AbstractApiController {
             returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
         }
         return URI.create(returnUrl);
-    }
-
-    private URI getRedirectUriForReactClient(UriInfo uriInfo, String certificateId) {
-        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
-        final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
-        return uriBuilder
-            .host(reactPilotConfig.getHostReactClient())
-            .path(reactPilotConfig.getUrlReactTemplate())
-            .buildFromMap(urlParams);
-    }
-
-    private boolean shouldRedirectToReactClient(WebCertUser user, String certificateType) {
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        if (feature == null) {
-            return false;
-        }
-        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
