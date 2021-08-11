@@ -31,9 +31,10 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CL
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,7 +75,7 @@ public class SubscriptionServiceTest {
     private MonitoringLogService monitoringLogService;
 
     @Captor
-    private ArgumentCaptor<Map<String, String>> restServiceParamCaptor;
+    private ArgumentCaptor<Map<String, List<String>>> restServiceParamCaptor;
 
     @InjectMocks
     private SubscriptionServiceImpl subscriptionService;
@@ -199,7 +200,7 @@ public class SubscriptionServiceTest {
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
         assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber));
-        assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber));
+        assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0));
     }
 
     @Test(expected = MissingSubscriptionException.class)
@@ -258,7 +259,9 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(sithsUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
@@ -271,7 +274,9 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(sithsUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
@@ -286,6 +291,22 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(sithsUser);
 
         verify(monitoringLogService).logSubscriptionWarnings(expectedUserId, AuthenticationMethodEnum.SITHS.name(), expectedHsaIds);
+    }
+
+    @Test
+    public void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
+        final var sithsUser = createWebCertSithsUser(4, 2, 0);
+        sithsUser.getVardgivare().get(1).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(2).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+
+        setRestServiceMockToReturn(3);
+        setFeaturesHelperMockToReturn(true, false);
+
+        subscriptionService.checkSubscriptions(sithsUser);
+
+        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        assertEquals(3, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_1").size());
+        assertEquals(1, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_4").size());
     }
 
     @Test
@@ -323,7 +344,7 @@ public class SubscriptionServiceTest {
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
         assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber));
-        assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber));
+        assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0));
     }
 
     @Test
@@ -384,7 +405,9 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptionElegWebCertUser(elegUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
@@ -397,7 +420,9 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptionElegWebCertUser(elegUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        verify(monitoringLogService).logSubscriptionServiceCallFailure(restServiceParamCaptor.getValue().values(), "MESSAGE_TEXT");
+
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
@@ -470,7 +495,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
-        final var hashedOrgNo = Collections.singleton(HashUtility.hash("121212-1212"));
+        final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
         setMockToReturnRestClientExceptionForUnregistered();
 
         subscriptionService.isUnregisteredElegUserMissingSubscription("191212121212");
@@ -480,7 +505,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
-        final var hashedOrgNo = Collections.singleton(HashUtility.hash("121212-1212"));
+        final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
 
         setMockToReturnRestClientResponseExceptionForUnregistered();
 

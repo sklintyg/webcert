@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.integration.kundportalen.enumerations.Authenticati
 
 public interface SubscriptionRestService {
 
-    List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
+    List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
 
     boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
 
