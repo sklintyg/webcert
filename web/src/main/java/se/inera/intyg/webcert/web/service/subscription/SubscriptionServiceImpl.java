@@ -25,12 +25,14 @@ import static se.inera.intyg.webcert.integration.kundportalen.enumerations.Authe
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,27 +135,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(missingSubscriptions);
     }
 
-    private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<String> allCareProviders,
+    private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<List<String>> allCareProviders,
         List<String> careProvidersWithoutSubscription) {
-
         if (isSubscriptionRequired()
-            && missingSubscriptionOnAllCareProviders(allCareProviders, careProvidersWithoutSubscription)) {
+            && missingSubscriptionOnAllCareProviders(flatMapCollection(allCareProviders), careProvidersWithoutSubscription)) {
             throw new MissingSubscriptionException(String.format("All care providers for user %s are missing subscription",
                 webCertUser.getHsaId()));
         }
     }
 
-    private boolean missingSubscriptionOnAllCareProviders(Collection<String> allCareProviders,
+    private boolean missingSubscriptionOnAllCareProviders(List<String> allCareProviders,
         List<String> careProvidersWithoutSubscription) {
         return allCareProviders.size() == careProvidersWithoutSubscription.size()
             && allCareProviders.containsAll(careProvidersWithoutSubscription);
     }
 
-    private Map<String, String> getCareProviderOrgNumbers(WebCertUser webCertUser) {
+    private Map<String, List<String>> getCareProviderOrgNumbers(WebCertUser webCertUser) {
         if (isPrivatePractitioner(webCertUser) && isElegUser(webCertUser)) {
             return getOrganizationNumberForElegUser(webCertUser);
         } else {
-            final var careProviderOrgNumbers = new HashMap<String, String>();
+            final var careProviderOrgNumbers = new HashMap<String, List<String>>();
             for (var careProvider : webCertUser.getVardgivare()) {
                 getCareProviderOrganizationNumber(careProvider, careProviderOrgNumbers);
             }
@@ -161,24 +162,37 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private Map<String, String> getOrganizationNumberForElegUser(WebCertUser webCertUser) {
+    private Map<String, List<String>> getOrganizationNumberForElegUser(WebCertUser webCertUser) {
         try {
             final var careProvider = webCertUser.getVardgivare().stream().findFirst().map(Vardgivare::getId).orElseThrow();
             final var orgNumber = createOrganizationNumberFromPersonId(webCertUser.getPersonId());
-            return Map.of(orgNumber, careProvider);
+            return Map.of(orgNumber, List.of(careProvider));
         } catch (NoSuchElementException e) {
             LOG.error("Failure getting organization number for private practitioner {}.", hash(webCertUser.getPersonId()), e);
             return Collections.emptyMap();
         }
     }
 
-    private void getCareProviderOrganizationNumber(Vardgivare careProvider, Map<String, String> organizations) {
+    private void getCareProviderOrganizationNumber(Vardgivare careProvider, Map<String, List<String>> organizations) {
         try {
             final var organizationNumber = careProvider.getVardenheter().stream().filter(unit -> unit.getVardgivareOrgnr() != null)
                 .findFirst().map(Vardenhet::getVardgivareOrgnr).orElseThrow();
-            organizations.put(organizationNumber, careProvider.getId());
+            addOrganization(organizationNumber, careProvider.getId(), organizations);
         } catch (NoSuchElementException e) {
             LOG.error("Failure getting organization number for careProvider {}.", careProvider.getId(), e);
+        }
+    }
+
+    private void addOrganization(String organizationNumber, String careProviderId, Map<String, List<String>> organizations) {
+        if (!organizations.containsKey(organizationNumber)) {
+            final var careProviderList = new ArrayList<String>();
+            careProviderList.add(careProviderId);
+            organizations.put(organizationNumber, careProviderList);
+        } else {
+            final var careProviderIds = organizations.get(organizationNumber);
+            if (!careProviderIds.contains(careProviderId)) {
+                careProviderIds.add(careProviderId);
+            }
         }
     }
 
@@ -220,12 +234,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private List<String> getMissingSubscriptions(Map<String, String> careProviderOrgNumbers, AuthenticationMethodEnum authMethod) {
+    private List<String> getMissingSubscriptions(Map<String, List<String>> careProviderOrgNumbers, AuthenticationMethodEnum authMethod) {
         try {
             return subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
         } catch (Exception e) {
             LOG.error("Kundportalen subscription service call failure for org numbers {}.", careProviderOrgNumbers.values(), e);
-            monitorLogIfServiceCallFailure(careProviderOrgNumbers.values(), e);
+            monitorLogIfServiceCallFailure(flatMapCollection(careProviderOrgNumbers.values()), e);
             return Collections.emptyList();
         }
     }
@@ -236,12 +250,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         } catch (Exception e) {
             LOG.error("Kundportalen subscription service call failure for unregistered eleg user with org number {}.",
                 hashed(organizationNumber), e);
-            monitorLogIfServiceCallFailure(Collections.singleton(hashed(organizationNumber)), e);
+            monitorLogIfServiceCallFailure(List.of(hashed(organizationNumber)), e);
             return false;
         }
     }
 
-    private void monitorLogIfServiceCallFailure(Collection<String> queryIds, Exception e) {
+    private void monitorLogIfServiceCallFailure(List<String> queryIds, Exception e) {
         if (e instanceof RestClientException) {
             monitoringLogService.logSubscriptionServiceCallFailure(queryIds, e.getMessage());
         }
@@ -253,6 +267,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private String hashed(String organizationNumber) {
         return HashUtility.hash(organizationNumber);
+    }
+
+    private List<String> flatMapCollection(Collection<List<String>> collection) {
+        return collection.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     @Override

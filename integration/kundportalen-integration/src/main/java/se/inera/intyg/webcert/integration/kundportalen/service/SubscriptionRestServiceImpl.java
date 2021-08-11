@@ -62,7 +62,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     @Override
-    public List<String> getMissingSubscriptions(Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
+    public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var organizationResponse = getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
         final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
         return getCareProvidersMissingSubscription(organizationInfo, organizationNumberHsaIdMap, authMethod);
@@ -89,13 +89,13 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,
-        Map<String, String> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
+        Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var careProvidersMissingSubscription = new ArrayList<String>();
 
         for (var organization : organizations) {
             final var serviceCodes = organization.getServiceCodes();
             if (missingSubscription(serviceCodes, authMethod)) {
-                careProvidersMissingSubscription.add(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
+                careProvidersMissingSubscription.addAll(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
             }
         }
         return careProvidersMissingSubscription;

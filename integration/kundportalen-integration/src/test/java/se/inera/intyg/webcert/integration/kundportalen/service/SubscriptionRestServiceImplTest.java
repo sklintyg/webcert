@@ -113,6 +113,21 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response.isEmpty());
     }
 
+    @Test
+    public void shouldReturnAllCareProvidersSharingTheSameOrgNumber() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
+        orgNoHsaIdMap.get("ORG_NO_1").add("HSA_ID_1-2");
+        orgNoHsaIdMap.get("ORG_NO_1").add("HSA_ID_1-3");
+        final var expectedHsaIds = orgNoHsaIdMap.get("ORG_NO_1");
+
+        setMockToReturn(HttpStatus.OK, 2, 2, 0);
+
+        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+
+        assertEquals(4, response.size());
+        assertTrue(response.containsAll(expectedHsaIds));
+    }
+
     @Test (expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
@@ -363,10 +378,12 @@ public class SubscriptionRestServiceImplTest {
             .thenThrow(e);
     }
 
-    private Map<String, String> createOrgNoHsaIdMap(int count) {
-        final var orgNoHsaIdMap = new HashMap<String, String>();
+    private Map<String, List<String>> createOrgNoHsaIdMap(int count) {
+        final var orgNoHsaIdMap = new HashMap<String, List<String>>();
         for (var i = 1; i <= count; i++) {
-            orgNoHsaIdMap.put("ORG_NO_" + i, "HSA_ID_" + i);
+            final var hsaIdList = new ArrayList<String>();
+            hsaIdList.add("HSA_ID_" + i);
+            orgNoHsaIdMap.put("ORG_NO_" + i, hsaIdList);
         }
         return orgNoHsaIdMap;
     }
