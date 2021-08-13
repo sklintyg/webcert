@@ -19,12 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.lisjp.model.internal.Sjukskrivning.SjukskrivningsGrad;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
@@ -48,7 +52,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
     }
 
     @Override
-    public MaximalSjukskrivningstidResponse validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
+    public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
         MaximalSjukskrivningstidRequest sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
         Icd10KoderRequest codesRequest = new Icd10KoderRequest();
         codesRequest.setIcd10Kod1(request.getIcd10Code(0));
@@ -56,17 +60,47 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
         codesRequest.setIcd10Kod3(request.getIcd10Code(2));
 
         List<Period> periods = new ArrayList<>();
+        AtomicLong totalDays = new AtomicLong();
         request.getDateRangeList().getList().forEach((dateRange) -> {
             Period period = new Period();
             period.setFrom(dateRange.getFrom());
             period.setTom(dateRange.getTo());
-            period.setNedsattning(Integer.parseInt(dateRange.getId()));
+            totalDays.addAndGet(getTotalDays(dateRange));
+            final var sjukskrivningsgrad = SjukskrivningsGrad.fromId(dateRange.getId());
+            period.setNedsattning(Integer.parseInt(sjukskrivningsgrad.getLabel().replace("%", "")));
             periods.add(period);
         });
 
         sickLeaveTimeRequest.setIcd10Koder(codesRequest);
         sickLeaveTimeRequest.setPersonnummer(Personnummer.createPersonnummer(request.getPersonId()).get());
         sickLeaveTimeRequest.setPeriods(periods);
-        return fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest);
+        return getResponseText(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest), totalDays.get());
+    }
+
+    private long getTotalDays(CertificateDataValueDateRange dateRange) {
+        if (dateRange.getFrom() == null || dateRange.getTo() == null) {
+            return 0;
+        }
+        return Duration.between(dateRange.getFrom().atStartOfDay(), dateRange.getTo().atStartOfDay()).toDays();
+    }
+
+    private String getResponseText(MaximalSjukskrivningstidResponse response, long daysFromCurrentCertificate) {
+        if (response.isOverskriderRekommenderadSjukskrivningstid()) {
+            if (response.getTotalSjukskrivningstid() == daysFromCurrentCertificate) {
+                return "Den föreslagna sjukskrivningsperioden är längre än FMBs rekommendation på "
+                    + response.getMaximaltRekommenderadSjukskrivningstid() + " dagar ("
+                    + response.getMaximaltRekommenderadSjukskrivningstidSource() + ") för diagnosen "
+                    + response.getAktuellIcd10Kod() + ". Ange en motivering för att underlätta Försäkringskassans handläggning.";
+            } else {
+                return "Den totala sjukskrivningsperioden är "
+                    + response.getTotalSjukskrivningstid()
+                    + " dagar och därmed längre än FMBs rekommendation på "
+                    + response.getMaximaltRekommenderadSjukskrivningstid()
+                    + " dagar (" + response.getMaximaltRekommenderadSjukskrivningstidSource() + ") för diagnosen "
+                    + response.getAktuellIcd10Kod()
+                    + ". Ange en motivering för att underlätta Försäkringskassans handläggning. Sjukskrivningsperioden är baserad på patientens sammanhängande intyg på denna vårdenhet.";
+            }
+        }
+        return "";
     }
 }

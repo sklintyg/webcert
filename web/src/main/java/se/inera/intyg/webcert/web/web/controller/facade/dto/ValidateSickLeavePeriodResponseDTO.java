@@ -16,12 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-package se.inera.intyg.webcert.web.service.facade;
+public class ValidateSickLeavePeriodResponseDTO {
 
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
+    private String message;
 
-public interface ValidateSickLeavePeriodFacadeService {
+    public String getMessage() {
+        return message;
+    }
 
-    String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request);
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public static ValidateSickLeavePeriodResponseDTO create(String message) {
+        final ValidateSickLeavePeriodResponseDTO response = new ValidateSickLeavePeriodResponseDTO();
+        response.setMessage(message);
+        return response;
+    }
 }

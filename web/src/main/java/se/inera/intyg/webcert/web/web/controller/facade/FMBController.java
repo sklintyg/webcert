@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
 
 @Path("/fmb")
 public class FMBController {
@@ -42,7 +43,7 @@ public class FMBController {
     @Autowired
     private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 
-    @GET
+    @POST
     @Path("/validateSickLeavePeriod")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
@@ -51,6 +52,6 @@ public class FMBController {
             LOG.debug("Validating sick leave period");
         }
         final var response = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(validateSickLeavePeriod);
-        return Response.ok(response).build();
+        return Response.ok(ValidateSickLeavePeriodResponseDTO.create(response)).build();
     }
 }

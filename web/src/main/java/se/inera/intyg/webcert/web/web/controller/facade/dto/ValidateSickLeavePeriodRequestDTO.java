@@ -34,6 +34,10 @@ public class ValidateSickLeavePeriodRequestDTO {
         this.personId = personId;
     }
 
+    public void setIcd10Codes(String[] icd10Codes) {
+        this.icd10Codes = icd10Codes;
+    }
+
     public String getIcd10Code(int index) {
         return icd10Codes.length - 1 < index ? "" : icd10Codes[index];
     }
