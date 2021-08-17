@@ -81,7 +81,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
         if (dateRange.getFrom() == null || dateRange.getTo() == null) {
             return 0;
         }
-        return Duration.between(dateRange.getFrom().atStartOfDay(), dateRange.getTo().atStartOfDay()).toDays();
+        return Duration.between(dateRange.getFrom().atStartOfDay(), dateRange.getTo().atStartOfDay().plusDays(1)).toDays();
     }
 
     private String getResponseText(MaximalSjukskrivningstidResponse response, long daysFromCurrentCertificate) {
