@@ -25,13 +25,14 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.kundportalen.stub.service.KundportalenStubRestApiService;
 
 @Controller
-@Path("/api/v1")
+@Path("/api/service/v1")
 public class KundportalenStubRestApi {
 
     private final KundportalenStubRestApiService kundportalenStubRestApiService;
@@ -41,10 +42,13 @@ public class KundportalenStubRestApi {
     }
 
     @POST
-    @Path("/service/subscription/Intygstjänster")
+    // Javax reserves endpoint 'services' for returning info about available endpoints. Thus for stub to return proper values
+    // endpoint 'services' is replaced with below value. Use wherever calls are made to the stub.
+    @Path("/notServices")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSubscriptionPost(@HeaderParam("Authorization") String accessToken, List<String> orgNumbers) {
-        return kundportalenStubRestApiService.createSubscriptionResponse(accessToken, orgNumbers);
+    public Response getSubscriptionPost(@HeaderParam("Authorization") String accessToken, @QueryParam("service") String service,
+        List<String> orgNumbers) {
+        return kundportalenStubRestApiService.createSubscriptionResponse(accessToken, service, orgNumbers);
     }
 }

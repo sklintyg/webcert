@@ -25,7 +25,7 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <context:annotation-config/>
-  <beans profile="dev,wc-all-stubs,testability-api">
+  <beans profile="dev,wc-all-stubs,wc-kundportalen-stub">
     <context:component-scan base-package="se.inera.intyg.webcert.integration.kundportalen.stub" />
   </beans>
 
