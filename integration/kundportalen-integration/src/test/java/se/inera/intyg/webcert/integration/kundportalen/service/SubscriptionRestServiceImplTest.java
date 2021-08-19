@@ -70,7 +70,8 @@ public class SubscriptionRestServiceImplTest {
     @Before
     public void setup() {
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenAccessToken", "accessToken");
-        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "serviceUrl");
+        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "https://kp.test");
+        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionService", "Intygstjänster");
         ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
         ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "sithsServiceCodes",
@@ -229,9 +230,6 @@ public class SubscriptionRestServiceImplTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForElegUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
     }

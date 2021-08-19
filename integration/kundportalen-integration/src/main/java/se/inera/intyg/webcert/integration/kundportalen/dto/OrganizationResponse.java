@@ -24,10 +24,10 @@ import java.util.List;
 
 public class OrganizationResponse {
 
-    @JsonProperty("org_no")
+    @JsonProperty("orgNo")
     private String organizationNumber;
 
-    @JsonProperty("service_code_subscriptions")
+    @JsonProperty("serviceCode")
     private List<String> serviceCodes;
 
 

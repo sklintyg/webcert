@@ -34,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
 import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 
@@ -45,6 +46,9 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
 
     @Value("${kundportalen.subscriptions.url}")
     private String kundportalenSubscriptionServiceUrl;
+
+    @Value("${kundportalen.subscriptions.service}")
+    private String kundportalenSubscriptionService;
 
     @Value("#{${kundportalen.service.codes.eleg}}")
     private List<String> elegServiceCodes;
@@ -77,7 +81,8 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
 
     private ResponseEntity<List<OrganizationResponse>> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var requestEntity = getRequestEntity(organizationNumbers);
-        return restTemplate.exchange(kundportalenSubscriptionServiceUrl, HttpMethod.POST, requestEntity, LIST_ORGANIZATION_RESPONSE);
+        final var requestUrl = getRequestUrlWithParams();
+        return restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, LIST_ORGANIZATION_RESPONSE);
     }
 
     private HttpEntity<Set<String>> getRequestEntity(Set<String> organizationNumbers) {
@@ -86,6 +91,12 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         return new HttpEntity<>(organizationNumbers, headers);
+    }
+
+    private String getRequestUrlWithParams() {
+        return UriComponentsBuilder.fromHttpUrl(kundportalenSubscriptionServiceUrl)
+            .queryParam("service", kundportalenSubscriptionService)
+            .toUriString();
     }
 
     private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,

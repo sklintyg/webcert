@@ -38,9 +38,11 @@ public class KundportalenStubRestApiService {
         this.stubState = stubState;
     }
 
-    public Response createSubscriptionResponse(String accessToken, List<String> orgNumbers) {
+    public Response createSubscriptionResponse(String accessToken, String service, List<String> orgNumbers) {
         if (accessToken == null) {
             return Response.status(Status.BAD_REQUEST).entity("Authorization header required by Kundportalen stub.").build();
+        } else if (service == null) {
+            return Response.status(Status.BAD_REQUEST).entity("Query parameter 'service' required by Kundportalen stub.").build();
         } else if (stubState.getHttpErrorCode() != 0) {
             return responseWithErrorStatusCode(stubState.getHttpErrorCode());
         } else {
@@ -56,8 +58,8 @@ public class KundportalenStubRestApiService {
             final var organization = new HashMap<String, Object>();
             final var subscribedServiceCodes = getSubscribedServiceCodes(activeSubscriptions, orgNumber);
 
-            organization.put("org_no", orgNumber);
-            organization.put("service_code_subscriptions", subscribedServiceCodes);
+            organization.put("orgNo", orgNumber);
+            organization.put("serviceCode", subscribedServiceCodes);
             subscriptionInfo.add(organization);
         }
         return Response.ok(subscriptionInfo).build();

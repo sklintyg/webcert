@@ -48,6 +48,7 @@ public class KundportalenStubRestApiServiceTest {
     KundportalenStubRestApiService kundportalenStubRestApiService;
 
     private static final String ACCESS_TOKEN = "accessToken";
+    private static final String SERVICE = "Intygstjänster";
 
     @Test
     public void shouldReturnMapWithOneActiveServiceCodeWhenOneSubscriptionExists() {
@@ -55,12 +56,12 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1"))
-            .readEntity(new GenericType<List<Map<String, Object>>>(){});
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>(){});
 
-        final var serviceCodeList = objectToListOfStrings(response.get(0).get("service_code_subscriptions"));
+        final var serviceCodeList = objectToListOfStrings(response.get(0).get("serviceCode"));
         assertEquals(1, response.size());
-        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("org_no"));
+        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("orgNo"));
         assertTrue(serviceCodeList.contains("SERVICE_CODE_1"));
     }
 
@@ -70,12 +71,12 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_2"))
-            .readEntity(new GenericType<List<Map<String, Object>>>(){});
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>(){});
 
-        final var serviceCodeList = objectToListOfStrings(response.get(0).get("service_code_subscriptions"));
+        final var serviceCodeList = objectToListOfStrings(response.get(0).get("serviceCode"));
         assertEquals(1, response.size());
-        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("org_no"));
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("orgNo"));
         assertTrue(serviceCodeList.contains("SERVICE_CODE_1"));
         assertTrue(serviceCodeList.contains("SERVICE_CODE_2"));
     }
@@ -86,12 +87,12 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_3"))
-            .readEntity(new GenericType<List<Map<String, Object>>>(){});
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>(){});
 
         assertEquals(1, response.size());
-        assertEquals("ORGANIZATION_NUMBER_3", response.get(0).get("org_no"));
-        assertTrue(((List<?>) response.get(0).get("service_code_subscriptions")).isEmpty());
+        assertEquals("ORGANIZATION_NUMBER_3", response.get(0).get("orgNo"));
+        assertTrue(((List<?>) response.get(0).get("serviceCode")).isEmpty());
     }
 
     @Test
@@ -100,15 +101,15 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1",
-            "ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1", "ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>(){});
 
         assert response != null;
-        final var serviceCodeList1 = objectToListOfStrings(response.get(0).get("service_code_subscriptions"));
-        final var serviceCodeList2 = objectToListOfStrings(response.get(1).get("service_code_subscriptions"));
+        final var serviceCodeList1 = objectToListOfStrings(response.get(0).get("serviceCode"));
+        final var serviceCodeList2 = objectToListOfStrings(response.get(1).get("serviceCode"));
         assertEquals(2, response.size());
-        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("org_no"));
-        assertEquals("ORGANIZATION_NUMBER_2", response.get(1).get("org_no"));
+        assertEquals("ORGANIZATION_NUMBER_1", response.get(0).get("orgNo"));
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(1).get("orgNo"));
         assertEquals(1, serviceCodeList1.size());
         assertEquals(2, serviceCodeList2.size());
     }
@@ -119,15 +120,15 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_2",
-            "ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_2", "ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>(){});
 
         assert response != null;
         assertEquals(2, response.size());
-        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("org_no"));
-        assertEquals("ORGANIZATION_NUMBER_3", response.get(1).get("org_no"));
-        assertEquals(2, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
-        assertTrue(((List<?>) response.get(1).get("service_code_subscriptions")).isEmpty());
+        assertEquals("ORGANIZATION_NUMBER_2", response.get(0).get("orgNo"));
+        assertEquals("ORGANIZATION_NUMBER_3", response.get(1).get("orgNo"));
+        assertEquals(2, ((List<?>) response.get(0).get("serviceCode")).size());
+        assertTrue(((List<?>) response.get(1).get("serviceCode")).isEmpty());
     }
 
     @Test
@@ -139,11 +140,11 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
         when(stubState.getServiceCodeList()).thenReturn(List.of("SERVICE_CODE_1", "SERVICE_CODE_2", "SERVICE_CODE_3"));
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1"))
-            .readEntity(new GenericType<List<Map<String, Object>>>() { });
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() { });
 
         assertEquals(1, response.size());
-        assertEquals(3, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
+        assertEquals(3, ((List<?>) response.get(0).get("serviceCode")).size());
     }
 
     @Test
@@ -154,19 +155,19 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1"))
-            .readEntity(new GenericType<List<Map<String, Object>>>() { });
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() { });
 
         assertEquals(1, response.size());
-        assertEquals(0, ((List<?>) response.get(0).get("service_code_subscriptions")).size());
+        assertEquals(0, ((List<?>) response.get(0).get("serviceCode")).size());
     }
 
     @Test
     public void shouldReturnNullErrorResponseWhenErrorSet() {
         when(stubState.getHttpErrorCode()).thenReturn(403);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1"));
-
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1"));
         assertEquals(Status.FORBIDDEN, response.getStatusInfo().toEnum());
     }
 
@@ -174,14 +175,24 @@ public class KundportalenStubRestApiServiceTest {
     public void shouldReturnError500WhenHttpErrorSetToUnknown() {
         when(stubState.getHttpErrorCode()).thenReturn(777);
 
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, List.of("ORGANIZATION_NUMBER_1"));
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1"));
 
         assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
     }
 
     @Test
     public void shouldReturnBadRequestIfNoAuthorizationHeader() {
-        final var response = kundportalenStubRestApiService.createSubscriptionResponse(null, List.of("ORGANIZATION_NUMBER_1"));
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(null, SERVICE,
+            List.of("ORGANIZATION_NUMBER_1"));
+
+        assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+    }
+
+    @Test
+    public void shouldReturnBadRequestIfNoServiceQueryParameter() {
+        final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, null,
+            List.of("ORGANIZATION_NUMBER_1"));
 
         assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
     }
