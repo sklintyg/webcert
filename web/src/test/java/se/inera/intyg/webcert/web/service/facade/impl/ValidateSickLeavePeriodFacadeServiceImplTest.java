@@ -19,11 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,12 +35,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,12 +47,13 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
 
     @InjectMocks
     private ValidateSickLeavePeriodFacadeServiceImpl validateSickLeavePeriodFacadeService;
-    
-    private final static String PERSON_ID = "19121212-1212";
 
-    @Test
-    void shallValidateSickLeavePeriod() {
-        ValidateSickLeavePeriodRequestDTO request = new ValidateSickLeavePeriodRequestDTO();
+    private final static String PERSON_ID = "19121212-1212";
+    private ValidateSickLeavePeriodRequestDTO request;
+
+    @BeforeEach
+    void setUp() {
+        request = new ValidateSickLeavePeriodRequestDTO();
         List<CertificateDataValueDateRange> dateRangeList = new ArrayList();
         String[] codes = {
             "A201"
@@ -68,25 +68,59 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
             .list(dateRangeList)
             .build());
         request.setIcd10Codes(codes);
+    }
 
-        MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest = new MaximalSjukskrivningstidRequest();
-        Icd10KoderRequest codesRequest = new Icd10KoderRequest();
-        codesRequest.setIcd10Kod1("A201");
-        Period period = new Period();
-        List<Period> periods = new ArrayList();
-        periods.add(period);
-        period.setNedsattning(25);
-        period.setFrom(LocalDate.now());
-        period.setTom(LocalDate.now().plusDays(2));
-        maximalSjukskrivningstidRequest.setPersonnummer(Personnummer.createPersonnummer(PERSON_ID).get());
-        maximalSjukskrivningstidRequest.setIcd10Koder(codesRequest);
-        maximalSjukskrivningstidRequest.setPeriods(periods);
-
+    @Test
+    void shallValidateSickLeavePeriod() {
         MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
         response.setOverskriderRekommenderadSjukskrivningstid(false);
-        Mockito.when(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(maximalSjukskrivningstidRequest)).thenReturn(response);
+        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
         validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
-        verify(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(maximalSjukskrivningstidRequest);
+        verify(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+    }
+
+    @Test
+    void shallNotReturnWarningIfRecommendationIsNotOvercome() {
+        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        response.setOverskriderRekommenderadSjukskrivningstid(false);
+        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() == 0);
+    }
+
+    @Test
+    void shallReturnWarningIfRecommendationIsOvercome() {
+        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        response.setOverskriderRekommenderadSjukskrivningstid(true);
+        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() > 0);
+    }
+
+    @Test
+    void shallReturnSpecialStringIfOnlyCurrentCertificateInSickleave() {
+        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        response.setOverskriderRekommenderadSjukskrivningstid(true);
+        response.setTotalSjukskrivningstid(3);
+        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() > 0);
+        assertTrue(warning.contains("Den föreslagna sjukskrivningsperioden"));
+    }
+
+    @Test
+    void shallReturnSpecialStringIfNotOnlyCurrentCertificateInSickleave() {
+        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        response.setOverskriderRekommenderadSjukskrivningstid(true);
+        response.setTotalSjukskrivningstid(10);
+        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() > 0);
+        assertTrue(warning.contains("Den totala sjukskrivningsperioden är"));
     }
 }

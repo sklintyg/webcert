@@ -19,11 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class MaximalSjukskrivningstidRequest {
@@ -109,7 +107,7 @@ public final class MaximalSjukskrivningstidRequest {
     public String toString() {
         return new ToStringBuilder(this)
             .append("icd10Koder", icd10Koder)
-            .append("personnummer", personnummer)
+            .append("personnummer", personnummer.getPersonnummerHash())
             .append("periods", periods)
             .toString();
     }
