@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.integration.kundportalen.service;
 
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,10 +95,12 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
         return new HttpEntity<>(organizationNumbers, headers);
     }
 
-    private String getRequestUrlWithParams() {
+    private URI getRequestUrlWithParams() {
         return UriComponentsBuilder.fromHttpUrl(kundportalenSubscriptionServiceUrl)
+            .encode(StandardCharsets.UTF_8)
             .queryParam("service", kundportalenSubscriptionService)
-            .toUriString();
+            .build()
+            .toUri();
     }
 
     private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,

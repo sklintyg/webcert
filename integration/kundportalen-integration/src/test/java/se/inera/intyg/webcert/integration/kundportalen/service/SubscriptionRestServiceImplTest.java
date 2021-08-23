@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.ELEG;
 import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.SITHS;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +134,7 @@ public class SubscriptionRestServiceImplTest {
     public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
@@ -206,7 +207,7 @@ public class SubscriptionRestServiceImplTest {
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
             eq(LIST_ORGANIZATION_RESPONSE));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
@@ -276,7 +277,7 @@ public class SubscriptionRestServiceImplTest {
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
 
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
             eq(LIST_ORGANIZATION_RESPONSE));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
@@ -315,7 +316,7 @@ public class SubscriptionRestServiceImplTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForUnregisteredElegUser() {
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
@@ -338,7 +339,7 @@ public class SubscriptionRestServiceImplTest {
 
         subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
             eq(LIST_ORGANIZATION_RESPONSE));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
@@ -358,7 +359,7 @@ public class SubscriptionRestServiceImplTest {
             }
         }
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(orgList, httpStatus));
     }
 
@@ -366,13 +367,13 @@ public class SubscriptionRestServiceImplTest {
         final var orgResponse = createOrganization(1, 0);
         orgResponse.setServiceCodes(ELEG_SERVICE_CODES);
 
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenReturn(new ResponseEntity<>(List.of(orgResponse), HttpStatus.OK));
     }
 
     private void setMockToReturnRestClientException() {
         final var e = new RestClientException("MESSAGE_TEXT");
-        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
             .thenThrow(e);
     }
 
