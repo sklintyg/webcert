@@ -82,9 +82,9 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     }
 
     private ResponseEntity<List<OrganizationResponse>> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
-        final var requestEntity = getRequestEntity(organizationNumbers);
+        final var httpEntity = getRequestEntity(organizationNumbers);
         final var requestUrl = getRequestUrlWithParams();
-        return restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, LIST_ORGANIZATION_RESPONSE);
+        return restTemplate.exchange(requestUrl, HttpMethod.POST, httpEntity, LIST_ORGANIZATION_RESPONSE);
     }
 
     private HttpEntity<Set<String>> getRequestEntity(Set<String> organizationNumbers) {

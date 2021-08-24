@@ -112,7 +112,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean isUnregisteredElegUserMissingSubscription(String personId) {
         try {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
-            LOG.debug("Fetching subscription info for unregistered private practitioner with organizion number {}.",
+            LOG.debug("Fetching subscription info for unregistered private practitioner with organization number {}.",
                 hashed(organizationNumber));
             final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
             monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
@@ -238,8 +238,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         try {
             return subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
         } catch (Exception e) {
-            LOG.error("Kundportalen subscription service call failure for org numbers {}.", careProviderOrgNumbers.values(), e);
-            monitorLogIfServiceCallFailure(flatMapCollection(careProviderOrgNumbers.values()), e);
+            final var careProviderHsaids = flatMapCollection(careProviderOrgNumbers.values());
+            LOG.error("Kundportalen subscription service call failure for care providers {}.", careProviderHsaids, e);
+            monitorLogIfServiceCallFailure(careProviderHsaids, e);
             return Collections.emptyList();
         }
     }
