@@ -46,6 +46,7 @@
     <wc-app-header is-empty="true"></wc-app-header>
   </div>
   <c:choose>
+
     <c:when test="${param.reason eq 'timeout'}">
     <div class="webcert-workarea-page container-fluid index-vy">
       <wc-error error-msg="<spring:message code="error.timeout.text" />" error-title="<spring:message code="error.timeout.title" />" redirecting-link="<spring:message code="error.timeout.showlogin" />"></wc-error>
@@ -55,10 +56,18 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.reason eq 'timeout_integration'}">
-    <div class="webcert-workarea-page container-fluid index-vy">
-      <wc-error error-msg="<spring:message code="error.timeout.integration.text" />" error-title="<spring:message code="error.timeout.title" />"></wc-error>
-    </div>
-      </c:when>
+      <div class="webcert-workarea-page container-fluid index-vy">
+        <wc-error error-msg="<spring:message code="error.timeout.integration.text" />" error-title="<spring:message code="error.timeout.title" />"></wc-error>
+      </div>
+    </c:when>
+
+    <c:when test="${param.reason eq 'auth-exception-subscription'}">
+      <div class="webcert-workarea-page container-fluid index-vy">
+        <wc-error error="'error.auth-exception-subscription.text'"></wc-error>
+      </div>
+      <wc-footer/>
+    </c:when>
+
   </c:choose>
 
   <c:choose>

@@ -44,6 +44,8 @@ public class FakeElegCredentials implements FakeCredential {
 
     private String authenticationMethod;
 
+    private String origin;
+
     public String getPersonId() {
         return personId;
     }
@@ -82,6 +84,14 @@ public class FakeElegCredentials implements FakeCredential {
 
     public void setSekretessMarkerad(boolean sekretessMarkerad) {
         this.sekretessMarkerad = sekretessMarkerad;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     @Override

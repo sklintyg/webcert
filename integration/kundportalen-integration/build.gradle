@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":webcert-common")
+
+    testCompile "org.springframework:spring-test"
+}

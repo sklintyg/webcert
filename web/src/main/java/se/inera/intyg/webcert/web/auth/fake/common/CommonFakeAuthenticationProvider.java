@@ -38,7 +38,6 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
@@ -69,7 +68,6 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         selectVardenhetFromFakeCredentials(token, details);
         overrideSekretessMarkeringFromFakeCredentials(token, details);
         updateFeatures(details);
-        applyUserOrigin(token, details);
         applyAuthenticationMethod(token, details);
         applyPersonalNumberForBankID(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential, new ArrayList<>());
@@ -95,21 +93,6 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             if (user.getValdVardenhet() != null && user.getValdVardgivare() != null) {
                 user.setFeatures(
                     authoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
-            }
-        }
-    }
-
-    private void applyUserOrigin(Authentication token, Object details) {
-        if (details instanceof IntygUser) {
-            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
-                String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
-                try {
-                    UserOriginType.valueOf(origin); // Type check.
-                    ((IntygUser) details).setOrigin(origin);
-                } catch (IllegalArgumentException e) {
-                    throw new AuthoritiesException(
-                        "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
-                }
             }
         }
     }

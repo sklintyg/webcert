@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth.fake;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -27,9 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
+import se.inera.intyg.webcert.web.auth.SavedRequestFactory;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 
@@ -41,6 +46,12 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
     private static final Logger LOG = LoggerFactory.getLogger(FakeAuthenticationFilter.class);
 
+    @Autowired
+    private SavedRequestFactory savedRequestFactory;
+
+    @Autowired
+    private RedisSavedRequestCache redisSavedRequestCache;
+
     protected FakeAuthenticationFilter() {
         super("/fake");
         LOG.error("FakeAuthentication enabled. DO NOT USE IN PRODUCTION");
@@ -49,6 +60,13 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
+
+        final var session = request.getSession(true);
+        if (session != null) {
+            final var savedRequest = savedRequestFactory.buildSavedRequest(request);
+            session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+            redisSavedRequestCache.saveRequest(request, response);
+        }
 
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding("UTF-8");
