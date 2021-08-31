@@ -28,6 +28,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class MonitoringLogServiceImplTest {
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    private MonitoringLogService logService = new MonitoringLogServiceImpl();
+    private final MonitoringLogService logService = new MonitoringLogServiceImpl();
 
     @Before
     public void setup() {
@@ -550,5 +551,30 @@ public class MonitoringLogServiceImplTest {
         logService.logMessageImported("CertificateId", "MessageId", "CareGiverId", "CareUnitId", "MessageType");
         verifyLog(Level.INFO,
             "MESSAGE_IMPORTED Message 'MessageId' with type 'MessageType' for certificate 'CertificateId' on caregiver 'CareGiverId' and care unit 'CareUnitId' was imported");
+    }
+
+    @Test
+    public void shouldLogSubscriptionServiceCallFailure() {
+        final var hsaIds = Collections.singleton(HSA_ID);
+        logService.logSubscriptionServiceCallFailure(hsaIds,"exceptionMessage");
+        verifyLog(Level.INFO,
+            "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with exceptionMessage "
+                + "'exceptionMessage'");
+    }
+
+    @Test
+    public void shouldLogLoginAttemptMissingSubscription() {
+        logService.logLoginAttemptMissingSubscription("userId", "SITHS", "[HSA_ID_1, HSA_ID_2]");
+        verifyLog(Level.INFO,
+            "LOGIN_ATTEMPT_MISSING_SUBSCRIPTION User id 'userId' attempting login with 'SITHS' was denied access to "
+                + "organizations '[HSA_ID_1, HSA_ID_2]' due to missing subscriptions");
+    }
+
+    @Test
+    public void shouldLogSubscriptionWarnings() {
+        logService.logSubscriptionWarnings("userId", "SITHS", "[HSA_ID_1, HSA_ID_2]");
+        verifyLog(Level.INFO,
+            "MISSING_SUBSCRIPTION_WARNING User id 'userId' logging in with 'SITHS' received subscription warning for "
+                + "organizations '[HSA_ID_1, HSA_ID_2]'");
     }
 }

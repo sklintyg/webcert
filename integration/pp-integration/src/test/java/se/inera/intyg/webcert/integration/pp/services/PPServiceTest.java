@@ -19,10 +19,8 @@
 package se.inera.intyg.webcert.integration.pp.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import javax.xml.ws.WebServiceException;
 import org.junit.Test;
@@ -77,27 +75,4 @@ public class PPServiceTest {
         service.getPrivatePractitioner("address", "any HSA-ID", "any PERSONNUMMER");
     }
 
-    @Test
-    public void testValidatePrivatePractitioner() {
-        boolean res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
-
-        assertTrue(res);
-    }
-
-    @Test
-    public void testValidatePrivatePractitionerError() {
-        boolean res = service.validatePrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
-
-        assertFalse(res);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidatePrivatePractitionerWhenHsaIdAndPersonalIdIsNull() {
-        service.validatePrivatePractitioner("address", null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidatePrivatePractitionerWhenBothHsaIdAndPersonalIdIsSet() {
-        service.validatePrivatePractitioner("address", "any HSA-ID", "any PERSONNUMMER");
-    }
 }

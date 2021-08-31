@@ -236,6 +236,7 @@
                       'efterNamn': '',
                       'personId': data[a].personId.extension,
                       'privatLakare': true,
+                      'origin': $scope.environment.origin,
                       'beskrivning': data[a].fullstandigtNamn + ' (Privatläkare, ' + (data[a].godkandAnvandare ? 'Godkänd' : 'Ej godkänd') + ')'
                   };
                   $scope.loginOptions.push(item);

@@ -1405,4 +1405,11 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="69" author="mh">
+    <addNotNullConstraint tableName="FMB_DIAGNOS_INFORMATION" columnName="FORSAKRINGSMEDICINSK_INFORMATION" columnDataType="text"/>
+    <addNotNullConstraint tableName="FMB_DIAGNOS_INFORMATION" columnName="SYMPTOM_PROGNOS_BEHANDLING" columnDataType="text"/>
+    <addNotNullConstraint tableName="FMB_BESKRIVNING" columnName="BESKRIVNING" columnDataType="text"/>
+    <addNotNullConstraint tableName="FMB_TYPFALL" columnName="TYPFALLSMENING" columnDataType="text"/>
+    <modifyDataType tableName="FMB_DIAGNOS_INFORMATION" columnName="INFORMATION_OM_REHABILITERING" newDataType="text"/>
+  </changeSet>
 </databaseChangeLog>

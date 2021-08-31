@@ -25,6 +25,7 @@ import io.restassured.RestAssured;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -56,6 +57,7 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
         fakeElegCredentials.setPersonId("19121212-1212");
         fakeElegCredentials.setPrivatLakare(true);
+        fakeElegCredentials.setOrigin(UserOriginType.NORMAL.name());
 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
 
@@ -87,6 +89,7 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
         fakeElegCredentials.setPersonId("19121212-1212");
         fakeElegCredentials.setPrivatLakare(true);
+        fakeElegCredentials.setOrigin(UserOriginType.NORMAL.name());
 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
 

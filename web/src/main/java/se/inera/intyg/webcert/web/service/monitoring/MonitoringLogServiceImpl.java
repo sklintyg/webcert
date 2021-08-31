@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -404,6 +405,21 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logSubscriptionServiceCallFailure(Collection<String> queryIds, String exceptionMessage) {
+        logEvent(MonitoringEvent.SUBSCRIPTION_SERVICE_CALL_FAILURE, queryIds, exceptionMessage);
+    }
+
+    @Override
+    public void logSubscriptionWarnings(String userId, String authMethod, String organizations) {
+        logEvent(MonitoringEvent.MISSING_SUBSCRIPTION_WARNING, userId, authMethod, organizations);
+    }
+
+    @Override
+    public void logLoginAttemptMissingSubscription(String userId, String authMethod, String organizations) {
+        logEvent(MonitoringEvent.LOGIN_ATTEMPT_MISSING_SUBSCRIPTION, userId, authMethod, organizations);
+    }
+
+    @Override
     public void logSamlStatusForFailedLogin(String issuer, String samlStatus) {
         logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
     }
@@ -538,6 +554,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SRS_MEASURES_DISPLAYED("SRS measures displayed in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
+
+        LOGIN_ATTEMPT_MISSING_SUBSCRIPTION("User id '{}' attempting login with '{}' was denied access to organizations '{}' due "
+            + "to missing subscriptions"),
+
+        MISSING_SUBSCRIPTION_WARNING("User id '{}' logging in with '{}' received subscription warning for organizations '{}'"),
+
+        SUBSCRIPTION_SERVICE_CALL_FAILURE("Subscription service call failure for id's '{}', with exceptionMessage '{}'"),
 
         IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}"),
 
