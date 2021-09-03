@@ -19,15 +19,20 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+
 public class CreateQuestionRequestDTO {
 
     private QuestionType type;
     private String message;
+    private String answer;
+    private boolean answerAsDraft;
+    private boolean reminded;
 
     public QuestionType getType() {
         return type;
     }
-
+    
     public void setType(QuestionType type) {
         this.type = type;
     }
@@ -38,5 +43,29 @@ public class CreateQuestionRequestDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public boolean isAnswerAsDraft() {
+        return answerAsDraft;
+    }
+
+    public void setAnswerAsDraft(boolean answerAsDraft) {
+        this.answerAsDraft = answerAsDraft;
+    }
+
+    public boolean isReminded() {
+        return reminded;
+    }
+
+    public void setReminded(boolean reminded) {
+        this.reminded = reminded;
     }
 }

@@ -16,28 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.PersonId;
+package se.inera.intyg.webcert.integration.kundportalen.config;
 
-public class ReplaceCertificateRequestDTO {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-    private PersonId patientId;
-    private String certificateType;
+@Configuration
+@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.kundportalen.service")
+public class RestConfig {
 
-    public PersonId getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(PersonId patientId) {
-        this.patientId = patientId;
-    }
-
-    public String getCertificateType() {
-        return certificateType;
-    }
-
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
+    @Bean(name = "subscriptionServiceRestTemplate")
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

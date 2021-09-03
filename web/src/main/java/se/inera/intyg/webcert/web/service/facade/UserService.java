@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade;
 
-import se.inera.intyg.common.support.modules.support.facade.dto.UserDTO;
+import se.inera.intyg.common.support.facade.model.user.User;
 
 public interface UserService {
 
-    UserDTO getLoggedInUser();
+    User getLoggedInUser();
 }

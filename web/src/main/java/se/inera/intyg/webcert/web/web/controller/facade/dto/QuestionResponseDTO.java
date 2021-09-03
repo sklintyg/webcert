@@ -16,28 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.PersonId;
+import java.util.List;
+import se.inera.intyg.common.support.facade.model.question.Question;
 
-public class CopyCertificateRequestDTO {
+public class QuestionResponseDTO {
 
-    private PersonId patientId;
-    private String certificateType;
+    private QuestionDTO question;
 
-    public PersonId getPatientId() {
-        return patientId;
+    public QuestionDTO getQuestion() {
+        return question;
     }
 
-    public void setPatientId(PersonId patientId) {
-        this.patientId = patientId;
+    public void setQuestion(QuestionDTO question) {
+        this.question = question;
     }
 
-    public String getCertificateType() {
-        return certificateType;
-    }
-
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
+    public static QuestionResponseDTO create(Question questions, List<ResourceLinkDTO> links) {
+        final var questionsResponseDTO = new QuestionResponseDTO();
+        questionsResponseDTO.setQuestion(QuestionDTO.create(questions, links));
+        return questionsResponseDTO;
     }
 }

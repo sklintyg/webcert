@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +32,13 @@ import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
-import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
-public class GetCertificationResourceLinksImpl implements GetCertificationResourceLinks {
+public class GetCertificateResourceLinksImpl implements GetCertificateResourceLinks {
 
     private final GetCertificatesAvailableFunctions getCertificatesAvailableFunctions;
     private final DraftAccessServiceHelper draftAccessServiceHelper;
@@ -46,7 +46,7 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Autowired
-    public GetCertificationResourceLinksImpl(
+    public GetCertificateResourceLinksImpl(
         GetCertificatesAvailableFunctions getCertificatesAvailableFunctions,
         DraftAccessServiceHelper draftAccessServiceHelper,
         LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper,
@@ -87,7 +87,7 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
     }
 
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForDraft() {
-        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+        final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
         functions.put(ResourceLinkTypeDTO.EDIT_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
@@ -118,7 +118,7 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
     }
 
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForLockedDraft() {
-        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+        final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
         functions.put(ResourceLinkTypeDTO.PRINT_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
@@ -139,7 +139,7 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
     }
 
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForCertificate() {
-        final var functions = new HashMap<ResourceLinkTypeDTO, AccessCheck>();
+        final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
         functions.put(ResourceLinkTypeDTO.PRINT_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
@@ -179,6 +179,11 @@ public class GetCertificationResourceLinksImpl implements GetCertificationResour
         functions.put(ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
             (accessEvaluationParameters, certificate) ->
                 certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.CREATE_QUESTIONS,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToCreateQuestion(accessEvaluationParameters)
         );
 
         return functions;

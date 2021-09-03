@@ -48,8 +48,8 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
@@ -81,6 +81,10 @@ public class LisjpIT {
                 .delete("testability/intyg/{certificateId}")
         );
         RestAssured.reset();
+    }
+
+    private ObjectMapper getObjectMapperForDeserialization() {
+        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
     }
 
     @Nested
@@ -199,14 +203,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var replaceCertificateRequest = new ReplaceCertificateRequestDTO();
-            replaceCertificateRequest.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            replaceCertificateRequest.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(replaceCertificateRequest)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/replace")
                 .then().extract().path("certificateId").toString();
@@ -226,6 +230,42 @@ public class LisjpIT {
         }
 
         @Test
+        @DisplayName("Shall return draft with current version when complementing 1.0")
+        void shallReturnCertificateOfCurrentVersionWhenComplement10() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.0",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
+            );
+        }
+
+        @Test
         @DisplayName("Shall return draft with current version when copy locked draft 1.0")
         void shallReturnCertificateOfCurrentVersionWhenCopy10() {
             final var testSetup = TestSetup.create()
@@ -241,14 +281,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
-            copyCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            copyCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(copyCertificateRequestDTO)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/copy")
                 .then().extract().path("certificateId").toString();
@@ -379,14 +419,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var replaceCertificateRequest = new ReplaceCertificateRequestDTO();
-            replaceCertificateRequest.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            replaceCertificateRequest.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(replaceCertificateRequest)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/replace")
                 .then().extract().path("certificateId").toString();
@@ -406,6 +446,42 @@ public class LisjpIT {
         }
 
         @Test
+        @DisplayName("Shall return draft with current version when complementing 1.1")
+        void shallReturnCertificateOfCurrentVersionWhenComplement11() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
+            );
+        }
+
+        @Test
         @DisplayName("Shall return draft with current version when copy locked draft 1.1")
         void shallReturnCertificateOfCurrentVersionWhenCopy11() {
             final var testSetup = TestSetup.create()
@@ -421,14 +497,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
-            copyCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            copyCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(copyCertificateRequestDTO)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/copy")
                 .then().extract().path("certificateId").toString();
@@ -461,7 +537,8 @@ public class LisjpIT {
 
             final var createUtkastRequest = new CreateUtkastRequest();
             createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
-            createUtkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
+            createUtkastRequest
+                .setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
             createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
             createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
 
@@ -684,14 +761,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var replaceCertificateRequest = new ReplaceCertificateRequestDTO();
-            replaceCertificateRequest.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            replaceCertificateRequest.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(replaceCertificateRequest)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/replace")
                 .then().extract().path("certificateId").toString();
@@ -719,14 +796,14 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
-            copyCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            copyCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(copyCertificateRequestDTO)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/copy")
                 .then().extract().path("certificateId").toString();
@@ -735,6 +812,43 @@ public class LisjpIT {
 
             assertAll(
                 () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to complement certificate with current version")
+        void shallBeAbleToComplementCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertAll(
+                () -> assertEquals(testSetup.certificateId(),
+                    newCertificate.getCertificate().getMetadata().getRelations().getParent().getCertificateId(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
             );
         }
 
@@ -830,9 +944,5 @@ public class LisjpIT {
                 () -> assertEquals(200, response.getStatusCode())
             );
         }
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
     }
 }

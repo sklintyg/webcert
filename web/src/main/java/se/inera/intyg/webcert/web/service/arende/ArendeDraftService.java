@@ -30,4 +30,12 @@ public interface ArendeDraftService {
     List<ArendeDraft> listAnswerDrafts(String intygId);
 
     ArendeDraft getQuestionDraft(String intygId);
+
+    ArendeDraft getAnswerDraft(String certificateId, String questionId);
+
+    ArendeDraft getQuestionDraftById(long id);
+
+    ArendeDraft create(String certificateId, String subject, String message);
+
+    ArendeDraft save(ArendeDraft arendeDraft);
 }

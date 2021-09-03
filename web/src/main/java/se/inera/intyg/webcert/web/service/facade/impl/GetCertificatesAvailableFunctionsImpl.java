@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
@@ -43,6 +44,66 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Service
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
 
+    private static final String EDIT_NAME = "Ändra";
+    private static final String EDIT_DESCRIPTION = "Ändrar intygsutkast";
+
+    private static final String REMOVE_NAME = "Radera";
+    private static final String REMOVE_DESCRIPTION = "Raderar intygsutkast";
+
+    private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
+    private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till intygsmottagare";
+
+    private static final String SIGN_NAME = "Signera intyget";
+    private static final String SIGN_DESCRIPTION = "Signerar intygsutkast";
+
+    private static final String FORWARD_NAME = "Vidarebefodra utkast";
+    private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
+
+    private static final String FMB_NAME = "FMB";
+    private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning";
+
+    private static final String REPLACE_NAME = "Ersätt";
+    private static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
+
+    private static final String RENEW_NAME = "Förnya";
+    private static final String RENEW_DESCRIPTION = "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.";
+    private static final String RENEW_BODY =
+        "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
+            + " med viss information från det ursprungliga intyget.<br><br>\n"
+            + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
+            + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
+            + "<ul>\n"
+            + "<li>Sjukskrivningsperiod och grad.</li>\n"
+            + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
+            + "<li>Referenser som intyget baseras på.</li>\n"
+            + "</ul>\n"
+            + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
+            + "Det nya utkastet skapas på den enhet du är inloggad på.";
+
+    private static final String PRINT_CERTIFICATE_DESCRIPTION = "Laddar ned intyget för utskrift.";
+    private static final String REVOKE_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera intyget.";
+
+    private static final String PRINT_NAME = "Skriv ut";
+    private static final String PRINT_DRAFT_DESCRIPTION = "Laddar ned intygsutkastet för utskrift.";
+
+    private static final String COPY_NAME = "Kopiera";
+    private static final String COPY_DESCRIPTION = "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.";
+
+    private static final String REVOKE_NAME = "Makulera";
+    private static final String REVOKE_LOCKED_DRAFT_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.";
+
+    private static final String QUESTIONS_NAME = "Ärendekommunikation";
+    private static final String QUESTIONS_DESCRIPTION = "Hantera kompletteringsbegäran, frågor och svar";
+
+    private static final String NEW_QUESTION_NAME = "Ny fråga";
+    private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
+
+    private static final String SEND_NAME = "Skicka till Försäkringskassan";
+    private static final String SEND_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan";
+    private static final String SEND_BODY = "<p>Om du går vidare kommer intyget skickas direkt till "
+        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
+        + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
+
     private final AuthoritiesHelper authoritiesHelper;
 
     @Autowired
@@ -66,7 +127,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 break;
             case LOCKED:
                 availableFunctions.addAll(
-                    getAvailableFunctionsForLockedDraft(certificate)
+                    getAvailableFunctionsForLockedDraft()
                 );
                 break;
             default:
@@ -80,8 +141,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.EDIT_CERTIFICATE,
-                "Ändra",
-                "Ändrar intygsutkast",
+                EDIT_NAME,
+                EDIT_DESCRIPTION,
                 true
             )
         );
@@ -89,8 +150,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                "Skriv ut",
-                "Laddar ned intygsutkastet för utskrift.",
+                PRINT_NAME,
+                PRINT_DRAFT_DESCRIPTION,
                 true
             )
         );
@@ -98,18 +159,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.REMOVE_CERTIFICATE,
-                "Radera",
-                "Raderar intygsutkast",
+                REMOVE_NAME,
+                REMOVE_DESCRIPTION,
                 true
             )
         );
 
-        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())) {
+        if (isSignedAndSendDirectly(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                    "Signera och skicka",
-                    "Intyget skickas direkt till intygsmottagare",
+                    SIGN_AND_SEND_NAME,
+                    SIGN_AND_SEND_DESCRIPTION,
                     true
                 )
             );
@@ -117,8 +178,19 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                    "Signera intyget",
-                    "Signerar intygsutkast",
+                    SIGN_NAME,
+                    SIGN_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
+        if (isMessagingAvailable(certificate) && isComplementingCertificate(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.QUESTIONS,
+                    QUESTIONS_NAME,
+                    QUESTIONS_DESCRIPTION,
                     true
                 )
             );
@@ -127,8 +199,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
-                "Vidarebefodra utkast",
-                "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.",
+                FORWARD_NAME,
+                FORWARD_DESCRIPTION,
                 true
             )
         );
@@ -137,8 +209,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     FMB,
-                    "FMB",
-                    "Läs FMB - ett stöd för ifyllnad och bedömning",
+                    FMB_NAME,
+                    FMB_DESCRIPTION,
                     true
                 )
             );
@@ -153,8 +225,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                "Skriv ut",
-                "Laddar ned intyget för utskrift.",
+                PRINT_NAME,
+                PRINT_CERTIFICATE_DESCRIPTION,
                 true
             )
         );
@@ -163,8 +235,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
-                    "Ersätt",
-                    "Skapar en kopia av detta intyg som du kan redigera.",
+                    REPLACE_NAME,
+                    REPLACE_DESCRIPTION,
                     true
                 )
             );
@@ -174,8 +246,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.REPLACE_CERTIFICATE_CONTINUE,
-                    "Ersätt",
-                    "Skapar en kopia av detta intyg som du kan redigera.",
+                    REPLACE_NAME,
+                    REPLACE_DESCRIPTION,
                     true
                 )
             );
@@ -185,19 +257,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.RENEW_CERTIFICATE,
-                    "Förnya",
-                    "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.",
-                    "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                        + " med viss information från det ursprungliga intyget.<br><br>\n"
-                        + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
-                        + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
-                        + "<ul>\n"
-                        + "<li>Sjukskrivningsperiod och grad.</li>\n"
-                        + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
-                        + "<li>Referenser som intyget baseras på.</li>\n"
-                        + "</ul>\n"
-                        + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
-                        + "Det nya utkastet skapas på den enhet du är inloggad på.",
+                    RENEW_NAME,
+                    RENEW_DESCRIPTION,
+                    RENEW_BODY,
                     true
                 )
             );
@@ -206,8 +268,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
-                "Makulera",
-                "Öppnar ett fönster där du kan välja att makulera intyget.",
+                REVOKE_NAME,
+                REVOKE_CERTIFICATE_DESCRIPTION,
                 true
             )
         );
@@ -216,24 +278,21 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                    "Skicka till Försäkringskassan",
-                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan",
-                    "<p>Om du går vidare kommer intyget skickas direkt till "
-                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
-                        +
-                        "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>",
+                    SEND_NAME,
+                    SEND_DESCRIPTION,
+                    SEND_BODY,
                     true
                 )
             );
         }
 
         if (isMessagingAvailable(certificate)) {
-            if (certificate.getMetadata().isSent()) {
+            if (isSent(certificate)) {
                 resourceLinks.add(
                     ResourceLinkDTO.create(
                         ResourceLinkTypeDTO.QUESTIONS,
-                        "Ärendekommunikation",
-                        "Hantera kompletteringsbegäran, frågor och svar",
+                        QUESTIONS_NAME,
+                        QUESTIONS_DESCRIPTION,
                         true
                     )
                 );
@@ -241,24 +300,35 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 resourceLinks.add(
                     ResourceLinkDTO.create(
                         ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
-                        "Ärendekommunikation",
-                        "Hantera kompletteringsbegäran, frågor och svar",
+                        QUESTIONS_NAME,
+                        QUESTIONS_DESCRIPTION,
                         true
                     )
                 );
             }
         }
 
+        if (isMessagingAvailable(certificate) && isSent(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_QUESTIONS,
+                    NEW_QUESTION_NAME,
+                    NEW_QUESTION_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
-    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
+    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft() {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                "Skriv ut",
-                "Laddar ned intygsutkastet för utskrift.",
+                PRINT_NAME,
+                PRINT_DRAFT_DESCRIPTION,
                 true
             )
         );
@@ -266,16 +336,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.COPY_CERTIFICATE,
-                "Kopiera",
-                "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
+                COPY_NAME,
+                COPY_DESCRIPTION,
                 true
             )
         );
 
         resourceLinks.add(
             ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
-                "Makulera",
-                "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.",
+                REVOKE_NAME,
+                REVOKE_LOCKED_DRAFT_DESCRIPTION,
                 true
             )
         );
@@ -283,8 +353,22 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return resourceLinks;
     }
 
+    private boolean isSent(Certificate certificate) {
+        return certificate.getMetadata().isSent();
+    }
+
+    private boolean isSignedAndSendDirectly(Certificate certificate) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())
+            || isComplementingCertificate(certificate);
+    }
+
+    private boolean isComplementingCertificate(Certificate certificate) {
+        return certificate.getMetadata().getRelations() != null && certificate.getMetadata().getRelations().getParent() != null
+            && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
+    }
+
     private boolean isSendCertificateAvailable(Certificate certificate) {
-        if (certificate.getMetadata().isSent()) {
+        if (isSent(certificate)) {
             return false;
         }
 

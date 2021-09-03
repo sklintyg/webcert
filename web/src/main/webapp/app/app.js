@@ -253,16 +253,16 @@
   // Inject language resources
   app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', '$stateParams', 'common.messageService',
     'common.moduleService', 'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
-    'idpConnectivityService', 'moduleConfig',
+    'idpConnectivityService', 'moduleConfig', 'common.subscriptionService',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, $stateParams, messageService, moduleService,
-             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
+             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig, subscriptionService) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
       $rootScope.testModeActive = false;
 
       UserModel.setUser(user);
-      UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
+      UserModel.doNotDisplayUserTerms = user && user.userTermsApprovedOrSubscriptionInUse;
 
       messageService.addResources(wcMessages);
       dynamicLinkService.addLinks(_links);
@@ -274,56 +274,15 @@
             var triggeredByLink = $location.search().forcelink;
             $location.search('forcelink', null);
 
-            var redirectToUnitSelection = function() {
-              if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
-                event.preventDefault();
-                $state.go('normal-origin-enhetsval', {destinationState: toState}, {location: false});
-                return true;
-              }
-              return false;
-            };
-
-            var termsCheck = function() {
-              // check terms if not accepted then always redirect
-              if (toState.name !== 'webcert.terms') {
-                UserModel.transitioning = false;
-              }
-              if (UserModel.isPrivatLakare() && !UserModel.termsAccepted && !UserModel.transitioning) {
-                event.preventDefault();
-                UserModel.transitioning = true;
-                $state.transitionTo('webcert.terms');
-              }
-            };
-
             // if we dont have a user
             if (!UserModel.user) {
-              // Make sure we send user to login state
-              if (toState.name !== 'webcert.index') {
-                event.preventDefault();
-                $state.go('webcert.index');
-              }
+              goStateWebcertIndex(event, toState);
             } else {
-              if (!redirectToUnitSelection()) {
-                if (isNotRedirectedToUnitSelection(toState.name) && !UserModel.idpConnectivityChecked) {
-                  UserModel.idpConnectivityChecked = true;
-                  idpConnectivityService.checkAndLogConnectivity();
-                }
-                termsCheck();
-
-                if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
-                  // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
-                  // open, but close modal.
-                  if ($uibModalStack.getTop()) {
-                    $uibModalStack.dismissAll();
-                    //If modal closed, and we did not navigate because of click on a modal link..
-                    if (!$uibModalStack.getTop() && !triggeredByLink) {
-                      // Abort current transition that apparently happended without explicitly first
-                      // closing the active modal. Most likely because of click on Back button in browser.
-                      event.preventDefault();
-                      $state.go(fromState, fromParams);
-                    }
-                  }
-                }
+              if (!redirectToUnitSelection(event, toState)) {
+                checkAndLogConnectivity(toState);
+                termsCheck(event, toState);
+                subscriptionWarning(event, toState, fromState);
+                preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
             }
           });
@@ -337,7 +296,7 @@
       $rootScope.$on('$stateChangeSuccess',
           function(event, toState/*, toParams, fromState, fromParams*/) {
             $log.debug('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
-            if (!UserModel.termsAccepted && UserModel.transitioning && toState.name === 'webcert.terms') {
+            if (!UserModel.doNotDisplayUserTerms && UserModel.transitioning && toState.name === 'webcert.terms') {
               UserModel.transitioning = false;
             }
           });
@@ -370,6 +329,67 @@
           return version ? version : 'n/a';
         } catch (e) {
           return 'n/a';
+        }
+      }
+
+      function subscriptionWarning(event, toState, fromState) {
+        if (toState.name !== 'webcert.subscription' && fromState.name !== 'webcert.subscription' &&
+            subscriptionService.shouldDisplayWarning()) {
+          event.preventDefault();
+          $state.go('webcert.subscription');
+        }
+      }
+
+      function termsCheck(event, toState) {
+          // check terms if not accepted then always redirect
+          if (toState.name !== 'webcert.terms') {
+            UserModel.transitioning = false;
+          }
+          if (UserModel.isPrivatLakare() && !UserModel.doNotDisplayUserTerms && !UserModel.transitioning) {
+            event.preventDefault();
+            UserModel.transitioning = true;
+            $state.transitionTo('webcert.terms');
+          }
+      }
+
+      function redirectToUnitSelection(event, toState) {
+        if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
+          event.preventDefault();
+          $state.go('normal-origin-enhetsval', {destinationState: toState}, {location: false});
+          return true;
+        }
+        return false;
+      }
+
+      function goStateWebcertIndex(event, toState) {
+        // Make sure we send user to login state
+        if (toState.name !== 'webcert.index') {
+          event.preventDefault();
+          $state.go('webcert.index');
+        }
+      }
+
+      function checkAndLogConnectivity(toState) {
+        if (isNotRedirectedToUnitSelection(toState.name) && !UserModel.idpConnectivityChecked) {
+          UserModel.idpConnectivityChecked = true;
+          idpConnectivityService.checkAndLogConnectivity();
+        }
+      }
+
+      function preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink) {
+        if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
+          // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
+          // open, but close modal.
+          if ($uibModalStack.getTop()) {
+            $uibModalStack.dismissAll();
+            //If modal closed, and we did not navigate because of click on a modal link..
+            if (!$uibModalStack.getTop() && !triggeredByLink && fromState.name !== 'webcert.subscription') {
+              // Abort current transition that apparently happended without explicitly first
+              // closing the active modal. Most likely because of click on Back button in browser.
+              event.preventDefault();
+              $state.go(fromState, fromParams);
+            }
+          }
         }
       }
 

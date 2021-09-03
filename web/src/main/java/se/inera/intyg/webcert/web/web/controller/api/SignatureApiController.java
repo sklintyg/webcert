@@ -38,6 +38,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,22 +58,30 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
-
-    private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-
     public static final String SIGNATUR_API_CONTEXT_PATH = "/api/signature";
     public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
     public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
+    private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
+    private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
+    private static final String PARAM_CERT_ID = "certId";
+
+    @Autowired
+    private ReactUriFactory reactUriFactory;
+
+    @Autowired
+    private ReactPilotUtil reactPilotUtil;
 
     @Autowired
     private UnderskriftService underskriftService;
@@ -91,6 +100,9 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired
     private DssSignMessageService dssSignMessageService;
+
+    @Autowired
+    private UtkastService utkastService;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -142,7 +154,8 @@ public class SignatureApiController extends AbstractApiController {
     @POST
     @Path(SIGN_SERVICE_RESPONSE_PATH)
     @PrometheusTimeMethod
-    public Response signServiceResponse(@FormParam("RelayState") String relayState, @FormParam("EidSignResponse") String eidSignResponse) {
+    public Response signServiceResponse(@Context UriInfo uriInfo, @FormParam("RelayState") String relayState,
+        @FormParam("EidSignResponse") String eidSignResponse) {
         SignaturBiljett signaturBiljett;
         monitoringLogService.logSignResponseReceived(relayState);
 
@@ -153,7 +166,7 @@ public class SignatureApiController extends AbstractApiController {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
                 "Could not decode sign response: " + e.getMessage());
-            return getRedirectResponseWithReturnUrl(signaturBiljett);
+            return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
         }
 
         var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponseString);
@@ -162,14 +175,14 @@ public class SignatureApiController extends AbstractApiController {
             signaturBiljett = dssSignatureService.updateSignatureTicketWithError(relayState);
             monitoringLogService.logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
                 "Validation of sign response signature failed!");
-            return getRedirectResponseWithReturnUrl(signaturBiljett);
+            return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
         }
 
         signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
         logIfSuccess(relayState, signaturBiljett);
 
-        return getRedirectResponseWithReturnUrl(signaturBiljett);
+        return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
     }
 
     private void logIfSuccess(String relayState, SignaturBiljett signaturBiljett) {
@@ -178,16 +191,28 @@ public class SignatureApiController extends AbstractApiController {
         }
     }
 
-    private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett) {
+    private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
+        final var redirectUri = getRedirectUri(signaturBiljett, uriInfo);
+        return Response.seeOther(redirectUri).build();
+    }
+
+    private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
+        final var certificateType = utkastService.getCertificateType(signaturBiljett.getIntygsId());
+        if (reactPilotUtil.useReactClient(getWebCertUserService().getUser(), certificateType)) {
+            return reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
+        }
+
+        return getRedirectUriForAngularClient(signaturBiljett);
+    }
+
+    private URI getRedirectUriForAngularClient(SignaturBiljett signaturBiljett) {
         String returnUrl;
         if (SignaturStatus.ERROR.equals(signaturBiljett.getStatus())) {
             returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId(), signaturBiljett.getTicketId());
         } else {
             returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
         }
-
-        // This will give HTTP-status 307.
-        return Response.temporaryRedirect(URI.create(returnUrl)).build();
+        return URI.create(returnUrl);
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {

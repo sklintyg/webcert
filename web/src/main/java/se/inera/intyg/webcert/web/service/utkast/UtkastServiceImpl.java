@@ -379,12 +379,12 @@ public class UtkastServiceImpl implements UtkastService {
     private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(IntygUser user) {
         return Collectors.groupingBy(Utkast::getIntygsTyp,
             Collectors.mapping(utkast -> PreviousIntyg.of(
-                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                enableShowDoiButton(user, utkast),
-                utkast.getEnhetsNamn(),
-                utkast.getIntygsId(),
-                utkast.getSkapad()),
+                    Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                    Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                    enableShowDoiButton(user, utkast),
+                    utkast.getEnhetsNamn(),
+                    utkast.getIntygsId(),
+                    utkast.getSkapad()),
                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)));
     }
 
@@ -478,9 +478,14 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    public String getCertificateType(String certificateId) {
+        return utkastRepository.getIntygsTyp(certificateId);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Utkast getDraft(String intygId, boolean pdlLog) {
-        final String intygType = utkastRepository.getIntygsTyp(intygId);
+        final String intygType = getCertificateType(intygId);
         return getDraft(intygId, intygType, pdlLog);
     }
 

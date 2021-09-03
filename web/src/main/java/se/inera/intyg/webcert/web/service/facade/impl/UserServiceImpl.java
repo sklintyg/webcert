@@ -21,9 +21,12 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.modules.support.facade.dto.UserDTO;
+import se.inera.intyg.common.support.facade.model.user.SigningMethod;
+import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,15 +39,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getLoggedInUser() {
+    public User getLoggedInUser() {
         final var webCertUser = webCertUserService.getUser();
-        final var loggedInUser = new UserDTO();
-        loggedInUser.setHsaId(webCertUser.getHsaId());
-        loggedInUser.setName(webCertUser.getNamn());
-        loggedInUser.setRole(
-            webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör" : webCertUser.getRoleTypeName());
-        loggedInUser.setLoggedInUnit(webCertUser.getValdVardenhet().getNamn());
-        loggedInUser.setLoggedInCareProvider(webCertUser.getValdVardgivare().getNamn());
-        return loggedInUser;
+        return User.builder()
+            .hsaId(webCertUser.getHsaId())
+            .name(webCertUser.getNamn())
+            .role(getRole(webCertUser))
+            .loggedInUnit(webCertUser.getValdVardenhet().getNamn())
+            .loggedInCareProvider(webCertUser.getValdVardgivare().getNamn())
+            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+            .build();
+    }
+
+    private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {
+        switch (authenticationMethod) {
+            case FAKE:
+                return SigningMethod.FAKE;
+            case SITHS:
+            case NET_ID:
+                return SigningMethod.DSS;
+            default:
+                throw new IllegalArgumentException(
+                    String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
+        }
+    }
+
+    private String getRole(WebCertUser webCertUser) {
+        return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör" : webCertUser.getRoleTypeName();
     }
 }

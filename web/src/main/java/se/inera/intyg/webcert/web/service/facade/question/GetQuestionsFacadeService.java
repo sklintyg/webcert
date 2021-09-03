@@ -24,5 +24,8 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 
 public interface GetQuestionsFacadeService {
 
+    List<Question> getComplementQuestions(String certificateId);
+
     List<Question> getQuestions(String certificateId);
+
 }

@@ -20,9 +20,10 @@
 package se.inera.intyg.webcert.web.service.facade;
 
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-public interface GetCertificationResourceLinks {
+public interface ComplementCertificateFacadeService {
 
-    ResourceLinkDTO[] get(Certificate certificate);
+    Certificate complement(String certificateId, String message);
+
+    Certificate answerComplement(String certificateId, String message);
 }

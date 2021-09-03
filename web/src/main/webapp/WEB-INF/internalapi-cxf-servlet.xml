@@ -38,6 +38,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntegratedUnitsApiController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntygInfoApiController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.TestCertificateController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.TermsApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

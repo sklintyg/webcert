@@ -43,6 +43,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,9 @@ import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
@@ -86,6 +88,51 @@ public class PdlIT {
                 .delete("testability/intyg/{certificateId}")
         );
         RestAssured.reset();
+    }
+
+    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
+        assertPdlLogMessage(expectedActivityType, certificateId, null);
+    }
+
+    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId, String activityArgs) {
+        final var pdlLogMessage = getPdlLogMessageFromQueue();
+        assertNotNull(pdlLogMessage, "Pdl message was null!");
+        assertAll(
+            () -> assertEquals(expectedActivityType, pdlLogMessage.getActivityType()),
+            () -> assertEquals("SE5565594230-B8N", pdlLogMessage.getSystemId()),
+            () -> assertEquals("Webcert", pdlLogMessage.getSystemName()),
+            () -> assertEquals(ActivityPurpose.CARE_TREATMENT, pdlLogMessage.getPurpose()),
+            () -> assertEquals(certificateId, pdlLogMessage.getActivityLevel()),
+            () -> assertEquals("Intyg", pdlLogMessage.getPdlResourceList().get(0).getResourceType()),
+            () -> {
+                if (activityArgs != null) {
+                    assertEquals(activityArgs, pdlLogMessage.getActivityArgs());
+                }
+            }
+        );
+    }
+
+    private void assertNumberOfPdlMessages(int expectedPdlLogMessageCount) {
+        final var pdlLogMessageCount = getPdlLogMessageCountFromQueue();
+        assertEquals(expectedPdlLogMessageCount, pdlLogMessageCount);
+    }
+
+    private PdlLogMessage getPdlLogMessageFromQueue() {
+        return given().when().get("testability/logMessages").then().extract().response().as(PdlLogMessage.class);
+    }
+
+    private int getPdlLogMessageCountFromQueue() {
+        return Integer.parseInt(
+            given().when().get("testability/logMessages/count").then().extract().response().body().asString()
+        );
+    }
+
+    private ObjectMapper getObjectMapperForDeserialization() {
+        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
+    }
+
+    private void incrementVersion(Certificate certificate) {
+        certificate.getMetadata().setVersion(certificate.getMetadata().getVersion() + 1);
     }
 
     @Nested
@@ -545,6 +592,41 @@ public class PdlIT {
         }
 
         @Test
+        void shallPdlLogCreateActivityWhenComplementCertificate() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertNumberOfPdlMessages(2);
+            assertPdlLogMessage(ActivityType.CREATE, newCertificate.getCertificate().getMetadata().getId());
+            assertPdlLogMessage(ActivityType.READ, newCertificate.getCertificate().getMetadata().getId());
+        }
+
+        @Test
         public void shallPdlLogCreateActivityWhenReplaceCertificate() {
             final var testSetup = TestSetup.create()
                 .certificate(
@@ -560,14 +642,14 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var replaceCertificateRequest = new ReplaceCertificateRequestDTO();
-            replaceCertificateRequest.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            replaceCertificateRequest.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(replaceCertificateRequest)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/replace")
                 .then().extract().path("certificateId").toString();
@@ -658,14 +740,14 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var copyCertificateRequestDTO = new CopyCertificateRequestDTO();
-            copyCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            copyCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
-                .body(copyCertificateRequestDTO)
+                .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/copy")
                 .then().extract().path("certificateId").toString();
@@ -707,50 +789,5 @@ public class PdlIT {
             assertNumberOfPdlMessages(1);
             assertPdlLogMessage(ActivityType.REVOKE, testSetup.certificateId());
         }
-    }
-
-    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
-        assertPdlLogMessage(expectedActivityType, certificateId, null);
-    }
-
-    private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId, String activityArgs) {
-        final var pdlLogMessage = getPdlLogMessageFromQueue();
-        assertNotNull(pdlLogMessage, "Pdl message was null!");
-        assertAll(
-            () -> assertEquals(expectedActivityType, pdlLogMessage.getActivityType()),
-            () -> assertEquals("SE5565594230-B8N", pdlLogMessage.getSystemId()),
-            () -> assertEquals("Webcert", pdlLogMessage.getSystemName()),
-            () -> assertEquals(ActivityPurpose.CARE_TREATMENT, pdlLogMessage.getPurpose()),
-            () -> assertEquals(certificateId, pdlLogMessage.getActivityLevel()),
-            () -> assertEquals("Intyg", pdlLogMessage.getPdlResourceList().get(0).getResourceType()),
-            () -> {
-                if (activityArgs != null) {
-                    assertEquals(activityArgs, pdlLogMessage.getActivityArgs());
-                }
-            }
-        );
-    }
-
-    private void assertNumberOfPdlMessages(int expectedPdlLogMessageCount) {
-        final var pdlLogMessageCount = getPdlLogMessageCountFromQueue();
-        assertEquals(expectedPdlLogMessageCount, pdlLogMessageCount);
-    }
-
-    private PdlLogMessage getPdlLogMessageFromQueue() {
-        return given().when().get("testability/logMessages").then().extract().response().as(PdlLogMessage.class);
-    }
-
-    private int getPdlLogMessageCountFromQueue() {
-        return Integer.parseInt(
-            given().when().get("testability/logMessages/count").then().extract().response().body().asString()
-        );
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
-    }
-
-    private void incrementVersion(Certificate certificate) {
-        certificate.getMetadata().setVersion(certificate.getMetadata().getVersion() + 1);
     }
 }

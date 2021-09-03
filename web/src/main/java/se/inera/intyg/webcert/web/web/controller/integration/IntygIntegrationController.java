@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -54,6 +53,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
@@ -101,7 +102,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private String urlUtkastFragmentTemplate;
 
     @Autowired
-    private ReactPilotConfig reactPilotConfig;
+    private ReactUriFactory reactUriFactory;
+
+    @Autowired
+    private ReactPilotUtil reactPilotUtil;
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -430,19 +434,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
-        if (shouldRedirectToReactClient(user, prepareRedirectToIntyg.getIntygTyp())) {
-            return getRedirectUriForReactClient(uriInfo, prepareRedirectToIntyg);
+        if (reactPilotUtil.useReactClient(user, prepareRedirectToIntyg.getIntygTyp())) {
+            return reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
         }
         return getRedirectUriForAngularClient(uriInfo, prepareRedirectToIntyg);
-    }
-
-    private URI getRedirectUriForReactClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
-        final var urlParams = Collections.singletonMap(PARAM_CERT_ID, prepareRedirectToIntyg.getIntygId());
-        return uriBuilder
-            .host(reactPilotConfig.getHostReactClient())
-            .path(reactPilotConfig.getUrlReactTemplate())
-            .buildFromMap(urlParams);
     }
 
     private URI getRedirectUriForAngularClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
@@ -454,14 +449,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             PARAM_CERT_ID, prepareRedirectToIntyg.getIntygId()
         );
         return uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
-    }
-
-    private boolean shouldRedirectToReactClient(WebCertUser user, String certificateType) {
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        if (feature == null) {
-            return false;
-        }
-        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {

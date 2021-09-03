@@ -39,12 +39,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificationResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -55,11 +56,11 @@ import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeServic
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
@@ -96,9 +97,11 @@ public class CertificateController {
     @Autowired
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
-    private GetCertificationResourceLinks getCertificationResourceLinks;
+    private GetCertificateResourceLinks getCertificateResourceLinks;
     @Autowired
     private SendCertificateFacadeService sendCertificateFacadeService;
+    @Autowired
+    private ComplementCertificateFacadeService complementCertificateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -109,7 +112,7 @@ public class CertificateController {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, true);
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -157,7 +160,7 @@ public class CertificateController {
             LOG.debug("Signing certificate with id: '{}'", certificateId);
         }
         final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
-        final var resourceLinks = getCertificationResourceLinks.get(signedCertificate);
+        final var resourceLinks = getCertificateResourceLinks.get(signedCertificate);
         final var certificateDTO = CertificateDTO.create(signedCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -194,7 +197,7 @@ public class CertificateController {
             revokeCertificate.getMessage()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }
@@ -204,14 +207,14 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response replaceCertificate(@PathParam("certificateId") @NotNull String certificateId,
-        @RequestBody @NotNull ReplaceCertificateRequestDTO replaceCertificate) {
+        @RequestBody @NotNull NewCertificateRequestDTO newCertificateRequestDTO) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Replacing certificate with id: '{}'", certificateId);
         }
         final var newCertificateId = replaceCertificateFacadeService.replaceCertificate(
             certificateId,
-            replaceCertificate.getCertificateType(),
-            replaceCertificate.getPatientId().getId()
+            newCertificateRequestDTO.getCertificateType(),
+            newCertificateRequestDTO.getPatientId().getId()
         );
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
     }
@@ -229,11 +232,49 @@ public class CertificateController {
     }
 
     @POST
+    @Path("/{certificateId}/complement")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response complementCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Complementing certificate with id: '{}'", certificateId);
+        }
+        final var complementCertificate = complementCertificateFacadeService.complement(
+            certificateId,
+            complementCertificateRequest.getMessage()
+        );
+
+        final var resourceLinks = getCertificateResourceLinks.get(complementCertificate);
+        final var certificateDTO = CertificateDTO.create(complementCertificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/answercomplement")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response answerComplementCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Answer complement certificate with id: '{}'", certificateId);
+        }
+        final var answeredComplementCertificate = complementCertificateFacadeService.answerComplement(
+            certificateId,
+            complementCertificateRequest.getMessage()
+        );
+
+        final var resourceLinks = getCertificateResourceLinks.get(answeredComplementCertificate);
+        final var certificateDTO = CertificateDTO.create(answeredComplementCertificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
+    }
+
+    @POST
     @Path("/{certificateId}/copy")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response copyCertificate(@PathParam("certificateId") @NotNull String certificateId,
-        @RequestBody @NotNull CopyCertificateRequestDTO copyCertificate) {
+        @RequestBody @NotNull NewCertificateRequestDTO copyCertificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Copy certificate with id: '{}'", certificateId);
         }
@@ -264,7 +305,7 @@ public class CertificateController {
             forwardCertificate.isForwarded()
         );
 
-        final var resourceLinks = getCertificationResourceLinks.get(certificate);
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
     }

@@ -17,8 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
+package se.inera.intyg.webcert.web.auth.exceptions;
 
-public enum QuestionType {
-    COORDINATION, CONTACT, OTHER
+import org.springframework.security.core.AuthenticationException;
+
+public class MissingSubscriptionException extends AuthenticationException {
+
+    public MissingSubscriptionException(String message) {
+        super(message);
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -36,6 +37,8 @@ public interface ArendeService {
     Arende processIncomingMessage(Arende arende);
 
     ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande);
+
+    Arende sendMessage(ArendeDraft arendeDraft);
 
     ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 
@@ -88,4 +91,6 @@ public interface ArendeService {
     List<Arende> getArendenExternal(List<String> intygsIds);
 
     List<Arende> getArendenInternal(String intygsId);
+
+    List<Arende> getRelatedArenden(String questionId);
 }

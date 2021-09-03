@@ -47,14 +47,17 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     @Override
     public ValidationErrorDTO[] validate(Certificate certificate) {
+        LOG.debug("Get certificate '{}' to validate", certificate.getMetadata().getId());
         final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
 
+        LOG.debug("Validate certificate '{}'", certificate.getMetadata().getId());
         final var draftValidation = utkastService.validateDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
             getJsonFromCertificate(certificate, currentCertificate.getModel())
         );
 
+        LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
         return convertDraftValidation(draftValidation);
     }
 
@@ -67,7 +70,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 

@@ -148,7 +148,7 @@ public class UserApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
             avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
-            user.setPrivatLakareAvtalGodkand(true);
+            user.setUserTermsApprovedOrSubscriptionInUse(true);
         }
         return Response.ok().build();
     }
