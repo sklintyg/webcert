@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -72,12 +73,13 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
 
     @Test
     void shallValidateSickLeavePeriod() {
-        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
-        response.setOverskriderRekommenderadSjukskrivningstid(false);
-        Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+        var expectedResponse = new MaximalSjukskrivningstidResponse();
+        expectedResponse.setOverskriderRekommenderadSjukskrivningstid(false);
+        Mockito.doReturn(expectedResponse).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        var actualResponse = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         verify(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+        assertNotNull(actualResponse);
     }
 
     @Test

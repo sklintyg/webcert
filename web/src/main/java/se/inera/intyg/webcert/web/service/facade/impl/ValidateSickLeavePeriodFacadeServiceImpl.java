@@ -23,8 +23,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.model.internal.Sjukskrivning.SjukskrivningsGrad;
@@ -41,8 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePer
 @Service
 public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLeavePeriodFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ValidateSickLeavePeriodFacadeServiceImpl.class);
-
     private final FmbDiagnosInformationService fmbDiagnosInformationService;
 
     @Autowired
@@ -53,14 +49,14 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
 
     @Override
     public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
-        MaximalSjukskrivningstidRequest sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
-        Icd10KoderRequest codesRequest = new Icd10KoderRequest();
+        var sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
+        var codesRequest = new Icd10KoderRequest();
         codesRequest.setIcd10Kod1(request.getIcd10Code(0));
         codesRequest.setIcd10Kod2(request.getIcd10Code(1));
         codesRequest.setIcd10Kod3(request.getIcd10Code(2));
 
         List<Period> periods = new ArrayList<>();
-        AtomicLong totalDays = new AtomicLong();
+        var totalDays = new AtomicLong();
         request.getDateRangeList().getList().forEach((dateRange) -> {
             Period period = new Period();
             period.setFrom(dateRange.getFrom());
