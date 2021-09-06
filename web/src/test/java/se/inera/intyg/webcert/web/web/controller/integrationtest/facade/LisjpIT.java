@@ -35,8 +35,12 @@ import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +48,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
@@ -53,6 +62,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateReques
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public class LisjpIT {
@@ -588,6 +599,65 @@ public class LisjpIT {
                 () -> assertEquals(CertificateStatus.UNSIGNED, response.getMetadata().getStatus()),
                 () -> assertNotNull(response.getData(), "Expect certificate to include data"),
                 () -> assertNotNull(response.getLinks(), "Expect certificate to include links")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with FMB warning")
+        void shallReturnDraftWithFMBWarning() {
+            final var icd10Codes = new String[]{"F500"};
+
+            Map<String, CertificateDataValue> valueMap = new HashMap<>();
+            var diagnosisValue = CertificateDataValueDiagnosisList.builder()
+                .list(Arrays.asList(
+                    CertificateDataValueDiagnosis.builder()
+                        .code("F500")
+                        .build()
+                    )
+                )
+                .build();
+            var sickLeaveValue = CertificateDataValueDateRangeList.builder()
+                .list(Arrays.asList(
+                    CertificateDataValueDateRange.builder()
+                        .id("HALFTEN")
+                        .from(LocalDate.now())
+                        .to(LocalDate.now().plusYears(5))
+                        .build()
+                    )
+                )
+                .build();
+            valueMap.put("6", diagnosisValue);
+            valueMap.put("32", sickLeaveValue);
+
+            final var testSetup = TestSetup.create()
+                .draftWithValues(
+                    LisjpEntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId(),
+                    valueMap
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var validateSickLeavePeriodRequest = new ValidateSickLeavePeriodRequestDTO();
+            validateSickLeavePeriodRequest.setPersonId(ATHENA_ANDERSSON.getPersonId().getId());
+            validateSickLeavePeriodRequest.setIcd10Codes(icd10Codes);
+            validateSickLeavePeriodRequest.setDateRangeList(sickLeaveValue);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .contentType(ContentType.JSON)
+                .body(validateSickLeavePeriodRequest)
+                .expect().statusCode(200)
+                .when()
+                .post("api/fmb/validateSickLeavePeriod")
+                .then().extract().response().as(ValidateSickLeavePeriodResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertTrue(response.getMessage().length() > 0)
             );
         }
 

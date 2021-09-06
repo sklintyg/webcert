@@ -172,6 +172,22 @@ public class TestSetup {
             return this;
         }
 
+        public TestSetupBuilder draftWithValues(String certificateType, String certificateTypeVersion,
+            String personId, String unitId, String patientId, Map<String, CertificateDataValue> valueMap) {
+            this.createCertificate = true;
+            this.status = CertificateStatus.UNSIGNED;
+            this.fillType = CreateCertificateFillType.WITH_VALUES;
+            this.values = valueMap;
+            this.certificateType = certificateType;
+            this.certificateTypeVersion = certificateTypeVersion;
+            this.patientId = patientId;
+            this.personId = personId;
+            this.unitId = unitId;
+            this.isSent = false;
+            return this;
+        }
+
+
         public TestSetupBuilder sendCertificate() {
             this.isSent = true;
             return this;
