@@ -94,7 +94,8 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
                     + response.getMaximaltRekommenderadSjukskrivningstid()
                     + " dagar (" + response.getMaximaltRekommenderadSjukskrivningstidSource() + ") för diagnosen "
                     + response.getAktuellIcd10Kod()
-                    + ". Ange en motivering för att underlätta Försäkringskassans handläggning. Sjukskrivningsperioden är baserad på patientens sammanhängande intyg på denna vårdenhet.";
+                    + ". Ange en motivering för att underlätta Försäkringskassans handläggning. Sjukskrivningsperioden"
+                    + " är baserad på patientens sammanhängande intyg på denna vårdenhet.";
             }
         }
         return "";
