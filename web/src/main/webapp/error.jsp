@@ -71,6 +71,7 @@
 <script type="text/javascript" src="/web/webjars/common/webcert/components/text/dynamicLink.directive.js"></script>
 <script type="text/javascript" src="/web/webjars/common/app-shared/unified-view/uvDomId.filter.js"></script>
 <script type="text/javascript" src="/web/webjars/common/webcert/components/wcAlertMessage/wcAlertMessage.directive.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/components/wcLogoutNow/wcLogoutNow.directive.js"></script>
 
 </head>
 <body class="start jsp" id="errorPage" ng-controller="LoginController">
@@ -152,6 +153,7 @@
             </c:when>
             <c:when test="${param.reason eq 'auth-exception-user-already-active'}">
               <h1><spring:message code="error.auth-exception-user-already-active.title" /></h1>
+              <wc-logout-now></wc-logout-now>
               <wc-alert-message alert-id="noAuth" alert-severity="info">
                 <spring:message code="error.auth-exception-user-already-active.text" />
               </wc-alert-message>
