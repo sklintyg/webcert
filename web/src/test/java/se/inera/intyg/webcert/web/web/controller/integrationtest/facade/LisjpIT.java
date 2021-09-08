@@ -606,28 +606,11 @@ public class LisjpIT {
         @DisplayName("Shall return draft with FMB warning")
         void shallReturnDraftWithFMBWarning() {
             final var icd10Codes = new String[]{"F500"};
-
-            Map<String, CertificateDataValue> valueMap = new HashMap<>();
-            var diagnosisValue = CertificateDataValueDiagnosisList.builder()
-                .list(Arrays.asList(
-                    CertificateDataValueDiagnosis.builder()
-                        .code("F500")
-                        .build()
-                    )
-                )
-                .build();
-            var sickLeaveValue = CertificateDataValueDateRangeList.builder()
-                .list(Arrays.asList(
-                    CertificateDataValueDateRange.builder()
-                        .id("HALFTEN")
-                        .from(LocalDate.now())
-                        .to(LocalDate.now().plusYears(5))
-                        .build()
-                    )
-                )
-                .build();
-            valueMap.put("6", diagnosisValue);
-            valueMap.put("32", sickLeaveValue);
+            final var diagnosisValue = getValueDiagnosisList();
+            final var sickLeaveValue = getValueDateRangeList();
+            final var valueMap = getValueMap(diagnosisValue, sickLeaveValue);
+            final ValidateSickLeavePeriodRequestDTO validateSickLeavePeriodRequest = getValidateSickLeavePeriodRequest(
+                icd10Codes, sickLeaveValue);
 
             final var testSetup = TestSetup.create()
                 .draftWithValues(
@@ -640,11 +623,6 @@ public class LisjpIT {
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
-
-            final var validateSickLeavePeriodRequest = new ValidateSickLeavePeriodRequestDTO();
-            validateSickLeavePeriodRequest.setPersonId(ATHENA_ANDERSSON.getPersonId().getId());
-            validateSickLeavePeriodRequest.setIcd10Codes(icd10Codes);
-            validateSickLeavePeriodRequest.setDateRangeList(sickLeaveValue);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -1014,5 +992,48 @@ public class LisjpIT {
                 () -> assertEquals(200, response.getStatusCode())
             );
         }
+    }
+
+    private ValidateSickLeavePeriodRequestDTO getValidateSickLeavePeriodRequest(String[] icd10Codes,
+        CertificateDataValueDateRangeList sickLeaveValue) {
+        final var validateSickLeavePeriodRequest = new ValidateSickLeavePeriodRequestDTO();
+        validateSickLeavePeriodRequest.setPersonId(ATHENA_ANDERSSON.getPersonId().getId());
+        validateSickLeavePeriodRequest.setIcd10Codes(icd10Codes);
+        validateSickLeavePeriodRequest.setDateRangeList(sickLeaveValue);
+        return validateSickLeavePeriodRequest;
+    }
+
+    private CertificateDataValueDiagnosisList getValueDiagnosisList() {
+        var diagnosisValue = CertificateDataValueDiagnosisList.builder()
+            .list(Arrays.asList(
+                CertificateDataValueDiagnosis.builder()
+                    .code("F500")
+                    .build()
+                )
+            )
+            .build();
+        return diagnosisValue;
+    }
+
+    private CertificateDataValueDateRangeList getValueDateRangeList() {
+        var sickLeaveValue = CertificateDataValueDateRangeList.builder()
+            .list(Arrays.asList(
+                CertificateDataValueDateRange.builder()
+                    .id("HALFTEN")
+                    .from(LocalDate.now())
+                    .to(LocalDate.now().plusYears(5))
+                    .build()
+                )
+            )
+            .build();
+        return sickLeaveValue;
+    }
+
+    private Map<String, CertificateDataValue> getValueMap(
+        CertificateDataValue diagnosisValue, CertificateDataValue sickLeaveValue) {
+        Map<String, CertificateDataValue> valueMap = new HashMap<>();
+        valueMap.put("6", diagnosisValue);
+        valueMap.put("32", sickLeaveValue);
+        return valueMap;
     }
 }
