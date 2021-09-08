@@ -83,13 +83,32 @@ public abstract class BaseCreateDraftCertificateValidator {
 
     protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, Personnummer personnummer, String intygsTyp,
         IntygUser user) {
-        if (personnummer != null) {
-            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
-            if (sekretessStatus != SekretessStatus.UNDEFINED) {
-                validateSekretess(errors, intygsTyp, sekretessStatus);
-                validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
-            }
+        if (personnummer == null) {
+            return;
         }
+
+        final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
+        if (sekretessStatus == SekretessStatus.FALSE) {
+            return;
+        }
+
+        final var certificateAllowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp);
+        if (!certificateAllowedForSekretess) {
+            errors.addError(errorCertificateTypeNotAllowed(sekretessStatus, intygsTyp));
+            return;
+        }
+        validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
+    }
+
+    private String errorCertificateTypeNotAllowed(SekretessStatus sekretessStatus, String certificateType) {
+        final var certificateName = getCertificateDisplayName(certificateType);
+
+        if (sekretessStatus == SekretessStatus.TRUE) {
+            return String.format("Intygstypen %s kan inte utfärdas för patienter med skyddade personuppgifter.", certificateName);
+        }
+
+        return String.format("Information om skyddade personuppgifter kunde inte hämtas. Intygstypen %s kan inte utfärdas för patient när "
+            + "uppgift om skyddade personuppgifter ej är tillgänglig.", certificateName);
     }
 
     protected void validateCreateForAvlidenPatientAllowed(
@@ -169,24 +188,7 @@ public abstract class BaseCreateDraftCertificateValidator {
                 .isVerified()) {
                 errors.addError(
                     "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
-                        + "att du har befattningen läkare eller tandläkare");
-            }
-        }
-    }
-
-    private void validateSekretess(ResultValidator errors, String intygsTyp, SekretessStatus sekretessStatus) {
-        if (!authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp)) {
-            switch (sekretessStatus) {
-                case TRUE:
-                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.",
-                        getCertificateDisplayName(intygsTyp));
-                    break;
-                case UNDEFINED:
-                    errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
-                        + "to a problem in the PU service.", intygsTyp);
-                    break;
-                case FALSE:
-                    break; // Do nothing
+                        + "att du har befattningen läkare eller tandläkare.");
             }
         }
     }
