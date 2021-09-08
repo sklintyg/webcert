@@ -50,7 +50,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
     @Override
     public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
         final var sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
-        final Icd10KoderRequest codesRequest = getIcd10CodesRequest(request);
+        final var codesRequest = getIcd10CodesRequest(request);
         final var periods = getPeriods(request);
         final var totalDays = getTotalDays(request);
 
@@ -63,7 +63,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
     }
 
     private AtomicLong getTotalDays(ValidateSickLeavePeriodRequestDTO request) {
-        var totalDays = new AtomicLong();
+        final var totalDays = new AtomicLong();
         request.getDateRangeList().getList().forEach((dateRange) ->
             totalDays.addAndGet(getTotalDays(dateRange))
         );
@@ -71,7 +71,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
     }
 
     private List<Period> getPeriods(ValidateSickLeavePeriodRequestDTO request) {
-        List<Period> periods = new ArrayList<>();
+        final List<Period> periods = new ArrayList<>();
         request.getDateRangeList().getList().forEach((dateRange) -> {
             final var period = new Period();
             period.setFrom(dateRange.getFrom());
