@@ -49,28 +49,46 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
 
     @Override
     public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
-        var sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
-        var codesRequest = new Icd10KoderRequest();
-        codesRequest.setIcd10Kod1(request.getIcd10Code(0));
-        codesRequest.setIcd10Kod2(request.getIcd10Code(1));
-        codesRequest.setIcd10Kod3(request.getIcd10Code(2));
-
-        List<Period> periods = new ArrayList<>();
-        var totalDays = new AtomicLong();
-        request.getDateRangeList().getList().forEach((dateRange) -> {
-            Period period = new Period();
-            period.setFrom(dateRange.getFrom());
-            period.setTom(dateRange.getTo());
-            totalDays.addAndGet(getTotalDays(dateRange));
-            final var sjukskrivningsgrad = SjukskrivningsGrad.fromId(dateRange.getId());
-            period.setNedsattning(Integer.parseInt(sjukskrivningsgrad.getLabel().replace("%", "")));
-            periods.add(period);
-        });
+        final var sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
+        final Icd10KoderRequest codesRequest = getIcd10CodesRequest(request);
+        List<Period> periods = getPeriods(request);
+        AtomicLong totalDays = getTotalDays(request);
 
         sickLeaveTimeRequest.setIcd10Koder(codesRequest);
         sickLeaveTimeRequest.setPersonnummer(Personnummer.createPersonnummer(request.getPersonId()).get());
         sickLeaveTimeRequest.setPeriods(periods);
-        return getResponseText(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest), totalDays.get());
+
+        final var response = fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest);
+        return getResponseText(response, totalDays.get());
+    }
+
+    private AtomicLong getTotalDays(ValidateSickLeavePeriodRequestDTO request) {
+        var totalDays = new AtomicLong();
+        request.getDateRangeList().getList().forEach((dateRange) ->
+            totalDays.addAndGet(getTotalDays(dateRange))
+        );
+        return totalDays;
+    }
+
+    private List<Period> getPeriods(ValidateSickLeavePeriodRequestDTO request) {
+        List<Period> periods = new ArrayList<>();
+        request.getDateRangeList().getList().forEach((dateRange) -> {
+            final var period = new Period();
+            period.setFrom(dateRange.getFrom());
+            period.setTom(dateRange.getTo());
+            final var sjukskrivningsgrad = SjukskrivningsGrad.fromId(dateRange.getId());
+            period.setNedsattning(Integer.parseInt(sjukskrivningsgrad.getLabel().replace("%", "")));
+            periods.add(period);
+        });
+        return periods;
+    }
+
+    private Icd10KoderRequest getIcd10CodesRequest(ValidateSickLeavePeriodRequestDTO request) {
+        final var codesRequest = new Icd10KoderRequest();
+        codesRequest.setIcd10Kod1(request.getIcd10Code(0));
+        codesRequest.setIcd10Kod2(request.getIcd10Code(1));
+        codesRequest.setIcd10Kod3(request.getIcd10Code(2));
+        return codesRequest;
     }
 
     private long getTotalDays(CertificateDataValueDateRange dateRange) {

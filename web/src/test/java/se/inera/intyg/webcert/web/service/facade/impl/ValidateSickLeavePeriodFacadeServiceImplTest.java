@@ -73,55 +73,55 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
 
     @Test
     void shallValidateSickLeavePeriod() {
-        var expectedResponse = new MaximalSjukskrivningstidResponse();
+        final var expectedResponse = new MaximalSjukskrivningstidResponse();
         expectedResponse.setOverskriderRekommenderadSjukskrivningstid(false);
         Mockito.doReturn(expectedResponse).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        var actualResponse = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        final var actualResponse = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         verify(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
         assertNotNull(actualResponse);
     }
 
     @Test
     void shallNotReturnWarningIfRecommendationIsNotOvercome() {
-        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        final var response = new MaximalSjukskrivningstidResponse();
         response.setOverskriderRekommenderadSjukskrivningstid(false);
         Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() == 0);
     }
 
     @Test
     void shallReturnWarningIfRecommendationIsOvercome() {
-        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        final var response = new MaximalSjukskrivningstidResponse();
         response.setOverskriderRekommenderadSjukskrivningstid(true);
         Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() > 0);
     }
 
     @Test
     void shallReturnSpecialStringIfOnlyCurrentCertificateInSickleave() {
-        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        final var response = new MaximalSjukskrivningstidResponse();
         response.setOverskriderRekommenderadSjukskrivningstid(true);
         response.setTotalSjukskrivningstid(3);
         Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() > 0);
         assertTrue(warning.contains("Den föreslagna sjukskrivningsperioden"));
     }
 
     @Test
     void shallReturnSpecialStringIfNotOnlyCurrentCertificateInSickleave() {
-        MaximalSjukskrivningstidResponse response = new MaximalSjukskrivningstidResponse();
+        final var response = new MaximalSjukskrivningstidResponse();
         response.setOverskriderRekommenderadSjukskrivningstid(true);
         response.setTotalSjukskrivningstid(10);
         Mockito.doReturn(response).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
-        String warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() > 0);
         assertTrue(warning.contains("Den totala sjukskrivningsperioden är"));
     }
