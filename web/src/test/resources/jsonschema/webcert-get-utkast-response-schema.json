@@ -24,6 +24,9 @@
     "latestTextVersion": {
       "type": "string"
     },
+    "latestMajorTextVersion": {
+      "type": "boolean"
+    },
     "klartForSigneringDatum": {
       "type": "string"
     },

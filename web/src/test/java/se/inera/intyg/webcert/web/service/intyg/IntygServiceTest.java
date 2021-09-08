@@ -39,6 +39,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -223,6 +224,9 @@ public class IntygServiceTest {
     @Mock
     IntegrationParameters intParam;
 
+    @Mock
+    private IntygTextsService intygTextsService;
+
     @InjectMocks
     private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
 
@@ -244,6 +248,7 @@ public class IntygServiceTest {
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 
     @Before
