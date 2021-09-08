@@ -51,8 +51,8 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
     public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {
         final var sickLeaveTimeRequest = new MaximalSjukskrivningstidRequest();
         final Icd10KoderRequest codesRequest = getIcd10CodesRequest(request);
-        List<Period> periods = getPeriods(request);
-        AtomicLong totalDays = getTotalDays(request);
+        final var periods = getPeriods(request);
+        final var totalDays = getTotalDays(request);
 
         sickLeaveTimeRequest.setIcd10Koder(codesRequest);
         sickLeaveTimeRequest.setPersonnummer(Personnummer.createPersonnummer(request.getPersonId()).get());
