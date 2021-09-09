@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -184,6 +186,7 @@ public class UtkastModuleApiControllerTest {
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 
     @Test
@@ -577,6 +580,23 @@ public class UtkastModuleApiControllerTest {
         assertNotNull(saveDraftResponse);
         assertTrue(saveDraftResponse.getVersion() > 0);
         assertEquals(UtkastStatus.DRAFT_INCOMPLETE, saveDraftResponse.getStatus());
+    }
+
+    @Test
+    public void shouldSetIsLatestMajorTextVersion() throws IOException, ModuleException {
+        final var certificateType = "lisjp";
+        setupGrundData();
+        setupUser(certificateType, false, UserOriginType.NORMAL.name(),
+            Collections.singletonList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG),
+            Collections.singletonList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(utkastService.getDraft(CERTIFICATE_ID, certificateType)).thenReturn(buildUtkast(certificateType, CERTIFICATE_ID));
+        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new Relations());
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(false);
+
+        Response response = moduleApiController.getDraft(certificateType, CERTIFICATE_ID, request);
+
+        assertFalse(response.readEntity(DraftHolder.class).isLatestMajorTextVersion());
     }
 
     private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
