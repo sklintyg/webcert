@@ -92,23 +92,20 @@ public abstract class BaseCreateDraftCertificateValidator {
             return;
         }
 
-        final var certificateAllowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp);
-        if (!certificateAllowedForSekretess) {
-            errors.addError(errorCertificateTypeNotAllowed(sekretessStatus, intygsTyp));
+        if (sekretessStatus == SekretessStatus.UNDEFINED) {
+            errors.addError("Information om skyddade personuppgifter kunde inte hämtas. Intygstypen {0} kan inte utfärdas"
+                + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.", getCertificateDisplayName(intygsTyp));
             return;
         }
-        validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
-    }
 
-    private String errorCertificateTypeNotAllowed(SekretessStatus sekretessStatus, String certificateType) {
-        final var certificateName = getCertificateDisplayName(certificateType);
-
-        if (sekretessStatus == SekretessStatus.TRUE) {
-            return String.format("Intygstypen %s kan inte utfärdas för patienter med skyddade personuppgifter.", certificateName);
+        final var certificateAllowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp);
+        if (!certificateAllowedForSekretess) {
+            errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.",
+                getCertificateDisplayName(intygsTyp));
+            return;
         }
 
-        return String.format("Information om skyddade personuppgifter kunde inte hämtas. Intygstypen %s kan inte utfärdas för patient när "
-            + "uppgift om skyddade personuppgifter ej är tillgänglig.", certificateName);
+        validateHsaUserMayCreateDraftForSekretessmarkerad(errors, user);
     }
 
     protected void validateCreateForAvlidenPatientAllowed(
@@ -180,16 +177,14 @@ public abstract class BaseCreateDraftCertificateValidator {
         PersonnummerChecksumValidator.validate(pnr, errors);
     }
 
-    private void validateHsaUserMayCreateDraft(ResultValidator errors, IntygUser user, SekretessStatus sekretessStatus) {
-        if (sekretessStatus == SekretessStatus.TRUE) {
-            AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-            if (!authoritiesValidator.given(user)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified()) {
-                errors.addError(
-                    "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
-                        + "att du har befattningen läkare eller tandläkare.");
-            }
+    private void validateHsaUserMayCreateDraftForSekretessmarkerad(ResultValidator errors, IntygUser user) {
+        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+        if (!authoritiesValidator.given(user)
+            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+            .isVerified()) {
+            errors.addError(
+                "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
+                    + "att du har befattningen läkare eller tandläkare.");
         }
     }
 

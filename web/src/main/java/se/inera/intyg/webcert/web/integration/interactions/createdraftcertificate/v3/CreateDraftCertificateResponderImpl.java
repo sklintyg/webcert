@@ -38,7 +38,6 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
@@ -149,12 +148,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             utkastsParams.getPatient().getPersonId().getExtension())
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 "Failed to create valid personnummer for createDraft request"));
-        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
-
-        if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {
-            return createErrorResponse("Intygstypen " + intygsTyp.toUpperCase()
-                + " kan inte utfärdas för patienter med skyddade personuppgifter", ErrorIdType.APPLICATION_ERROR);
-        }
 
         ModuleApi moduleApi = null;
         try {

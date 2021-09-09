@@ -310,6 +310,25 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         assertEquals(1, response.getErrorMessages().size());
     }
 
+    @Test
+    public void shouldReturnErrorWhenSekretessStatusUndefined() throws ModuleNotFoundException {
+        final var user = buildUserUnauthorized();
+        final var certificateType = Fk7263EntryPoint.MODULE_ID;
+        final var certificateDisplayName = Fk7263EntryPoint.MODULE_NAME;
+        final var certificate = buildIntyg(certificateType, "lastName", "firstName",
+            "fullName", "unitId", "unitName", true);
+        final var mockEntryPoint = mock(Fk7263EntryPoint.class);
+
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(moduleRegistry.getModuleEntryPoint(certificateType)).thenReturn(mockEntryPoint);
+        when(mockEntryPoint.getModuleName()).thenReturn(certificateDisplayName);
+
+        final var response = validator.validateApplicationErrors(certificate, user);
+
+        assertEquals(1, response.getErrorMessages().size());
+    }
+
     private PersonSvar buildPersonSvar() {
         Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
         return PersonSvar.found(new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"));
