@@ -55,20 +55,31 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
 
     @Override
     public IcfResponseDTO getIcfInformation(IcfRequestDTO request) {
-        if (request.getIcdCodes() == null || request.getIcdCodes().length == 0) {
+        if (isIcdCodesEmpty(request)) {
             return new IcfResponseDTO();
         }
 
-        final var icfInternalData = icfService.findIcfInformationByIcd10Koder(
-            Icd10KoderRequest.of(request.getIcd10Code(0), request.getIcd10Code(1), request.getIcd10Code(2)));
+        final var icfInternalData = getIcfData(request);
 
-        if (icfInternalData.getGemensamma() == null && icfInternalData.getUnika() == null) {
+        if (isIcfDataEmpty(icfInternalData)) {
             return new IcfResponseDTO();
         }
 
         return (convert(icfInternalData));
     }
 
+    private IcfResponse getIcfData(IcfRequestDTO request) {
+        return icfService.findIcfInformationByIcd10Koder(
+            Icd10KoderRequest.of(request.getIcd10Code(0), request.getIcd10Code(1), request.getIcd10Code(2)));
+    }
+
+    private boolean isIcfDataEmpty(IcfResponse icfInternalData) {
+        return icfInternalData.getGemensamma() == null && icfInternalData.getUnika() == null;
+    }
+
+    private boolean isIcdCodesEmpty(IcfRequestDTO request) {
+        return request.getIcdCodes() == null || request.getIcdCodes().length == 0;
+    }
 
     private IcfResponseDTO convert(IcfResponse response) {
         final var result = new IcfResponseDTO();
@@ -78,7 +89,9 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                 .commonCodes(
                     getActivityLimitationCommonCodes(response)
                 )
-                .uniqueCodes(getActivityLimitationUniqueCodes(response))
+                .uniqueCodes(
+                    getActivityLimitationUniqueCodes(response)
+                )
                 .build()
         );
 
@@ -87,7 +100,9 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                 .commonCodes(
                     getDisabilityCommonCodes(response)
                 )
-                .uniqueCodes(getDisabilityUniqueCodes(response))
+                .uniqueCodes(
+                    getDisabilityUniqueCodes(response)
+                )
                 .build()
         );
 
@@ -113,7 +128,14 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             return IcfIcd.builder().build();
         }
 
-        return IcfIcd.builder().icdCodes(getIcdCodeList(icfKoder.getIcd10Koder())).icfCodes(getIcfCodeList(icfKoder.getIcfKoder())).build();
+        return IcfIcd.builder()
+            .icdCodes(
+                icfKoder.getIcd10Koder().stream().map(this::getIcdCode).collect(Collectors.toList())
+            )
+            .icfCodes(
+                getIcfCodeList(icfKoder.getIcfKoder())
+            )
+            .build();
     }
 
     private List<IcfIcd> getDisabilityUniqueCodes(IcfResponse response) {
@@ -121,12 +143,16 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             return Collections.emptyList();
         }
 
-        return response.getUnika().stream().map(
-                icfDiagnoskodResponse -> IcfIcd.builder()
-                    .icdCodes(List.of(IcdCode.builder()
-                        .code(icfDiagnoskodResponse.getIcd10Kod())
-                        .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
-                    .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())).build())
+        return response.getUnika().stream()
+            .map(icfDiagnoskodResponse ->
+                IcfIcd.builder()
+                    .icdCodes(
+                        List.of(getIcdCode(icfDiagnoskodResponse.getIcd10Kod()))
+                    )
+                    .icfCodes(
+                        getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())
+                    )
+                    .build())
             .collect(Collectors.toList());
     }
 
@@ -135,11 +161,16 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             return Collections.emptyList();
         }
 
-        return response.getUnika().stream().map(
-                icfDiagnoskodResponse -> IcfIcd.builder()
-                    .icdCodes(List.of(IcdCode.builder().code(icfDiagnoskodResponse.getIcd10Kod())
-                        .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
-                    .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())).build())
+        return response.getUnika().stream()
+            .map(icfDiagnoskodResponse ->
+                IcfIcd.builder()
+                    .icdCodes(
+                        List.of(getIcdCode(icfDiagnoskodResponse.getIcd10Kod()))
+                    )
+                    .icfCodes(
+                        getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())
+                    )
+                    .build())
             .collect(Collectors.toList());
     }
 
@@ -150,14 +181,16 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                     .code(icfKod.getKod())
                     .description(icfKod.getBeskrivning())
                     .includes(icfKod.getInnefattar())
-                    .title(icfKod.getBenamning()).build()
+                    .title(icfKod.getBenamning())
+                    .build()
             ).collect(Collectors.toList());
     }
 
-    private List<IcdCode> getIcdCodeList(List<String> icdCodeList) {
-        return icdCodeList.stream()
-            .map(icd10Code -> IcdCode.builder().title(getDiagnosisTitle(icd10Code)).code(icd10Code).build()
-            ).collect(Collectors.toList());
+    private IcdCode getIcdCode(String icd10Code) {
+        return IcdCode.builder()
+            .title(getDiagnosisTitle(icd10Code))
+            .code(icd10Code)
+            .build();
     }
 
     private String getDiagnosisTitle(String icdCode) {
