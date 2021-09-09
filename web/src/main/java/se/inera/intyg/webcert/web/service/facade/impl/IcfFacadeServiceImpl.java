@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGNOS_ICD_10_ID;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.service.fmb.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
+import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
@@ -53,7 +55,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
 
     @Override
     public IcfResponseDTO getIcfInformation(IcfRequestDTO request) {
-        if (request.getIcdCodes().length == 0) {
+        if (request.getIcdCodes() == null || request.getIcdCodes().length == 0) {
             return new IcfResponseDTO();
         }
 
@@ -71,73 +73,74 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
     private IcfResponseDTO convert(IcfResponse response) {
         final var result = new IcfResponseDTO();
 
-        List<IcdCode> activityLimitationCommonIcdCodes = null;
-        List<IcfCode> activityLimitationCommonIcfCodes = null;
-        List<IcfIcd> activityLimitationUniqueCodes = null;
-
-        List<IcdCode> disabilityCommonIcdCodes = null;
-        List<IcfCode> disabilityCommonIcfCodes = null;
-        List<IcfIcd> disabilityUniqueCodes = null;
-
-        if (response.getGemensamma() != null) {
-            activityLimitationCommonIcdCodes = getIcdCodeList(response.getGemensamma()
-                .getAktivitetsBegransningsKoder()
-                .getIcd10Koder());
-
-            activityLimitationCommonIcfCodes = getIcfCodeList(response.getGemensamma()
-                .getAktivitetsBegransningsKoder()
-                .getIcfKoder());
-
-            disabilityCommonIcdCodes = getIcdCodeList(response.getGemensamma()
-                .getFunktionsNedsattningsKoder()
-                .getIcd10Koder());
-
-            disabilityCommonIcfCodes = getIcfCodeList(response.getGemensamma()
-                .getFunktionsNedsattningsKoder()
-                .getIcfKoder());
-        }
-
-        if (response.getUnika() != null) {
-            activityLimitationUniqueCodes = response.getUnika().stream().map(
-                    icfDiagnoskodResponse -> IcfIcd.builder()
-                        .icdCodes(List.of(IcdCode.builder().code(icfDiagnoskodResponse.getIcd10Kod())
-                            .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
-                        .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())).build())
-                .collect(Collectors.toList());
-
-            disabilityUniqueCodes = response.getUnika().stream().map(
-                    icfDiagnoskodResponse -> IcfIcd.builder()
-                        .icdCodes(List.of(IcdCode.builder()
-                            .code(icfDiagnoskodResponse.getIcd10Kod())
-                            .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
-                        .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())).build())
-                .collect(Collectors.toList());
-        }
-
         result.setActivityLimitation(
             Icf.builder()
                 .commonCodes(
-                    IcfIcd.builder()
-                        .icdCodes(activityLimitationCommonIcdCodes)
-                        .icfCodes(activityLimitationCommonIcfCodes)
-                        .build()
+                    getActivityLimitationCommonCodes(response)
                 )
-                .uniqueCodes(activityLimitationUniqueCodes)
+                .uniqueCodes(getActivityLimitationUniqueCodes(response))
                 .build()
         );
 
         result.setDisability(
             Icf.builder()
                 .commonCodes(
-                    IcfIcd.builder()
-                        .icdCodes(disabilityCommonIcdCodes)
-                        .icfCodes(disabilityCommonIcfCodes).build()
+                    getDisabilityCommonCodes(response)
                 )
-                .uniqueCodes(disabilityUniqueCodes)
+                .uniqueCodes(getDisabilityUniqueCodes(response))
                 .build()
         );
 
         return result;
+    }
+
+    private IcfIcd getDisabilityCommonCodes(IcfResponse response) {
+        if (response.getGemensamma() == null) {
+            return IcfIcd.builder().build();
+        }
+        return getCommonCodes(response.getGemensamma().getFunktionsNedsattningsKoder());
+    }
+
+    private IcfIcd getActivityLimitationCommonCodes(IcfResponse response) {
+        if (response.getGemensamma() == null) {
+            return IcfIcd.builder().build();
+        }
+        return getCommonCodes(response.getGemensamma().getAktivitetsBegransningsKoder());
+    }
+
+    private IcfIcd getCommonCodes(IcfKoder icfKoder) {
+        if (icfKoder == null) {
+            return IcfIcd.builder().build();
+        }
+
+        return IcfIcd.builder().icdCodes(getIcdCodeList(icfKoder.getIcd10Koder())).icfCodes(getIcfCodeList(icfKoder.getIcfKoder())).build();
+    }
+
+    private List<IcfIcd> getDisabilityUniqueCodes(IcfResponse response) {
+        if (response.getUnika() == null) {
+            return Collections.emptyList();
+        }
+
+        return response.getUnika().stream().map(
+                icfDiagnoskodResponse -> IcfIcd.builder()
+                    .icdCodes(List.of(IcdCode.builder()
+                        .code(icfDiagnoskodResponse.getIcd10Kod())
+                        .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
+                    .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())).build())
+            .collect(Collectors.toList());
+    }
+
+    private List<IcfIcd> getActivityLimitationUniqueCodes(IcfResponse response) {
+        if (response.getUnika() == null) {
+            return Collections.emptyList();
+        }
+
+        return response.getUnika().stream().map(
+                icfDiagnoskodResponse -> IcfIcd.builder()
+                    .icdCodes(List.of(IcdCode.builder().code(icfDiagnoskodResponse.getIcd10Kod())
+                        .title(getDiagnosisTitle(icfDiagnoskodResponse.getIcd10Kod())).build()))
+                    .icfCodes(getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())).build())
+            .collect(Collectors.toList());
     }
 
     private List<IcfCode> getIcfCodeList(List<IcfKod> icfCodeList) {
