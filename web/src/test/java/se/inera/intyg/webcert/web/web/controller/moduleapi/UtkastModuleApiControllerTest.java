@@ -594,7 +594,7 @@ public class UtkastModuleApiControllerTest {
         when(certificateRelationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new Relations());
         when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(false);
 
-        Response response = moduleApiController.getDraft(certificateType, CERTIFICATE_ID, request);
+        final var response = moduleApiController.getDraft(certificateType, CERTIFICATE_ID, request);
 
         assertFalse(response.readEntity(DraftHolder.class).isLatestMajorTextVersion());
     }
