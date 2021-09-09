@@ -337,4 +337,130 @@ class IcfFacadeServiceImplTest {
             return request;
         }
     }
+
+    @Nested
+    class MultipleIcfCodes {
+
+        private final String commonIcfCodeFirst = "icf code 0";
+        private final String commonIcfTitleFirst = "Icf title 0";
+        private final String commonIcfDescriptionFirst = "Icf description 0";
+        private final String commonIcfIncludesFirst = "Icf includes 0";
+        private final String commonIcdCodeFirst = "icd code 0";
+        private final String commonIcdTitleFirst = "icd title 0";
+
+        private final String uniqueIcfCode = "icf code unique 0";
+        private final String uniqueIcfTitle = "Icf title unique 0";
+        private final String uniqueIcfDescription = "Icf description unique 0";
+        private final String uniqueIcfIncludes = "Icf includes unique 0";
+        private final String uniqueIcdCode = "icd code unique 0";
+        private final String uniqueIcdTitle = "icd title unique 0";
+
+        private final String uniqueIcfCodeSecond = "icf code unique 1";
+        private final String uniqueIcfTitleSecond = "Icf title unique 1";
+        private final String uniqueIcfDescriptionSecond = "Icf description unique 1";
+        private final String uniqueIcfIncludesSecond = "Icf includes unique 1";
+        private final String uniqueIcdCodeSecond = "icd code unique 1";
+        private final String uniqueIcdTitleSecond = "icd title unique 1";
+
+
+        private IcfResponse icfResponse;
+        private IcfDiagnoskodResponse commonDiagnoskodResponse;
+        private IcfDiagnoskodResponse uniqueDiagnoskodResponse;
+        private IcfDiagnoskodResponse uniqueDiagnoskodResponseSecond;
+        private List<IcfDiagnoskodResponse> uniqueDiagnoskodResponses;
+        private IcfKod commonIcfCodeObj;
+        private IcfKod uniqueIcfCodeObjFirst;
+        private IcfKod uniqueIcfCodeObjSecond;
+        private List<IcfKod> commonIcfCodes;
+        private List<IcfKod> uniqueIcfCodes;
+        private List<String> commonIcdCodes;
+        private List<String> uniqueIcdCodes;
+        private FunktionsNedsattningsKoder commonDisabilityCodes;
+        private FunktionsNedsattningsKoder uniqueDisabilityCodes;
+        private AktivitetsBegransningsKoder commonActivityLimitationCodes;
+        private AktivitetsBegransningsKoder uniqueActivityLimitationCodes;
+
+        @BeforeEach
+        void setUp() {
+            icfResponse = new IcfResponse();
+            commonDiagnoskodResponse = new IcfDiagnoskodResponse();
+            commonIcfCodeObj = IcfKod.of(commonIcfCodeFirst, commonIcfTitleFirst, commonIcfDescriptionFirst, commonIcfIncludesFirst);
+            commonIcfCodes = List.of(commonIcfCodeObj);
+            commonIcdCodes = List.of(commonIcdCodeFirst);
+            commonDisabilityCodes = FunktionsNedsattningsKoder.of(commonIcdCodes, commonIcfCodes);
+            commonDiagnoskodResponse.setFunktionsNedsattningsKoder(commonDisabilityCodes);
+            commonActivityLimitationCodes = AktivitetsBegransningsKoder.of(commonIcdCodes, commonIcfCodes);
+            commonDiagnoskodResponse.setAktivitetsBegransningsKoder(commonActivityLimitationCodes);
+
+            uniqueDiagnoskodResponse = new IcfDiagnoskodResponse();
+            uniqueIcfCodeObjFirst = IcfKod.of(uniqueIcfCode, uniqueIcfTitle, uniqueIcfDescription, uniqueIcfIncludes);
+            uniqueIcfCodeObjSecond = IcfKod.of(uniqueIcfCodeSecond, uniqueIcfTitleSecond, uniqueIcfDescriptionSecond,
+                uniqueIcfIncludesSecond);
+            uniqueIcfCodes = List.of(uniqueIcfCodeObjFirst, uniqueIcfCodeObjSecond);
+            uniqueIcdCodes = List.of(uniqueIcdCode);
+            uniqueDisabilityCodes = FunktionsNedsattningsKoder.of(uniqueIcdCodes, uniqueIcfCodes);
+            uniqueActivityLimitationCodes = AktivitetsBegransningsKoder.of(uniqueIcdCodes, uniqueIcfCodes);
+            uniqueDiagnoskodResponse.setAktivitetsBegransningsKoder(uniqueActivityLimitationCodes);
+            uniqueDiagnoskodResponse.setFunktionsNedsattningsKoder(uniqueDisabilityCodes);
+            uniqueDiagnoskodResponse.setIcd10Kod(uniqueIcdCode);
+
+            uniqueDiagnoskodResponseSecond = new IcfDiagnoskodResponse();
+            uniqueDiagnoskodResponseSecond.setAktivitetsBegransningsKoder(uniqueActivityLimitationCodes);
+            uniqueDiagnoskodResponseSecond.setFunktionsNedsattningsKoder(uniqueDisabilityCodes);
+            uniqueDiagnoskodResponseSecond.setIcd10Kod(uniqueIcdCodeSecond);
+
+            uniqueDiagnoskodResponses = List.of(uniqueDiagnoskodResponse, uniqueDiagnoskodResponseSecond);
+            icfResponse.setUnika(uniqueDiagnoskodResponses);
+            icfResponse.setGemensamma(commonDiagnoskodResponse);
+
+            doReturn(icfResponse)
+                .when(icfService)
+                .findIcfInformationByIcd10Koder(any());
+        }
+
+        @Test
+        void shallReturnMultipleUniqueIcfCodes() {
+            final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
+
+            assertEquals(icfResponse.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().size(),
+                actual.getDisability().getUniqueCodes().get(0).getIcfCodes()
+                    .size());
+        }
+
+        @Test
+        void shallReturnMultipleUniqueIcdCodes() {
+            final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
+
+            assertEquals(icfResponse.getUnika().get(0).getFunktionsNedsattningsKoder().getIcd10Koder().size(),
+                actual.getDisability().getUniqueCodes().get(0).getIcdCodes()
+                    .size());
+        }
+
+        @Test
+        void shallReturnMultipleUniqueIcfCodesWithCorrectIcfCodes() {
+            final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
+
+            assertEquals(icfResponse.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod(),
+                actual.getDisability().getUniqueCodes().get(0).getIcfCodes().get(0).getCode());
+            assertEquals(icfResponse.getUnika().get(1).getFunktionsNedsattningsKoder().getIcfKoder().get(1).getKod(),
+                actual.getDisability().getUniqueCodes().get(1).getIcfCodes().get(1).getCode());
+        }
+
+        @Test
+        void shallReturnMultipleUniqueIcfCodesWithCorrectIcdCodes() {
+            final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
+
+            assertEquals(icfResponse.getUnika().get(0).getIcd10Kod(),
+                actual.getDisability().getUniqueCodes().get(0).getIcdCodes().get(0).getCode());
+            assertEquals(icfResponse.getUnika().get(1).getIcd10Kod(),
+                actual.getDisability().getUniqueCodes().get(1).getIcdCodes().get(0).getCode());
+        }
+
+        IcfRequestDTO createRequestDTO() {
+            final var request = new IcfRequestDTO();
+            request.setIcdCodes(new String[]{"1"});
+
+            return request;
+        }
+    }
 }
