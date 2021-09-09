@@ -19,36 +19,40 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.util.Arrays;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 
-@Path("/icf")
-public class IcfController {
+@ExtendWith(MockitoExtension.class)
+public class IcfControllerTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IcfController.class);
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
-
-    @Autowired
+    @Mock
     private IcfFacadeService icfFacadeService;
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response getQuestions(IcfRequestDTO request) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));
+    @InjectMocks
+    private IcfController fmbController;
+
+    @Nested
+    class ValidateSickLeavePeriod {
+
+        @BeforeEach
+        void setup() {
         }
 
-        return Response.ok(icfFacadeService.getIcfInformation(request)).build();
+        @Test
+        void shallValidateSickLeavePeriod() {
+            IcfRequestDTO request = new IcfRequestDTO();
+            fmbController.getQuestions(request);
+            verify(icfFacadeService).getIcfInformation(any());
+        }
     }
 }

@@ -944,5 +944,9 @@ public class LisjpIT {
                 () -> assertEquals(200, response.getStatusCode())
             );
         }
+
+        @Test
+        void name() {
+        }
     }
 }

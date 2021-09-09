@@ -113,6 +113,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
         if (response.getGemensamma() == null) {
             return IcfIcd.builder().build();
         }
+
         return getCommonCodes(response.getGemensamma().getFunktionsNedsattningsKoder());
     }
 
@@ -120,6 +121,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
         if (response.getGemensamma() == null) {
             return IcfIcd.builder().build();
         }
+
         return getCommonCodes(response.getGemensamma().getAktivitetsBegransningsKoder());
     }
 
@@ -147,7 +149,9 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             .map(icfDiagnoskodResponse ->
                 IcfIcd.builder()
                     .icdCodes(
-                        List.of(getIcdCode(icfDiagnoskodResponse.getIcd10Kod()))
+                        List.of(
+                            getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
+                        )
                     )
                     .icfCodes(
                         getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())
@@ -165,7 +169,9 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             .map(icfDiagnoskodResponse ->
                 IcfIcd.builder()
                     .icdCodes(
-                        List.of(getIcdCode(icfDiagnoskodResponse.getIcd10Kod()))
+                        List.of(
+                            getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
+                        )
                     )
                     .icfCodes(
                         getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())
