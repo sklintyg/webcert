@@ -64,6 +64,7 @@ public class DraftHolder {
     private boolean avliden = false;
     private boolean patientNameChangedInPU = false;
     private boolean patientAddressChangedInPU = false;
+    private boolean isLatestMajorTextVersion = true;
 
     private List<ActionLink> links = new ArrayList<>();
 
@@ -240,5 +241,13 @@ public class DraftHolder {
 
     public void setTestIntyg(boolean isTestIntyg) {
         this.isTestIntyg = isTestIntyg;
+    }
+
+    public boolean isLatestMajorTextVersion() {
+        return isLatestMajorTextVersion;
+    }
+
+    public void setLatestMajorTextVersion(boolean latestMajorTextVersion) {
+        isLatestMajorTextVersion = latestMajorTextVersion;
     }
 }
