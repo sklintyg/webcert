@@ -190,6 +190,16 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.EXTENDED;
             case KOPIERATFRAN:
                 return CertificateEventTypeDTO.COPIED_FROM;
+            case NYFRFM:
+                return CertificateEventTypeDTO.INCOMING_MESSAGE;
+            case NYSVFM:
+                return CertificateEventTypeDTO.OUTGOING_MESSAGE;
+            case HANFRFM:
+                return CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED;
+            case HANFRFV:
+                return CertificateEventTypeDTO.INCOMING_MESSAGE_HANDLED;
+            case KOMPLBEGARAN:
+                return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
             default:
                 throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
         }
