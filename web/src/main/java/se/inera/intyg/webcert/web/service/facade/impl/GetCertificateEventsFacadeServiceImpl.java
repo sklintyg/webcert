@@ -192,14 +192,14 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.COPIED_FROM;
             case NYFRFM:
                 return CertificateEventTypeDTO.INCOMING_MESSAGE;
-            case NYFRFV:
-                return CertificateEventTypeDTO.OUTGOING_MESSAGE;
             case NYSVFM:
                 return CertificateEventTypeDTO.INCOMING_ANSWER;
             case HANFRFM:
-                return CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED;
-            case HANFRFV:
                 return CertificateEventTypeDTO.INCOMING_MESSAGE_HANDLED;
+            case NYFRFV:
+                return CertificateEventTypeDTO.OUTGOING_MESSAGE;
+            case HANFRFV:
+                return CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED;
             case KOMPLBEGARAN:
                 return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
             case PAMINNELSE:

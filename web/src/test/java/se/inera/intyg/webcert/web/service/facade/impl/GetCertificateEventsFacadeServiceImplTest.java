@@ -178,12 +178,19 @@ class GetCertificateEventsFacadeServiceImplTest {
                 Arguments.of(EventCode.MAKULERAT, CertificateEventTypeDTO.REVOKED),
                 Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
                 Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
-                Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM)
+                Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
+                Arguments.of(EventCode.NYFRFM, CertificateEventTypeDTO.INCOMING_MESSAGE),
+                Arguments.of(EventCode.NYFRFV, CertificateEventTypeDTO.OUTGOING_MESSAGE),
+                Arguments.of(EventCode.NYSVFM, CertificateEventTypeDTO.INCOMING_ANSWER),
+                Arguments.of(EventCode.HANFRFM, CertificateEventTypeDTO.INCOMING_MESSAGE_HANDLED),
+                Arguments.of(EventCode.HANFRFV, CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED),
+                Arguments.of(EventCode.PAMINNELSE, CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER),
+                Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT)
             );
         }
 
         /**
-         *  Event types that should be decorated are specifically tested else-where.
+         * Event types that should be decorated are specifically tested else-where.
          */
         Stream<EventCode> eventTypesNotToDecorate() {
             return Stream.of(
@@ -191,7 +198,14 @@ class GetCertificateEventsFacadeServiceImplTest {
                 EventCode.LAST,
                 EventCode.SIGNAT,
                 EventCode.SKICKAT,
-                EventCode.MAKULERAT
+                EventCode.MAKULERAT,
+                EventCode.NYFRFM,
+                EventCode.NYFRFV,
+                EventCode.HANFRFV,
+                EventCode.HANFRFM,
+                EventCode.NYSVFM,
+                EventCode.PAMINNELSE,
+                EventCode.KOMPLBEGARAN
             );
         }
 
@@ -282,7 +296,7 @@ class GetCertificateEventsFacadeServiceImplTest {
 
             relations.setParent(parentRelation);
         }
-        
+
         @Test
         void shallIncludeParentCertificateId() {
             final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
