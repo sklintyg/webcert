@@ -74,7 +74,7 @@ public class QuestionConverterImpl implements QuestionConverter {
                 Answer.builder()
                     .id(answer.getMeddelandeId())
                     .message(answer.getMeddelande())
-                    .author(answer.getVardaktorName())
+                    .author(getAuthor(answer))
                     .sent(answer.getSkickatTidpunkt())
                     .build()
             )
