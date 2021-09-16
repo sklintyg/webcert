@@ -139,7 +139,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
             .thenReturn(new TakResult(true, Lists.emptyList()));
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(eq(SekretessStatus.FALSE));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 

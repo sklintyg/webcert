@@ -114,6 +114,9 @@
         <prop key="se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException">
           ${privatepractitioner.portal.registration.url}
         </prop>
+        <prop key="se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException">
+          /new-error.jsp?reason=auth-exception-subscription
+        </prop>
 
       </props>
     </property>
@@ -187,6 +190,7 @@
     <security:http security="none" pattern="/testability/anvandare/**"/>
     <security:http security="none" pattern="/testability/arendetest/**"/>
     <security:http security="none" pattern="/testability/utkast/**"/>
+    <security:http security="none" pattern="/testability/config/**"/>
 
     <!--
       This enable access to the HSA service stub

@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP;
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
+import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.OK;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,14 +45,18 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
+import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -73,6 +81,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private PPService ppService;
 
     @Autowired
+    private PPRestService ppRestService;
+
+    @Autowired
     private PUService puService;
 
     @Autowired
@@ -89,6 +100,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired(required = false)
     private Optional<UserOrigin> userOrigin;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
@@ -108,20 +122,117 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     // - - - - - Default scope - - - - -
 
     protected WebCertUser createUser(SAMLCredential samlCredential) {
+        final var personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+        final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
+        redirectUnregisteredUsers(personId, ppAuthStatus);
 
-        String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+        final var hosPerson = getAuthorizedHosPerson(personId);
+        final var requestOrigin = resolveRequestOrigin();
+        final var role = lookupUserRole();
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
+        assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
 
-        assertHosPersonIsAuthorized(personId);
+        return webCertUser;
+    }
 
+    private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+
+        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+            redirectWhenNoActiveSubscriptionFeatures(personId, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionAdaptation()) {
+            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionRequired()) {
+            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
+        }
+    }
+
+    private void redirectWhenNoActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == NO_ACCOUNT) {
+            throw privatePractitionerAuthorizationException(hashed(personId));
+        }
+    }
+
+    private void redirectWhenActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == NO_ACCOUNT) {
+            final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
+            if (hasSubscription) {
+                throw privatePractitionerAuthorizationException(hashed(personId));
+            }
+            throw missingSubscriptionException(hashed(personId));
+        }
+    }
+
+    private void assertWebCertUserIsAuthorized(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+
+        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
+            authorizeWhenNoActiveSubscriptionFeatures(webCertUser, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionAdaptation()) {
+            authorizeWhenSubscriptionAdaptation(webCertUser, ppAuthStatus);
+            return;
+        }
+        if (subscriptionService.isSubscriptionRequired()) {
+            authorizeWhenSubscriptionRequired(webCertUser, ppAuthStatus);
+        }
+    }
+
+    private void authorizeWhenNoActiveSubscriptionFeatures(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        if (ppAuthStatus == OK) {
+            return;
+        }
+        throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+    }
+
+    private void authorizeWhenSubscriptionAdaptation(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+        final var acceptedTerms = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
+
+        if (ppAuthStatus == OK && (acceptedTerms || hasSubscription)) {
+            return;
+        }
+        if (ppAuthStatus == NOT_AUTHORIZED_IN_HOSP && (acceptedTerms || hasSubscription)) {
+            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+        }
+        throw missingSubscriptionException(webCertUser.getHsaId());
+    }
+
+    private void authorizeWhenSubscriptionRequired(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
+        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+
+        if (ppAuthStatus == OK && hasSubscription) {
+            return;
+        }
+        if (hasSubscription) {
+            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
+        }
+        throw missingSubscriptionException(webCertUser.getHsaId());
+    }
+
+    private String hashed(String personId) {
+        return Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
+    }
+
+    private PrivatePractitionerAuthorizationException privatePractitionerAuthorizationException(String hashedPersonIdOrHsaId) {
+        return new PrivatePractitionerAuthorizationException("User '" + hashedPersonIdOrHsaId + "' is not authorized to access webcert "
+            + "according to private practitioner portal");
+    }
+
+    private MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {
+        return new MissingSubscriptionException("Private practitioner '" + hashedPersonIdOrHsaId + "' was denied access to Webcert due to "
+            + "missing subscription.");
+    }
+
+    private HoSPersonType getAuthorizedHosPerson(String personId) {
         HoSPersonType hosPerson = getHosPerson(personId);
         if (hosPerson == null) {
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
-
-        // Lookup user's role
-        Role role = lookupUserRole();
-
-        return createWebCertUser(hosPerson, role, samlCredential);
+        return hosPerson;
     }
 
     /*
@@ -132,34 +243,23 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
-    // - - - - - Private scope - - - - -
-
-    private void assertHosPersonIsAuthorized(String personId) {
-        boolean authorized = ppService.validatePrivatePractitioner(logicalAddress, null, personId);
-        if (!authorized) {
-            // Throw exception that spring-security can pick up and redirect user to privatläkarportalen
-            throw new PrivatePractitionerAuthorizationException(
-                "User is not authorized to access webcert according to private practitioner portal");
-        }
-    }
-
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
-
-        if (!userOrigin.isPresent()) {
+    private String resolveRequestOrigin() {
+        if (userOrigin.isEmpty()) {
             throw new IllegalStateException("No WebCertUserOrigin present, cannot login user.");
         }
-        String requestOrigin = userOrigin.get().resolveOrigin(getCurrentRequest());
+        final var requestOrigin = userOrigin.get().resolveOrigin(getCurrentRequest());
+        return getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName();
+    }
 
-        // Create the WebCert user object injection user's privileges
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role, SAMLCredential samlCredential) {
         WebCertUser user = new WebCertUser();
 
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setRoles(AuthoritiesResolverUtil.toMap(lookupUserRole()));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
         // Set application mode / request origin
-        user.setOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName());
+        user.setOrigin(requestOrigin);
 
-        user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
         user.setNamn(hosPerson.getFullstandigtNamn());
@@ -177,7 +277,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
+        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
         return user;
+    }
+
+    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(HoSPersonType hosPerson, WebCertUser user) {
+        final var userTermsApprovedOrSubscriptionInUse = subscriptionService.isAnySubscriptionFeatureActive()
+            || avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension());
+        user.setUserTermsApprovedOrSubscriptionInUse(userTermsApprovedOrSubscriptionInUse);
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {

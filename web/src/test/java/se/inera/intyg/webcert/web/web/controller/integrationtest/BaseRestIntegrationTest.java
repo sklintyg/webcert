@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -88,17 +89,20 @@ public abstract class BaseRestIntegrationTest {
     protected static String csrfToken;
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
-        "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
+        "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.NORMAL.name()).build();
 
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
-        "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
+        "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.NORMAL.name()).build();
 
 
     /**
      * Has multiple vardenheter.
      */
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-        "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
+        "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.NORMAL.name()).build();
+
+    protected static FakeCredentials STAFFAN_STAFETT = new FakeCredentials.FakeCredentialsBuilder("staffan", "")
+        .legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.NORMAL.name()).build();
 
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
 
