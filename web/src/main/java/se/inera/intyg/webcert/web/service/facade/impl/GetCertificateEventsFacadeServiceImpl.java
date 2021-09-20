@@ -93,6 +93,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         addEventForChildRelation(events, childRelations.getReplacedByUtkast(), CertificateEventTypeDTO.REPLACED, certificateId);
         addEventForChildRelation(events, childRelations.getReplacedByIntyg(), CertificateEventTypeDTO.REPLACED, certificateId);
         addEventForChildRelation(events, childRelations.getUtkastCopy(), CertificateEventTypeDTO.COPIED_BY, certificateId);
+        addEventForChildRelation(events, childRelations.getComplementedByIntyg(), CertificateEventTypeDTO.COMPLEMENTED, certificateId);
     }
 
     private void addEventForChildRelation(List<CertificateEventDTO> events, WebcertCertificateRelation relation,

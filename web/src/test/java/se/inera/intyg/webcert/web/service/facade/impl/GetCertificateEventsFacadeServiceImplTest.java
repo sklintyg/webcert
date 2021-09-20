@@ -720,63 +720,76 @@ class GetCertificateEventsFacadeServiceImplTest {
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class ComplementedEvent {
+    class ComplementedCertificateEvent {
 
-        private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-        private WebcertCertificateRelation parentRelation;
+        private static final String CHILD_CERTIFICATE_ID = "ChildCertificateId";
+        private WebcertCertificateRelation childRelation;
 
         @BeforeEach
         void setup() {
-            certificateEvent.setEventCode(EventCode.KOMPLETTERAR);
+            certificateEvents.clear();
 
-            parentRelation = new WebcertCertificateRelation(
-                PARENT_CERTIFICATE_ID,
-                RelationKod.FRLANG,
+            childRelation = new WebcertCertificateRelation(
+                CHILD_CERTIFICATE_ID,
+                RelationKod.KOMPLT,
                 LocalDateTime.now(),
                 UtkastStatus.SIGNED,
                 false);
 
-            relations.setParent(parentRelation);
+            final var latestChildRelation = new FrontendRelations();
+            latestChildRelation.setComplementedByIntyg(childRelation);
+
+            relations.setLatestChildRelations(latestChildRelation);
         }
 
         @Test
-        void shallIncludeParentCertificateId() {
+        void shallIncludeChildCertificateId() {
             final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
 
-            assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+            assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
         }
 
-        Stream<Arguments> parentStatuses() {
+        @Test
+        void shallIncludeTimestampFromChild() {
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
+        }
+
+        @Test
+        void shallIncludeTypeOfComplemented() {
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            assertEquals(CertificateEventTypeDTO.COMPLEMENTED, actualEvents[0].getType());
+        }
+
+        Stream<Arguments> childStatuses() {
             return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED)
             );
         }
 
         @ParameterizedTest
-        @MethodSource("parentStatuses")
+        @MethodSource("childStatuses")
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-            relations.getParent().setStatus(parentStatus);
+            relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
 
             final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
 
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> parentRevokedStatuses() {
+        Stream<Arguments> childRevokedStatuses() {
             return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED)
             );
         }
 
         @ParameterizedTest
-        @MethodSource("parentRevokedStatuses")
+        @MethodSource("childRevokedStatuses")
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-            relations.getParent().setStatus(parentStatus);
-            relations.getParent().setMakulerat(true);
+            relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
+            relations.getLatestChildRelations().getComplementedByIntyg().setMakulerat(true);
 
             final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
 
