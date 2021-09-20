@@ -204,6 +204,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
             case PAMINNELSE:
                 return CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER;
+            case KOMPLETTERAR:
+                return CertificateEventTypeDTO.COMPLEMENTED;
             default:
                 throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
         }
@@ -233,7 +235,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         final var eventTypesToDecorateWithParent = Arrays.asList(
             CertificateEventTypeDTO.REPLACES,
             CertificateEventTypeDTO.EXTENDED,
-            CertificateEventTypeDTO.COPIED_FROM
+            CertificateEventTypeDTO.COPIED_FROM,
+            CertificateEventTypeDTO.COMPLEMENTED
         );
         return eventTypesToDecorateWithParent.contains(eventType);
     }
