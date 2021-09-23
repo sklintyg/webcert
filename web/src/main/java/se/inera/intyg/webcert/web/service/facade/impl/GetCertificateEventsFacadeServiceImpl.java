@@ -93,6 +93,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         addEventForChildRelation(events, childRelations.getReplacedByUtkast(), CertificateEventTypeDTO.REPLACED, certificateId);
         addEventForChildRelation(events, childRelations.getReplacedByIntyg(), CertificateEventTypeDTO.REPLACED, certificateId);
         addEventForChildRelation(events, childRelations.getUtkastCopy(), CertificateEventTypeDTO.COPIED_BY, certificateId);
+        addEventForChildRelation(events, childRelations.getComplementedByUtkast(), CertificateEventTypeDTO.COMPLEMENTED, certificateId);
         addEventForChildRelation(events, childRelations.getComplementedByIntyg(), CertificateEventTypeDTO.COMPLEMENTED, certificateId);
     }
 
@@ -206,7 +207,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
             case PAMINNELSE:
                 return CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER;
             case KOMPLETTERAR:
-                return CertificateEventTypeDTO.COMPLEMENTED;
+                return CertificateEventTypeDTO.COMPLEMENTS;
             default:
                 throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
         }
@@ -237,7 +238,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
             CertificateEventTypeDTO.REPLACES,
             CertificateEventTypeDTO.EXTENDED,
             CertificateEventTypeDTO.COPIED_FROM,
-            CertificateEventTypeDTO.COMPLEMENTED
+            CertificateEventTypeDTO.COMPLEMENTS
         );
         return eventTypesToDecorateWithParent.contains(eventType);
     }
