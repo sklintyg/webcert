@@ -130,7 +130,7 @@ public class QuestionConverterImpl implements QuestionConverter {
     }
 
     private String getAuthor(Arende arende) {
-        if (arende.getSkickatAv().equalsIgnoreCase("FK")) {
+        if (arende.getSkickatAv() != null && arende.getSkickatAv().equalsIgnoreCase("FK")) {
             return "Försäkringskassan";
         }
         return arende.getVardaktorName();
