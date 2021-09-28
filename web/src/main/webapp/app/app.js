@@ -280,7 +280,7 @@
             } else {
               if (!redirectToUnitSelection(event, toState)) {
                 checkAndLogConnectivity(toState);
-                termsCheck(event, toState);
+                //termsCheck(event, toState);
                 subscriptionWarning(event, toState, fromState);
                 preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
