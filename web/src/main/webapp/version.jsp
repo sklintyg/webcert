@@ -47,6 +47,10 @@
         <span class="label label-info"><spring:message code="project.version" /></span>
       </div>
       <div>
+        Build number:
+        <span class="label label-info"><spring:message code="buildNumber" /></span>
+      </div>
+      <div>
         Build time:
         <span class="label label-info"><spring:message code="buildTime" /></span>
       </div>
