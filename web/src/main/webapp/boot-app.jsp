@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
@@ -35,9 +36,13 @@
 
 <!-- bower:css -->
 <!-- endbower -->
-<link rel="stylesheet" href="/app/webcert.css?<spring:message code="buildNumber" />"
+<spring:message code="project.version" var="buildVersion" />
+<c:set var="buildVersionNoDot" value="${fn:replace(buildVersion, '.', '')}" />
+<c:set var="buildVersionNoDotOrDash" value="${fn:replace(buildVersionNoDot, '-', '')}" />
+
+<link rel="stylesheet" href="/app/webcert.css?cacheSlayer=${buildVersionNoDotOrDash}"
       media="screen">
-<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />"
+<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?cacheSlayer=${buildVersionNoDotOrDash}"
       media="screen">
 
 </head>
@@ -74,8 +79,8 @@
       <script type="text/javascript">
           var WEBCERT_DEBUG_MODE = false;
       </script>
-      <script type="text/javascript" src="/app/vendor.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/app/vendor.min.js?cacheSlayer=${buildVersionNoDotOrDash}"></script>
+      <script type="text/javascript" src="/app/app.min.js?cacheSlayer=${buildVersionNoDotOrDash}"></script>
     </c:when>
     <c:otherwise>
       <script type="text/javascript">
