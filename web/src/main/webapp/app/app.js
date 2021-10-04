@@ -280,7 +280,7 @@
             } else {
               if (!redirectToUnitSelection(event, toState)) {
                 checkAndLogConnectivity(toState);
-                termsCheck(event, toState);
+                //termsCheck(event, toState);
                 subscriptionWarning(event, toState, fromState);
                 preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
@@ -340,7 +340,7 @@
         }
       }
 
-      function termsCheck(event, toState) {
+      /*function termsCheck(event, toState) {
           // check terms if not accepted then always redirect
           if (toState.name !== 'webcert.terms') {
             UserModel.transitioning = false;
@@ -350,7 +350,7 @@
             UserModel.transitioning = true;
             $state.transitionTo('webcert.terms');
           }
-      }
+      }*/
 
       function redirectToUnitSelection(event, toState) {
         if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
