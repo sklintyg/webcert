@@ -25,6 +25,11 @@ import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUN
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11;
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_DELSVAR_ID_31;
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_SVAR_JSON_ID_31;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.NO_ID;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ONSKAR_FORMEDLA_DIAGNOS_SVAR_ID_100;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +40,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -44,6 +50,7 @@ import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCode;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
@@ -199,6 +206,10 @@ public class CreateCertificateTestabilityUtil {
             return createMinimumValuesAf00213();
         }
 
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID)) {
+            return createMinimumValuesAg7804();
+        }
+
         return Collections.emptyMap();
     }
 
@@ -261,6 +272,37 @@ public class CreateCertificateTestabilityUtil {
             .selected(false)
             .build();
         values.put(ARBETETS_PAVERKAN_DELSVAR_ID_41, harArbetspaverkan);
+
+        return values;
+    }
+
+    private Map<String, CertificateDataValue> createMinimumValuesAg7804() {
+        final var values = new HashMap<String, CertificateDataValue>();
+
+        final CertificateDataValueBoolean avstangningSmittskydd = CertificateDataValueBoolean.builder()
+            .id(AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27)
+            .selected(true)
+            .build();
+        values.put(AVSTANGNING_SMITTSKYDD_SVAR_ID_27, avstangningSmittskydd);
+
+        final CertificateDataValueCode shouldIncludeDiagnoses = CertificateDataValueCode.builder()
+            .code(NO_ID)
+            .id(NO_ID)
+            .build();
+        values.put(ONSKAR_FORMEDLA_DIAGNOS_SVAR_ID_100, shouldIncludeDiagnoses);
+
+        final var bedomning = CertificateDataValueDateRangeList.builder()
+            .list(
+                Collections.singletonList(
+                    CertificateDataValueDateRange.builder()
+                        .id("HELT_NEDSATT")
+                        .from(LocalDate.now())
+                        .to(LocalDate.now().plusDays(DEFAULT_SICK_LEAVE_LENGTH))
+                        .build()
+                )
+            )
+            .build();
+        values.put(BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         return values;
     }
