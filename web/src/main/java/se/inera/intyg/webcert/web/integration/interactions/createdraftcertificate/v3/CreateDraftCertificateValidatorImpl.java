@@ -111,5 +111,4 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
             validateBusinessRulesForSekretessmarkeradPatient(errors, personnummer, intygsTyp, user);
         }
     }
-
 }

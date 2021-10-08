@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -124,6 +125,9 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     @Mock
     protected CertificateAccessServiceHelper certificateAccessServiceHelper;
 
+    @Mock
+    protected IntygTextsService intygTextsService;
+
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
 
@@ -149,6 +153,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 
     protected CertificateMetaData buildCertificateMetaData() {

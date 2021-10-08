@@ -19,17 +19,32 @@
 
 package se.inera.intyg.webcert.integration.kundportalen.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @ComponentScan(basePackages = "se.inera.intyg.webcert.integration.kundportalen.service")
 public class RestConfig {
 
+    @Value("${kundportalen.connection.request.timeout}")
+    private int connectionRequestTimeout;
+
+    @Value("${kundportalen.connection.timeout}")
+    private int connectionTimeout;
+
+    @Value("${kundportalen.read.timeout}")
+    private int readTimeout;
+
     @Bean(name = "subscriptionServiceRestTemplate")
     RestTemplate restTemplate() {
-        return new RestTemplate();
+        final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
+        httpRequestFactory.setConnectTimeout(connectionTimeout);
+        httpRequestFactory.setReadTimeout(readTimeout);
+        return new RestTemplate(httpRequestFactory);
     }
 }
