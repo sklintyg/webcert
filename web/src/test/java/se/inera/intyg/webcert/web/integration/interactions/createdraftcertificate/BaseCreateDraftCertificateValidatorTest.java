@@ -79,8 +79,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
 
-        when(authoritiesHelper.getIntygstyperAllowedForAvliden())
-            .thenReturn(Arrays.asList(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
+        when(authoritiesHelper.getIntygstyperAllowedForAvliden()).thenReturn(Arrays.asList(DoiModuleEntryPoint.MODULE_ID));
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
             .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);

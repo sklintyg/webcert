@@ -17,7 +17,7 @@
         clear: left;
         margin-top: 0;
       }
-      span, a.internal{
+      span > a.internal{
         .material-icons {
           font-size: 16px;
         }
