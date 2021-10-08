@@ -39,6 +39,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -221,6 +222,9 @@ public class IntygServiceTest {
     @Mock
     IntegrationParameters intParam;
 
+    @Mock
+    private IntygTextsService intygTextsService;
+
     @InjectMocks
     private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
 
@@ -323,8 +327,8 @@ public class IntygServiceTest {
         typAvIntyg.setCode(CERTIFICATE_TYPE);
         typeInfo.setTyp(typAvIntyg);
         typeInfo.setTypVersion(CERTIFICATE_TYPE_VERSION_1_0);
-        when(getCertificateTypeInfoService.getCertificateTypeInfo(anyString(),
-            any(GetCertificateTypeInfoType.class))).thenReturn(typeInfo);
+        when(getCertificateTypeInfoService.getCertificateTypeInfo(anyString(), any(GetCertificateTypeInfoType.class))).thenReturn(typeInfo);
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 
     @Before
@@ -1494,6 +1498,27 @@ public class IntygServiceTest {
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
         verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
         assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
+    }
+
+    @Test
+    public void shouldSetIsLatestMajorTextVersionWhenCertificateFromIntygstjanst() {
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(false);
+
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        assertFalse(intygData.isLatestMajorTextVersion());
+    }
+
+    @Test
+    public void shouldSetIsLatestMajorTextVersionWhenCertificateFromWebcert() throws IntygModuleFacadeException, IOException {
+        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(false);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenThrow(new IntygModuleFacadeException(""));
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(getIntyg(CERTIFICATE_ID,
+            LocalDateTime.now(), null));
+
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        assertFalse(intygData.isLatestMajorTextVersion());
     }
 
     private IntygPdf buildPdfDocument() {

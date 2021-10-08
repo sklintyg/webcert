@@ -64,7 +64,9 @@ public abstract class IntygContentHolder {
 
     public abstract boolean isPatientAddressChangedInPU();
 
-    public abstract  boolean isTestIntyg();
+    public abstract boolean isTestIntyg();
+
+    public abstract boolean isLatestMajorTextVersion();
 
     private List<ActionLink> links = new ArrayList<>();
 
@@ -78,7 +80,8 @@ public abstract class IntygContentHolder {
 
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()
-            .setRelations(new Relations());
+            .setRelations(new Relations())
+            .setLatestMajorTextVersion(true);
     }
 
     @AutoValue.Builder
@@ -107,6 +110,8 @@ public abstract class IntygContentHolder {
         public abstract Builder setPatientAddressChangedInPU(boolean patientAddressChangedInPU);
 
         public abstract Builder setTestIntyg(boolean isTestIntyg);
+
+        public abstract Builder setLatestMajorTextVersion(boolean isLatestMajorTextVersion);
     }
 
 }
