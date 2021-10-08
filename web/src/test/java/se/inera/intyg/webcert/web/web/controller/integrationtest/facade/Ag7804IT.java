@@ -174,7 +174,7 @@ public class Ag7804IT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            //certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
             final var certificateId = given()
                 .pathParam("certificateId", testSetup.certificateId())
@@ -182,7 +182,7 @@ public class Ag7804IT {
                 .when().post("api/certificate/{certificateId}/renew")
                 .then().extract().path("certificateId").toString();
 
-            //certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(certificateId);
 
             final var response = given()
                 .pathParam("certificateId", certificateId)
