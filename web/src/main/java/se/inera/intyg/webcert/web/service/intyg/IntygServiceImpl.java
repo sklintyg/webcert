@@ -51,6 +51,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypei
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -198,6 +199,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
+
+    @Autowired
+    private IntygTextsService intygTextsService;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -900,6 +904,7 @@ public class IntygServiceImpl implements IntygService {
                 .setPatientNameChangedInPU(patientNameChanged)
                 .setPatientAddressChangedInPU(patientAddressChanged)
                 .setTestIntyg(utlatande.getGrundData().getPatient().isTestIndicator())
+                .setLatestMajorTextVersion(intygTextsService.isLatestMajorVersion(intygType, intygTypeVersion))
                 .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -980,6 +985,7 @@ public class IntygServiceImpl implements IntygService {
                 .setPatientNameChangedInPU(patientNameChanged)
                 .setPatientAddressChangedInPU(patientAddressChanged)
                 .setTestIntyg(utkast.isTestIntyg())
+                .setLatestMajorTextVersion(intygTextsService.isLatestMajorVersion(utlatande.getTyp(), utlatande.getTextVersion()))
                 .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {

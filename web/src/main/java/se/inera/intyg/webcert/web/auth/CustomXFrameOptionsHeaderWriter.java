@@ -39,23 +39,26 @@ public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
     @Autowired
     private WebCertUserService userService;
 
+    private static final String PDF_API_IDENTIFIER = "/pdf";
+
     @Override
     public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
 
-        if (shouldSkipHeader()) {
-            LOG.debug("Skipping  " + XFRAME_OPTIONS_HEADER + " header for request to " + request.getRequestURI());
+        final var requestUri = request.getRequestURI();
+
+        if (shouldSkipHeader(requestUri)) {
+            LOG.debug("Skipping  " + XFRAME_OPTIONS_HEADER + " header for request to " + requestUri);
         } else {
             response.addHeader(XFRAME_OPTIONS_HEADER, "DENY");
         }
     }
 
-    private boolean shouldSkipHeader() {
-        if (!userService.hasAuthenticationContext() || READONLY.name().equals(userService.getUser().getOrigin())) {
-            return true;
-        }
-        // Default is to add the header
-        return false;
-
+    private boolean shouldSkipHeader(String requestUri) {
+        return !userService.hasAuthenticationContext() || READONLY.name().equals(userService.getUser().getOrigin())
+            || isRequestForPdfApi(requestUri);
     }
 
+    private boolean isRequestForPdfApi(String requestUri) {
+        return requestUri.contains(PDF_API_IDENTIFIER);
+    }
 }

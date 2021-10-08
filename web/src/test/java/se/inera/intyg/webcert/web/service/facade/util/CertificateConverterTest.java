@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -39,6 +40,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -66,6 +68,9 @@ public class CertificateConverterTest {
 
     @Mock
     private CertificateRelationService certificateRelationService;
+
+    @Mock
+    private IntygTextsService intygTextsService;
 
     @InjectMocks
     private CertificateConverterImpl certificateConverter;
@@ -126,6 +131,15 @@ public class CertificateConverterTest {
             final var actualCertificate = certificateConverter.convert(draft);
 
             assertEquals(expectedTestCertificate, actualCertificate.getMetadata().isTestCertificate());
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shallIncludeLatestMajorVersion(boolean expectedLatestMajorVersion) {
+            doReturn(expectedLatestMajorVersion).when(intygTextsService).isLatestMajorVersion(any(), any());
+            final var actualCertificate = certificateConverter.convert(draft);
+
+            assertEquals(expectedLatestMajorVersion, actualCertificate.getMetadata().isLatestMajorVersion());
         }
     }
 

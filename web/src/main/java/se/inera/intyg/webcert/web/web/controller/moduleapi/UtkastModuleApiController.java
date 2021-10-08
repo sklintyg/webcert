@@ -449,8 +449,10 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setRevokedAt(utkast.getAterkalladDatum());
 
         // Upgrade to latest minor version available for major version of the intygtype
-        draftHolder.setLatestTextVersion(
-            intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
+        draftHolder.setLatestTextVersion(intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion()));
+
+        draftHolder.setLatestMajorTextVersion(intygTextsService.isLatestMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
 
         // Handle relations
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
