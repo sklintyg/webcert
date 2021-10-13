@@ -65,7 +65,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             return new IcfResponseDTO();
         }
 
-        return (convert(icfInternalData));
+        return convert(icfInternalData);
     }
 
     private IcfResponse getIcfData(IcfRequestDTO request) {

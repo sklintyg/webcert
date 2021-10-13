@@ -19,8 +19,11 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -31,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class IcfControllerTest {
@@ -39,7 +43,7 @@ public class IcfControllerTest {
     private IcfFacadeService icfFacadeService;
 
     @InjectMocks
-    private IcfController fmbController;
+    private IcfController icfController;
 
     @Nested
     class ValidateSickLeavePeriod {
@@ -49,10 +53,19 @@ public class IcfControllerTest {
         }
 
         @Test
-        void shallValidateSickLeavePeriod() {
+        void shallGetIcfInformation() {
             IcfRequestDTO request = new IcfRequestDTO();
-            fmbController.getQuestions(request);
+            icfController.getIcf(request);
             verify(icfFacadeService).getIcfInformation(any());
+        }
+
+        @Test
+        void shallReturnIcfInformation() {
+            when(icfFacadeService.getIcfInformation(any())).thenReturn(new IcfResponseDTO());
+            IcfRequestDTO request = new IcfRequestDTO();
+            final var response = icfController.getIcf(request);
+            assertEquals(response.getStatus(), 200);
+            assertTrue(response.getEntity() instanceof IcfResponseDTO);
         }
     }
 }

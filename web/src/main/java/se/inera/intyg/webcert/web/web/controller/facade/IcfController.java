@@ -44,7 +44,7 @@ public class IcfController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getQuestions(IcfRequestDTO request) {
+    public Response getIcf(IcfRequestDTO request) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));
         }
