@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -52,10 +53,14 @@ public class CertificateConverterImpl implements CertificateConverter {
 
     private final CertificateRelationService certificateRelationService;
 
+    private final IntygTextsService intygTextsService;
+
     @Autowired
-    public CertificateConverterImpl(IntygModuleRegistry moduleRegistry, CertificateRelationService certificateRelationService) {
+    public CertificateConverterImpl(IntygModuleRegistry moduleRegistry, CertificateRelationService certificateRelationService,
+        IntygTextsService intygTextsService) {
         this.moduleRegistry = moduleRegistry;
         this.certificateRelationService = certificateRelationService;
+        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -91,6 +96,11 @@ public class CertificateConverterImpl implements CertificateConverter {
 
         certificateToReturn.getMetadata().setRelations(
             getRelations(certificateToReturn.getMetadata().getId())
+        );
+
+        certificateToReturn.getMetadata().setLatestMajorVersion(
+            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
+                certificateToReturn.getMetadata().getTypeVersion())
         );
 
         return certificateToReturn;

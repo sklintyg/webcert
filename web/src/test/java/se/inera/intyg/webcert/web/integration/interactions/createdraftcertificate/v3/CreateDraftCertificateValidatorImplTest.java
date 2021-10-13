@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -44,6 +45,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidatorTest;
@@ -285,6 +287,46 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
         assertEquals(1, response.getErrorMessages().size());
         assertTrue(response.getErrorMessages().get(0).contains(certificateType));
+    }
+
+    @Test
+    public void shouldNotAddSecondErrorMessageWhenVardadminAndCertificateNotAllowedForSekretessmarkerad() throws ModuleNotFoundException {
+        final var user = buildUserUnauthorized();
+        user.getAuthorities().remove(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT);
+        final var certificateType = DbModuleEntryPoint.MODULE_ID;
+        final var certificateDisplayName = DbModuleEntryPoint.MODULE_NAME;
+        final var certificate = buildIntyg(certificateType, "lastName", "firstName",
+            "fullName", "unitId", "unitName", true);
+        final var mockEntryPoint = mock(DbModuleEntryPoint.class);
+
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>());
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        when(moduleRegistry.getModuleEntryPoint(certificateType)).thenReturn(mockEntryPoint);
+        when(mockEntryPoint.getModuleName()).thenReturn(certificateDisplayName);
+
+        final var response = validator.validateApplicationErrors(certificate, user);
+
+        assertEquals(1, response.getErrorMessages().size());
+    }
+
+    @Test
+    public void shouldReturnErrorWhenSekretessStatusUndefined() throws ModuleNotFoundException {
+        final var user = buildUserUnauthorized();
+        final var certificateType = Fk7263EntryPoint.MODULE_ID;
+        final var certificateDisplayName = Fk7263EntryPoint.MODULE_NAME;
+        final var certificate = buildIntyg(certificateType, "lastName", "firstName",
+            "fullName", "unitId", "unitName", true);
+        final var mockEntryPoint = mock(Fk7263EntryPoint.class);
+
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(moduleRegistry.getModuleEntryPoint(certificateType)).thenReturn(mockEntryPoint);
+        when(mockEntryPoint.getModuleName()).thenReturn(certificateDisplayName);
+
+        final var response = validator.validateApplicationErrors(certificate, user);
+
+        assertEquals(1, response.getErrorMessages().size());
     }
 
     private PersonSvar buildPersonSvar() {
