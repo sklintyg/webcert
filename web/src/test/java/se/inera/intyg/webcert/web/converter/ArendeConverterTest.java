@@ -126,7 +126,7 @@ public class ArendeConverterTest {
         utkast.setVardgivarNamn(vardgivareName);
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse(givenName, surname));
+        when(hsaEmployeeService.getEmployee(eq(null), eq(signeratAv))).thenReturn(createHsaResponse(givenName, surname));
 
         Arende res = new Arende();
         ArendeConverter.decorateArendeFromUtkast(res, utkast, now, hsaEmployeeService);
@@ -159,7 +159,7 @@ public class ArendeConverterTest {
         utkast.setIntygsTyp(intygTyp);
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse(givenName, surname));
+        when(hsaEmployeeService.getEmployee(eq(null), eq(signeratAv))).thenReturn(createHsaResponse(givenName, surname));
 
         Arende res = new Arende();
         ArendeConverter.decorateArendeFromUtkast(res, utkast, LocalDateTime.now(), hsaEmployeeService);
@@ -175,7 +175,7 @@ public class ArendeConverterTest {
         utkast.setEnhetsId("enhetsid");
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
-        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenThrow(new WebServiceException());
+        when(hsaEmployeeService.getEmployee(eq(null), anyString())).thenThrow(new WebServiceException());
         try {
             ArendeConverter.decorateArendeFromUtkast(new Arende(), utkast, LocalDateTime.now(), hsaEmployeeService);
             fail("Should throw");
@@ -191,7 +191,7 @@ public class ArendeConverterTest {
         utkast.setEnhetsId("enhetsid");
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
-        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenReturn(createHsaResponse(null, null));
+        when(hsaEmployeeService.getEmployee(eq(null), anyString())).thenReturn(createHsaResponse(null, null));
         try {
             ArendeConverter.decorateArendeFromUtkast(new Arende(), utkast, LocalDateTime.now(), hsaEmployeeService);
             fail("Should throw");
@@ -267,7 +267,7 @@ public class ArendeConverterTest {
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));
+        when(hsaEmployeeService.getEmployee(null, signeratAv)).thenReturn(createHsaResponse(givenName, surname));
 
         Arende res = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, hsaEmployeeService);
 
@@ -337,7 +337,7 @@ public class ArendeConverterTest {
         doReturn(careProvider).when(unit).getVardgivare();
         doReturn(careProviderName).when(careProvider).getVardgivarnamn();
 
-        when(hsaEmployeeService.getEmployee(signedBy, null)).thenReturn(createHsaResponse(givenName, surname));
+        when(hsaEmployeeService.getEmployee(null, signedBy)).thenReturn(createHsaResponse(givenName, surname));
 
         Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName, hsaEmployeeService);
 
@@ -436,19 +436,14 @@ public class ArendeConverterTest {
     public void getNamesByHsaIds() {
         String id1 = "not_found";
         String id2 = "foundId";
+        final var givenName = "Test";
+        final var surname = "Testorsson Svensson";
 
         List<String> hsaIds = Arrays.asList(id1, id2);
 
-        when(hsaEmployeeService.getEmployee(eq(id1), any())).thenThrow(WebServiceException.class);
+        when(hsaEmployeeService.getEmployee(eq(null), eq(id1))).thenThrow(WebServiceException.class);
 
-        when(hsaEmployeeService.getEmployee(eq(id2), any())).thenAnswer(invocation -> {
-            PersonInformation personInformation = new PersonInformation();
-            personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
-
-            List<PersonInformation> personInformationTypeList = new ArrayList<>();
-            personInformationTypeList.add(personInformation);
-            return personInformationTypeList;
-        });
+        when(hsaEmployeeService.getEmployee(eq(null), eq(id2))).thenReturn(createHsaResponse(givenName, surname));
 
         Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
 
