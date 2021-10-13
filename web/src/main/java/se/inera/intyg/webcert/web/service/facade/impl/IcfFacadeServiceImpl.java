@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.icf.IcdCode;
-import se.inera.intyg.common.support.facade.model.icf.Icf;
+import se.inera.intyg.common.support.facade.model.icf.AvailableIcfCodes;
+import se.inera.intyg.common.support.facade.model.icf.Icd10Code;
 import se.inera.intyg.common.support.facade.model.icf.IcfCode;
-import se.inera.intyg.common.support.facade.model.icf.IcfIcd;
+import se.inera.intyg.common.support.facade.model.icf.IcfCodeCollection;
 import se.inera.intyg.common.support.modules.service.WebcertModuleService;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.service.fmb.icf.IcfService;
@@ -85,7 +85,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
         final var result = new IcfResponseDTO();
 
         result.setActivityLimitation(
-            Icf.builder()
+            AvailableIcfCodes.builder()
                 .commonCodes(
                     getActivityLimitationCommonCodes(response)
                 )
@@ -96,7 +96,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
         );
 
         result.setDisability(
-            Icf.builder()
+            AvailableIcfCodes.builder()
                 .commonCodes(
                     getDisabilityCommonCodes(response)
                 )
@@ -109,29 +109,29 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
         return result;
     }
 
-    private IcfIcd getDisabilityCommonCodes(IcfResponse response) {
+    private IcfCodeCollection getDisabilityCommonCodes(IcfResponse response) {
         if (response.getGemensamma() == null) {
-            return IcfIcd.builder().build();
+            return IcfCodeCollection.builder().build();
         }
 
         return getCommonCodes(response.getGemensamma().getFunktionsNedsattningsKoder());
     }
 
-    private IcfIcd getActivityLimitationCommonCodes(IcfResponse response) {
+    private IcfCodeCollection getActivityLimitationCommonCodes(IcfResponse response) {
         if (response.getGemensamma() == null) {
-            return IcfIcd.builder().build();
+            return IcfCodeCollection.builder().build();
         }
 
         return getCommonCodes(response.getGemensamma().getAktivitetsBegransningsKoder());
     }
 
-    private IcfIcd getCommonCodes(IcfKoder icfKoder) {
+    private IcfCodeCollection getCommonCodes(IcfKoder icfKoder) {
         if (icfKoder == null) {
-            return IcfIcd.builder().build();
+            return IcfCodeCollection.builder().build();
         }
 
-        return IcfIcd.builder()
-            .icdCodes(
+        return IcfCodeCollection.builder()
+            .icd10Codes(
                 icfKoder.getIcd10Koder().stream().map(this::getIcdCode).collect(Collectors.toList())
             )
             .icfCodes(
@@ -140,15 +140,15 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             .build();
     }
 
-    private List<IcfIcd> getDisabilityUniqueCodes(IcfResponse response) {
+    private List<IcfCodeCollection> getDisabilityUniqueCodes(IcfResponse response) {
         if (response.getUnika() == null) {
             return Collections.emptyList();
         }
 
         return response.getUnika().stream()
             .map(icfDiagnoskodResponse ->
-                IcfIcd.builder()
-                    .icdCodes(
+                IcfCodeCollection.builder()
+                    .icd10Codes(
                         List.of(
                             getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
                         )
@@ -160,15 +160,15 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             .collect(Collectors.toList());
     }
 
-    private List<IcfIcd> getActivityLimitationUniqueCodes(IcfResponse response) {
+    private List<IcfCodeCollection> getActivityLimitationUniqueCodes(IcfResponse response) {
         if (response.getUnika() == null) {
             return Collections.emptyList();
         }
 
         return response.getUnika().stream()
             .map(icfDiagnoskodResponse ->
-                IcfIcd.builder()
-                    .icdCodes(
+                IcfCodeCollection.builder()
+                    .icd10Codes(
                         List.of(
                             getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
                         )
@@ -192,8 +192,8 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
             ).collect(Collectors.toList());
     }
 
-    private IcdCode getIcdCode(String icd10Code) {
-        return IcdCode.builder()
+    private Icd10Code getIcdCode(String icd10Code) {
+        return Icd10Code.builder()
             .title(getDiagnosisTitle(icd10Code))
             .code(icd10Code)
             .build();

@@ -19,26 +19,26 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.common.support.facade.model.icf.Icf;
+import se.inera.intyg.common.support.facade.model.icf.AvailableIcfCodes;
 
 public class IcfResponseDTO {
 
-    private Icf disability;
-    private Icf activityLimitation;
+    private AvailableIcfCodes disability;
+    private AvailableIcfCodes activityLimitation;
 
-    public void setDisability(Icf disability) {
+    public void setDisability(AvailableIcfCodes disability) {
         this.disability = disability;
     }
 
-    public void setActivityLimitation(Icf activityLimitation) {
+    public void setActivityLimitation(AvailableIcfCodes activityLimitation) {
         this.activityLimitation = activityLimitation;
     }
 
-    public Icf getDisability() {
+    public AvailableIcfCodes getDisability() {
         return disability;
     }
 
-    public Icf getActivityLimitation() {
+    public AvailableIcfCodes getActivityLimitation() {
         return activityLimitation;
     }
 }

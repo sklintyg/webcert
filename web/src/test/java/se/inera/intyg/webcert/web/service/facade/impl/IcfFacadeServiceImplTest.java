@@ -116,7 +116,7 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getGemensamma().getAktivitetsBegransningsKoder().getIcd10Koder().size(),
-                actual.getDisability().getCommonCodes().getIcdCodes().size());
+                actual.getDisability().getCommonCodes().getIcd10Codes().size());
         }
 
         @Test
@@ -132,7 +132,7 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getGemensamma().getFunktionsNedsattningsKoder().getIcd10Koder().size(),
-                actual.getDisability().getCommonCodes().getIcdCodes().size());
+                actual.getDisability().getCommonCodes().getIcd10Codes().size());
 
         }
 
@@ -143,7 +143,7 @@ class IcfFacadeServiceImplTest {
                 .getDescriptionFromDiagnosKod(any(), any());
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
-            assertEquals(icdTitle, actual.getDisability().getCommonCodes().getIcdCodes().get(0).getTitle());
+            assertEquals(icdTitle, actual.getDisability().getCommonCodes().getIcd10Codes().get(0).getTitle());
         }
 
         @Test
@@ -153,7 +153,7 @@ class IcfFacadeServiceImplTest {
                 .getDescriptionFromDiagnosKod(any(), any());
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
-            assertEquals(icdCode, actual.getDisability().getCommonCodes().getIcdCodes().get(0).getCode());
+            assertEquals(icdCode, actual.getDisability().getCommonCodes().getIcd10Codes().get(0).getCode());
         }
 
         @Test
@@ -260,7 +260,7 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getUnika().get(0).getAktivitetsBegransningsKoder().getIcd10Koder().size(),
-                actual.getDisability().getUniqueCodes().get(0).getIcdCodes().size());
+                actual.getDisability().getUniqueCodes().get(0).getIcd10Codes().size());
         }
 
         @Test
@@ -276,7 +276,7 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getUnika().get(0).getFunktionsNedsattningsKoder().getIcd10Koder().size(),
-                actual.getDisability().getUniqueCodes().get(0).getIcdCodes().size());
+                actual.getDisability().getUniqueCodes().get(0).getIcd10Codes().size());
 
         }
 
@@ -287,7 +287,7 @@ class IcfFacadeServiceImplTest {
                 .getDescriptionFromDiagnosKod(any(), any());
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
-            assertEquals(icdTitle, actual.getDisability().getUniqueCodes().get(0).getIcdCodes().get(0).getTitle());
+            assertEquals(icdTitle, actual.getDisability().getUniqueCodes().get(0).getIcd10Codes().get(0).getTitle());
         }
 
         @Test
@@ -297,7 +297,7 @@ class IcfFacadeServiceImplTest {
                 .getDescriptionFromDiagnosKod(any(), any());
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
-            assertEquals(icdCode, actual.getDisability().getUniqueCodes().get(0).getIcdCodes().get(0).getCode());
+            assertEquals(icdCode, actual.getDisability().getUniqueCodes().get(0).getIcd10Codes().get(0).getCode());
         }
 
         @Test
@@ -432,7 +432,7 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getUnika().get(0).getFunktionsNedsattningsKoder().getIcd10Koder().size(),
-                actual.getDisability().getUniqueCodes().get(0).getIcdCodes()
+                actual.getDisability().getUniqueCodes().get(0).getIcd10Codes()
                     .size());
         }
 
@@ -451,9 +451,9 @@ class IcfFacadeServiceImplTest {
             final var actual = icfFacadeService.getIcfInformation(createRequestDTO());
 
             assertEquals(icfResponse.getUnika().get(0).getIcd10Kod(),
-                actual.getDisability().getUniqueCodes().get(0).getIcdCodes().get(0).getCode());
+                actual.getDisability().getUniqueCodes().get(0).getIcd10Codes().get(0).getCode());
             assertEquals(icfResponse.getUnika().get(1).getIcd10Kod(),
-                actual.getDisability().getUniqueCodes().get(1).getIcdCodes().get(0).getCode());
+                actual.getDisability().getUniqueCodes().get(1).getIcd10Codes().get(0).getCode());
         }
 
         IcfRequestDTO createRequestDTO() {
