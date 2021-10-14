@@ -99,6 +99,18 @@ class UserServiceImplTest {
             doReturn(ROLE)
                 .when(user)
                 .getRoleTypeName();
+
+            doReturn(HSA_ID)
+                .when(
+                    user.getValdVardenhet()
+                        .getId()
+                );
+
+            doReturn(HSA_ID)
+                .when(
+                    user.getValdVardgivare()
+                        .getId()
+                );
         }
 
         @Test
@@ -114,15 +126,27 @@ class UserServiceImplTest {
         }
 
         @Test
-        void shallReturnWithLoggedInUnit() {
+        void shallReturnWithLoggedInUnitName() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInUnit());
+            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInUnit().getUnitName());
         }
 
         @Test
-        void shallReturnWithLoggedInCareProvider() {
+        void shallReturnWithLoggedInUnitUnitId() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider());
+            assertEquals(HSA_ID, actualUser.getLoggedInUnit().getUnitId());
+        }
+
+        @Test
+        void shallReturnWithLoggedInCareProviderName() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider().getUnitName());
+        }
+
+        @Test
+        void shallReturnWithLoggedInCareProviderUnitId() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(HSA_ID, actualUser.getLoggedInCareProvider().getUnitId());
         }
     }
 

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
@@ -45,8 +46,26 @@ public class UserServiceImpl implements UserService {
             .hsaId(webCertUser.getHsaId())
             .name(webCertUser.getNamn())
             .role(getRole(webCertUser))
-            .loggedInUnit(webCertUser.getValdVardenhet().getNamn())
-            .loggedInCareProvider(webCertUser.getValdVardgivare().getNamn())
+            .loggedInUnit(
+                Unit.builder()
+                    .unitName(
+                        webCertUser.getValdVardenhet().getNamn()
+                    )
+                    .unitId(
+                        webCertUser.getValdVardenhet().getId()
+                    )
+                    .build()
+            )
+            .loggedInCareProvider(
+                Unit.builder()
+                    .unitName(
+                        webCertUser.getValdVardgivare().getNamn()
+                    )
+                    .unitId(
+                        webCertUser.getValdVardgivare().getId()
+                    )
+                    .build()
+            )
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .build();
     }
