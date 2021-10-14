@@ -58,6 +58,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
@@ -990,6 +992,31 @@ public class LisjpIT {
 
             assertAll(
                 () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return icf request with icf codes")
+        void shallReturnIcfRequestWithIcfCodes() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var icd10Codes = new String[]{"A02"};
+            final IcfRequestDTO icfRequestDTO = new IcfRequestDTO();
+            icfRequestDTO.setIcdCodes(icd10Codes);
+
+            final var response = given()
+                .contentType(ContentType.JSON)
+                .body(icfRequestDTO)
+                .expect().statusCode(200)
+                .when()
+                .post("api/icf")
+                .then().extract().response().as(IcfResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertTrue(response.getActivityLimitation().getUniqueCodes().size() > 0),
+                () -> assertTrue(response.getDisability().getUniqueCodes().size() > 0)
             );
         }
     }
