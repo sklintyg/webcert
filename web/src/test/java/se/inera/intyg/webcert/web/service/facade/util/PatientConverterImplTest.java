@@ -146,7 +146,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetIsReserveIdIfExistsInIntegrationParameters() {
+        public void shallSetReserveIdIfExistsInIntegrationParameters() {
             final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
             parameters.setBeforeAlternateSsn(RESERVE_NUMBER);
             user.setParameters(parameters);
@@ -155,7 +155,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetIsReserveIdIfNotInIntegrationParameters() {
+        public void shallNotSetReserveIdIfNotInIntegrationParameters() {
             final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
