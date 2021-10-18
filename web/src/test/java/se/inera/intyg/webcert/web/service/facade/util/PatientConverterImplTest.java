@@ -130,36 +130,68 @@ class PatientConverterImplTest {
     class PatientStatuses {
 
         @Test
-        public void shallSetIsPatientIdDifferentFromIntegrationParameters() {
+        public void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
+            final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
+            parameters.setBeforeAlternateSsn(PATIENT_ID);
+            user.setParameters(parameters);
+            final var patient = patientConverter.convert(utkast);
+            assertEquals(ALTERNATE_PATIENT_ID, patient.getPersonId().getId());
+        }
+
+        @Test
+        public void shallHaveOriginalPatientIdIfNotReplaced() {
+            final var parameters = getIntegrationParameters(null, FIRSTNAME, LASTNAME);
+            user.setParameters(parameters);
+            final var patient = patientConverter.convert(utkast);
+            assertEquals(PATIENT_ID, patient.getPersonId().getId());
+        }
+
+        @Test
+        public void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsReplaced() {
+            final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
+            parameters.setBeforeAlternateSsn(PATIENT_ID);
+            user.setParameters(parameters);
+            final var patient = patientConverter.convert(utkast);
+            assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
+        }
+
+        @Test
+        public void shallSetPreviousPersonIdToOriginalIdIfAlternateSSNIsSent() {
             final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertTrue(patient.isDifferentPatientIdFromJS());
+            assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
         }
 
         @Test
-        public void shallNotSetIsPatientIdDifferentFromIntegrationParameters() {
-            final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
+        public void shallSetFlagIfPersonIdIsReplaced() {
+            final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
+            parameters.setBeforeAlternateSsn(PATIENT_ID);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertFalse(patient.isDifferentPatientIdFromJS());
+            assertTrue(patient.isPersonIdUpdated());
         }
 
         @Test
-        public void shallSetReserveIdIfExistsInIntegrationParameters() {
-            final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
-            parameters.setBeforeAlternateSsn(RESERVE_NUMBER);
+        public void shallNotSetFlagIfPersonIdIsNotReplaceButAlternateSSNIsSent() {
+            final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertEquals(RESERVE_NUMBER, patient.getReserveId());
+            assertFalse(patient.isPersonIdUpdated());
         }
 
         @Test
-        public void shallNotSetReserveIdIfNotInIntegrationParameters() {
-            final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
+        public void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
+            final var patient = patientConverter.convert(utkast);
+            assertFalse(patient.isPersonIdUpdated());
+        }
+
+        @Test
+        public void shallSetPreviousPersonIdToOriginalIdIfAlternateSSNIsSet() {
+            final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertEquals("", patient.getReserveId());
+            assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
         }
 
         @ParameterizedTest
@@ -197,7 +229,7 @@ class PatientConverterImplTest {
             final var parameters = getIntegrationParameters(PATIENT_ID, ALTERNATE_FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertTrue(patient.isDifferentNameFromJS());
+            assertTrue(patient.isDifferentNameFromEHR());
         }
 
         @Test
@@ -205,7 +237,7 @@ class PatientConverterImplTest {
             final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, ALTERNATE_LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertTrue(patient.isDifferentNameFromJS());
+            assertTrue(patient.isDifferentNameFromEHR());
         }
 
         @Test
@@ -213,7 +245,7 @@ class PatientConverterImplTest {
             final var parameters = getIntegrationParameters(PATIENT_ID, ALTERNATE_FIRSTNAME, ALTERNATE_LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertTrue(patient.isDifferentNameFromJS());
+            assertTrue(patient.isDifferentNameFromEHR());
         }
 
         @Test
@@ -221,14 +253,14 @@ class PatientConverterImplTest {
             final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
             user.setParameters(parameters);
             final var patient = patientConverter.convert(utkast);
-            assertFalse(patient.isDifferentNameFromJS());
+            assertFalse(patient.isDifferentNameFromEHR());
         }
 
         @Test
         public void shallNotStausesIfNoIntegrationParameters() {
             final var patient = patientConverter.convert(utkast);
-            assertFalse(patient.isDifferentNameFromJS());
-            assertFalse(patient.isDifferentPatientIdFromJS());
+            assertFalse(patient.isDifferentNameFromEHR());
+            assertFalse(patient.isPersonIdUpdated());
         }
     }
 
