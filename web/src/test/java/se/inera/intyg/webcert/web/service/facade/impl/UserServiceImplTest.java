@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -100,17 +101,26 @@ class UserServiceImplTest {
                 .when(user)
                 .getRoleTypeName();
 
-            doReturn(HSA_ID)
-                .when(
-                    user.getValdVardenhet()
-                        .getId()
-                );
+            when(
+                user.getValdVardenhet()
+                    .getId()
+            ).thenReturn(HSA_ID);
 
-            doReturn(HSA_ID)
-                .when(
-                    user.getValdVardgivare()
-                        .getId()
-                );
+            when(
+                user.getValdVardenhet()
+                    .getNamn()
+            ).thenReturn(CARE_UNIT_NAME);
+
+            when(
+                user.getValdVardgivare()
+                    .getId()
+            ).thenReturn(HSA_ID);
+
+            when(
+                user.getValdVardgivare()
+                    .getNamn()
+            ).thenReturn(CARE_PROVIDER_NAME);
+
         }
 
         @Test
