@@ -73,7 +73,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -155,9 +154,6 @@ public class NotificationServiceImplTest {
 
     @Mock
     private IntygService intygService;
-
-    @Mock
-    private FeaturesHelper featuresHelper;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -1056,12 +1052,6 @@ public class NotificationServiceImplTest {
         final var careUnit = mock(Vardenhet.class);
         doReturn(careUnit).when(createdBy).getVardenhet();
         doReturn(ENHET_ID).when(careUnit).getEnhetsid();
-        final var careProvider = mock(Vardgivare.class);
-        doReturn(careProvider).when(careUnit).getVardgivare();
-        doReturn(VARDGIVAR_ID).when(careProvider).getVardgivarid();
-        final var patient = mock(Patient.class);
-        doReturn(patient).when(basicData).getPatient();
-        doReturn(PATIENT_ID).when(patient).getPersonId();
         return certificate;
     }
 

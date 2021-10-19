@@ -66,7 +66,6 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
@@ -98,9 +97,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
-
-    @Autowired
-    private FeaturesHelper featuresHelper;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -316,7 +312,6 @@ public class NotificationServiceImpl implements NotificationService {
     public void forwardInternalNotification(final String intygsId, final String intygstyp, final Utlatande utlatande,
         final HandelsekodEnum handelse) {
         final String careUnitId = utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
-        final String careGiverId = utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid();
         final String reference = referensService.getReferensForIntygsId(intygsId);
 
         try {
@@ -454,8 +449,6 @@ public class NotificationServiceImpl implements NotificationService {
         final var certificateId = certificate.getUtlatande().getId();
         final var certificateType = certificate.getUtlatande().getTyp();
         final var careUnitId = certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
-        final var careProviderId = certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid();
-        final var patientId = certificate.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummer();
         final var draftJson = certificate.getContents();
 
         final var notificationMessage = notificationMessageFactory.createNotificationMessage(certificateId, certificateType, careUnitId,
