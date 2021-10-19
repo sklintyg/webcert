@@ -93,7 +93,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
         // The wiretap is used to directly forward SIGNAT messages (see INTYG-2744) to the send queue while the original
         // SIGNAT is passed on into the aggregation phase. The aggregation phase never emits any SIGNAT, only ANDRAT.
-        from("direct:signatWireTap").routeId("signatWireTap")
+        from("direct:signatWireTap")
             .choice()
             .when(header(NotificationRouteHeaders.HANDELSE).isEqualTo(HandelsekodEnum.SIGNAT.value()))
             .to(notificationQueue)
