@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2021 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -19,56 +19,33 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <context:property-placeholder
-      location="classpath:notifications/unit-test.properties" order="1" ignore-resource-not-found="false" />
+  <context:property-placeholder location="classpath:notifications/unit-test.properties" order="1" />
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.notifications"/>
-
-  <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
-  <bean id="moduleRegistry" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.common.support.modules.registry.IntygModuleRegistry" />
-  </bean>
+
+  <bean id="processNotificationRequestRouteBuilder" class="se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder"/>
+
+  <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
+
+  <bean id="customObjectMapper" class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
 
   <bean id="transactionManager" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.springframework.transaction.PlatformTransactionManager" />
+    <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
   </bean>
 
   <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
     <property name="transactionManager" ref="transactionManager" />
   </bean>
 
-
-  <bean id="mockedPuService" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.infra.integration.pu.services.PUService" />
+  <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
+    <constructor-arg ref="customObjectMapper"/>
+    <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>
   </bean>
-
-  <bean id="mockedStringRedisTemplate" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.springframework.data.redis.core.StringRedisTemplate" />
-  </bean>
-
-  <bean id="notificationPatientEnricher" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher">
-     <property name="puService" ref="mockedPuService" />
-  </bean>
-
-  <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
-  <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean"/>
-
-  <bean id="configurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
-    <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
-    <constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}" />
-  </bean>
-
-  <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
-  <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
-
-  <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver" />
-  <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper" />
 
 </beans>

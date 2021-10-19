@@ -20,13 +20,13 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.internal.verification.VerificationModeFactory.noInteractions;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
@@ -47,8 +47,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -123,7 +121,7 @@ public class NotificationTransformerTest {
 
         try {
             notificationTransformer.process(mockMessage);
-            assertTrue("Should have thrown exception due to unsupported version!", false);
+            fail("Should have thrown exception due to unsupported version!");
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
@@ -195,7 +193,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSendResultMessageOnTransformationErrorIfWebcertMessagingIsUsed() throws Exception {
+    public void shallSendResultMessageOnTransformationError() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
         final var mockMessage = mock(Message.class);
@@ -204,79 +202,18 @@ public class NotificationTransformerTest {
 
         doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
         doThrow(new RuntimeException()).when(certificateStatusUpdateForCareCreator).create(any(), any());
-        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
         doReturn(mockNotificationResultMessage).when(notificationResultMessageCreator)
             .createFailureMessage(any(), any(), any(), any(), any());
 
         try {
             notificationTransformer.process(mockMessage);
-            assertTrue("Should have thrown exception due to transformation error!", false);
+            fail("Should have thrown exception due to transformation error!");
         } catch (Exception e) {
             verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
 
             assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
         }
     }
-
-    @Test
-    public void shallNotSendResultMessageOnTransformationErrorIfWebcertMessagingIsntUsed() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doThrow(new RuntimeException()).when(certificateStatusUpdateForCareCreator).create(any(), any());
-        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-
-        try {
-            notificationTransformer.process(mockMessage);
-            assertTrue("Should have thrown exception due to transformation error!", false);
-        } catch (Exception e) {
-            verifyNoInteractions(notificationResultMessageSender);
-        }
-    }
-
-    @Test
-    public void shallNotSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsntUsed() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doThrow(new TemporaryException("Temporarily failed!")).when(certificateStatusUpdateForCareCreator).create(any(), any());
-        doReturn(false).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-
-        try {
-            notificationTransformer.process(mockMessage);
-            assertTrue("Should have thrown a TemporaryException!", false);
-        } catch (TemporaryException e) {
-            verifyNoInteractions(notificationResultMessageSender);
-        }
-    }
-
-    @Test
-    public void shallSendResultMessageOnTemporaryExceptionIfWebcertMessagingIsUsed() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
-        final var mockMessage = mock(Message.class);
-
-        final var captureNotificationResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doThrow(new TemporaryException("Temporarily failed!")).when(certificateStatusUpdateForCareCreator).create(any(), any());
-        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
-        doReturn(mockNotificationResultMessage).when(notificationResultMessageCreator)
-            .createFailureMessage(any(), any(), any(), any(), any());
-
-        try {
-            notificationTransformer.process(mockMessage);
-            assertTrue("Should have thrown a Exception!", false);
-        } catch (TemporaryException e) {
-            assertTrue("Should not throw TemporaryException if Webcert messaging is on", false);
-        } catch (Exception e) {
-            verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
-            assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
-        }
-    }
-
 
     private NotificationMessage createNotificationMessage() {
         return createNotificationMessage(SchemaVersion.VERSION_3);

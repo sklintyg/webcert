@@ -58,7 +58,7 @@ public class NotificationPatientEnricherTest {
         verifyNoInteractions(puService);
     }
 
-    @Test(expected = TemporaryException.class)
+    @Test(expected = IllegalStateException.class)
     public void testExceptionIsThrownWhenPuInvocationFails() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class)))
             .thenReturn(PersonSvar.error());

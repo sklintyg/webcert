@@ -67,7 +67,6 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
@@ -326,9 +325,6 @@ public class NotificationServiceImpl implements NotificationService {
                 json, handelse,
                 SchemaVersion.VERSION_3, reference, null, null);
 
-            save(notificationMessage, careUnitId, careGiverId,
-                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null, null);
-
             send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
@@ -428,9 +424,6 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
             version, reference, amneskod, sistaDatumForSvar);
 
-        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
-            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar, hanteratAv);
-
         send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
 
@@ -467,8 +460,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         final var notificationMessage = notificationMessageFactory.createNotificationMessage(certificateId, certificateType, careUnitId,
             draftJson, handelse, version, reference, amneskod, sistaDatumForSvar);
-
-        save(notificationMessage, careUnitId, careProviderId, patientId, amne, sistaDatumForSvar, hanteratAv);
 
         send(notificationMessage, careUnitId, certificate.getUtlatande().getTextVersion());
     }
@@ -565,25 +556,6 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
-    private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-        ArendeAmne amne, LocalDate sistaDatumForSvar, String hanteratAv) {
-
-        if (!isWebcertMessagingUsed()) {
-            Handelse handelse = new Handelse();
-            handelse.setCode(notificationMessage.getHandelse());
-            handelse.setEnhetsId(enhetsId);
-            handelse.setIntygsId(notificationMessage.getIntygsId());
-            handelse.setPersonnummer(personnummer);
-            handelse.setTimestamp(notificationMessage.getHandelseTid());
-            handelse.setVardgivarId(vardgivarId);
-            handelse.setAmne(amne);
-            handelse.setSistaDatumForSvar(sistaDatumForSvar);
-            handelse.setHanteratAv(hanteratAv);
-
-            handelseRepo.save(handelse);
-        }
-    }
-
     private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
         if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
@@ -606,15 +578,10 @@ public class NotificationServiceImpl implements NotificationService {
             throw e;
         }
 
-        if (isWebcertMessagingUsed()) {
-            LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
-            monitoringLog.logStatusUpdateQueued(notificationMessage.getIntygsId(), correlationId, notificationMessage.getLogiskAdress(),
-                notificationMessage.getIntygsTyp(), intygTypeVersion, notificationMessage.getHandelse().name(),
-                notificationMessage.getHandelseTid(), currentUserId());
-        } else {
-            LOGGER.debug("Notification sent: {}", notificationMessage);
-            monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
-        }
+        LOGGER.debug("Notification message generated and sent to aggregation queue: {}", notificationMessage);
+        monitoringLog.logStatusUpdateQueued(notificationMessage.getIntygsId(), correlationId, notificationMessage.getLogiskAdress(),
+            notificationMessage.getIntygsTyp(), intygTypeVersion, notificationMessage.getHandelse().name(),
+            notificationMessage.getHandelseTid(), currentUserId());
     }
 
 
@@ -658,10 +625,6 @@ public class NotificationServiceImpl implements NotificationService {
                 + "' couldn't be sent to " + mailNotification.getCareUnitId()
                 + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
         }
-    }
-
-    private boolean isWebcertMessagingUsed() {
-        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
     }
 
     private static final class NotificationMessageCreator implements MessageCreator {
