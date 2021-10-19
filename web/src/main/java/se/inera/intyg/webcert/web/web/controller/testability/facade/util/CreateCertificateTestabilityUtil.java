@@ -160,7 +160,7 @@ public class CreateCertificateTestabilityUtil {
         utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
     }
 
-    private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
+    public void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
         Utkast utkast) {
         if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
             final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getModel());
@@ -184,13 +184,14 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+    public void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
             return;
         }
 
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.WITH_VALUES) {
             updateCertificate(certificate, createCertificateRequest.getValues());
+            return;
         }
 
         final var valueMap = createValues(createCertificateRequest);
@@ -332,7 +333,7 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
+    public String getJsonFromCertificate(Certificate certificate, String currentModel) {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
                 certificate.getMetadata().getType(),
@@ -354,7 +355,7 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private HoSPersonal getHoSPerson(String personId, String unitId) {
+    public HoSPersonal getHoSPerson(String personId, String unitId) {
         final var user = getUser(personId);
         user.changeValdVardenhet(unitId);
         final var unit = HoSPersonHelper.createVardenhetFromIntygUser(unitId, user);
