@@ -30,13 +30,15 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
 
+@Component
 public class NotificationPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessor.class);
-    
+
     private final ObjectMapper objectMapper;
 
     private final NotificationPostProcessingService notificationPostProcessingService;

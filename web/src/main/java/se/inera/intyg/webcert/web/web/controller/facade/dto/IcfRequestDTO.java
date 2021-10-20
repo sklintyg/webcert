@@ -16,18 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.common.sender.exception;
 
-public class DiscardCandidateException extends Exception {
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-    private static final long serialVersionUID = -8184379033317261358L;
+public class IcfRequestDTO {
 
-    public DiscardCandidateException(String message) {
-        super(message);
+    private String[] icdCodes;
+
+    public void setIcdCodes(String[] icdCodes) {
+        this.icdCodes = icdCodes;
     }
 
-    public DiscardCandidateException(Throwable cause) {
-        super(cause);
+    public String[] getIcdCodes() {
+        return icdCodes;
     }
 
+    public String getIcd10Code(int index) {
+        return icdCodes.length - 1 < index ? "" : icdCodes[index];
+    }
 }

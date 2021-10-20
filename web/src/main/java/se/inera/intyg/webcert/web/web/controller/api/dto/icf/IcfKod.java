@@ -32,7 +32,7 @@ public class IcfKod {
     public IcfKod() {
     }
 
-    IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
+    public IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
         this.kod = kod;
         this.benamning = benamning;
         this.beskrivning = beskrivning;

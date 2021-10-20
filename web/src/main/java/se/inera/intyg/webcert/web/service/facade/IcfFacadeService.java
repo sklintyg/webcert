@@ -16,32 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+package se.inera.intyg.webcert.web.service.facade;
 
-import org.junit.Test;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
-public class MessageRedeliveryFlagTest {
+public interface IcfFacadeService {
 
-    @Test
-    public void lowerAndoutdatedTest() {
-        long t0 = System.currentTimeMillis() - 1L;
-        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
-
-        sf.lowered(System.currentTimeMillis());
-
-        assertTrue(sf.getSuccessTimestamp() > t0);
-        assertTrue(sf.isOutdated(t0));
-    }
-
-    @Test
-    public void raisedTest() {
-        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
-
-        sf.raised();
-
-        assertEquals(0L, sf.getSuccessTimestamp());
-    }
+    IcfResponseDTO getIcfInformation(IcfRequestDTO request);
 }

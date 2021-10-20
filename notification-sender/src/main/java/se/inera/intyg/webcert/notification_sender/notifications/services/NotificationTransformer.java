@@ -32,8 +32,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
@@ -46,9 +44,6 @@ public class NotificationTransformer {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private FeaturesHelper featuresHelper;
 
     @Autowired
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
@@ -93,21 +88,11 @@ public class NotificationTransformer {
         LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
             + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
 
-        if (usingWebcertMessaging()) {
-            final var correlationId = message.getHeader(CORRELATION_ID, String.class);
-            final var userId = message.getHeader(USER_ID, String.class);
-            final var resultMessage = notificationResultMessageCreator
-                .createFailureMessage(notificationMessage, correlationId, userId, certificateTypeVersion, e);
-            notificationResultMessageSender.sendResultMessage(resultMessage);
-
-            ifTemporaryExceptionThenConvertToRuntimeException(e);
-        }
-    }
-
-    private void ifTemporaryExceptionThenConvertToRuntimeException(Exception e) {
-        if (e instanceof TemporaryException) {
-            throw new RuntimeException(e.getMessage());
-        }
+        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
+        final var userId = message.getHeader(USER_ID, String.class);
+        final var resultMessage = notificationResultMessageCreator
+            .createFailureMessage(notificationMessage, correlationId, userId, certificateTypeVersion, e);
+        notificationResultMessageSender.sendResultMessage(resultMessage);
     }
 
     private String getSchemaVersion(NotificationMessage notificationMessage) {
@@ -135,9 +120,5 @@ public class NotificationTransformer {
         String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
         message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
         return certificateVersion;
-    }
-
-    private boolean usingWebcertMessaging() {
-        return featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_USE_WEBCERT_MESSAGING);
     }
 }

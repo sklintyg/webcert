@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -99,6 +100,27 @@ class UserServiceImplTest {
             doReturn(ROLE)
                 .when(user)
                 .getRoleTypeName();
+
+            when(
+                user.getValdVardenhet()
+                    .getId()
+            ).thenReturn(HSA_ID);
+
+            when(
+                user.getValdVardenhet()
+                    .getNamn()
+            ).thenReturn(CARE_UNIT_NAME);
+
+            when(
+                user.getValdVardgivare()
+                    .getId()
+            ).thenReturn(HSA_ID);
+
+            when(
+                user.getValdVardgivare()
+                    .getNamn()
+            ).thenReturn(CARE_PROVIDER_NAME);
+
         }
 
         @Test
@@ -114,15 +136,27 @@ class UserServiceImplTest {
         }
 
         @Test
-        void shallReturnWithLoggedInUnit() {
+        void shallReturnWithLoggedInUnitName() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInUnit());
+            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInUnit().getUnitName());
         }
 
         @Test
-        void shallReturnWithLoggedInCareProvider() {
+        void shallReturnWithLoggedInUnitUnitId() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider());
+            assertEquals(HSA_ID, actualUser.getLoggedInUnit().getUnitId());
+        }
+
+        @Test
+        void shallReturnWithLoggedInCareProviderName() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider().getUnitName());
+        }
+
+        @Test
+        void shallReturnWithLoggedInCareProviderUnitId() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(HSA_ID, actualUser.getLoggedInCareProvider().getUnitId());
         }
     }
 
