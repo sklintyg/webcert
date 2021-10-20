@@ -39,7 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
-    
+
     @Autowired
     private UtkastRepository draftRepo;
 
@@ -84,7 +84,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     }
 
     private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
-        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
+        throws ModuleNotFoundException, IOException, ModuleException {
 
         if (isDeletedEvent(event)) {
             final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());

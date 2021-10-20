@@ -25,7 +25,7 @@ import java.util.Objects;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -34,18 +34,25 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 
+@Component
 public class NotificationWSSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSSender.class);
 
-    @Autowired
-    private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
+    private final CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
-    @Autowired
-    private NotificationResultMessageCreator notificationResultMessageCreator;
+    private final NotificationResultMessageCreator notificationResultMessageCreator;
 
-    @Autowired
-    private NotificationResultMessageSender notificationResultMessageSender;
+    private final NotificationResultMessageSender notificationResultMessageSender;
+
+    public NotificationWSSender(
+        CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient,
+        NotificationResultMessageCreator notificationResultMessageCreator,
+        NotificationResultMessageSender notificationResultMessageSender) {
+        this.statusUpdateForCareClient = statusUpdateForCareClient;
+        this.notificationResultMessageCreator = notificationResultMessageCreator;
+        this.notificationResultMessageSender = notificationResultMessageSender;
+    }
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,

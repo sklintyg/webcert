@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -71,7 +73,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -79,7 +80,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -94,9 +94,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-/**
- * Created by Magnus Ekstrand on 03/12/14.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceImplTest {
 
@@ -111,6 +108,7 @@ public class NotificationServiceImplTest {
     private static final String VARDGIVAR_ID = "vardgivarId";
     private static final String SKAPAD_AV_HSA_ID = "skapadAvHsaID";
     private static final String SKAPAD_AV_FULL_NAME = "Firstname Lastname";
+
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElse(null);
 
@@ -157,9 +155,6 @@ public class NotificationServiceImplTest {
     @Mock
     private IntygService intygService;
 
-    @Mock
-    private FeaturesHelper featuresHelper;
-
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -172,7 +167,6 @@ public class NotificationServiceImplTest {
 
         when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
         when(referensService.getReferensForIntygsId(any(String.class))).thenReturn(USER_REFERENCE);
-        when(featuresHelper.isFeatureActive(any(String.class))).thenReturn(false);
     }
 
     private void setupMocks(SchemaVersion schemaVersion) {
@@ -236,7 +230,7 @@ public class NotificationServiceImplTest {
             or(isNull(), any(Amneskod.class)),
             or(isNull(), any(LocalDate.class)));
 
-        verify(handelseRepository).save(any(Handelse.class));
+        verifyNoInteractions(handelseRepository);
     }
 
     @Test
@@ -974,8 +968,8 @@ public class NotificationServiceImplTest {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
-        verify(handelseRepository).save(any(Handelse.class));
+        verifyMonitorLogging(res);
+        verifyNoInteractions(handelseRepository);
     }
 
     private void verifySuccessfulInvocationsForCertificate(HandelsekodEnum kod) throws Exception {
@@ -1006,8 +1000,20 @@ public class NotificationServiceImplTest {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
-        verify(handelseRepository).save(any(Handelse.class));
+        verifyMonitorLogging(res);
+        verifyNoInteractions(handelseRepository);
+    }
+
+    private void verifyMonitorLogging(Message message) throws JMSException {
+        verify(mockMonitoringLogService).logStatusUpdateQueued(
+            eq(INTYG_ID),
+            eq(message.getStringProperty(NotificationRouteHeaders.CORRELATION_ID)),
+            any(String.class),
+            eq(message.getStringProperty(NotificationRouteHeaders.INTYGS_TYP)),
+            nullable(String.class),
+            eq(message.getStringProperty(NotificationRouteHeaders.HANDELSE)),
+            any(LocalDateTime.class),
+            nullable(String.class));
     }
 
     private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
@@ -1046,12 +1052,6 @@ public class NotificationServiceImplTest {
         final var careUnit = mock(Vardenhet.class);
         doReturn(careUnit).when(createdBy).getVardenhet();
         doReturn(ENHET_ID).when(careUnit).getEnhetsid();
-        final var careProvider = mock(Vardgivare.class);
-        doReturn(careProvider).when(careUnit).getVardgivare();
-        doReturn(VARDGIVAR_ID).when(careProvider).getVardgivarid();
-        final var patient = mock(Patient.class);
-        doReturn(patient).when(basicData).getPatient();
-        doReturn(PATIENT_ID).when(patient).getPersonId();
         return certificate;
     }
 

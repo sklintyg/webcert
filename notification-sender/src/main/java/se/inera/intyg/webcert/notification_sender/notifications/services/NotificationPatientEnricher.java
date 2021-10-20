@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
@@ -45,7 +45,7 @@ public class NotificationPatientEnricher {
     @Autowired
     private PUService puService;
 
-    public void enrichWithPatient(Intyg intyg) throws TemporaryException {
+    public void enrichWithPatient(Intyg intyg) {
         // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
         String intygsTyp = intyg.getTyp().getCode();
         switch (intygsTyp.toLowerCase()) {
@@ -71,8 +71,7 @@ public class NotificationPatientEnricher {
                         intyg.getPatient().setPostort(EMPTY_STRING);
                     }
                 } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-                    throw new TemporaryException(
-                        new IllegalStateException("Could not query PU-service for enriching notification with patient data."));
+                    throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");
                 } else {
                     LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
                         personnummer.getPersonnummerHash());
@@ -91,7 +90,7 @@ public class NotificationPatientEnricher {
 
         Optional<Personnummer> personnummer = Optional.ofNullable(person.getPersonnummer());
 
-        if (!personnummer.isPresent()) {
+        if (personnummer.isEmpty()) {
             throw new IllegalArgumentException("Call to buildPatientFromPersonSvar contained a null personnummer.");
         }
 
@@ -117,11 +116,7 @@ public class NotificationPatientEnricher {
     }
 
     private String nullSafe(String str) {
-        if (str == null) {
-            return EMPTY_STRING;
-        } else {
-            return str;
-        }
+        return Objects.requireNonNullElse(str, EMPTY_STRING);
     }
 
     @VisibleForTesting

@@ -68,7 +68,7 @@ public class CertificateStatusUpdateForCareCreator {
     private static final String XML_LOCAL_PART = "CertificateStatusUpdateForCare";
 
     public CertificateStatusUpdateForCareType create(NotificationMessage notificationMessage, String certificateTypeVersion)
-        throws TemporaryException, ModuleNotFoundException, IOException, ModuleException {
+        throws ModuleNotFoundException, IOException, ModuleException {
         final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
         final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
         final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
@@ -77,7 +77,7 @@ public class CertificateStatusUpdateForCareCreator {
     }
 
     public CertificateStatusUpdateForCareType create(Handelse event, Vardgivare careProvider,
-        Vardenhet careUnit, PersonInformation personInfo) throws ModuleNotFoundException, TemporaryException {
+        Vardenhet careUnit, PersonInformation personInfo) throws ModuleNotFoundException {
 
         String moduleId = moduleRegistry.getModuleIdFromExternalId(event.getCertificateType());
         ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(moduleId);

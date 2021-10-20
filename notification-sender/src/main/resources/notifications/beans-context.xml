@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2021 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -22,17 +22,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="notificationPostProcessor" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor"/>
-
-  <bean id="notificationWSSender" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSSender" />
-
   <bean id="notificationTransformer" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer"/>
 
   <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
-
-  <bean id="notificationWSClientV3" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient"></bean>
-
-  <bean id="messageRedeliveryFlag" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.MessageRedeliveryFlag"></bean>
 
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder"/>
 
