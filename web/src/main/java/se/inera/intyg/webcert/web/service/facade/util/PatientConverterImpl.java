@@ -60,7 +60,7 @@ public class PatientConverterImpl implements PatientConverter {
             .lastName(certificate.getPatientEfternamn())
             .fullName(getFullName(certificate))
             .testIndicated(patientDetailsResolver.isTestIndicator(patientId))
-            .protectedPerson(getProtectedStatus(patientId))
+            .protectedPerson(isProtectedPerson(patientId))
             .deceased(patientDetailsResolver.isAvliden(patientId))
             .differentNameFromEHR(isPatientNameDifferent(certificate, parameters))
             .previousPersonId(getPreviousPersonId(patientId, parameters))
@@ -97,9 +97,22 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private boolean isPatientNameDifferent(Utkast certificate, IntegrationParameters parameters) {
-        return parameters != null && parameters.getFornamn() != null && parameters.getEfternamn() != null && (
-            !parameters.getFornamn().equals(certificate.getPatientFornamn()) || !parameters.getEfternamn()
-                .equals(certificate.getPatientEfternamn()));
+        return isNameSentAsParameter(parameters)
+            && isNameDifferent(certificate, parameters);
+    }
+
+    private boolean isNameDifferent(Utkast certificate, IntegrationParameters parameters) {
+        final var isFirstNameDifferent = isStringDifferent(certificate.getPatientFornamn(), parameters.getFornamn());
+        final var isLastNameDifferent = isStringDifferent(parameters.getEfternamn(), certificate.getPatientEfternamn());
+        return isFirstNameDifferent || isLastNameDifferent;
+    }
+
+    private boolean isStringDifferent(String s1, String s2) {
+        return !s1.equals(s2);
+    }
+
+    private boolean isNameSentAsParameter(IntegrationParameters parameters) {
+        return parameters != null && parameters.getFornamn() != null && parameters.getEfternamn() != null;
     }
 
     private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
@@ -127,9 +140,9 @@ public class PatientConverterImpl implements PatientConverter {
         return parameters != null && parameters.getAlternateSsn() != null && !parameters.getAlternateSsn().equals("");
     }
 
-    private boolean getProtectedStatus(Personnummer patientId) {
-        return patientDetailsResolver.getSekretessStatus(patientId) == SekretessStatus.TRUE
-            || patientDetailsResolver.getSekretessStatus(patientId) == SekretessStatus.UNDEFINED;
+    private boolean isProtectedPerson(Personnummer patientId) {
+        final var protectedStatus = patientDetailsResolver.getSekretessStatus(patientId);
+        return protectedStatus == SekretessStatus.TRUE || protectedStatus == SekretessStatus.UNDEFINED;
     }
 
     private String getFullName(Utkast certificate) {
