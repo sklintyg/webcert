@@ -104,6 +104,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
         + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
 
+    private static final String CREATE_AG7804_NAME = "Skapa Ag7804";
+    private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
+    private static final String CREATE_AG7804_BODY = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
+        + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
+        + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
+        + "Gör detta i så fall först.</div>"
+        + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804) utifrån ett Läkarintyg för sjukpenning innebär att "
+        + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
+        + "</p></div>";
+
     private final AuthoritiesHelper authoritiesHelper;
 
     @Autowired
@@ -265,6 +275,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (isRenewCertificateFromTemplateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.RENEW_CERTIFICATE_FROM_TEMPLATE,
+                    CREATE_AG7804_NAME,
+                    CREATE_AG7804_DESCRIPTION,
+                    CREATE_AG7804_BODY,
+                    true
+                )
+            );
+        }
+
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
@@ -372,6 +394,14 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return false;
         }
 
+        if (isReplacementSigned(certificate)) {
+            return false;
+        }
+
+        return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+    }
+
+    private boolean isRenewCertificateFromTemplateAvailable(Certificate certificate) {
         if (isReplacementSigned(certificate)) {
             return false;
         }

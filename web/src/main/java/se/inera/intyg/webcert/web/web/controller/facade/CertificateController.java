@@ -232,6 +232,18 @@ public class CertificateController {
     }
 
     @POST
+    @Path("/{certificateId}/renew/template")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response renewCertificateFromTemplate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Renewing certificate with id: '{}'", certificateId);
+        }
+        final var newCertificateId = renewCertificateFacadeService.renewCertificateFromTemplate(certificateId);
+        return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
+    }
+
+    @POST
     @Path("/{certificateId}/complement")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
