@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
@@ -44,6 +45,7 @@ public class QuestionDTO {
     private Reminder[] reminders;
     private LocalDateTime lastUpdate;
     private List<ResourceLinkDTO> links;
+    private LocalDate lastDateToReply;
 
     public static QuestionDTO create(Question question, List<ResourceLinkDTO> links) {
         final var questionDTO = new QuestionDTO();
@@ -61,6 +63,7 @@ public class QuestionDTO {
         questionDTO.reminders = question.getReminders();
         questionDTO.lastUpdate = question.getLastUpdate();
         questionDTO.links = links;
+        questionDTO.lastDateToReply = question.getLastDateToReply();
         return questionDTO;
     }
 
@@ -174,5 +177,13 @@ public class QuestionDTO {
 
     public void setLinks(List<ResourceLinkDTO> links) {
         this.links = links;
+    }
+
+    public LocalDate getLastDateToReply() {
+        return lastDateToReply;
+    }
+
+    public void setLastDateToReply(LocalDate lastDateToReply) {
+        this.lastDateToReply = lastDateToReply;
     }
 }
