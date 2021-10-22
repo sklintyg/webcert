@@ -75,7 +75,7 @@ public class QuestionConverterImpl implements QuestionConverter {
                     .id(answer.getMeddelandeId())
                     .message(answer.getMeddelande())
                     .author(getAuthor(answer))
-                    .sent(answer.getSkickatTidpunkt())
+                    .sent(answer.getTimestamp())
                     .build()
             )
             .build();
@@ -109,7 +109,7 @@ public class QuestionConverterImpl implements QuestionConverter {
                     .id(reminder.getMeddelandeId())
                     .author(getAuthor(reminder))
                     .message(reminder.getMeddelande())
-                    .sent(reminder.getSkickatTidpunkt())
+                    .sent(reminder.getTimestamp())
                     .build()
             )
             .toArray(Reminder[]::new);
@@ -119,7 +119,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .type(getType(arende.getAmne()))
             .author(getAuthor(arende))
             .subject(getSubject(arende))
-            .sent(arende.getSkickatTidpunkt())
+            .sent(arende.getTimestamp())
             .isHandled(arende.getStatus() == Status.CLOSED)
             .isForwarded(arende.getVidarebefordrad())
             .message(arende.getMeddelande())
