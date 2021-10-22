@@ -69,7 +69,7 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setSkickatTidpunkt(SENT);
+            arende.setTimestamp(SENT);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
@@ -276,7 +276,7 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setSkickatTidpunkt(SENT);
+            arende.setTimestamp(SENT);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
@@ -286,7 +286,7 @@ class QuestionConverterImplTest {
             arendeSvar = new Arende();
             arendeSvar.setMeddelandeId(ANSWER_ID);
             arendeSvar.setVardaktorName(ANSWER_AUTHOR);
-            arendeSvar.setSkickatTidpunkt(ANSWER_SENT);
+            arendeSvar.setTimestamp(ANSWER_SENT);
             arendeSvar.setMeddelande(ANSWER_MESSAGE);
 
             arendeSvarDraft = new ArendeDraft();
@@ -382,7 +382,7 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setSkickatTidpunkt(SENT);
+            arende.setTimestamp(SENT);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
@@ -392,7 +392,7 @@ class QuestionConverterImplTest {
             arendeSvar = new Arende();
             arendeSvar.setMeddelandeId(ANSWER_ID);
             arendeSvar.setVardaktorName(ANSWER_AUTHOR);
-            arendeSvar.setSkickatTidpunkt(ANSWER_SENT);
+            arendeSvar.setTimestamp(ANSWER_SENT);
             arendeSvar.setMeddelande(ANSWER_MESSAGE);
 
             arendeSvarDraft = new ArendeDraft();
@@ -402,7 +402,7 @@ class QuestionConverterImplTest {
             arendePaminnelse = new Arende();
             arendePaminnelse.setMeddelandeId(REMINDER_ID);
             arendePaminnelse.setMeddelande(REMINDER_MESSAGE);
-            arendePaminnelse.setSkickatTidpunkt(REMINDER_SENT);
+            arendePaminnelse.setTimestamp(REMINDER_SENT);
             arendePaminnelse.setSkickatAv(SENT_BY_FK);
         }
 
