@@ -21,12 +21,20 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.notification;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.with;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.notification.NotificationServicesIT.AnswersEnum.DIAGNOS;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.notification.NotificationServicesIT.AnswersEnum.SICK_LEAVE;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.notification.NotificationServicesIT.AnswersEnum.SMITTSKYDD;
-import static se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType.WITH_VALUES;
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
@@ -35,78 +43,529 @@ import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.TypeRef;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
-import se.inera.intyg.common.fkparent.model.converter.RespConstants;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.TestSetup;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.NotificationRequest;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.dto.NotificationRequestDTO;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
-@TestMethodOrder(OrderAnnotation.class)
+@TestInstance(Lifecycle.PER_CLASS)
 public class NotificationServicesIT {
 
     private static final int HTTP_OK = 200;
-
+    private static final int OK = 0;
+    private static final int TECHNICAL_ERROR = 3;
+    private static final int APPLICATION_ERROR = 6;
     private static final List<String> LAKARE = Collections.singletonList("Läkare");
+    private static final TypeRef<List<CertificateStatusUpdateForCareType>> LIST_NOTIFICATIONS = new TypeRef<>(){};
 
     private static final FakeCredentials JOURNA_LA_SYSTEM = new FakeCredentials.FakeCredentialsBuilder("SE4815162344-1B02",
         "SE4815162344-1A03").legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.DJUPINTEGRATION.name()).build();
 
-    private static final TypeRef<List<CertificateStatusUpdateForCareType>> LIST_NOTIFICATIONS = new TypeRef<>(){};
-
     private List<String> certificateIdsToCleanAfterTest;
-    private final List<NotificationRequestDTO> updateDraftRequests = new ArrayList<>();
 
-    protected enum AnswersEnum { SMITTSKYDD, DIAGNOS, SICK_LEAVE }
+    @BeforeAll
+    public void initiate() {
+        getRestAssuredSession();
+        registerIntegratedUnit();
+        clearNotificationStub();
+        setNotificationStubResponse(0);
+        RestAssured.reset();
+    }
+
+    @AfterAll
+    public void cleanup() {
+        getRestAssuredSession();
+        unregisterIntegratedUnit();
+        RestAssured.reset();
+    }
 
     @BeforeEach
     public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
+        getRestAssuredSession();
         certificateIdsToCleanAfterTest = new ArrayList<>();
-        RestAssured.objectMapper(new Jackson2Mapper(((type, charset) -> new CustomObjectMapper())));
-        clearNotifications();
     }
 
     @AfterEach
     public void tearDown() {
-        clearNotifications();
-        setNotificationStubError(0);
-        updateDraftRequests.clear();
-        deleteEvents(certificateIdsToCleanAfterTest);
+        clearNotificationStub();
+        setNotificationStubResponse(OK);
+        deleteCreatedEvents();
+        deleteCreatedArenden();
+        deleteCreatedCertificates();
+        RestAssured.reset();
+    }
+
+    @Test
+    @DisplayName("Status update for create draft should have event type SKAPAT")
+    public void statusUpdateForCreateDraftShouldHaveEventTypeSkapat() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertEquals(1L, getNumberOfEvents(HandelsekodEnum.SKAPAT, statusUpdates))
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for sign draft should have event type SIGNAT")
+    public void statusUpdateForSignDraftShouldHaveEventTypeSignat() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.MINIMAL,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), SIGNAT);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(SIGNAT, statusUpdates) >= 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for draft ready to sign should have event type KFSIGN")
+    public void statusUpdateForDraftReadyToSignShouldHaveEventTypeKfsign() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.MINIMAL,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), KFSIGN);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(KFSIGN, statusUpdates) >= 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for delete draft should have event type RADERA")
+    public void statusUpdateForDeleteDraftShouldHaveEventTypeKfsign() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), RADERA);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(RADERA, statusUpdates) >= 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for revoke certificate should have event type MAKULE")
+    public void statusUpdateForRevokeCertificateShouldHaveEventTypeKfsign() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), MAKULE);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(MAKULE, statusUpdates) >= 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for send certificate should have event type SKICKA")
+    public void statusUpdateForSendCertificateShouldHaveEventTypeSkicka() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), SKICKA);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(SKICKA, statusUpdates) >= 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for new question from care should have event type NYFRFV")
+    public void statusUpdateForNewQuestionFromCareShouldHaveEventTypeNyfrfv() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), NYFRFV);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(NYFRFV, statusUpdates) >= 1),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getTotalt()),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getEjBesvarade())
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for new answer from recipient should have event type NYSVFM")
+    public void statusUpdateForNewAnswerFromRecipientShouldHaveEventTypeNysvfm() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), NYSVFM);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(NYSVFM, statusUpdates) >= 1),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getTotalt()),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getBesvarade())
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for handled question from care should have event type HANFRFV")
+    public void statusUpdateForHandledQuestionFromCareShouldHaveEventTypeHanfrfv() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), HANFRFV);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(HANFRFV, statusUpdates) >= 1),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getTotalt()),
+            () -> assertEquals(1, statusUpdates.get(0).getSkickadeFragor().getHanterade())
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for new question from recipient should have event type NYFRFM")
+    public void statusUpdateForNewQuestionFromRecipientShouldHaveEventTypeNyfrfm() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), NYFRFM);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(NYFRFM, statusUpdates) >= 1),
+            () -> assertEquals(1, statusUpdates.get(0).getMottagnaFragor().getTotalt()),
+            () -> assertEquals(1, statusUpdates.get(0).getMottagnaFragor().getEjBesvarade())
+        );
+    }
+
+    @Test
+    @DisplayName("Status update for answered question from recipient should have event type HANFRFM")
+    public void statusUpdateForAnsweredQuestionFromRecipientShouldHaveEventTypeHanfrfm() {
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                JOURNA_LA_SYSTEM.getHsaId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        clearNotificationStub();
+        sendNotification(testSetup.certificateId(), HANFRFM);
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+
+        assertAll(
+            () -> assertTrue(getNumberOfEvents(HANFRFM, statusUpdates) >= 1),
+            () -> assertEquals(1, statusUpdates.get(0).getMottagnaFragor().getTotalt()),
+            () -> assertEquals(1, statusUpdates.get(0).getMottagnaFragor().getHanterade())
+        );
+    }
+
+    @Test
+    @DisplayName("Status updates should have expected key certificate properties")
+    public void statusUpdatesShouldHaveExpectedKeyCertificateProperties() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        waitForMessages(1, 3, 15, 1);
+
+        final var statusUpdates = getNotifications();
+        final var metadata = testSetup.certificate().getMetadata();
+        final var certtificate = statusUpdates.get(0).getIntyg();
+
+        assertAll(
+            () -> assertEquals(testSetup.certificateId(), certtificate.getIntygsId().getExtension()),
+            () -> assertEquals(metadata.getIssuedBy().getPersonId(), certtificate.getSkapadAv().getPersonalId().getExtension()),
+            () -> assertEquals(metadata.getPatient().getPersonId().getId(), certtificate.getPatient().getPersonId().getExtension())
+        );
+    }
+
+    @Test
+    @DisplayName("Successfully sent status updates should have delivery status SUCCESS")
+    public void successfullySentStatusUpdatesShouldHaveDeliveryStatusSuccess() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+
+        waitForMessages(1, 3, 15, 1);
+
+        assertAll(
+            () -> assertEquals(NotificationDeliveryStatusEnum.SUCCESS, getNotificationDeliveryStatus(testSetup.certificateId()))
+        );
+    }
+
+    @Test
+    @DisplayName("Status updates with result Application Error should have delivery status FAILURE")
+    public void statusUpdatesWithResultApplicationErrorShouldHaveDeliveryStatusFailure() {
+        setNotificationStubResponse(APPLICATION_ERROR);
+
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+
+        waitForMessages(1, 3, 15, 1);
+
+        assertAll(
+            () -> assertEquals(NotificationDeliveryStatusEnum.FAILURE, getNotificationDeliveryStatus(testSetup.certificateId()))
+        );
+    }
+
+    @Test
+    @DisplayName("Status updates with result Technical Error should have delivery status RESEND")
+    public void statusUpdatesWithResultTechnicalErrorShouldHaveDeliveryStatusResend() {
+        setNotificationStubResponse(TECHNICAL_ERROR);
+
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                JOURNA_LA_SYSTEM.getHsaId(),
+                JOURNA_LA_SYSTEM.getEnhetId(),
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(JOURNA_LA_SYSTEM)
+            .setup();
+
+        waitForMessages(1, 3, 15, 1);
+
+        assertAll(
+            () -> assertEquals(NotificationDeliveryStatusEnum.RESEND, getNotificationDeliveryStatus(testSetup.certificateId()))
+        );
+    }
+
+    private void getRestAssuredSession() {
+        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
+        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
+        RestAssured.objectMapper(new Jackson2Mapper(((type, charset) -> new CustomObjectMapper())));
+        RestAssured.config = RestAssured.config()
+            .logConfig(logConfig)
+            .sessionConfig(new SessionConfig("SESSION", null));
+    }
+
+    private void registerIntegratedUnit() {
+        final var integratedUnit = new IntegreradEnhetEntryWithSchemaVersion();
+        integratedUnit.setEnhetsId(JOURNA_LA_SYSTEM.getEnhetId());
+        integratedUnit.setVardgivareId("SE4815162344-1A01");
+        integratedUnit.setSchemaVersion("2.0"); // This results in SchemaVersion.VERSION_3
+        integratedUnit.setEnhetsNamn("Webcert-Integration Enhet 2");
+        integratedUnit.setVardgivareNamn("Webcert-Integration Vårdgivare 1");
+        given()
+            .contentType(ContentType.JSON).body(integratedUnit)
+            .when().post("/testability/integreradevardenheter")
+            .then().statusCode(HTTP_OK);
+    }
+
+    private void unregisterIntegratedUnit() {
+        given().pathParam("unitId", JOURNA_LA_SYSTEM.getEnhetId())
+            .when().delete("/testability/integreradevardenheter/{unitId}")
+            .then().statusCode(HTTP_OK);
+    }
+
+    private void sendNotification(String certificateId, HandelsekodEnum eventEnum) {
+        final var notificationRequest = new NotificationRequest();
+        notificationRequest.setCertificateId(certificateId);
+        notificationRequest.setEventCode(eventEnum);
+        given()
+            .contentType(ContentType.JSON).body(notificationRequest)
+            .when().post("/testability/notification/updateandnotify")
+            .then().statusCode(HTTP_OK);
+    }
+
+    private void deleteCreatedEvents() {
+        given()
+            .contentType(ContentType.JSON).body(certificateIdsToCleanAfterTest)
+            .when().post("/testability/notification/clearevents")
+            .then().statusCode(HTTP_OK);
+    }
+
+    private void deleteCreatedArenden() {
+        given()
+            .contentType(ContentType.JSON).body(certificateIdsToCleanAfterTest)
+            .when().post("/testability/notification/cleararenden")
+            .then().statusCode(HTTP_OK);
+    }
+
+    private void deleteCreatedCertificates() {
         certificateIdsToCleanAfterTest.forEach(certificateId ->
             given()
                 .pathParam("certificateId", certificateId)
@@ -114,144 +573,24 @@ public class NotificationServicesIT {
                 .when()
                 .delete("testability/intyg/{certificateId}")
         );
-        RestAssured.reset();
     }
 
-    @Test
-    @Order(1)
-    @DisplayName("Status updates should have expected event types")
-    public void statusUpdatesShouldHaveExpectedEventTypes() {
-
-        final var testSetup = createEmptyDraft(LisjpEntryPoint.MODULE_ID, true);
-
-        addAnswer(testSetup.certificate(), SMITTSKYDD);
-        addAnswer(testSetup.certificate(), DIAGNOS);
-        addAnswer(testSetup.certificate(), SICK_LEAVE);
-        sign(testSetup.certificate());
-        updateDraft(updateDraftRequests);
-
-        waitForMessages(1, 3, 10, 2);
-
-        final var statusUpdates = getNotifications();
-
-        assertEquals(2, statusUpdates.size());
-        assertEquals(1L, getNumberOfEvents(HandelsekodEnum.SKAPAT, statusUpdates));
-        assertEquals(1L, getNumberOfEvents(HandelsekodEnum.SIGNAT, statusUpdates));
-        assertEquals(0L, getNumberOfEvents(HandelsekodEnum.ANDRAT, statusUpdates));
+    private void waitForMessages(int pollDelay, int pollInterval, int atMost, int expectedNumberOfMessages) {
+        with()
+            .pollDelay(Duration.ofSeconds(pollDelay)).and().pollInterval(Duration.ofSeconds(pollInterval))
+            .await().atMost(Duration.ofSeconds(atMost)).until(messagesArrived(expectedNumberOfMessages));
     }
 
-    @Test
-    @Order(2)
-    @DisplayName("Status updates should have expected basic certificate properties")
-    public void statusUpdatesShouldHaveExpectedBasicCertificateProperties() {
-
-        final var testSetup = createEmptyDraft(Af00213EntryPoint.MODULE_ID, true);
-
-        waitForMessages(1, 3, 10, 1);
-
-        final var statusUpdates = getNotifications();
-        final var metadata = testSetup.certificate().getMetadata();
-        final var certtificate = statusUpdates.get(0).getIntyg();
-
-        assertEquals(1, statusUpdates.size());
-        assertEquals(testSetup.certificateId(), certtificate.getIntygsId().getExtension());
-        assertEquals(metadata.getIssuedBy().getPersonId(), certtificate.getSkapadAv().getPersonalId().getExtension());
-        assertEquals(metadata.getPatient().getPersonId().getId(), certtificate.getPatient().getPersonId().getExtension());
-    }
-
-    @Test
-    @Order(3)
-    @DisplayName("Should send expected number of status updates when multiple certificates and events")
-    public void shouldSendExpectedNumberOfStatusUpdatesWhenMultipleCertificatesAndEvents() {
-
-        final var testSetup1 = createEmptyDraft(LisjpEntryPoint.MODULE_ID, true);
-        addAnswer(testSetup1.certificate(), SMITTSKYDD);
-        addAnswer(testSetup1.certificate(), DIAGNOS);
-
-        final var testSetup2 = createEmptyDraft(LisjpEntryPoint.MODULE_ID, false);
-        addAnswer(testSetup1.certificate(), SICK_LEAVE);
-        addAnswer(testSetup2.certificate(), DIAGNOS);
-
-        final var testSetup3 = createEmptyDraft(LisjpEntryPoint.MODULE_ID, false);
-        sign(testSetup1.certificate());
-        addAnswer(testSetup3.certificate(), SICK_LEAVE);
-        addAnswer(testSetup3.certificate(), DIAGNOS);
-        addAnswer(testSetup2.certificate(), SICK_LEAVE);
-        addAnswer(testSetup3.certificate(), SMITTSKYDD);
-        sign(testSetup3.certificate());
-        addAnswer(testSetup2.certificate(), SMITTSKYDD);
-        sign(testSetup2.certificate());
-
-        updateDraft(updateDraftRequests);
-
-        waitForMessages(2, 4, 15, 6);
-
-        final var statusUpdates = getNotifications();
-
-        assertEquals(6, statusUpdates.size());
-        assertEquals(3L, getNumberOfEvents(HandelsekodEnum.SKAPAT, statusUpdates));
-        assertEquals(3L, getNumberOfEvents(HandelsekodEnum.SIGNAT, statusUpdates));
-        assertEquals(0L, getNumberOfEvents(HandelsekodEnum.ANDRAT, statusUpdates));
-    }
-
-    @Test
-    @Order(4)
-    @DisplayName("Successfully sent status updates should have delivery status SUCCESS")
-    public void successfullySentStatusUpdatesShouldHaveDeliveryStatusSuccess() {
-        clearNotifications();
-
-        final var testSetup = createEmptyDraft(Af00213EntryPoint.MODULE_ID, true);
-
-        waitForMessages(1, 3, 10, 1);
-
-        final var statusUpdates = getNotifications();
-
-        assertEquals(1, statusUpdates.size());
-        assertEquals(NotificationDeliveryStatusEnum.SUCCESS, getNotificationDeliveryStatus(testSetup.certificateId()));
-    }
-
-    @Test
-    @Order(5)
-    @DisplayName("Status updates with result Application Error should have delivery status FAILURE")
-    public void statusUpdatesWithResultApplicationErrorShouldHaveDeliveryStatusFailure() {
-        setNotificationStubError(6);
-
-        final var testSetup = createEmptyDraft(Af00213EntryPoint.MODULE_ID, true);
-
-        waitForMessages(1, 3, 10, 1);
-
-        final var statusUpdates = getNotifications();
-
-        assertEquals(1, statusUpdates.size());
-        assertEquals(NotificationDeliveryStatusEnum.FAILURE, getNotificationDeliveryStatus(testSetup.certificateId()));
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("Status updates with result Technical Error should have delivery status RESEND")
-    public void statusUpdatesWithResultTechnicalErrorShouldHaveDeliveryStatusResend() {
-        setNotificationStubError(4);
-
-        final var testSetup = createEmptyDraft(Af00213EntryPoint.MODULE_ID, true);
-
-        waitForMessages(1, 3, 10, 1);
-
-        final var statusUpdates = getNotifications();
-
-        assertEquals(1, statusUpdates.size());
-        assertEquals(NotificationDeliveryStatusEnum.RESEND, getNotificationDeliveryStatus(testSetup.certificateId()));
+    private Callable<Boolean> messagesArrived(int expectedNumberOfMessages) {
+        return () -> given()
+            .when().get("/services/api/notification-api/notifieringar/v3")
+            .then().statusCode(HTTP_OK)
+            .extract().response().getBody().as(LIST_NOTIFICATIONS).size() >= expectedNumberOfMessages;
     }
 
     private long getNumberOfEvents(HandelsekodEnum eventType, List<CertificateStatusUpdateForCareType> statusUpdates) {
         return statusUpdates.stream().filter(statusUpdate -> statusUpdate.getHandelse().getHandelsekod().getCode()
             .equals(eventType.name())).count();
-    }
-
-    private void updateDraft(List<NotificationRequestDTO> updateDraftRequest) {
-        given()
-            .contentType(ContentType.JSON).body(updateDraftRequest)
-            .when().post("/testability/notification/updateandnotify")
-            .then().statusCode(HTTP_OK);
     }
 
     private List<CertificateStatusUpdateForCareType> getNotifications() {
@@ -262,16 +601,10 @@ public class NotificationServicesIT {
                 .extract().response().getBody().as(LIST_NOTIFICATIONS);
     }
 
-    private void setNotificationStubError(int errorCode) {
+    private void setNotificationStubResponse(int errorCode) {
         given().pathParam("errorCode", errorCode)
             .when().get("/services/api/notification-api/notifieringar/v3/emulateError/{errorCode}")
             .then().statusCode(HTTP_OK);
-    }
-
-    private void waitForMessages(int pollDelay, int pollInterval, int atMost, int numberOfMessages) {
-        with()
-            .pollDelay(Duration.ofSeconds(pollDelay)).and().pollInterval(Duration.ofSeconds(pollInterval))
-            .await().atMost(Duration.ofSeconds(atMost)).until(messagesArrived(numberOfMessages));
     }
 
     private NotificationDeliveryStatusEnum getNotificationDeliveryStatus(String certificateId) {
@@ -282,145 +615,9 @@ public class NotificationServicesIT {
             .extract().response().getBody().as(NotificationDeliveryStatusEnum.class);
     }
 
-    private Callable<Boolean> messagesArrived(int numberOfMessages) {
-        return () -> given()
-            .when().get("/services/api/notification-api/notifieringar/v3/stats")
-            .then().statusCode(HTTP_OK)
-            .extract().response().getBody().asString().split("\n").length >= numberOfMessages + 2;
-    }
-
-    private void clearNotifications() {
+    private void clearNotificationStub() {
         given()
             .when().post("/services/api/notification-api/clear")
             .then().statusCode(204);
-    }
-
-    private void deleteEvents(List<String> certificateIds) {
-        given()
-            .contentType(ContentType.JSON).body(certificateIds)
-            .when().post("/testability/notification/clearevents")
-            .then().statusCode(HTTP_OK);
-    }
-
-    private TestSetup createEmptyDraft(String certificateType, boolean login) {
-        final var testSetup = TestSetup.create()
-            .draft(
-                certificateType,
-                "1.0",
-                CreateCertificateFillType.EMPTY,
-                JOURNA_LA_SYSTEM.getHsaId(),
-                JOURNA_LA_SYSTEM.getEnhetId(),
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .login(login ? JOURNA_LA_SYSTEM : null)
-            .setup();
-
-        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-        return testSetup;
-    }
-
-    private CreateCertificateRequestDTO createCertificateRequestDTO(Certificate certificate) {
-        final var certificateRequest = new CreateCertificateRequestDTO();
-        certificateRequest.setCertificateType(certificate.getMetadata().getType());
-        certificateRequest.setCertificateTypeVersion(certificate.getMetadata().getTypeVersion());
-        certificateRequest.setPatientId(ATHENA_ANDERSSON.getPersonId().getId());
-        certificateRequest.setPersonId(JOURNA_LA_SYSTEM.getHsaId());
-        certificateRequest.setUnitId(JOURNA_LA_SYSTEM.getEnhetId());
-        certificateRequest.setStatus(CertificateStatus.UNSIGNED);
-        certificateRequest.setFillType(WITH_VALUES);
-        certificateRequest.setValues(new HashMap<>());
-        certificateRequest.setSent(false);
-        return certificateRequest;
-    }
-
-    private void addAnswer(Certificate certificate, AnswersEnum answerEnum) {
-        final var createCertificateRequest = createCertificateRequestDTO(certificate);
-        createCertificateRequest.setValues(getPreviousAnswers(certificate.getMetadata().getId()));
-        createCertificateRequest.getValues().putAll(getAnswer(answerEnum));
-
-        createUpdateDraftRequest(certificate, createCertificateRequest);
-    }
-
-    private void sign(Certificate certificate) {
-        final var createCertificateRequest = createCertificateRequestDTO(certificate);
-        createCertificateRequest.setStatus(CertificateStatus.SIGNED);
-        createCertificateRequest.setValues(getPreviousAnswers(certificate.getMetadata().getId()));
-        createUpdateDraftRequest(certificate, createCertificateRequest);
-    }
-
-    private void createUpdateDraftRequest(Certificate certificate, CreateCertificateRequestDTO createCertificateRequest) {
-        final var updateDraftrequest = new NotificationRequestDTO();
-        updateDraftrequest.setCertificate(certificate);
-        updateDraftrequest.setCertificateRequestDTO(createCertificateRequest);
-        updateDraftRequests.add(updateDraftrequest);
-    }
-
-
-    private Map<String, CertificateDataValue> getPreviousAnswers(String certificateId) {
-        final var previousAnswers = new HashMap<String, CertificateDataValue>();
-
-        final var relatedUpdateRequests = updateDraftRequests.stream().filter(req -> req.getCertificate()
-            .getMetadata().getId().equals(certificateId)).collect(Collectors.toList());
-        if (relatedUpdateRequests.isEmpty()) {
-            return previousAnswers;
-        }
-        previousAnswers.putAll(relatedUpdateRequests.get(relatedUpdateRequests.size() - 1).getCertificateRequestDTO().getValues());
-        return previousAnswers;
-    }
-
-    private Map<String, CertificateDataValue> getAnswer(AnswersEnum answerEnum) {
-        switch (answerEnum) {
-            case SMITTSKYDD:
-                return getAnswerSmittskydd();
-            case DIAGNOS:
-                return getAnswerDiagnos();
-            default:
-                return getAnswerSickLeave();
-        }
-    }
-
-    private Map<String, CertificateDataValue> getAnswerSmittskydd() {
-        final var valueMap = new HashMap<String, CertificateDataValue>();
-        final var certificateDataValue = CertificateDataValueBoolean.builder()
-            .id(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27)
-            .selected(true)
-            .build();
-        valueMap.put(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27, certificateDataValue);
-        return valueMap;
-    }
-
-    private Map<String, CertificateDataValue> getAnswerDiagnos() {
-        final var valueMap = new HashMap<String, CertificateDataValue>();
-        final var certificateDataValue =  CertificateDataValueDiagnosisList.builder()
-            .list(
-                Collections.singletonList(
-                    CertificateDataValueDiagnosis.builder()
-                        .id("1")
-                        .terminology("ICD_10_SE")
-                        .code("J09")
-                        .description("Influensa orsakad av identifierat zoonotiskt eller pandemiskt influensavirus")
-                        .build()
-                )
-            )
-            .build();
-        valueMap.put(RespConstants.DIAGNOS_SVAR_ID_6, certificateDataValue);
-        return valueMap;
-    }
-
-    private Map<String, CertificateDataValue> getAnswerSickLeave() {
-        final var valueMap = new HashMap<String, CertificateDataValue>();
-        final var certificateDataValue =  CertificateDataValueDateRangeList.builder()
-            .list(
-                Collections.singletonList(
-                    CertificateDataValueDateRange.builder()
-                        .id("HELT_NEDSATT")
-                        .from(LocalDate.now())
-                        .to(LocalDate.now().plusDays(21))
-                        .build()
-                )
-            )
-            .build();
-        valueMap.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, certificateDataValue);
-        return valueMap;
     }
 }

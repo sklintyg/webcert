@@ -19,27 +19,26 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.dto;
 
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 
-public class NotificationRequestDTO {
+public class NotificationRequest {
 
-    private Certificate certificate;
-    private CreateCertificateRequestDTO certificateRequestDTO;
+    private HandelsekodEnum eventCode;
+    private String certificateId;
 
-    public CreateCertificateRequestDTO getCertificateRequestDTO() {
-        return certificateRequestDTO;
+    public HandelsekodEnum getEventCode() {
+        return eventCode;
     }
 
-    public void setCertificateRequestDTO(CreateCertificateRequestDTO certificateRequestDTO) {
-        this.certificateRequestDTO = certificateRequestDTO;
+    public void setEventCode(HandelsekodEnum eventCode) {
+        this.eventCode = eventCode;
     }
 
-    public Certificate getCertificate() {
-        return certificate;
+    public String getCertificateId() {
+        return certificateId;
     }
 
-    public void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
     }
 }

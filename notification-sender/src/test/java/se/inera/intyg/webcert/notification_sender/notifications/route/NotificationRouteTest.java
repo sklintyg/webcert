@@ -123,8 +123,7 @@ public class NotificationRouteTest {
     private static final SchemaVersion SCHEMA_VERSION = SchemaVersion.VERSION_3;
     private static final String CERTIFICATE_ID_1 = UUID.randomUUID().toString();
     private static final String CERTIFICATE_ID_2 = UUID.randomUUID().toString();
-    private static final String CERTIFICATE_ID_3 = UUID.randomUUID().toString();
-    private static final String VERSION_1_0 = "1.0";
+    private static final String VERSION_1_2 = "1.2";
     private static final String LOGICAL_ADDRESS = "SE12345678-1234";
     private static final String ROUTE_START_ENDPOINT = "direct:receiveNotificationForAggregationRequestEndpoint";
     private static final Long ENDPOINT_REASSERT_PERIOD = 100L;
@@ -330,39 +329,14 @@ public class NotificationRouteTest {
     }
 
     @Test
-    public void testShouldHandleMultipleCertificatesSimultaneously()
-        throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(9, 1, 6, 6, 6, 0, 0);
-        setEndointReassertPeriod();
-
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(8, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
-
-        addMessageToSend(3, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(7, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(9, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(11, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, SIGNAT);
-
-        addMessageToSend(5, CERTIFICATE_ID_3, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(6, CERTIFICATE_ID_3, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(10, CERTIFICATE_ID_3, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(12, CERTIFICATE_ID_3, LisjpEntryPoint.MODULE_ID, SIGNAT);
-
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
-
-    @Test
     public void testSignEventCancelsAggregatedChangedEvents() throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
         setEndointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
         addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(5, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(6, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
+        addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+        addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
 
         sendMessagesToNotificationRoute(messagesToSend);
         verifyMessageCount();
@@ -398,7 +372,7 @@ public class NotificationRouteTest {
     private Map<String, Object> getMessageHeaders(String certificateType, HandelsekodEnum eventCode) {
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, certificateType);
-        headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION,  VERSION_1_0);
+        headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION,  VERSION_1_2);
         headers.put(NotificationRouteHeaders.HANDELSE, eventCode.name());
         headers.put(NotificationRouteHeaders.CORRELATION_ID, UUID.randomUUID().toString());
         return headers;
@@ -461,7 +435,7 @@ public class NotificationRouteTest {
 
     private CertificateStatusUpdateForCareType createStatusUpdate() {
         final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setIntyg(NotificationTestHelper.createIntyg(LisjpEntryPoint.MODULE_ID, VERSION_1_0, CERTIFICATE_ID_1));
+        statusUpdate.setIntyg(NotificationTestHelper.createIntyg(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CERTIFICATE_ID_1));
         statusUpdate.setHandelse(createEvent());
         statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
         statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));

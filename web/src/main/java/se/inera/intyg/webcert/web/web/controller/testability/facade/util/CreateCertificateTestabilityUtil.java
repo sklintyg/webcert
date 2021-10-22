@@ -184,7 +184,7 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    public void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+    private void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
             return;
         }
@@ -333,7 +333,7 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    public String getJsonFromCertificate(Certificate certificate, String currentModel) {
+    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
                 certificate.getMetadata().getType(),
