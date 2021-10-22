@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -37,13 +38,16 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
     private final CopyUtkastServiceHelper copyUtkastServiceHelper;
     private final CopyUtkastService copyUtkastService;
     private final UtkastService utkastService;
+    private final IntygTextsService intygTextsService;
 
     @Autowired
     public RenewCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, UtkastService utkastService) {
+        CopyUtkastService copyUtkastService, UtkastService utkastService,
+        IntygTextsService intygTextsService) {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
         this.utkastService = utkastService;
+        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -62,5 +66,38 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
 
         LOG.debug("Return renewal draft '{}' ", renewalCopy.getNewDraftIntygId());
         return renewalCopy.getNewDraftIntygId();
+    }
+
+    @Override
+    public String renewCertificateFromTemplate(String certificateId) {
+        LOG.debug("Get certificate '{}' that will be used as template", certificateId);
+        final var certificate = utkastService.getDraft(certificateId, false);
+        final var certificateType = certificate.getIntygsTyp();
+        final var newCertificateType = getNewCertificateType(certificateType);
+        final var copyRequest = new CopyIntygRequest();
+        copyRequest.setPatientPersonnummer(certificate.getPatientPersonnummer());
+
+        LOG.debug("Preparing to create a renewal from template for '{}' with new type '{}' from old type '{}'", certificateId,
+            newCertificateType, certificateType);
+        final var request = copyUtkastServiceHelper
+            .createUtkastFromDifferentIntygTypeRequest(certificateId, newCertificateType, certificateType, copyRequest);
+
+        request.setTypVersion(intygTextsService.getLatestVersion(newCertificateType));
+
+        LOG.debug("Create renewal from template for '{}' with new type '{}' from old type '{}'", certificateId, newCertificateType,
+            certificateType);
+        final var renewalCopy = copyUtkastService.createUtkastFromSignedTemplate(request);
+
+        LOG.debug("Return renewal from template draft '{}' ", renewalCopy.getNewDraftIntygId());
+        return renewalCopy.getNewDraftIntygId();
+    }
+
+    private String getNewCertificateType(String templateType) {
+        switch (templateType) {
+            case "lisjp":
+                return "ag7804";
+            default:
+                return "";
+        }
     }
 }
