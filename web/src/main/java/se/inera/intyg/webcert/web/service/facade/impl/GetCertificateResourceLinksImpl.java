@@ -25,6 +25,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -196,9 +197,17 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
             certificate.getMetadata().getType(),
             certificate.getMetadata().getTypeVersion(),
             unit,
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
+            getPatientId(certificate.getMetadata().getPatient()),
             certificate.getMetadata().isTestCertificate()
         );
+    }
+
+    private Personnummer getPatientId(Patient patient) {
+        String patientId = patient.getPersonId().getId();
+        if (patient.getPreviousPersonId() != null && !patient.isPersonIdUpdated()) {
+            patientId = patient.getPreviousPersonId().getId();
+        }
+        return Personnummer.createPersonnummer(patientId).orElseThrow();
     }
 
     private Vardenhet createUnit(Certificate certificate) {

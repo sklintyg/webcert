@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -55,12 +53,15 @@ public class CertificateConverterImpl implements CertificateConverter {
 
     private final IntygTextsService intygTextsService;
 
+    private final PatientConverter patientConverter;
+
     @Autowired
     public CertificateConverterImpl(IntygModuleRegistry moduleRegistry, CertificateRelationService certificateRelationService,
-        IntygTextsService intygTextsService) {
+        IntygTextsService intygTextsService, PatientConverter patientConverter) {
         this.moduleRegistry = moduleRegistry;
         this.certificateRelationService = certificateRelationService;
         this.intygTextsService = intygTextsService;
+        this.patientConverter = patientConverter;
     }
 
     @Override
@@ -217,25 +218,7 @@ public class CertificateConverterImpl implements CertificateConverter {
     }
 
     private Patient getPatient(Utkast certificate) {
-        return Patient.builder()
-            .personId(
-                PersonId.builder()
-                    .id(certificate.getPatientPersonnummer().getPersonnummer())
-                    .type("PERSON_NUMMER")
-                    .build()
-            )
-            .firstName(certificate.getPatientFornamn())
-            .middleName(certificate.getPatientMellannamn())
-            .lastName(certificate.getPatientEfternamn())
-            .fullName(getFullName(certificate))
-            .build();
-    }
-
-    private String getFullName(Utkast certificate) {
-        if (Objects.nonNull(certificate.getPatientMellannamn()) && certificate.getPatientMellannamn().trim().length() > 0) {
-            return certificate.getPatientFornamn() + ' ' + certificate.getPatientMellannamn() + ' ' + certificate.getPatientEfternamn();
-        }
-        return certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn();
+        return patientConverter.convert(certificate);
     }
 
     private boolean isRevoked(Utkast certificate) {
