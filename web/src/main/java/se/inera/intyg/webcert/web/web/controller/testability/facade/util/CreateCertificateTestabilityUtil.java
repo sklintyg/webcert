@@ -160,7 +160,7 @@ public class CreateCertificateTestabilityUtil {
         utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
     }
 
-    public void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
+    private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
         Utkast utkast) {
         if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
             final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getModel());
@@ -355,7 +355,7 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    public HoSPersonal getHoSPerson(String personId, String unitId) {
+    private HoSPersonal getHoSPerson(String personId, String unitId) {
         final var user = getUser(personId);
         user.changeValdVardenhet(unitId);
         final var unit = HoSPersonHelper.createVardenhetFromIntygUser(unitId, user);
