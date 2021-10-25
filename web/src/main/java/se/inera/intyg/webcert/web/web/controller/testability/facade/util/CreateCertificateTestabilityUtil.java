@@ -191,7 +191,6 @@ public class CreateCertificateTestabilityUtil {
 
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.WITH_VALUES) {
             updateCertificate(certificate, createCertificateRequest.getValues());
-            return;
         }
 
         final var valueMap = createValues(createCertificateRequest);

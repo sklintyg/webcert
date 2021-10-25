@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.integrationtest.notification;
+package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.with;
@@ -35,7 +35,15 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_REGIONEN;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_REGIONEN_NAME;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL_NAME;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.VARDADMIN_ALVA;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.VARDADMIN_ALVA_ALFA_VARDCENTRAL;
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
@@ -47,7 +55,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -68,15 +75,12 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.TestSetup;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -84,23 +88,8 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @TestInstance(Lifecycle.PER_CLASS)
 public class NotificationServicesIT {
 
-    private static final String ALFA_REGION_ID = "TSTNMT2321000156-ALFA";
-    private static final String ALFA_REGION_NAME = "Alfa Regionen";
-    private static final String ALFA_VARDCENTRAL_ID = "TSTNMT2321000156-ALVC";
-    private static final String ALFA_VARDCENTRAL_NAME = "Alfa Vårdcentral";
-    private static final String DR_AJLA_ID = "TSTNMT2321000156-DRAA";
-    private static final String VARDADMIN_ALVA_ID = "TSTNMT2321000156-VAAA";
-    private static final String PATIENT_ATHENA_ID = ATHENA_ANDERSSON.getPersonId().getId();
-    private static final List<String> LAKARE = Collections.singletonList("Läkare");
-    private static final List<String> VARDADMIN = Collections.singletonList("Vårdadministratör");
-
-    private static final FakeCredentials DR_AJLA = new FakeCredentials.FakeCredentialsBuilder(DR_AJLA_ID,
-        ALFA_VARDCENTRAL_ID).legitimeradeYrkesgrupper(LAKARE).origin(UserOriginType.DJUPINTEGRATION.name()).build();
-
-    private static final FakeCredentials VARDADMIN_ALVA = new FakeCredentials.FakeCredentialsBuilder(VARDADMIN_ALVA_ID,
-        ALFA_VARDCENTRAL_ID).legitimeradeYrkesgrupper(VARDADMIN).origin(UserOriginType.DJUPINTEGRATION.name()).build();
-
     private static final String VERSION_1_2 = "1.2";
+    private static final String PATIENT_ATHENA = ATHENA_ANDERSSON.getPersonId().getId();
     private static final Integer POLL_DELAY = 1;
     private static final Integer POLL_INTERVAL = 3;
     private static final Integer WAIT_AT_MOST = 16;
@@ -116,7 +105,7 @@ public class NotificationServicesIT {
 
     @BeforeAll
     public void initiate() {
-        getSession();
+        configureRestAssured();
         setIntegratedUnit();
         resetNotificationStub();
         setNotificationStubResponseOk();
@@ -129,7 +118,7 @@ public class NotificationServicesIT {
 
     @BeforeEach
     public void setupBase() {
-        getSession();
+        configureRestAssured();
         certificateIdsToCleanAfterTest = new ArrayList<>();
     }
 
@@ -143,7 +132,7 @@ public class NotificationServicesIT {
 
     @AfterAll
     public void cleanup() {
-        getSession();
+        configureRestAssured();
         resetIntegratedUnit();
         RestAssured.reset();
     }
@@ -151,8 +140,8 @@ public class NotificationServicesIT {
     @Test
     @DisplayName("Status update for create draft should have event type SKAPAT")
     public void statusUpdateForCreateDraftShouldHaveEventTypeSkapat() {
-        final var createDraftCertificateData = new CreateDraftCertificateData(LisjpEntryPoint.MODULE_ID.toUpperCase(), PATIENT_ATHENA_ID,
-            DR_AJLA_ID, ALFA_VARDCENTRAL_ID);
+        final var createDraftCertificateData = new CreateDraftCertificateData(LisjpEntryPoint.MODULE_ID.toUpperCase(), PATIENT_ATHENA,
+            DR_AJLA, ALFA_VARDCENTRAL);
 
         final var certificateId = given()
             .contentType(ContentType.XML).body(requestTemplateCreateDraft.add("data", createDraftCertificateData).render())
@@ -175,9 +164,10 @@ public class NotificationServicesIT {
     @DisplayName("Status update for sign draft should have event type SIGNAT")
     public void statusUpdateForSignDraftShouldHaveEventTypeSignat() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, DR_AJLA_ID, ALFA_VARDCENTRAL_ID,
-                PATIENT_ATHENA_ID)
-            .login(DR_AJLA)
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -187,13 +177,13 @@ public class NotificationServicesIT {
             .when().post("/api/certificate/{certificateId}/sign")
             .then().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(SIGNAT, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -201,9 +191,11 @@ public class NotificationServicesIT {
     @DisplayName("Status update for draft ready to sign should have event type KFSIGN")
     public void statusUpdateForDraftReadyToSignShouldHaveEventTypeKfsign() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, VARDADMIN_ALVA_ID, ALFA_VARDCENTRAL_ID,
-                PATIENT_ATHENA_ID)
-            .login(VARDADMIN_ALVA)
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, VARDADMIN_ALVA, ALFA_VARDCENTRAL,
+                PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(VARDADMIN_ALVA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -214,13 +206,13 @@ public class NotificationServicesIT {
             .when().put("/api/intyg/{certificateType}/{certificateId}/{certificateVersion}/redoattsignera")
             .then().assertThat().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(KFSIGN, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(VARDADMIN_ALVA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(VARDADMIN_ALVA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -228,9 +220,10 @@ public class NotificationServicesIT {
     @DisplayName("Status update for delete draft should have event type RADERA")
     public void statusUpdateForDeleteDraftShouldHaveEventTypeRadera() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.EMPTY, DR_AJLA_ID, ALFA_VARDCENTRAL_ID,
-                PATIENT_ATHENA_ID)
-            .login(DR_AJLA)
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.EMPTY, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -240,13 +233,13 @@ public class NotificationServicesIT {
             .when().delete("/api/certificate/{certificateId}/{certificateVersion}")
             .then().assertThat().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(RADERA, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -254,8 +247,10 @@ public class NotificationServicesIT {
     @DisplayName("Status update for revoke certificate should have event type MAKULE")
     public void statusUpdateForRevokeCertificateShouldHaveEventTypeMakule() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
-            .login(DR_AJLA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -269,13 +264,13 @@ public class NotificationServicesIT {
             .when().post("/api/certificate/{certificateId}/revoke")
             .then().assertThat().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(MAKULE, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -283,8 +278,10 @@ public class NotificationServicesIT {
     @DisplayName("Status update for send certificate should have event type SKICKA")
     public void statusUpdateForSendCertificateShouldHaveEventTypeSkicka() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
-            .login(DR_AJLA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -293,13 +290,13 @@ public class NotificationServicesIT {
             .when().post("/api/certificate/{certificateId}/send")
             .then().assertThat().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(SKICKA, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -307,21 +304,23 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new question from care should have event type NYFRFV")
     public void statusUpdateForNewQuestionFromCareShouldHaveEventTypeNyfrfv() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionDraft()
-            .login(DR_AJLA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
         sendQuestionFromCare(testSetup);
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(NYFRFV, testSetup.certificateId());
 
         assertAll(
             () -> assertEquals(1, expectedStatusUpdates.size()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension()),
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getSkickadeFragor().getTotalt()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getSkickadeFragor().getEjBesvarade())
         );
@@ -331,22 +330,25 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new answer from recipient should have event type NYSVFM")
     public void statusUpdateForNewAnswerFromRecipientShouldHaveEventTypeNysvfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .question()
-            .login(DR_AJLA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var messageToCareData = new SendMessageToCareData(UUID.randomUUID().toString(), testSetup.certificateId(), PATIENT_ATHENA_ID,
-            ALFA_VARDCENTRAL_ID, ArendeAmne.KONTKT.name(), testSetup.questionId(), null);
+        final var messageToCareData = new SendMessageToCareData(UUID.randomUUID().toString(), testSetup.certificateId(),
+            PATIENT_ATHENA,
+            ALFA_VARDCENTRAL, ArendeAmne.KONTKT.name(), testSetup.questionId(), null);
 
         given()
             .contentType(ContentType.XML).body(requestTemplateAnswer.add("data", messageToCareData).render())
             .when().post("/services/send-message-to-care/v2.0")
             .then().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(NYSVFM, testSetup.certificateId());
 
@@ -362,10 +364,12 @@ public class NotificationServicesIT {
     @DisplayName("Status update for handled question from care should have event type HANFRFV")
     public void statusUpdateForHandledQuestionFromCareShouldHaveEventTypeHanfrfv() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionDraft()
-            .login(DR_AJLA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -379,7 +383,7 @@ public class NotificationServicesIT {
             .when().post("/api/question/{questionId}/handle")
             .then().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2 + 1);
+        waitForMessages(2);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(HANFRFV, testSetup.certificateId());
 
@@ -387,7 +391,7 @@ public class NotificationServicesIT {
             () -> assertEquals(1, expectedStatusUpdates.size()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getSkickadeFragor().getTotalt()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getSkickadeFragor().getHanterade()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
@@ -395,21 +399,23 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new question from recipient should have event type NYFRFM")
     public void statusUpdateForNewQuestionFromRecipientShouldHaveEventTypeNyfrfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
-            .login(DR_AJLA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
         final var lastDateForResponse = LocalDateTime.now().plusDays(1).toLocalDate().toString();
-        final var messageToCareData = new SendMessageToCareData(UUID.randomUUID().toString(), testSetup.certificateId(), PATIENT_ATHENA_ID,
-            ALFA_VARDCENTRAL_ID, ArendeAmne.KONTKT.name(), null, lastDateForResponse);
+        final var messageToCareData = new SendMessageToCareData(UUID.randomUUID().toString(), testSetup.certificateId(), PATIENT_ATHENA,
+            ALFA_VARDCENTRAL, ArendeAmne.KONTKT.name(), null, lastDateForResponse);
 
         given()
             .contentType(ContentType.XML).body(requestTemplateQuestion.add("data", messageToCareData).render())
             .when().post("/services/send-message-to-care/v2.0")
             .then().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(NYFRFM, testSetup.certificateId());
 
@@ -426,10 +432,12 @@ public class NotificationServicesIT {
     @DisplayName("Status update for answered question from recipient should have event type HANFRFM")
     public void statusUpdateForAnsweredQuestionFromRecipientShouldHaveEventTypeHanfrfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL_ID, DR_AJLA_ID, PATIENT_ATHENA_ID)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionWithAnswerDraft()
-            .login(DR_AJLA)
+            .useDjupIntegratedOrigin()
+            .clearNotificationStub()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -442,7 +450,7 @@ public class NotificationServicesIT {
             .when().post("/api/question/{questionId}/sendanswer")
             .then().statusCode(HttpStatus.OK.value());
 
-        waitForMessages(2);
+        waitForMessages(1);
 
         final var expectedStatusUpdates = getStatusUpdatesOfType(HANFRFM, testSetup.certificateId());
 
@@ -450,11 +458,11 @@ public class NotificationServicesIT {
             () -> assertEquals(1, expectedStatusUpdates.size()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getMottagnaFragor().getTotalt()),
             () -> assertEquals(1, expectedStatusUpdates.get(0).getMottagnaFragor().getHanterade()),
-            () -> assertEquals(DR_AJLA_ID, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
+            () -> assertEquals(DR_AJLA, expectedStatusUpdates.get(0).getHanteratAv().getExtension())
         );
     }
 
-    private void getSession() {
+    private void configureRestAssured() {
         final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
         RestAssured.objectMapper(new Jackson2Mapper(((type, charset) -> new CustomObjectMapper())));
@@ -539,7 +547,7 @@ public class NotificationServicesIT {
         replacedIntegratedUnit = given()
             .when().get("/testability/integreradevardenheter")
             .then().statusCode(HttpStatus.OK.value()).extract().body().as(LIST_INTEGRATED_UNIT)
-            .stream().filter(unit -> unit.getEnhetsId().equals(ALFA_VARDCENTRAL_ID)).findFirst().orElse(null);
+            .stream().filter(unit -> unit.getEnhetsId().equals(ALFA_VARDCENTRAL)).findFirst().orElse(null);
 
         if (replacedIntegratedUnit != null) {
             deleteCurrentIntegratedUnit();
@@ -561,17 +569,17 @@ public class NotificationServicesIT {
     }
 
     private void deleteCurrentIntegratedUnit() {
-        given().pathParam("unitId", ALFA_VARDCENTRAL_ID)
+        given().pathParam("unitId", ALFA_VARDCENTRAL)
             .when().delete("/testability/integreradevardenheter/{unitId}")
             .then().statusCode(HttpStatus.OK.value());
     }
 
     private IntegreradEnhetEntryWithSchemaVersion getIntegreradUnitAlfa() {
         final var integratedUnit = new IntegreradEnhetEntryWithSchemaVersion();
-        integratedUnit.setEnhetsId(ALFA_VARDCENTRAL_ID);
+        integratedUnit.setEnhetsId(ALFA_VARDCENTRAL);
         integratedUnit.setEnhetsNamn(ALFA_VARDCENTRAL_NAME);
-        integratedUnit.setVardgivareId(ALFA_REGION_ID);
-        integratedUnit.setVardgivareNamn(ALFA_REGION_NAME);
+        integratedUnit.setVardgivareId(ALFA_REGIONEN);
+        integratedUnit.setVardgivareNamn(ALFA_REGIONEN_NAME);
         integratedUnit.setSchemaVersion("2.0");
         return integratedUnit;
     }
