@@ -71,6 +71,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 public class LisjpIT {
 
     private static final String CURRENT_VERSION = "1.2";
+    private static final String AG7804_CURRENT_VERSION = "1.1";
 
     private List<String> certificateIdsToCleanAfterTest;
 
@@ -197,6 +198,42 @@ public class LisjpIT {
 
             assertAll(
                 () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when creating from template of 1.0")
+        void shallReturnCertificateOfCurrentVersionWhenCreatingFromTemplate10() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.0",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(AG7804_CURRENT_VERSION, response.getMetadata().getTypeVersion())
             );
         }
 
@@ -535,6 +572,42 @@ public class LisjpIT {
                 () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
             );
         }
+
+        @Test
+        @DisplayName("Shall return draft with current version when creating from template of version 1.1")
+        void shallReturnCertificateOfCurrentVersionWhenCreatingFromTemplate11() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(AG7804_CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
     }
 
     @Nested
@@ -856,6 +929,35 @@ public class LisjpIT {
                 .body(newCertificateRequestDTO)
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/copy")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to create certificate from template with current version")
+        void shallBeAbleToCreateCertificateFromTemplateCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
                 .then().extract().path("certificateId").toString();
 
             certificateIdsToCleanAfterTest.add(certificateId);

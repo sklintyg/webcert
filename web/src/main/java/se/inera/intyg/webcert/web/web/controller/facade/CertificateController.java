@@ -41,6 +41,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
@@ -102,6 +103,8 @@ public class CertificateController {
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Autowired
     private ComplementCertificateFacadeService complementCertificateFacadeService;
+    @Autowired
+    private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -232,14 +235,14 @@ public class CertificateController {
     }
 
     @POST
-    @Path("/{certificateId}/renew/template")
+    @Path("/{certificateId}/template")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response renewCertificateFromTemplate(@PathParam("certificateId") @NotNull String certificateId) {
+    public Response createCertificateFromTemplate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Renewing certificate with id: '{}'", certificateId);
         }
-        final var newCertificateId = renewCertificateFacadeService.renewCertificateFromTemplate(certificateId);
+        final var newCertificateId = createCertificateFromTemplateFacadeService.createCertificateFromTemplate(certificateId);
         return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
     }
 

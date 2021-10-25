@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade;
 
-public interface RenewCertificateFacadeService {
+public interface CreateCertificateFromTemplateFacadeService {
 
-    String renewCertificate(String certificateId);
+    String createCertificateFromTemplate(String certificateId);
 }

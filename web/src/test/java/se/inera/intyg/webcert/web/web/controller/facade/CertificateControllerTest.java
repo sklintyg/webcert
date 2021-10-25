@@ -53,6 +53,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
@@ -112,6 +113,8 @@ public class CertificateControllerTest {
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Mock
     private ComplementCertificateFacadeService complementCertificateFacadeService;
+    @Mock
+    private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @InjectMocks
     private CertificateController certificateController;
 
@@ -518,6 +521,31 @@ public class CertificateControllerTest {
 
             final var response = (CopyCertificateResponseDTO) certificateController
                 .copyCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
+                .getEntity();
+
+            assertEquals(expectedId, response.getCertificateId());
+        }
+    }
+
+    @Nested
+    class CreateCertificateFromTemplate {
+
+        private Certificate certificate;
+
+        @BeforeEach
+        void setup() {
+            certificate = createCertificate();
+        }
+
+        @Test
+        void shallReturnIdOfNewCertificate() {
+            final var expectedId = "newCertificateId";
+
+            doReturn(expectedId)
+                .when(createCertificateFromTemplateFacadeService)
+                .createCertificateFromTemplate(anyString());
+
+            final var response = (RenewCertificateResponseDTO) certificateController.createCertificateFromTemplate(CERTIFICATE_ID)
                 .getEntity();
 
             assertEquals(expectedId, response.getCertificateId());
