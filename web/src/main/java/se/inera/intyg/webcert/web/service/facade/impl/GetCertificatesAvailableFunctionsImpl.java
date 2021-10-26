@@ -38,6 +38,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -115,10 +116,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "</p></div>";
 
     private final AuthoritiesHelper authoritiesHelper;
+    private final WebCertUserService webCertUserService;
 
     @Autowired
-    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper) {
+    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService) {
         this.authoritiesHelper = authoritiesHelper;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -275,10 +278,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        if (isRenewCertificateFromTemplateAvailable(certificate)) {
+        if (isCreateCertificateFromTemplateAvailable(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.RENEW_CERTIFICATE_FROM_TEMPLATE,
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
                     CREATE_AG7804_NAME,
                     CREATE_AG7804_DESCRIPTION,
                     CREATE_AG7804_BODY,
@@ -389,6 +392,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
     }
 
+    private boolean isRevoked(Certificate certificate) {
+        return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
+
+    }
+
     private boolean isSendCertificateAvailable(Certificate certificate) {
         if (isSent(certificate)) {
             return false;
@@ -401,12 +409,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
     }
 
-    private boolean isRenewCertificateFromTemplateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate)) {
+    private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
+        if (isReplacementSigned(certificate) || isDjupintegration() || isComplementingCertificate(certificate) || isRevoked(certificate)) {
             return false;
         }
 
         return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+    }
+
+    private boolean isDjupintegration() {
+        final var user = webCertUserService.getUser();
+        return user != null && user.getOrigin().contains("DJUPINTEGRATION");
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {

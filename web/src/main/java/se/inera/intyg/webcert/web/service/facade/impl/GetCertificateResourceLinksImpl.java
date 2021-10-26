@@ -161,7 +161,7 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)
         );
 
-        functions.put(ResourceLinkTypeDTO.RENEW_CERTIFICATE_FROM_TEMPLATE,
+        functions.put(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
             (accessEvaluationParameters, certificate) ->
                 certificateAccessServiceHelper.isAllowToCreateDraftFromSignedTemplate(accessEvaluationParameters)
         );
