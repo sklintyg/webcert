@@ -224,6 +224,25 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .evaluate();
     }
 
+    @Override
+    public AccessResult allowToCreateDraftFromPrefill(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), getCertificateTypeToCreate(accessEvaluationParameters.getCertificateType()))
+            .feature(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
+            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(false)
+            .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(false)
+            .checkRenew(false)
+            .checkPatientSecrecy()
+            .checkUnique()
+            .evaluate();
+    }
+
     /**
      * Currently not possible to do this mapping without hardcoding.
      *

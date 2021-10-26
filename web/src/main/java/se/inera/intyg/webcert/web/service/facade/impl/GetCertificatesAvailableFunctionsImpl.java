@@ -28,6 +28,7 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -35,10 +36,20 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -117,11 +128,19 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
+    private final IntygModuleRegistry moduleRegistry;
+    private final UtkastCandidateServiceImpl utkastCandidateService;
+    private final PatientDetailsResolver patientDetailsResolver;
 
     @Autowired
-    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService) {
+    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
+        IntygModuleRegistry moduleRegistry, UtkastCandidateServiceImpl utkastCandidateService,
+        PatientDetailsResolver patientDetailsResolver) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
+        this.moduleRegistry = moduleRegistry;
+        this.utkastCandidateService = utkastCandidateService;
+        this.patientDetailsResolver = patientDetailsResolver;
     }
 
     @Override
@@ -218,7 +237,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
+        if (isLisjp(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     FMB,
@@ -282,6 +301,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
+                    CREATE_AG7804_NAME,
+                    CREATE_AG7804_DESCRIPTION,
+                    CREATE_AG7804_BODY,
+                    true
+                )
+            );
+        }
+
+        if (isCreateCertificateFromCandidateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
                     CREATE_AG7804_NAME,
                     CREATE_AG7804_DESCRIPTION,
                     CREATE_AG7804_BODY,
@@ -406,7 +437,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return false;
         }
 
-        return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+        return isLisjp(certificate);
     }
 
     private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
@@ -414,6 +445,43 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return false;
         }
 
+        return isLisjp(certificate);
+    }
+
+    private boolean isCreateCertificateFromCandidateAvailable(Certificate certificate) {
+        if (certificate.getMetadata().getVersion() == 0 && certificate.getMetadata().getRelations() == null && isLisjp(certificate)) {
+            return isCandidateCertificateAvailable(certificate);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isCandidateCertificateAvailable(Certificate certificate) {
+        try {
+            final ModuleApi moduleApi = moduleRegistry
+                .getModuleApi(certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
+
+            Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
+                .getCandidateMetaData(moduleApi, certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(),
+                    getPatientDataFromPU(certificate.getMetadata().getType(), certificate), false);
+            return metaData.isPresent();
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        }
+    }
+
+    private Patient getPatientDataFromPU(String certificateType, Certificate certificate) {
+        final var pnr = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId());
+        Patient resolvedPatientData = patientDetailsResolver
+            .resolvePatient(pnr.get(), certificateType, certificate.getMetadata().getTypeVersion());
+        if (resolvedPatientData == null) {
+            throw new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
+        }
+        return resolvedPatientData;
+    }
+
+    private boolean isLisjp(Certificate certificate) {
         return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
     }
 

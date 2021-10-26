@@ -373,6 +373,10 @@ public final class CertificateAccessServiceHelper {
         return certificateAccessService.allowToCreateDraftFromSignedTemplate(accessEvaluationParameters).isAllowed();
     }
 
+    public boolean isAllowToCreateDraftFromPrefill(AccessEvaluationParameters accessEvaluationParameters) {
+        return certificateAccessService.allowToCreateDraftFromPrefill(accessEvaluationParameters).isAllowed();
+    }
+
     public void validateAllowCreateDraftFromSignedTemplate(Utlatande utlatande) {
         final AccessResult accessResult = evaluateAccessToCreateDraftFromSignedTemplate(utlatande);
 

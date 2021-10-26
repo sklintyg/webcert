@@ -166,6 +166,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 certificateAccessServiceHelper.isAllowToCreateDraftFromSignedTemplate(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToCreateDraftFromPrefill(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
                 certificateAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)

@@ -41,6 +41,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
@@ -105,6 +106,8 @@ public class CertificateController {
     private ComplementCertificateFacadeService complementCertificateFacadeService;
     @Autowired
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
+    @Autowired
+    private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -240,10 +243,22 @@ public class CertificateController {
     @PrometheusTimeMethod
     public Response createCertificateFromTemplate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Renewing certificate with id: '{}'", certificateId);
+            LOG.debug("Creating draft from template with id: '{}'", certificateId);
         }
         final var newCertificateId = createCertificateFromTemplateFacadeService.createCertificateFromTemplate(certificateId);
-        return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
+        return Response.ok(newCertificateId).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/candidate")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response createCertificateFromCandidate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
+        }
+        final var newCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(certificateId);
+        return Response.ok(newCertificateId).build();
     }
 
     @POST
