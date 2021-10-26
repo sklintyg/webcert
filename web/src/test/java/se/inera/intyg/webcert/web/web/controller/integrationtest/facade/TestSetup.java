@@ -31,6 +31,7 @@ import io.restassured.response.Response;
 import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
@@ -105,6 +106,7 @@ public class TestSetup {
         private FakeCredential credentials;
         private String origin;
         private boolean sjf;
+        private boolean clearNotificationStub;
 
         private String certificateId;
         private String questionId;
@@ -246,6 +248,11 @@ public class TestSetup {
             return this;
         }
 
+        public TestSetupBuilder clearNotificationStub() {
+            this.clearNotificationStub = true;
+            return this;
+        }
+
         public TestSetup setup() {
             if (createCertificate) {
                 certificateId = createCertificate();
@@ -273,6 +280,10 @@ public class TestSetup {
 
             if (certificateId != null) {
                 certificate = getCertificate(certificateId);
+            }
+
+            if (clearNotificationStub) {
+                resetNotificationStub();
             }
 
             if (clearPdlLogMessages) {
@@ -393,6 +404,12 @@ public class TestSetup {
                 .pathParam("origin", newOrigin)
                 .expect().statusCode(200)
                 .when().get("authtestability/user/origin/{origin}");
+        }
+
+        private void resetNotificationStub() {
+            given()
+                .when().post("/services/api/notification-api/clear")
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

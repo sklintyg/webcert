@@ -28,10 +28,13 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 public class IntegrationTest {
 
     public static String DR_AJLA = "TSTNMT2321000156-DRAA";
+    public static final String VARDADMIN_ALVA = "TSTNMT2321000156-VAAA";
     public static String DR_BEATA = "TSTNMT2321000156-DRBE";
 
     public static String ALFA_REGIONEN = "TSTNMT2321000156-ALFA";
+    public static final String ALFA_REGIONEN_NAME = "Alfa Regionen";
     public static String ALFA_VARDCENTRAL = "TSTNMT2321000156-ALVC";
+    public static final String ALFA_VARDCENTRAL_NAME = "Alfa Vårdcentral";
     public static String ALFA_LAKARMOTTAGNING = "TSTNMT2321000156-ALLM";
 
     public static String BETA_REGIONEN = "TSTNMT2321000156-BETA";
@@ -54,10 +57,15 @@ public class IntegrationTest {
             .build();
     }
 
-    private static final List<String> LAKARE = Collections.singletonList("Läkare");
+    protected static final List<String> LAKARE = Collections.singletonList("Läkare");
+    protected static final List<String> VARDADMIN = Collections.singletonList("Vårdadministratör");
+
 
     protected static FakeCredentials DR_AJLA_ALFA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(DR_AJLA,
         ALFA_VARDCENTRAL).legitimeradeYrkesgrupper(LAKARE).build();
+
+    protected static final FakeCredentials VARDADMIN_ALVA_ALFA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(VARDADMIN_ALVA,
+        ALFA_VARDCENTRAL).legitimeradeYrkesgrupper(VARDADMIN).build();
 
     protected static FakeCredentials DR_BEATA_BETA_VARDCENTRAL = new FakeCredentials.FakeCredentialsBuilder(DR_BEATA,
         BETA_VARDCENTRAL).legitimeradeYrkesgrupper(LAKARE).build();

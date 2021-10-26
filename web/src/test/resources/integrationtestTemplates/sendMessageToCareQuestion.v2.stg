@@ -1,0 +1,44 @@
+delimiters "$", "$"
+
+request(data) ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3">
+  <soapenv:Header>
+    <urn:LogicalAddress>?</urn:LogicalAddress>
+  </soapenv:Header>
+  <soapenv:Body>
+    <urn1:SendMessageToCare>
+      <urn1:meddelande-id>$data.messageId$</urn1:meddelande-id>
+      <urn1:referens-id></urn1:referens-id>
+      <urn1:skickatTidpunkt>$data.sentTime$</urn1:skickatTidpunkt>
+      <urn1:intygs-id>
+        <urn2:root></urn2:root>
+        <urn2:extension>$data.certificateId$</urn2:extension>
+      </urn1:intygs-id>
+      <urn1:patientPerson-id>
+        <urn2:root>1.2.752.129.2.1.3.1</urn2:root>
+        <urn2:extension>$data.patientId$</urn2:extension>
+      </urn1:patientPerson-id>
+      <urn1:logiskAdressMottagare>$data.unitId$</urn1:logiskAdressMottagare>
+      <urn1:amne>
+        <urn2:code>$data.subject$</urn2:code>
+        <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>
+      </urn1:amne>
+      <urn1:rubrik>TEST HEADER FOR QUESTION</urn1:rubrik>
+      <urn1:meddelande>TEST MESSAGE FOR QUESTION</urn1:meddelande>
+      <urn1:paminnelseMeddelande-id></urn1:paminnelseMeddelande-id>
+      <urn1:skickatAv>
+        <urn1:part>
+          <urn2:code>FKASSA</urn2:code>
+          <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>
+        </urn1:part>
+      </urn1:skickatAv>
+      <urn1:komplettering>
+        <urn1:frage-id>0</urn1:frage-id>
+        <urn1:instans>0</urn1:instans>
+        <urn1:text></urn1:text>
+      </urn1:komplettering>
+      <urn1:sistaDatumForSvar>$data.lastDateForResponse$</urn1:sistaDatumForSvar>
+    </urn1:SendMessageToCare>
+  </soapenv:Body>
+</soapenv:Envelope>
+>>

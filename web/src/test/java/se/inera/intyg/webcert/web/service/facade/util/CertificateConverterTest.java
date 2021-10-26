@@ -46,6 +46,7 @@ import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -72,11 +73,15 @@ public class CertificateConverterTest {
     @Mock
     private IntygTextsService intygTextsService;
 
+    @Mock
+    private PatientConverter patientConverter;
+
     @InjectMocks
     private CertificateConverterImpl certificateConverter;
 
     private final Utkast draft = createDraft();
     private final Relations relations = new Relations();
+    private final Patient patient = getPatient();
 
     @BeforeEach
     void setupMocks() throws Exception {
@@ -89,6 +94,9 @@ public class CertificateConverterTest {
 
         doReturn(relations)
             .when(certificateRelationService).getRelations(draft.getIntygsId());
+
+        doReturn(patient)
+            .when(patientConverter).convert(draft);
     }
 
     @Nested
@@ -210,76 +218,12 @@ public class CertificateConverterTest {
         }
     }
 
-    @Nested
-    class ValidatePatient {
 
-        @Test
-        void shallIncludePersonId() {
-            final var expectedPersonId = PersonId.builder()
-                .id(draft.getPatientPersonnummer().getPersonnummer())
-                .type("PERSON_NUMMER")
-                .build();
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertAll(
-                () -> assertEquals(expectedPersonId.getId(), actualCertificate.getMetadata().getPatient().getPersonId().getId()),
-                () -> assertEquals(expectedPersonId.getType(), actualCertificate.getMetadata().getPatient().getPersonId().getType())
-            );
-        }
-
-        @Test
-        void shallIncludeFirstName() {
-            final var expectedFirstName = "Fornamnet";
-            draft.setPatientFornamn(expectedFirstName);
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertEquals(expectedFirstName, actualCertificate.getMetadata().getPatient().getFirstName());
-        }
-
-        @Test
-        void shallIncludeMiddleName() {
-            final var expectedMiddleName = "Mellannamnet";
-            draft.setPatientMellannamn(expectedMiddleName);
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertEquals(expectedMiddleName, actualCertificate.getMetadata().getPatient().getMiddleName());
-        }
-
-        @Test
-        void shallIncludeLastName() {
-            final var expectedLastName = "Efternamnet";
-            draft.setPatientEfternamn(expectedLastName);
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertEquals(expectedLastName, actualCertificate.getMetadata().getPatient().getLastName());
-        }
-
-        @Test
-        void shallIncludeFullNameWithoutMiddleName() {
-            final var expectedFullName = "Fornamnet Efternamnet";
-            draft.setPatientFornamn("Fornamnet");
-            draft.setPatientEfternamn("Efternamnet");
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertEquals(expectedFullName, actualCertificate.getMetadata().getPatient().getFullName());
-        }
-
-        @Test
-        void shallIncludeFullNameWithMiddleName() {
-            final var expectedFullName = "Fornamnet Mellannamnet Efternamnet";
-            draft.setPatientFornamn("Fornamnet");
-            draft.setPatientMellannamn("Mellannamnet");
-            draft.setPatientEfternamn("Efternamnet");
-
-            final var actualCertificate = certificateConverter.convert(draft);
-
-            assertEquals(expectedFullName, actualCertificate.getMetadata().getPatient().getFullName());
-        }
+    @Test
+    void shallIncludePatient() {
+        final var expectedPatient = getPatient();
+        final var actualCertificate = certificateConverter.convert(draft);
+        assertEquals(expectedPatient, actualCertificate.getMetadata().getPatient());
     }
 
     @Nested
@@ -812,5 +756,22 @@ public class CertificateConverterTest {
                     .build()
             )
             .build();
+    }
+
+    private Patient getPatient() {
+        return Patient.builder()
+            .personId(getPersonId())
+            .firstName("Fornamnet")
+            .lastName("Efternamnet")
+            .middleName("Mellannamnet")
+            .build();
+    }
+
+    private PersonId getPersonId() {
+        final var expectedPersonId = PersonId.builder()
+            .id(draft.getPatientPersonnummer().getPersonnummer())
+            .type("PERSON_NUMMER")
+            .build();
+        return expectedPersonId;
     }
 }
