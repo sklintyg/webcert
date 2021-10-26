@@ -126,7 +126,8 @@ public class QuestionConverterImpl implements QuestionConverter {
             .lastUpdate(arende.getSenasteHandelse())
             .reminders(remindersToAdd)
             .complements(complements)
-            .answeredByCertificate(answeredByCertificate);
+            .answeredByCertificate(answeredByCertificate)
+            .lastDateToReply(arende.getSistaDatumForSvar());
     }
 
     private String getAuthor(Arende arende) {
