@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -125,6 +126,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804) utifrån ett Läkarintyg för sjukpenning innebär att "
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
+
+    private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
+    private static String createFromCandidateBody = "";
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
@@ -248,6 +252,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (isCreateCertificateFromCandidateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
+                    CREATE_FROM_CANDIDATE_NAME,
+                    "",
+                    createFromCandidateBody,
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
@@ -301,18 +317,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
-                    CREATE_AG7804_NAME,
-                    CREATE_AG7804_DESCRIPTION,
-                    CREATE_AG7804_BODY,
-                    true
-                )
-            );
-        }
-
-        if (isCreateCertificateFromCandidateAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
                     CREATE_AG7804_NAME,
                     CREATE_AG7804_DESCRIPTION,
                     CREATE_AG7804_BODY,
@@ -449,11 +453,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isCreateCertificateFromCandidateAvailable(Certificate certificate) {
-        if (certificate.getMetadata().getVersion() == 0 && certificate.getMetadata().getRelations() == null && isLisjp(certificate)) {
+        if (certificate.getMetadata().getVersion() == 1 && isRelationsEmpty(certificate) && isAg7804(certificate)) {
             return isCandidateCertificateAvailable(certificate);
         } else {
             return false;
         }
+    }
+
+    private boolean isRelationsEmpty(Certificate certificate) {
+        return certificate.getMetadata().getRelations() == null || (certificate.getMetadata().getRelations().getParent() == null
+            && certificate.getMetadata().getRelations().getChildren().length == 0);
     }
 
     private boolean isCandidateCertificateAvailable(Certificate certificate) {
@@ -464,10 +473,20 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
                 .getCandidateMetaData(moduleApi, certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(),
                     getPatientDataFromPU(certificate.getMetadata().getType(), certificate), false);
+            if (metaData.isPresent()) {
+                setCreateFromCandidateBody(metaData.get().getIntygCreated().toString());
+            }
             return metaData.isPresent();
         } catch (ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
         }
+    }
+
+    private void setCreateFromCandidateBody(String candidateDate) {
+        createFromCandidateBody = "<p>Det finns ett Läkarintyg för sjukpenning för denna patient som är utfärdat "
+            + "<span class='iu-fw-bold'>"
+            + candidateDate.split("T")[0]
+            + "</span> på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
     }
 
     private Patient getPatientDataFromPU(String certificateType, Certificate certificate) {
@@ -483,6 +502,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isLisjp(Certificate certificate) {
         return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+    }
+
+    private boolean isAg7804(Certificate certificate) {
+        return certificate.getMetadata().getType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID);
     }
 
     private boolean isDjupintegration() {

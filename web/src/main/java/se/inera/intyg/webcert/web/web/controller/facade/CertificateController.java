@@ -60,6 +60,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResp
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
@@ -246,7 +248,7 @@ public class CertificateController {
             LOG.debug("Creating draft from template with id: '{}'", certificateId);
         }
         final var newCertificateId = createCertificateFromTemplateFacadeService.createCertificateFromTemplate(certificateId);
-        return Response.ok(newCertificateId).build();
+        return Response.ok(CreateCertificateFromTemplateResponseDTO.create(newCertificateId)).build();
     }
 
     @POST
@@ -258,7 +260,7 @@ public class CertificateController {
             LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
         }
         final var newCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(certificateId);
-        return Response.ok(newCertificateId).build();
+        return Response.ok(CreateCertificateFromCandidateResponseDTO.create(certificateId)).build();
     }
 
     @POST

@@ -21,13 +21,16 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,15 +39,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -58,7 +64,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
     private UtkastService utkastService;
 
     @Mock
-    private IntygTextsService draftAccessServiceHelper;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
     private UtkastCandidateServiceImpl utkastCandidateService;
@@ -87,7 +93,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
     private final static String LATEST_VERSION = "2.0";
 
     @BeforeEach
-    void setup() {
+    void setup() throws ModuleNotFoundException {
         doReturn(createCertificate())
             .when(utkastService)
             .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
@@ -100,10 +106,22 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         patient.setPersonId(Personnummer.createPersonnummer(PATIENT_ID).get());
         doReturn(patient).when(patientDetailsResolver).resolvePatient(any(), any(), any());
 
-        final var metadata = mock(UtkastCandidateMetaData.class);
-        doReturn(CANDIDATE_ID).when(metadata).getIntygId();
+        final var moduleApi = mock(Ag7804ModuleApiV1.class);
 
-        doReturn(metadata).when(utkastCandidateService).getCandidateMetaData(any(), any(), any(), any(), any());
+        doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
+
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
+            .thenReturn(Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
+    }
+
+    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
+        return new UtkastCandidateMetaData.Builder()
+            .with(builder -> {
+                builder.intygId = intygId;
+                builder.intygType = intygType;
+                builder.intygTypeVersion = intygTypeVersion;
+            })
+            .create();
     }
 
     @Nested
