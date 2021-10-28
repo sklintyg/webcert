@@ -23,13 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,14 +42,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -54,6 +69,18 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     AuthoritiesHelper authoritiesHelper;
+
+    @Mock
+    WebCertUserService webCertUserService;
+
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    UtkastCandidateServiceImpl utkastCandidateService;
+
+    @Mock
+    PatientDetailsResolver patientDetailsResolver;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -140,6 +167,69 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+        }
+    }
+
+    @Nested
+    class CreateCertificateFromCandidate {
+
+        void setUpPatient() {
+            final var patient = new Patient();
+            patient.setPersonId(Personnummer.createPersonnummer("191212121212").get());
+            doReturn(patient).when(patientDetailsResolver).resolvePatient(any(), any(), any());
+        }
+
+        void setUpModuleApi() throws ModuleNotFoundException {
+            final var moduleApi = mock(Ag7804ModuleApiV1.class);
+            doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
+        }
+
+        void setUpMetadata() {
+            when(utkastCandidateService
+                .getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
+                .thenReturn(Optional.of(createCandidateMetaData("candidateId", "candidateType", "version")));
+        }
+
+        @Test
+        void shallIncludeCreateCertificateFromCandidate() throws ModuleNotFoundException {
+            setUpPatient();
+            setUpModuleApi();
+            setUpMetadata();
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfNoCandidate() throws ModuleNotFoundException {
+            setUpPatient();
+            setUpModuleApi();
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfNotVersion0() {
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var metadata = certificate.getMetadata();
+            metadata.setVersion(1);
+            certificate.setMetadata(metadata);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfLisjp() {
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
         }
     }
 
@@ -504,4 +594,16 @@ class GetCertificatesAvailableFunctionsImplTest {
             .findFirst()
             .orElse(null);
     }
+
+    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
+        return new UtkastCandidateMetaData.Builder()
+            .with(builder -> {
+                builder.intygId = intygId;
+                builder.intygType = intygType;
+                builder.intygTypeVersion = intygTypeVersion;
+                builder.intygCreated = LocalDateTime.now();
+            })
+            .create();
+    }
 }
+

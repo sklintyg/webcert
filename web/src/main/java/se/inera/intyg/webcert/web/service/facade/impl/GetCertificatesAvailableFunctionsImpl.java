@@ -453,7 +453,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isCreateCertificateFromCandidateAvailable(Certificate certificate) {
-        if (certificate.getMetadata().getVersion() == 1 && isRelationsEmpty(certificate) && isAg7804(certificate)) {
+        if (certificate.getMetadata().getVersion() == 0 && isRelationsEmpty(certificate) && isAg7804(certificate)) {
             return isCandidateCertificateAvailable(certificate);
         } else {
             return false;
