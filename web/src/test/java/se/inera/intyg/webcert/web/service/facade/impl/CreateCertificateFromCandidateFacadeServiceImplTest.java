@@ -48,14 +48,12 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCandidateFacadeServiceImplTest {
@@ -86,7 +84,6 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
 
     private final static String CERTIFICATE_ID = "certificateId";
     private final static String CANDIDATE_ID = "candidateId";
-    private final static String NEW_CERTIFICATE_ID = "renewCertificateId";
     private final static String CERTIFICATE_TYPE = "ag7804";
     private final static String CANDIDATE_TYPE = "lisjp";
     private final static String PATIENT_ID = "191212121212";
@@ -114,16 +111,6 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
             .thenReturn(Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
     }
 
-    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
-        return new UtkastCandidateMetaData.Builder()
-            .with(builder -> {
-                builder.intygId = intygId;
-                builder.intygType = intygType;
-                builder.intygTypeVersion = intygTypeVersion;
-            })
-            .create();
-    }
-
     @Nested
     class CreateCertificateFromCandidate {
 
@@ -136,7 +123,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
 
             verify(utkastService).updateDraftFromCandidate(certificateIdArgumentCaptor.capture(), anyString(), any(Utkast.class));
 
-            assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
+            assertEquals(CANDIDATE_ID, certificateIdArgumentCaptor.getValue());
         }
 
         @Test
@@ -146,7 +133,9 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
 
             final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-            assertEquals(CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
+            verify(utkastService).updateDraftFromCandidate(anyString(), certificateTypeArgumentCaptor.capture(), any(Utkast.class));
+
+            assertEquals(CANDIDATE_TYPE, certificateTypeArgumentCaptor.getValue());
         }
 
         @Test
@@ -154,27 +143,19 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
 
             createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
 
-            final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+            final var certificateArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
 
-            assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+            verify(utkastService).updateDraftFromCandidate(anyString(), anyString(), certificateArgumentCaptor.capture());
+
+            assertEquals(PATIENT_ID, certificateArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
         }
 
         @Test
-        void shallIncludeCorrectLatestVersion() {
-
-            createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
-
-            final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-
-            assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
-
-        @Test
-        void shallReturnNewDraftId() {
+        void shallReturnDraftId() {
 
             final var actualCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
 
-            assertEquals(NEW_CERTIFICATE_ID, actualCertificateId);
+            assertEquals(CERTIFICATE_ID, actualCertificateId);
         }
     }
 
@@ -187,7 +168,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         draft.setStatus(UtkastStatus.SIGNED);
         draft.setSkapad(LocalDateTime.now());
         draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
+        draft.setEnhetsId("enhetsId");
         return draft;
     }
 
@@ -200,7 +181,17 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         draft.setStatus(UtkastStatus.SIGNED);
         draft.setSkapad(LocalDateTime.now());
         draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
+        draft.setEnhetsId("enhetsId");
         return draft;
+    }
+
+    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
+        return new UtkastCandidateMetaData.Builder()
+            .with(builder -> {
+                builder.intygId = intygId;
+                builder.intygType = intygType;
+                builder.intygTypeVersion = intygTypeVersion;
+            })
+            .create();
     }
 }
