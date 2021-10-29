@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -397,6 +398,8 @@ class QuestionConverterImplTest {
         private ArendeDraft arendeSvarDraft;
         private Arende arendePaminnelse;
 
+        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
+
         @BeforeEach
         void setup() {
             arende = new Arende();
@@ -425,6 +428,7 @@ class QuestionConverterImplTest {
             arendePaminnelse.setMeddelande(REMINDER_MESSAGE);
             arendePaminnelse.setTimestamp(REMINDER_SENT);
             arendePaminnelse.setSkickatAv(SENT_BY_FK);
+            arendePaminnelse.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
         }
 
         @Test
@@ -480,6 +484,29 @@ class QuestionConverterImplTest {
                 .convert(arende, new Complement[0], null, (ArendeDraft) null, Collections.emptyList());
 
             assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
+        }
+
+        @Test
+        void shallReturnQuestionWithLastDateToReplyFromReminder() {
+            final var actualQuestion = questionConverter
+                .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
+
+            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+        }
+
+        @Test
+        void shallReturnQuestionWithLatestLastDateToReplyFromReminderIfMultipleReminders() {
+            final Arende reminder1 = new Arende();
+            reminder1.setSistaDatumForSvar(LocalDate.now());
+            final Arende reminder2 = new Arende();
+            reminder2.setSistaDatumForSvar(LocalDate.now().plusDays(10));
+            final Arende reminder3 = new Arende();
+            reminder3.setSistaDatumForSvar(LocalDate.now().plusDays(5));
+
+            final var actualQuestion = questionConverter
+                .convert(arende, new Complement[0], null, arendeSvar, List.of(reminder1, reminder2, reminder3));
+
+            assertEquals(reminder3.getSistaDatumForSvar(), actualQuestion.getLastDateToReply());
         }
     }
 
