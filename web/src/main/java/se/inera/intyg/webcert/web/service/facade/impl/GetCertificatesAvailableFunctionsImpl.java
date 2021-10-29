@@ -123,7 +123,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
         + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
         + "Gör detta i så fall först.</div>"
-        + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804) utifrån ett Läkarintyg för sjukpenning innebär att "
+        + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804)"
+        + " utifrån ett Läkarintyg för sjukpenning innebär att "
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
 
