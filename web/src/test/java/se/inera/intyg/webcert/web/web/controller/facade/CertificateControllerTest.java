@@ -72,6 +72,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResp
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
@@ -541,9 +543,10 @@ public class CertificateControllerTest {
                 .when(createCertificateFromTemplateFacadeService)
                 .createCertificateFromTemplate(anyString());
 
-            final var response = certificateController.createCertificateFromTemplate(CERTIFICATE_ID).getEntity();
+            final var response = (CreateCertificateFromTemplateResponseDTO) certificateController
+                .createCertificateFromTemplate(CERTIFICATE_ID).getEntity();
 
-            assertEquals(expectedId, response);
+            assertEquals(expectedId, response.getCertificateId());
         }
     }
 
@@ -558,9 +561,10 @@ public class CertificateControllerTest {
                 .when(createCertificateFromCandiateFacadeService)
                 .createCertificateFromCandidate(anyString());
 
-            final var response = certificateController.createCertificateFromCandidate(CERTIFICATE_ID).getEntity();
+            final var response = (CreateCertificateFromCandidateResponseDTO) certificateController
+                .createCertificateFromCandidate(CERTIFICATE_ID).getEntity();
 
-            assertEquals(expectedId, response);
+            assertEquals(expectedId, response.getCertificateId());
         }
     }
 
