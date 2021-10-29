@@ -260,7 +260,7 @@ public class CertificateController {
             LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
         }
         final var newCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(certificateId);
-        return Response.ok(CreateCertificateFromCandidateResponseDTO.create(certificateId)).build();
+        return Response.ok(CreateCertificateFromCandidateResponseDTO.create(newCertificateId)).build();
     }
 
     @POST
