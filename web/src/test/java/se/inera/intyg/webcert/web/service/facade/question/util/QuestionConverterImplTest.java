@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,7 @@ class QuestionConverterImplTest {
         private final boolean IS_FORWARDED = true;
         private final String MESSAGE = "message";
         private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
 
         private Arende arende;
 
@@ -75,6 +77,7 @@ class QuestionConverterImplTest {
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
             arende.setSenasteHandelse(LAST_UPDATE);
+            arende.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
         }
 
         @Test
@@ -175,6 +178,13 @@ class QuestionConverterImplTest {
 
             assertEquals(LAST_UPDATE, actualQuestion.getLastUpdate());
         }
+
+        @Test
+        void shallReturnQuestionWithLastDateToReply() {
+            final var actualQuestion = questionConverter.convert(arende);
+
+            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+        }
     }
 
     @Nested
@@ -192,6 +202,7 @@ class QuestionConverterImplTest {
         private final boolean IS_FORWARDED = true;
         private final String MESSAGE = "message";
         private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
 
         private Arende arende;
         private Complement[] expectedComplements;
@@ -209,6 +220,7 @@ class QuestionConverterImplTest {
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
             arende.setSenasteHandelse(LAST_UPDATE);
+            arende.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
 
             expectedComplements = new Complement[]{Complement.builder().build()};
             expectedAnswerByCertificate = CertificateRelation.builder().build();
@@ -242,6 +254,15 @@ class QuestionConverterImplTest {
                 .convert(arende, expectedComplements, expectedAnswerByCertificate, new ArendeDraft(), Collections.emptyList());
 
             assertEquals(expectedAnswerByCertificate, actualQuestion.getAnsweredByCertificate());
+        }
+
+        @Test
+        void shallReturnQuestionWithLastDateToReply() {
+            final var actualQuestion = questionConverter
+                .convert(arende, expectedComplements, expectedAnswerByCertificate, new ArendeDraft(), Collections.emptyList());
+
+            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+
         }
     }
 
