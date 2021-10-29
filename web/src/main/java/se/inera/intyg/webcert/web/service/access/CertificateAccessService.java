@@ -40,8 +40,6 @@ public interface CertificateAccessService {
 
     AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToCreateDraftFromPrefill(AccessEvaluationParameters accessEvaluationParameters);
-
     AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters);
 
     AccessResult allowToReadQuestions(AccessEvaluationParameters accessEvaluationParameters);
