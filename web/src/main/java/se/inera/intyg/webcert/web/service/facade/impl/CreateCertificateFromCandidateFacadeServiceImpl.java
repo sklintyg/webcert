@@ -19,27 +19,21 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
 @Service
 public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCertificateFromCandidateFacadeService {
@@ -49,19 +43,19 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
     private final DraftAccessServiceHelper draftAccessServiceHelper;
     private final MonitoringLogService monitoringLogService;
     private final UtkastCandidateServiceImpl utkastCandidateService;
-    private final IntygModuleRegistry moduleRegistry;
     private final PatientDetailsResolver patientDetailsResolver;
+    private final CandidateDataHelper candidateDataHelper;
 
     @Autowired
     public CreateCertificateFromCandidateFacadeServiceImpl(UtkastService utkastService, DraftAccessServiceHelper draftAccessServiceHelper,
-        MonitoringLogService monitoringLogService,
-        UtkastCandidateServiceImpl utkastCandidateService,
-        IntygModuleRegistry moduleRegistry, PatientDetailsResolver patientDetailsResolver) {
+        MonitoringLogService monitoringLogService, UtkastCandidateServiceImpl utkastCandidateService,
+        PatientDetailsResolver patientDetailsResolver,
+        CandidateDataHelper candidateDataHelper) {
         this.utkastService = utkastService;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
         this.monitoringLogService = monitoringLogService;
         this.utkastCandidateService = utkastCandidateService;
-        this.moduleRegistry = moduleRegistry;
+        this.candidateDataHelper = candidateDataHelper;
         this.patientDetailsResolver = patientDetailsResolver;
     }
 
@@ -71,7 +65,7 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
 
         final var certificate = utkastService.getDraft(certificateId, false);
-        final var candidateId = getCandidateId(certificate);
+        final var candidateId = candidateDataHelper.getCandidateId(certificate);
         final var candidate = utkastService.getDraft(candidateId, false);
         var error = true;
 
@@ -103,27 +97,5 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
                     candidate.getIntygsTyp(), candidateId, certificate.getIntygsTyp(), certificateId);
             }
         }
-    }
-
-    private String getCandidateId(Utkast certificate) {
-        try {
-            final ModuleApi moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
-            Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
-                .getCandidateMetaData(moduleApi, certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
-                    getPatientDataFromPU(certificate.getIntygsTyp(), certificate), false);
-            return metaData.get().getIntygId();
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
-        }
-    }
-
-    private Patient getPatientDataFromPU(String certificateType, Utkast certificate) {
-        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(
-            certificate.getPatientPersonnummer(), certificateType, certificate.getIntygTypeVersion());
-        if (resolvedPatientData == null) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
-        }
-        return resolvedPatientData;
     }
 }
