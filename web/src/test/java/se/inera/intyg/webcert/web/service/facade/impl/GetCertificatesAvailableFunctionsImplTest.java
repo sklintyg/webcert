@@ -24,11 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -43,23 +41,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
-import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -74,13 +66,7 @@ class GetCertificatesAvailableFunctionsImplTest {
     WebCertUserService webCertUserService;
 
     @Mock
-    IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    UtkastCandidateServiceImpl utkastCandidateService;
-
-    @Mock
-    PatientDetailsResolver patientDetailsResolver;
+    CandidateDataHelper candidateDataHelper;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -173,27 +159,14 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class CreateCertificateFromCandidate {
 
-        void setUpPatient() {
-            final var patient = new Patient();
-            patient.setPersonId(Personnummer.createPersonnummer("191212121212").get());
-            doReturn(patient).when(patientDetailsResolver).resolvePatient(any(), any(), any());
-        }
-
-        void setUpModuleApi() throws ModuleNotFoundException {
-            final var moduleApi = mock(Ag7804ModuleApiV1.class);
-            doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
-        }
-
         void setUpMetadata() {
-            when(utkastCandidateService
-                .getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
+            when(candidateDataHelper
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class)))
                 .thenReturn(Optional.of(createCandidateMetaData("candidateId", "candidateType", "version")));
         }
 
         @Test
-        void shallIncludeCreateCertificateFromCandidate() throws ModuleNotFoundException {
-            setUpPatient();
-            setUpModuleApi();
+        void shallIncludeCreateCertificateFromCandidate() {
             setUpMetadata();
             final var certificate = CertificateFacadeTestHelper
                 .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
@@ -202,9 +175,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallExcludeCreateCertificateFromCandidateIfNoCandidate() throws ModuleNotFoundException {
-            setUpPatient();
-            setUpModuleApi();
+        void shallExcludeCreateCertificateFromCandidateIfNoCandidate() {
             final var certificate = CertificateFacadeTestHelper
                 .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);

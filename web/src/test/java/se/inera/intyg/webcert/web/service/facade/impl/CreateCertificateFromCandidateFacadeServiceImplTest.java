@@ -21,11 +21,9 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,19 +37,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
@@ -65,19 +56,10 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
-    private UtkastCandidateServiceImpl utkastCandidateService;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Mock
     private MonitoringLogService monitoringLogService;
 
     @Mock
-    private DraftAccessService draftAccessService;
+    private CandidateDataHelper candidateDataHelper;
 
     @InjectMocks
     private CreateCertificateFromCandidateFacadeServiceImpl createCertificateFromCandidateFacadeService;
@@ -90,7 +72,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
     private final static String LATEST_VERSION = "2.0";
 
     @BeforeEach
-    void setup() throws ModuleNotFoundException {
+    void setup() {
         doReturn(createCertificate())
             .when(utkastService)
             .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
@@ -99,15 +81,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
             .when(utkastService)
             .getDraft(eq(CANDIDATE_ID), eq(Boolean.FALSE));
 
-        final var patient = new Patient();
-        patient.setPersonId(Personnummer.createPersonnummer(PATIENT_ID).get());
-        doReturn(patient).when(patientDetailsResolver).resolvePatient(any(), any(), any());
-
-        final var moduleApi = mock(Ag7804ModuleApiV1.class);
-
-        doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
-
-        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean()))
+        when(candidateDataHelper.getCandidateMetadata(anyString(), anyString(), any(Personnummer.class)))
             .thenReturn(Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
     }
 

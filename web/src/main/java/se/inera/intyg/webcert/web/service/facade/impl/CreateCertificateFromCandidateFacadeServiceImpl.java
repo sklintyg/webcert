@@ -31,8 +31,6 @@ import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -42,21 +40,15 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
     private final UtkastService utkastService;
     private final DraftAccessServiceHelper draftAccessServiceHelper;
     private final MonitoringLogService monitoringLogService;
-    private final UtkastCandidateServiceImpl utkastCandidateService;
-    private final PatientDetailsResolver patientDetailsResolver;
     private final CandidateDataHelper candidateDataHelper;
 
     @Autowired
     public CreateCertificateFromCandidateFacadeServiceImpl(UtkastService utkastService, DraftAccessServiceHelper draftAccessServiceHelper,
-        MonitoringLogService monitoringLogService, UtkastCandidateServiceImpl utkastCandidateService,
-        PatientDetailsResolver patientDetailsResolver,
-        CandidateDataHelper candidateDataHelper) {
+        MonitoringLogService monitoringLogService, CandidateDataHelper candidateDataHelper) {
         this.utkastService = utkastService;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
         this.monitoringLogService = monitoringLogService;
-        this.utkastCandidateService = utkastCandidateService;
         this.candidateDataHelper = candidateDataHelper;
-        this.patientDetailsResolver = patientDetailsResolver;
     }
 
 
@@ -65,7 +57,8 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
 
         final var certificate = utkastService.getDraft(certificateId, false);
-        final var candidateId = candidateDataHelper.getCandidateId(certificate);
+        final var candidateId = candidateDataHelper.getCandidateMetadata(certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
+            certificate.getPatientPersonnummer()).get().getIntygId();
         final var candidate = utkastService.getDraft(candidateId, false);
         var error = true;
 

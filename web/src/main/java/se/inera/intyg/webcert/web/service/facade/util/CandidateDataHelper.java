@@ -19,10 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import java.util.Optional;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
 public interface CandidateDataHelper {
-
-    String getCandidateId(Utkast certificate);
     
+    Optional<UtkastCandidateMetaData> getCandidateMetadata(String certificateType, String certificateTypeVersion,
+        Personnummer patientPersonId);
 }

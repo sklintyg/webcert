@@ -26,9 +26,9 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
@@ -49,22 +49,24 @@ public class CandidateDataHelperImpl implements CandidateDataHelper {
     }
 
     @Override
-    public String getCandidateId(Utkast certificate) {
+    public Optional<UtkastCandidateMetaData> getCandidateMetadata(String certificateType, String certificateTypeVersion,
+        Personnummer patientPersonId) {
         try {
-            final ModuleApi moduleApi = moduleRegistry.getModuleApi(certificate.getIntygsTyp(), certificate.getIntygTypeVersion());
+            final ModuleApi moduleApi = moduleRegistry
+                .getModuleApi(certificateType, certificateTypeVersion);
+
             Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
-                .getCandidateMetaData(moduleApi, certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
-                    getPatientDataFromPU(certificate.getIntygsTyp(), certificate), false);
-            return metaData.get().getIntygId();
+                .getCandidateMetaData(moduleApi, certificateType, certificateTypeVersion,
+                    getPatientDataFromPU(certificateType, certificateTypeVersion, patientPersonId), false);
+            return metaData;
         } catch (ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
         }
     }
 
 
-    private Patient getPatientDataFromPU(String certificateType, Utkast certificate) {
-        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(
-            certificate.getPatientPersonnummer(), certificateType, certificate.getIntygTypeVersion());
+    private Patient getPatientDataFromPU(String certificateType, String certificateTypeVersion, Personnummer patientPersonId) {
+        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(patientPersonId, certificateType, certificateTypeVersion);
         if (resolvedPatientData == null) {
             throw new WebCertServiceException(
                 WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
