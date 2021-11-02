@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUt
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getType;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getTypeFromAmneAsString;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -127,7 +128,29 @@ public class QuestionConverterImpl implements QuestionConverter {
             .reminders(remindersToAdd)
             .complements(complements)
             .answeredByCertificate(answeredByCertificate)
-            .lastDateToReply(arende.getSistaDatumForSvar());
+            .lastDateToReply(
+                getLastDateToReply(arende, reminders)
+            );
+    }
+
+    private LocalDate getLastDateToReply(Arende arende, List<Arende> reminders) {
+        if (reminders.stream().anyMatch(currArende -> currArende.getSistaDatumForSvar() != null)) {
+            return getLatestReminderLastDateToReply(reminders);
+        } else {
+            return arende.getSistaDatumForSvar();
+        }
+    }
+
+    private LocalDate getLatestReminderLastDateToReply(List<Arende> reminders) {
+        LocalDate date = null;
+
+        for (Arende reminder : reminders) {
+            if (reminder.getSistaDatumForSvar() != null) {
+                date = reminder.getSistaDatumForSvar();
+            }
+        }
+
+        return date;
     }
 
     private String getAuthor(Arende arende) {
