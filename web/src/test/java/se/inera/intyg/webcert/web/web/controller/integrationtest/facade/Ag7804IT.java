@@ -641,7 +641,6 @@ public class Ag7804IT {
                     DR_AJLA,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
-                .clearPdlLogMessages()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .useDjupIntegratedOrigin()
                 .setup();
