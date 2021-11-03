@@ -209,7 +209,7 @@ public final class ArendeConverter {
 
     private static String getNameByHsaId(String hsaId, HsatkEmployeeService hsaEmployeeService) {
         try {
-            return hsaEmployeeService.getEmployee(hsaId, null)
+            return hsaEmployeeService.getEmployee(null, hsaId)
                     .stream()
                     .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
                     .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
