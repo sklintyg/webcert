@@ -120,7 +120,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "</p></div>";
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
-    private static String createFromCandidateBody = "";
+    private String createFromCandidateBody = "";
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
