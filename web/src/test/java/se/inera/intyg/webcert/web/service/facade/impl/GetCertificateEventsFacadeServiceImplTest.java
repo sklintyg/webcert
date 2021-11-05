@@ -186,7 +186,8 @@ class GetCertificateEventsFacadeServiceImplTest {
                 Arguments.of(EventCode.HANFRFV, CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED),
                 Arguments.of(EventCode.PAMINNELSE, CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER),
                 Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
-                Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS)
+                Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
+                Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM)
             );
         }
 
@@ -206,7 +207,8 @@ class GetCertificateEventsFacadeServiceImplTest {
                 EventCode.HANFRFM,
                 EventCode.NYSVFM,
                 EventCode.PAMINNELSE,
-                EventCode.KOMPLBEGARAN
+                EventCode.KOMPLBEGARAN,
+                EventCode.SKAPATFRAN
             );
         }
 

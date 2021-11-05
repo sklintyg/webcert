@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -37,7 +38,10 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
+import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -104,11 +108,30 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
         + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
 
+    private static final String CREATE_AG7804_NAME = "Skapa Ag7804";
+    private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
+    private static final String CREATE_AG7804_BODY = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
+        + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
+        + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
+        + "Gör detta i så fall först.</div>"
+        + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804)"
+        + " utifrån ett Läkarintyg för sjukpenning innebär att "
+        + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
+        + "</p></div>";
+
+    private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
+    private String createFromCandidateBody = "";
+
     private final AuthoritiesHelper authoritiesHelper;
+    private final WebCertUserService webCertUserService;
+    private final CandidateDataHelper candidateDataHelper;
 
     @Autowired
-    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper) {
+    public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
+        CandidateDataHelper candidateDataHelper) {
         this.authoritiesHelper = authoritiesHelper;
+        this.webCertUserService = webCertUserService;
+        this.candidateDataHelper = candidateDataHelper;
     }
 
     @Override
@@ -205,12 +228,24 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
+        if (isLisjp(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     FMB,
                     FMB_NAME,
                     FMB_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
+        if (isCreateCertificateFromCandidateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
+                    CREATE_FROM_CANDIDATE_NAME,
+                    "",
+                    createFromCandidateBody,
                     true
                 )
             );
@@ -260,6 +295,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     RENEW_NAME,
                     RENEW_DESCRIPTION,
                     RENEW_BODY,
+                    true
+                )
+            );
+        }
+
+        if (isCreateCertificateFromTemplateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
+                    CREATE_AG7804_NAME,
+                    CREATE_AG7804_DESCRIPTION,
+                    CREATE_AG7804_BODY,
                     true
                 )
             );
@@ -367,6 +414,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
     }
 
+    private boolean isRevoked(Certificate certificate) {
+        return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
+
+    }
+
     private boolean isSendCertificateAvailable(Certificate certificate) {
         if (isSent(certificate)) {
             return false;
@@ -376,7 +428,56 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return false;
         }
 
+        return isLisjp(certificate);
+    }
+
+    private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
+        if (isReplacementSigned(certificate) || isDjupintegration() || isComplementingCertificate(certificate) || isRevoked(certificate)) {
+            return false;
+        }
+
+        return isLisjp(certificate);
+    }
+
+    private boolean isCreateCertificateFromCandidateAvailable(Certificate certificate) {
+        if (certificate.getMetadata().getVersion() == 0 && isRelationsEmpty(certificate) && isAg7804(certificate)) {
+            final var metadata = candidateDataHelper
+                .getCandidateMetadata(certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(),
+                    Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get());
+            if (metadata.isPresent()) {
+                setCreateFromCandidateBody(metadata.get().getIntygCreated().toString());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isRelationsEmpty(Certificate certificate) {
+        return certificate.getMetadata().getRelations() == null || (certificate.getMetadata().getRelations().getParent() == null
+            && certificate.getMetadata().getRelations().getChildren().length == 0);
+    }
+
+    private void setCreateFromCandidateBody(String candidateDate) {
+        createFromCandidateBody = "<p>Det finns ett Läkarintyg för sjukpenning för denna patient som är utfärdat "
+            + "<span class='iu-fw-bold'>"
+            + candidateDate.split("T")[0]
+            + "</span> på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+    }
+
+    private boolean isLisjp(Certificate certificate) {
         return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
+    }
+
+    private boolean isAg7804(Certificate certificate) {
+        return certificate.getMetadata().getType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID);
+    }
+
+    private boolean isDjupintegration() {
+        final var user = webCertUserService.getUser();
+        return user != null && user.getOrigin().contains("DJUPINTEGRATION");
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {

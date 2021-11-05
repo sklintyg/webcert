@@ -18,26 +18,21 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
-    COMPLEMENT_CERTIFICATE,
-    CANNOT_COMPLEMENT_CERTIFICATE,
-    CREATE_CERTIFICATE_FROM_TEMPLATE,
-    CREATE_CERTIFICATE_FROM_CANDIDATE,
+public class CreateCertificateFromCandidateResponseDTO {
+
+    private String certificateId;
+
+    public static CreateCertificateFromCandidateResponseDTO create(String certificateId) {
+        final CreateCertificateFromCandidateResponseDTO responseDTO = new CreateCertificateFromCandidateResponseDTO();
+        responseDTO.certificateId = certificateId;
+        return responseDTO;
+    }
+
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
 }
