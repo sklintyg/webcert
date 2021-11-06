@@ -75,8 +75,7 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
     private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
         try {
             LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final Utkast utkast = utkastService.getDraft(certificateId, pdlLog);
-            return utkast;
+            return utkastService.getDraft(certificateId, pdlLog);
         } catch (WebCertServiceException ex) {
             if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
                 LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
