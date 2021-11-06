@@ -27,32 +27,27 @@ import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 @Service
 public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeService {
 
     private final IntygService intygService;
-    private final UtkastService utkastService;
     private final CertificateReceiverService certificateReceiverService;
 
-
     @Autowired
-    public SendCertificateFacadeServiceImpl(IntygService intygService, UtkastService utkastService,
-        CertificateReceiverService certificateReceiverService) {
+    public SendCertificateFacadeServiceImpl(IntygService intygService, CertificateReceiverService certificateReceiverService) {
         this.intygService = intygService;
-        this.utkastService = utkastService;
         this.certificateReceiverService = certificateReceiverService;
     }
 
     @Override
     public String sendCertificate(String certificateId) {
-        final var certificate = utkastService.getDraft(certificateId, false);
-        final var receivers = getMainReceivers(certificate.getIntygsTyp());
+        final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
+        final var receivers = getMainReceivers(intygTypeInfo.getIntygType());
 
         return receivers.stream()
-            .map(r -> intygService.sendIntyg(certificateId, certificate.getIntygsTyp(), r.getId(), false))
+            .map(r -> intygService.sendIntyg(certificateId, intygTypeInfo.getIntygType(), r.getId(), false))
             .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2)
             .orElse(IntygServiceResult.FAILED)
             .toString();
@@ -64,5 +59,4 @@ public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeSe
             .filter(IntygReceiver::isLocked)
             .collect(Collectors.toList());
     }
-
 }

@@ -24,9 +24,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -36,20 +40,49 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
     private final UtkastService utkastService;
 
-    private final CertificateConverter certificateConverter;
+    private final IntygService intygService;
+
+    private final UtkastToCertificateConverter utkastToCertificateConverter;
+
+    private final IntygToCertificateConverter intygToCertificateConverter;
 
     @Autowired
-    public GetCertificateFacadeServiceImpl(UtkastService utkastService, CertificateConverter certificateConverter) {
+    public GetCertificateFacadeServiceImpl(UtkastService utkastService,
+        IntygService intygService,
+        UtkastToCertificateConverter utkastToCertificateConverter,
+        IntygToCertificateConverter intygToCertificateConverter) {
         this.utkastService = utkastService;
-        this.certificateConverter = certificateConverter;
+        this.intygService = intygService;
+        this.utkastToCertificateConverter = utkastToCertificateConverter;
+        this.intygToCertificateConverter = intygToCertificateConverter;
     }
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog) {
-        LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
-        final Utkast utkast = utkastService.getDraft(certificateId, pdlLog);
+        final Utkast utkast = getCertificateFromWebcert(certificateId, pdlLog);
+        if (utkast == null) {
+            LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'", certificateId, pdlLog);
+            final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog);
+
+            LOG.debug("Converting IntygContentHolder to Certificate");
+            return intygToCertificateConverter.convert(intygContentHolder);
+        }
 
         LOG.debug("Converting Utkast to Certificate");
-        return certificateConverter.convert(utkast);
+        return utkastToCertificateConverter.convert(utkast);
+    }
+
+    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
+        try {
+            LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
+            final Utkast utkast = utkastService.getDraft(certificateId, pdlLog);
+            return utkast;
+        } catch (WebCertServiceException ex) {
+            if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+                LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
+                return null;
+            }
+            throw ex;
+        }
     }
 }

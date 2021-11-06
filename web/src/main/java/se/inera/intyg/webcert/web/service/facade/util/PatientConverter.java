@@ -20,9 +20,9 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface PatientConverter {
 
-    Patient convert(Utkast certificate);
+    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
 }
