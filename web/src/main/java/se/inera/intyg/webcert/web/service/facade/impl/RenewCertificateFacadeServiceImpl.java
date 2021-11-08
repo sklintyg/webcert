@@ -23,9 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
@@ -36,23 +38,26 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
 
     private final CopyUtkastServiceHelper copyUtkastServiceHelper;
     private final CopyUtkastService copyUtkastService;
-    private final UtkastService utkastService;
+    private final GetCertificateFacadeService getCertificateFacadeService;
 
     @Autowired
     public RenewCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, UtkastService utkastService) {
+        CopyUtkastService copyUtkastService,
+        GetCertificateFacadeService getCertificateFacadeService) {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
-        this.utkastService = utkastService;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
     public String renewCertificate(String certificateId) {
         LOG.debug("Get certificate '{}' that will be renewed", certificateId);
-        final var certificate = utkastService.getDraft(certificateId, false);
-        final var certificateType = certificate.getIntygsTyp();
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificateType = certificate.getMetadata().getType();
         final var copyRequest = new CopyIntygRequest();
-        copyRequest.setPatientPersonnummer(certificate.getPatientPersonnummer());
+        copyRequest.setPatientPersonnummer(
+            getPersonId(certificate.getMetadata().getPatient())
+        );
 
         LOG.debug("Preparing to create a renewal for '{}' with type '{}'", certificateId, certificateType);
         final var renewalRequest = copyUtkastServiceHelper.createRenewalCopyRequest(certificateId, certificateType, copyRequest);
@@ -62,5 +67,9 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
 
         LOG.debug("Return renewal draft '{}' ", renewalCopy.getNewDraftIntygId());
         return renewalCopy.getNewDraftIntygId();
+    }
+
+    private Personnummer getPersonId(Patient patient) {
+        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }

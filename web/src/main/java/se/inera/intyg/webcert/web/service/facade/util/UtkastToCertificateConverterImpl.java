@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.service.facade.util;
+
+import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
+import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.isRevoked;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Staff;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+
+@Component
+public class UtkastToCertificateConverterImpl implements UtkastToCertificateConverter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UtkastToCertificateConverterImpl.class);
+
+    private final IntygModuleRegistry moduleRegistry;
+
+    private final IntygTextsService intygTextsService;
+
+    private final PatientConverter patientConverter;
+
+    private final CertificateRelationsConverter certificateRelationsConverter;
+
+    @Autowired
+    public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
+        IntygTextsService intygTextsService,
+        PatientConverter patientConverter,
+        CertificateRelationsConverter certificateRelationsConverter) {
+        this.moduleRegistry = moduleRegistry;
+        this.intygTextsService = intygTextsService;
+        this.patientConverter = patientConverter;
+        this.certificateRelationsConverter = certificateRelationsConverter;
+    }
+
+    @Override
+    public Certificate convert(Utkast certificate) {
+        LOG.debug("Converting Utkast to Certificate");
+        return convertToCertificate(certificate);
+    }
+
+    private Certificate convertToCertificate(Utkast certificate) {
+        final var certificateToReturn = getCertificateToReturn(
+            certificate.getIntygsTyp(),
+            certificate.getIntygTypeVersion(),
+            certificate.getModel()
+        );
+
+        certificateToReturn.getMetadata().setCreated(certificate.getSkapad());
+        certificateToReturn.getMetadata().setVersion(certificate.getVersion());
+        certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
+        certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
+        certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
+
+        certificateToReturn.getMetadata().setCareProvider(
+            getCareProvider(certificate)
+        );
+
+        certificateToReturn.getMetadata().setStatus(
+            getStatus(isRevoked(certificate), certificate.getStatus())
+        );
+
+        certificateToReturn.getMetadata().setPatient(
+            patientConverter.convert(
+                certificate.getPatientPersonnummer(),
+                certificate.getIntygsTyp(),
+                certificate.getIntygTypeVersion()
+            )
+        );
+
+        certificateToReturn.getMetadata().setIssuedBy(
+            getIssuedBy(certificate)
+        );
+
+        certificateToReturn.getMetadata().setRelations(
+            certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
+        );
+
+        certificateToReturn.getMetadata().setLatestMajorVersion(
+            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
+                certificateToReturn.getMetadata().getTypeVersion())
+        );
+
+        return certificateToReturn;
+    }
+
+    private Staff getIssuedBy(Utkast certificate) {
+        final var staff = new Staff();
+
+        staff.setPersonId(certificate.getSkapadAv().getHsaId());
+        staff.setFullName(certificate.getSkapadAv().getNamn());
+
+        return staff;
+    }
+
+    private Unit getCareProvider(Utkast certificate) {
+        return Unit.builder()
+            .unitId(certificate.getVardgivarId())
+            .unitName(certificate.getVardgivarNamn())
+            .build();
+    }
+
+    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
+        try {
+            LOG.debug("Retrieving ModuleAPI for type '{}' version '{}'", certificateType, certificateTypeVersion);
+            final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+            LOG.debug("Retrieving Certificate from Json");
+            return moduleApi.getCertificateFromJson(jsonModel);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+}

@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
@@ -43,9 +44,14 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,59 +61,121 @@ class GetCertificateFacadeServiceImplTest {
     private UtkastService utkastService;
 
     @Mock
-    private CertificateConverter certificateConverter;
+    private IntygService intygService;
+
+    @Mock
+    private UtkastToCertificateConverter utkastToCertificateConverter;
+
+    @Mock
+    private IntygToCertificateConverter intygToCertificateConverter;
 
     @InjectMocks
     private GetCertificateFacadeServiceImpl getCertificateService;
 
-    private final Utkast draft = createDraft();
+    @Nested
+    class CertificateInWebcert {
 
-    @BeforeEach
-    void setupMocks() {
-        doReturn(draft)
-            .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
+        private final Utkast draft = createDraft();
 
-        doReturn(createCertificate())
-            .when(certificateConverter).convert(draft);
-    }
+        @BeforeEach
+        void setupMocks() {
+            doReturn(draft)
+                .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
 
-    @Test
-    void shallReturnCertificate() {
-        final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
-        assertNotNull(certificate, "Certificate should not be null!");
+            doReturn(createCertificate())
+                .when(utkastToCertificateConverter).convert(draft);
+        }
+
+        @Test
+        void shallReturnCertificate() {
+            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            assertNotNull(certificate, "Certificate should not be null!");
+        }
+
+        @Nested
+        class ValidatePdlLogging {
+
+            @Test
+            void shallPdlLogIfRequired() {
+                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(draft.getIntygsId(), true);
+                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+            }
+
+            @Test
+            void shallNotPdlLogIfRequired() {
+                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(draft.getIntygsId(), false);
+                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+            }
+        }
+
+        private Utkast createDraft() {
+            final var draft = new Utkast();
+            draft.setIntygsId("certificateId");
+            draft.setIntygsTyp("certificateType");
+            draft.setIntygTypeVersion("certificateTypeVersion");
+            draft.setModel("draftJson");
+            draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+            draft.setSkapad(LocalDateTime.now());
+            draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
+            draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
+            return draft;
+        }
     }
 
     @Nested
-    class ValidatePdlLogging {
+    class CertificateMissingInWebcert {
 
-        @Test
-        void shallPdlLogIfRequired() {
-            final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-            getCertificateService.getCertificate(draft.getIntygsId(), true);
-            verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-            assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+        private final String CERTIFICATE_ID = "certificateId";
+        private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
+            .build();
+
+        @BeforeEach
+        void setupMocks() {
+            doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
+                .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
+
+            doReturn(intygContentHolder)
+                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean());
+
+            doReturn(createCertificate())
+                .when(intygToCertificateConverter).convert(intygContentHolder);
         }
 
         @Test
-        void shallNotPdlLogIfRequired() {
-            final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-            getCertificateService.getCertificate(draft.getIntygsId(), false);
-            verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-            assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+        void shallReturnCertificate() {
+            final var certificate = getCertificateService.getCertificate(CERTIFICATE_ID, false);
+            assertNotNull(certificate, "Certificate should not be null!");
         }
-    }
 
-    private Utkast createDraft() {
-        final var draft = new Utkast();
-        draft.setIntygsId("certificateId");
-        draft.setIntygsTyp("certificateType");
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
-        draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
-        return draft;
+        @Nested
+        class ValidatePdlLogging {
+
+            @Test
+            void shallPdlLogIfRequired() {
+                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(CERTIFICATE_ID, true);
+                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture());
+                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+            }
+
+            @Test
+            void shallNotPdlLogIfRequired() {
+                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(CERTIFICATE_ID, false);
+                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture());
+                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+            }
+        }
     }
 
     private Certificate createCertificate() {

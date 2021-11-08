@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,20 +33,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @ExtendWith(MockitoExtension.class)
 public class SendCertificateFacadeServiceImplTest {
 
     @Mock
     private IntygService intygService;
-    @Mock
-    private UtkastService utkastService;
     @Mock
     private CertificateReceiverService certificateReceiverService;
 
@@ -59,11 +57,8 @@ public class SendCertificateFacadeServiceImplTest {
 
     @BeforeEach
     void setup() {
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(CERTIFICATE_TYPE);
-
-        when(utkastService.getDraft(eq(CERTIFICATE_ID), eq(false))).thenReturn(draft);
+        doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, "certificateTypeVersion"))
+            .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
         when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(MAIN_RECEIVER_ID), eq(false)))
             .thenReturn(IntygServiceResult.OK);
     }

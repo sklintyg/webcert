@@ -34,12 +34,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
@@ -55,7 +59,7 @@ class RenewCertificateFacadeServiceImplTest {
     private CopyUtkastService copyUtkastService;
 
     @Mock
-    private UtkastService utkastService;
+    private GetCertificateFacadeService getCertificateFacadeService;
 
     @InjectMocks
     private RenewCertificateFacadeServiceImpl renewCertificateFacadeService;
@@ -68,8 +72,8 @@ class RenewCertificateFacadeServiceImplTest {
     @BeforeEach
     void setup() {
         doReturn(createCertificate())
-            .when(utkastService)
-            .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+            .when(getCertificateFacadeService)
+            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
         final var serviceRequest = new CreateRenewalCopyRequest(
             CERTIFICATE_ID,
@@ -144,16 +148,24 @@ class RenewCertificateFacadeServiceImplTest {
         assertEquals(RENEW_CERTIFICATE_ID, actualCertificateId);
     }
 
-    private Utkast createCertificate() {
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(CERTIFICATE_TYPE);
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.SIGNED);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
-        return draft;
+    private Certificate createCertificate() {
+        final var certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .type(CERTIFICATE_TYPE)
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(PATIENT_ID)
+                                .type("PERSON_NUMMER")
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        );
+        return certificate;
     }
 }
