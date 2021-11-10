@@ -28,9 +28,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 @Service
 public class ErrorLogFacadeServiceImpl implements ErrorLogFacadeService {
 
-
     private final MonitoringLogService monitoringService;
-
 
     @Autowired
     public ErrorLogFacadeServiceImpl(MonitoringLogService monitoringService) {
@@ -41,11 +39,18 @@ public class ErrorLogFacadeServiceImpl implements ErrorLogFacadeService {
     public void log(ErrorLogRequestDTO request) {
         monitoringService
             .logClientError(request.getErrorId(), getCertificateId(request.getCertificateId()),
-                request.getErrorCode(), request.getErrorMessage(), request.getStackTrace());
+                request.getErrorCode(), request.getMessage(), getStackTrace(request.getStackTrace()));
+    }
+
+    private boolean isDefined(String value) {
+        return value != null && !value.isEmpty() && !value.isBlank();
     }
 
     private String getCertificateId(String certificateId) {
-        return !certificateId.isEmpty() && !certificateId.isBlank() ? certificateId : "NO_CERTIFICATE_ID";
+        return isDefined(certificateId) ? certificateId : "NO_CERTIFICATE_ID";
     }
 
+    private String getStackTrace(String stackTrace) {
+        return isDefined(stackTrace) ? stackTrace : "NO_STACK_TRACE";
+    }
 }

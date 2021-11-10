@@ -44,10 +44,11 @@ public class ErrorLogFacadeServiceImplTest {
     private final static String STACK_TRACE = "stack trace";
     private final static String ERROR_CODE = "error code";
     private final static String NO_CERTIFICATE_ID = "NO_CERTIFICATE_ID";
+    private final static String NO_STACK_TRACE = "NO_STACK_TRACE";
 
     @Test
     void shallLogError() {
-        var request = createRequest(true);
+        var request = createRequest(true, true);
 
         errorLogFacadeService.log(request);
         verify(monitoringLogService).logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
@@ -55,19 +56,27 @@ public class ErrorLogFacadeServiceImplTest {
 
     @Test
     void shallLogErrorWithoutCertificateId() {
-        var request = createRequest(false);
+        var request = createRequest(false, true);
 
         errorLogFacadeService.log(request);
         verify(monitoringLogService).logClientError(ERROR_ID, NO_CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
     }
 
-    private ErrorLogRequestDTO createRequest(boolean includeId) {
+    @Test
+    void shallLogErrorWithoutStackTrace() {
+        var request = createRequest(true, false);
+
+        errorLogFacadeService.log(request);
+        verify(monitoringLogService).logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, NO_STACK_TRACE);
+    }
+
+    private ErrorLogRequestDTO createRequest(boolean includeId, boolean includeStackTrace) {
         ErrorLogRequestDTO request = new ErrorLogRequestDTO();
         request.setErrorId(ERROR_ID);
         request.setCertificateId(includeId ? CERTIFICATE_ID : NO_CERTIFICATE_ID);
         request.setErrorCode(ERROR_CODE);
-        request.setStackTrace(STACK_TRACE);
-        request.setErrorMessage(ERROR_MESSAGE);
+        request.setStackTrace(includeStackTrace ? STACK_TRACE : NO_STACK_TRACE);
+        request.setMessage(ERROR_MESSAGE);
         return request;
     }
 }

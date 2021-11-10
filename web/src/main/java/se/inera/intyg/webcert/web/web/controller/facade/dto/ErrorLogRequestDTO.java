@@ -21,18 +21,18 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class ErrorLogRequestDTO {
 
-    private String errorMessage;
+    private String message;
     private String errorId;
     private String certificateId;
     private String errorCode;
     private String stackTrace;
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getErrorId() {

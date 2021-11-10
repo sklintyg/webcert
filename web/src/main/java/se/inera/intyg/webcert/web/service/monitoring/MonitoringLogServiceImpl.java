@@ -587,8 +587,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             "Received error from sign service for request with transactionID '{}' for certificate '{}' with error message: {} - {} - {}"),
 
         CLIENT_ERROR(
-            "Received error from client with errorId '{}' for certificate '{}' with error code and message: {} : {} - {}");
-
+            "Received error from client with errorId '{}' for certificate '{}' with error code '{}', message '{}' and stacktrace '{}'");
 
         private final String msg;
 
