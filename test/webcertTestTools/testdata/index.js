@@ -31,7 +31,8 @@ module.exports = {
     bas: require('./ts.bas.js'),
     diabetes: {
       v2: require('./ts.diabetes.v2.js'),
-      v3: require('./ts.diabetes.v3.js')
+      v3: require('./ts.diabetes.v3.js'),
+      v4: require('./ts.diabetes.v4.js')
     },
     trk1009: {
       v1: require('./ts.trk1009.v1')
