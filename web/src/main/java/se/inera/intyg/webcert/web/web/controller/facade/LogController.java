@@ -26,8 +26,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.ErrorLogFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
 @Path("/log")
@@ -36,6 +38,9 @@ public class LogController {
     private static final Logger LOG = LoggerFactory.getLogger(LogController.class);
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
+
+    @Autowired
+    private ErrorLogFacadeService errorLogFacadeService;
 
     @POST
     @Path("/error")
@@ -46,7 +51,7 @@ public class LogController {
             LOG.debug("Logging error with id: '{}'", errorLogRequest.getErrorId());
         }
 
-        errorLogService.log(errorLogRequest);
+        errorLogFacadeService.log(errorLogRequest);
         return Response.ok().build();
     }
 }
