@@ -19,10 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 
-public interface CertificateConverter {
+public interface CertificateRelationsConverter {
 
-    Certificate convert(Utkast certificate);
+    CertificateRelations convert(String certificateId);
 }
