@@ -82,6 +82,10 @@ module.exports = {
         v3: {
           utkast: require(intygPath + 'ts/ts_diabetes/v3/tsDiabetes.utkast.page.js'),
           intyg: require(intygPath + 'ts/ts_diabetes/v3/tsDiabetes.intyg.page.js')
+        },
+        v4: {
+          utkast: require(intygPath + 'ts/ts_diabetes/v4/tsDiabetes.utkast.page.js'),
+          intyg: require(intygPath + 'ts/ts_diabetes/v4/tsDiabetes.intyg.page.js')
         }
       },
       bas: {
