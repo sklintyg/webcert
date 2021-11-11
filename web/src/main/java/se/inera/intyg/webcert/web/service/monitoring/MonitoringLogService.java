@@ -175,11 +175,12 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     /**
      * Log that a message has been imported.
+     *
      * @param certificateId Id of the certificate.
      * @param messageId Id of the message.
-     * @param caregiverId   HSA-Id of the care giver.
-     * @param careUnitId    HSA-Id of the care unit.
-     * @param messageType   Type of message.
+     * @param caregiverId HSA-Id of the care giver.
+     * @param careUnitId HSA-Id of the care unit.
+     * @param messageType Type of message.
      */
     void logMessageImported(String certificateId, String messageId, String caregiverId, String careUnitId, String messageType);
 
@@ -194,4 +195,6 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor, String resultMinor,
         String resultMessage);
+
+    void logClientError(String errorId, String certificateId, String errorCode, String errorMessage, String stackTrace);
 }

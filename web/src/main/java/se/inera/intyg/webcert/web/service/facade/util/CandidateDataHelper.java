@@ -19,10 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.Patient;
+import java.util.Optional;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
-public interface PatientConverter {
-
-    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
+public interface CandidateDataHelper {
+    
+    Optional<UtkastCandidateMetaData> getCandidateMetadata(String certificateType, String certificateTypeVersion,
+        Personnummer patientPersonId);
 }

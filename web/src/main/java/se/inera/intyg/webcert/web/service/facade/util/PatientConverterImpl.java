@@ -19,14 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -46,8 +44,8 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     @Override
-    public Patient convert(Utkast certificate) {
-        final var patientId = certificate.getPatientPersonnummer();
+    public Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion) {
+        final var patient = patientDetailsResolver.resolvePatient(patientId, certificateType, certificateTypeVersion);
         final var user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
         final var parameters = getIntegrationParameters(user);
 
@@ -55,14 +53,14 @@ public class PatientConverterImpl implements PatientConverter {
             .personId(
                 getPersonId(patientId, parameters)
             )
-            .firstName(certificate.getPatientFornamn())
-            .middleName(certificate.getPatientMellannamn())
-            .lastName(certificate.getPatientEfternamn())
-            .fullName(getFullName(certificate))
-            .testIndicated(patientDetailsResolver.isTestIndicator(patientId))
+            .firstName(patient.getFornamn())
+            .middleName(patient.getMellannamn())
+            .lastName(patient.getEfternamn())
+            .fullName(patient.getFullstandigtNamn())
+            .testIndicated(patient.isTestIndicator())
             .protectedPerson(isProtectedPerson(patientId))
-            .deceased(patientDetailsResolver.isAvliden(patientId))
-            .differentNameFromEHR(isPatientNameDifferent(certificate, parameters))
+            .deceased(patient.isAvliden())
+            .differentNameFromEHR(isPatientNameDifferent(patient, parameters))
             .previousPersonId(getPreviousPersonId(patientId, parameters))
             .personIdUpdated(isPatientIdUpdated(parameters, patientId))
             .build();
@@ -72,7 +70,6 @@ public class PatientConverterImpl implements PatientConverter {
         return isBeforeAlternateSSNSet(parameters) && !isPersonIdSameAsBeforeAlternateSSN(patientId, parameters);
     }
 
-
     private boolean isBeforeAlternateSSNSet(IntegrationParameters parameters) {
         return parameters != null && parameters.getBeforeAlternateSsn() != null && !parameters.getBeforeAlternateSsn().equals("");
     }
@@ -80,7 +77,7 @@ public class PatientConverterImpl implements PatientConverter {
     private PersonId getPersonId(Personnummer patientId, IntegrationParameters parameters) {
         final var id = parameters == null || !isAlternateSSNSet(parameters)
             || isPersonIdSameAsAlternateSSN(patientId, parameters)
-            ? patientId.getPersonnummer()
+            ? patientId.getPersonnummerWithDash()
             : parameters.getAlternateSsn();
         return PersonId.builder()
             .id(id)
@@ -89,21 +86,27 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private boolean isPersonIdSameAsBeforeAlternateSSN(Personnummer patientId, IntegrationParameters parameters) {
-        return parameters != null && patientId.getPersonnummer().equals(parameters.getBeforeAlternateSsn());
+        return parameters != null && compareWithAndWithoutDash(patientId, parameters.getBeforeAlternateSsn());
     }
 
     private boolean isPersonIdSameAsAlternateSSN(Personnummer patientId, IntegrationParameters parameters) {
-        return parameters != null && patientId.getPersonnummer().equals(parameters.getAlternateSsn());
+        return parameters != null && compareWithAndWithoutDash(patientId, parameters.getAlternateSsn());
     }
 
-    private boolean isPatientNameDifferent(Utkast certificate, IntegrationParameters parameters) {
+    private boolean compareWithAndWithoutDash(Personnummer patientId, String patientIdAsString) {
+        return patientId.getPersonnummer().equals(patientIdAsString)
+            || patientId.getPersonnummerWithDash().equals(patientIdAsString);
+    }
+
+    private boolean isPatientNameDifferent(se.inera.intyg.common.support.model.common.internal.Patient patient,
+        IntegrationParameters parameters) {
         return isNameSentAsParameter(parameters)
-            && isNameDifferent(certificate, parameters);
+            && isNameDifferent(patient, parameters);
     }
 
-    private boolean isNameDifferent(Utkast certificate, IntegrationParameters parameters) {
-        final var isFirstNameDifferent = isStringDifferent(certificate.getPatientFornamn(), parameters.getFornamn());
-        final var isLastNameDifferent = isStringDifferent(parameters.getEfternamn(), certificate.getPatientEfternamn());
+    private boolean isNameDifferent(se.inera.intyg.common.support.model.common.internal.Patient patient, IntegrationParameters parameters) {
+        final var isFirstNameDifferent = isStringDifferent(patient.getFornamn(), parameters.getFornamn());
+        final var isLastNameDifferent = isStringDifferent(parameters.getEfternamn(), patient.getEfternamn());
         return isFirstNameDifferent || isLastNameDifferent;
     }
 
@@ -120,7 +123,7 @@ public class PatientConverterImpl implements PatientConverter {
             return null;
         } else if (!isBeforeAlternateSSNSet(parameters)) {
             return PersonId.builder()
-                .id(patientId.getPersonnummer())
+                .id(patientId.getPersonnummerWithDash())
                 .type("PERSON_NUMMER")
                 .build();
         }
@@ -143,13 +146,6 @@ public class PatientConverterImpl implements PatientConverter {
     private boolean isProtectedPerson(Personnummer patientId) {
         final var protectedStatus = patientDetailsResolver.getSekretessStatus(patientId);
         return protectedStatus == SekretessStatus.TRUE || protectedStatus == SekretessStatus.UNDEFINED;
-    }
-
-    private String getFullName(Utkast certificate) {
-        if (Objects.nonNull(certificate.getPatientMellannamn()) && certificate.getPatientMellannamn().trim().length() > 0) {
-            return certificate.getPatientFornamn() + ' ' + certificate.getPatientMellannamn() + ' ' + certificate.getPatientEfternamn();
-        }
-        return certificate.getPatientFornamn() + ' ' + certificate.getPatientEfternamn();
     }
 
     private IntegrationParameters getIntegrationParameters(WebCertUser user) {

@@ -208,6 +208,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER;
             case KOMPLETTERAR:
                 return CertificateEventTypeDTO.COMPLEMENTS;
+            case SKAPATFRAN:
+                return CertificateEventTypeDTO.CREATED_FROM;
             default:
                 throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
         }

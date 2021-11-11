@@ -372,7 +372,7 @@ public final class CertificateAccessServiceHelper {
     public boolean isAllowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters) {
         return certificateAccessService.allowToCreateDraftFromSignedTemplate(accessEvaluationParameters).isAllowed();
     }
-
+    
     public void validateAllowCreateDraftFromSignedTemplate(Utlatande utlatande) {
         final AccessResult accessResult = evaluateAccessToCreateDraftFromSignedTemplate(utlatande);
 

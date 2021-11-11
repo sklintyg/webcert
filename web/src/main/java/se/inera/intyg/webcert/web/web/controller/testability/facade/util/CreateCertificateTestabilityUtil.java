@@ -68,7 +68,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
-import se.inera.intyg.webcert.web.service.facade.util.CertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -86,7 +86,7 @@ public class CreateCertificateTestabilityUtil {
 
     private final UtkastService utkastService;
 
-    private final CertificateConverter certificateConverter;
+    private final UtkastToCertificateConverter utkastToCertificateConverter;
 
     private final UtkastRepository utkastRepository;
 
@@ -98,13 +98,13 @@ public class CreateCertificateTestabilityUtil {
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
-        CertificateConverter certificateConverter, UtkastRepository utkastRepository,
+        UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
         IntygTextsService intygTextsService) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
-        this.certificateConverter = certificateConverter;
+        this.utkastToCertificateConverter = utkastToCertificateConverter;
         this.utkastRepository = utkastRepository;
         this.intygTextsService = intygTextsService;
     }
@@ -132,7 +132,7 @@ public class CreateCertificateTestabilityUtil {
 
         final var utkast = createNewDraft(createNewDraftRequest);
 
-        final var certificate = certificateConverter.convert(utkast);
+        final var certificate = utkastToCertificateConverter.convert(utkast);
 
         updateCertificate(createCertificateRequest, certificate);
 

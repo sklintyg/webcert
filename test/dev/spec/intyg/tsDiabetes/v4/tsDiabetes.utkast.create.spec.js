@@ -22,10 +22,11 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v3.utkast;
-var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v3.intyg;
+var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v4.utkast;
+var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v4.intyg;
+var hasHogreKorkortsbehorigheter = require('webcert-testtools/pages/pageHelper.util').hasHogreKorkortsbehorigheter;
 
-xdescribe('Create and Sign ts-diabetes v3 utkast', function() {
+describe('Create and sign ts-diabetes v4 utkast', function() {
 
   var utkastId = null,
       data = null;
@@ -36,46 +37,54 @@ xdescribe('Create and Sign ts-diabetes v3 utkast', function() {
     specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
   });
 
-  it('Spara undan intygsId från URL', function() {
+  it('Save certificate id from url', function() {
     UtkastPage.disableAutosave();
 
     specHelper.getUtkastIdFromUrl().then(function(id) {
       utkastId = id;
     });
-    data = wcTestTools.testdata.ts.diabetes.v3.get(utkastId);
+    data = wcTestTools.testdata.ts.diabetes.v4.get(utkastId);
   });
 
-  describe('Fyll i intyget', function() {
+  describe('Fill draft sections', function() {
 
-    it('fillInKorkortstyper', function() {
-      UtkastPage.fillInKorkortstyper(data.korkortstyper);
+    it('Fill IntygetAvser', function() {
+      UtkastPage.fillIntygetAvser(data.intygetAvserKategorier);
     });
 
-    it('fillInIdentitetStyrktGenom', function() {
-      UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
+    it('Fill IdentitetStyrktGenom', function() {
+      UtkastPage.fillIdentitetStyrktGenom(data.identitetStyrktGenom);
     });
 
-    it('fillInAllmant', function() {
-      UtkastPage.fillInAllmant(data.allmant);
+    it('Fill Allmant', function() {
+      UtkastPage.fillAllmant(data.allmant);
     });
 
-    it('fillInSynfunktion', function() {
-      UtkastPage.fillInSynfunktion(data.synfunktion);
+    it('Fill Hypoglykemi', function() {
+      if (data.allmant.medicinering === 'Ja' && data.allmant.medicineringHypoglykemi === 'Ja') {
+        UtkastPage.fillHypoglykemiForMedication(data.hypoglykemi);
+      }
+      if (hasHogreKorkortsbehorigheter(data.intygetAvserKategorier)) {
+        UtkastPage.fillHypoglykemiForHogreBehorigheter(data.hypoglykemi);
+      }
     });
 
-    it('fillInBedomning', function() {
-      UtkastPage.enableAutosave();
-      UtkastPage.fillInBedomning(data.bedomning);
+    it('Fill Ovrigt', function() {
+      UtkastPage.fillOvrigt(data.ovrigt);
+    });
+
+    it('Fill Bedomning', function() {
+      UtkastPage.fillBedomning(data.bedomning);
     });
   });
 
-  it('Signera intyget', function() {
+  it('Sign draft', function() {
     UtkastPage.whenSigneraButtonIsEnabled();
     UtkastPage.signeraButtonClick();
     expect(IntygPage.isAt()).toBeTruthy();
   });
 
-  it('Verifiera intyg', function() {
+  it('Verify certificate', function() {
     IntygPage.verify(data);
   });
 

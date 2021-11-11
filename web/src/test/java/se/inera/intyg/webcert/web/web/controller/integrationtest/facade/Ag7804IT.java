@@ -35,24 +35,16 @@ import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
@@ -61,7 +53,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateReques
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public class Ag7804IT {
@@ -637,49 +628,60 @@ public class Ag7804IT {
                 );
             }
         }
-    }
 
-    private ValidateSickLeavePeriodRequestDTO getValidateSickLeavePeriodRequest(String[] icd10Codes,
-        CertificateDataValueDateRangeList sickLeaveValue) {
-        final var validateSickLeavePeriodRequest = new ValidateSickLeavePeriodRequestDTO();
-        validateSickLeavePeriodRequest.setPersonId(ATHENA_ANDERSSON.getPersonId().getId());
-        validateSickLeavePeriodRequest.setIcd10Codes(icd10Codes);
-        validateSickLeavePeriodRequest.setDateRangeList(sickLeaveValue);
-        return validateSickLeavePeriodRequest;
-    }
+        @Test
+        @DisplayName("Shall fill draft from lisjp candidate certificate")
+        public void shallCreateDraftFromCandidate() {
 
-    private CertificateDataValueDiagnosisList getValueDiagnosisList() {
-        var diagnosisValue = CertificateDataValueDiagnosisList.builder()
-            .list(Arrays.asList(
-                CertificateDataValueDiagnosis.builder()
-                    .code("F500")
-                    .build()
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
                 )
-            )
-            .build();
-        return diagnosisValue;
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+
+            final var draftId = createAg7804Draft();
+
+            final var response = given()
+                .pathParam("certificateId", draftId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateId}/candidate")
+                .then().extract().response();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+            certificateIdsToCleanAfterTest.add(draftId);
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
     }
 
-    private CertificateDataValueDateRangeList getValueDateRangeList() {
-        var sickLeaveValue = CertificateDataValueDateRangeList.builder()
-            .list(Arrays.asList(
-                CertificateDataValueDateRange.builder()
-                    .id("HALFTEN")
-                    .from(LocalDate.now())
-                    .to(LocalDate.now().plusYears(5))
-                    .build()
-                )
-            )
-            .build();
-        return sickLeaveValue;
-    }
+    private String createAg7804Draft() {
+        final var createUtkastRequest = new CreateUtkastRequest();
+        createUtkastRequest.setIntygType(Ag7804EntryPoint.MODULE_ID);
+        createUtkastRequest
+            .setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
+        createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
+        createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
 
-    private Map<String, CertificateDataValue> getValueMap(
-        CertificateDataValue diagnosisValue, CertificateDataValue sickLeaveValue) {
-        Map<String, CertificateDataValue> valueMap = new HashMap<>();
-        valueMap.put("6", diagnosisValue);
-        valueMap.put("32", sickLeaveValue);
-        return valueMap;
+        final var draftId = given()
+            .pathParam("certificateType", Ag7804EntryPoint.MODULE_ID)
+            .contentType(ContentType.JSON)
+            .body(createUtkastRequest)
+            .expect().statusCode(200)
+            .when()
+            .post("api/utkast/{certificateType}")
+            .then().extract().path("intygsId").toString();
+
+        return draftId;
     }
 }
 

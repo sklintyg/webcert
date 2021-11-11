@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.util;
+package se.inera.intyg.webcert.web.service.facade;
 
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
-public interface PatientConverter {
+public interface ErrorLogFacadeService {
 
-    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
+    void log(ErrorLogRequestDTO request);
 }

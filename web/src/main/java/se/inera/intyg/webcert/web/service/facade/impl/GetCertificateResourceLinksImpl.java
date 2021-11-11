@@ -115,6 +115,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowedToCopyFromCandidate(accessEvaluationParameters)
+        );
+
         return functions;
     }
 
@@ -160,6 +165,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
         functions.put(ResourceLinkTypeDTO.RENEW_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
                 certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
+            (accessEvaluationParameters, certificate) ->
+                certificateAccessServiceHelper.isAllowToCreateDraftFromSignedTemplate(accessEvaluationParameters)
         );
 
         functions.put(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,

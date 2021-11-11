@@ -16,13 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-package se.inera.intyg.webcert.web.service.facade.util;
+public class CreateCertificateFromTemplateResponseDTO {
 
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+    private String certificateId;
 
-public interface CertificateConverter {
+    public static CreateCertificateFromTemplateResponseDTO create(String certificateId) {
+        final CreateCertificateFromTemplateResponseDTO responseDTO = new CreateCertificateFromTemplateResponseDTO();
+        responseDTO.certificateId = certificateId;
+        return responseDTO;
+    }
 
-    Certificate convert(Utkast certificate);
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
 }

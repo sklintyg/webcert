@@ -248,8 +248,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     // CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateQueued(String certificateId, String correlationId, String logicalAddress, String certificateType,
         String certificateVersion, String eventName, LocalDateTime eventTime, String currentUser) {
-            logEvent(MonitoringEvent.STATUS_UPDATE_QUEUED, certificateId, correlationId, logicalAddress, certificateType,
-                certificateVersion, eventName, eventTime, currentUser);
+        logEvent(MonitoringEvent.STATUS_UPDATE_QUEUED, certificateId, correlationId, logicalAddress, certificateType,
+            certificateVersion, eventName, eventTime, currentUser);
     } // CHECKSTYLE:ON ParameterNumber
 
     @Override
@@ -460,6 +460,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED, transactionId, intygsId, resultMajor, resultMinor, resultMessage);
     }
 
+    @Override
+    public void logClientError(String errorId, String certificateId, String errorCode, String errorMessage, String stackTrace) {
+        logEvent(MonitoringEvent.CLIENT_ERROR, errorId, certificateId, errorCode, errorMessage, stackTrace);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -579,8 +584,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         DSS_SIGNATURE_REQUEST_CREATED("Sign request for certificate '{}' created with transactionID '{}'"),
 
         DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED(
-            "Received error from sign service for request with transactionID '{}' for certificate '{}' with error message: {} - {} - {}");
+            "Received error from sign service for request with transactionID '{}' for certificate '{}' with error message: {} - {} - {}"),
 
+        CLIENT_ERROR(
+            "Received error from client with errorId '{}' for certificate '{}' with error code '{}', message '{}' and stacktrace '{}'");
 
         private final String msg;
 

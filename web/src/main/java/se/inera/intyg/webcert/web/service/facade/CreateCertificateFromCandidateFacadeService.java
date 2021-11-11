@@ -17,12 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.util;
+package se.inera.intyg.webcert.web.service.facade;
 
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.schemas.contract.Personnummer;
+public interface CreateCertificateFromCandidateFacadeService {
 
-public interface PatientConverter {
-
-    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
+    String createCertificateFromCandidate(String certificateId);
+    
 }

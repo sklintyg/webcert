@@ -16,13 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-package se.inera.intyg.webcert.web.service.facade.util;
+public class CreateCertificateFromCandidateResponseDTO {
 
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.schemas.contract.Personnummer;
+    private String certificateId;
 
-public interface PatientConverter {
+    public static CreateCertificateFromCandidateResponseDTO create(String certificateId) {
+        final CreateCertificateFromCandidateResponseDTO responseDTO = new CreateCertificateFromCandidateResponseDTO();
+        responseDTO.certificateId = certificateId;
+        return responseDTO;
+    }
 
-    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
+    public String getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
 }

@@ -23,7 +23,6 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALEXA_VALFRIDSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
@@ -42,11 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
@@ -57,6 +55,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
@@ -585,10 +585,69 @@ public class PdlIT {
             assertPdlLogMessage(ActivityType.CREATE, certificateId);
         }
 
-        @Disabled("Until it has been implemented")
         @Test
-        public void shallPdlLogCreateActivityWhenCopyFromCertificate() {
-            fail();
+        public void shallPdlLogCreateActivityWhenCopyFromTemplate() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
+                .then().extract().response().as(CreateCertificateFromCandidateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(response.getCertificateId());
+
+            assertNumberOfPdlMessages(2);
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
+            assertPdlLogMessage(ActivityType.CREATE, response.getCertificateId());
+        }
+
+        @Test
+        public void shallPdlLogCreateActivityWhenFillFromCandidate() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+
+            final var draftId = createAg7804Draft();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+            certificateIdsToCleanAfterTest.add(draftId);
+
+            final var response = given()
+                .pathParam("certificateId", draftId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/candidate")
+                .then().extract().response().as(CreateCertificateFromTemplateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(response.getCertificateId());
+
+            assertNumberOfPdlMessages(4);
+            assertPdlLogMessage(ActivityType.CREATE, response.getCertificateId());
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
+            assertPdlLogMessage(ActivityType.READ, testSetup.certificateId());
+            assertPdlLogMessage(ActivityType.UPDATE, response.getCertificateId());
         }
 
         @Test
@@ -789,5 +848,25 @@ public class PdlIT {
             assertNumberOfPdlMessages(1);
             assertPdlLogMessage(ActivityType.REVOKE, testSetup.certificateId());
         }
+    }
+
+    private String createAg7804Draft() {
+        final var createUtkastRequest = new CreateUtkastRequest();
+        createUtkastRequest.setIntygType(Ag7804EntryPoint.MODULE_ID);
+        createUtkastRequest
+            .setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
+        createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
+        createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
+
+        final var draftId = given()
+            .pathParam("certificateType", Ag7804EntryPoint.MODULE_ID)
+            .contentType(ContentType.JSON)
+            .body(createUtkastRequest)
+            .expect().statusCode(200)
+            .when()
+            .post("api/utkast/{certificateType}")
+            .then().extract().path("intygsId").toString();
+
+        return draftId;
     }
 }
