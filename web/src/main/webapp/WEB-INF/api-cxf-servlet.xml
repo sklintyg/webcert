@@ -63,6 +63,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.UserController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.IcfController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.FMBController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.LogController"/>
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider"/>
