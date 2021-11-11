@@ -54,13 +54,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till intygsmottagare";
 
     private static final String SIGN_NAME = "Signera intyget";
-    private static final String SIGN_DESCRIPTION = "Signerar intygsutkast";
+    private static final String SIGN_DESCRIPTION = "Intyget signeras.";
 
     private static final String FORWARD_NAME = "Vidarebefodra utkast";
     private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
 
     private static final String FMB_NAME = "FMB";
-    private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning";
+    private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";
 
     private static final String REPLACE_NAME = "Ersätt";
     private static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
@@ -99,7 +99,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
 
     private static final String SEND_NAME = "Skicka till Försäkringskassan";
-    private static final String SEND_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan";
+    private static final String SEND_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
     private static final String SEND_BODY = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
         + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
