@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getRole(WebCertUser webCertUser) {
-        return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör" : webCertUser.getRoleTypeName();
+        return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör"
+            : webCertUser.getRoleTypeName().split(" ")[0];
     }
 }

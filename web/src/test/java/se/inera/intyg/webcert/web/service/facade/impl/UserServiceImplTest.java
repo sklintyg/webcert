@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -158,6 +160,21 @@ class UserServiceImplTest {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(HSA_ID, actualUser.getLoggedInCareProvider().getUnitId());
         }
+
+        @Test
+        void shallReturnProtectedPerson() {
+            doReturn(true)
+                .when(user)
+                .isSekretessMarkerad();
+            final var actualUser = userService.getLoggedInUser();
+            assertTrue(actualUser.isProtectedPerson());
+        }
+
+        @Test
+        void shallReturnNotProtectedPerson() {
+            final var actualUser = userService.getLoggedInUser();
+            assertFalse(actualUser.isProtectedPerson());
+        }
     }
 
     @Nested
@@ -188,6 +205,16 @@ class UserServiceImplTest {
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals("Vårdadministratör", actualUser.getRole());
+        }
+
+        @Test
+        void shallReturnRoleWithoutExtension() {
+            doReturn("Läkare - inom EU")
+                .when(user)
+                .getRoleTypeName();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("Läkare", actualUser.getRole());
         }
     }
 
