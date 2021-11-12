@@ -52,7 +52,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String EDIT_DESCRIPTION = "Ändrar intygsutkast";
 
     private static final String REMOVE_NAME = "Radera";
-    private static final String REMOVE_DESCRIPTION = "Raderar intygsutkast";
+    private static final String REMOVE_DESCRIPTION = "Raderar intygsutkastet.";
 
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
     private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till intygsmottagare";
