@@ -17,7 +17,7 @@ describe('PDL loggning för Ärendehantering av LISJP-intyg', function () {
         cy.fixture('FK_intyg/maxLisjpData').as('intygsdata');
         cy.fixture('vårdpersonal/annikaLarsson').as('vårdpersonal');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal1');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
         cy.skapaSigneratIntygWebcert(this).then((utkastId) =>{
         

@@ -10,7 +10,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-intyg', function () {
         cy.fixture('SKR_intyg/maxAG7804Data').as('AGintygsdata');
         cy.fixture('vårdpersonal/annikaLarsson').as('vårdpersonal');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal1');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
         cy.skapaSigneratIntygWebcert(this).then((utkastId) =>{
         

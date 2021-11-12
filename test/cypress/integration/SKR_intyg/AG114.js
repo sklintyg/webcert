@@ -9,7 +9,7 @@ describe('AG114-intyg', function () {
     before(function() {
         cy.fixture('SKR_intyg/maxAG114Data').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     });
 

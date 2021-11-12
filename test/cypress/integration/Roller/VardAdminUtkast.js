@@ -7,7 +7,7 @@ describe('Behörigheter för Vårdadmin gällande LISJP-utkast', function () {
     before(function() {
         cy.fixture('FK_intyg/minLisjpData').as('intygsdata');
         cy.fixture('vårdpersonal/annikaLarsson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
         cy.skapaLisjpUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');

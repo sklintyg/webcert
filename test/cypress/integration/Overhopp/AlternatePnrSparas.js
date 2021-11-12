@@ -9,10 +9,10 @@ describe('Funktionalitet kring ändrat personnummer', function () {
     before(function() {
         
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve2').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
         cy.fixture('vårdtagare/haraldOlsson').as('vårdtagare2');
-        cy.fixture('vårdenheter/NMT_vg3_ve1').as('vårdenhetParalell');
+        cy.fixture('vårdenheter/NMT_vg2_ve1').as('vårdenhetParalell');
         cy.fixture('vårdenheter/NMT_vg1_ve1').as('vårdenhet1');
     });
 

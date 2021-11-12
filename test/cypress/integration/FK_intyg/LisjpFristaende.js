@@ -1,14 +1,14 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 import * as intyg from '../../support/FK_intyg/lisjpIntyg'
-import * as registerIntyg from '../../support/FK_intyg/registerLisjp'
+//import * as registerIntyg from '../../support/FK_intyg/registerLisjp'
 
 describe('registrera LISJP-intyg likt fristående', function () {
 
     before(function() {
         cy.fixture('FK_intyg/maxLisjpData').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     });
 
@@ -46,7 +46,7 @@ describe('registrera LISJP-intyg likt fristående', function () {
             cy.log(intygsUrl1);
            
          });
-         intyg.makuleraIntyg("Annat allvarligt fel");
+        // intyg.makuleraIntyg("Annat allvarligt fel");
          /*var start =  "/1.1/";
          var stop = "/?signed"
          

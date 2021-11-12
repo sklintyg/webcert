@@ -17,7 +17,7 @@ describe('TS-Diabetes-intyg', function () {
         cy.fixture('TS_intyg/minTsDiabetes').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
-        cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     })
 

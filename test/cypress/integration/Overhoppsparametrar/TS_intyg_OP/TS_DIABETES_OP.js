@@ -1,6 +1,6 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/TS_intyg/tsDiabetesIntyg'
+import * as intyg from '../../../support/TS_intyg/tsDiabetesIntyg30'
 import * as overhopp from '../../../support/overhopp_helpers'
 
 // TSTRK1031 = Transportstyrelsens läkarintyg, diabetes version 3.0
@@ -10,7 +10,7 @@ describe('TS-DIABETES-intyg', function () {
     before(function() {
         cy.fixture('TS_intyg/minTsDiabetes').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     })

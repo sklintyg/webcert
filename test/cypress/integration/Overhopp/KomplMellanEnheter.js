@@ -7,10 +7,10 @@ describe('Det är möjligt att komplettera från parallell enhet', function () {
 
     before(function() {
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
-        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg2_ve1').as('vårdenhet');
         cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
-        cy.fixture('vårdenheter/MottagningAlfaenheten').as('vårdenhetTvå');
-        cy.fixture('vårdenheter/MottagningBetaEnheten').as('vårdenhetTre');
+        cy.fixture('vårdenheter/MottagningAvd1VG2').as('vårdenhetTvå');
+        cy.fixture('vårdenheter/MottagningAvd2VG2').as('vårdenhetTre');
         cy.skapaLISJPIfylltUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("LISJP-Förifyllt utkast med id " + utkastId + " skapat och används i testfallet");
