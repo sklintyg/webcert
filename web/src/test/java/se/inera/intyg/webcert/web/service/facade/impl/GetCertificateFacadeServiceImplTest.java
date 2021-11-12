@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -69,6 +70,9 @@ class GetCertificateFacadeServiceImplTest {
     @Mock
     private IntygToCertificateConverter intygToCertificateConverter;
 
+    @Mock
+    private DraftAccessServiceHelper draftAccessServiceHelper;
+
     @InjectMocks
     private GetCertificateFacadeServiceImpl getCertificateService;
 
@@ -89,6 +93,13 @@ class GetCertificateFacadeServiceImplTest {
         @Test
         void shallReturnCertificate() {
             final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            assertNotNull(certificate, "Certificate should not be null!");
+        }
+
+        @Test
+        void shallCheckReadAccess() {
+            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            verify(draftAccessServiceHelper).validateAllowToReadUtkast(draft);
             assertNotNull(certificate, "Certificate should not be null!");
         }
 
