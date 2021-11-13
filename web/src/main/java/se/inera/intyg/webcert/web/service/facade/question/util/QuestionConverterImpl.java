@@ -33,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -55,7 +56,7 @@ public class QuestionConverterImpl implements QuestionConverter {
 
     @Override
     public Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate) {
-        return startConvert(arende, complements).build();
+        return startConvert(arende, complements, answeredByCertificate, Collections.emptyList()).build();
     }
 
     @Override
@@ -127,7 +128,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .lastUpdate(arende.getSenasteHandelse())
             .reminders(remindersToAdd)
             .complements(complements)
-            .answeredByCertificate(answeredByCertificate)
+            .answeredByCertificate(arende.getAmne() == ArendeAmne.KOMPLT ? answeredByCertificate : null)
             .lastDateToReply(
                 getLastDateToReply(arende, reminders)
             );

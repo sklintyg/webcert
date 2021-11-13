@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -48,6 +50,20 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     private final CertificateRelationService certificateRelationService;
 
     private final CertificateEventService certificateEventService;
+
+    private final List<EventCode> eventCodesToRemove = Arrays.asList(
+        EventCode.RELINTYGMAKULE,
+        EventCode.NYFRFM,
+        EventCode.NYFRFV,
+        EventCode.HANFRFV,
+        EventCode.HANFRFM,
+        EventCode.NYSVFM,
+        EventCode.PAMINNELSE
+    );
+
+    private final List<CertificateEventTypeDTO> duplicatesToFilterOut = Arrays.asList(
+        CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT
+    );
 
     @Autowired
     public GetCertificateEventsFacadeServiceImpl(
@@ -154,14 +170,35 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private List<CertificateEventDTO> getCertificateEvents(List<CertificateEvent> events) {
+        final List<CertificateEventDTO> listThatCanBeDuplicate = new ArrayList();
         return events.stream()
             .filter(this::shouldBeIncluded)
             .map(this::convertCertificateEvent)
+            .filter(certificateEventDTO -> checkIfNotDuplicate(listThatCanBeDuplicate, certificateEventDTO))
             .collect(Collectors.toList());
     }
 
+    private boolean checkIfNotDuplicate(List<CertificateEventDTO> listThatCanBeDuplicate, CertificateEventDTO certificateEventDTO) {
+        if (duplicatesToFilterOut.contains(certificateEventDTO.getType())) {
+            if (isDuplicate(listThatCanBeDuplicate, certificateEventDTO)) {
+                return false;
+            }
+            listThatCanBeDuplicate.add(certificateEventDTO);
+        }
+        return true;
+    }
+
+    private boolean isDuplicate(List<CertificateEventDTO> listThatCanBeDuplicate, CertificateEventDTO certificateEventDTO) {
+        return listThatCanBeDuplicate.stream()
+            .anyMatch(o ->
+                certificateEventDTO.getType().equals(o.getType())
+                    && certificateEventDTO.getTimestamp().truncatedTo(ChronoUnit.MINUTES)
+                    .isEqual(o.getTimestamp().truncatedTo(ChronoUnit.MINUTES))
+            );
+    }
+
     private boolean shouldBeIncluded(CertificateEvent event) {
-        return event.getEventCode() != EventCode.RELINTYGMAKULE;
+        return !eventCodesToRemove.contains(event.getEventCode());
     }
 
     private CertificateEventDTO convertCertificateEvent(CertificateEvent eventToConvert) {
@@ -192,20 +229,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
                 return CertificateEventTypeDTO.EXTENDED;
             case KOPIERATFRAN:
                 return CertificateEventTypeDTO.COPIED_FROM;
-            case NYFRFM:
-                return CertificateEventTypeDTO.INCOMING_MESSAGE;
-            case NYSVFM:
-                return CertificateEventTypeDTO.INCOMING_ANSWER;
-            case HANFRFM:
-                return CertificateEventTypeDTO.INCOMING_MESSAGE_HANDLED;
-            case NYFRFV:
-                return CertificateEventTypeDTO.OUTGOING_MESSAGE;
-            case HANFRFV:
-                return CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED;
             case KOMPLBEGARAN:
                 return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
-            case PAMINNELSE:
-                return CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER;
             case KOMPLETTERAR:
                 return CertificateEventTypeDTO.COMPLEMENTS;
             case SKAPATFRAN:
