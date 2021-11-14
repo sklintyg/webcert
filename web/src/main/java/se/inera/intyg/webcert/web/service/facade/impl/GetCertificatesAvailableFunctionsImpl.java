@@ -63,6 +63,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String FORWARD_NAME = "Vidarebefodra utkast";
     private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
 
+    private static final String READY_FOR_SIGNING_NAME = "Markera klart för signering";
+    private static final String READY_FOR_SIGNING_DESCRIPTION = "Utkastet markeras som klart för signering.";
+
     private static final String FMB_NAME = "FMB";
     private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";
 
@@ -224,6 +227,15 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
                 FORWARD_NAME,
                 FORWARD_DESCRIPTION,
+                true
+            )
+        );
+
+        resourceLinks.add(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.READY_FOR_SIGNING,
+                READY_FOR_SIGNING_NAME,
+                READY_FOR_SIGNING_DESCRIPTION,
                 true
             )
         );
@@ -443,7 +455,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (certificate.getMetadata().getVersion() == 0 && isRelationsEmpty(certificate) && isAg7804(certificate)) {
             final var metadata = candidateDataHelper
                 .getCandidateMetadata(certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion(),
-                    Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get());
+                    Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow());
             if (metadata.isPresent()) {
                 setCreateFromCandidateBody(metadata.get().getIntygCreated().toString());
                 return true;
