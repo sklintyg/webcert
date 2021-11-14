@@ -62,7 +62,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         EventCode.KFSIGN
     );
 
-    private final List<CertificateEventTypeDTO> duplicatesToFilterOut = Arrays.asList(
+    private final List<CertificateEventTypeDTO> duplicatesToFilterOut = List.of(
         CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT
     );
 
@@ -102,8 +102,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     private CertificateEventDTO[] sortAndReturnArray(List<CertificateEventDTO> events) {
         return events.stream()
             .sorted(Comparator.comparing(CertificateEventDTO::getTimestamp))
-            .collect(Collectors.toList())
-            .toArray(new CertificateEventDTO[0]);
+            .toArray(CertificateEventDTO[]::new);
     }
 
     private void addEventsBasedOnChildRelations(List<CertificateEventDTO> events, FrontendRelations childRelations, String certificateId) {
@@ -171,7 +170,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private List<CertificateEventDTO> getCertificateEvents(List<CertificateEvent> events) {
-        final List<CertificateEventDTO> listThatCanBeDuplicate = new ArrayList();
+        final List<CertificateEventDTO> listThatCanBeDuplicate = new ArrayList<>();
         return events.stream()
             .filter(this::shouldBeIncluded)
             .map(this::convertCertificateEvent)
@@ -242,8 +241,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private void decorateCertificateEventsWithParentInfo(List<CertificateEventDTO> events, WebcertCertificateRelation parentRelation) {
-        events.stream()
-            .forEach(certificateEventDTO -> decorateCertificateEventWithParentInfo(certificateEventDTO, parentRelation));
+        events.forEach(certificateEventDTO -> decorateCertificateEventWithParentInfo(certificateEventDTO, parentRelation));
     }
 
     private void decorateCertificateEventWithParentInfo(CertificateEventDTO event, WebcertCertificateRelation parentRelation) {
