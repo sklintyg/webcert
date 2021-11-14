@@ -53,14 +53,20 @@ class ReadyForSignFacadeServiceImplTest {
     }
 
     @Test
-    void shallSetAsReadyForSign() {
+    void shallReadyForSign() {
+        readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
+
+        verify(utkastService).setKlarForSigneraAndSendStatusMessage(CERTIFICATE_ID, CERTIFICATE_TYPE);
+    }
+
+    @Test
+    void shallReturnCertificateWithReadyForSignDateTime() {
         final var expectedReadyForSign = LocalDateTime.now();
 
         certificate.getMetadata().setReadyForSign(expectedReadyForSign);
 
-        final var actualCertificate = readyForSignFacadeService.setReadyForSign(CERTIFICATE_ID);
+        final var actualCertificate = readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
 
         assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
-        verify(utkastService).setKlarForSigneraAndSendStatusMessage(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 }

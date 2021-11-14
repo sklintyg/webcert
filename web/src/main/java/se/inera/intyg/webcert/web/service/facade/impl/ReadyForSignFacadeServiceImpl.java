@@ -23,7 +23,7 @@ public class ReadyForSignFacadeServiceImpl implements ReadyForSignFacadeService 
     }
 
     @Override
-    public Certificate setReadyForSign(String certificateId) {
+    public Certificate readyForSign(String certificateId) {
         LOG.debug("Get certificate type for certificate '{}'", certificateId);
         final var certificateType = utkastService.getCertificateType(certificateId);
 

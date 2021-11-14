@@ -23,5 +23,5 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface ReadyForSignFacadeService {
 
-    Certificate setReadyForSign(String certificateId);
+    Certificate readyForSign(String certificateId);
 }
