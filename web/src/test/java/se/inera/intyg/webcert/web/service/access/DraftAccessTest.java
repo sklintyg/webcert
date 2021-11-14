@@ -440,7 +440,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
-        assertAllowToSignUtkastNotLatestMajorVersion(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastNotLatestMajorVersion(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastNotLatestMajorVersion(AccessResult actualValue);
@@ -449,7 +450,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToSignUtkastOnDeceasedPatient(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnDeceasedPatient(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -476,7 +478,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -485,7 +488,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -494,7 +498,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -503,7 +508,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -512,7 +518,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -521,7 +528,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToSignUtkastNoConditionsDifferentUnit(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastNoConditionsDifferentUnit(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -783,7 +791,9 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
-        assertAllowToForwardUtkastNotLatestMajorVersion(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToForwardUtkastNotLatestMajorVersion(accessService.allowToForwardDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
     }
 
     abstract protected void assertAllowToForwardUtkastNotLatestMajorVersion(AccessResult actualValue);
@@ -886,4 +896,125 @@ abstract public class DraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToForwardUtkastNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToReadyForSignNoConditions(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToReadyForSignNotLatestMajorVersion(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToReadyForSignOnDeceasedPatient(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToReadyForSignOnInactiveUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToReadyForSignOnRenewFalse(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToReadyForSignOnSekretessPatientOnSameUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToReadyForSignOnSekretessPatientOnDifferentUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToReadyForSignOnDeceasedPatientOnDifferentUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToReadyForSignOnInactiveUnitOnDifferentUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToReadyForSignOnRenewFalseOnDifferentUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToReadyForSignNoConditionsDifferentUnit(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignNoConditionsDifferentUnit(AccessResult actualValue);
 }

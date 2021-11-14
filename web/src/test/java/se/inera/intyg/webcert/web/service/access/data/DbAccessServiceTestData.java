@@ -42,6 +42,7 @@ public class DbAccessServiceTestData implements AccessServiceTestData {
         AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
         AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG,
         AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+        AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST,
         AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
         AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
         AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG,

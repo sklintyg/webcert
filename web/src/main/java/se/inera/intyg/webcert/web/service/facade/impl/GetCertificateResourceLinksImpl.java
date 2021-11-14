@@ -115,6 +115,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 draftAccessServiceHelper.isAllowedToForwardUtkast(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.READY_FOR_SIGNING,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowedToReadyForSign(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowedToCopyFromCandidate(accessEvaluationParameters)

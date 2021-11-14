@@ -416,4 +416,59 @@ public class DbDraftAccessTest extends DraftAccessTest {
     protected void assertAllowToForwardUtkastNoConditionsDifferentUnit(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
     }
+
+    @Override
+    protected void assertAllowToReadyForSignNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignNotLatestMajorVersion(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+    }
 }

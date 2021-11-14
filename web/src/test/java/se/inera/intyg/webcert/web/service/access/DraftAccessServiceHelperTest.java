@@ -57,7 +57,7 @@ public class DraftAccessServiceHelperTest {
         draft = new Utkast();
         draft.setIntygsTyp("certificateType");
         draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").get());
+        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
         draft.setTestIntyg(false);
     }
 
@@ -318,6 +318,52 @@ public class DraftAccessServiceHelperTest {
     public void shallNotAllowIfNoAccessToForwardCertificatePassingAccessEvaluationParameters() {
         doReturn(createNoAccessResult()).when(draftAccessService).allowToForwardDraft(any(AccessEvaluationParameters.class));
         final var actualResult = draftAccessServiceHelper.isAllowedToForwardUtkast(mock(AccessEvaluationParameters.class));
+        assertFalse(actualResult);
+    }
+
+    @Test
+    public void shallThrowExceptionIfNoAccessToReadyForSign() {
+        try {
+            doReturn(createNoAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+            draftAccessServiceHelper.validateAllowToReadyForSign(draft);
+            fail();
+        } catch (AuthoritiesException ex) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void shallNotThrowExeptionIfAllowAccessToReadyForSign() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+        draftAccessServiceHelper.validateAllowToReadyForSign(draft);
+        assertTrue(true);
+    }
+
+    @Test
+    public void shallAllowIfAllowAccessToReadyForSign() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToReadyForSign(draft);
+        assertTrue(actualResult);
+    }
+
+    @Test
+    public void shallNotAllowIfNoAccessToReadyForSign() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToReadyForSign(draft);
+        assertFalse(actualResult);
+    }
+
+    @Test
+    public void shallAllowIfAllowAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
+        doReturn(createAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToReadyForSign(mock(AccessEvaluationParameters.class));
+        assertTrue(actualResult);
+    }
+
+    @Test
+    public void shallNotAllowIfNoAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
+        doReturn(createNoAccessResult()).when(draftAccessService).allowToReadyForSign(any(AccessEvaluationParameters.class));
+        final var actualResult = draftAccessServiceHelper.isAllowedToReadyForSign(mock(AccessEvaluationParameters.class));
         assertFalse(actualResult);
     }
 
