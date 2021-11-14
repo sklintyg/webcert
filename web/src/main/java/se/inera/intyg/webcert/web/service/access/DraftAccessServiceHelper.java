@@ -205,7 +205,6 @@ public final class DraftAccessServiceHelper {
         );
     }
 
-
     public boolean isAllowedToCopyFromCandidate(Utkast utkast) {
         return evaluateAllowToCopyFromCandidate(utkast).isAllowed();
     }
