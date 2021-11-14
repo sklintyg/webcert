@@ -157,7 +157,8 @@ class GetCertificateEventsFacadeServiceImplTest {
                 EventCode.HANFRFV,
                 EventCode.HANFRFM,
                 EventCode.NYSVFM,
-                EventCode.PAMINNELSE
+                EventCode.PAMINNELSE,
+                EventCode.KFSIGN
             );
         }
 

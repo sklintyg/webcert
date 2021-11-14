@@ -58,7 +58,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         EventCode.HANFRFV,
         EventCode.HANFRFM,
         EventCode.NYSVFM,
-        EventCode.PAMINNELSE
+        EventCode.PAMINNELSE,
+        EventCode.KFSIGN
     );
 
     private final List<CertificateEventTypeDTO> duplicatesToFilterOut = Arrays.asList(
