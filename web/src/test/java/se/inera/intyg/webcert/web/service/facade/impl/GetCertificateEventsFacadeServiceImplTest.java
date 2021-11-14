@@ -158,17 +158,6 @@ class GetCertificateEventsFacadeServiceImplTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class EventTypes {
 
-        void setup() {
-            final var parentRelation = new WebcertCertificateRelation(
-                "ParentCertificateId",
-                RelationKod.ERSATT,
-                LocalDateTime.now(),
-                UtkastStatus.SIGNED,
-                false);
-
-            relations.setParent(parentRelation);
-        }
-
         Stream<Arguments> eventTypes() {
             return Stream.of(
                 Arguments.of(EventCode.SKAPAT, CertificateEventTypeDTO.CREATED),

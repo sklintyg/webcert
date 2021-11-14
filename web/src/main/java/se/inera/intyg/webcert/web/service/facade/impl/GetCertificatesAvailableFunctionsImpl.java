@@ -63,8 +63,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String FORWARD_NAME = "Vidarebefodra utkast";
     private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
 
-    private static final String READY_FOR_SIGNING_NAME = "Markera klart för signering";
-    private static final String READY_FOR_SIGNING_DESCRIPTION = "Utkastet markeras som klart för signering.";
+    private static final String READY_FOR_SIGN_NAME = "Markera klart för signering";
+    private static final String READY_FOR_SIGN_DESCRIPTION = "Utkastet markeras som klart för signering.";
 
     private static final String FMB_NAME = "FMB";
     private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";
@@ -233,9 +233,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         resourceLinks.add(
             ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.READY_FOR_SIGNING,
-                READY_FOR_SIGNING_NAME,
-                READY_FOR_SIGNING_DESCRIPTION,
+                ResourceLinkTypeDTO.READY_FOR_SIGN,
+                READY_FOR_SIGN_NAME,
+                READY_FOR_SIGN_DESCRIPTION,
                 true
             )
         );

@@ -138,7 +138,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         void shallIncludeReadyForSigning() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.READY_FOR_SIGNING);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.READY_FOR_SIGN);
         }
 
         @Test
