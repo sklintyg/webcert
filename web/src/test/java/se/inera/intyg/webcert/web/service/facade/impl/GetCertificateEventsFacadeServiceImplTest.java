@@ -142,16 +142,45 @@ class GetCertificateEventsFacadeServiceImplTest {
         );
     }
 
-    @Test
-    /**
-     * EventCode.RELINTYGMAKULE is not relevant for the user and will be filtered out.
-     */
-    void shallExcludeRelIntygMakuleEvent() {
-        certificateEvent.setEventCode(EventCode.RELINTYGMAKULE);
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class EventTypesToFilterOut {
 
-        final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+        /**
+         * Event types that should be filtered out because they are currently not relevant for the user
+         */
+        Stream<EventCode> eventTypesToFilterOut() {
+            return Stream.of(
+                EventCode.RELINTYGMAKULE,
+                EventCode.NYFRFM,
+                EventCode.NYFRFV,
+                EventCode.HANFRFV,
+                EventCode.HANFRFM,
+                EventCode.NYSVFM,
+                EventCode.PAMINNELSE,
+                EventCode.KFSIGN
+            );
+        }
 
-        assertEquals(0, actualEvents.length);
+        @ParameterizedTest
+        @MethodSource("eventTypesToFilterOut")
+        void shallFilterOutType(EventCode eventCode) {
+            certificateEvent.setEventCode(eventCode);
+
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            assertEquals(0, actualEvents.length);
+        }
+
+        @Test
+        void shallfilterOutDuplicateComplementRequests() {
+            certificateEvent.setEventCode(EventCode.KOMPLBEGARAN);
+            certificateEvents.add(certificateEvent);
+
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            assertEquals(1, actualEvents.length);
+        }
     }
 
     @Nested
@@ -168,12 +197,6 @@ class GetCertificateEventsFacadeServiceImplTest {
                 Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
                 Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
                 Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
-                Arguments.of(EventCode.NYFRFM, CertificateEventTypeDTO.INCOMING_MESSAGE),
-                Arguments.of(EventCode.NYFRFV, CertificateEventTypeDTO.OUTGOING_MESSAGE),
-                Arguments.of(EventCode.NYSVFM, CertificateEventTypeDTO.INCOMING_ANSWER),
-                Arguments.of(EventCode.HANFRFM, CertificateEventTypeDTO.INCOMING_MESSAGE_HANDLED),
-                Arguments.of(EventCode.HANFRFV, CertificateEventTypeDTO.OUTGOING_MESSAGE_HANDLED),
-                Arguments.of(EventCode.PAMINNELSE, CertificateEventTypeDTO.INCOMING_MESSAGE_REMINDER),
                 Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
                 Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
                 Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM)
@@ -190,12 +213,6 @@ class GetCertificateEventsFacadeServiceImplTest {
                 EventCode.SIGNAT,
                 EventCode.SKICKAT,
                 EventCode.MAKULERAT,
-                EventCode.NYFRFM,
-                EventCode.NYFRFV,
-                EventCode.HANFRFV,
-                EventCode.HANFRFM,
-                EventCode.NYSVFM,
-                EventCode.PAMINNELSE,
                 EventCode.KOMPLBEGARAN,
                 EventCode.SKAPATFRAN
             );

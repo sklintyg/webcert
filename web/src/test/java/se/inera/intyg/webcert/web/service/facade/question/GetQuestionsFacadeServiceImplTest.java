@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -224,6 +225,23 @@ public class GetQuestionsFacadeServiceImplTest {
 
         assertEquals(1, actualQuestions.size(), "Expect one question");
         assertEquals(answeredByCertificate, answeredByCertificateArgCaptor.getValue());
+    }
+
+    @Test
+    void shallReturnQuestionWithComplementButNoAnsweredByCertificateIfRevoked() {
+        final var answeredByCertificate = CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+            .status(CertificateStatus.REVOKED)
+            .build();
+
+        final var answeredByCertificateArgCaptor =
+            setupMockToReturnQuestionsWithComplementAndAnsweredByCertificate(new CertificateRelation[]{answeredByCertificate});
+
+        final var actualQuestions = getQuestionsFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(1, actualQuestions.size(), "Expect one question");
+        assertNull(answeredByCertificateArgCaptor.getValue(), "Expect answeredByCertificate to be null because it is revoked");
     }
 
     @Test
