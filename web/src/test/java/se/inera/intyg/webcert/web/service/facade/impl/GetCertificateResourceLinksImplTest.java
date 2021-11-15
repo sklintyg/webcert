@@ -186,6 +186,23 @@ class GetCertificateResourceLinksImplTest {
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
         }
 
+        @Test
+        void shallIncludeReadyForSign() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.READY_FOR_SIGN);
+            doReturn(true).when(draftAccessServiceHelper).isAllowedToReadyForSign(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.READY_FOR_SIGN);
+        }
+
+        @Test
+        void shallExcludeReadyForSign() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.READY_FOR_SIGN);
+            doReturn(false).when(draftAccessServiceHelper).isAllowedToReadyForSign(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.READY_FOR_SIGN);
+        }
 
         @Test
         void shallIncludeFMB() {

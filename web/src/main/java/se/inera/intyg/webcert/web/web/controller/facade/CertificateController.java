@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -98,6 +99,8 @@ public class CertificateController {
     private RenewCertificateFacadeService renewCertificateFacadeService;
     @Autowired
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
+    @Autowired
+    private ReadyForSignFacadeService readyForSignFacadeService;
     @Autowired
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
@@ -336,6 +339,21 @@ public class CertificateController {
             version,
             forwardCertificate.isForwarded()
         );
+
+        final var resourceLinks = getCertificateResourceLinks.get(certificate);
+        final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
+        return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
+    }
+
+    @POST
+    @Path("/{certificateId}/readyforsign")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response readyForSign(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ready for sign certificate with id: '{}' ", certificateId);
+        }
+        final var certificate = readyForSignFacadeService.readyForSign(certificateId);
 
         final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);

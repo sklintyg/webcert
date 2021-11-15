@@ -41,6 +41,7 @@ public final class DraftAccessServiceHelper {
     public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
     }
+
     public void validateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
         final AccessResult accessResult = evaluateAllowToCreateUtkast(intygsTyp, personnummer);
 
@@ -168,6 +169,32 @@ public final class DraftAccessServiceHelper {
 
     private AccessResult evaluateAllowToForwardUtkast(Utkast utkast) {
         return draftAccessService.allowToForwardDraft(
+            AccessEvaluationParameters.create(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion(),
+                UtkastUtil.getVardenhet(utkast),
+                utkast.getPatientPersonnummer(),
+                utkast.isTestIntyg()
+            )
+        );
+    }
+
+    public boolean isAllowedToReadyForSign(Utkast utkast) {
+        return evaluateAllowToReadyForSign(utkast).isAllowed();
+    }
+
+    public boolean isAllowedToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
+        return draftAccessService.allowToReadyForSign(accessEvaluationParameters).isAllowed();
+    }
+
+    public void validateAllowToReadyForSign(Utkast utkast) {
+        final AccessResult accessResult = evaluateAllowToReadyForSign(utkast);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private AccessResult evaluateAllowToReadyForSign(Utkast utkast) {
+        return draftAccessService.allowToReadyForSign(
             AccessEvaluationParameters.create(
                 utkast.getIntygsTyp(),
                 utkast.getIntygTypeVersion(),

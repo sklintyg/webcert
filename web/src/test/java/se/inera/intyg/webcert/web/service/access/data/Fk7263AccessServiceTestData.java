@@ -35,6 +35,8 @@ public class Fk7263AccessServiceTestData implements AccessServiceTestData {
     private static List<String> PRIVILEGES = Arrays.asList(
         AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
         AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+        AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST,
         AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
         AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
         AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,

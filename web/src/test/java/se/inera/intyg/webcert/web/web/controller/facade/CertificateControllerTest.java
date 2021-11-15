@@ -60,6 +60,7 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
@@ -108,6 +109,8 @@ public class CertificateControllerTest {
     private RenewCertificateFacadeService renewCertificateFacadeService;
     @Mock
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
+    @Mock
+    private ReadyForSignFacadeService readyForSignFacadeService;
     @Mock
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Mock
@@ -596,6 +599,35 @@ public class CertificateControllerTest {
 
             final var response = (CertificateResponseDTO) certificateController
                 .forwardCertificate(CERTIFICATE_ID, CERTIFICATE_VERSION, forwardCertificateRequestDTO).getEntity();
+
+            assertEquals(resourceLinks, response.getCertificate().getLinks());
+        }
+    }
+
+    @Nested
+    class ReadyForSign {
+
+        private Certificate certificate;
+        private ResourceLinkDTO[] resourceLinks;
+
+        @BeforeEach
+        void setup() {
+            certificate = createCertificate();
+
+            doReturn(certificate)
+                .when(readyForSignFacadeService)
+                .readyForSign(anyString());
+
+            resourceLinks = new ResourceLinkDTO[0];
+
+            doReturn(resourceLinks)
+                .when(getCertificateResourceLinks)
+                .get(certificate);
+        }
+
+        @Test
+        void shallIncludeResourceLinks() {
+            final var response = (CertificateResponseDTO) certificateController.readyForSign(CERTIFICATE_ID).getEntity();
 
             assertEquals(resourceLinks, response.getCertificate().getLinks());
         }

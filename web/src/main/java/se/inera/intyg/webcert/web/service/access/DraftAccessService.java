@@ -38,6 +38,8 @@ public interface DraftAccessService {
 
     AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters);
 
+    AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters);
+
     AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters);
 
 }

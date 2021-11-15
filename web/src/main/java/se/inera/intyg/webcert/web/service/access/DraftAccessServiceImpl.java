@@ -185,7 +185,24 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     public AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(true)
+            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
+    }
+
+    @Override
+    public AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
             .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
