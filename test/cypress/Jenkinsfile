@@ -114,8 +114,7 @@ pipeline {
           // När troubleshootingen är klar gällande vart problemet med timeouts ligger
           // så ska nedanstående rad återställas:
           // sh "npm run test:e2e:electron"
-          // and config to make the report nicer
-          sh "npm run test:e2e:electron -- --spec '${SPECFILES_TO_RUN}' --reporter-options jenkinsMode=true"
+          sh "npm run test:e2e:electron -- --spec '${SPECFILES_TO_RUN}'"
         }
       }
     }
