@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -121,7 +122,8 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
         }
 
         return Stream.of(childrenRelations)
-            .filter(childRelation -> childRelation.getType() == CertificateRelationType.COMPLEMENTED)
+            .filter(childRelation -> childRelation.getType() == CertificateRelationType.COMPLEMENTED
+                && childRelation.getStatus() != CertificateStatus.REVOKED)
             .collect(Collectors.toList());
     }
 
@@ -181,6 +183,7 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     private Question convertQuestion(Arende question, Complement[] complements, CertificateRelation answeredByCertificate,
         ArendeDraft answerDraft, Arende answer, List<Arende> reminders) {
+
         if (answer != null) {
             return questionConverter.convert(question, complements, answeredByCertificate, answer, reminders);
         }

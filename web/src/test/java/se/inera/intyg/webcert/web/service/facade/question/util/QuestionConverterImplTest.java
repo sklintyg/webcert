@@ -214,7 +214,7 @@ class QuestionConverterImplTest {
             arende = new Arende();
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
-            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setAmne(ArendeAmne.KOMPLT);
             arende.setSkickatTidpunkt(SENT);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
