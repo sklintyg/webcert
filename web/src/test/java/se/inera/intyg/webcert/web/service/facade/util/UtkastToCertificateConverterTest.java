@@ -127,6 +127,16 @@ public class UtkastToCertificateConverterTest {
             assertEquals(expectedForwarded, actualCertificate.getMetadata().isForwarded());
         }
 
+        @Test
+        void shallIncludeReadyForSign() {
+            final var expectedReadyForSign = LocalDateTime.now();
+            draft.setKlartForSigneringDatum(expectedReadyForSign);
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
+        }
+
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shallIncludeTestCertificate(boolean expectedTestCertificate) {
