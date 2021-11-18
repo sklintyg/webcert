@@ -58,8 +58,13 @@ public class ValidateSickLeavePeriodFacadeServiceImpl implements ValidateSickLea
         sickLeaveTimeRequest.setPersonnummer(Personnummer.createPersonnummer(request.getPersonId()).get());
         sickLeaveTimeRequest.setPeriods(periods);
 
-        final var response = fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest);
-        return getResponseText(response, totalDays.get());
+        try {
+            final var response = fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest);
+            return getResponseText(response, totalDays.get());
+        } catch (Exception e) {
+            return "På grund av ett tekniskt fel kan vi just nu inte räkna"
+                + " ut om patienten överskrider FMB:s rekommenderade sjukskrivningslängd.";
+        }
     }
 
     private AtomicLong getTotalDays(ValidateSickLeavePeriodRequestDTO request) {

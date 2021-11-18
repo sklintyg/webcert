@@ -36,6 +36,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
@@ -124,5 +126,16 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
         final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() > 0);
         assertTrue(warning.contains("Den totala sjukskrivningsperioden är"));
+    }
+
+    @Test
+    void shallReturnErrorMessageIfExceptionIsThrown() {
+        Mockito.doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Failed"))
+            .when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() > 0);
+        assertTrue(warning.contains(
+            "På grund av ett tekniskt fel kan vi just nu inte räkna ut om patienten överskrider FMB:s rekommenderade sjukskrivningslängd."));
     }
 }
