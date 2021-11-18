@@ -36,6 +36,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
@@ -128,7 +130,8 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
 
     @Test
     void shallReturnErrorMessageIfExceptionIsThrown() {
-        Mockito.doReturn(new Exception()).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+        Mockito.doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Failed"))
+            .when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
 
         final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
         assertTrue(warning.length() > 0);
