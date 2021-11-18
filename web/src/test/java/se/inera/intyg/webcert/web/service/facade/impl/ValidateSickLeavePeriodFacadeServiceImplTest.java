@@ -125,4 +125,14 @@ public class ValidateSickLeavePeriodFacadeServiceImplTest {
         assertTrue(warning.length() > 0);
         assertTrue(warning.contains("Den totala sjukskrivningsperioden är"));
     }
+
+    @Test
+    void shallReturnErrorMessageIfExceptionIsThrown() {
+        Mockito.doReturn(new Exception()).when(fmbDiagnosInformationService).validateSjukskrivningtidForPatient(any());
+
+        final var warning = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(request);
+        assertTrue(warning.length() > 0);
+        assertTrue(warning.contains(
+            "På grund av ett tekniskt fel kan vi just nu inte räkna ut om patienten överskrider FMB:s rekommenderade sjukskrivningslängd."));
+    }
 }
