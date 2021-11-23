@@ -32,6 +32,7 @@ import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 public class UtkastToCertificateConverterImpl implements UtkastToCertificateConverter {
@@ -46,15 +47,19 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final CertificateRelationsConverter certificateRelationsConverter;
 
+    private final WebCertUserService webCertUserService;
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
-        CertificateRelationsConverter certificateRelationsConverter) {
+        CertificateRelationsConverter certificateRelationsConverter,
+        WebCertUserService webCertUserService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -105,6 +110,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
                 certificateToReturn.getMetadata().getTypeVersion())
         );
+
+        if (webCertUserService.hasAuthenticationContext() && webCertUserService.getUser().getParameters() != null) {
+            certificateToReturn.getMetadata().setResponsibleHospName(webCertUserService.getUser().getParameters().getResponsibleHospName());
+        }
 
         return certificateToReturn;
     }
