@@ -19,12 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -47,6 +51,9 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     @Override
     public ValidationErrorDTO[] validate(Certificate certificate) {
+
+        final var moduleApi = getModuleApi(certificate);
+
         LOG.debug("Get certificate '{}' to validate", certificate.getMetadata().getId());
         final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
 
@@ -54,49 +61,96 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         final var draftValidation = utkastService.validateDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
-            getJsonFromCertificate(certificate, currentCertificate.getModel())
+            getJsonFromCertificate(moduleApi, certificate, currentCertificate.getModel())
         );
 
         LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
-        return convertDraftValidation(draftValidation);
+        return convertDraftValidation(moduleApi, certificate, draftValidation);
     }
 
-    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
+    private ModuleApi getModuleApi(Certificate certificate) {
         try {
-            final var moduleApi = moduleRegistry.getModuleApi(
-                certificate.getMetadata().getType(),
-                certificate.getMetadata().getTypeVersion()
-            );
+            return moduleRegistry.getModuleApi(certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 
+    private String getJsonFromCertificate(ModuleApi moduleApi, Certificate certificate, String currentModel) {
+        try {
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
 
-    private ValidationErrorDTO[] convertDraftValidation(DraftValidation draftValidation) {
+    private ValidationErrorDTO[] convertDraftValidation(ModuleApi moduleApi, Certificate certificate, DraftValidation draftValidation) {
         return draftValidation.getMessages().stream()
-            .map(this::convertValidationError)
+            .map(validationMessage -> convertValidationError(moduleApi, certificate, validationMessage))
             .toArray(ValidationErrorDTO[]::new);
     }
 
-    private ValidationErrorDTO convertValidationError(DraftValidationMessage validationMessage) {
+    private ValidationErrorDTO convertValidationError(ModuleApi moduleApi, Certificate certificate,
+        DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
         validationError.setField(validationMessage.getField());
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
-        validationError.setText(
-            getValidationText(validationMessage.getField())
-        );
+        validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
+            validationMessage.getQuestionId()));
         return validationError;
     }
 
-    // TODO: We need a way to give correct message to the user. Or should frontend adjust based on component?
-    private String getValidationText(String field) {
-        if (field.contains("har")) {
-            return "Välj ett alternativ.";
-        }
-        return "Ange ett svar.";
+    private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
+        ValidationMessageType validationMessageType, String questionId) {
+        final var key = resolveKey(certificate, message, validationMessageType, questionId);
+        return moduleApi.getMessagesProvider().get(key);
     }
+
+    private String resolveKey(Certificate certificate, String message, ValidationMessageType validationMessageType, String questionId) {
+        if (!Strings.isNullOrEmpty(message)) {
+            return message;
+        }
+
+        final var componentType = certificate.getData().get(questionId).getConfig().getType();
+        final var oldComponentName = convertToOldName(componentType, certificate, questionId);
+        return "common.validation." + oldComponentName + "." + validationMessageType.name().toLowerCase();
+    }
+
+    private String convertToOldName(CertificateDataConfigTypes componentType, Certificate certificate, String questionId) {
+        switch (componentType) {
+            case UE_CHECKBOX_MULTIPLE_CODE:
+                if (isQuestion40InFK7804(certificate.getMetadata().getType(), questionId)) {
+                    return "ue-checkgroup-disabled";
+                }
+                return "ue-checkgroup";
+            case UE_CHECKBOX_BOOLEAN:
+                return "ue-checkbox";
+            case UE_CHECKBOX_MULTIPLE_DATE:
+                return "ue-checkgroup";
+            case UE_DIAGNOSES:
+                return "ue-diagnos";
+            case UE_TEXTAREA:
+                return "ue-textarea";
+            case UE_RADIO_BOOLEAN:
+                return "ue-radio";
+            case UE_RADIO_MULTIPLE_CODE:
+            case UE_DROPDOWN:
+                return "ue-prognos";
+            case UE_SICK_LEAVE_PERIOD:
+                return "ue-sjukskrivningar";
+            case UE_ICF:
+                return "ue-icf";
+            case CATEGORY:
+                return "ue-kategori";
+            default:
+                throw new RuntimeException("No conversion specified for componentType: " + componentType);
+        }
+    }
+
+    private boolean isQuestion40InFK7804(String certificateType, String questionId) {
+        return certificateType.equals("lisjp") && questionId.equals("40");
+    }
+
 }

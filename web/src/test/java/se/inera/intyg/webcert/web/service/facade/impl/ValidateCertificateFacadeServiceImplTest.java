@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +30,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.services.messages.CertificateMessagesProvider;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateDataElement;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigCheckboxMultipleCode;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -45,8 +49,12 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 class ValidateCertificateFacadeServiceImplTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String CERTIFICATE_TYPE = "lisjp";
     private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
+    private static final String EXPECTED_TEXT = "expectedText";
+    private static final String EXPECTED_TEXT2 = "expectedText2";
+    private static final String EXPECTED_MESSAGE = "expectedMessage";
+    private static final String QUESTION_ID_40 = "40";
 
     @Mock
     private UtkastService utkastService;
@@ -69,7 +77,10 @@ class ValidateCertificateFacadeServiceImplTest {
                     .type(CERTIFICATE_TYPE)
                     .typeVersion(CERTIFICATE_TYPE_VERSION)
                     .build()
-            )
+            ).addElement(CertificateDataElement.builder()
+                .id(QUESTION_ID_40)
+                .config(CertificateDataConfigCheckboxMultipleCode.builder().build())
+                .build())
             .build();
 
         final var currentCertificate = new Utkast();
@@ -88,6 +99,19 @@ class ValidateCertificateFacadeServiceImplTest {
         doReturn(certificateJson)
             .when(moduleApi)
             .getJsonFromCertificate(certificate, currentCertificate.getModel());
+
+        final var messagesProvider = mock(CertificateMessagesProvider.class);
+        lenient().doReturn(messagesProvider)
+            .when(moduleApi)
+            .getMessagesProvider();
+
+        lenient().doReturn(EXPECTED_TEXT)
+            .when(messagesProvider)
+            .get(EXPECTED_MESSAGE);
+
+        lenient().doReturn(EXPECTED_TEXT2)
+            .when(messagesProvider)
+            .get("common.validation.ue-checkgroup-disabled.empty");
 
         doReturn(draftValidation)
             .when(utkastService)
@@ -149,6 +173,30 @@ class ValidateCertificateFacadeServiceImplTest {
         final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
         assertEquals(expectedType, actualValidationErrors[0].getType());
+    }
+
+    @Test
+    void shallIncludeTextInValidationError() {
+        final var draftValidationMessage = addValidationMessage();
+
+        draftValidationMessage.setMessage(EXPECTED_MESSAGE);
+
+        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+        assertEquals(EXPECTED_TEXT, actualValidationErrors[0].getText());
+    }
+
+    @Test
+    void shallIncludeTextDependingOnComponentInValidationError() {
+        final var draftValidationMessage = addValidationMessage();
+
+        draftValidationMessage.setType(ValidationMessageType.EMPTY);
+        draftValidationMessage.setMessage(null);
+        draftValidationMessage.setQuestionId(QUESTION_ID_40);
+
+        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+        assertEquals(EXPECTED_TEXT2, actualValidationErrors[0].getText());
     }
 
     private DraftValidationMessage addValidationMessage() {
