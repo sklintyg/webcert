@@ -111,9 +111,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
                 certificateToReturn.getMetadata().getTypeVersion())
         );
 
-        if (webCertUserService.hasAuthenticationContext() && webCertUserService.getUser().getParameters() != null) {
-            certificateToReturn.getMetadata().setResponsibleHospName(webCertUserService.getUser().getParameters().getResponsibleHospName());
-        }
+        setResponsibleHospNameIfAvailable(certificateToReturn);
 
         return certificateToReturn;
     }
@@ -142,6 +140,17 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             return moduleApi.getCertificateFromJson(jsonModel);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
+        }
+    }
+
+    private void setResponsibleHospNameIfAvailable(Certificate certificateToReturn) {
+        if (!webCertUserService.hasAuthenticationContext()) {
+            return;
+        }
+
+        final var integrationParameters = webCertUserService.getUser().getParameters();
+        if (integrationParameters != null) {
+            certificateToReturn.getMetadata().setResponsibleHospName(integrationParameters.getResponsibleHospName());
         }
     }
 }
