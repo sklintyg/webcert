@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +53,9 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 public class UtkastToCertificateConverterTest {
@@ -67,6 +71,9 @@ public class UtkastToCertificateConverterTest {
 
     @Mock
     private CertificateRelationsConverter certificateRelationsConverter;
+
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
@@ -289,6 +296,41 @@ public class UtkastToCertificateConverterTest {
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+        }
+    }
+
+    @Nested
+    class ValidateResponsibleHospName {
+
+        @Test
+        public void shallNotSetResponsibleHospNameWhenNoAuthenticationContext() {
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+        }
+
+        @Test
+        public void shallNotSetResponsibleHospNameWhenIntegrationParametersIsNull() {
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
+            when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
+            when(webCertUserService.getUser().getParameters()).thenReturn(null);
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+        }
+
+        @Test
+        public void shallSetResponsibleHospNameWhenIntegrationParametersArePresent() {
+            final var expectedResponsibleHospName = "responsibleHospName";
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
+            when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
+            when(webCertUserService.getUser().getParameters()).thenReturn(mock(IntegrationParameters.class));
+            when(webCertUserService.getUser().getParameters().getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertEquals(expectedResponsibleHospName, actualCertificate.getMetadata().getResponsibleHospName());
         }
     }
 
