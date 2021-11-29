@@ -171,7 +171,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     public void scheduleSessionRemoval(HttpSession session) {
         final var timeToInvalidate = Instant.now().plusSeconds(logoutTimeout).toEpochMilli();
         session.setAttribute(TIME_TO_INVALIDATE_ATTRIBUTE_NAME, timeToInvalidate);
-        LOG.debug("Scheduled removal of session {} in {} milliseconds", session.getId(), timeToInvalidate);
+        LOG.debug("Scheduled removal of session {} at {} milliseconds", session.getId(), timeToInvalidate);
     }
 
     @Override
