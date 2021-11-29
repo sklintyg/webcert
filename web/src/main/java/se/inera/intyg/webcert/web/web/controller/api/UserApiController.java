@@ -224,7 +224,7 @@ public class UserApiController extends AbstractApiController {
     public Response cancelLogout(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
 
-        getWebCertUserService().cancelScheduledLogout(session.getId());
+        getWebCertUserService().cancelScheduledLogout(session);
 
         return Response.ok().build();
     }
