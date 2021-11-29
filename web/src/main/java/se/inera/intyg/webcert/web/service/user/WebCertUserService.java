@@ -79,23 +79,9 @@ public interface WebCertUserService {
      */
     boolean isUserAllowedAccessToUnit(String enhetId);
 
-    /**
-     * Schedule removal of backend session (both HttpSession and Spring session) for user.
-     * <p>
-     * This is done after a timeout and invalidation can be cancelled through calling {@link #cancelScheduledLogout}.
-     *
-     * @param session The HttpSession to call invalidate on after timeout.
-     */
     void scheduleSessionRemoval(HttpSession session);
 
-    /**
-     * Cancel scheduled removal of session.
-     * <p>
-     * If no removal of session with id sessionId then nothing is done. Does not interrupt currently running scheduled tasks.
-     *
-     * @param sessionId The id of the session to cancel removal of.
-     */
-    void cancelScheduledLogout(String sessionId);
+    void cancelScheduledLogout(HttpSession session);
 
     /**
      * Performs immediate removal of backend session (both HttpSession and Spring session) for user.

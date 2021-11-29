@@ -153,16 +153,13 @@ public class UserApiControllerTest {
 
     @Test
     public void testLogoutCancel() {
-        String sessionId = "sessionId";
-
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
 
         when(request.getSession()).thenReturn(session);
-        when(session.getId()).thenReturn(sessionId);
 
         userApiController.cancelLogout(request);
 
-        verify(webCertUserService).cancelScheduledLogout(sessionId);
+        verify(webCertUserService).cancelScheduledLogout(session);
     }
 }
