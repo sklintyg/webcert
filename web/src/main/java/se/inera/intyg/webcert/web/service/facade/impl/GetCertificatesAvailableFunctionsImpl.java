@@ -65,7 +65,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
 
     private static final String READY_FOR_SIGN_NAME = "Markera klart för signering";
-    private static final String READY_FOR_SIGN_DESCRIPTION = "Utkastet markeras som klart för signering.";
+    private static final String READY_FOR_SIGN_DESCRIPTION = "Utkastet markeras som klar för signering.";
 
     private static final String FMB_NAME = "FMB";
     private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";

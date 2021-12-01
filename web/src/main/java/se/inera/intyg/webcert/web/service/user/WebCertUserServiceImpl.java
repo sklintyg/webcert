@@ -18,13 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import com.google.common.annotations.VisibleForTesting;
+import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
+
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +48,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class WebCertUserServiceImpl implements WebCertUserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
-
-    @VisibleForTesting
-    ConcurrentHashMap<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
 
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
@@ -167,29 +162,16 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
-    public void cancelScheduledLogout(String sessionId) {
-        ScheduledFuture task = taskMap.get(sessionId);
-        if (task != null) {
-            task.cancel(false);
-            LOG.debug("Canceling removal of session {}", sessionId);
-            taskMap.remove(sessionId);
-        }
+    public void cancelScheduledLogout(HttpSession session) {
+        session.setAttribute(TIME_TO_INVALIDATE_ATTRIBUTE_NAME, null);
+        LOG.debug("Canceling removal of session {}", session.getId());
     }
 
     @Override
     public void scheduleSessionRemoval(HttpSession session) {
-        String sessionId = session.getId();
-
-        ScheduledFuture<?> task = scheduler.schedule(() -> {
-            LOG.debug("Removing session {}", sessionId);
-
-            sessionRepository.deleteById(sessionId);
-            session.invalidate();
-            session.setMaxInactiveInterval(0);
-            taskMap.remove(sessionId);
-        }, Date.from(Instant.now().plusSeconds(logoutTimeout)));
-        taskMap.putIfAbsent(sessionId, task);
-        LOG.debug("Scheduled removal of session {}", sessionId);
+        final var timeToInvalidate = Instant.now().plusSeconds(logoutTimeout).toEpochMilli();
+        session.setAttribute(TIME_TO_INVALIDATE_ATTRIBUTE_NAME, timeToInvalidate);
+        LOG.debug("Scheduled removal of session {} at {} milliseconds", session.getId(), timeToInvalidate);
     }
 
     @Override

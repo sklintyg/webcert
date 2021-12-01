@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
             )
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .protectedPerson(webCertUser.isSekretessMarkerad())
+            .preferences(webCertUser.getAnvandarPreference())
             .build();
     }
 

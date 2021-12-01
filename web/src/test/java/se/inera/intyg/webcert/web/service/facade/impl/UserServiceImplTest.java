@@ -26,6 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,7 @@ class UserServiceImplTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
+    private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
 
     @BeforeEach
     void setUp() {
@@ -88,6 +90,10 @@ class UserServiceImplTest {
         doReturn(careUnit)
             .when(user)
             .getValdVardenhet();
+
+        doReturn(PREFERENCES)
+            .when(user)
+            .getAnvandarPreference();
     }
 
     @Nested
@@ -174,6 +180,12 @@ class UserServiceImplTest {
         void shallReturnNotProtectedPerson() {
             final var actualUser = userService.getLoggedInUser();
             assertFalse(actualUser.isProtectedPerson());
+        }
+
+        @Test
+        void shallReturnUserPreferences() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(PREFERENCES, actualUser.getPreferences());
         }
     }
 

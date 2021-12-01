@@ -48,6 +48,7 @@ import java.util.concurrent.ScheduledFuture;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -282,30 +283,24 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testLogout() {
-        String sessionId = "sessionId";
-
-        HttpSession session = mock(HttpSession.class);
+        final var sessionId = "sessionId";
+        final var session = mock(HttpSession.class);
         when(session.getId()).thenReturn(sessionId);
-
-        when(scheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(mock(ScheduledFuture.class));
 
         webcertUserService.scheduleSessionRemoval(session);
 
-        assertTrue(webcertUserService.taskMap.containsKey(sessionId));
+        verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), anyLong());
     }
 
     @Test
     public void testLogoutCancel() {
-        String sessionId = "sessionId";
-        ScheduledFuture future = mock(ScheduledFuture.class);
+        final var sessionId = "sessionId";
+        final var session = mock(HttpSession.class);
+        when(session.getId()).thenReturn(sessionId);
 
-        webcertUserService.taskMap.put(sessionId, future);
+        webcertUserService.cancelScheduledLogout(session);
 
-        webcertUserService.cancelScheduledLogout(sessionId);
-
-        assertFalse(webcertUserService.taskMap.containsKey(sessionId));
-
-        verify(future).cancel(false);
+        verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), eq(null));
     }
 
     @Test
