@@ -19,11 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getLoggedInUser() {
         final var webCertUser = webCertUserService.getUser();
+        final var loggedInCareUnit = getLoggedInCareUnit(webCertUser);
         return User.builder()
             .hsaId(webCertUser.getHsaId())
             .name(webCertUser.getNamn())
@@ -53,6 +57,16 @@ public class UserServiceImpl implements UserService {
                     )
                     .unitId(
                         webCertUser.getValdVardenhet().getId()
+                    )
+                    .build()
+            )
+            .loggedInCareUnit(
+                Unit.builder()
+                    .unitName(
+                        loggedInCareUnit.getNamn()
+                    )
+                    .unitId(
+                        loggedInCareUnit.getId()
                     )
                     .build()
             )
@@ -88,5 +102,30 @@ public class UserServiceImpl implements UserService {
     private String getRole(WebCertUser webCertUser) {
         return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör"
             : webCertUser.getRoleTypeName().split(" ")[0];
+    }
+
+    private Vardenhet getLoggedInCareUnit(WebCertUser webCertUser) {
+        final var loggedInCareProviderId = webCertUser.getValdVardgivare().getId();
+        final var loggedInUnitId = webCertUser.getValdVardenhet().getId();
+        final var currentCareProvider = webCertUser.getVardgivare().stream()
+            .filter(careProvider -> careProvider.getId().equalsIgnoreCase(loggedInCareProviderId))
+            .findFirst()
+            .orElseThrow();
+
+        return findCareUnit(currentCareProvider.getVardenheter(), loggedInUnitId);
+    }
+
+    private Vardenhet findCareUnit(List<Vardenhet> careUnits, String loggedInUnitId) {
+        return careUnits.stream()
+            .filter(careUnit -> careUnit.getId().equalsIgnoreCase(loggedInUnitId) || isSubunit(careUnit.getMottagningar(), loggedInUnitId))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    private boolean isSubunit(List<Mottagning> units, String loggedInUnitId) {
+        if (units == null) {
+            return false;
+        }
+        return units.stream().anyMatch(unit -> unit.getId().equalsIgnoreCase(loggedInUnitId));
     }
 }
