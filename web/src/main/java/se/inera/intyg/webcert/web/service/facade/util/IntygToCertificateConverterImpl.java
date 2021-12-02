@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import static se.inera.intyg.common.support.modules.converter.InternalConverterUtil.getHsaId;
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,9 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
@@ -43,6 +44,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygToCertificateConverterImpl.class);
+    private static final long DEFAULT_CERTIFICATE_VERSION = 99;
 
     private final IntygModuleRegistry moduleRegistry;
 
@@ -54,17 +56,20 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final HsatkEmployeeService hsaEmployeeService;
 
+    private final HsatkOrganizationService hsatkOrganizationService;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
-        HsatkEmployeeService hsaEmployeeService) {
+        HsatkEmployeeService hsaEmployeeService, HsatkOrganizationService hsatkOrganizationService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.hsaEmployeeService = hsaEmployeeService;
+        this.hsatkOrganizationService = hsatkOrganizationService;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setCreated(
             getSignedDate(certificate.getStatuses())
         );
-        certificateToReturn.getMetadata().setVersion(99);
+        certificateToReturn.getMetadata().setVersion(DEFAULT_CERTIFICATE_VERSION);
         certificateToReturn.getMetadata().setForwarded(false);
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(
@@ -92,6 +97,10 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate.getUtlatande().getGrundData().getSkapadAv())
+        );
+
+        certificateToReturn.getMetadata().setCareUnit(
+            getCareUnit(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet())
         );
 
         certificateToReturn.getMetadata().setStatus(
@@ -138,6 +147,15 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         return Unit.builder()
             .unitId(skapadAv.getVardenhet().getVardgivare().getVardgivarid())
             .unitName(skapadAv.getVardenhet().getVardgivare().getVardgivarnamn())
+            .build();
+    }
+
+    private Unit getCareUnit(Vardenhet unit) {
+        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unit.getEnhetsid()).getHealthCareUnitHsaId();
+        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
+        return Unit.builder()
+            .unitId(careUnitId != null ? careUnitId : unit.getEnhetsid())
+            .unitName(careUnit != null ? careUnit.getUnitName() : unit.getEnhetsnamn())
             .build();
     }
 
