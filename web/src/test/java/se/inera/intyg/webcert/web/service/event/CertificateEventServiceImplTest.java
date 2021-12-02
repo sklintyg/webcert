@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -233,6 +234,33 @@ public class CertificateEventServiceImplTest {
         assertEquals(EventCode.KOMPLBEGARAN, result.get(2).getEventCode());
         verify(utkastRepository).findById(INTYG_CERTIFICATE_ID);
         verify(intygService).fetchIntygDataForInternalUse(INTYG_CERTIFICATE_ID, true);
+    }
+
+    @Test
+    public void testGenerateNoEventsForIntygWithArende() {
+        final var timestampWithMilliseconds = LocalDateTime.parse("2021-01-01T00:00:00.750");
+        final var timestampWithoutMilliseconds = LocalDateTime.parse("2021-01-01T00:00:01");
+
+        final var intyg = getIntygContentHolder();
+        final var arende = getArende(INTYG_CERTIFICATE_ID);
+        arende.setTimestamp(timestampWithoutMilliseconds);
+
+        final var event = getCertificateEvent(INTYG_CERTIFICATE_ID);
+        event.setTimestamp(timestampWithMilliseconds);
+        event.setEventCode(EventCode.KOMPLBEGARAN);
+
+        final var eventList = new ArrayList<CertificateEvent>();
+        eventList.add(event);
+
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(eventList);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+
+        final var result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
+
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(EventCode.KOMPLBEGARAN, result.get(0).getEventCode());
     }
 
     @Test
