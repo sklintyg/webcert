@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -97,7 +98,7 @@ public class IntygToCertificateConverterImplTest {
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
 
-    private final List<Status> statusList = new ArrayList();
+    private final List<Status> statusList = new ArrayList<>();
     private final IntygContentHolder intygContentHolder = createIntygContentHolder();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
@@ -126,7 +127,7 @@ public class IntygToCertificateConverterImplTest {
             .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
         doReturn(getUnit())
-            .when(hsatkOrganizationService).getUnit(any(String.class), any(String.class));
+            .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
     }
 
     @Nested
