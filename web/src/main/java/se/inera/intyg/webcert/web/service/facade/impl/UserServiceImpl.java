@@ -63,10 +63,10 @@ public class UserServiceImpl implements UserService {
             .loggedInCareUnit(
                 Unit.builder()
                     .unitName(
-                        loggedInCareUnit != null ? loggedInCareUnit.getNamn() : null
+                        loggedInCareUnit.getNamn()
                     )
                     .unitId(
-                        loggedInCareUnit != null ? loggedInCareUnit.getId() : null
+                        loggedInCareUnit.getId()
                     )
                     .build()
             )
@@ -108,26 +108,24 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProviderId = webCertUser.getValdVardgivare().getId();
         final var loggedInUnitId = webCertUser.getValdVardenhet().getId();
         final var currentCareProvider = webCertUser.getVardgivare().stream()
-            .filter(careProvider -> careProvider.getId().equals(loggedInCareProviderId)).findFirst().orElse(null);
+            .filter(careProvider -> careProvider.getId().equalsIgnoreCase(loggedInCareProviderId))
+            .findFirst()
+            .orElseThrow();
 
-        return currentCareProvider != null ? findCareUnit(currentCareProvider.getVardenheter(), loggedInUnitId) : null;
+        return findCareUnit(currentCareProvider.getVardenheter(), loggedInUnitId);
     }
 
     private Vardenhet findCareUnit(List<Vardenhet> careUnits, String loggedInUnitId) {
-        if (careUnits != null) {
-            for (var careUnit : careUnits) {
-                if (careUnit.getId().equals(loggedInUnitId) || isSubunit(careUnit.getMottagningar(), loggedInUnitId)) {
-                    return careUnit;
-                }
-            }
-        }
-        return null;
+        return careUnits.stream()
+            .filter(careUnit -> careUnit.getId().equalsIgnoreCase(loggedInUnitId) || isSubunit(careUnit.getMottagningar(), loggedInUnitId))
+            .findFirst()
+            .orElseThrow();
     }
 
     private boolean isSubunit(List<Mottagning> units, String loggedInUnitId) {
         if (units == null) {
             return false;
         }
-        return units.stream().anyMatch(unit -> unit.getId().equals(loggedInUnitId));
+        return units.stream().anyMatch(unit -> unit.getId().equalsIgnoreCase(loggedInUnitId));
     }
 }

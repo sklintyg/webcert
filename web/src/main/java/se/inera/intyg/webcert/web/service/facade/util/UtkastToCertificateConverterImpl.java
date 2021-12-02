@@ -145,10 +145,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private Unit getCareUnit(Utkast certificate) {
         final var careUnitId = hsatkOrganizationService.getHealthCareUnit(certificate.getEnhetsId()).getHealthCareUnitHsaId();
-        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, "basic") : null;
+        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
         return Unit.builder()
-            .unitId(careUnitId)
-            .unitName(careUnit != null ? careUnit.getUnitName() : null)
+            .unitId(careUnitId != null ? careUnitId : certificate.getEnhetsId())
+            .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
             .build();
     }
 

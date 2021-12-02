@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -95,7 +96,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         );
 
         certificateToReturn.getMetadata().setCareUnit(
-            getCareUnit(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid())
+            getCareUnit(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet())
         );
 
         certificateToReturn.getMetadata().setStatus(
@@ -142,12 +143,12 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             .build();
     }
 
-    private Unit getCareUnit(String unitId) {
-        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unitId).getHealthCareUnitHsaId();
-        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, "basic") : null;
+    private Unit getCareUnit(Vardenhet unit) {
+        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unit.getEnhetsid()).getHealthCareUnitHsaId();
+        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
         return Unit.builder()
-            .unitId(careUnitId)
-            .unitName(careUnit != null ? careUnit.getUnitName() : null)
+            .unitId(careUnitId != null ? careUnitId : unit.getEnhetsid())
+            .unitName(careUnit != null ? careUnit.getUnitName() : unit.getEnhetsnamn())
             .build();
     }
 
