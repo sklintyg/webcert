@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -46,12 +47,14 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -266,6 +269,13 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewCertificate() {
+            final var unitId = "unitId";
+            final var webcertUser = Mockito.mock(WebCertUser.class);
+            final var unit = Mockito.mock(SelectableVardenhet.class);
+            doReturn(webcertUser).when(webCertUserService).getUser();
+            doReturn("").when(webcertUser).getOrigin();
+            doReturn(unit).when(webcertUser).getValdVardenhet();
+            doReturn(unitId).when(unit).getId();
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -303,6 +313,13 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewIfReplacedByUnsignedCertificate() {
+            final var unitId = "unitId";
+            final var webcertUser = Mockito.mock(WebCertUser.class);
+            final var unit = Mockito.mock(SelectableVardenhet.class);
+            doReturn(webcertUser).when(webCertUserService).getUser();
+            doReturn("").when(webcertUser).getOrigin();
+            doReturn(unit).when(webcertUser).getValdVardenhet();
+            doReturn(unitId).when(unit).getId();
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
