@@ -26,6 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -34,7 +35,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -51,7 +55,10 @@ class UserServiceImplTest {
     private WebCertUser user;
 
     private static final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
+    private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final String CARE_UNIT_NAME = "CARE_UNIT_NAME";
+    private static final String CARE_UNIT_ID = "CARE_UNIT_ID";
+    private static final String UNIT_ID = "UNIT_ID";
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
@@ -72,6 +79,10 @@ class UserServiceImplTest {
         doReturn(NAME)
             .when(user)
             .getNamn();
+
+        doReturn(getCareProvider())
+            .when(user)
+            .getVardgivare();
 
         final var careProvider = mock(SelectableVardenhet.class);
         doReturn(CARE_PROVIDER_NAME)
@@ -168,6 +179,22 @@ class UserServiceImplTest {
         }
 
         @Test
+        void shallReturnWithLoggedInCareUnitName() {
+            when(user.getValdVardenhet().getId()).thenReturn(UNIT_ID);
+            when(user.getValdVardgivare().getId()).thenReturn(CARE_PROVIDER_ID);
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInCareUnit().getUnitName());
+        }
+
+        @Test
+        void shallReturnWithLoggedInCareUnitId() {
+            when(user.getValdVardenhet().getId()).thenReturn(UNIT_ID);
+            when(user.getValdVardgivare().getId()).thenReturn(CARE_PROVIDER_ID);
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(CARE_UNIT_ID, actualUser.getLoggedInCareUnit().getUnitId());
+        }
+
+        @Test
         void shallReturnProtectedPerson() {
             doReturn(true)
                 .when(user)
@@ -259,5 +286,21 @@ class UserServiceImplTest {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
         }
+    }
+
+    private List<Vardgivare> getCareProvider() {
+        final var unit = new Mottagning();
+        unit.setId(UNIT_ID);
+
+        final var careUnit = new Vardenhet();
+        careUnit.setId(CARE_UNIT_ID);
+        careUnit.setNamn(CARE_UNIT_NAME);
+        careUnit.setMottagningar(List.of(unit));
+
+        final var careProvider = new Vardgivare();
+        careProvider.setId(CARE_PROVIDER_ID);
+        careProvider.setVardenheter(List.of(careUnit));
+
+        return List.of(careProvider);
     }
 }

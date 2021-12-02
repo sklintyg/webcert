@@ -50,6 +50,8 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -75,12 +77,18 @@ public class UtkastToCertificateConverterTest {
     @Mock
     private WebCertUserService webCertUserService;
 
+    @Mock
+    private HsatkOrganizationService hsatkOrganizationService;
+
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
 
     private final Utkast draft = createDraft();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
+
+    private static final String CARE_UNIT_ID = "careUnitId";
+    private static final String CARE_UNIT_NAME = "careUnitName";
 
     @BeforeEach
     void setupMocks() throws Exception {
@@ -100,6 +108,12 @@ public class UtkastToCertificateConverterTest {
                 draft.getIntygsTyp(),
                 draft.getIntygTypeVersion()
             );
+
+        doReturn(getHealthCareUnit())
+            .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+        doReturn(getUnit())
+            .when(hsatkOrganizationService).getUnit(any(String.class), any(String.class));
     }
 
     @Nested
@@ -204,6 +218,22 @@ public class UtkastToCertificateConverterTest {
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
             assertEquals(expectedCareProviderName, actualCertificate.getMetadata().getCareProvider().getUnitName());
+        }
+    }
+
+    @Nested
+    class ValidateCareUnit {
+
+        @Test
+        void shallIncludeCareUnitId() {
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            assertEquals(CARE_UNIT_ID, actualCertificate.getMetadata().getCareUnit().getUnitId());
+        }
+
+        @Test
+        void shallIncludeCareUnitName() {
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            assertEquals(CARE_UNIT_NAME, actualCertificate.getMetadata().getCareUnit().getUnitName());
         }
     }
 
@@ -339,6 +369,7 @@ public class UtkastToCertificateConverterTest {
         draft.setIntygsId("certificateId");
         draft.setIntygsTyp("certificateType");
         draft.setIntygTypeVersion("certificateTypeVersion");
+        draft.setEnhetsId("unitId");
         draft.setModel("draftJson");
         draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         draft.setSkapad(LocalDateTime.now());
@@ -380,10 +411,22 @@ public class UtkastToCertificateConverterTest {
     }
 
     private PersonId getPersonId() {
-        final var expectedPersonId = PersonId.builder()
+        return PersonId.builder()
             .id(draft.getPatientPersonnummer().getPersonnummer())
             .type("PERSON_NUMMER")
             .build();
-        return expectedPersonId;
+    }
+
+    private HealthCareUnit getHealthCareUnit() {
+        final var healthCareUnit = new HealthCareUnit();
+        healthCareUnit.setHealthCareUnitHsaId(CARE_UNIT_ID);
+        return healthCareUnit;
+    }
+
+    private se.inera.intyg.infra.integration.hsatk.model.Unit getUnit() {
+        final var unit = new se.inera.intyg.infra.integration.hsatk.model.Unit();
+        unit.setUnitHsaId(CARE_UNIT_ID);
+        unit.setUnitName(CARE_UNIT_NAME);
+        return unit;
     }
 }

@@ -35,12 +35,14 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Component
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygToCertificateConverterImpl.class);
+    private static final long DEFAULT_CERTIFICATE_VERSION = 99;
 
     private final IntygModuleRegistry moduleRegistry;
 
@@ -50,15 +52,19 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final CertificateRelationsConverter certificateRelationsConverter;
 
+    private final HsatkOrganizationService hsatkOrganizationService;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
-        CertificateRelationsConverter certificateRelationsConverter) {
+        CertificateRelationsConverter certificateRelationsConverter,
+        HsatkOrganizationService hsatkOrganizationService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
+        this.hsatkOrganizationService = hsatkOrganizationService;
     }
 
     @Override
@@ -77,7 +83,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setCreated(
             getSignedDate(certificate.getStatuses())
         );
-        certificateToReturn.getMetadata().setVersion(99);
+        certificateToReturn.getMetadata().setVersion(DEFAULT_CERTIFICATE_VERSION);
         certificateToReturn.getMetadata().setForwarded(false);
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(
@@ -86,6 +92,10 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate.getUtlatande().getGrundData().getSkapadAv())
+        );
+
+        certificateToReturn.getMetadata().setCareUnit(
+            getCareUnit(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid())
         );
 
         certificateToReturn.getMetadata().setStatus(
@@ -129,6 +139,15 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         return Unit.builder()
             .unitId(skapadAv.getVardenhet().getVardgivare().getVardgivarid())
             .unitName(skapadAv.getVardenhet().getVardgivare().getVardgivarnamn())
+            .build();
+    }
+
+    private Unit getCareUnit(String unitId) {
+        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unitId).getHealthCareUnitHsaId();
+        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, "basic") : null;
+        return Unit.builder()
+            .unitId(careUnitId)
+            .unitName(careUnit != null ? careUnit.getUnitName() : null)
             .build();
     }
 

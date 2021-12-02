@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -49,17 +50,21 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final WebCertUserService webCertUserService;
 
+    private final HsatkOrganizationService hsatkOrganizationService;
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
-        WebCertUserService webCertUserService) {
+        WebCertUserService webCertUserService,
+        HsatkOrganizationService hsatkOrganizationService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.webCertUserService = webCertUserService;
+        this.hsatkOrganizationService = hsatkOrganizationService;
     }
 
     @Override
@@ -84,6 +89,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate)
+        );
+
+        certificateToReturn.getMetadata().setCareUnit(
+            getCareUnit(certificate)
         );
 
         certificateToReturn.getMetadata().setStatus(
@@ -131,6 +140,15 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         return Unit.builder()
             .unitId(certificate.getVardgivarId())
             .unitName(certificate.getVardgivarNamn())
+            .build();
+    }
+
+    private Unit getCareUnit(Utkast certificate) {
+        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(certificate.getEnhetsId()).getHealthCareUnitHsaId();
+        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, "basic") : null;
+        return Unit.builder()
+            .unitId(careUnitId)
+            .unitName(careUnit != null ? careUnit.getUnitName() : null)
             .build();
     }
 
