@@ -111,6 +111,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
 
+    public static final String EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer inte att klarmarkeras.";
+    public static final String EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer att klarmarkeras.";
+
+
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private String createFromCandidateBody = "";
 
@@ -404,8 +408,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private String getRenewBody(Certificate certificate) {
         if (isLisjpCertificate(certificate)) {
             final var complementaryText =
-                isUserAndCertificateFromSameCareUnit(certificate) ? "Eventuell kompletteringsbegäran kommer att klarmarkeras."
-                    : "Eventuell kompletteringsbegäran kommer inte att klarmarkeras.";
+                isUserAndCertificateFromSameCareUnit(certificate) ? EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY
+                    : EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
 
             return String.format(
                 "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"

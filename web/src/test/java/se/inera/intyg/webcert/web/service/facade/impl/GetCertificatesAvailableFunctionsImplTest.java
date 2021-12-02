@@ -28,6 +28,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -267,15 +269,21 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class RenewCertificates {
 
-        @Test
-        void shallIncludeRenewCertificate() {
-            final var unitId = "unitId";
+        void setupRenewData(String unitId, Boolean lisjpCertificate) {
             final var webcertUser = Mockito.mock(WebCertUser.class);
             final var unit = Mockito.mock(SelectableVardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
-            doReturn(unit).when(webcertUser).getValdVardenhet();
-            doReturn(unitId).when(unit).getId();
+
+            if (lisjpCertificate) {
+                doReturn(unit).when(webcertUser).getValdVardenhet();
+                doReturn(unitId).when(unit).getId();
+            }
+        }
+
+        @Test
+        void shallIncludeRenewCertificate() {
+            setupRenewData("unitId", true);
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -283,6 +291,58 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeComplementWontBeMarkedReadyTextIfDifferentUnit() {
+            setupRenewData("non matching id", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains(EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY));
+        }
+
+        @Test
+        void shallIncludeComplementWillBeMarkedReadyTextIfSameUnit() {
+            setupRenewData("unitId", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains(EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY));
+        }
+
+        @Test
+        void shallIncludeCorrectBodyIfLisjpCertificate() {
+            setupRenewData("unitId", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains("Valet om man vill ha kontakt med Försäkringskassan."));
+        }
+
+        @Test
+        void shallIncludeCorrectBodyIfAg7804Certificate() {
+            setupRenewData("unitId", false);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, Ag7804EntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains("Valet om diagnos ska förmedlas till arbetsgivaren"));
         }
 
         @Test
