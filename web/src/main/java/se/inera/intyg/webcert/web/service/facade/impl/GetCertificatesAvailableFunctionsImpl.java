@@ -420,18 +420,19 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     + "<br>%s<br><br>\n"
                     + "Det nya utkastet skapas på den enhet du är inloggad på.", complementaryText);
         } else {
-            return "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                + " med viss information från det ursprungliga intyget.<br><br>" +
-                "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>" +
-                "De uppgifter som inte kommer med till det nya utkastet är:<br><br>" +
-                "<ul>" +
-                "<li>Valet om diagnos ska förmedlas till arbetsgivaren</li>" +
-                "<li>Valet om funktionsnedsättning ska förmedlas till arbetsgivaren</li>" +
-                "<li>Sjukskrivningsperiod och grad</li>" +
-                "<li>Valet om man vill ha kontakt med arbetsgivaren</li>" +
-                "<li>Referenser som intyget baseras på</li>" +
-                "</ul>" +
-                "<br>Det nya utkastet skapas på den enhet du är  inloggad på.";
+            return
+                "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
+                    + " med viss information från det ursprungliga intyget.<br><br>"
+                    + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>"
+                    + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>"
+                    + "<ul>"
+                    + "<li>Valet om diagnos ska förmedlas till arbetsgivaren</li>"
+                    + "<li>Valet om funktionsnedsättning ska förmedlas till arbetsgivaren</li>"
+                    + "<li>Sjukskrivningsperiod och grad</li>"
+                    + "<li>Valet om man vill ha kontakt med arbetsgivaren</li>"
+                    + "<li>Referenser som intyget baseras på</li>"
+                    + "</ul>"
+                    + "<br>Det nya utkastet skapas på den enhet du är inloggad på.";
         }
     }
 
