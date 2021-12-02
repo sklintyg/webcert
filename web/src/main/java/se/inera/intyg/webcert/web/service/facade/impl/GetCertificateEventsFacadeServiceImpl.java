@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -60,10 +58,6 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         EventCode.NYSVFM,
         EventCode.PAMINNELSE,
         EventCode.KFSIGN
-    );
-
-    private final List<CertificateEventTypeDTO> duplicatesToFilterOut = List.of(
-        CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT
     );
 
     @Autowired
@@ -170,31 +164,10 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private List<CertificateEventDTO> getCertificateEvents(List<CertificateEvent> events) {
-        final List<CertificateEventDTO> listThatCanBeDuplicate = new ArrayList<>();
         return events.stream()
             .filter(this::shouldBeIncluded)
             .map(this::convertCertificateEvent)
-            .filter(certificateEventDTO -> checkIfNotDuplicate(listThatCanBeDuplicate, certificateEventDTO))
             .collect(Collectors.toList());
-    }
-
-    private boolean checkIfNotDuplicate(List<CertificateEventDTO> listThatCanBeDuplicate, CertificateEventDTO certificateEventDTO) {
-        if (duplicatesToFilterOut.contains(certificateEventDTO.getType())) {
-            if (isDuplicate(listThatCanBeDuplicate, certificateEventDTO)) {
-                return false;
-            }
-            listThatCanBeDuplicate.add(certificateEventDTO);
-        }
-        return true;
-    }
-
-    private boolean isDuplicate(List<CertificateEventDTO> listThatCanBeDuplicate, CertificateEventDTO certificateEventDTO) {
-        return listThatCanBeDuplicate.stream()
-            .anyMatch(o ->
-                certificateEventDTO.getType().equals(o.getType())
-                    && certificateEventDTO.getTimestamp().truncatedTo(ChronoUnit.MINUTES)
-                    .isEqual(o.getTimestamp().truncatedTo(ChronoUnit.MINUTES))
-            );
     }
 
     private boolean shouldBeIncluded(CertificateEvent event) {

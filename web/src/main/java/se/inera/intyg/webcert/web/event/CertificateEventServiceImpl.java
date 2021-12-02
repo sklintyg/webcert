@@ -100,7 +100,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 LocalDateTime latestTimestamp = events.stream()
                     .map(CertificateEvent::getTimestamp)
                     .max(LocalDateTime::compareTo)
-                    .get();
+                    .orElse(null);
                 List<CertificateEvent> eventsFromArende = createEventsFromArende(certificateId, latestTimestamp);
                 events.addAll(eventsFromArende);
             }
@@ -108,7 +108,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
         return events;
     }
-    
+
     private List<CertificateEvent> addEventsForCertificate(String certificateId) {
         List<CertificateEvent> events = new ArrayList<>();
         Utkast certificate = utkastRepository.findById(certificateId).orElse(null);
@@ -127,9 +127,9 @@ public class CertificateEventServiceImpl implements CertificateEventService {
     private List<CertificateEvent> createEventsFromUtkast(Utkast certificate) {
         List<CertificateEvent> events = new ArrayList<>();
 
-        createEventFromCreation(certificate).ifPresent(event -> events.add(event));
+        createEventFromCreation(certificate).ifPresent(events::add);
         events.addAll(createEventsFromState(certificate));
-        createEventFromSent(certificate).ifPresent(event -> events.add(event));
+        createEventFromSent(certificate).ifPresent(events::add);
         events.addAll(createEventsFromArende(certificate.getIntygsId()));
 
         return events;
@@ -138,8 +138,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
     private List<CertificateEvent> createEventsFromIntygContentHolder(String certificateId, IntygContentHolder certificate) {
         List<CertificateEvent> events = new ArrayList<>();
 
-        createEventFromCreation(certificateId, certificate).ifPresent(event -> events.add(event));
-        createEventFromSigned(certificateId, certificate.getUtlatande()).ifPresent(event -> events.add(event));
+        createEventFromCreation(certificateId, certificate).ifPresent(events::add);
+        createEventFromSigned(certificateId, certificate.getUtlatande()).ifPresent(events::add);
         events.addAll(createEventsFromStatuses(certificateId, certificate));
         events.addAll(createEventsFromArende(certificateId));
 
@@ -251,7 +251,9 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         List<Arende> messages;
 
         if (afterTimestamp != null) {
-            messages = arendeService.getArendenInternal(certificateId).stream().filter(m -> m.getTimestamp().isAfter(afterTimestamp))
+            final var afterTimestampWithExtraSecond = addASecondToDealWithTimingIssue(afterTimestamp);
+            messages = arendeService.getArendenInternal(certificateId).stream()
+                .filter(m -> m.getTimestamp().isAfter(afterTimestampWithExtraSecond))
                 .collect(Collectors.toList());
         } else {
             messages = arendeService.getArendenInternal(certificateId);
@@ -278,6 +280,15 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         }
 
         return events;
+    }
+
+    /**
+     * The afterTimestamp is defined based on the latest CertificateEvent created. When compared to the timestamp on the Arende, it can
+     * falsely consider it as 'before' even if it logically happened at the same time. This is due to a timing issue and because the
+     * precision of the two LocalDateTime differs. The Arende timestamp doesn't include milliseconds but the event does.
+     */
+    private LocalDateTime addASecondToDealWithTimingIssue(LocalDateTime afterTimestamp) {
+        return afterTimestamp.plusSeconds(1L);
     }
 
     private String getTitleForMessage(Arende message, EventCode code) {
