@@ -41,6 +41,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
+import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -122,13 +123,15 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final CandidateDataHelper candidateDataHelper;
+    private final UserService userService;
 
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-        CandidateDataHelper candidateDataHelper) {
+        CandidateDataHelper candidateDataHelper, UserService userService) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
+        this.userService = userService;
     }
 
     @Override
@@ -442,12 +445,14 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private Boolean isLisjpCertificate(Certificate certificate) {
-        return Objects.equals(certificate.getMetadata().getType(), "lisjp");
+        return Objects.equals(certificate.getMetadata().getType(), LisjpEntryPoint.MODULE_ID);
     }
 
     private Boolean isUserAndCertificateFromSameCareUnit(Certificate certificate) {
-        return Objects.equals(webCertUserService.getUser().getValdVardenhet().getId(),
-            certificate.getMetadata().getUnit().getUnitId());
+        final var loggedInCareUnit = userService.getLoggedInCareUnit(webCertUserService.getUser());
+
+        return Objects.equals(loggedInCareUnit.getId(),
+            certificate.getMetadata().getCareUnit().getUnitId());
     }
 
     private boolean isSent(Certificate certificate) {

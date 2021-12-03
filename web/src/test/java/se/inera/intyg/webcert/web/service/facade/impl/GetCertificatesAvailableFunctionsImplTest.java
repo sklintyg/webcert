@@ -49,7 +49,7 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -72,6 +72,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     CandidateDataHelper candidateDataHelper;
+
+    @Mock
+    UserServiceImpl userService;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -271,13 +274,13 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         void setupRenewData(String unitId, Boolean lisjpCertificate) {
             final var webcertUser = Mockito.mock(WebCertUser.class);
-            final var unit = Mockito.mock(SelectableVardenhet.class);
+            final var careUnit = Mockito.mock(Vardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
 
             if (lisjpCertificate) {
-                doReturn(unit).when(webcertUser).getValdVardenhet();
-                doReturn(unitId).when(unit).getId();
+                doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
+                doReturn(unitId).when(careUnit).getId();
             }
         }
 
@@ -373,13 +376,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewIfReplacedByUnsignedCertificate() {
-            final var unitId = "unitId";
-            final var webcertUser = Mockito.mock(WebCertUser.class);
-            final var unit = Mockito.mock(SelectableVardenhet.class);
-            doReturn(webcertUser).when(webCertUserService).getUser();
-            doReturn("").when(webcertUser).getOrigin();
-            doReturn(unit).when(webcertUser).getValdVardenhet();
-            doReturn(unitId).when(unit).getId();
+            setupRenewData("unitId", true);
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
