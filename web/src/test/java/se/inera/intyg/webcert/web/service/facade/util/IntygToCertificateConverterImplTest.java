@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -56,6 +57,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
@@ -71,6 +74,9 @@ public class IntygToCertificateConverterImplTest {
     public static final boolean IS_TEST_INTYG = true;
     public static final String CARE_PROVIDER_ID = "CareProviderId";
     public static final String CARE_PROVIDER_NAME = "CareProviderName";
+    public static final String CARE_UNIT_ID = "CareUnitId";
+    public static final String CARE_UNIT_NAME = "CareUnitName";
+    public static final String UNIT_ID = "unitId";
     public static final String PERSON_ID = "PersonId";
     public static final String PERSON_NAME = "Doctor Alpha";
 
@@ -86,10 +92,13 @@ public class IntygToCertificateConverterImplTest {
     @Mock
     private CertificateRelationsConverter certificateRelationsConverter;
 
+    @Mock
+    private HsatkOrganizationService hsatkOrganizationService;
+
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
 
-    private final List<Status> statusList = new ArrayList();
+    private final List<Status> statusList = new ArrayList<>();
     private final IntygContentHolder intygContentHolder = createIntygContentHolder();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
@@ -113,6 +122,12 @@ public class IntygToCertificateConverterImplTest {
                 CERTIFICATE_TYPE,
                 CERTIFICATE_TYPE_VERSION
             );
+
+        doReturn(getHealthCareUnit())
+            .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+        doReturn(getUnit())
+            .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
     }
 
     @Nested
@@ -225,6 +240,22 @@ public class IntygToCertificateConverterImplTest {
     }
 
     @Nested
+    class ValidateCareUnit {
+
+        @Test
+        void shallIncludeCareUnitId() {
+            final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+            assertEquals(CARE_UNIT_ID, actualCertificate.getMetadata().getCareUnit().getUnitId());
+        }
+
+        @Test
+        void shallIncludeCareUnitName() {
+            final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+            assertEquals(CARE_UNIT_NAME, actualCertificate.getMetadata().getCareUnit().getUnitName());
+        }
+    }
+
+    @Nested
     class ValidateIssuedBy {
 
         @Test
@@ -290,6 +321,7 @@ public class IntygToCertificateConverterImplTest {
         grundData.getSkapadAv().setPersonId(PERSON_ID);
         grundData.getSkapadAv().setFullstandigtNamn(PERSON_NAME);
         grundData.getSkapadAv().setVardenhet(new Vardenhet());
+        grundData.getSkapadAv().getVardenhet().setEnhetsid(UNIT_ID);
         grundData.getSkapadAv().getVardenhet().setVardgivare(new Vardgivare());
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarid(CARE_PROVIDER_ID);
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarnamn(CARE_PROVIDER_NAME);
@@ -357,5 +389,18 @@ public class IntygToCertificateConverterImplTest {
             .type("PERSON_NUMMER")
             .build();
         return expectedPersonId;
+    }
+
+    private HealthCareUnit getHealthCareUnit() {
+        final var healthCareUnit = new HealthCareUnit();
+        healthCareUnit.setHealthCareUnitHsaId(CARE_UNIT_ID);
+        return healthCareUnit;
+    }
+
+    private se.inera.intyg.infra.integration.hsatk.model.Unit getUnit() {
+        final var unit = new se.inera.intyg.infra.integration.hsatk.model.Unit();
+        unit.setUnitHsaId(CARE_UNIT_ID);
+        unit.setUnitName(CARE_UNIT_NAME);
+        return unit;
     }
 }
