@@ -111,7 +111,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
 
-    public static final String EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer inte att klarmarkeras.";
+    public static final String EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer inte "
+        + "att klarmarkeras.";
     public static final String EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer att klarmarkeras.";
 
 
