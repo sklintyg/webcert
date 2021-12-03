@@ -92,6 +92,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private static final String PRINT_NAME = "Skriv ut";
     private static final String PRINT_DRAFT_DESCRIPTION = "Laddar ned intygsutkastet för utskrift.";
+    private static final String PRINT_PROTECTED_PERSON_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
+        + "<i class='ic-alert__icon ic-info-icon'></i><p>Patienten har skyddade personuppgifter. Hantera utskriften varsamt.</p></div>";
 
     private static final String COPY_NAME = "Kopiera";
     private static final String COPY_DESCRIPTION = "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.";
@@ -173,14 +175,26 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                PRINT_NAME,
-                PRINT_DRAFT_DESCRIPTION,
-                true
-            )
-        );
+        if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    PRINT_NAME,
+                    PRINT_DRAFT_DESCRIPTION,
+                    true
+                )
+            );
+        } else {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    PRINT_NAME,
+                    PRINT_DRAFT_DESCRIPTION,
+                    PRINT_PROTECTED_PERSON_BODY,
+                    true
+                )
+            );
+        }
 
         resourceLinks.add(
             ResourceLinkDTO.create(
