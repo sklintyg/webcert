@@ -19,8 +19,12 @@
 package se.inera.intyg.webcert.web.service.facade;
 
 import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface UserService {
 
     User getLoggedInUser();
+
+    Vardenhet getLoggedInCareUnit(WebCertUser webCertUser);
 }

@@ -28,6 +28,7 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -40,6 +41,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
+import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -74,18 +76,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private static final String RENEW_NAME = "Förnya";
     private static final String RENEW_DESCRIPTION = "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.";
-    private static final String RENEW_BODY =
-        "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-            + " med viss information från det ursprungliga intyget.<br><br>\n"
-            + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
-            + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
-            + "<ul>\n"
-            + "<li>Sjukskrivningsperiod och grad.</li>\n"
-            + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
-            + "<li>Referenser som intyget baseras på.</li>\n"
-            + "</ul>\n"
-            + "<br>Eventuell kompletteringsbegäran kommer att klarmarkeras.<br><br>\n"
-            + "Det nya utkastet skapas på den enhet du är inloggad på.";
 
     private static final String PRINT_CERTIFICATE_DESCRIPTION = "Laddar ned intyget för utskrift.";
     private static final String REVOKE_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera intyget.";
@@ -124,19 +114,26 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
 
+    public static final String EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer inte "
+        + "att klarmarkeras.";
+    public static final String EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer att klarmarkeras.";
+
+
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private String createFromCandidateBody = "";
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final CandidateDataHelper candidateDataHelper;
+    private final UserService userService;
 
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-        CandidateDataHelper candidateDataHelper) {
+        CandidateDataHelper candidateDataHelper, UserService userService) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
+        this.userService = userService;
     }
 
     @Override
@@ -320,7 +317,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     ResourceLinkTypeDTO.RENEW_CERTIFICATE,
                     RENEW_NAME,
                     RENEW_DESCRIPTION,
-                    RENEW_BODY,
+                    getRenewBody(certificate),
                     true
                 )
             );
@@ -424,6 +421,52 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         );
 
         return resourceLinks;
+    }
+
+    private String getRenewBody(Certificate certificate) {
+        if (isLisjpCertificate(certificate)) {
+            final var complementaryText =
+                isUserAndCertificateFromSameCareUnit(certificate) ? EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY
+                    : EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
+
+            return String.format(
+                "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
+                    + " med viss information från det ursprungliga intyget.<br><br>\n"
+                    + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
+                    + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
+                    + "<ul>\n"
+                    + "<li>Sjukskrivningsperiod och grad.</li>\n"
+                    + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
+                    + "<li>Referenser som intyget baseras på.</li>\n"
+                    + "</ul>\n"
+                    + "<br>%s<br><br>\n"
+                    + "Det nya utkastet skapas på den enhet du är inloggad på.", complementaryText);
+        } else {
+            return
+                "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
+                    + " med viss information från det ursprungliga intyget.<br><br>"
+                    + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>"
+                    + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>"
+                    + "<ul>"
+                    + "<li>Valet om diagnos ska förmedlas till arbetsgivaren</li>"
+                    + "<li>Valet om funktionsnedsättning ska förmedlas till arbetsgivaren</li>"
+                    + "<li>Sjukskrivningsperiod och grad</li>"
+                    + "<li>Valet om man vill ha kontakt med arbetsgivaren</li>"
+                    + "<li>Referenser som intyget baseras på</li>"
+                    + "</ul>"
+                    + "<br>Det nya utkastet skapas på den enhet du är inloggad på.";
+        }
+    }
+
+    private Boolean isLisjpCertificate(Certificate certificate) {
+        return Objects.equals(certificate.getMetadata().getType(), LisjpEntryPoint.MODULE_ID);
+    }
+
+    private Boolean isUserAndCertificateFromSameCareUnit(Certificate certificate) {
+        final var loggedInCareUnit = userService.getLoggedInCareUnit(webCertUserService.getUser());
+
+        return Objects.equals(loggedInCareUnit.getId(),
+            certificate.getMetadata().getCareUnit().getUnitId());
     }
 
     private boolean isSent(Certificate certificate) {
