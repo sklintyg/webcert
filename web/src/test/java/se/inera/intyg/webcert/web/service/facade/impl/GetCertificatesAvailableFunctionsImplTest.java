@@ -42,8 +42,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -83,9 +85,20 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludePrintCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var certificate = getCertificateWithProtectedPatient(false);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
+        }
+
+        @Test
+        void shallIncludeBodyForPrintCertificateIfProtectedPerson() {
+            final var certificate = getCertificateWithProtectedPatient(true);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
         }
 
         @Test
@@ -161,6 +174,16 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
+    }
+
+    private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson) {
+        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+        var metadata = certificate.getMetadata();
+        var patient = Patient.builder()
+            .protectedPerson(isProtectedPerson)
+            .build();
+        metadata.setPatient(patient);
+        return certificate;
     }
 
     @Nested
