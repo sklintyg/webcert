@@ -171,16 +171,6 @@ class GetCertificateEventsFacadeServiceImplTest {
 
             assertEquals(0, actualEvents.length);
         }
-
-        @Test
-        void shallfilterOutDuplicateComplementRequests() {
-            certificateEvent.setEventCode(EventCode.KOMPLBEGARAN);
-            certificateEvents.add(certificateEvent);
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            assertEquals(1, actualEvents.length);
-        }
     }
 
     @Nested
