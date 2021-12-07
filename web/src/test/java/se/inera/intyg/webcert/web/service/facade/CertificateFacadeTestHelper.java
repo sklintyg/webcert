@@ -72,6 +72,16 @@ public class CertificateFacadeTestHelper {
                     .email("email")
                     .phoneNumber("phoneNumber")
                     .build()
+            ).careUnit(
+                Unit.builder().
+                    unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
             );
 
         if (relation != null) {

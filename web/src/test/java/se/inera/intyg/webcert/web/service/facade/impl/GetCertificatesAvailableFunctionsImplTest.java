@@ -28,6 +28,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -48,12 +51,14 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -69,6 +74,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     CandidateDataHelper candidateDataHelper;
+
+    @Mock
+    UserServiceImpl userService;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -287,8 +295,21 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class RenewCertificates {
 
+        void setupRenewData(String unitId, Boolean lisjpCertificate) {
+            final var webcertUser = Mockito.mock(WebCertUser.class);
+            final var careUnit = Mockito.mock(Vardenhet.class);
+            doReturn(webcertUser).when(webCertUserService).getUser();
+            doReturn("").when(webcertUser).getOrigin();
+
+            if (lisjpCertificate) {
+                doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
+                doReturn(unitId).when(careUnit).getId();
+            }
+        }
+
         @Test
         void shallIncludeRenewCertificate() {
+            setupRenewData("unitId", true);
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -296,6 +317,58 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeComplementWontBeMarkedReadyTextIfDifferentUnit() {
+            setupRenewData("non matching id", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains(EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY));
+        }
+
+        @Test
+        void shallIncludeComplementWillBeMarkedReadyTextIfSameUnit() {
+            setupRenewData("unitId", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains(EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY));
+        }
+
+        @Test
+        void shallIncludeCorrectBodyIfLisjpCertificate() {
+            setupRenewData("unitId", true);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains("Valet om man vill ha kontakt med Försäkringskassan."));
+        }
+
+        @Test
+        void shallIncludeCorrectBodyIfAg7804Certificate() {
+            setupRenewData("unitId", false);
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, Ag7804EntryPoint.MODULE_ID);
+
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var renewFunction = get(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+            assertTrue(renewFunction.getBody().contains("Valet om diagnos ska förmedlas till arbetsgivaren"));
         }
 
         @Test
@@ -326,6 +399,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewIfReplacedByUnsignedCertificate() {
+            setupRenewData("unitId", true);
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
