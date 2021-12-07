@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
             : webCertUser.getRoleTypeName().split(" ")[0];
     }
 
+    @Override
     public Vardenhet getLoggedInCareUnit(WebCertUser webCertUser) {
         final var loggedInCareProviderId = webCertUser.getValdVardgivare().getId();
         final var loggedInUnitId = webCertUser.getValdVardenhet().getId();
