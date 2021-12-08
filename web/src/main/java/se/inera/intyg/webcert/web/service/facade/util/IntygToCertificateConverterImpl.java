@@ -35,6 +35,8 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Component
@@ -50,15 +52,18 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final CertificateRelationsConverter certificateRelationsConverter;
 
+    private final PUService puService;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
-        CertificateRelationsConverter certificateRelationsConverter) {
+        CertificateRelationsConverter certificateRelationsConverter, PUService puService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
+        this.puService = puService;
     }
 
     @Override
@@ -117,10 +122,13 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Staff getIssuedBy(HoSPersonal skapadAv) {
+        final var person = puService.getPerson(Personnummer.createPersonnummer((skapadAv.getPersonId())).get()).getPerson();
         final var staff = new Staff();
 
         staff.setPersonId(skapadAv.getPersonId());
-        staff.setFullName(skapadAv.getFullstandigtNamn());
+        staff.setFullName(
+            person.getFornamn() + (person.getMellannamn().length() > 0 ? " " + person.getMellannamn() : "") + " " + person.getEfternamn()
+        );
 
         return staff;
     }
