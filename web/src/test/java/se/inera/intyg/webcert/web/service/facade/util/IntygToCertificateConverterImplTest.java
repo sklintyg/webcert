@@ -59,6 +59,9 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
@@ -79,6 +82,11 @@ public class IntygToCertificateConverterImplTest {
     public static final String UNIT_ID = "unitId";
     public static final String PERSON_ID = "PersonId";
     public static final String PERSON_NAME = "Doctor Alpha";
+    public static final Personnummer STAFF_PERSON_ID = Personnummer.createPersonnummer("191212121213").orElseThrow();
+    public static final String STAFF_PERSON_ID_STRING = "191212121213";
+    public static final String STAFF_FIRST_NAME = "Firstname";
+    public static final String STAFF_LAST_NAME = "Lastname";
+    public static final String STAFF_MIDDLE_NAME = "Middlename";
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -95,6 +103,9 @@ public class IntygToCertificateConverterImplTest {
     @Mock
     private HsatkOrganizationService hsatkOrganizationService;
 
+    @Mock
+    private PUService puService;
+
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
 
@@ -102,6 +113,10 @@ public class IntygToCertificateConverterImplTest {
     private final IntygContentHolder intygContentHolder = createIntygContentHolder();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
+    private final Person staff = new Person(
+        STAFF_PERSON_ID, false, false, STAFF_FIRST_NAME, STAFF_MIDDLE_NAME, STAFF_LAST_NAME, "", "", ""
+    );
+    private final PersonSvar personResponse = PersonSvar.found(staff);
 
     @BeforeEach
     void setupMocks() throws Exception {
@@ -128,6 +143,9 @@ public class IntygToCertificateConverterImplTest {
 
         doReturn(getUnit())
             .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+
+        doReturn(personResponse)
+            .when(puService).getPerson(STAFF_PERSON_ID);
     }
 
     @Nested
@@ -260,7 +278,7 @@ public class IntygToCertificateConverterImplTest {
 
         @Test
         void shallIncludePersonId() {
-            final var expectedPersonId = PERSON_ID;
+            final var expectedPersonId = STAFF_PERSON_ID_STRING;
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -269,7 +287,7 @@ public class IntygToCertificateConverterImplTest {
 
         @Test
         void shallIncludeName() {
-            final var expectedFullName = PERSON_NAME;
+            final var expectedFullName = STAFF_FIRST_NAME + " " + STAFF_MIDDLE_NAME + " " + STAFF_LAST_NAME;
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -318,7 +336,7 @@ public class IntygToCertificateConverterImplTest {
         grundData.setPatient(new se.inera.intyg.common.support.model.common.internal.Patient());
         grundData.getPatient().setPersonId(PATIENT_PERSONNUMMER);
         grundData.setSkapadAv(new HoSPersonal());
-        grundData.getSkapadAv().setPersonId(PERSON_ID);
+        grundData.getSkapadAv().setPersonId(STAFF_PERSON_ID_STRING);
         grundData.getSkapadAv().setFullstandigtNamn(PERSON_NAME);
         grundData.getSkapadAv().setVardenhet(new Vardenhet());
         grundData.getSkapadAv().getVardenhet().setEnhetsid(UNIT_ID);
