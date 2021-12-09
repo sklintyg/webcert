@@ -25,6 +25,7 @@ import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNE
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
 import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO.FMB;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,10 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -97,11 +101,27 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String NEW_QUESTION_NAME = "Ny fråga";
     private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
 
+    private static final int SICKLEAVE_DAYS_LIMIT = 15;
     private static final String SEND_NAME = "Skicka till Försäkringskassan";
     private static final String SEND_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
     private static final String SEND_BODY = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
         + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
+    private static final String SEND_BODY_SHORT_SICKLEAVE_PERIOD =
+        "<div class='ic-alert ic-alert--status ic-alert--info'><div>"
+            + "<i class='ic-alert__icon ic-info-icon' style='float: left; margin-top: 3px;'></i>"
+            + "<p style='margin-left: 10px'>Om sjukperioden är kortare än 15 dagar ska intyget inte skickas"
+            + " till Försäkringskassan utom i vissa undantagsfall.</p></div></div></br>"
+            + "Intyget ska skickas till Försäkringskassan från dag 8 i sjukperioden om patienten är:</br>"
+            + "<ul><li>Egenföretagare</li>"
+            + "<li>Arbetssökande</li>"
+            + "<li>Anställd men arbetsgivaren betalar inte ut sjuklön</li>"
+            + "<li>Studerande och arbetar med rätt till sjukpenning (tjänar mer än 10 700 per år)</li>"
+            + "<li>Ledig med föräldrapenning</li>"
+            + "<li>Ledig med graviditetspenning</li></ul>"
+            + "</br>Om du går vidare kommer intyget skickas direkt till "
+            + "Försäkringskassans system vilket ska göras i samråd med patienten.</br>"
+            + "</br>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.";
 
     private static final String CREATE_AG7804_NAME = "Skapa Ag7804";
     private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
@@ -350,7 +370,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
                     SEND_NAME,
                     SEND_DESCRIPTION,
-                    SEND_BODY,
+                    hasShortSickleavePeriod(certificate) ? SEND_BODY_SHORT_SICKLEAVE_PERIOD : SEND_BODY,
                     true
                 )
             );
@@ -390,6 +410,20 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         return resourceLinks;
+    }
+
+    private boolean hasShortSickleavePeriod(Certificate certificate) {
+        final var optionalSickLeavePeriod = certificate.getData().values().stream()
+            .filter(dataElement -> dataElement.getConfig().getType() == CertificateDataConfigTypes.UE_SICK_LEAVE_PERIOD).findFirst();
+        if (optionalSickLeavePeriod.isPresent()) {
+            final var sickLeavePeriod = (CertificateDataValueDateRangeList) optionalSickLeavePeriod.get().getValue();
+            var sickLeaveLength = 0;
+            for (CertificateDataValueDateRange sickLeave : sickLeavePeriod.getList()) {
+                sickLeaveLength += ChronoUnit.DAYS.between(sickLeave.getFrom(), sickLeave.getTo());
+            }
+            return sickLeaveLength < SICKLEAVE_DAYS_LIMIT;
+        }
+        return false;
     }
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft() {
