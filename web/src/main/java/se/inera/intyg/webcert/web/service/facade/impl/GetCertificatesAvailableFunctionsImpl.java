@@ -101,7 +101,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String NEW_QUESTION_NAME = "Ny fråga";
     private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
 
-    private static final int SICKLEAVE_DAYS_LIMIT = 15;
+    private static final long SICKLEAVE_DAYS_LIMIT = 15;
     private static final String SEND_NAME = "Skicka till Försäkringskassan";
     private static final String SEND_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
     private static final String SEND_BODY = "<p>Om du går vidare kommer intyget skickas direkt till "
@@ -417,7 +417,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .filter(dataElement -> dataElement.getConfig().getType() == CertificateDataConfigTypes.UE_SICK_LEAVE_PERIOD).findFirst();
         if (optionalSickLeavePeriod.isPresent()) {
             final var sickLeavePeriod = (CertificateDataValueDateRangeList) optionalSickLeavePeriod.get().getValue();
-            var sickLeaveLength = 0;
+            long sickLeaveLength = 0;
             for (CertificateDataValueDateRange sickLeave : sickLeavePeriod.getList()) {
                 sickLeaveLength += ChronoUnit.DAYS.between(sickLeave.getFrom(), sickLeave.getTo());
             }
