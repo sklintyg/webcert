@@ -419,13 +419,46 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     @Nested
-    class SendCertificates {
+    class SendCertificate {
 
         @Test
         void shallIncludeSend() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeSendWithWarningIfSickleavePeriodIsShorterThan15Days() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(14);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+            assertTrue(actualAvailableFunctions
+                .stream()
+                .anyMatch(link -> link.getBody() != null && link.getBody()
+                    .contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
+        }
+
+        @Test
+        void shallNotIncludeSendWithWarningIfSickleavePeriodIs15Days() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(15);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+            assertFalse(actualAvailableFunctions
+                .stream()
+                .anyMatch(link ->
+                    link.getBody() != null && link.getBody().contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
+        }
+
+        @Test
+        void shallNotIncludeSendWithWarningIfSickleavePeriodIsLongerThan15Days() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(100);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+            assertFalse(actualAvailableFunctions
+                .stream()
+                .anyMatch(link -> link.getBody() != null && link.getBody()
+                    .contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
         }
 
         @Test
