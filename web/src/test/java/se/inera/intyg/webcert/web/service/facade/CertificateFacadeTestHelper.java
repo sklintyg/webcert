@@ -19,15 +19,21 @@
 
 package se.inera.intyg.webcert.web.service.facade;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigSickLeavePeriod;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
 
 public class CertificateFacadeTestHelper {
 
@@ -150,6 +156,67 @@ public class CertificateFacadeTestHelper {
 
         return CertificateBuilder.create()
             .metadata(metadataBuilder.build())
+            .build();
+    }
+
+    public static Certificate createCertificateWithSickleavePeriod(int numberOfDays) {
+        final var metadataBuilder = CertificateMetadata.builder()
+            .id("certificateId")
+            .type("lisjp")
+            .typeVersion("1.2")
+            .status(CertificateStatus.SIGNED)
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id("191212121212")
+                            .build()
+                    )
+                    .build()
+            )
+            .unit(
+                Unit.builder()
+                    .unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            )
+            .careProvider(
+                Unit.builder()
+                    .unitId("careProviderId")
+                    .unitName("careProviderName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            );
+
+        final var sickLeavePeriod = CertificateDataElement.builder()
+            .config(
+                CertificateDataConfigSickLeavePeriod.builder().build()
+            )
+            .value(
+                CertificateDataValueDateRangeList.builder()
+                    .list(Arrays.asList(
+                        CertificateDataValueDateRange.builder()
+                            .from(LocalDate.now())
+                            .to(LocalDate.now().plusDays(numberOfDays))
+                            .build()
+                        )
+                    )
+                    .build()
+            )
+            .build();
+
+        return CertificateBuilder.create()
+            .metadata(metadataBuilder.build())
+            .addElement(sickLeavePeriod)
             .build();
     }
 }
