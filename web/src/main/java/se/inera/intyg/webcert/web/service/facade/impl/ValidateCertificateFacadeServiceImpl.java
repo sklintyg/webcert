@@ -135,6 +135,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
                 return "ue-textarea";
             case UE_RADIO_BOOLEAN:
                 return "ue-radio";
+            case UE_RADIO_MULTIPLE_CODE_OPTIONAL_DROPDOWN:
             case UE_RADIO_MULTIPLE_CODE:
             case UE_DROPDOWN:
                 return "ue-prognos";
