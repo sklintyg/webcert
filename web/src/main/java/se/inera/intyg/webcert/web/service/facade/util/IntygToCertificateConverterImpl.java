@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.util;
 
+import static se.inera.intyg.common.support.modules.converter.InternalConverterUtil.getHsaId;
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 
 import java.time.LocalDateTime;
@@ -35,8 +36,7 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Component
@@ -52,18 +52,19 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final CertificateRelationsConverter certificateRelationsConverter;
 
-    private final PUService puService;
+    private final HsatkEmployeeService hsaEmployeeService;
 
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
-        CertificateRelationsConverter certificateRelationsConverter, PUService puService) {
+        CertificateRelationsConverter certificateRelationsConverter,
+        HsatkEmployeeService hsaEmployeeService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
-        this.puService = puService;
+        this.hsaEmployeeService = hsaEmployeeService;
     }
 
     @Override
@@ -122,12 +123,12 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Staff getIssuedBy(HoSPersonal skapadAv) {
-        final var person = puService.getPerson(Personnummer.createPersonnummer((skapadAv.getPersonId())).get()).getPerson();
+        final var person = hsaEmployeeService.getEmployee(skapadAv.getPersonId(), getHsaId(skapadAv.getPersonId()).toString()).get(0);
         final var staff = new Staff();
 
         staff.setPersonId(skapadAv.getPersonId());
         staff.setFullName(
-            person.getFornamn() + (person.getMellannamn().length() > 0 ? " " + person.getMellannamn() : "") + " " + person.getEfternamn()
+            person.getGivenName() + " " + person.getMiddleAndSurName()
         );
 
         return staff;
