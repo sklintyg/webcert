@@ -63,7 +63,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
-        HsatkEmployeeService hsaEmployeeService, HsatkOrganizationService hsatkOrganizationService) {
+        HsatkEmployeeService hsaEmployeeService,
+        HsatkOrganizationService hsatkOrganizationService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
