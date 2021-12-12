@@ -36,6 +36,7 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
@@ -55,17 +56,21 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final HsatkOrganizationService hsatkOrganizationService;
 
+    private final HsatkEmployeeService hsatkEmployeeService;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
-        HsatkOrganizationService hsatkOrganizationService) {
+        HsatkOrganizationService hsatkOrganizationService,
+        HsatkEmployeeService hsatkEmployeeService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.hsatkOrganizationService = hsatkOrganizationService;
+        this.hsatkEmployeeService = hsatkEmployeeService;
     }
 
     @Override
@@ -128,11 +133,13 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Staff getIssuedBy(HoSPersonal skapadAv) {
+        final var person = hsatkEmployeeService.getEmployee(null, skapadAv.getPersonId()).get(0);
         final var staff = new Staff();
 
         staff.setPersonId(skapadAv.getPersonId());
-        staff.setFullName(skapadAv.getFullstandigtNamn());
-
+        staff.setFullName(
+            person.getGivenName() + " " + person.getMiddleAndSurName()
+        );
         return staff;
     }
 
