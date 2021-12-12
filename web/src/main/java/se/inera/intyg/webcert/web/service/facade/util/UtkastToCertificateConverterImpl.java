@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -52,19 +53,24 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final HsatkOrganizationService hsatkOrganizationService;
 
+    private final HsatkEmployeeService hsaEmployeeService;
+
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
         WebCertUserService webCertUserService,
-        HsatkOrganizationService hsatkOrganizationService) {
+        HsatkOrganizationService hsatkOrganizationService,
+        HsatkEmployeeService hsaEmployeeService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.webCertUserService = webCertUserService;
         this.hsatkOrganizationService = hsatkOrganizationService;
+        this.hsaEmployeeService = hsaEmployeeService;
     }
 
     @Override
@@ -83,7 +89,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         certificateToReturn.getMetadata().setCreated(certificate.getSkapad());
         certificateToReturn.getMetadata().setVersion(certificate.getVersion());
         certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
-        certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
+        //certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
 
@@ -128,10 +134,13 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
     }
 
     private Staff getIssuedBy(Utkast certificate) {
+        final var person = hsaEmployeeService.getEmployee(null, certificate.getSkapadAv().getHsaId()).get(0);
         final var staff = new Staff();
 
         staff.setPersonId(certificate.getSkapadAv().getHsaId());
-        staff.setFullName(certificate.getSkapadAv().getNamn());
+        staff.setFullName(
+            person.getGivenName() + " " + person.getMiddleAndSurName()
+        );
 
         return staff;
     }

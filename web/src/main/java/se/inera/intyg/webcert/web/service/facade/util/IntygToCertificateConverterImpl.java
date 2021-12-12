@@ -133,7 +133,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Staff getIssuedBy(HoSPersonal skapadAv) {
-        final var person = hsaEmployeeService.getEmployee(skapadAv.getPersonId(), getHsaId(skapadAv.getPersonId()).toString()).get(0);
+        final var person = hsaEmployeeService.getEmployee(null, skapadAv.getPersonId()).get(0);
         final var staff = new Staff();
 
         staff.setPersonId(skapadAv.getPersonId());
