@@ -172,7 +172,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 break;
             case LOCKED:
                 availableFunctions.addAll(
-                    getAvailableFunctionsForLockedDraft()
+                    getAvailableFunctionsForLockedDraft(certificate)
                 );
                 break;
             default:
@@ -400,16 +400,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return false;
     }
 
-    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft() {
+    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                PRINT_NAME,
-                PRINT_DRAFT_DESCRIPTION,
-                true
-            )
-        );
+        addPrintResourceLink(certificate, resourceLinks);
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -605,8 +598,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.PRINT_CERTIFICATE,
                     PRINT_NAME,
-                    certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED ? PRINT_DRAFT_DESCRIPTION
-                        : PRINT_CERTIFICATE_DESCRIPTION,
+                    certificate.getMetadata().getStatus() == CertificateStatus.SIGNED ? PRINT_CERTIFICATE_DESCRIPTION
+                        : PRINT_DRAFT_DESCRIPTION,
                     true
                 )
             );

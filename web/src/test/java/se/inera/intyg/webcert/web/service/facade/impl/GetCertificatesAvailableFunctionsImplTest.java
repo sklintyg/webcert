@@ -93,7 +93,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludePrintCertificate() {
-            final var certificate = getCertificateWithProtectedPatient(false);
+            final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
@@ -102,7 +102,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeBodyForPrintCertificateIfProtectedPerson() {
-            final var certificate = getCertificateWithProtectedPatient(true);
+            final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
@@ -184,8 +184,8 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
     }
 
-    private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson) {
-        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+    private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson, CertificateStatus certificateStatus) {
+        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, certificateStatus);
         var metadata = certificate.getMetadata();
         var patient = Patient.builder()
             .protectedPerson(isProtectedPerson)
@@ -245,11 +245,21 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class LockedDraft {
 
-        @Test
         void shallIncludePrintCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
+        }
+
+        @Test
+        void shallIncludeBodyForPrintCertificateIfProtectedPerson() {
+            final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.LOCKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
         }
 
         @Test
@@ -279,16 +289,20 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludePrintCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
         }
 
         @Test
-        void shallIncludeRevokeCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+        void shallIncludeBodyForPrintCertificateIfProtectedPerson() {
+            final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
+            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
         }
     }
 
