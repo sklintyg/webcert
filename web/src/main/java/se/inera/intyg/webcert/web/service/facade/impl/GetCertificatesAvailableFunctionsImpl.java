@@ -192,26 +192,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                    PRINT_NAME,
-                    PRINT_DRAFT_DESCRIPTION,
-                    true
-                )
-            );
-        } else {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                    PRINT_NAME,
-                    PRINT_DRAFT_DESCRIPTION,
-                    PRINT_PROTECTED_PERSON_BODY,
-                    true
-                )
-            );
-        }
+        addPrintResourceLink(certificate, resourceLinks);
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -300,14 +281,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.PRINT_CERTIFICATE,
-                PRINT_NAME,
-                PRINT_CERTIFICATE_DESCRIPTION,
-                true
-            )
-        );
+        addPrintResourceLink(certificate, resourceLinks);
 
         if (isReplaceCertificateAvailable(certificate)) {
             resourceLinks.add(
@@ -623,5 +597,30 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isMessagingAvailable(Certificate certificate) {
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
+    }
+
+    private void addPrintResourceLink(Certificate certificate, ArrayList<ResourceLinkDTO> resourceLinks) {
+        if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    PRINT_NAME,
+                    certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED ? PRINT_DRAFT_DESCRIPTION
+                        : PRINT_CERTIFICATE_DESCRIPTION,
+                    true
+                )
+            );
+        } else {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRINT_CERTIFICATE,
+                    PRINT_NAME,
+                    certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED ? PRINT_DRAFT_DESCRIPTION
+                        : PRINT_CERTIFICATE_DESCRIPTION,
+                    PRINT_PROTECTED_PERSON_BODY,
+                    true
+                )
+            );
+        }
     }
 }
