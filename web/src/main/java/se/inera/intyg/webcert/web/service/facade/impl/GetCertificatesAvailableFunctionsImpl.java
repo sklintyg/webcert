@@ -626,9 +626,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean hasBeenComplemented(Certificate certificate) {
-        return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
-            relation -> relation.getType().equals(
-                COMPLEMENTED)
-        );
+        if (certificate.getMetadata().getRelations() != null) {
+            return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
+                relation -> relation.getType().equals(
+                    COMPLEMENTED)
+            );
+        }
+        return false;
     }
 }
