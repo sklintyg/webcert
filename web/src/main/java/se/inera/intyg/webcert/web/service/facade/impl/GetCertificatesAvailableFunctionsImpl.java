@@ -605,7 +605,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return isReplacementUnsigned(certificate);
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate));
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
