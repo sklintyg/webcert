@@ -175,6 +175,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     getAvailableFunctionsForLockedDraft()
                 );
                 break;
+            case REVOKED:
+                availableFunctions.addAll(
+                    getAvailableFunctionsForRevokedCertificate(certificate)
+                );
             default:
         }
         return availableFunctions;
@@ -457,6 +461,23 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return resourceLinks;
     }
 
+    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForRevokedCertificate(Certificate certificate) {
+        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+        if (isMessagingAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.QUESTIONS,
+                    QUESTIONS_NAME,
+                    QUESTIONS_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
+        return resourceLinks;
+    }
+
     private String getRenewBody(Certificate certificate) {
         if (isLisjpCertificate(certificate)) {
             final var complementaryText =
@@ -584,7 +605,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate));
+        return isReplacementUnsigned(certificate);
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
