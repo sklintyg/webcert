@@ -179,6 +179,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 availableFunctions.addAll(
                     getAvailableFunctionsForRevokedCertificate(certificate)
                 );
+                break;
             default:
         }
         return availableFunctions;
