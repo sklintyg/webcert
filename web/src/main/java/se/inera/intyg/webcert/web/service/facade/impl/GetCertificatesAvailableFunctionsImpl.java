@@ -620,7 +620,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate));
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate) || hasBeenComplemented(certificate));
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
@@ -628,7 +628,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isRenewCertificateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate)) {
+        if (isReplacementSigned(certificate) || hasBeenComplemented(certificate)) {
             return false;
         }
 
@@ -661,6 +661,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
     }
 
+    private boolean hasBeenComplemented(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() != null) {
+            return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
+                relation -> relation.getType().equals(
+                    COMPLEMENTED)
+            );
+        }
+        return false;
+    }
+  
     private boolean isCopyCertificateAvailable(Certificate certificate) {
         return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }
