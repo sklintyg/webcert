@@ -746,6 +746,30 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
     }
 
+    @Nested
+    class QuestionsForRevoked {
+
+        @Test
+        void shallIncludeQuestionsWhenRevokedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(CertificateRelation.builder()
+                        .type(CertificateRelationType.COMPLEMENTED)
+                        .build())
+                    .build()
+            );
+
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(anyString(), eq(LisjpEntryPoint.MODULE_ID));
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+    }
+
     private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
         final var actualResourceLink = get(availableFunctions, type);
         assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));

@@ -175,6 +175,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     getAvailableFunctionsForLockedDraft()
                 );
                 break;
+            case REVOKED:
+                availableFunctions.addAll(
+                    getAvailableFunctionsForRevokedCertificate(certificate)
+                );
+                break;
             default:
         }
         return availableFunctions;
@@ -453,6 +458,23 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 true
             )
         );
+
+        return resourceLinks;
+    }
+
+    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForRevokedCertificate(Certificate certificate) {
+        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+        if (isMessagingAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.QUESTIONS,
+                    QUESTIONS_NAME,
+                    QUESTIONS_DESCRIPTION,
+                    true
+                )
+            );
+        }
 
         return resourceLinks;
     }
