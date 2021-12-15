@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
@@ -172,7 +173,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 break;
             case LOCKED:
                 availableFunctions.addAll(
-                    getAvailableFunctionsForLockedDraft()
+                    getAvailableFunctionsForLockedDraft(certificate)
                 );
                 break;
             case REVOKED:
@@ -431,7 +432,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return false;
     }
 
-    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft() {
+    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -442,14 +443,27 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.COPY_CERTIFICATE,
-                COPY_NAME,
-                COPY_DESCRIPTION,
-                true
-            )
-        );
+        if (isCopyCertificateAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    COPY_NAME,
+                    COPY_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
+        if (isCopyCertificateContinueAvailable(certificate)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE,
+                    COPY_NAME,
+                    COPY_DESCRIPTION,
+                    true
+                )
+            );
+        }
 
         resourceLinks.add(
             ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
@@ -645,5 +659,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isMessagingAvailable(Certificate certificate) {
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
+    }
+
+    private boolean isCopyCertificateAvailable(Certificate certificate) {
+        return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
+    }
+
+    private boolean isCopyCertificateContinueAvailable(Certificate certificate) {
+        return includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }
 }
