@@ -21,7 +21,7 @@ node {
     version = "${nodeJsVersion}"
     npmVersion = "${npmVersion}"
     download = true
-    distBaseUrl = 'https://nodejs.org/dist'
+    distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
     workDir = file("${rootProject.projectDir}/.gradle/nodejs")
     npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
