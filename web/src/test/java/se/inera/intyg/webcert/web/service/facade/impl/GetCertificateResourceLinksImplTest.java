@@ -244,6 +244,24 @@ class GetCertificateResourceLinksImplTest {
         }
 
         @Test
+        void shallExcludeCopyCertificateContinue() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+            doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+        }
+
+        @Test
+        void shallIncludeCopyCertificateContinue() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+            doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+        }
+
+        @Test
         void shallExcludeCopyCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.COPY_CERTIFICATE);
             doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
