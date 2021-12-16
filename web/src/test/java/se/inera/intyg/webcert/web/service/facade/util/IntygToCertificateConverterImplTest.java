@@ -45,6 +45,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -79,6 +80,8 @@ public class IntygToCertificateConverterImplTest {
     public static final String UNIT_ID = "unitId";
     public static final String PERSON_ID = "PersonId";
     public static final String PERSON_NAME = "Doctor Alpha";
+    public static final String PERSON_ID_FROM_JSON = "PersonId - json";
+    public static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -260,7 +263,7 @@ public class IntygToCertificateConverterImplTest {
 
         @Test
         void shallIncludePersonId() {
-            final var expectedPersonId = PERSON_ID;
+            final var expectedPersonId = PERSON_ID_FROM_JSON;
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -269,7 +272,7 @@ public class IntygToCertificateConverterImplTest {
 
         @Test
         void shallIncludeName() {
-            final var expectedFullName = PERSON_NAME;
+            final var expectedFullName = PERSON_NAME_FROM_JSON;
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -367,6 +370,12 @@ public class IntygToCertificateConverterImplTest {
                             .city("city")
                             .email("email")
                             .phoneNumber("phoneNumber")
+                            .build()
+                    )
+                    .issuedBy(
+                        Staff.builder()
+                            .personId(PERSON_ID_FROM_JSON)
+                            .fullName(PERSON_NAME_FROM_JSON)
                             .build()
                     )
                     .build()

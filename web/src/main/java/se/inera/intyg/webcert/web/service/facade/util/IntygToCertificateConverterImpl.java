@@ -111,10 +111,6 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             )
         );
 
-        certificateToReturn.getMetadata().setIssuedBy(
-            getIssuedBy(certificate.getUtlatande().getGrundData().getSkapadAv())
-        );
-
         certificateToReturn.getMetadata().setRelations(
             certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
         );
@@ -125,15 +121,6 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         );
 
         return certificateToReturn;
-    }
-
-    private Staff getIssuedBy(HoSPersonal skapadAv) {
-        final var staff = new Staff();
-
-        staff.setPersonId(skapadAv.getPersonId());
-        staff.setFullName(skapadAv.getFullstandigtNamn());
-
-        return staff;
     }
 
     private Unit getCareProvider(HoSPersonal skapadAv) {
