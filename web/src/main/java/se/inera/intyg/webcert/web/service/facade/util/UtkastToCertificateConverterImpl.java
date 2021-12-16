@@ -107,10 +107,6 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             )
         );
 
-        certificateToReturn.getMetadata().setIssuedBy(
-            getIssuedBy(certificate)
-        );
-
         certificateToReturn.getMetadata().setRelations(
             certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
         );
@@ -125,15 +121,6 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         );
 
         return certificateToReturn;
-    }
-
-    private Staff getIssuedBy(Utkast certificate) {
-        final var staff = new Staff();
-
-        staff.setPersonId(certificate.getSkapadAv().getHsaId());
-        staff.setFullName(certificate.getSkapadAv().getNamn());
-
-        return staff;
     }
 
     private Unit getCareProvider(Utkast certificate) {
