@@ -141,6 +141,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE,
+            (accessEvaluationParameters, certificate) ->
+                lockedDraftAccessServiceHelper.isAllowToCopy(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
                 lockedDraftAccessServiceHelper.isAllowToInvalidate(accessEvaluationParameters)

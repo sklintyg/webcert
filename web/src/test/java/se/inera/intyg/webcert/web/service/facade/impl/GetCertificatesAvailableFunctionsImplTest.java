@@ -267,6 +267,20 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+        }
+
+        @Test
+        void shallIncludeCopyContinueCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            CertificateRelation copied = CertificateRelation.builder().type(CertificateRelationType.COPIED)
+                .status(CertificateStatus.UNSIGNED).build();
+            final var children = new CertificateRelation[]{copied};
+            certificate.getMetadata().setRelations(CertificateRelations.builder().children(children).build());
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
         }
 
         @Test
@@ -430,6 +444,36 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
         }
+
+        @Test
+        void shallExcludeRenewIfComplementedBySignedCertificate() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.SIGNED)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .build();
+
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeRenewIfComplementedByUnsignedCertificate() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.UNSIGNED)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .build();
+
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
+        }
     }
 
     @Nested
@@ -511,6 +555,36 @@ class GetCertificatesAvailableFunctionsImplTest {
                 .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeReplaceIfComplementedBySignedCertificate() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.SIGNED)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .build();
+
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeReplaceIfComplementedByUnsignedCertificate() {
+            final var relation = CertificateRelation.builder()
+                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
+                .created(LocalDateTime.now())
+                .status(CertificateStatus.UNSIGNED)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .build();
+
+            final var certificate = CertificateFacadeTestHelper
+                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
         }
     }
 
@@ -682,6 +756,30 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeQuestionsWhenComplementDraft() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(CertificateRelation.builder()
+                        .type(CertificateRelationType.COMPLEMENTED)
+                        .build())
+                    .build()
+            );
+
+            doReturn(true)
+                .when(authoritiesHelper)
+                .isFeatureActive(anyString(), eq(LisjpEntryPoint.MODULE_ID));
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+    }
+
+    @Nested
+    class QuestionsForRevoked {
+
+        @Test
+        void shallIncludeQuestionsWhenRevokedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
             certificate.getMetadata().setRelations(
                 CertificateRelations.builder()
                     .parent(CertificateRelation.builder()

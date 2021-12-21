@@ -45,6 +45,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -90,6 +91,8 @@ public class UtkastToCertificateConverterTest {
 
     private static final String CARE_UNIT_ID = "careUnitId";
     private static final String CARE_UNIT_NAME = "careUnitName";
+    private static final String PERSON_ID_FROM_JSON = "PersonId - json";
+    private static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
     @BeforeEach
     void setupMocks() throws Exception {
@@ -243,8 +246,8 @@ public class UtkastToCertificateConverterTest {
 
         @Test
         void shallIncludePersonId() {
-            final var expectedPersonId = "PersonId";
-            draft.getSkapadAv().setHsaId(expectedPersonId);
+            final var expectedPersonId = PERSON_ID_FROM_JSON;
+            draft.getSkapadAv().setHsaId("PersonId from utkast");
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -253,8 +256,8 @@ public class UtkastToCertificateConverterTest {
 
         @Test
         void shallIncludeName() {
-            final var expectedFullName = "Doctor Alpha";
-            draft.getSkapadAv().setNamn(expectedFullName);
+            final var expectedFullName = PERSON_NAME_FROM_JSON;
+            draft.getSkapadAv().setNamn("Person name from utkast");
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -395,6 +398,12 @@ public class UtkastToCertificateConverterTest {
                             .city("city")
                             .email("email")
                             .phoneNumber("phoneNumber")
+                            .build()
+                    )
+                    .issuedBy(
+                        Staff.builder()
+                            .personId(PERSON_ID_FROM_JSON)
+                            .fullName(PERSON_NAME_FROM_JSON)
                             .build()
                     )
                     .build()
