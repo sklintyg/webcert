@@ -192,7 +192,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        addPrintResourceLink(certificate, resourceLinks);
+        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -281,7 +281,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        addPrintResourceLink(certificate, resourceLinks);
+        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
 
         if (isReplaceCertificateAvailable(certificate)) {
             resourceLinks.add(
@@ -402,7 +402,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        addPrintResourceLink(certificate, resourceLinks);
+        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -592,19 +592,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
     }
 
-    private void addPrintResourceLink(Certificate certificate, ArrayList<ResourceLinkDTO> resourceLinks) {
+    private ResourceLinkDTO getPrintResourceLink(Certificate certificate, ArrayList<ResourceLinkDTO> resourceLinks) {
         if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
-            resourceLinks.add(
+            return
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.PRINT_CERTIFICATE,
                     PRINT_NAME,
                     certificate.getMetadata().getStatus() == CertificateStatus.SIGNED ? PRINT_CERTIFICATE_DESCRIPTION
                         : PRINT_DRAFT_DESCRIPTION,
                     true
-                )
-            );
+                );
         } else {
-            resourceLinks.add(
+            return
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.PRINT_CERTIFICATE,
                     PRINT_NAME,
@@ -612,8 +611,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                         : PRINT_CERTIFICATE_DESCRIPTION,
                     PRINT_PROTECTED_PERSON_BODY,
                     true
-                )
-            );
+                );
         }
     }
 }
