@@ -40,6 +40,7 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -47,6 +48,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -77,7 +79,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";
 
     private static final String REPLACE_NAME = "Ersätt";
-    private static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
+    public static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
+    public static final String REPLACE_DESCRIPTION_DISABLED = "Intyget har minst en ohanterad kompletteringsbegäran"
+        + " och går inte att ersätta.";
 
     private static final String RENEW_NAME = "Förnya";
     private static final String RENEW_DESCRIPTION = "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.";
@@ -147,14 +151,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final WebCertUserService webCertUserService;
     private final CandidateDataHelper candidateDataHelper;
     private final UserService userService;
+    private GetQuestionsFacadeService getQuestionsFacadeService;
 
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-        CandidateDataHelper candidateDataHelper, UserService userService) {
+        CandidateDataHelper candidateDataHelper, UserService userService,
+        GetQuestionsFacadeService getQuestionsFacadeService) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
         this.userService = userService;
+        this.getQuestionsFacadeService = getQuestionsFacadeService;
     }
 
     @Override
@@ -316,14 +323,26 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         );
 
         if (isReplaceCertificateAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
-                    REPLACE_NAME,
-                    REPLACE_DESCRIPTION,
-                    true
-                )
-            );
+            if (hasComplementQuestion(certificate)) {
+                resourceLinks.add(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
+                        REPLACE_NAME,
+                        REPLACE_DESCRIPTION_DISABLED,
+                        false
+                    )
+                );
+            } else {
+                resourceLinks.add(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
+                        REPLACE_NAME,
+                        REPLACE_DESCRIPTION,
+                        true
+                    )
+                );
+            }
+
         }
 
         if (isReplaceCertificateContinueAvailable(certificate)) {
@@ -551,6 +570,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private boolean isComplementingCertificate(Certificate certificate) {
         return certificate.getMetadata().getRelations() != null && certificate.getMetadata().getRelations().getParent() != null
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
+    }
+
+    private boolean hasComplementQuestion(Certificate certificate) {
+        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
+
+        return questions.stream().anyMatch(question -> question.getType().equals(QuestionType.COMPLEMENT));
     }
 
     private boolean isRevoked(Certificate certificate) {
