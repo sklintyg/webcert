@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -30,8 +31,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
+import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION_DISABLED;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,11 +55,14 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -77,6 +84,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     UserServiceImpl userService;
+
+    @Mock
+    GetQuestionsFacadeService getQuestionsFacadeService;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -592,10 +602,30 @@ class GetCertificatesAvailableFunctionsImplTest {
     class ReplaceCertificates {
 
         @Test
-        void shallIncludeReplaceCertificate() {
+        void shallIncludeReplaceCertificateEnabledIfNotComplementing() {
+            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(Collections.emptyList());
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var replaceFunction = actualAvailableFunctions.stream()
+                .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
+                .findFirst().get();
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
+            assertTrue(replaceFunction.isEnabled());
+            assertEquals(REPLACE_DESCRIPTION, replaceFunction.getDescription());
+        }
+
+        @Test
+        void shallIncludeReplaceCertificateDisabledIfComplementing() {
+            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
+                List.of(Question.builder().type(QuestionType.COMPLEMENT).build()));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var replaceFunction = actualAvailableFunctions.stream()
+                .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
+                .findFirst().get();
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
+            assertFalse(replaceFunction.isEnabled());
+            assertEquals(REPLACE_DESCRIPTION_DISABLED, replaceFunction.getDescription());
         }
 
         @Test
