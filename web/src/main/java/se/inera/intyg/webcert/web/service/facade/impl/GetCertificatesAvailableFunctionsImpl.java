@@ -147,6 +147,31 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private String createFromCandidateBody = "";
 
+    private static final String PROTECTED_INTEGRATION_USER_MODAL_TITLE = "Användning av Webcert med skyddade personuppgifter";
+    private static final String PROTECTED_INTEGRATION_DOCTOR_MODAL_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
+        + "<i class='ic-alert__icon ic-info-icon'></i><p>Du har skyddade personuppgifter.</p></div>"
+        + "<p class='iu-fw-bold iu-py-300'> Att använda Webcert med en skyddade personuppgifter innebär:</p>"
+        + "<ul><li>När du signerar ett intyg kommer ditt namn och information om den vårdgivare och vårdenhet intyget"
+        + " är utfärdat på, vara synligt.</li>"
+        + "<li>Vid kommunikation med Försäkringskassan kring ett intyg, kommer ditt namn att vara synligt. Detta kan "
+        + "göra att information om dig och var du arbetar kan spridas.</li></ul>"
+        + "<p class='iu-py-300'>Vill du ändå gå vidare och använda Webcert kan du göra det, efter att du "
+        + "godkänt att du tagit del av denna information. "
+        + "Detta godkännande behöver du bara göra en gång.\n"
+        + "</p><p>Vill du inte använda Webcert, eller av annan anledning väljer att avbryta, så kommer Webcert att avslutas.</p>";
+
+    private static final String PROTECTED_INTEGRATION_ADMINISTRATOR_MODAL_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
+        + "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
+        + "<i class='ic-alert__icon ic-info-icon'></i><p>Du har skyddade personuppgifter.</p></div>"
+        + "<p class='iu-fw-bold iu-py-300'> Att använda Webcert med en skyddade personuppgifter innebär:</p>"
+        + "<ul>"
+        + "<li>Vid kommunikation med Försäkringskassan kring ett intyg, kommer ditt namn att vara synligt. Detta kan "
+        + "göra att information om dig och var du arbetar kan spridas.</li></ul>"
+        + "<p class='iu-py-300'>Vill du ändå gå vidare och använda Webcert kan du göra det, efter att du"
+        + " godkänt att du tagit del av denna information. "
+        + "Detta godkännande behöver du bara göra en gång.\n"
+        + "</p><p>Vill du inte använda Webcert, eller av annan anledning väljer att avbryta, så kommer Webcert att avslutas.</p>";
+
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final CandidateDataHelper candidateDataHelper;
@@ -288,6 +313,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (isStaffProtectedPerson() && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL,
+                    PROTECTED_INTEGRATION_USER_MODAL_TITLE,
+                    "",
+                    isDoctor() ? PROTECTED_INTEGRATION_DOCTOR_MODAL_BODY : PROTECTED_INTEGRATION_ADMINISTRATOR_MODAL_BODY,
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
@@ -408,7 +445,24 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (isStaffProtectedPerson() && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL,
+                    PROTECTED_INTEGRATION_USER_MODAL_TITLE,
+                    "",
+                    isDoctor() ? PROTECTED_INTEGRATION_DOCTOR_MODAL_BODY : PROTECTED_INTEGRATION_ADMINISTRATOR_MODAL_BODY,
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
+
+    }
+
+    private boolean isStaffProtectedPerson() {
+        return webCertUserService.getUser().isSekretessMarkerad();
     }
 
     private boolean hasShortSickleavePeriod(Certificate certificate) {
@@ -459,6 +513,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
+        if (isStaffProtectedPerson() && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL,
+                    PROTECTED_INTEGRATION_USER_MODAL_TITLE,
+                    "",
+                    isDoctor() ? PROTECTED_INTEGRATION_DOCTOR_MODAL_BODY : PROTECTED_INTEGRATION_ADMINISTRATOR_MODAL_BODY,
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
@@ -471,6 +537,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     ResourceLinkTypeDTO.QUESTIONS,
                     QUESTIONS_NAME,
                     QUESTIONS_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
+        if (isStaffProtectedPerson() && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL,
+                    PROTECTED_INTEGRATION_USER_MODAL_TITLE,
+                    "",
+                    isDoctor() ? PROTECTED_INTEGRATION_DOCTOR_MODAL_BODY : PROTECTED_INTEGRATION_ADMINISTRATOR_MODAL_BODY,
                     true
                 )
             );
@@ -606,6 +684,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return certificate.getMetadata().getType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID);
     }
 
+    private boolean isDoctor() {
+        final var user = webCertUserService.getUser();
+        return user != null && user.isLakare();
+    }
+
     private boolean isDjupintegration() {
         final var user = webCertUserService.getUser();
         return user != null && user.getOrigin().contains("DJUPINTEGRATION");
@@ -673,10 +756,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     PRINT_PROTECTED_PERSON_BODY,
                     true
                 );
-          }
-      }
+        }
+    }
 
-      private boolean hasBeenComplemented(Certificate certificate) {
+    private boolean hasBeenComplemented(Certificate certificate) {
         if (certificate.getMetadata().getRelations() != null) {
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
                 relation -> relation.getType().equals(
@@ -685,7 +768,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
         return false;
     }
-  
+
     private boolean isCopyCertificateAvailable(Certificate certificate) {
         return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }

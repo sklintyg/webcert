@@ -205,6 +205,73 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     @Nested
+    class ProtectedUserApproval {
+
+        void setupUser(boolean isProtected, String origin) {
+            final var user = new WebCertUser();
+            user.setSekretessMarkerad(isProtected);
+            user.setOrigin(origin);
+            doReturn(user).when(webCertUserService).getUser();
+        }
+
+        @Test
+        void shallIncludeProtectedPersonAgreementForDraftIfIntegrationOriginAndProtectedUser() {
+            setupUser(true, "DJUPINTEGRATION");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallIncludeProtectedPersonAgreementForSignedIfIntegrationOriginAndProtectedUser() {
+            setupUser(true, "DJUPINTEGRATION");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallIncludeProtectedPersonAgreementForLockedIfIntegrationOriginAndProtectedUser() {
+            setupUser(true, "DJUPINTEGRATION");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallIncludeProtectedPersonAgreementForRevokedIfIntegrationOriginAndProtectedUser() {
+            setupUser(true, "DJUPINTEGRATION");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallExcludeProtectedPersonAgreementIfIntegrationOriginButNotProtectedUser() {
+            setupUser(false, "DJUPINTEGRATION");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallExcludeProtectedPersonAgreementIfProtectedserButNotIntegrationOrigin() {
+            setupUser(true, "NORMAL");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+
+        @Test
+        void shallExcludeProtectedPersonAgreementIfNotProtectedAndNotIntegration() {
+            setupUser(false, "NORMAL");
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.PROTECTED_USER_APPROVAL);
+        }
+    }
+
+    @Nested
     class CreateCertificateFromCandidate {
 
         void setUpMetadata() {
