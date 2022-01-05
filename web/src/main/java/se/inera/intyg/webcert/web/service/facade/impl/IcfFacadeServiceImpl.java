@@ -153,8 +153,8 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                             getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
                         )
                     )
-                    .icfCodes(
-                        getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())
+                    .icfCodes(icfDiagnoskodResponse.getFunktionsNedsattningsKoder() != null ? getIcfCodeList(
+                        icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder()) : Collections.emptyList()
                     )
                     .build())
             .collect(Collectors.toList());
@@ -174,7 +174,8 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                         )
                     )
                     .icfCodes(
-                        getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())
+                        icfDiagnoskodResponse.getAktivitetsBegransningsKoder() != null ? getIcfCodeList(
+                            icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder()) : Collections.emptyList()
                     )
                     .build())
             .collect(Collectors.toList());
