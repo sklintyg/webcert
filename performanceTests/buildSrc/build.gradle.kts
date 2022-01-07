@@ -7,7 +7,7 @@ plugins {
 repositories {
   maven("https://nexus.drift.inera.se/repository/maven-releases/")
   gradlePluginPortal()
-  jcenter()
+  mavenCentral()
 }
 
 tasks {
