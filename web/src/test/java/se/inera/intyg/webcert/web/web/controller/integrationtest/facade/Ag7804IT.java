@@ -56,7 +56,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public class Ag7804IT {
 
-    private static final String CURRENT_VERSION = "1.1";
+    private static final String CURRENT_VERSION = "1.2";
 
     private List<String> certificateIdsToCleanAfterTest;
 
@@ -270,397 +270,578 @@ public class Ag7804IT {
             );
         }
 
-        @Nested
-        class Ag7804ITCurrentVersion {
-
-            @Test
-            @DisplayName("Shall create draft with version current version")
-            public void shallCreateDraftOfCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                final var createUtkastRequest = new CreateUtkastRequest();
-                createUtkastRequest.setIntygType(Ag7804EntryPoint.MODULE_ID);
-                createUtkastRequest
-                    .setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
-                createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
-                createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
-
-                final var certificateId = given()
-                    .pathParam("certificateType", Ag7804EntryPoint.MODULE_ID)
-                    .contentType(ContentType.JSON)
-                    .body(createUtkastRequest)
-                    .expect().statusCode(200)
-                    .when()
-                    .post("api/utkast/{certificateType}")
-                    .then().extract().path("intygsId").toString();
-
-                certificateIdsToCleanAfterTest.add(certificateId);
-
-                assertAll(
-                    () -> assertTrue(certificateId != null && certificateId.trim().length() > 0, "Expected id of the created certificate")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall return draft with current version")
-            void shallReturnDraftOfCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.EMPTY,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .expect().statusCode(200)
-                    .when()
-                    .get("api/certificate/{certificateId}")
-                    .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
-
-                assertAll(
-                    () -> assertEquals(testSetup.certificateId(), response.getMetadata().getId()),
-                    () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion()),
-                    () -> assertEquals(CertificateStatus.UNSIGNED, response.getMetadata().getStatus()),
-                    () -> assertNotNull(response.getData(), "Expect certificate to include data"),
-                    () -> assertNotNull(response.getLinks(), "Expect certificate to include links")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall return validation errors for draft with current version")
-            public void shallReturnValidationErrors() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.EMPTY,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(testSetup.certificate())
-                    .expect().statusCode(200)
-                    .when()
-                    .post("api/certificate/{certificateId}/validate")
-                    .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-                assertAll(
-                    () -> assertNotNull(response.getValidationErrors(), "Expect response to include validation errors")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall return new version (revision) when saving draft with current version")
-            public void shallReturnNewVersionWhenSaving() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.EMPTY,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(testSetup.certificate())
-                    .expect().statusCode(200)
-                    .when()
-                    .put("api/certificate/{certificateId}")
-                    .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-                assertAll(
-                    () -> assertTrue(response.getVersion() > testSetup.certificate().getMetadata().getVersion(),
-                        "Expect version after save to be incremented")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to print draft with current version")
-            public void shallBeAbleToPrintCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.MINIMAL,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
-                    .when()
-                    .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
-                    .then().extract().response();
-
-                assertAll(
-                    () -> assertEquals(200, response.getStatusCode())
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to delete draft with current version")
-            public void shallBeAbleToDeleteCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.MINIMAL,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .pathParam("version", 1)
-                    .when()
-                    .delete("api/certificate/{certificateId}/{version}")
-                    .then().extract().response();
-
-                assertAll(
-                    () -> assertEquals(200, response.getStatusCode())
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to renew certificate with current version")
-            void shallBeAbleToRenewCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .certificate(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        ALFA_VARDCENTRAL,
-                        DR_AJLA,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var certificateId = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .expect().statusCode(200)
-                    .when().post("api/certificate/{certificateId}/renew")
-                    .then().extract().path("certificateId").toString();
-
-                certificateIdsToCleanAfterTest.add(certificateId);
-
-                assertAll(
-                    () -> assertNotNull(certificateId, "Expect certificate id to have a value")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to replace certificate with current version")
-            void shallBeAbleToReplaceCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .certificate(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        ALFA_VARDCENTRAL,
-                        DR_AJLA,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-                newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-                newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
-
-                final var certificateId = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(newCertificateRequestDTO)
-                    .expect().statusCode(200)
-                    .when().post("api/certificate/{certificateId}/replace")
-                    .then().extract().path("certificateId").toString();
-
-                certificateIdsToCleanAfterTest.add(certificateId);
-
-                assertAll(
-                    () -> assertNotNull(certificateId, "Expect certificate id to have a value")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to copy locked draft with current version")
-            void shallBeAbleToCopyCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .lockedDraft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-                newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-                newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
-
-                final var certificateId = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(newCertificateRequestDTO)
-                    .expect().statusCode(200)
-                    .when().post("api/certificate/{certificateId}/copy")
-                    .then().extract().path("certificateId").toString();
-
-                certificateIdsToCleanAfterTest.add(certificateId);
-
-                assertAll(
-                    () -> assertNotNull(certificateId, "Expect certificate id to have a value")
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to revoke certificate with current version")
-            public void shallBeAbleToRevokeCertificateOfCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .certificate(
-                        Ag7804EntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        ALFA_VARDCENTRAL,
-                        DR_AJLA,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
-                revokeCertificateRequest.setReason("Reason");
-                revokeCertificateRequest.setMessage("Message");
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(revokeCertificateRequest)
-                    .when().post("api/certificate/{certificateId}/revoke")
-                    .then().extract().response();
-
-                assertAll(
-                    () -> assertEquals(200, response.getStatusCode())
-                );
-            }
-
-            @Test
-            @DisplayName("Shall be able to revoke locked draft with current version")
-            public void shallBeAbleToRevokeLockedDraftOfCurrentVersion() {
-                final var testSetup = TestSetup.create()
-                    .lockedDraft(
-                        Ag7804EntryPoint.MODULE_ID,
-                        "1.1",
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .clearPdlLogMessages()
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
-                revokeCertificateRequest.setReason("Reason");
-                revokeCertificateRequest.setMessage("Message");
-
-                final var response = given()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(revokeCertificateRequest)
-                    .when().post("api/certificate/{certificateId}/revoke")
-                    .then().extract().response();
-
-                assertAll(
-                    () -> assertEquals(200, response.getStatusCode())
-                );
-            }
-        }
-
         @Test
-        @DisplayName("Shall fill draft from lisjp candidate certificate")
-        public void shallCreateDraftFromCandidate() {
-
+        @DisplayName("Shall return certificate with version 1.1")
+        void shallReturnCertificateOfVersion11() {
             final var testSetup = TestSetup.create()
                 .certificate(
-                    LisjpEntryPoint.MODULE_ID,
-                    "1.2",
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
                     ALFA_VARDCENTRAL,
                     DR_AJLA,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .useDjupIntegratedOrigin()
                 .setup();
 
-            final var draftId = createAg7804Draft();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
             final var response = given()
-                .pathParam("certificateId", draftId)
-                .contentType(ContentType.JSON)
+                .pathParam("certificateId", testSetup.certificateId())
                 .expect().statusCode(200)
                 .when()
-                .post("api/certificate/{certificateId}/candidate")
-                .then().extract().response();
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(testSetup.certificateId(), response.getMetadata().getId()),
+                () -> assertEquals("1.1", response.getMetadata().getTypeVersion()),
+                () -> assertEquals(CertificateStatus.SIGNED, response.getMetadata().getStatus()),
+                () -> assertNotNull(response.getData(), "Expect certificate to include data"),
+                () -> assertNotNull(response.getLinks(), "Expect certificate to include links")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to print draft with version 1.1")
+        public void shallBeAbleToPrintCertificateOfVersion11() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-            certificateIdsToCleanAfterTest.add(draftId);
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
+                .when()
+                .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
+                .then().extract().response();
 
             assertAll(
                 () -> assertEquals(200, response.getStatusCode())
             );
         }
+
+        @Test
+        @DisplayName("Shall return draft with current version when renewing 1.1")
+        void shallReturnCertificateOfCurrentVersionWhenRenewing11() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/renew")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when replacing 1.1")
+        void shallReturnCertificateOfCurrentVersionWhenReplace11() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/replace")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when copy locked draft 1.1")
+        void shallReturnCertificateOfCurrentVersionWhenCopy11() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/copy")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+    }
+
+    @Nested
+    class Ag7804ITCurrentVersion {
+
+        @Test
+        @DisplayName("Shall create draft with version current version")
+        public void shallCreateDraftOfCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var createUtkastRequest = new CreateUtkastRequest();
+            createUtkastRequest.setIntygType(Ag7804EntryPoint.MODULE_ID);
+            createUtkastRequest
+                .setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
+            createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
+            createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
+
+            final var certificateId = given()
+                .pathParam("certificateType", Ag7804EntryPoint.MODULE_ID)
+                .contentType(ContentType.JSON)
+                .body(createUtkastRequest)
+                .expect().statusCode(200)
+                .when()
+                .post("api/utkast/{certificateType}")
+                .then().extract().path("intygsId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertTrue(certificateId != null && certificateId.trim().length() > 0, "Expected id of the created certificate")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version")
+        void shallReturnDraftOfCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .draft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    CreateCertificateFillType.EMPTY,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(testSetup.certificateId(), response.getMetadata().getId()),
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion()),
+                () -> assertEquals(CertificateStatus.UNSIGNED, response.getMetadata().getStatus()),
+                () -> assertNotNull(response.getData(), "Expect certificate to include data"),
+                () -> assertNotNull(response.getLinks(), "Expect certificate to include links")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return validation errors for draft with current version")
+        public void shallReturnValidationErrors() {
+            final var testSetup = TestSetup.create()
+                .draft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    CreateCertificateFillType.EMPTY,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(testSetup.certificate())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateId}/validate")
+                .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertNotNull(response.getValidationErrors(), "Expect response to include validation errors")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return new version (revision) when saving draft with current version")
+        public void shallReturnNewVersionWhenSaving() {
+            final var testSetup = TestSetup.create()
+                .draft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    CreateCertificateFillType.EMPTY,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(testSetup.certificate())
+                .expect().statusCode(200)
+                .when()
+                .put("api/certificate/{certificateId}")
+                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertTrue(response.getVersion() > testSetup.certificate().getMetadata().getVersion(),
+                    "Expect version after save to be incremented")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to print draft with current version")
+        public void shallBeAbleToPrintCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .draft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    CreateCertificateFillType.MINIMAL,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
+                .when()
+                .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to delete draft with current version")
+        public void shallBeAbleToDeleteCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .draft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    CreateCertificateFillType.MINIMAL,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("version", 1)
+                .when()
+                .delete("api/certificate/{certificateId}/{version}")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to renew certificate with current version")
+        void shallBeAbleToRenewCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/renew")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to replace certificate with current version")
+        void shallBeAbleToReplaceCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/replace")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to copy locked draft with current version")
+        void shallBeAbleToCopyCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/copy")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to revoke certificate with current version")
+        public void shallBeAbleToRevokeCertificateOfCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
+            revokeCertificateRequest.setReason("Reason");
+            revokeCertificateRequest.setMessage("Message");
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(revokeCertificateRequest)
+                .when().post("api/certificate/{certificateId}/revoke")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to revoke locked draft with current version")
+        public void shallBeAbleToRevokeLockedDraftOfCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    "1.1",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
+            revokeCertificateRequest.setReason("Reason");
+            revokeCertificateRequest.setMessage("Message");
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(revokeCertificateRequest)
+                .when().post("api/certificate/{certificateId}/revoke")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+    }
+
+    @Test
+    @DisplayName("Shall fill draft from lisjp candidate certificate")
+    public void shallCreateDraftFromCandidate() {
+
+        final var testSetup = TestSetup.create()
+            .certificate(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .setup();
+
+        final var draftId = createAg7804Draft();
+
+        final var response = given()
+            .pathParam("certificateId", draftId)
+            .contentType(ContentType.JSON)
+            .expect().statusCode(200)
+            .when()
+            .post("api/certificate/{certificateId}/candidate")
+            .then().extract().response();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+        certificateIdsToCleanAfterTest.add(draftId);
+
+        assertAll(
+            () -> assertEquals(200, response.getStatusCode())
+        );
     }
 
     private String createAg7804Draft() {
