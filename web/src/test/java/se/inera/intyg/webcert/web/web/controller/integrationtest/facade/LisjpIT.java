@@ -69,8 +69,8 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public class LisjpIT {
 
-    private static final String CURRENT_VERSION = "1.2";
-    private static final String AG7804_CURRENT_VERSION = "1.1";
+    private static final String CURRENT_VERSION = "1.3";
+    private static final String AG7804_CURRENT_VERSION = "1.2";
 
     private List<String> certificateIdsToCleanAfterTest;
 
@@ -579,6 +579,258 @@ public class LisjpIT {
                 .certificate(
                     LisjpEntryPoint.MODULE_ID,
                     "1.1",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(AG7804_CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return certificate with version 1.2")
+        void shallReturnCertificateOfVersion12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(testSetup.certificateId(), response.getMetadata().getId()),
+                () -> assertEquals("1.2", response.getMetadata().getTypeVersion()),
+                () -> assertNotNull(response.getData(), "Expect certificate to include data"),
+                () -> assertNotNull(response.getLinks(), "Expect certificate to include links")
+            );
+        }
+
+        @Test
+        @DisplayName("Shall be able to print draft with version 1.2")
+        public void shallBeAbleToPrintCertificateOfVersion12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .clearPdlLogMessages()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
+                .when()
+                .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when renewing 1.2")
+        void shallReturnCertificateOfCurrentVersionWhenRenewing12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/renew")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when replace 1.2")
+        void shallReturnCertificateOfCurrentVersionWhenReplace12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/replace")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when complementing 1.2")
+        void shallReturnCertificateOfCurrentVersionWhenComplement12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .complementQuestion()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
+            complementCertificateRequestDTO.setMessage("");
+
+            final var newCertificate = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(complementCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/complement")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, newCertificate.getCertificate().getMetadata().getTypeVersion(),
+                    () -> String.format("Failed for certificate '%s'", testSetup.certificateId()))
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when copy locked draft 1.2")
+        void shallReturnCertificateOfCurrentVersionWhenCopy12() {
+            final var testSetup = TestSetup.create()
+                .lockedDraft(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/copy")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        @DisplayName("Shall return draft with current version when creating from template of version 1.2")
+        void shallReturnCertificateOfCurrentVersionWhenCreatingFromTemplate12() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    LisjpEntryPoint.MODULE_ID,
+                    "1.2",
                     ALFA_VARDCENTRAL,
                     DR_AJLA,
                     ATHENA_ANDERSSON.getPersonId().getId()
