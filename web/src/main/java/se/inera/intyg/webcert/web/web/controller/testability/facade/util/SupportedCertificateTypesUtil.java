@@ -50,7 +50,7 @@ public class SupportedCertificateTypesUtil {
                 LisjpEntryPoint.ISSUER_TYPE_ID,
                 LisjpEntryPoint.MODULE_ID,
                 LisjpEntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1", "1.2"),
+                Arrays.asList("1.0", "1.1", "1.2", "1.3"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
             )
@@ -60,7 +60,7 @@ public class SupportedCertificateTypesUtil {
                 Ag7804EntryPoint.ISSUER_TYPE_ID,
                 Ag7804EntryPoint.MODULE_ID,
                 Ag7804EntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1"),
+                Arrays.asList("1.0", "1.1", "1.2"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
             )
