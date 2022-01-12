@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class SupportedCertificateTypesUtil {
                 LisjpEntryPoint.ISSUER_TYPE_ID,
                 LisjpEntryPoint.MODULE_ID,
                 LisjpEntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1", "1.2"),
+                Arrays.asList("1.0", "1.1", "1.2", "1.3"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
             )
@@ -61,7 +60,7 @@ public class SupportedCertificateTypesUtil {
                 Ag7804EntryPoint.ISSUER_TYPE_ID,
                 Ag7804EntryPoint.MODULE_ID,
                 Ag7804EntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1"),
+                Arrays.asList("1.0", "1.1", "1.2"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
             )
