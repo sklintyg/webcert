@@ -25,6 +25,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -143,7 +144,7 @@ class ValidateCertificateFacadeServiceImplTest {
     void shallIncludeFieldInValidationError() {
         final var draftValidationMessage = addValidationMessage();
 
-        final var expectedField = "expectedField";
+        final var expectedField = "expectedQuestionId";
         draftValidationMessage.setField(expectedField);
 
         final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
@@ -212,4 +213,42 @@ class ValidateCertificateFacadeServiceImplTest {
         draftValidation.addMessage(validationMessage);
         return validationMessage;
     }
+
+    @Nested
+    class ConvertField {
+
+
+        @Test
+        void shallConvertJsonIdToQuestionId() {
+            final String EXPECTED_ID = "expectedQuestionId";
+            final var draftValidationMessage = addValidationMessage();
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+
+        @Test
+        void shallConvertChildNotationInField() {
+            final String EXPECTED_ID = "expectedQuestionId.childId";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("parentField[childId]");
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+
+        @Test
+        void shallConvertTwoLevelsOfChildNotationInField() {
+            final String EXPECTED_ID = "expectedQuestionId.childId.row";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("parentField[childId].row");
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+    }
+
 }

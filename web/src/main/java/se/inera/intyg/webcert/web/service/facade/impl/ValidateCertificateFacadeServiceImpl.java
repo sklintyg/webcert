@@ -94,12 +94,27 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
-        validationError.setField(validationMessage.getField());
+        validationError.setField(convertField(validationMessage.getField(), validationMessage.getQuestionId()));
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
         validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
             validationMessage.getQuestionId()));
         return validationError;
+    }
+
+    private void mergeFieldParts(String field, StringBuilder stringBuilder, String regexToSplit) {
+        final var parts = field.split(regexToSplit);
+        if (parts.length >= 2) {
+            stringBuilder.append(".").append(parts[1]);
+        }
+    }
+
+    private String convertField(String field, String questionId) {
+        final var fieldWithoutExtraChars = field.replace("]", "");
+        StringBuilder resultingField = new StringBuilder(questionId);
+        mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\[");
+        mergeFieldParts(fieldWithoutExtraChars, resultingField, ".");
+        return resultingField.toString();
     }
 
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
