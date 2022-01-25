@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -76,7 +77,7 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             return intygToCertificateConverter.convert(intygContentHolder);
         }
 
-        if (utkast.getSkickadTillMottagareDatum() == null) {
+        if (isSignedButNotSent(utkast)) {
             LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
             final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
             utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
@@ -84,6 +85,10 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
         LOG.debug("Converting Utkast to Certificate");
         return utkastToCertificateConverter.convert(utkast);
+    }
+
+    private boolean isSignedButNotSent(Utkast utkast) {
+        return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
     }
 
     private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {

@@ -106,7 +106,8 @@ class GetCertificateFacadeServiceImplTest {
         }
 
         @Test
-        void shallGetCertificateStatusFromITIfNotSent() {
+        void shallGetCertificateStatusFromITIfSignedButNotSent() {
+            draft.setStatus(UtkastStatus.SIGNED);
             draft.setSkickadTillMottagareDatum(null);
 
             final var expectedSentDateTime = LocalDateTime.now();
@@ -125,9 +126,37 @@ class GetCertificateFacadeServiceImplTest {
 
         @Test
         void shallNotGetCertificateStatusFromITIfSent() {
+            draft.setStatus(UtkastStatus.SIGNED);
             getCertificateService.getCertificate(draft.getIntygsId(), false);
             verify(itIntegrationService, never())
                     .getCertificateInfo(draft.getIntygsId());
+        }
+
+        @Test
+        void shallNotGetCertificateStatusFromITIfDraftIncomplete() {
+            draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+            draft.setSkickadTillMottagareDatum(null);
+            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            verify(itIntegrationService, never())
+                .getCertificateInfo(draft.getIntygsId());
+        }
+
+        @Test
+        void shallNotGetCertificateStatusFromITIfDraftComplete() {
+            draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
+            draft.setSkickadTillMottagareDatum(null);
+            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            verify(itIntegrationService, never())
+                .getCertificateInfo(draft.getIntygsId());
+        }
+
+        @Test
+        void shallNotGetCertificateStatusFromITIfDraftLocked() {
+            draft.setStatus(UtkastStatus.DRAFT_LOCKED);
+            draft.setSkickadTillMottagareDatum(null);
+            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            verify(itIntegrationService, never())
+                .getCertificateInfo(draft.getIntygsId());
         }
 
         @Nested
