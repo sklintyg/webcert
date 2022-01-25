@@ -94,7 +94,8 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
-        validationError.setField(convertField(validationMessage.getField(), validationMessage.getQuestionId()));
+        validationError
+            .setField(convertField(validationMessage.getField(), validationMessage.getQuestionId(), validationMessage.getType()));
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
         validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
@@ -109,9 +110,19 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         }
     }
 
-    private String convertField(String field, String questionId) {
+    private String getInitialField(String field, String questionId, ValidationMessageType type) {
+        final var shouldKeepOriginalField = type != ValidationMessageType.EMPTY;
+        final var parts = field.split("\\[").length != 0 ? field.split("\\[") : field.split(".");
+        if (shouldKeepOriginalField) {
+            return parts.length == 0 ? field : parts[0];
+        } else {
+            return questionId;
+        }
+    }
+
+    private String convertField(String field, String questionId, ValidationMessageType type) {
         final var fieldWithoutExtraChars = field.replace("]", "");
-        StringBuilder resultingField = new StringBuilder(questionId);
+        StringBuilder resultingField = new StringBuilder(getInitialField(field, questionId, type));
         mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\[");
         mergeFieldParts(fieldWithoutExtraChars, resultingField, ".");
         return resultingField.toString();

@@ -205,7 +205,7 @@ class ValidateCertificateFacadeServiceImplTest {
         final var validationMessage = new DraftValidationMessage(
             "expectedCategory",
             "expectedField",
-            ValidationMessageType.BLANK,
+            ValidationMessageType.EMPTY,
             "expectedMessage",
             "expectedDynamicKey",
             "expectedQuestionId"
@@ -249,6 +249,41 @@ class ValidateCertificateFacadeServiceImplTest {
 
             assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
         }
-    }
 
+        @Test
+        void shallIncludeOriginalAndChildIdFieldIfTypeIsNotEmpty() {
+            final String EXPECTED_ID = "parentField.childId.row";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("parentField[childId].row");
+            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+
+        @Test
+        void shallIncludeOriginalFieldIfTypeIsNotEmpty() {
+            final String EXPECTED_ID = "parentField";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("parentField");
+            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+
+        @Test
+        void shallIncludeOriginalFieldAndPositionIfTypeIsNotEmpty() {
+            final String EXPECTED_ID = "parentField.row";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("parentField.row");
+            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
+    }
 }
