@@ -45,7 +45,7 @@ configure<GatlingPluginExtension> {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {

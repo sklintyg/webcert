@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGNOS_ICD_10_ID;
@@ -153,8 +152,8 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                             getIcdCode(icfDiagnoskodResponse.getIcd10Kod())
                         )
                     )
-                    .icfCodes(
-                        getIcfCodeList(icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder())
+                    .icfCodes(icfDiagnoskodResponse.getFunktionsNedsattningsKoder() != null ? getIcfCodeList(
+                        icfDiagnoskodResponse.getFunktionsNedsattningsKoder().getIcfKoder()) : Collections.emptyList()
                     )
                     .build())
             .collect(Collectors.toList());
@@ -174,7 +173,8 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
                         )
                     )
                     .icfCodes(
-                        getIcfCodeList(icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder())
+                        icfDiagnoskodResponse.getAktivitetsBegransningsKoder() != null ? getIcfCodeList(
+                            icfDiagnoskodResponse.getAktivitetsBegransningsKoder().getIcfKoder()) : Collections.emptyList()
                     )
                     .build())
             .collect(Collectors.toList());
