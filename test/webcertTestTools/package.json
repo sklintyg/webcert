@@ -10,7 +10,7 @@
     "dependencies": {
         "common-testtools": "^0.4.0",
         "jclass": "^1.2.1",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.21",
         "request": "^2.85.0",
         "xml2js": "^0.4.17"
     },
