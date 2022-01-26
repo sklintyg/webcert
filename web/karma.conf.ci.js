@@ -46,13 +46,13 @@ module.exports = function(config) {
     logLevel: config.LOG_ERROR,
     singleRun: true,
 
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
 
     plugins: (function() {
       var plugins = [
         'karma-jasmine',
         'karma-junit-reporter',
-        'karma-phantomjs-launcher',
+        'karma-chrome-launcher',
         'karma-mocha-reporter',
         'karma-ng-html2js-preprocessor'
       ];
