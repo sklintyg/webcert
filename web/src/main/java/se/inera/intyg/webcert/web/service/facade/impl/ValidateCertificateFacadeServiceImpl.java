@@ -111,9 +111,9 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     private String getInitialField(String field, String questionId, ValidationMessageType type) {
         final var shouldKeepOriginalField = type != ValidationMessageType.EMPTY;
-        final var parts = field.split("\\[").length != 0 ? field.split("\\[") : field.split("\\.");
+        final var parts = field.split("\\[").length > 1 ? field.split("\\[") : field.split("\\.");
         if (shouldKeepOriginalField) {
-            return parts.length == 0 ? field : parts[0];
+            return parts.length <= 1 ? field : parts[0];
         } else {
             return questionId;
         }
@@ -122,8 +122,11 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
     private String convertField(String field, String questionId, ValidationMessageType type) {
         final var fieldWithoutExtraChars = field.replace("]", "");
         StringBuilder resultingField = new StringBuilder(getInitialField(field, questionId, type));
+        final var resultingFieldLength = resultingField.length();
         mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\[");
-        mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\.");
+        if (resultingFieldLength == resultingField.length()) {
+            mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\.");
+        }
         return resultingField.toString();
     }
 
