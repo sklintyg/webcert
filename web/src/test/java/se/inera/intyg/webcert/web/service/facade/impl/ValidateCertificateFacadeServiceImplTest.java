@@ -284,5 +284,18 @@ class ValidateCertificateFacadeServiceImplTest {
 
             assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
         }
+
+        @Test
+        void shallReturnOriginalFieldIfQuestionIdIsNull() {
+            final String EXPECTED_ID = "original[field].row";
+            final var draftValidationMessage = addValidationMessage();
+            draftValidationMessage.setField("original[field].row");
+            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
+            draftValidationMessage.setQuestionId(null);
+
+            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
+        }
     }
 }
