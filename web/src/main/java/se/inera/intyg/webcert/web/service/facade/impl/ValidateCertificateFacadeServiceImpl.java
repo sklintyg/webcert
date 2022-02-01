@@ -111,7 +111,10 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     private String getInitialField(String field, String questionId, ValidationMessageType type) {
         final var shouldKeepOriginalField = type != ValidationMessageType.EMPTY;
-        final var parts = field != null && field.split("\\[").length > 1 ? field.split("\\[") : field.split("\\.");
+        if(field == null) {
+            return questionId;
+        }
+        final var parts = field.split("\\[").length > 1 ? field.split("\\[") : field.split("\\.");
         if (shouldKeepOriginalField) {
             return parts.length <= 1 ? field : parts[0];
         } else {
