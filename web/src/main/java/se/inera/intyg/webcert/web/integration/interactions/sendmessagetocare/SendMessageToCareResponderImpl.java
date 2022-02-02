@@ -55,7 +55,10 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                 case MESSAGE_ALREADY_EXISTS:
                     result.setResultCode(ResultCodeType.INFO);
                     result.setResultText(e.getMessage());
-                    LOG.info("Could not process incoming message to care. Message already exists. {} : {}", e.getErrorCode(),
+                    LOG.info("Could not process incoming message to care. Message already exists. Question id {}. Certificate id {}. {} {}",
+                        request.getMeddelandeId(),
+                        request.getIntygsId().getExtension(),
+                        e.getErrorCode(),
                         e.getMessage());
                     break;
                 case INVALID_STATE:
@@ -64,13 +67,21 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                     result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.VALIDATION_ERROR);
                     result.setResultText(e.getMessage());
-                    LOG.error("Could not process incoming message to care. Validation error. {} : {}", e.getErrorCode(), e.getMessage());
+                    LOG.error("Could not process incoming message to care. Validation error. Question id {}. Certificate id {}. {} {}",
+                        request.getMeddelandeId(),
+                        request.getIntygsId().getExtension(),
+                        e.getErrorCode(),
+                        e.getMessage());
                     break;
                 default:
                     result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.APPLICATION_ERROR);
                     result.setResultText(e.getMessage());
-                    LOG.error("Could not process incoming message to care. Application error. {} : {}", e.getErrorCode(), e.getMessage());
+                    LOG.error("Could not process incoming message to care. Application error. Question id {}. Certificate id {}. {} {}",
+                        request.getMeddelandeId(),
+                        request.getIntygsId().getExtension(),
+                        e.getErrorCode(),
+                        e.getMessage());
                     break;
             }
         }

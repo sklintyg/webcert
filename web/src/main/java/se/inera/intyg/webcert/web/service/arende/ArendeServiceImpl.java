@@ -194,11 +194,12 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "meddelandeId not unique");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS,
+                "This message has already been received.");
         }
 
         if (arende.getSvarPaId() != null && !arendeRepository.findBySvarPaId(arende.getSvarPaId()).isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Answer already exist for this message");
         }
 
         Utkast utkast = utkastRepository.findById(certificateId).orElse(null);
