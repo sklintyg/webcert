@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +78,16 @@ public class SendMessageToCareResponderImplTest {
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
         assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+    }
+
+    @Test
+    public void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any()))
+            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "Exception message"));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.INFO, response.getResult().getResultCode());
+        assertNull(response.getResult().getErrorId());
     }
 
     @Test

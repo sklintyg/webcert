@@ -51,19 +51,26 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
             arendeService.processIncomingMessage(ArendeConverter.convert(request));
             result.setResultCode(ResultCodeType.OK);
         } catch (WebCertServiceException e) {
-            result.setResultCode(ResultCodeType.ERROR);
             switch (e.getErrorCode()) {
+                case MESSAGE_ALREADY_EXISTS:
+                    result.setResultCode(ResultCodeType.INFO);
+                    result.setResultText(e.getMessage());
+                    LOG.info("Could not process incoming message to care. Message already exists. {} : {}", e.getErrorCode(),
+                        e.getMessage());
+                    break;
                 case INVALID_STATE:
                 case DATA_NOT_FOUND:
                 case EXTERNAL_SYSTEM_PROBLEM:
+                    result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.VALIDATION_ERROR);
                     result.setResultText(e.getMessage());
-                    LOG.warn("{}: {}", e.getErrorCode().name(), e.getMessage());
+                    LOG.error("Could not process incoming message to care. Validation error. {} : {}", e.getErrorCode(), e.getMessage());
                     break;
                 default:
+                    result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.APPLICATION_ERROR);
                     result.setResultText(e.getMessage());
-                    LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
+                    LOG.error("Could not process incoming message to care. Application error. {} : {}", e.getErrorCode(), e.getMessage());
                     break;
             }
         }

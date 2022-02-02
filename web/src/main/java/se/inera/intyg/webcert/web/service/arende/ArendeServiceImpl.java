@@ -194,7 +194,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "meddelandeId not unique");
         }
 
         if (arende.getSvarPaId() != null && !arendeRepository.findBySvarPaId(arende.getSvarPaId()).isEmpty()) {
