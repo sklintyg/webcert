@@ -30,7 +30,7 @@ public final class QuestionUtil {
     }
 
     public static QuestionType getTypeFromAmneAsString(String amne) {
-        if (amne.isBlank()) {
+        if (amne == null || amne.isBlank()) {
             return QuestionType.MISSING;
         }
         final var arendeAmne = ArendeAmne.valueOf(amne);
