@@ -429,13 +429,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testProcessIncomingMessageMEDDELANDE_IDNotUnique() {
+    public void testProcessIncomingMessageMessageAlreadyExists() {
         when(arendeRepository.findOneByMeddelandeId(isNull())).thenReturn(new Arende());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
         } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+            assertEquals(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, e.getErrorCode());
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);
