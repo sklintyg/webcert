@@ -93,12 +93,47 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
-        validationError.setField(validationMessage.getField());
+        validationError
+            .setField(convertField(validationMessage.getField(), validationMessage.getQuestionId(), validationMessage.getType()));
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
         validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
             validationMessage.getQuestionId()));
         return validationError;
+    }
+
+    private void mergeFieldParts(String field, StringBuilder stringBuilder, String regexToSplit) {
+        final var parts = field.split(regexToSplit);
+        if (parts.length >= 2) {
+            stringBuilder.append(".").append(parts[1]);
+        }
+    }
+
+    private String getInitialField(String field, String questionId, ValidationMessageType type) {
+        final var shouldKeepOriginalField = type != ValidationMessageType.EMPTY;
+        if (field == null) {
+            return questionId;
+        }
+        final var parts = field.split("\\[").length > 1 ? field.split("\\[") : field.split("\\.");
+        if (shouldKeepOriginalField) {
+            return parts.length <= 1 ? field : parts[0];
+        } else {
+            return questionId;
+        }
+    }
+
+    private String convertField(String field, String questionId, ValidationMessageType type) {
+        if (questionId == null) {
+            return field;
+        }
+        final var fieldWithoutExtraChars = field.replace("]", "");
+        StringBuilder resultingField = new StringBuilder(getInitialField(field, questionId, type));
+        final var resultingFieldLength = resultingField.length();
+        mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\[");
+        if (resultingFieldLength == resultingField.length()) {
+            mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\.");
+        }
+        return resultingField.toString();
     }
 
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
