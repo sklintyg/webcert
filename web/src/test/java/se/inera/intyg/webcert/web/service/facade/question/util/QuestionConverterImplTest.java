@@ -570,6 +570,15 @@ class QuestionConverterImplTest {
         }
 
         @Test
+        void shallReturnQuestionWithTypeNull() {
+            arendeDraft.setAmne(null);
+
+            final var actualQuestion = questionConverter.convert(arendeDraft);
+
+            assertEquals(QuestionType.MISSING, actualQuestion.getType());
+        }
+
+        @Test
         void shallReturnQuestionWithMessage() {
             final var actualQuestion = questionConverter.convert(arendeDraft);
 
