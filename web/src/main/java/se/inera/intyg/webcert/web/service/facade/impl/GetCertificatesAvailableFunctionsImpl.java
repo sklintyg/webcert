@@ -296,7 +296,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
 
         if (isReplaceCertificateAvailable(certificate)) {
-            if (hasComplementQuestion(certificate)) {
+            if (hasUnhandledComplement(certificate)) {
                 resourceLinks.add(
                     ResourceLinkDTO.create(
                         ResourceLinkTypeDTO.REPLACE_CERTIFICATE,
@@ -680,6 +680,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
                 relation -> relation.getType().equals(
                     COMPLEMENTED)
+            );
+        }
+        return false;
+    }
+
+    private boolean hasUnhandledComplement(Certificate certificate) {
+        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
+        if (questions != null) {
+            return questions.stream().anyMatch(
+                    question -> !question.isHandled() && question.getType() == QuestionType.COMPLEMENT
             );
         }
         return false;

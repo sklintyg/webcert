@@ -601,7 +601,7 @@ class GetCertificatesAvailableFunctionsImplTest {
     class ReplaceCertificates {
 
         @Test
-        void shallIncludeReplaceCertificateEnabledIfNotComplementing() {
+        void shallIncludeReplaceCertificateEnabledIfNotComplements() {
             when(getQuestionsFacadeService.getQuestions(any())).thenReturn(Collections.emptyList());
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
@@ -614,9 +614,9 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeReplaceCertificateDisabledIfComplementing() {
+        void shallIncludeReplaceCertificateDisabledIfUnhandledComplement() {
             when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
-                List.of(Question.builder().type(QuestionType.COMPLEMENT).build()));
+                List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(false).build()));
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             final var replaceFunction = actualAvailableFunctions.stream()
@@ -625,6 +625,20 @@ class GetCertificatesAvailableFunctionsImplTest {
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
             assertFalse(replaceFunction.isEnabled());
             assertEquals(REPLACE_DESCRIPTION_DISABLED, replaceFunction.getDescription());
+        }
+
+        @Test
+        void shallIncludeReplaceCertificateEnabledIfHandledComplement() {
+            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
+                    List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(true).build()));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            final var replaceFunction = actualAvailableFunctions.stream()
+                    .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
+                    .findFirst().get();
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
+            assertTrue(replaceFunction.isEnabled());
+            assertEquals(REPLACE_DESCRIPTION, replaceFunction.getDescription());
         }
 
         @Test
