@@ -54,10 +54,10 @@ public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFaca
 
         if (isCertificateLocked(certificate)) {
             LOG.debug("Revoke locked draft {} with reason {}", certificateId, reason);
-            utkastService.revokeLockedDraft(certificateId, certificate.getMetadata().getType(), reason, message);
+            utkastService.revokeLockedDraft(certificateId, certificate.getMetadata().getType(), message, reason);
         } else {
             LOG.debug("Revoke certificate {} with reason {}", certificateId, reason);
-            intygService.revokeIntyg(certificateId, certificate.getMetadata().getType(), reason, message);
+            intygService.revokeIntyg(certificateId, certificate.getMetadata().getType(), message, reason);
         }
 
         return getCertificateFacadeService.getCertificate(certificateId, false);
