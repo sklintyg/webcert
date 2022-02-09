@@ -32,6 +32,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.infra.certificate.dto.CertificateListRequest;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
 import se.inera.intyg.infra.message.dto.MessageFromIT;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
@@ -60,6 +61,16 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
                 throw ex;
             }
             return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public ItIntygInfo getCertificateInfo(String certificateId) {
+        final var url = intygstjanstenUrl + "/internalapi/intygInfo/" + certificateId;
+        try {
+            return restTemplate.getForObject(url, ItIntygInfo.class);
+        } catch (HttpClientErrorException ex) {
+            return new ItIntygInfo();
         }
     }
 
