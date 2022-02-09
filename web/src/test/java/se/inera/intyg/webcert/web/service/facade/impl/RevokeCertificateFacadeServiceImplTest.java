@@ -82,10 +82,7 @@ class RevokeCertificateFacadeServiceImplTest {
 
         verify(utkastService)
             .revokeLockedDraft(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                REASON,
-                MESSAGE
+                certificate.getMetadata().getId(), certificate.getMetadata().getType(), MESSAGE, REASON
             );
 
         assertNotNull(actualCertificate);
@@ -98,11 +95,7 @@ class RevokeCertificateFacadeServiceImplTest {
         final var actualCertificate = revokeCertificateFacadeService.revokeCertificate(CERTIFICATE_ID, REASON, MESSAGE);
 
         verify(intygService)
-            .revokeIntyg(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                REASON,
-                MESSAGE
+            .revokeIntyg(certificate.getMetadata().getId(), certificate.getMetadata().getType(), MESSAGE, REASON
             );
 
         assertNotNull(actualCertificate);
