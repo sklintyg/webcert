@@ -25,6 +25,7 @@ ext {
     commonsIoVersion = "2.6"
     cxfVersion = "3.2.4"
     geronimoJmsVersion = "1.1.1"
+    h2Version = "2.1.210"
     hibernateVersion = "5.3.15.Final" // included because of bug in BOM version 5.4.12
     jadiraUserTypeVersion = "6.0.1.GA"
     swaggerJaxrsVersion = "1.6.0"
