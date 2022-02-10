@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -89,24 +91,49 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
     @Override
     public List<CertificateEvent> getCertificateEvents(String certificateId) {
-        List<CertificateEvent> events = certificateEventRepository.findByCertificateId(certificateId);
+        final var events = certificateEventRepository.findByCertificateId(certificateId);
 
         if (events.isEmpty()) {
-            events = addEventsForCertificate(certificateId);
-        } else {
-            IntygContentHolder intygContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
+            return addEventsForCertificate(certificateId);
+        }
 
-            if (intygContentHolder != null) {
-                LocalDateTime latestTimestamp = events.stream()
-                    .map(CertificateEvent::getTimestamp)
-                    .max(LocalDateTime::compareTo)
-                    .orElse(null);
-                List<CertificateEvent> eventsFromArende = createEventsFromArende(certificateId, latestTimestamp);
-                events.addAll(eventsFromArende);
-            }
+        final var intygContentHolder = intygService.fetchIntygDataForInternalUse(certificateId, true);
+        if (intygContentHolder == null) {
+            return events;
+        }
+
+        final var latestTimestamp = events.stream()
+                .map(CertificateEvent::getTimestamp)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+        final var eventsFromArende = createEventsFromArende(certificateId, latestTimestamp);
+        events.addAll(eventsFromArende);
+
+        if (shouldCreateSentEvent(events, intygContentHolder)) {
+            events.add(createSentEvent(certificateId, sentStatus(intygContentHolder)));
         }
 
         return events;
+    }
+
+    private Status sentStatus(IntygContentHolder intygContentHolder) {
+        return intygContentHolder.getStatuses().stream()
+                .filter(status -> status.getType() == CertificateState.SENT)
+                .findFirst().orElseThrow();
+    }
+
+    private boolean shouldCreateSentEvent(List<CertificateEvent> events, IntygContentHolder intygContentHolder) {
+        return missingSentEvent(events) && containsSentStatus(intygContentHolder);
+    }
+
+    private boolean missingSentEvent(List<CertificateEvent> events) {
+        return events.stream().noneMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.SKICKAT);
+    }
+
+    private boolean containsSentStatus(IntygContentHolder intygContentHolder) {
+        return intygContentHolder.getStatuses() != null
+                && intygContentHolder.getStatuses().stream()
+                .anyMatch(status -> status.getType() == CertificateState.SENT);
     }
 
     private List<CertificateEvent> addEventsForCertificate(String certificateId) {
@@ -172,7 +199,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 EventCode code = getEventCode(parent.getRelationKod());
                 String relation = getMessageForCertificateEvent(code, parent.getIntygsId());
                 CertificateEvent savedEvent = save(certificateId, grundData.getSkapadAv().getPersonId(), code, certificate.getCreated(),
-                    relation);
+                        relation);
                 return Optional.of(savedEvent);
             } else {
                 String skapadAv = grundData.getSkapadAv() != null ? grundData.getSkapadAv().getPersonId() : UNKNOWN_USER;
@@ -194,7 +221,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         } else if (certificate.getStatus() == UtkastStatus.SIGNED) {
             Signatur signature = certificate.getSignatur();
             CertificateEvent savedEvent = save(certificateId, signature.getSigneradAv(), EventCode.SIGNAT, signature.getSigneringsDatum(),
-                "Certificate type: " + certificate.getIntygsTyp());
+                    "Certificate type: " + certificate.getIntygsTyp());
             events.add(savedEvent);
             if (certificate.getAterkalladDatum() != null) {
                 savedEvent = save(certificateId, WEBCERT_USER, EventCode.MAKULERAT, certificate.getAterkalladDatum());
@@ -210,7 +237,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         if (grundData.getSigneringsdatum() != null) {
             String signedBy = grundData.getSkapadAv().getPersonId();
             CertificateEvent savedEvent = save(certificateId, signedBy, EventCode.SIGNAT, grundData.getSigneringsdatum(),
-                utlatande.getTyp());
+                    utlatande.getTyp());
             return Optional.of(savedEvent);
         }
         return Optional.empty();
@@ -220,8 +247,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
     private Optional<CertificateEvent> createEventFromSent(Utkast certificate) {
         if (certificate.getSkickadTillMottagareDatum() != null) {
             CertificateEvent savedEvent = save(certificate.getIntygsId(), WEBCERT_USER, EventCode.SKICKAT,
-                certificate.getSkickadTillMottagareDatum(),
-                "Recipient: " + certificate.getSkickadTillMottagare());
+                    certificate.getSkickadTillMottagareDatum(),
+                    "Recipient: " + certificate.getSkickadTillMottagare());
             return Optional.of(savedEvent);
         }
         return Optional.empty();
@@ -233,13 +260,17 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         if (!CollectionUtils.isEmpty(certificate.getStatuses())) {
             for (Status status : certificate.getStatuses()) {
                 if (status.getType().name().equals("SENT") && status.getTimestamp() != null) {
-                    String message = "Recipient: " + status.getTarget();
-                    CertificateEvent savedEvent = save(certificateId, UNKNOWN_USER, EventCode.SKICKAT, status.getTimestamp(), message);
+                    CertificateEvent savedEvent = createSentEvent(certificateId, status);
                     events.add(savedEvent);
                 }
             }
         }
         return events;
+    }
+
+    private CertificateEvent createSentEvent(String certificateId, Status status) {
+        String message = "Recipient: " + status.getTarget();
+        return save(certificateId, UNKNOWN_USER, EventCode.SKICKAT, status.getTimestamp(), message);
     }
 
     private List<CertificateEvent> createEventsFromArende(String certificateId) {
@@ -253,8 +284,8 @@ public class CertificateEventServiceImpl implements CertificateEventService {
         if (afterTimestamp != null) {
             final var afterTimestampWithExtraSecond = addASecondToDealWithTimingIssue(afterTimestamp);
             messages = arendeService.getArendenInternal(certificateId).stream()
-                .filter(m -> m.getTimestamp().isAfter(afterTimestampWithExtraSecond))
-                .collect(Collectors.toList());
+                    .filter(m -> m.getTimestamp().isAfter(afterTimestampWithExtraSecond))
+                    .collect(Collectors.toList());
         } else {
             messages = arendeService.getArendenInternal(certificateId);
         }
@@ -265,7 +296,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                 String sentBy = message.getSkickatAv() != null ? message.getSkickatAv() : UNKNOWN_USER;
                 if (message.getSvarPaId() != null || message.getSvarPaReferens() != null) {
                     events.add(save(certificateId, sentBy, EventCode.NYSVFM, message.getTimestamp(),
-                        getTitleForMessage(message, EventCode.NYSVFM)));
+                            getTitleForMessage(message, EventCode.NYSVFM)));
                 } else {
                     if (message.getPaminnelseMeddelandeId() != null) {
                         events.add(save(certificateId, sentBy, EventCode.PAMINNELSE, message.getTimestamp()));
@@ -273,7 +304,7 @@ public class CertificateEventServiceImpl implements CertificateEventService {
                         events.add(save(certificateId, sentBy, EventCode.KOMPLBEGARAN, message.getTimestamp()));
                     } else {
                         events.add(save(certificateId, sentBy, EventCode.NYFRFM, message.getTimestamp(),
-                            getTitleForMessage(message, EventCode.NYFRFM)));
+                                getTitleForMessage(message, EventCode.NYFRFM)));
                     }
                 }
             }

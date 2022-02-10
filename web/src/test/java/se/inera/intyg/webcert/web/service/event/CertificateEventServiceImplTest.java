@@ -33,11 +33,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -90,7 +92,7 @@ public class CertificateEventServiceImplTest {
 
     @Test
     public void testGetEvents() {
-        List<CertificateEvent> list = new ArrayList<CertificateEvent>();
+        List<CertificateEvent> list = new ArrayList<>();
         list.add(getCertificateEvent(UTKAST_CERTIFICATE_ID));
 
         when(eventRepository.findByCertificateId(anyString())).thenReturn(list);
@@ -141,13 +143,15 @@ public class CertificateEventServiceImplTest {
 
         verify(eventRepository).findByCertificateId(UTKAST_CERTIFICATE_ID);
         verify(intygService).fetchIntygDataForInternalUse(UTKAST_CERTIFICATE_ID, true);
-        assertEquals(3, eventList.size());
-        assertEquals(EventCode.NYFRFM, eventList.get(0).getEventCode());
-        assertEquals(earlierEventTimestamp, eventList.get(0).getTimestamp());
-        assertEquals(EventCode.KOMPLBEGARAN, eventList.get(1).getEventCode());
-        assertEquals(latestEventTimestamp, eventList.get(1).getTimestamp());
-        assertEquals(EventCode.PAMINNELSE, eventList.get(2).getEventCode());
-        assertEquals(newMessageTimestamp, eventList.get(2).getTimestamp());
+        assertTrue("Expects a NYFRFM event", eventList.stream()
+                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.NYFRFM
+                        && earlierEventTimestamp.equals(certificateEvent.getTimestamp())));
+        assertTrue("Expects a KOMPLBEGARAN event", eventList.stream()
+                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN
+                        && latestEventTimestamp.equals(certificateEvent.getTimestamp())));
+        assertTrue("Expects a PAMINNELSE event", eventList.stream()
+                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.PAMINNELSE
+                        && newMessageTimestamp.equals(certificateEvent.getTimestamp())));
     }
 
     @Test
@@ -178,7 +182,7 @@ public class CertificateEventServiceImplTest {
 
         when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
-        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+        when(arendeService.getArendenInternal(anyString())).thenReturn(List.of(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         List<CertificateEvent> result = eventService.getCertificateEvents(UTKAST_CERTIFICATE_ID);
@@ -214,6 +218,61 @@ public class CertificateEventServiceImplTest {
     }
 
     @Test
+    public void testGenerateSentEventForIntygSentFromOutsideWebcert() {
+
+        final var intyg = getIntygContentHolder();
+
+        final var signedEvent = new CertificateEvent();
+        signedEvent.setEventCode(EventCode.SIGNAT);
+        signedEvent.setCertificateId(INTYG_CERTIFICATE_ID);
+        signedEvent.setTimestamp(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
+
+        final List<CertificateEvent> events = new ArrayList<>();
+        events.add(signedEvent);
+
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(events);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+        when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
+
+        assertFalse(result.isEmpty());
+        assertEquals(2, result.size());
+        assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
+        assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
+    }
+
+    @Test
+    public void testDontGenerateSentEventForIntygSentFromWebcert() {
+
+        final var intyg = getIntygContentHolder();
+
+        final var signedEvent = new CertificateEvent();
+        signedEvent.setEventCode(EventCode.SIGNAT);
+        signedEvent.setCertificateId(INTYG_CERTIFICATE_ID);
+        signedEvent.setTimestamp(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
+
+        final var sentEvent = new CertificateEvent();
+        sentEvent.setEventCode(EventCode.SKICKAT);
+        sentEvent.setCertificateId(INTYG_CERTIFICATE_ID);
+        sentEvent.setTimestamp(LocalDateTime.now().minus(1, ChronoUnit.HOURS));
+
+        final List<CertificateEvent> events = new ArrayList<>();
+        events.add(signedEvent);
+        events.add(sentEvent);
+
+        when(eventRepository.findByCertificateId(anyString())).thenReturn(events);
+        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
+
+        List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
+
+        assertFalse(result.isEmpty());
+        assertEquals(2, result.size());
+        assertEquals(EventCode.SIGNAT, result.get(0).getEventCode());
+        assertEquals(EventCode.SKICKAT, result.get(1).getEventCode());
+    }
+
+    @Test
     public void testGenerateEventsForIntygWithArende() {
 
         IntygContentHolder intyg = getIntygContentHolder();
@@ -222,7 +281,7 @@ public class CertificateEventServiceImplTest {
         when(eventRepository.findByCertificateId(anyString())).thenReturn(Collections.emptyList());
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
         when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
-        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+        when(arendeService.getArendenInternal(anyString())).thenReturn(List.of(arende));
         when(eventRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         List<CertificateEvent> result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
@@ -254,13 +313,12 @@ public class CertificateEventServiceImplTest {
 
         when(eventRepository.findByCertificateId(anyString())).thenReturn(eventList);
         when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intyg);
-        when(arendeService.getArendenInternal(anyString())).thenReturn(Arrays.asList(arende));
+        when(arendeService.getArendenInternal(anyString())).thenReturn(List.of(arende));
 
         final var result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals(EventCode.KOMPLBEGARAN, result.get(0).getEventCode());
+        assertTrue("Expects a KOMPLBEGARAN event", result.stream().anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN));
     }
 
     @Test
@@ -332,31 +390,31 @@ public class CertificateEventServiceImplTest {
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(status)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
-            .build();
+                .setContents("<external-json/>")
+                .setUtlatande(getUtlatande())
+                .setStatuses(status)
+                .setRevoked(false)
+                .setDeceased(false)
+                .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
+                .setTestIntyg(false)
+                .build();
     }
 
     private IntygContentHolder getIntygContentHolderGeneratingNoEvents() {
 
         IntygContentHolder certificate = IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(null)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
-            .build();
+                .setContents("<external-json/>")
+                .setUtlatande(getUtlatande())
+                .setStatuses(null)
+                .setRevoked(false)
+                .setDeceased(false)
+                .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
+                .setTestIntyg(false)
+                .build();
 
         certificate.getUtlatande().getGrundData().setSigneringsdatum(null);
 
@@ -368,7 +426,7 @@ public class CertificateEventServiceImplTest {
         // create mocked Utlatande from intygstjansten
         try {
             return new CustomObjectMapper().readValue(new ClassPathResource(
-                "FragaSvarServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
+                    "FragaSvarServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
