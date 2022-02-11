@@ -40,6 +40,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -97,158 +98,205 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class TestAttributes {
+    class TestWrapper {
 
         @BeforeEach
         void setUp() {
-            doReturn(AuthenticationMethod.SITHS)
+            doReturn(getParameters(false))
                 .when(user)
-                .getAuthenticationMethod();
-
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
+                .getParameters();
         }
 
-        @Test
-        void shallReturnWithHsaId() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(HSA_ID, actualUser.getHsaId());
+        @Nested
+        class TestAttributes {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(AuthenticationMethod.SITHS)
+                    .when(user)
+                    .getAuthenticationMethod();
+
+                doReturn(ROLE)
+                    .when(user)
+                    .getRoleTypeName();
+            }
+
+            @Test
+            void shallReturnWithHsaId() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(HSA_ID, actualUser.getHsaId());
+            }
+
+            @Test
+            void shallReturnWithName() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(NAME, actualUser.getName());
+            }
+
+            @Test
+            void shallReturnWithLoggedInUnitName() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(UNIT_NAME, actualUser.getLoggedInUnit().getUnitName());
+            }
+
+            @Test
+            void shallReturnWithLoggedInUnitUnitId() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(UNIT_ID, actualUser.getLoggedInUnit().getUnitId());
+            }
+
+            @Test
+            void shallReturnWithLoggedInCareProviderName() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider().getUnitName());
+            }
+
+            @Test
+            void shallReturnWithLoggedInCareProviderUnitId() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(CARE_PROVIDER_ID, actualUser.getLoggedInCareProvider().getUnitId());
+            }
+
+            @Test
+            void shallReturnWithLoggedInCareUnitName() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInCareUnit().getUnitName());
+            }
+
+            @Test
+            void shallReturnWithLoggedInCareUnitId() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(CARE_UNIT_ID, actualUser.getLoggedInCareUnit().getUnitId());
+            }
+
+            @Test
+            void shallReturnProtectedPerson() {
+                doReturn(true)
+                    .when(user)
+                    .isSekretessMarkerad();
+                final var actualUser = userService.getLoggedInUser();
+                assertTrue(actualUser.isProtectedPerson());
+            }
+
+            @Test
+            void shallReturnNotProtectedPerson() {
+                final var actualUser = userService.getLoggedInUser();
+                assertFalse(actualUser.isProtectedPerson());
+            }
+
+            @Test
+            void shallReturnUserPreferences() {
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(PREFERENCES, actualUser.getPreferences());
+            }
         }
 
-        @Test
-        void shallReturnWithName() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(NAME, actualUser.getName());
+        @Nested
+        class Roles {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(AuthenticationMethod.SITHS)
+                    .when(user)
+                    .getAuthenticationMethod();
+
+            }
+
+            @Test
+            void shallReturnWithRole() {
+                doReturn(ROLE)
+                    .when(user)
+                    .getRoleTypeName();
+
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(ROLE, actualUser.getRole());
+            }
+
+            @Test
+            void shallReturnWithVardAdministratorRole() {
+                doReturn("VARDADMINISTRATOR")
+                    .when(user)
+                    .getRoleTypeName();
+
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals("Vårdadministratör", actualUser.getRole());
+            }
+
+            @Test
+            void shallReturnRoleWithoutExtension() {
+                doReturn("Läkare - inom EU")
+                    .when(user)
+                    .getRoleTypeName();
+
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals("Läkare", actualUser.getRole());
+            }
         }
 
-        @Test
-        void shallReturnWithLoggedInUnitName() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(UNIT_NAME, actualUser.getLoggedInUnit().getUnitName());
-        }
+        @Nested
+        class SigningMethod {
 
-        @Test
-        void shallReturnWithLoggedInUnitUnitId() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(UNIT_ID, actualUser.getLoggedInUnit().getUnitId());
-        }
+            @BeforeEach
+            void setUp() {
+                doReturn(ROLE)
+                    .when(user)
+                    .getRoleTypeName();
+            }
 
-        @Test
-        void shallReturnWithLoggedInCareProviderName() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_PROVIDER_NAME, actualUser.getLoggedInCareProvider().getUnitName());
-        }
+            @Test
+            void shallReturnWithSigningMethodFake() {
+                doReturn(AuthenticationMethod.FAKE)
+                    .when(user)
+                    .getAuthenticationMethod();
 
-        @Test
-        void shallReturnWithLoggedInCareProviderUnitId() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_PROVIDER_ID, actualUser.getLoggedInCareProvider().getUnitId());
-        }
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.FAKE, actualUser.getSigningMethod());
+            }
 
-        @Test
-        void shallReturnWithLoggedInCareUnitName() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_UNIT_NAME, actualUser.getLoggedInCareUnit().getUnitName());
-        }
+            @Test
+            void shallReturnWithSigningMethodDSS() {
+                doReturn(AuthenticationMethod.SITHS)
+                    .when(user)
+                    .getAuthenticationMethod();
 
-        @Test
-        void shallReturnWithLoggedInCareUnitId() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(CARE_UNIT_ID, actualUser.getLoggedInCareUnit().getUnitId());
-        }
-
-        @Test
-        void shallReturnProtectedPerson() {
-            doReturn(true)
-                .when(user)
-                .isSekretessMarkerad();
-            final var actualUser = userService.getLoggedInUser();
-            assertTrue(actualUser.isProtectedPerson());
-        }
-
-        @Test
-        void shallReturnNotProtectedPerson() {
-            final var actualUser = userService.getLoggedInUser();
-            assertFalse(actualUser.isProtectedPerson());
-        }
-
-        @Test
-        void shallReturnUserPreferences() {
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(PREFERENCES, actualUser.getPreferences());
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
+            }
         }
     }
 
     @Nested
-    class Roles {
+    class InactiveUnit {
 
         @BeforeEach
         void setUp() {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
-        }
 
-        @Test
-        void shallReturnWithRole() {
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
-
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals(ROLE, actualUser.getRole());
-        }
-
-        @Test
-        void shallReturnWithVardAdministratorRole() {
-            doReturn("VARDADMINISTRATOR")
-                .when(user)
-                .getRoleTypeName();
-
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals("Vårdadministratör", actualUser.getRole());
-        }
-
-        @Test
-        void shallReturnRoleWithoutExtension() {
-            doReturn("Läkare - inom EU")
-                .when(user)
-                .getRoleTypeName();
-
-            final var actualUser = userService.getLoggedInUser();
-            assertEquals("Läkare", actualUser.getRole());
-        }
-    }
-
-    @Nested
-    class SigningMethod {
-
-        @BeforeEach
-        void setUp() {
             doReturn(ROLE)
                 .when(user)
                 .getRoleTypeName();
         }
 
         @Test
-        void shallReturnWithSigningMethodFake() {
-            doReturn(AuthenticationMethod.FAKE)
+        void shallReturnWithActiveLoggedInUnit() {
+            doReturn(getParameters(false))
                 .when(user)
-                .getAuthenticationMethod();
+                .getParameters();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.FAKE, actualUser.getSigningMethod());
+            assertFalse(actualUser.getLoggedInUnit().getIsInactive());
         }
 
         @Test
-        void shallReturnWithSigningMethodDSS() {
-            doReturn(AuthenticationMethod.SITHS)
+        void shallReturnWithInactiveLoggedInUnit() {
+            doReturn(getParameters(true))
                 .when(user)
-                .getAuthenticationMethod();
+                .getParameters();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
+            assertTrue(actualUser.getLoggedInUnit().getIsInactive());
         }
     }
 
@@ -278,5 +326,12 @@ class UserServiceImplTest {
         unit.setId(UNIT_ID);
         unit.setNamn(UNIT_NAME);
         return unit;
+    }
+
+    private IntegrationParameters getParameters(Boolean inactiveUnit) {
+        final var params = new IntegrationParameters(null, null, null, null,
+            null, null, null, null, null,
+        false, false, inactiveUnit, false);
+        return params;
     }
 }
