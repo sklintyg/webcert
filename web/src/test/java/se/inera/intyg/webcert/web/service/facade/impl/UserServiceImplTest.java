@@ -40,6 +40,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -188,6 +189,7 @@ class UserServiceImplTest {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
+
         }
 
         @Test
@@ -252,6 +254,41 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class InactiveUnitTests {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user)
+                .getAuthenticationMethod();
+
+            doReturn(ROLE)
+                .when(user)
+                .getRoleTypeName();
+        }
+
+        @Test
+        void shallReturnWithActiveLoggedInUnit() {
+            doReturn(getParameters(false))
+                .when(user)
+                .getParameters();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertFalse(actualUser.getLoggedInUnit().getIsInactive());
+        }
+
+        @Test
+        void shallReturnWithInactiveLoggedInUnit() {
+            doReturn(getParameters(true))
+                .when(user)
+                .getParameters();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertTrue(actualUser.getLoggedInUnit().getIsInactive());
+        }
+    }
+
     private List<Vardgivare> getNavigableCareProvider() {
         final var unit = (Mottagning) getUnit();
 
@@ -278,5 +315,12 @@ class UserServiceImplTest {
         unit.setId(UNIT_ID);
         unit.setNamn(UNIT_NAME);
         return unit;
+    }
+
+    private IntegrationParameters getParameters(Boolean inactiveUnit) {
+        final var params = new IntegrationParameters(null, null, null, null,
+            null, null, null, null, null,
+            false, false, inactiveUnit, false);
+        return params;
     }
 }
