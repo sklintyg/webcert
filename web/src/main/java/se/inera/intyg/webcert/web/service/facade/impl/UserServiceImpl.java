@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
         final var webCertUser = webCertUserService.getUser();
         final var loggedInCareUnit = getLoggedInCareUnit(webCertUser);
         final var params = webCertUser.getParameters();
+        final var isInactiveUnit = params != null && params.isInactiveUnit();
 
         return User.builder()
             .hsaId(webCertUser.getHsaId())
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
                         webCertUser.getValdVardenhet().getId()
                     )
                     .isInactive(
-                        params.isInactiveUnit()
+                        isInactiveUnit
                     )
                     .build()
             )
