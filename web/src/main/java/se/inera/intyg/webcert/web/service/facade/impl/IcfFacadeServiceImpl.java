@@ -131,7 +131,7 @@ public class IcfFacadeServiceImpl implements IcfFacadeService {
 
         return IcfCodeCollection.builder()
             .icd10Codes(
-                icfKoder.getIcd10Koder().stream().map(this::getIcdCode).collect(Collectors.toList())
+                icfKoder.getIcd10Koder().stream().sorted(Collections.reverseOrder()).map(this::getIcdCode).collect(Collectors.toList())
             )
             .icfCodes(
                 getIcfCodeList(icfKoder.getIcfKoder())
