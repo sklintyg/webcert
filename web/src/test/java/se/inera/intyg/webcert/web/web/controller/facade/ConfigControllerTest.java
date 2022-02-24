@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package se.inera.intyg.webcert.web.web.controller.facade;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+
+import java.util.Map;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
+
+@ExtendWith(MockitoExtension.class)
+public class ConfigControllerTest {
+
+    @Mock
+    private DynamicLinkService dynamicLinkService;
+
+    @InjectMocks
+    private ConfigController configController;
+
+    @Nested
+    class ConfigControllerTests {
+
+        @Test
+        void getConfigurationReturnsVersion() {
+            final String version = "1.0";
+            ReflectionTestUtils.setField(configController, "version", version);
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(response.getVersion(), version);
+        }
+
+        @Test
+        void getDynamicLinksReturnsLinks() {
+            final var links = Map.of("Test", new DynamicLink());
+
+            doReturn(links)
+                .when(dynamicLinkService)
+                .getAllAsMap();
+
+            final var response = (Map<String, DynamicLink>) configController.getDynamicLinks();
+            assertTrue(response.containsKey("Test"));
+        }
+    }
+}
