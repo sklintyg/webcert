@@ -41,6 +41,7 @@
   <security:http security="none" pattern="/api/modules/map"/>
   <security:http security="none" pattern="/api/modules/active"/>
   <security:http security="none" pattern="/api/config/**"/>
+  <security:http security="none" pattern="/api/configuration/**"/>
   <security:http security="none" pattern="/api/log/**"/>
   <!-- Everything under /app such as js, css, images etc is ok to access at any time -->
   <security:http security="none" pattern="/app/**"/>
