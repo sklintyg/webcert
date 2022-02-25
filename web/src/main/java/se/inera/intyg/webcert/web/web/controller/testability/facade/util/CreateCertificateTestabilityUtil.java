@@ -24,11 +24,14 @@ import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUN
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11;
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_DELSVAR_ID_31;
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_SVAR_JSON_ID_31;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.*;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32;
-import static se.inera.intyg.common.ag7804.converter.RespConstants.NO_ID;
-import static se.inera.intyg.common.ag7804.converter.RespConstants.ONSKAR_FORMEDLA_DIAGNOS_SVAR_ID_100;
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.*;
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.ARBETSRESOR_SVAR_ID_34;
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.ARBETSTIDSFORLAGGNING_SVAR_JSON_ID_33;
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.NUVARANDE_ARBETE_SVAR_JSON_ID_29;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,19 +44,17 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
+import se.inera.intyg.common.lisjp.model.internal.ArbetslivsinriktadeAtgarder;
+import se.inera.intyg.common.lisjp.model.internal.PrognosDagarTillArbeteTyp;
+import se.inera.intyg.common.lisjp.model.internal.PrognosTyp;
+import se.inera.intyg.common.lisjp.model.internal.Sysselsattning;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCode;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
+import se.inera.intyg.common.support.facade.model.value.*;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -92,6 +93,8 @@ public class CreateCertificateTestabilityUtil {
     private final IntygTextsService intygTextsService;
 
     private static final int DEFAULT_SICK_LEAVE_LENGTH = 14;
+    private static final int DEFAULT_SHORT_SICK_LEAVE_LENGTH = 4;
+
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -198,7 +201,11 @@ public class CreateCertificateTestabilityUtil {
 
     private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
-            return createMinimumValuesLisjp();
+            if(createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createMinimumValuesLisjp();
+            } else {
+                return createMaximumValuesLisjp();
+            }
         }
 
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
@@ -221,6 +228,31 @@ public class CreateCertificateTestabilityUtil {
             .build();
         values.put(RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27, avstangningSmittskydd);
 
+        final CertificateDataValueDiagnosisList diagnos = getCertificateDataValueDiagnosisList();
+        values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
+
+        final CertificateDataValueDateRangeList bedomning = getCertificateDataValueDateRangeList(false);
+        values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        return values;
+    }
+
+    private CertificateDataValueDateRangeList getCertificateDataValueDateRangeList(boolean shortPeriod) {
+        final var bedomning = CertificateDataValueDateRangeList.builder()
+            .list(
+                Collections.singletonList(
+                    CertificateDataValueDateRange.builder()
+                        .id("HELT_NEDSATT")
+                        .from(LocalDate.now())
+                        .to(LocalDate.now().plusDays(shortPeriod ? DEFAULT_SHORT_SICK_LEAVE_LENGTH : DEFAULT_SICK_LEAVE_LENGTH))
+                        .build()
+                )
+            )
+            .build();
+        return bedomning;
+    }
+
+    private CertificateDataValueDiagnosisList getCertificateDataValueDiagnosisList() {
         final CertificateDataValueDiagnosisList diagnos = CertificateDataValueDiagnosisList.builder()
             .list(
                 Collections.singletonList(
@@ -233,20 +265,163 @@ public class CreateCertificateTestabilityUtil {
                 )
             )
             .build();
+        return diagnos;
+    }
+
+    private Map<String, CertificateDataValue> createMaximumValuesLisjp() {
+        final var values = new HashMap<String, CertificateDataValue>();
+        final var EXAMPLE_TEXT = "Detta är ett exempel";
+
+        final var baseratPa = CertificateDataValueDateList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueDate.builder()
+                                        .id(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_ANNAT_SVAR_JSON_ID_1)
+                                        .date(LocalDate.now())
+                                        .build()
+
+                        )
+                )
+                .build();
+        values.put(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1, baseratPa);
+
+        final var motiveringAnnat = CertificateDataTextValue.builder()
+                .id(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_BESKRIVNING_DELSVAR_JSON_ID_1)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TYP_DELSVAR_ID_1, motiveringAnnat);
+
+        final var motiveringEjUndersokning = CertificateDataTextValue.builder()
+                .id(MOTIVERING_TILL_INTE_BASERAT_PA_UNDERLAG_ID_1)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_DATUM_DELSVAR_ID_1, motiveringEjUndersokning);
+
+        final var sysselsattning = CertificateDataValueCodeList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueCode.builder()
+                                        .id(Sysselsattning.SysselsattningsTyp.NUVARANDE_ARBETE.getId())
+                                        .code(Sysselsattning.SysselsattningsTyp.NUVARANDE_ARBETE.getId())
+                                        .build()
+                        )
+                )
+                .build();
+        values.put(RespConstants.TYP_AV_SYSSELSATTNING_SVAR_ID_28, sysselsattning);
+
+        final var arbetsuppgifter = CertificateDataTextValue.builder()
+                .id(NUVARANDE_ARBETE_SVAR_JSON_ID_29)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.NUVARANDE_ARBETE_SVAR_ID_29, arbetsuppgifter);
+
+        final var diagnos = getCertificateDataValueDiagnosisList();
         values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
 
-        final var bedomning = CertificateDataValueDateRangeList.builder()
-            .list(
-                Collections.singletonList(
-                    CertificateDataValueDateRange.builder()
-                        .id("HELT_NEDSATT")
-                        .from(LocalDate.now())
-                        .to(LocalDate.now().plusDays(DEFAULT_SICK_LEAVE_LENGTH))
-                        .build()
-                )
-            )
-            .build();
+        final var funktionsnedsattning = CertificateDataIcfValue.builder()
+                .id(RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_35)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.FUNKTIONSNEDSATTNING_SVAR_ID_35, funktionsnedsattning);
+
+        final var aktivitetsbegransning = CertificateDataIcfValue.builder()
+                .id(RespConstants.AKTIVITETSBEGRANSNING_SVAR_JSON_ID_17)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.AKTIVITETSBEGRANSNING_SVAR_ID_17, aktivitetsbegransning);
+
+        final var pagaendeBehandling = CertificateDataTextValue.builder()
+                .id(RespConstants.PAGAENDEBEHANDLING_SVAR_JSON_ID_19)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.PAGAENDEBEHANDLING_SVAR_ID_19, pagaendeBehandling);
+
+        final var planeradBehandling = CertificateDataTextValue.builder()
+                .id(RespConstants.PLANERADBEHANDLING_SVAR_JSON_ID_20)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
+
+        final CertificateDataValueDateRangeList bedomning = getCertificateDataValueDateRangeList(true);
         values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        final var motiveringTidigtStartdatum = CertificateDataTextValue.builder()
+                .id(RespConstants.MOTIVERING_TILL_TIDIGT_STARTDATUM_FOR_SJUKSKRIVNING_ID)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_NIVA_DELSVARSVAR_ID_32, motiveringTidigtStartdatum);
+
+        final var forsakringsMedicinsktBeslutsstod = CertificateDataTextValue.builder()
+                .id(RespConstants.FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_JSON_ID_37)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_ID_37, forsakringsMedicinsktBeslutsstod);
+
+        final var arbetstidsforlaggning = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(RespConstants.ARBETSTIDSFORLAGGNING_SVAR_JSON_ID_33)
+                .build();
+        values.put(RespConstants.ARBETSTIDSFORLAGGNING_SVAR_ID_33, arbetstidsforlaggning);
+
+        final var motiveringArbetstidsforlaggning = CertificateDataTextValue.builder()
+                .id(RespConstants.ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_JSON_ID_33)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_ID_33, motiveringArbetstidsforlaggning);
+
+        final var arbetsresor = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(RespConstants.ARBETSRESOR_SVAR_JSON_ID_34)
+                .build();
+        values.put(RespConstants.ARBETSRESOR_SVAR_ID_34, arbetsresor);
+
+        final var prognos = CertificateDataValueCode.builder()
+                .id(PrognosTyp.ATER_X_ANTAL_DGR.getId())
+                .code(PrognosTyp.ATER_X_ANTAL_DGR.getId())
+                .build();
+        values.put(RespConstants.PROGNOS_SVAR_ID_39, prognos);
+
+        final var prognosTimePeriod = CertificateDataValueCode.builder()
+                .id(PrognosDagarTillArbeteTyp.DAGAR_30.getId())
+                .code(PrognosDagarTillArbeteTyp.DAGAR_30.getId())
+                .build();
+        values.put(RespConstants.PROGNOS_BESKRIVNING_DELSVAR_ID_39, prognosTimePeriod);
+
+        final var atgarder = CertificateDataValueCodeList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueCode.builder()
+                                        .id(ArbetslivsinriktadeAtgarder.ArbetslivsinriktadeAtgarderVal.OVRIGT.getId())
+                                        .code(ArbetslivsinriktadeAtgarder.ArbetslivsinriktadeAtgarderVal.OVRIGT.getId())
+                                        .build()
+                        )
+                )
+                .build();
+        values.put(RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_SVAR_ID_40, atgarder);
+
+        final var atgarderBeskrivning = CertificateDataTextValue.builder()
+                .id(RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_JSON_ID_44)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_ID_44, atgarderBeskrivning);
+
+        final var ovrigt = CertificateDataTextValue.builder()
+                .id(RespConstants.OVRIGT_SVAR_JSON_ID_25)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.OVRIGT_SVAR_ID_25, ovrigt);
+
+        final var kontakt = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(KONTAKT_ONSKAS_SVAR_JSON_ID_26)
+                .build();
+        values.put(KONTAKT_ONSKAS_SVAR_ID_26, kontakt);
+
+        final var kontaktMotivering = CertificateDataTextValue.builder()
+                .id(RespConstants.ANLEDNING_TILL_KONTAKT_DELSVAR_JSON_ID_26)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(RespConstants.ANLEDNING_TILL_KONTAKT_DELSVAR_ID_26, kontaktMotivering);
 
         return values;
     }

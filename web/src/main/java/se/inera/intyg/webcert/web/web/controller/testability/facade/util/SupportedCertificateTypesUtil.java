@@ -52,7 +52,7 @@ public class SupportedCertificateTypesUtil {
                 LisjpEntryPoint.MODULE_NAME,
                 Arrays.asList("1.0", "1.1", "1.2", "1.3"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
         certificateTypes.add(

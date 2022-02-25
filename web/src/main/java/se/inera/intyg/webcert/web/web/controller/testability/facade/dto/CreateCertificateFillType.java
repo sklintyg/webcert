@@ -19,5 +19,5 @@
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
 public enum CreateCertificateFillType {
-    EMPTY, MINIMAL, WITH_VALUES
+    EMPTY, MINIMAL, WITH_VALUES, MAXIMAL
 }
