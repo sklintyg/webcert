@@ -120,8 +120,6 @@ public class CreateCertificateTestabilityUtil {
     private static final int DEFAULT_SHORT_SICK_LEAVE_LENGTH = 4;
     private static String EXAMPLE_TEXT = "Detta är ett exempel";
 
-
-
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
