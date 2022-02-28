@@ -42,7 +42,7 @@ public class SupportedCertificateTypesUtil {
                 Af00213EntryPoint.MODULE_NAME,
                 Collections.singletonList("1.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
         certificateTypes.add(
@@ -62,7 +62,7 @@ public class SupportedCertificateTypesUtil {
                 Ag7804EntryPoint.MODULE_NAME,
                 Arrays.asList("1.0", "1.1", "1.2"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL)
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
         return certificateTypes;

@@ -18,20 +18,44 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.ARBETETS_PAVERKAN_DELSVAR_ID_41;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.ARBETETS_PAVERKAN_SVAR_JSON_ID_41;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_DELSVAR_ID_11;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_DELSVAR_ID_31;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.UTREDNING_BEHANDLING_SVAR_JSON_ID_31;
+import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.*;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.*;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.AKTIVITETSBEGRANSNING_SVAR_ID_17;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.AKTIVITETSBEGRANSNING_SVAR_JSON_ID_17;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_ID_44;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_JSON_ID_44;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSLIVSINRIKTADE_ATGARDER_SVAR_ID_40;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSRESOR_SVAR_ID_34;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSRESOR_SVAR_JSON_ID_34;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_ID_33;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_JSON_ID_33;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSTIDSFORLAGGNING_SVAR_ID_33;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ARBETSTIDSFORLAGGNING_SVAR_JSON_ID_33;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_ID_27;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.AVSTANGNING_SMITTSKYDD_SVAR_JSON_ID_27;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.DIAGNOS_SVAR_ID_6;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_ID_37;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_JSON_ID_37;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_ID_35;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.FUNKTIONSNEDSATTNING_SVAR_JSON_ID_35;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_ANNAT_SVAR_JSON_ID_1;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_BESKRIVNING_DELSVAR_JSON_ID_1;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_DATUM_DELSVAR_ID_1;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TYP_DELSVAR_ID_1;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.NUVARANDE_ARBETE_SVAR_ID_29;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.NUVARANDE_ARBETE_SVAR_JSON_ID_29;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.OVRIGT_SVAR_ID_25;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.OVRIGT_SVAR_JSON_ID_25;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PAGAENDEBEHANDLING_SVAR_ID_19;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PAGAENDEBEHANDLING_SVAR_JSON_ID_19;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PLANERADBEHANDLING_SVAR_ID_20;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PLANERADBEHANDLING_SVAR_JSON_ID_20;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PROGNOS_BESKRIVNING_DELSVAR_ID_39;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.PROGNOS_SVAR_ID_39;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.TYP_AV_SYSSELSATTNING_SVAR_ID_28;
 import static se.inera.intyg.common.fkparent.model.converter.RespConstants.*;
-import static se.inera.intyg.common.fkparent.model.converter.RespConstants.ARBETSRESOR_SVAR_ID_34;
-import static se.inera.intyg.common.fkparent.model.converter.RespConstants.ARBETSTIDSFORLAGGNING_SVAR_JSON_ID_33;
-import static se.inera.intyg.common.fkparent.model.converter.RespConstants.NUVARANDE_ARBETE_SVAR_JSON_ID_29;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -94,6 +118,8 @@ public class CreateCertificateTestabilityUtil {
 
     private static final int DEFAULT_SICK_LEAVE_LENGTH = 14;
     private static final int DEFAULT_SHORT_SICK_LEAVE_LENGTH = 4;
+    private static String EXAMPLE_TEXT = "Detta är ett exempel";
+
 
 
     @Autowired
@@ -209,11 +235,19 @@ public class CreateCertificateTestabilityUtil {
         }
 
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
-            return createMinimumValuesAf00213();
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createMinimumValuesAf00213();
+            } else {
+                return createMaximumValuesAf00213();
+            }
         }
 
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID)) {
-            return createMinimumValuesAg7804();
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createMinimumValuesAg7804();
+            } else {
+                return createMaximumValuesAg7804();
+            }
         }
 
         return Collections.emptyMap();
@@ -270,7 +304,6 @@ public class CreateCertificateTestabilityUtil {
 
     private Map<String, CertificateDataValue> createMaximumValuesLisjp() {
         final var values = new HashMap<String, CertificateDataValue>();
-        final var EXAMPLE_TEXT = "Detta är ett exempel";
 
         final var baseratPa = CertificateDataValueDateList.builder()
                 .list(
@@ -310,7 +343,7 @@ public class CreateCertificateTestabilityUtil {
         values.put(RespConstants.TYP_AV_SYSSELSATTNING_SVAR_ID_28, sysselsattning);
 
         final var arbetsuppgifter = CertificateDataTextValue.builder()
-                .id(NUVARANDE_ARBETE_SVAR_JSON_ID_29)
+                .id(RespConstants.NUVARANDE_ARBETE_SVAR_JSON_ID_29)
                 .text(EXAMPLE_TEXT)
                 .build();
         values.put(RespConstants.NUVARANDE_ARBETE_SVAR_ID_29, arbetsuppgifter);
@@ -450,6 +483,61 @@ public class CreateCertificateTestabilityUtil {
         return values;
     }
 
+    private Map<String, CertificateDataValue> createMaximumValuesAf00213() {
+        final var values = new HashMap<String, CertificateDataValue>();
+
+        final CertificateDataValueBoolean harFunktionsnedsattning = CertificateDataValueBoolean.builder()
+                .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11)
+                .selected(true)
+                .build();
+        values.put(FUNKTIONSNEDSATTNING_DELSVAR_ID_11, harFunktionsnedsattning);
+
+        final var funktionsnedsattning = CertificateDataTextValue.builder()
+                .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_12)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(FUNKTIONSNEDSATTNING_DELSVAR_ID_12, funktionsnedsattning);
+
+        final CertificateDataValueBoolean harAktivitetsbegransning = CertificateDataValueBoolean.builder()
+                .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_21)
+                .selected(true)
+                .build();
+        values.put(AKTIVITETSBEGRANSNING_DELSVAR_ID_21, harAktivitetsbegransning);
+
+
+        final CertificateDataValueBoolean aktivitetsbegransning = CertificateDataValueBoolean.builder()
+                .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_22)
+                .selected(true)
+                .build();
+        values.put(AKTIVITETSBEGRANSNING_DELSVAR_ID_21, aktivitetsbegransning);
+
+        final var utredningBehandling = CertificateDataTextValue.builder()
+                .id(UTREDNING_BEHANDLING_SVAR_JSON_ID_32)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(UTREDNING_BEHANDLING_DELSVAR_ID_32, utredningBehandling);
+
+        final CertificateDataValueBoolean harArbetspaverkan = CertificateDataValueBoolean.builder()
+                .id(ARBETETS_PAVERKAN_SVAR_JSON_ID_41)
+                .selected(true)
+                .build();
+        values.put(ARBETETS_PAVERKAN_DELSVAR_ID_41, harArbetspaverkan);
+
+        final var arbetspaverkan = CertificateDataTextValue.builder()
+                .id(ARBETETS_PAVERKAN_SVAR_JSON_ID_42)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(ARBETETS_PAVERKAN_DELSVAR_ID_42, arbetspaverkan);
+
+        final var ovrigt = CertificateDataTextValue.builder()
+                .id(OVRIGT_SVAR_JSON_ID_5)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(OVRIGT_SVAR_ID_5, ovrigt);
+
+        return values;
+    }
+
     private Map<String, CertificateDataValue> createMinimumValuesAg7804() {
         final var values = new HashMap<String, CertificateDataValue>();
 
@@ -477,6 +565,158 @@ public class CreateCertificateTestabilityUtil {
             )
             .build();
         values.put(BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        return values;
+    }
+
+    private Map<String, CertificateDataValue> createMaximumValuesAg7804() {
+        final var values = new HashMap<String, CertificateDataValue>();
+
+        final CertificateDataValueCode shouldIncludeDiagnoses = CertificateDataValueCode.builder()
+                .code(YES_ID)
+                .id(YES_ID)
+                .build();
+        values.put(ONSKAR_FORMEDLA_DIAGNOS_SVAR_ID_100, shouldIncludeDiagnoses);
+
+        final var baseratPa = CertificateDataValueDateList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueDate.builder()
+                                        .id(GRUNDFORMEDICINSKTUNDERLAG_ANNAT_SVAR_JSON_ID_1)
+                                        .date(LocalDate.now())
+                                        .build()
+
+                        )
+                )
+                .build();
+        values.put(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1, baseratPa);
+
+        final var motiveringAnnat = CertificateDataTextValue.builder()
+                .id(GRUNDFORMEDICINSKTUNDERLAG_BESKRIVNING_DELSVAR_JSON_ID_1)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(GRUNDFORMEDICINSKTUNDERLAG_TYP_DELSVAR_ID_1, motiveringAnnat);
+
+        final var sysselsattning = CertificateDataValueCodeList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueCode.builder()
+                                        .id(Sysselsattning.SysselsattningsTyp.NUVARANDE_ARBETE.getId())
+                                        .code(Sysselsattning.SysselsattningsTyp.NUVARANDE_ARBETE.getId())
+                                        .build()
+                        )
+                )
+                .build();
+        values.put(TYP_AV_SYSSELSATTNING_SVAR_ID_28, sysselsattning);
+
+        final var arbetsuppgifter = CertificateDataTextValue.builder()
+                .id(NUVARANDE_ARBETE_SVAR_JSON_ID_29)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(NUVARANDE_ARBETE_SVAR_ID_29, arbetsuppgifter);
+
+        final var diagnos = getCertificateDataValueDiagnosisList();
+        values.put(DIAGNOS_SVAR_ID_6, diagnos);
+
+        final var funktionsnedsattning = CertificateDataIcfValue.builder()
+                .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_35)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(FUNKTIONSNEDSATTNING_SVAR_ID_35, funktionsnedsattning);
+
+        final var aktivitetsbegransning = CertificateDataIcfValue.builder()
+                .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_17)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(AKTIVITETSBEGRANSNING_SVAR_ID_17, aktivitetsbegransning);
+
+        final var pagaendeBehandling = CertificateDataTextValue.builder()
+                .id(PAGAENDEBEHANDLING_SVAR_JSON_ID_19)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(PAGAENDEBEHANDLING_SVAR_ID_19, pagaendeBehandling);
+
+        final var planeradBehandling = CertificateDataTextValue.builder()
+                .id(PLANERADBEHANDLING_SVAR_JSON_ID_20)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
+
+        final CertificateDataValueDateRangeList bedomning = getCertificateDataValueDateRangeList(true);
+        values.put(BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
+
+        final var forsakringsMedicinsktBeslutsstod = CertificateDataTextValue.builder()
+                .id(FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_JSON_ID_37)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(FORSAKRINGSMEDICINSKT_BESLUTSSTOD_SVAR_ID_37, forsakringsMedicinsktBeslutsstod);
+
+        final var arbetstidsforlaggning = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(ARBETSTIDSFORLAGGNING_SVAR_JSON_ID_33)
+                .build();
+        values.put(ARBETSTIDSFORLAGGNING_SVAR_ID_33, arbetstidsforlaggning);
+
+        final var motiveringArbetstidsforlaggning = CertificateDataTextValue.builder()
+                .id(ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_JSON_ID_33)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(ARBETSTIDSFORLAGGNING_MOTIVERING_SVAR_ID_33, motiveringArbetstidsforlaggning);
+
+        final var arbetsresor = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(ARBETSRESOR_SVAR_JSON_ID_34)
+                .build();
+        values.put(ARBETSRESOR_SVAR_ID_34, arbetsresor);
+
+        final var prognos = CertificateDataValueCode.builder()
+                .id(PrognosTyp.ATER_X_ANTAL_DGR.getId())
+                .code(PrognosTyp.ATER_X_ANTAL_DGR.getId())
+                .build();
+        values.put(PROGNOS_SVAR_ID_39, prognos);
+
+        final var prognosTimePeriod = CertificateDataValueCode.builder()
+                .id(PrognosDagarTillArbeteTyp.DAGAR_30.getId())
+                .code(PrognosDagarTillArbeteTyp.DAGAR_30.getId())
+                .build();
+        values.put(PROGNOS_BESKRIVNING_DELSVAR_ID_39, prognosTimePeriod);
+
+        final var atgarder = CertificateDataValueCodeList.builder()
+                .list(
+                        Collections.singletonList(
+                                CertificateDataValueCode.builder()
+                                        .id(ArbetslivsinriktadeAtgarder.ArbetslivsinriktadeAtgarderVal.OVRIGT.getId())
+                                        .code(ArbetslivsinriktadeAtgarder.ArbetslivsinriktadeAtgarderVal.OVRIGT.getId())
+                                        .build()
+                        )
+                )
+                .build();
+        values.put(ARBETSLIVSINRIKTADE_ATGARDER_SVAR_ID_40, atgarder);
+
+        final var atgarderBeskrivning = CertificateDataTextValue.builder()
+                .id(ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_JSON_ID_44)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(ARBETSLIVSINRIKTADE_ATGARDER_BESKRIVNING_SVAR_ID_44, atgarderBeskrivning);
+
+        final var ovrigt = CertificateDataTextValue.builder()
+                .id(OVRIGT_SVAR_JSON_ID_25)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(OVRIGT_SVAR_ID_25, ovrigt);
+
+        final var kontakt = CertificateDataValueBoolean.builder()
+                .selected(true)
+                .id(KONTAKT_ONSKAS_SVAR_JSON_ID_103)
+                .build();
+        values.put(KONTAKT_ONSKAS_SVAR_ID_103, kontakt);
+
+        final var kontaktMotivering = CertificateDataTextValue.builder()
+                .id(ANLEDNING_TILL_KONTAKT_DELSVAR_JSON_ID_103)
+                .id(ANLEDNING_TILL_KONTAKT_DELSVAR_JSON_ID_103)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(ANLEDNING_TILL_KONTAKT_DELSVAR_ID_103, kontaktMotivering);
 
         return values;
     }
