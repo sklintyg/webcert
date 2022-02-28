@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.integration.ITIntegrationService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
@@ -48,17 +50,20 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
     private final DraftAccessServiceHelper draftAccessServiceHelper;
 
+    private final ITIntegrationService itIntegrationService;
+
     @Autowired
     public GetCertificateFacadeServiceImpl(UtkastService utkastService,
-        IntygService intygService,
-        UtkastToCertificateConverter utkastToCertificateConverter,
-        IntygToCertificateConverter intygToCertificateConverter,
-        DraftAccessServiceHelper draftAccessServiceHelper) {
+                                           IntygService intygService,
+                                           UtkastToCertificateConverter utkastToCertificateConverter,
+                                           IntygToCertificateConverter intygToCertificateConverter,
+                                           DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService) {
         this.utkastService = utkastService;
         this.intygService = intygService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
         this.intygToCertificateConverter = intygToCertificateConverter;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
+        this.itIntegrationService = itIntegrationService;
     }
 
     @Override
@@ -72,8 +77,18 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             return intygToCertificateConverter.convert(intygContentHolder);
         }
 
+        if (isSignedButNotSent(utkast)) {
+            LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
+            final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
+            utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
+        }
+
         LOG.debug("Converting Utkast to Certificate");
         return utkastToCertificateConverter.convert(utkast);
+    }
+
+    private boolean isSignedButNotSent(Utkast utkast) {
+        return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
     }
 
     private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.integration;
 import java.util.List;
 import java.util.Set;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
 import se.inera.intyg.infra.message.dto.MessageFromIT;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
@@ -36,6 +37,14 @@ public interface ITIntegrationService {
      * @return List of messages. If no messages exists for the certificate, then list will be empty.
      */
     List<MessageFromIT> findMessagesByCertificateId(String certificateId);
+
+    /**
+     * Get information about a certificate from intygstjänsten.
+     *
+     * @param certificateId Id of certificate
+     * @return  Info about the certificate. If the certificate doesn't exist the ItIntygInfo is empty.
+     */
+    ItIntygInfo getCertificateInfo(String certificateId);
 
     /**
      * Get all signed certificates for a specific doctor.
