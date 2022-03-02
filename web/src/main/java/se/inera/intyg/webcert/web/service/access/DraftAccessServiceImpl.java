@@ -105,7 +105,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
