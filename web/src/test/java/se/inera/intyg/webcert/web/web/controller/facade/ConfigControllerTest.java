@@ -22,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +32,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.infra.driftbannerdto.Application;
+import se.inera.intyg.infra.driftbannerdto.Banner;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.integration.ia.services.IABannerService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +44,9 @@ public class ConfigControllerTest {
 
     @Mock
     private DynamicLinkService dynamicLinkService;
+
+    @Mock
+    private IABannerService iaBannerService;
 
     @InjectMocks
     private ConfigController configController;
@@ -64,6 +72,20 @@ public class ConfigControllerTest {
 
             final var response = (Map<String, DynamicLink>) configController.getDynamicLinks();
             assertTrue(response.containsKey("Test"));
+        }
+
+        @Test
+        void getConfigurationReturnsBanners() {
+            final var banner = new Banner();
+            banner.setApplication(Application.WEBCERT);
+            final var banners = List.of(banner);
+
+            doReturn(banners)
+                    .when(iaBannerService)
+                    .getCurrentBanners();
+
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(response.getBanners().size(), 1);
         }
     }
 }

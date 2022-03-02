@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,8 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import se.inera.intyg.infra.driftbannerdto.Application;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.integration.ia.services.IABannerService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
@@ -48,6 +51,9 @@ public class ConfigController {
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
+    @Autowired
+    private IABannerService iaBannerService;
+
     @PostConstruct
     public void init() {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -61,7 +67,9 @@ public class ConfigController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting configuration");
         }
-        return Response.ok(new ConfigurationDTO(version)).build();
+        final var banners = iaBannerService.getCurrentBanners().stream().filter((banner -> banner.getApplication() == Application.WEBCERT)).collect(Collectors.toList());
+
+        return Response.ok(new ConfigurationDTO(version, banners)).build();
     }
 
     @GET

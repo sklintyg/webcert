@@ -19,12 +19,18 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import se.inera.intyg.infra.driftbannerdto.Banner;
+
+import java.util.List;
+
 public class ConfigurationDTO {
 
     private String version;
+    private List<Banner> banners;
 
-    public ConfigurationDTO(String version) {
+    public ConfigurationDTO(String version, List<Banner> banners) {
         this.version = version;
+        this.banners = banners;
     }
 
     public ConfigurationDTO() {
@@ -37,4 +43,9 @@ public class ConfigurationDTO {
     public void setVersion(String version) {
         this.version = version;
     }
+
+    public List<Banner> getBanners() {
+        return banners;
+    }
+
 }
