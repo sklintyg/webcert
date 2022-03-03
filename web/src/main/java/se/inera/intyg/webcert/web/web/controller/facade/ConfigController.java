@@ -67,7 +67,10 @@ public class ConfigController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting configuration");
         }
-        final var banners = iaBannerService.getCurrentBanners().stream().filter((banner -> banner.getApplication() == Application.WEBCERT)).collect(Collectors.toList());
+        final var banners = iaBannerService.getCurrentBanners()
+                .stream()
+                .filter((banner -> banner.getApplication() == Application.WEBCERT))
+                .collect(Collectors.toList());
 
         return Response.ok(new ConfigurationDTO(version, banners)).build();
     }
