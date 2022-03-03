@@ -58,7 +58,8 @@ public class CreateLisjpTestabilityUtil {
         final CertificateDataValueDiagnosisList diagnos = createCertificateValuesTestabilityUtil.getCertificateDataValueDiagnosisList();
         values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
 
-        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil.getCertificateDataValueDateRangeList(false);
+        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil
+                .getCertificateDataValueDateRangeList(false);
         values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         return values;
@@ -110,7 +111,8 @@ public class CreateLisjpTestabilityUtil {
                 .build();
         values.put(RespConstants.NUVARANDE_ARBETE_SVAR_ID_29, arbetsuppgifter);
 
-        final var diagnos = createCertificateValuesTestabilityUtil.getCertificateDataValueDiagnosisList();
+        final var diagnos = createCertificateValuesTestabilityUtil
+                .getCertificateDataValueDiagnosisList();
         values.put(RespConstants.DIAGNOS_SVAR_ID_6, diagnos);
 
         final var funktionsnedsattning = CertificateDataIcfValue.builder()
@@ -137,7 +139,8 @@ public class CreateLisjpTestabilityUtil {
                 .build();
         values.put(RespConstants.PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
 
-        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil.getCertificateDataValueDateRangeList(true);
+        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil
+                .getCertificateDataValueDateRangeList(true);
         values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         final var motiveringTidigtStartdatum = CertificateDataTextValue.builder()

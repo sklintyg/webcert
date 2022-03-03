@@ -123,7 +123,8 @@ public class CreateAg7804TestabilityUtil {
                 .build();
         values.put(NUVARANDE_ARBETE_SVAR_ID_29, arbetsuppgifter);
 
-        final var diagnos = createCertificateValuesTestabilityUtil.getCertificateDataValueDiagnosisList();
+        final var diagnos = createCertificateValuesTestabilityUtil
+                .getCertificateDataValueDiagnosisList();
         values.put(DIAGNOS_SVAR_ID_6, diagnos);
 
         final var funktionsnedsattning = CertificateDataIcfValue.builder()
@@ -150,7 +151,8 @@ public class CreateAg7804TestabilityUtil {
                 .build();
         values.put(PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
 
-        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil.getCertificateDataValueDateRangeList(true);
+        final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil
+                .getCertificateDataValueDateRangeList(true);
         values.put(BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         final var forsakringsMedicinsktBeslutsstod = CertificateDataTextValue.builder()

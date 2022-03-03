@@ -82,7 +82,8 @@ public class CreateCertificateTestabilityUtil {
                                             PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
                                             UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
                                             IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
-                                            CreateAg7804TestabilityUtil createAg7804TestabilityUtil, CreateAf00213TestabilityUtil createAf00213TestabilityUtil) {
+                                            CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
+                                            CreateAf00213TestabilityUtil createAf00213TestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
