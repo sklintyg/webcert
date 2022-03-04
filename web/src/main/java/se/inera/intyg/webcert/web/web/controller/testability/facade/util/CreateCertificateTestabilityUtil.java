@@ -186,7 +186,7 @@ public class CreateCertificateTestabilityUtil {
 
     private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
-            if(createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
                 return createLisjpTestabilityUtil.createMinimumValuesLisjp();
             } else {
                 return createLisjpTestabilityUtil.createMaximumValuesLisjp();

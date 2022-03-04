@@ -45,8 +45,8 @@ public class CreateCertificateValuesTestabilityUtil {
                                 CertificateDataValueDateRange.builder()
                                         .id("HELT_NEDSATT")
                                         .from(LocalDate.now())
-                                        .to(LocalDate.now().plusDays(shortPeriod ?
-                                                DEFAULT_SHORT_SICK_LEAVE_LENGTH : DEFAULT_SICK_LEAVE_LENGTH)
+                                        .to(LocalDate.now().plusDays(shortPeriod
+                                                ? DEFAULT_SHORT_SICK_LEAVE_LENGTH : DEFAULT_SICK_LEAVE_LENGTH)
                                         )
                                         .build()
                         )
