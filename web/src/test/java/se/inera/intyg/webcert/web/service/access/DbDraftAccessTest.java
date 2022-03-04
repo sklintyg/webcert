@@ -323,7 +323,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -348,7 +348,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -378,7 +378,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToForwardUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -403,7 +403,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
     }
 
     @Override
@@ -433,7 +433,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadyForSignOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -458,7 +458,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadyForSignOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
     }
 
     @Override
