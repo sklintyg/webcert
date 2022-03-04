@@ -87,5 +87,19 @@ public class ConfigControllerTest {
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(response.getBanners().size(), 1);
         }
+
+        @Test
+        void getConfigurationReturnsOnlyWCBanners() {
+            final var banner = new Banner();
+            banner.setApplication(Application.INTYGSSTATISTIK);
+            final var banners = List.of(banner);
+
+            doReturn(banners)
+                    .when(iaBannerService)
+                    .getCurrentBanners();
+
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(response.getBanners().size(), 0);
+        }
     }
 }
