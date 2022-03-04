@@ -39,7 +39,7 @@ public class CreateCertificateValuesTestabilityUtil {
     }
 
     public CertificateDataValueDateRangeList getCertificateDataValueDateRangeList(boolean shortPeriod) {
-        final var bedomning = CertificateDataValueDateRangeList.builder()
+        return CertificateDataValueDateRangeList.builder()
                 .list(
                         Collections.singletonList(
                                 CertificateDataValueDateRange.builder()
@@ -52,11 +52,10 @@ public class CreateCertificateValuesTestabilityUtil {
                         )
                 )
                 .build();
-        return bedomning;
     }
 
     public CertificateDataValueDiagnosisList getCertificateDataValueDiagnosisList() {
-        final CertificateDataValueDiagnosisList diagnos = CertificateDataValueDiagnosisList.builder()
+        return CertificateDataValueDiagnosisList.builder()
                 .list(
                         Collections.singletonList(
                                 CertificateDataValueDiagnosis.builder()
@@ -68,6 +67,5 @@ public class CreateCertificateValuesTestabilityUtil {
                         )
                 )
                 .build();
-        return diagnos;
     }
 }
