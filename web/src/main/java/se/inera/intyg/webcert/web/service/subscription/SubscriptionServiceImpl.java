@@ -45,7 +45,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
-import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
@@ -75,32 +74,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public boolean checkSubscriptionElegWebCertUser(WebCertUser webCertUser) {
-        try {
-            checkSubscriptions(webCertUser);
-            return webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty();
-        } catch (MissingSubscriptionException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public void checkSubscriptions(WebCertUser webCertUser) {
+    public boolean checkSubscriptions(WebCertUser webCertUser) {
         setSubscriptionInfo(webCertUser);
 
-        if (isFristaendeWebcertUser(webCertUser) && isAnySubscriptionFeatureActive()) {
-            final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
-
-            if (!careProviderOrgNumbers.isEmpty()) {
-                LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
-                final var authenticationMethod = isElegUser(webCertUser) ? ELEG : SITHS;
-                final var careProviderHsaIds = getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
-
-                monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
-                blockUsersWithoutAnySubscription(webCertUser, careProviderOrgNumbers.values(), careProviderHsaIds);
-                setSubscriptionActions(webCertUser, careProviderHsaIds);
-            }
+        if (!isFristaendeWebcertUser(webCertUser) || !isAnySubscriptionFeatureActive()) {
+            return true;
         }
+
+        final var careProviderOrgNumbers = getCareProviderOrgNumbers(webCertUser);
+
+        if (!careProviderOrgNumbers.isEmpty()) {
+            LOG.debug("Fetching subscription info for WebCertUser with hsaid {}.", webCertUser.getHsaId());
+            final var authenticationMethod = isElegUser(webCertUser) ? ELEG : SITHS;
+            final var careProviderHsaIds = getMissingSubscriptions(careProviderOrgNumbers, authenticationMethod);
+
+            monitorLogMissingSubscriptions(webCertUser.getHsaId(), authenticationMethod, careProviderHsaIds);
+            setSubscriptionActions(webCertUser, careProviderHsaIds);
+        }
+
+        return webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty();
     }
 
     public void setSubscriptionInfo(WebCertUser webCertUser) {
@@ -129,25 +121,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().remove(selectedCareProvider.getId());
     }
 
+    @Override
+    public boolean isSubscriptionMissingWhenRequired(WebCertUser webCertUser) {
+        if (isFristaendeWebcertUser(webCertUser) && isSubscriptionRequired() && webCertUser.getSubscriptionInfo() != null) {
+            final var selectedCareProvider = webCertUser.getValdVardgivare();
+            final var missingSubscriptions = webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscriptionUnmodifiable();
+            return selectedCareProvider != null && missingSubscriptions.contains(selectedCareProvider.getId());
+        }
+
+        return false;
+    }
+
     private void setSubscriptionActions(WebCertUser webCertUser, List<String> missingSubscriptions) {
         final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
         webCertUser.getSubscriptionInfo().setSubscriptionAction(action);
         webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(missingSubscriptions);
-    }
-
-    private void blockUsersWithoutAnySubscription(WebCertUser webCertUser, Collection<List<String>> allCareProviders,
-        List<String> careProvidersWithoutSubscription) {
-        if (isSubscriptionRequired()
-            && missingSubscriptionOnAllCareProviders(flatMapCollection(allCareProviders), careProvidersWithoutSubscription)) {
-            throw new MissingSubscriptionException(String.format("All care providers for user %s are missing subscription",
-                webCertUser.getHsaId()));
-        }
-    }
-
-    private boolean missingSubscriptionOnAllCareProviders(List<String> allCareProviders,
-        List<String> careProvidersWithoutSubscription) {
-        return allCareProviders.size() == careProvidersWithoutSubscription.size()
-            && allCareProviders.containsAll(careProvidersWithoutSubscription);
+        webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscriptionUnmodifiable(List.copyOf(missingSubscriptions));
     }
 
     private Map<String, List<String>> getCareProviderOrgNumbers(WebCertUser webCertUser) {

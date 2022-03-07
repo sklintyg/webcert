@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -16,24 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.subscription;
 
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+.missingsubscription-body {
 
-public interface SubscriptionService {
-
-    boolean checkSubscriptions(WebCertUser webcertUser);
-
-    boolean isUnregisteredElegUserMissingSubscription(String personId);
-
-    boolean isSubscriptionRequired();
-
-    boolean isSubscriptionAdaptation();
-
-    boolean isAnySubscriptionFeatureActive();
-
-    void acknowledgeSubscriptionWarning(WebCertUser webCertUser);
-
-    boolean isSubscriptionMissingWhenRequired(WebCertUser webCertUser);
-
+  em {
+    font-style: normal;
+    color: #DA4453;
+  }
 }

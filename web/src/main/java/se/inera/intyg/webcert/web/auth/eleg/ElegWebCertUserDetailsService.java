@@ -189,7 +189,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void authorizeWhenSubscriptionAdaptation(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+        final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
         final var acceptedTerms = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
 
         if (ppAuthStatus == OK && (acceptedTerms || hasSubscription)) {
@@ -202,9 +202,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void authorizeWhenSubscriptionRequired(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        final var hasSubscription = subscriptionService.checkSubscriptionElegWebCertUser(webCertUser);
+        final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
 
-        if (ppAuthStatus == OK && hasSubscription) {
+        if (ppAuthStatus == OK) {
             return;
         }
         if (hasSubscription) {

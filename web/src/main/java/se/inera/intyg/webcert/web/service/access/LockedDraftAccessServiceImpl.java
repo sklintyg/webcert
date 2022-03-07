@@ -39,6 +39,7 @@ import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -50,15 +51,17 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
+    private final SubscriptionService subscriptionService;
 
     @Autowired
     public LockedDraftAccessServiceImpl(final WebCertUserService webCertUserService,
         final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService, IntygTextsService intygTextsService) {
+        final UtkastService utkastService, IntygTextsService intygTextsService, SubscriptionService subscriptionService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
         this.intygTextsService = intygTextsService;
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
@@ -90,6 +93,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
             .checkPatientSecrecy()
             .checkUnique()
             .checkUnit(true, true)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -138,7 +142,8 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {
-        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService,
+            subscriptionService);
     }
 
     private WebCertUser getUser() {

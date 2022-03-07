@@ -36,6 +36,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -54,6 +55,7 @@ public final class AccessServiceEvaluation {
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
+    private final SubscriptionService subscriptionService;
 
     private WebCertUser user;
     private String certificateType;
@@ -70,6 +72,7 @@ public final class AccessServiceEvaluation {
     private boolean checkRenew;
     private boolean checkPatientSecrecy;
     private boolean checkPatientTestIndicator;
+    private boolean checkSubscription;
     private boolean checkUnique;
     private boolean checkUniqueOnlyCertificate;
     private boolean checkUnit;
@@ -92,11 +95,12 @@ public final class AccessServiceEvaluation {
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
-        UtkastService utkastService, IntygTextsService intygTextsService) {
+        UtkastService utkastService, IntygTextsService intygTextsService, SubscriptionService subscriptionService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
         this.intygTextsService = intygTextsService;
+        this.subscriptionService = subscriptionService;
     }
 
     /**
@@ -110,8 +114,10 @@ public final class AccessServiceEvaluation {
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
         @NotNull PatientDetailsResolver patientDetailsResolver,
         @NotNull UtkastService utkastService,
-        @NotNull IntygTextsService intygTextsService) {
-        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+        @NotNull IntygTextsService intygTextsService,
+        @NotNull SubscriptionService subscriptionService) {
+        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService,
+            subscriptionService);
     }
 
     /**
@@ -412,6 +418,11 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
+    public AccessServiceEvaluation checkSubscription() {
+        this.checkSubscription = true;
+        return this;
+    }
+
     /**
      * Evaluate criterias and returns an AccessResult.
      *
@@ -461,7 +472,24 @@ public final class AccessServiceEvaluation {
             accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate, certificateId);
         }
 
+        if (checkSubscription && accessResult.isEmpty()) {
+            accessResult = isSubscriptionRuleValid(user);
+        }
+
         return accessResult.orElseGet(AccessResult::noProblem);
+    }
+
+    private Optional<AccessResult> isSubscriptionRuleValid(WebCertUser user) {
+        final var missingSunscriptionWhenRequired = subscriptionService.isSubscriptionMissingWhenRequired(user);
+
+        if (!missingSunscriptionWhenRequired) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            AccessResult.create(AccessResultCode.MISSING_SUBSCRIPTION,
+                createMessage("Action is blocked due to missing subscription"))
+        );
     }
 
     private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
