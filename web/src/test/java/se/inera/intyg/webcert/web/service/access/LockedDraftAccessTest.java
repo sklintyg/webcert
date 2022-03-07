@@ -55,6 +55,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     abstract protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadUtkastWhenMissingSubscription(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -174,6 +185,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToCopyNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToCopyWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToCopyWhenMissingSubscriptions(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToCopyWhenMissingSubscriptions(AccessResult actualValue);
 
     @Test
     public void isAllowToCopyNotLatestMajorVersion() {
@@ -395,6 +417,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     abstract protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToDeleteUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToDeleteUtkastWhenMissingSubscription(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToDeleteUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToDeleteNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -520,6 +553,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToPrintUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToPrintUtkastWhenMissingSubscription(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToPrintUtkastWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToPrintNotLatestMajorVersion() {

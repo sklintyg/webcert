@@ -47,6 +47,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -98,6 +103,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToReplaceNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReplaceWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -158,6 +168,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToRenewNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToRenewWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -232,6 +247,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToDeleteWhenNoSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -283,6 +303,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -339,6 +364,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     @Override
     protected void assertAllowToSendNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSendWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
     }
 
     @Override
@@ -402,6 +432,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToCreateQuestionWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToCreateQuestionOnDeceasedPatient(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
@@ -448,6 +483,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToAnswerComplementNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerComplementWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -507,6 +547,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToAnswerQuestionWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToAnswerQuestionNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -558,6 +603,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 
@@ -617,6 +667,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToSetComplementAsHandledWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToSetComplementAsHandledNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -669,6 +724,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     @Override
     protected void assertAllowToSetQuestionAsHandledNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetQuestionAsHandledWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
     }
 
     @Override
@@ -727,6 +787,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadQuestionsWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadQuestionsNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -778,6 +843,11 @@ public class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToForwardQuestionsWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 

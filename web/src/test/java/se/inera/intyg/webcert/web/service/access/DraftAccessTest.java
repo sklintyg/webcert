@@ -55,6 +55,17 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowedToCreateUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowedToCreateUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowedToCreateUtkastWhenMissingSubscription(accessService.allowToCreateDraft(
+            AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)
+        ));
+    }
+
+    abstract protected void assertAllowedToCreateUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToCreateUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -196,6 +207,17 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadUtkastWhenMissingSubscription(accessService.allowToReadDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -318,6 +340,17 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowToEditUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToEditUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToEditUtkastWhenMissingSubscription(accessService.allowToEditDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToEditUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToEditUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -437,6 +470,15 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowToSignUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToSignUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToSignUtkastWhenMissingSubscription(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+    }
+
+    abstract protected void assertAllowToSignUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToSignUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -544,6 +586,17 @@ abstract public class DraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToDeleteUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToDeleteUtkastWhenMissingSubscription(accessService.allowToDeleteDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToDeleteUtkastWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToDeleteUtkastNotLatestMajorVersion() {
@@ -667,6 +720,17 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToPrintUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToPrintUtkastWhenMissingSubscription(accessService.allowToPrintDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToPrintUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToPrintUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -788,6 +852,17 @@ abstract public class DraftAccessTest extends AccessTest {
     abstract protected void assertAllowToForwardUtkastNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToForwardUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToForwardUtkastWhenMissingSubscription(accessService.allowToForwardDraft(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToForwardUtkastWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToForwardUtkastNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -907,6 +982,17 @@ abstract public class DraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToReadyForSignNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadyForSignWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadyForSignWhenMissingSubscription(accessService.allowToReadyForSign(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadyForSignWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToReadyForSignNotLatestMajorVersion() {

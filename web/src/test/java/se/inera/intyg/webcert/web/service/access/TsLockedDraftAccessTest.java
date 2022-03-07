@@ -53,6 +53,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToReadUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -105,6 +110,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     @Override
     protected void assertAllowToCopyNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCopyWhenMissingSubscriptions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
     }
 
     @Override
@@ -183,6 +193,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToDeleteUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -234,6 +249,11 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintUtkastWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 

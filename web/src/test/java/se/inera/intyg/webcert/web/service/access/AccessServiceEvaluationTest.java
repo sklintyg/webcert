@@ -34,6 +34,7 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -50,6 +51,8 @@ public class AccessServiceEvaluationTest {
     @Mock
     private IntygTextsService intygTextsService;
     @Mock
+    private SubscriptionService subscriptionService;
+    @Mock
     private WebCertUser user;
 
     private AccessServiceEvaluation accessServiceEvaluation;
@@ -57,7 +60,7 @@ public class AccessServiceEvaluationTest {
     @Before
     public void setup() {
         accessServiceEvaluation = AccessServiceEvaluation
-            .create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+            .create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService, subscriptionService);
     }
 
     @Test
