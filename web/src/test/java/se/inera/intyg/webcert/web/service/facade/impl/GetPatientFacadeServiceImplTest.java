@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,15 @@ public class GetPatientFacadeServiceImplTest {
         assertFalse(response.getPatient().isTestIndicated());
         assertFalse(response.getPatient().isDeceased());
         assertFalse(response.getPatient().isProtectedPerson());
+    }
+
+    @Test
+    void shallLogPULookup() {
+        setupPatient();
+
+        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), response.getStatus().name());
     }
 
     private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased) {
