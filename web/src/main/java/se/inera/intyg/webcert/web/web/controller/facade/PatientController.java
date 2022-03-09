@@ -49,7 +49,7 @@ public class PatientController {
     @Path("/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getCertificate(@PathParam("patientId") @NotNull String patientId) {
+    public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
         final var patientResponseDTO = getPatientFacadeService.getPatient(patientId);
 
         if(patientResponseDTO != null) {
