@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
+import java.util.List;
 import org.mockito.Mock;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -28,7 +29,8 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -50,9 +52,6 @@ abstract public class AccessTest {
     @Mock
     protected IntygTextsService intygTextsService;
 
-    @Mock
-    protected SubscriptionService subscriptionService;
-
     protected final String intygsTyp;
     protected final String intygsTypVersion;
     protected final AccessServiceTestData accessServiceTestData;
@@ -66,6 +65,7 @@ abstract public class AccessTest {
     public static final String vardgivarId = "VardgivarId";
     public static final String PERSONNUMMER_TOLVAN = "191212121212";
     public static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PERSONNUMMER_TOLVAN).get();
+    public static final SubscriptionInfo SUBSCRIPTION_INFO = new SubscriptionInfo("date1", "date2");
 
     public AccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
         this.intygsTyp = intygsTyp;
@@ -95,7 +95,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForNoConditionsDifferentUnit() {
@@ -120,7 +120,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForNotLatestMajorVersion() {
@@ -145,7 +145,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(false).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForNotLatestMajorVersionDifferentUnit() {
@@ -171,7 +171,7 @@ abstract public class AccessTest {
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
         doReturn(false).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForDeceasedPatient() {
@@ -196,7 +196,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForDeceasedPatientDifferentUnit() {
@@ -221,7 +221,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForInactiveUnit() {
@@ -246,7 +246,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForInactiveUnitDifferentUnit() {
@@ -271,7 +271,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForOnRenewFalse() {
@@ -296,7 +296,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForOnRenewFalseDifferentUnit() {
@@ -321,7 +321,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForOnSekretessPatient() {
@@ -346,7 +346,7 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForOnSekretessPatientDifferentUnit() {
@@ -371,11 +371,14 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(false).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(SUBSCRIPTION_INFO).when(user).getSubscriptionInfo();
     }
 
     protected void setupMocksForMissingSubscription() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
+        final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
+        subscriptionInfo.setSubscriptionAction(SubscriptionAction.BLOCK);
+        subscriptionInfo.setCareProvidersMissingSubscription(List.of(vardgivarId));
         doReturn(user)
             .when(webCertUserService).getUser();
         doReturn(false)
@@ -396,6 +399,6 @@ abstract public class AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(true).when(subscriptionService).isSubscriptionMissingWhenRequired(user);
+        doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
     }
 }

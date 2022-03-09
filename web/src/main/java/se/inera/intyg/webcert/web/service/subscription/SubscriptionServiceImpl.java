@@ -116,27 +116,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void acknowledgeSubscriptionWarning(WebCertUser webCertUser) {
+    public void acknowledgeSubscriptionModal(WebCertUser webCertUser) {
         final var selectedCareProvider = webCertUser.getValdVardgivare();
-        webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().remove(selectedCareProvider.getId());
-    }
-
-    @Override
-    public boolean isSubscriptionMissingWhenRequired(WebCertUser webCertUser) {
-        if (isFristaendeWebcertUser(webCertUser) && isSubscriptionRequired() && webCertUser.getSubscriptionInfo() != null) {
-            final var selectedCareProvider = webCertUser.getValdVardgivare();
-            final var missingSubscriptions = webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscriptionUnmodifiable();
-            return selectedCareProvider != null && missingSubscriptions.contains(selectedCareProvider.getId());
-        }
-
-        return false;
+        webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().remove(selectedCareProvider.getId());
     }
 
     private void setSubscriptionActions(WebCertUser webCertUser, List<String> missingSubscriptions) {
         final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
         webCertUser.getSubscriptionInfo().setSubscriptionAction(action);
-        webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(missingSubscriptions);
-        webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscriptionUnmodifiable(List.copyOf(missingSubscriptions));
+        webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(List.copyOf(missingSubscriptions));
+        webCertUser.getSubscriptionInfo().setCareProvidersForSubscriptionModal(missingSubscriptions);
     }
 
     private Map<String, List<String>> getCareProviderOrgNumbers(WebCertUser webCertUser) {

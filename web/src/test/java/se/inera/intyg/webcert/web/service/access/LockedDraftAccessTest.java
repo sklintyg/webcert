@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 abstract public class LockedDraftAccessTest extends AccessTest {
@@ -261,6 +262,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
             accessService.allowToCopy(
@@ -290,6 +292,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
             accessService.allowToCopy(
@@ -319,6 +322,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
             accessService.allowToCopy(

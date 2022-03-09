@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 abstract public class DraftAccessTest extends AccessTest {
@@ -126,6 +127,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenUtkastSameVGExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)
@@ -151,6 +153,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnDifferentCareProviderWhenIntygSameVGExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)
@@ -176,6 +179,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenIntygExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)

@@ -42,7 +42,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -54,17 +53,15 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
-    private final SubscriptionService subscriptionService;
 
     @Autowired
     public DraftAccessServiceImpl(final WebCertUserService webCertUserService,
         final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService, IntygTextsService intygTextsService, SubscriptionService subscriptionService) {
+        final UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
         this.intygTextsService = intygTextsService;
-        this.subscriptionService = subscriptionService;
     }
 
     @Override
@@ -243,8 +240,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {
-        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService,
-            subscriptionService);
+        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     private WebCertUser getUser() {

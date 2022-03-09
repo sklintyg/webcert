@@ -32,8 +32,6 @@ public interface SubscriptionService {
 
     boolean isAnySubscriptionFeatureActive();
 
-    void acknowledgeSubscriptionWarning(WebCertUser webCertUser);
-
-    boolean isSubscriptionMissingWhenRequired(WebCertUser webCertUser);
+    void acknowledgeSubscriptionModal(WebCertUser webCertUser);
 
 }

@@ -124,7 +124,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         assertEquals(SubscriptionAction.WARN, subscriptionInfoBefore.getSubscriptionAction());
         assertTrue(subscriptionInfoBefore.getCareProvidersMissingSubscription().contains(selectedCareProviderBefore.getId()));
 
-        given().expect().statusCode(OK).when().get(SUBSCRIPTION_API_URI + "/acknowledgeWarning");
+        given().expect().statusCode(OK).when().get(SUBSCRIPTION_API_URI + "/acknowledgeSubscriptionModal");
 
         final var responseAfter = given()
             .when().get(USER_API_URI)

@@ -40,8 +40,8 @@ angular.module('webcert').controller('webcert.MissingSubscriptionCtrl', ['$log',
         {
           name: 'subscription.missing.modal.close',
           clickFn: function() {
-            subscriptionService.acknowledgeWarning();
-            subscriptionProxy.acknowledgeWarning(function() {
+            subscriptionService.acknowledgeSubscriptionModal();
+            subscriptionProxy.acknowledgeSubscriptionModal(function() {
               $scope.modalOptions.modalInstance.close();
               $state.go('webcert.create-index');
             });

@@ -36,7 +36,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -55,7 +55,6 @@ public final class AccessServiceEvaluation {
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
-    private final SubscriptionService subscriptionService;
 
     private WebCertUser user;
     private String certificateType;
@@ -95,12 +94,11 @@ public final class AccessServiceEvaluation {
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
         PatientDetailsResolver patientDetailsResolver,
-        UtkastService utkastService, IntygTextsService intygTextsService, SubscriptionService subscriptionService) {
+        UtkastService utkastService, IntygTextsService intygTextsService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
         this.intygTextsService = intygTextsService;
-        this.subscriptionService = subscriptionService;
     }
 
     /**
@@ -114,10 +112,8 @@ public final class AccessServiceEvaluation {
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
         @NotNull PatientDetailsResolver patientDetailsResolver,
         @NotNull UtkastService utkastService,
-        @NotNull IntygTextsService intygTextsService,
-        @NotNull SubscriptionService subscriptionService) {
-        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService,
-            subscriptionService);
+        @NotNull IntygTextsService intygTextsService) {
+        return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
     }
 
     /**
@@ -480,9 +476,9 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isSubscriptionRuleValid(WebCertUser user) {
-        final var missingSunscriptionWhenRequired = subscriptionService.isSubscriptionMissingWhenRequired(user);
+        final var missingSubscriptionWhenRequired = isMissingSubscriptionWhenRequired(user);
 
-        if (!missingSunscriptionWhenRequired) {
+        if (!missingSubscriptionWhenRequired) {
             return Optional.empty();
         }
 
@@ -762,5 +758,20 @@ public final class AccessServiceEvaluation {
         }
         return message;
     }
+
+    private boolean isMissingSubscriptionWhenRequired(WebCertUser webCertUser) {
+        final var isFristaendeWebcertUser = webCertUser.getOrigin().equals(UserOriginType.NORMAL.name());
+        final var subscriptionInfo = webCertUser.getSubscriptionInfo();
+        final var isSubscriptionRequired = subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK;
+
+        if (isFristaendeWebcertUser && isSubscriptionRequired) {
+            final var missingSubscriptions =  subscriptionInfo.getCareProvidersMissingSubscription();
+            final var selectedCareProvider = webCertUser.getValdVardgivare();
+            return selectedCareProvider != null && missingSubscriptions.contains(selectedCareProvider.getId());
+        }
+
+        return false;
+    }
+
 
 }
