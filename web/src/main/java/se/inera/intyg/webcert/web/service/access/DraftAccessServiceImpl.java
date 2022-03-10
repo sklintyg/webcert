@@ -142,7 +142,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .patient(patient)
             .certificateId(certificateId)
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
