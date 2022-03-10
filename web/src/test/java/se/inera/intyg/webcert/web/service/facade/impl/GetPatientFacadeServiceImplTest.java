@@ -61,13 +61,22 @@ public class GetPatientFacadeServiceImplTest {
     private final static String MIDDLENAME = "middlename";
 
 
-    void setupPatient(boolean protectedPerson, boolean testIndicated, boolean deceased) {
-        PersonSvar personSvar = createPersonSvar(protectedPerson, testIndicated, deceased);
+    void setupPatient(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
+        PersonSvar personSvar = createPersonSvar(protectedPerson, testIndicated, deceased, includeMiddleName);
         doReturn(personSvar).when(puService).getPerson(any());
     }
 
+    void setupPatient(boolean protectedPerson, boolean testIndicated, boolean deceased) {
+        setupPatient(protectedPerson, testIndicated, deceased, true);
+
+    }
+
     void setupPatient() {
-        setupPatient(false, false, false);
+        setupPatient(false, false, false, true);
+    }
+
+    void setupPatientWithoutMiddleName() {
+        setupPatient(false, false, false, false);
     }
 
     @Test
@@ -104,6 +113,24 @@ public class GetPatientFacadeServiceImplTest {
         final var response = getPatientFacadeService.getPatient(PATIENT_ID);
 
         assertEquals(MIDDLENAME, response.getPatient().getMiddleName());
+    }
+
+    @Test
+    void shallSetFullNameForPatientWithMiddleName() {
+        setupPatient();
+
+        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+
+        assertEquals(FIRSTNAME + " " + MIDDLENAME + " " + LASTNAME, response.getPatient().getFullName());
+    }
+
+    @Test
+    void shallSetFullNameForPatientWithoutMiddleName() {
+        setupPatientWithoutMiddleName();
+
+        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+
+        assertEquals(FIRSTNAME + " " + LASTNAME, response.getPatient().getFullName());
     }
 
     @Test
@@ -159,8 +186,8 @@ public class GetPatientFacadeServiceImplTest {
         verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), response.getStatus().name());
     }
 
-    private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased) {
-        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME, MIDDLENAME, LASTNAME, "", "", "", testIndicated);
+    private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
+        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME, includeMiddleName ? MIDDLENAME : null, LASTNAME, "", "", "", testIndicated);
         return PersonSvar.found(person);
     }
 }

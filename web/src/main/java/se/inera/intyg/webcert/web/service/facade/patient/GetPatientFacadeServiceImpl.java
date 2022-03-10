@@ -15,7 +15,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.PatientController;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 
 @Service
-public class GetPatientFacadeServiceImpl {
+public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
     private static final Logger LOG = LoggerFactory.getLogger(PatientController.class);
 
     final private PUService puService;
@@ -28,6 +28,7 @@ public class GetPatientFacadeServiceImpl {
         this.monitoringService = monitoringService;
     }
 
+    @Override
     public PatientResponseDTO getPatient(String patientId) {
         try {
             Personnummer formattedPatientId = formatPatientId(patientId);
@@ -58,12 +59,20 @@ public class GetPatientFacadeServiceImpl {
                 .firstName(personSvar.getPerson().getFornamn())
                 .lastName(personSvar.getPerson().getEfternamn())
                 .middleName(personSvar.getPerson().getMellannamn())
+                .fullName(getFullName(personSvar))
                 .deceased(personSvar.getPerson().isAvliden())
                 .protectedPerson(personSvar.getPerson().isSekretessmarkering())
                 .testIndicated(personSvar.getPerson().isTestIndicator())
                 .build();
 
         return PatientResponseDTO.create(patient, personSvar.getStatus());
+    }
+
+    private String getFullName(PersonSvar personSvar) {
+        if(personSvar.getPerson().getMellannamn() == null || personSvar.getPerson().getMellannamn().length() == 0) {
+            return personSvar.getPerson().getFornamn() + " " + personSvar.getPerson().getEfternamn();
+        }
+        return personSvar.getPerson().getFornamn() + " " + personSvar.getPerson().getMellannamn() + " " + personSvar.getPerson().getEfternamn();
     }
 
     private Personnummer formatPatientId(String personId) throws InvalidPersonNummerException {
