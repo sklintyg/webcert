@@ -142,7 +142,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .patient(patient)
             .certificateId(certificateId)
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID)// You should be able to sign a draft for a deceased person
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
