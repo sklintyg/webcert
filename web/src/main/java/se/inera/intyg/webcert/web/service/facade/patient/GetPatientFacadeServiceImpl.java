@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.facade.patient;
 
 import org.slf4j.Logger;
@@ -11,12 +30,11 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.web.controller.facade.PatientController;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 
 @Service
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
-    private static final Logger LOG = LoggerFactory.getLogger(PatientController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetPatientFacadeServiceImpl.class);
 
     final private PUService puService;
 
@@ -49,7 +67,8 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
     }
 
     private PatientResponseDTO convertPatientResponse(PersonSvar personSvar, String patientId) {
-        final var patient = Patient.builder()
+        final var isPatientDefined = personSvar.getPerson() != null;
+        final var patient = isPatientDefined ? Patient.builder()
                 .personId(
                         PersonId.builder()
                                 .id(patientId)
@@ -63,16 +82,17 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
                 .deceased(personSvar.getPerson().isAvliden())
                 .protectedPerson(personSvar.getPerson().isSekretessmarkering())
                 .testIndicated(personSvar.getPerson().isTestIndicator())
-                .build();
+                .build() : Patient.builder().build();
 
         return PatientResponseDTO.create(patient, personSvar.getStatus());
     }
 
     private String getFullName(PersonSvar personSvar) {
-        if(personSvar.getPerson().getMellannamn() == null || personSvar.getPerson().getMellannamn().length() == 0) {
-            return personSvar.getPerson().getFornamn() + " " + personSvar.getPerson().getEfternamn();
+        final var patient = personSvar.getPerson();
+        if(patient.getMellannamn() == null || patient.getMellannamn().length() == 0) {
+            return patient.getFornamn() + " " + patient.getEfternamn();
         }
-        return personSvar.getPerson().getFornamn() + " " + personSvar.getPerson().getMellannamn() + " " + personSvar.getPerson().getEfternamn();
+        return patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn();
     }
 
     private Personnummer formatPatientId(String personId) throws InvalidPersonNummerException {

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,19 +28,8 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
