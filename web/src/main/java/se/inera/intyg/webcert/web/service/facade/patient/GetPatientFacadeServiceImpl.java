@@ -36,9 +36,9 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
     private static final Logger LOG = LoggerFactory.getLogger(GetPatientFacadeServiceImpl.class);
 
-    final private PUService puService;
+    private final PUService puService;
 
-    final private MonitoringLogService monitoringService;
+    private final MonitoringLogService monitoringService;
 
     @Autowired
     public GetPatientFacadeServiceImpl(PUService puService, MonitoringLogService monitoringService) {
@@ -89,7 +89,7 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
 
     private String getFullName(PersonSvar personSvar) {
         final var patient = personSvar.getPerson();
-        if(patient.getMellannamn() == null || patient.getMellannamn().length() == 0) {
+        if (patient.getMellannamn() == null || patient.getMellannamn().length() == 0) {
             return patient.getFornamn() + " " + patient.getEfternamn();
         }
         return patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn();

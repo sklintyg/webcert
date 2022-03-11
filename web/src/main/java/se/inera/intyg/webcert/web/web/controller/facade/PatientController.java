@@ -18,24 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.*;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.*;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
 
 @Path("/patient")
 public class PatientController {
@@ -52,7 +41,7 @@ public class PatientController {
     public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
         final var patientResponseDTO = getPatientFacadeService.getPatient(patientId);
 
-        if(patientResponseDTO != null) {
+        if (patientResponseDTO != null) {
             return Response.ok(patientResponseDTO).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
