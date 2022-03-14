@@ -173,7 +173,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
                 TsDiabetesEntryPoint.MODULE_ID,
                 Tstrk1009EntryPoint.MODULE_ID,
                 TsTrk1062EntryPoint.MODULE_ID,
-                DbModuleEntryPoint.MODULE_ID)// You should be able to print a draft for a deceased person
+                DbModuleEntryPoint.MODULE_ID)
             .checkPatientSecrecy()
             .checkUnit(false, true)
             .evaluate();
