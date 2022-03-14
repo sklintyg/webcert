@@ -152,9 +152,13 @@ public class DbDraftAccessTest extends DraftAccessTest {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
+    /**
+     * You are alowed to update a draft for a deceased person.
+     * @param actualValue value to be compared to expected value.
+     */
     @Override
     protected void assertAllowToEditUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -209,7 +213,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToSignUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -319,7 +323,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -344,7 +348,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -374,7 +378,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToForwardUtkastOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
@@ -429,7 +433,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadyForSignOnDeceasedPatient(AccessResult actualValue) {
-        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
