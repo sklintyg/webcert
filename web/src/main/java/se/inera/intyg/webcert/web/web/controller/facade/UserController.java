@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
 @Path("/user")
 public class UserController {
@@ -38,9 +40,12 @@ public class UserController {
 
     private final UserService userService;
 
+    private final GetUserResourceLinks getUserResourceLinks;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks) {
         this.userService = userService;
+        this.getUserResourceLinks = getUserResourceLinks;
     }
 
     @GET
@@ -49,6 +54,7 @@ public class UserController {
     public Response getUser() {
         LOG.debug("Getting logged in user");
         final var loggedInUser = userService.getLoggedInUser();
-        return Response.ok(loggedInUser).build();
+        final var resourceLinks = getUserResourceLinks.get();
+        return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
     }
 }
