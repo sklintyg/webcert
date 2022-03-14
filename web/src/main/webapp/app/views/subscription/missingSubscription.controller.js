@@ -28,7 +28,7 @@ angular.module('webcert').controller('webcert.MissingSubscriptionCtrl', ['$log',
 
     $scope.modalBody = {
       infoCheck: messageService.getProperty('subscription.missing.info.check'),
-      infoGeneral: messageService.getProperty('subscription.missing.info.general'),
+      infoGeneral: 'subscription.missing.info.general',
       infoLink: 'subscription.missing.info.link'
     };
 

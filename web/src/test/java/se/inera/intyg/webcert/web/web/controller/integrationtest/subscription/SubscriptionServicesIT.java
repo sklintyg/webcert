@@ -43,7 +43,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
     private static final int OK = 200;
-    private static final int FORBIDDEN = 403;
 
     private static final String USER_API_URI = "api/anvandare";
     private static final String SUBSCRIPTION_API_URI = "/api/subscription";
@@ -105,8 +104,8 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenWarningAcknowledged() throws JsonProcessingException {
-        final var testFeatures = createSubscriptionFeatures(true, false);
+    public void shouldRemoveCareProviderFromForSubscriptionModalListWhenModalAcknowledged() throws JsonProcessingException {
+        final var testFeatures = createSubscriptionFeatures(false, true);
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
             .then().statusCode(OK);
         given().expect().statusCode(OK).when().get(KUNDPORTALEN_STUB_SETTINGS_URI + "/setactive/2-orgnr-vastmanland/Webcert");
@@ -121,8 +120,8 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         final var webCertUserBefore = objectMapper.readValue(responseBefore, WebCertUser.class);
         final var selectedCareProviderBefore = ((Vardgivare) webCertUserBefore.getValdVardgivare());
         final var subscriptionInfoBefore = webCertUserBefore.getSubscriptionInfo();
-        assertEquals(SubscriptionAction.WARN, subscriptionInfoBefore.getSubscriptionAction());
-        assertTrue(subscriptionInfoBefore.getCareProvidersMissingSubscription().contains(selectedCareProviderBefore.getId()));
+        assertEquals(SubscriptionAction.BLOCK, subscriptionInfoBefore.getSubscriptionAction());
+        assertTrue(subscriptionInfoBefore.getCareProvidersForSubscriptionModal().contains(selectedCareProviderBefore.getId()));
 
         given().expect().statusCode(OK).when().get(SUBSCRIPTION_API_URI + "/acknowledgeSubscriptionModal");
 
@@ -134,12 +133,12 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
         final var webCertUserAfter = objectMapper.readValue(responseAfter, WebCertUser.class);
         final var selectedCareProviderAfter = ((Vardgivare) webCertUserAfter.getValdVardgivare());
         final var subscriptionInfoAfter = webCertUserAfter.getSubscriptionInfo();
-        assertEquals(SubscriptionAction.WARN, subscriptionInfoAfter.getSubscriptionAction());
-        assertFalse(subscriptionInfoAfter.getCareProvidersMissingSubscription().contains(selectedCareProviderAfter.getId()));
+        assertEquals(SubscriptionAction.BLOCK, subscriptionInfoAfter.getSubscriptionAction());
+        assertFalse(subscriptionInfoAfter.getCareProvidersForSubscriptionModal().contains(selectedCareProviderAfter.getId()));
     }
 
     @Test
-    public void shouldFailWithForbiddenIfNoSubscriptionsWhenRequired() {
+    public void shouldBeAdmittedIfNoSubscriptionsWhenRequired() {
         final var testFeatures = createSubscriptionFeatures(false, true);
         given().contentType(ContentType.JSON).body(testFeatures).when().post(TESTABILITY_CONFIG_URI + "/setfeatures")
             .then().statusCode(OK);
@@ -149,7 +148,7 @@ public class SubscriptionServicesIT extends BaseRestIntegrationTest {
 
         given()
             .when().get(USER_API_URI)
-            .then().statusCode(FORBIDDEN);
+            .then().statusCode(OK);
     }
 
     @Test
