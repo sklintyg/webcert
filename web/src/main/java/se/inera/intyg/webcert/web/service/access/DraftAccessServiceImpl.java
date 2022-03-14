@@ -105,7 +105,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -143,7 +142,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .patient(patient)
             .certificateId(certificateId)
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -160,7 +158,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(false)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .excludeCertificateTypesForDeceased(
                 DoiModuleEntryPoint.MODULE_ID,
                 LisjpEntryPoint.MODULE_ID,
@@ -175,7 +172,8 @@ public class DraftAccessServiceImpl implements DraftAccessService {
                 TsBasEntryPoint.MODULE_ID,
                 TsDiabetesEntryPoint.MODULE_ID,
                 Tstrk1009EntryPoint.MODULE_ID,
-                TsTrk1062EntryPoint.MODULE_ID)
+                TsTrk1062EntryPoint.MODULE_ID,
+                DbModuleEntryPoint.MODULE_ID)
             .checkPatientSecrecy()
             .checkUnit(false, true)
             .evaluate();
@@ -190,7 +188,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -207,7 +204,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
