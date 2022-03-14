@@ -188,7 +188,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID)// You should be able to forward a draft for a deceased person
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
@@ -205,7 +204,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .careUnit(accessEvaluationParameters.getUnit())
             .patient(accessEvaluationParameters.getPatient())
             .checkPatientDeceased(true)
-            .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID)// You should be able to sign a draft for a deceased person
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
