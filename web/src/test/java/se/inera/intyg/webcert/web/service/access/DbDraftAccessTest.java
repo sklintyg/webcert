@@ -403,7 +403,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
@@ -458,7 +458,7 @@ public class DbDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadyForSignOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
