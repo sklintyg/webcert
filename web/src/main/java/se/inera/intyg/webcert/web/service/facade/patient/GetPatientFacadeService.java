@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.patient;
 
-import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
+import se.inera.intyg.common.support.facade.model.Patient;
 
 public interface GetPatientFacadeService {
 
-    PatientResponseDTO getPatient(String patientId);
+    Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException;
 }

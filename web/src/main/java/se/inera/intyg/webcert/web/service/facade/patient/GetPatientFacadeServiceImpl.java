@@ -45,28 +45,28 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
     }
 
     @Override
-    public PatientResponseDTO getPatient(String patientId) {
-        try {
-            Personnummer formattedPatientId = formatPatientId(patientId);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Getting patient info for: {}", formattedPatientId.getPersonnummerHash());
-            }
-
-            PersonSvar personSvar = puService.getPerson(formattedPatientId);
-
-            monitoringService.logPULookup(formattedPatientId, personSvar.getStatus().name());
-
-            return convertPatientResponse(personSvar, patientId);
-
-        } catch (InvalidPersonNummerException e) {
-            LOG.error(e.getMessage());
-            return null;
+    public Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException {
+        Personnummer formattedPatientId = formatPatientId(patientId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Getting patient info for: {}", formattedPatientId.getPersonnummerHash());
         }
+
+        PersonSvar personSvar = puService.getPerson(formattedPatientId);
+        monitoringService.logPULookup(formattedPatientId, personSvar.getStatus().name());
+
+        if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+            throw new PatientSearchErrorException();
+        }
+
+        return convertPatient(personSvar, patientId);
     }
 
-    private PatientResponseDTO convertPatientResponse(PersonSvar personSvar, String patientId) {
-        final var isPatientDefined = personSvar.getPerson() != null;
-        final var patient = isPatientDefined ? Patient.builder()
+    private Patient convertPatient(PersonSvar personSvar, String patientId) {
+        if (personSvar.getPerson() == null) {
+            return null;
+        }
+
+        return Patient.builder()
                 .personId(
                         PersonId.builder()
                                 .id(patientId)
