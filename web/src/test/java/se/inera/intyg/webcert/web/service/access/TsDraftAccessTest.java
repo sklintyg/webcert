@@ -53,6 +53,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowedToCreateUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToCreateUtkastNotLatestMajorVersion(AccessResult actualValue) {
         // Always creates on the latest version so it will never be an issue
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
@@ -95,6 +100,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadUtkastWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -154,6 +164,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToEditUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToEditUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
@@ -209,6 +224,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToSignUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToSignUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
@@ -260,6 +280,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToDeleteUtkastWhenMissingSubscription(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
@@ -319,6 +344,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToPrintUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToPrintUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
@@ -374,6 +404,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     }
 
     @Override
+    protected void assertAllowToForwardUtkastWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToForwardUtkastNotLatestMajorVersion(AccessResult actualValue) {
         assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
@@ -426,6 +461,11 @@ public class TsDraftAccessTest extends DraftAccessTest {
     @Override
     protected void assertAllowToReadyForSignNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToReadyForSignWhenMissingSubscription(AccessResult actualValue) {
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualValue.getCode());
     }
 
     @Override

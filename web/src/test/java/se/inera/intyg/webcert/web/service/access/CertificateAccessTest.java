@@ -65,6 +65,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadWhenMissingSubscription(accessService.allowToRead(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReadWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
@@ -153,6 +162,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToReplaceNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReplaceWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReplaceWhenMissingSubscription(accessService.allowToReplace(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReplaceWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToReplaceNotLatestMajorVersion() {
@@ -261,6 +279,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToRenewNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToRenewWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToRenewWhenMissingSubscription(accessService.allowToRenew(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToRenewWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToRenewNotLatestMajorVersion() {
@@ -425,6 +452,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToDeleteNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToDeleteWhenNoSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToDeleteWhenNoSubscription(accessService.allowToInvalidate(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToDeleteWhenNoSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToDeleteNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -530,6 +566,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToPrintNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToPrintWhenMissingSubscription() {
+        setupMocksForNoConditions();
+
+        assertAllowToPrintWhenMissingSubscription(accessService.allowToPrint(accessEvaluationParameters, isEmployer));
+    }
+
+    abstract protected void assertAllowToPrintWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToPrintNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -627,6 +672,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSendNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSendWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToSendWhenMissingSubscription(accessService.allowToSend(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSendWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToSendNotLatestMajorVersion() {
@@ -728,6 +782,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToCreateQuestionNoConditions(AccessResult actualValue);
 
     @Test
+    public void isallowToCreateQuestionWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToCreateQuestionWhenMissingSubscription(accessService.allowToCreateQuestion(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToCreateQuestionWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToCreateQuestionNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -827,6 +890,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToAnswerComplementNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToAnswerComplementWhenMissingSubscription(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToAnswerComplementNotLatestMajorVersion() {
@@ -936,6 +1008,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToAnswerQuestionNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToAnswerQuestionWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToAnswerQuestionWhenMissingSubscription(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToAnswerQuestionNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -1041,6 +1122,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToAnswerAdminQuestionWhenMissingSubscription(accessService.allowToAnswerAdminQuestion(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToAnswerAdminQuestionNotLatestMajorVersion() {
@@ -1152,6 +1242,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToSetComplementAsHandledWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToSetComplementAsHandledWhenMissingSubscription(accessService.allowToSetComplementAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToSetComplementAsHandledNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -1259,6 +1358,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSetQuestionAsHandledNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetQuestionAsHandledWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToSetQuestionAsHandledWhenMissingSubscription(accessService.allowToSetQuestionAsHandled(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToSetQuestionAsHandledWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToSetQuestionAsHandledNotLatestMajorVersion() {
@@ -1369,6 +1477,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToReadQuestionsNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToReadQuestionsWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadQuestionsWhenMissingSubscription(accessService.allowToReadQuestions(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToReadQuestionsWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadQuestionsNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -1466,6 +1583,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToForwardQuestionsWhenMissingSubscription(accessService.allowToForwardQuestions(accessEvaluationParameters));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToForwardQuestionsNotLatestMajorVersion() {

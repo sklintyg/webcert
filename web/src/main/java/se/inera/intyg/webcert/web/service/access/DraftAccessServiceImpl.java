@@ -81,6 +81,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkRenew(false)
             .checkPatientSecrecy()
             .checkUnique()
+            .checkSubscription()
             .evaluate();
     }
 
@@ -109,6 +110,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -147,6 +149,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnique(true)
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -192,6 +195,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -208,6 +212,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -226,6 +231,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientDeceased(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 

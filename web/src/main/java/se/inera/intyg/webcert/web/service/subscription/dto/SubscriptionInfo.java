@@ -29,6 +29,9 @@ public class SubscriptionInfo implements Serializable {
     private SubscriptionAction subscriptionAction;
 
     @JsonProperty
+    private List<String> careProvidersForSubscriptionModal;
+
+    @JsonProperty
     private List<String> careProvidersMissingSubscription;
 
     @JsonProperty
@@ -45,6 +48,7 @@ public class SubscriptionInfo implements Serializable {
         this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
         this.requireSubscriptionStartDate = requireSubscriptionStartDate;
         this.subscriptionAction = SubscriptionAction.NONE;
+        this.careProvidersForSubscriptionModal = Collections.emptyList();
         this.careProvidersMissingSubscription = Collections.emptyList();
     }
 
@@ -56,12 +60,19 @@ public class SubscriptionInfo implements Serializable {
         this.subscriptionAction = subscriptionAction;
     }
 
+    public List<String> getCareProvidersForSubscriptionModal() {
+        return careProvidersForSubscriptionModal;
+    }
+
+    public void setCareProvidersForSubscriptionModal(List<String> careProvidersForSubscriptionModal) {
+        this.careProvidersForSubscriptionModal = careProvidersForSubscriptionModal;
+    }
+
     public List<String> getCareProvidersMissingSubscription() {
         return careProvidersMissingSubscription;
     }
 
-    public void setCareProvidersMissingSubscription(
-        List<String> careProvidersMissingSubscription) {
+    public void setCareProvidersMissingSubscription(List<String> careProvidersMissingSubscription) {
         this.careProvidersMissingSubscription = careProvidersMissingSubscription;
     }
 

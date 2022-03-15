@@ -19,21 +19,27 @@
 package se.inera.intyg.webcert.web.service.access;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -187,4 +193,74 @@ public class AccessServiceEvaluationTest {
 
         assertEquals(AccessResultCode.AUTHORIZATION_BLOCKED, actualAccessResult.getCode());
     }
-}
+
+    @Test
+    public void shallAllowIfHasSubscriptionWhenSubscriptionRequired() {
+        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 2, UserOriginType.NORMAL);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkSubscription()
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallNotAllowIfMissingSubscriptionWhenSubscriptionRequired() {
+        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.NORMAL);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkSubscription()
+            .evaluate();
+
+        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfMissingSubscriptionWhenSubscriptionRequiredButNotFristaende() {
+        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.DJUPINTEGRATION);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkSubscription()
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfMissingSubscriptionWhenSubscriptionNotRequired() {
+        setupMocksForSubscriptionCheck(SubscriptionAction.NONE, 3, UserOriginType.NORMAL);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+            .checkSubscription()
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    private void setupMocksForSubscriptionCheck(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions,
+        UserOriginType userOriginType) {
+        final var subscriptionInfo = getSubscriptionInfo(subscriptionAction, numberOfMissingSubscriptions);
+        final var selectedCareProviderMock = mock(Vardgivare.class);
+        when(user.getSubscriptionInfo()).thenReturn(subscriptionInfo);
+        when(user.getOrigin()).thenReturn(userOriginType.name());
+        when(user.getValdVardgivare()).thenReturn(selectedCareProviderMock);
+        when(selectedCareProviderMock.getId()).thenReturn("CARE_PROVIDER_HSA_ID_3");
+    }
+
+    private SubscriptionInfo getSubscriptionInfo(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions) {
+        final var missingSubscriptionList = getMissingSubscriptionsList(numberOfMissingSubscriptions);
+        final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
+        subscriptionInfo.setSubscriptionAction(subscriptionAction);
+        subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
+        return  subscriptionInfo;
+    }
+
+    private List<String> getMissingSubscriptionsList(int numberOfMissingSubscriptions) {
+        final var careProviderHsaIds = new ArrayList<String>();
+        for (var i = 1; i <= numberOfMissingSubscriptions; i++) {
+            careProviderHsaIds.add("CARE_PROVIDER_HSA_ID_" + i);
+        }
+        return careProviderHsaIds;
+    }
+ }
