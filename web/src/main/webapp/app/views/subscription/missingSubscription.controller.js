@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$rootScope', '$scope', '$window', '$sanitize', '$state',
+angular.module('webcert').controller('webcert.MissingSubscriptionCtrl', ['$log', '$rootScope', '$scope', '$window', '$sanitize', '$state',
   '$location', 'common.UserModel', 'common.subscriptionService', 'common.dynamicLinkService', 'common.SubscriptionProxy',
   'common.messageService',
   function($log, $rootScope, $scope, $window, $sanitize, $state, $location, UserModel, subscriptionService, dynamicLinkService,
@@ -27,22 +27,18 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
     UserModel.transitioning = false;
 
     $scope.modalBody = {
-      infoCheck: messageService.getProperty('subscription.warning.info.check',
-          {subscriptionAdaptationStartDate: subscriptionService.getSubscriptionAdaptationStartDate()}),
-      infoGeneral: messageService.getProperty('subscription.warning.info.general',
-          {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
-      infoEleg: messageService.getProperty('subscription.warning.info.eleg',
-          {requireSubscriptionStartDate: subscriptionService.getRequireSubscriptionStartDate()}),
-      infoLink: 'subscription.warning.info.link'
+      infoCheck: messageService.getProperty('subscription.missing.info.check'),
+      infoGeneral: 'subscription.missing.info.general',
+      infoLink: 'subscription.missing.info.link'
     };
 
     $scope.modalOptions = {
       body: $scope.modalBody,
-      modalBodyTemplateUrl: '/app/views/subscription/subscription.body.html',
-      titleId: 'subscription.warning.title.text',
+      modalBodyTemplateUrl: '/app/views/subscription/missingSubscription.body.html',
+      titleId: 'subscription.missing.title.text',
       buttons: [
         {
-          name: 'subscription.warning.modal.close',
+          name: 'subscription.missing.modal.close',
           clickFn: function() {
             subscriptionService.acknowledgeSubscriptionModal();
             subscriptionProxy.acknowledgeSubscriptionModal(function() {
@@ -51,7 +47,7 @@ angular.module('webcert').controller('webcert.SubscriptionCtrl', ['$log', '$root
             });
           },
           text: 'common.close',
-          id: 'subscriptionWarningModalClose',
+          id: 'missingSubscriptionModalClose',
           className: 'btn-default'
         }
       ],

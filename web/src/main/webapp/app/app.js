@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -282,6 +282,7 @@
                 checkAndLogConnectivity(toState);
                 //termsCheck(event, toState);
                 subscriptionWarning(event, toState, fromState);
+                checkMissingSubscription(event, toState, fromState);
                 preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
             }
@@ -337,6 +338,14 @@
             subscriptionService.shouldDisplayWarning()) {
           event.preventDefault();
           $state.go('webcert.subscription');
+        }
+      }
+
+      function checkMissingSubscription(event, toState, fromState) {
+        if (toState.name !== 'webcert.missingSubscription' && fromState.name !== 'webcert.missingSubscription' &&
+            subscriptionService.shouldDisplayMissingSubscriptionModal()) {
+          event.preventDefault();
+          $state.go('webcert.missingSubscription');
         }
       }
 

@@ -83,6 +83,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkPatientSecrecy()
             .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -101,6 +102,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(false)
             .checkPatientSecrecy()
             .checkUnit(true, true)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -146,6 +148,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -163,6 +166,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -180,6 +184,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -202,6 +207,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -221,6 +227,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(false)
             .checkPatientSecrecy()
             .checkUnique()
+            .checkSubscription()
             .evaluate();
     }
 
@@ -255,6 +262,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -293,6 +301,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -310,6 +319,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
@@ -327,6 +337,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkRenew(true)
             .checkPatientSecrecy()
             .checkUnit(false, false)
+            .checkSubscription()
             .evaluate();
     }
 
