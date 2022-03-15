@@ -46,9 +46,9 @@ public class PatientController {
         try {
             final var patient = getPatientFacadeService.getPatient(patientId);
             return Response.ok(PatientResponseDTO.create(patient)).build();
-        } catch(InvalidPatientIdException e) {
+        } catch (InvalidPatientIdException e) {
             return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
-        } catch(PatientSearchErrorException e) {
+        } catch (PatientSearchErrorException e) {
             return Response.ok(PatientResponseDTO.createErrorResponse()).build();
         }
     }
