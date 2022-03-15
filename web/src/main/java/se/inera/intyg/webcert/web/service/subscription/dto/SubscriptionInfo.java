@@ -40,6 +40,8 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private String requireSubscriptionStartDate;
 
+    private static final long serialVersionUID = -1586500199315227249L;
+
     public SubscriptionInfo() {
 
     }
