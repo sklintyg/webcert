@@ -5,7 +5,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <%--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2022 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -55,6 +55,8 @@
   <div class="wc-main-menu-wrapper">
     <wc-main-menu></wc-main-menu>
   </div>
+
+  <wc-missing-subscription-banner></wc-missing-subscription-banner>
 
   <wc-modal-user-survey app-label="'wc'"></wc-modal-user-survey>
 

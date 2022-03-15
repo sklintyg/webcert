@@ -36,6 +36,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -70,6 +71,7 @@ public final class AccessServiceEvaluation {
     private boolean checkRenew;
     private boolean checkPatientSecrecy;
     private boolean checkPatientTestIndicator;
+    private boolean checkSubscription;
     private boolean checkUnique;
     private boolean checkUniqueOnlyCertificate;
     private boolean checkUnit;
@@ -412,6 +414,11 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
+    public AccessServiceEvaluation checkSubscription() {
+        this.checkSubscription = true;
+        return this;
+    }
+
     /**
      * Evaluate criterias and returns an AccessResult.
      *
@@ -461,7 +468,24 @@ public final class AccessServiceEvaluation {
             accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate, certificateId);
         }
 
+        if (checkSubscription && accessResult.isEmpty()) {
+            accessResult = isSubscriptionRuleValid(user);
+        }
+
         return accessResult.orElseGet(AccessResult::noProblem);
+    }
+
+    private Optional<AccessResult> isSubscriptionRuleValid(WebCertUser user) {
+        final var missingSubscriptionWhenRequired = isMissingSubscriptionWhenRequired(user);
+
+        if (!missingSubscriptionWhenRequired) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            AccessResult.create(AccessResultCode.MISSING_SUBSCRIPTION,
+                createMessage("Action is blocked due to missing subscription"))
+        );
     }
 
     private Optional<AccessResult> isLatestMajorVersionRuleValid(WebCertUser user, String certificateType, String certificateTypeVersion) {
@@ -735,4 +759,17 @@ public final class AccessServiceEvaluation {
         return message;
     }
 
+    private boolean isMissingSubscriptionWhenRequired(WebCertUser webCertUser) {
+        final var isFristaendeWebcertUser = webCertUser.getOrigin().equals(UserOriginType.NORMAL.name());
+        final var subscriptionInfo = webCertUser.getSubscriptionInfo();
+        final var isSubscriptionRequired = subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK;
+
+        if (isFristaendeWebcertUser && isSubscriptionRequired) {
+            final var missingSubscriptions =  subscriptionInfo.getCareProvidersMissingSubscription();
+            final var selectedCareProvider = webCertUser.getValdVardgivare();
+            return selectedCareProvider != null && missingSubscriptions.contains(selectedCareProvider.getId());
+        }
+
+        return false;
+    }
 }

@@ -227,7 +227,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
             REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
 
         assertNotNull(webcertUser);
-        verify(subscriptionService, times(1)).checkSubscriptionElegWebCertUser(any(WebCertUser.class));
+        verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
             REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
 
         assertNotNull(webcertUser);
-        verify(subscriptionService, times(1)).checkSubscriptionElegWebCertUser(any(WebCertUser.class));
+        verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
 
     @Test(expected = MissingSubscriptionException.class)
@@ -312,16 +312,20 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
             REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
 
         assertNotNull(webcertUser);
-        verify(subscriptionService, times(0)).checkSubscriptions(any(WebCertUser.class));
+        verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
 
-    @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowMissingSubscriptionExceptionWhenSubscriptionRequiredAndNoSubscriptionAndAuthorized() {
+    @Test
+    public void shouldAdmitUserWhenMissingSubscriptionExceptionWhenSubscriptionRequiredAndNoSubscriptionAndAuthorized() {
         setCheckSubscriptionElegMockToReturn(false);
         setSubscriptionFeaturesMocksToReturn(false, true);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
-        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+        final var webcertUser = testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare,
+            REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(webcertUser);
+        verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
 
     @Test(expected = PrivatePractitionerAuthorizationException.class)
@@ -426,7 +430,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     }
 
     private void setCheckSubscriptionElegMockToReturn(boolean hasSubscription) {
-        when(subscriptionService.checkSubscriptionElegWebCertUser(any(WebCertUser.class))).thenReturn(hasSubscription);
+        when(subscriptionService.checkSubscriptions(any(WebCertUser.class))).thenReturn(hasSubscription);
     }
 
     private void setUnauthorizedElegMissingSubscriptionMockToReturn(boolean missingSubscription) {

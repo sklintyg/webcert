@@ -36,11 +36,11 @@ public class SubscriptionController extends AbstractApiController {
     private SubscriptionService subscriptionService;
 
     @GET
-    @Path("/acknowledgeWarning")
+    @Path("/acknowledgeSubscriptionModal")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity<String> acknowledgeSubscriptionWarning() {
+    public ResponseEntity<String> acknowledgeSubscriptionModal() {
         final var webCertUser = getWebCertUserService().getUser();
-        subscriptionService.acknowledgeSubscriptionWarning(webCertUser);
+        subscriptionService.acknowledgeSubscriptionModal(webCertUser);
         return ResponseEntity.ok().build();
     }
 }

@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 abstract public class LockedDraftAccessTest extends AccessTest {
@@ -53,6 +54,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToReadUtkastWhenMissingSubscription(accessService.allowToRead(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToReadUtkastWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToReadNotLatestMajorVersion() {
@@ -176,6 +188,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     abstract protected void assertAllowToCopyNoConditions(AccessResult actualValue);
 
     @Test
+    public void isAllowToCopyWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToCopyWhenMissingSubscriptions(accessService.allowToCopy(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToCopyWhenMissingSubscriptions(AccessResult actualValue);
+
+    @Test
     public void isAllowToCopyNotLatestMajorVersion() {
         setupMocksForNotLatestMajorVersion();
 
@@ -239,6 +262,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
             accessService.allowToCopy(
@@ -268,6 +292,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
             accessService.allowToCopy(
@@ -297,6 +322,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
+        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
             accessService.allowToCopy(
@@ -393,6 +419,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToDeleteUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToDeleteUtkastWhenMissingSubscription(accessService.allowToInvalidate(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToDeleteUtkastWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToDeleteNotLatestMajorVersion() {
@@ -520,6 +557,17 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToPrintUtkastWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToPrintUtkastWhenMissingSubscription(accessService.allowToPrint(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+        ));
+    }
+
+    abstract protected void assertAllowToPrintUtkastWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToPrintNotLatestMajorVersion() {

@@ -98,6 +98,11 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action because not the latest version.
      */
-    NOT_LATEST_MAJOR_VERSION
+    NOT_LATEST_MAJOR_VERSION,
+
+    /**
+     * No access. Not allowed to perform action because selected care provider has no subscription.
+     */
+    MISSING_SUBSCRIPTION
 
 }
