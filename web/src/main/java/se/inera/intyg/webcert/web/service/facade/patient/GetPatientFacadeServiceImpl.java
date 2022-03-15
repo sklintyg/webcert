@@ -82,9 +82,7 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
                 .deceased(personSvar.getPerson().isAvliden())
                 .protectedPerson(personSvar.getPerson().isSekretessmarkering())
                 .testIndicated(personSvar.getPerson().isTestIndicator())
-                .build() : Patient.builder().build();
-
-        return PatientResponseDTO.create(patient, personSvar.getStatus());
+                .build();
     }
 
     private String getFullName(PersonSvar personSvar) {
@@ -95,8 +93,7 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
         return patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn();
     }
 
-    private Personnummer formatPatientId(String personId) throws InvalidPersonNummerException {
-        return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new InvalidPersonNummerException("Could not create Personnummer object from personId: " + personId));
+    private Personnummer formatPatientId(String personId) throws InvalidPatientIdException {
+        return Personnummer.createPersonnummer(personId).orElseThrow(InvalidPatientIdException::new);
     }
 }

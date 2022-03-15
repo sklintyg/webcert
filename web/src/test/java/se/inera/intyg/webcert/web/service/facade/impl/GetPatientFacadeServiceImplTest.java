@@ -28,6 +28,8 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -68,114 +70,161 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithPatientId() {
+    void shallGetPatientWithPatientId() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(PATIENT_ID, response.getPatient().getPersonId().getId());
+        assertEquals(PATIENT_ID, patient.getPersonId().getId());
     }
 
     @Test
-    void shallGetPatientWithFirstName() {
+    void shallGetPatientWithFirstName() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(FIRSTNAME, response.getPatient().getFirstName());
+        assertEquals(FIRSTNAME, patient.getFirstName());
     }
 
     @Test
-    void shallGetPatientWithLastName() {
+    void shallGetPatientWithLastName() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(LASTNAME, response.getPatient().getLastName());
+        assertEquals(LASTNAME, patient.getLastName());
     }
 
     @Test
-    void shallGetPatientWithMiddleName() {
+    void shallGetPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(MIDDLENAME, response.getPatient().getMiddleName());
+        assertEquals(MIDDLENAME, patient.getMiddleName());
     }
 
     @Test
-    void shallSetFullNameForPatientWithMiddleName() {
+    void shallSetFullNameForPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(FIRSTNAME + " " + MIDDLENAME + " " + LASTNAME, response.getPatient().getFullName());
+        assertEquals(FIRSTNAME + " " + MIDDLENAME + " " + LASTNAME, patient.getFullName());
     }
 
     @Test
-    void shallSetFullNameForPatientWithoutMiddleName() {
+    void shallSetFullNameForPatientWithoutMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatientWithoutMiddleName();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertEquals(FIRSTNAME + " " + LASTNAME, response.getPatient().getFullName());
+        assertEquals(FIRSTNAME + " " + LASTNAME, patient.getFullName());
     }
 
     @Test
-    void shallGetPatientWithProtectedPersonFlag() {
+    void shallGetPatientWithProtectedPersonFlag() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient(true, false, false);
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertTrue(response.getPatient().isProtectedPerson());
-        assertFalse(response.getPatient().isDeceased());
-        assertFalse(response.getPatient().isTestIndicated());
+        assertTrue(patient.isProtectedPerson());
+        assertFalse(patient.isDeceased());
+        assertFalse(patient.isTestIndicated());
     }
 
     @Test
-    void shallGetPatientWithDeceasedFlag() {
+    void shallGetPatientWithDeceasedFlag() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient(false, false, true);
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertTrue(response.getPatient().isDeceased());
-        assertFalse(response.getPatient().isProtectedPerson());
-        assertFalse(response.getPatient().isTestIndicated());
+        assertTrue(patient.isDeceased());
+        assertFalse(patient.isProtectedPerson());
+        assertFalse(patient.isTestIndicated());
     }
 
     @Test
-    void shallGetPatientWithAllFlags() {
+    void shallGetPatientWithAllFlags() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient(true, true, true);
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertTrue(response.getPatient().isTestIndicated());
-        assertTrue(response.getPatient().isDeceased());
-        assertTrue(response.getPatient().isProtectedPerson());
+        assertTrue(patient.isTestIndicated());
+        assertTrue(patient.isDeceased());
+        assertTrue(patient.isProtectedPerson());
     }
 
     @Test
-    void shallGetPatientWithNoFlags() {
+    void shallGetPatientWithNoFlags() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
 
-        assertFalse(response.getPatient().isTestIndicated());
-        assertFalse(response.getPatient().isDeceased());
-        assertFalse(response.getPatient().isProtectedPerson());
+        assertFalse(patient.isTestIndicated());
+        assertFalse(patient.isDeceased());
+        assertFalse(patient.isProtectedPerson());
     }
 
     @Test
-    void shallLogPULookup() {
+    void shallLogPULookupIfPatientIsFound() throws InvalidPatientIdException, PatientSearchErrorException {
         setupPatient();
 
-        final var response = getPatientFacadeService.getPatient(PATIENT_ID);
+        getPatientFacadeService.getPatient(PATIENT_ID);
 
-        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), response.getStatus().name());
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "FOUND");
+    }
+
+    @Test
+    void shallLogPULookupIfPatientIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException {
+        setupPatientNotFound();
+
+        getPatientFacadeService.getPatient(PATIENT_ID);
+
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "NOT_FOUND");
+    }
+
+    @Test
+    void shallLogPULookupIfPUError() {
+        setupPatientError();
+        try {
+            getPatientFacadeService.getPatient(PATIENT_ID);
+        } catch (InvalidPatientIdException | PatientSearchErrorException e) {
+            e.printStackTrace();
+        }
+
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "ERROR");
+    }
+
+    @Test
+    void shallReturnNullIfPersonIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException {
+        setupPatientNotFound();
+        final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
+        assertNull(patient);
+    }
+
+    @Test
+    void shallThrowExceptionIfPUError() {
+        setupPatientError();
+        assertThrows(PatientSearchErrorException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
+    }
+
+    @Test
+    void shallThrowExceptionIfPatientIdIsInvalid() {
+        assertThrows(InvalidPatientIdException.class, () -> getPatientFacadeService.getPatient("121212"));
     }
 
     private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
         Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME, includeMiddleName ? MIDDLENAME : null, LASTNAME, "", "", "", testIndicated);
         return PersonSvar.found(person);
+    }
+
+    private void setupPatientNotFound() {
+        doReturn(PersonSvar.notFound()).when(puService).getPerson(any());
+    }
+
+    private void setupPatientError() {
+        doReturn(PersonSvar.error()).when(puService).getPerson(any());
     }
 }

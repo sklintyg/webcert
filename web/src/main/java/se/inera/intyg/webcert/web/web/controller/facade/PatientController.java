@@ -19,8 +19,14 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
+import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -39,12 +45,13 @@ public class PatientController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
-        final var patientResponseDTO = getPatientFacadeService.getPatient(patientId);
-
-        if (patientResponseDTO != null) {
-            return Response.ok(patientResponseDTO).build();
-        } else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        try {
+            final var patient = getPatientFacadeService.getPatient(patientId);
+            return Response.ok(PatientResponseDTO.create(patient)).build();
+        } catch(InvalidPatientIdException e) {
+            return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
+        } catch(PatientSearchErrorException e) {
+            return Response.ok(PatientResponseDTO.createErrorResponse()).build();
         }
     }
 }

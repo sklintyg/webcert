@@ -24,12 +24,28 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 public class PatientResponseDTO {
 
     private Patient patient;
-    private PersonSvar.Status status;
+    private PatientResponseStatusDTO status;
 
-    public static PatientResponseDTO create(Patient patient, PersonSvar.Status status) {
+    public static PatientResponseDTO create(Patient patient) {
         final var responseDTO = new PatientResponseDTO();
-        responseDTO.patient = patient;
-        responseDTO.status = status;
+        if (patient == null) {
+            responseDTO.status = PatientResponseStatusDTO.NOT_FOUND;
+        } else {
+            responseDTO.patient = patient;
+            responseDTO.status = PatientResponseStatusDTO.FOUND;
+        }
+        return responseDTO;
+    }
+
+    public static PatientResponseDTO createErrorResponse() {
+        final var responseDTO = new PatientResponseDTO();
+        responseDTO.status = PatientResponseStatusDTO.ERROR;
+        return responseDTO;
+    }
+
+    public static PatientResponseDTO createInvalidPatientIdResponse() {
+        final var responseDTO = new PatientResponseDTO();
+        responseDTO.status = PatientResponseStatusDTO.INVALID_PATIENT_ID;
         return responseDTO;
     }
 
@@ -41,11 +57,11 @@ public class PatientResponseDTO {
         return patient;
     }
 
-    public void setStatus(PersonSvar.Status status) {
+    public void setStatus(PatientResponseStatusDTO status) {
         this.status = status;
     }
 
-    public PersonSvar.Status getStatus() {
+    public PatientResponseStatusDTO getStatus() {
         return status;
     }
 }
