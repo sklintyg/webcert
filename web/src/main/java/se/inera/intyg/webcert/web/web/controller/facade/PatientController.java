@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;

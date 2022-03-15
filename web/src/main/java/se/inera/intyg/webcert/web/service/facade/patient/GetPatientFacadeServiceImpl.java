@@ -27,10 +27,8 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 
 @Service
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {

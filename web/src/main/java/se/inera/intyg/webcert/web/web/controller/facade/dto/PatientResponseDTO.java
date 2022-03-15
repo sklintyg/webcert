@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 
 public class PatientResponseDTO {
 

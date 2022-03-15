@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
