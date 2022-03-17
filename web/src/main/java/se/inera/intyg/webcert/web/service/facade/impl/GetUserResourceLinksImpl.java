@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -30,16 +29,13 @@ import java.util.ArrayList;
 
 @Service
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
-    private final WebCertUserService webCertUserService;
 
     @Autowired
-    public GetUserResourceLinksImpl(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
+    public GetUserResourceLinksImpl() {
     }
 
     @Override
-    public ResourceLinkDTO[] get() {
-        final var user = webCertUserService.getUser();
+    public ResourceLinkDTO[] get(WebCertUser user) {
         final var availableFunctions = new ArrayList<>(getAvailableFunctionsForUser(user));
         return availableFunctions.toArray(ResourceLinkDTO[]::new);
     }
@@ -50,7 +46,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         if (isCreateCertificateAvailable(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+                            ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
                             "",
                             "",
                             true

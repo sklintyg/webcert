@@ -22,58 +22,52 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
 
-    @Mock
-    WebCertUserService webCertUserService;
-
-    @InjectMocks
-    private GetUserResourceLinksImpl getUserResourceLinks;
-
     @Nested
     class ResourceLinks {
 
-        void setup(String origin) {
+        @InjectMocks
+        private GetUserResourceLinksImpl getUserResourceLinks;
+
+        WebCertUser getUser(String origin) {
             final var user = new WebCertUser();
             user.setOrigin(origin);
-            doReturn(user).when(webCertUserService).getUser();
+            return user;
         }
 
         @Test
         void shallIncludeLogoutIfOriginIsNormal() {
-            setup("NORMAL");
-            final var actualLinks = getUserResourceLinks.get();
+            final var user = getUser("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallNotIncludeLogoutIfOriginIsNotNormal() {
-            setup("DJUPINTEGRATION");
-            final var actualLinks = getUserResourceLinks.get();
+            final var user = getUser("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallIncludeCreateCertificateIfOriginIsNormal() {
-            setup("NORMAL");
-            final var actualLinks = getUserResourceLinks.get();
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CREATE_CERTIFICATE);
+            final var user = getUser("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallNotIncludeCreateCertificateIfOriginIsNotNormal() {
-            setup("DJUPINTEGRATION");
-            final var actualLinks = getUserResourceLinks.get();
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CREATE_CERTIFICATE);
+            final var user = getUser("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
     }
 }

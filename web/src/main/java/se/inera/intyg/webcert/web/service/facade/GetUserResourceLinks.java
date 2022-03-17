@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade;
 
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 public interface GetUserResourceLinks {
-
-    ResourceLinkDTO[] get();
+    ResourceLinkDTO[] get(WebCertUser user);
 }
