@@ -99,6 +99,7 @@ public class UserServiceImpl implements UserService {
             case NET_ID:
                 return SigningMethod.DSS;
             case MOBILT_BANK_ID:
+            case BANK_ID:
                 return SigningMethod.BANK_ID;
             default:
                 throw new IllegalArgumentException(
