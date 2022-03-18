@@ -98,6 +98,8 @@ public class UserServiceImpl implements UserService {
             case SITHS:
             case NET_ID:
                 return SigningMethod.DSS;
+            case MOBILT_BANK_ID:
+                return SigningMethod.BANK_ID;
             default:
                 throw new IllegalArgumentException(
                     String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
@@ -105,6 +107,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getRole(WebCertUser webCertUser) {
+        // TODO This null check is a TEMPORARY FIX and MUST be replaced with proper functionality.
+        if (webCertUser.getRoleTypeName() == null) {
+            return "Läkare";
+        }
         return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör"
             : webCertUser.getRoleTypeName().split(" ")[0];
     }
