@@ -19,18 +19,21 @@
 
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.infra.driftbannerdto.Banner;
-
 import java.util.List;
+import se.inera.intyg.infra.driftbannerdto.Banner;
 
 public class ConfigurationDTO {
 
     private String version;
     private List<Banner> banners;
+    private String sakerhetstjanstIdpUrl;
+    private String cgiFunktionstjansterIdpUrl;
 
-    public ConfigurationDTO(String version, List<Banner> banners) {
+    public ConfigurationDTO(String version, List<Banner> banners, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.banners = banners;
+        this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
+        this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
     }
 
     public ConfigurationDTO() {
@@ -46,6 +49,14 @@ public class ConfigurationDTO {
 
     public List<Banner> getBanners() {
         return banners;
+    }
+
+    public String getSakerhetstjanstIdpUrl() {
+        return sakerhetstjanstIdpUrl;
+    }
+
+    public String getCgiFunktionstjansterIdpUrl() {
+        return cgiFunktionstjansterIdpUrl;
     }
 
 }

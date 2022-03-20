@@ -48,6 +48,12 @@ public class ConfigController {
     @Value("${project.version}")
     private String version;
 
+    @Value("${sakerhetstjanst.saml.idp.metadata.url}")
+    private String sakerhetstjanstIdpUrl;
+
+    @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
+    private String cgiFunktionstjansterIdpUrl;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -68,11 +74,11 @@ public class ConfigController {
             LOG.debug("Getting configuration");
         }
         final var banners = iaBannerService.getCurrentBanners()
-                .stream()
-                .filter((banner -> banner.getApplication() == Application.WEBCERT))
-                .collect(Collectors.toList());
+            .stream()
+            .filter((banner -> banner.getApplication() == Application.WEBCERT))
+            .collect(Collectors.toList());
 
-        return Response.ok(new ConfigurationDTO(version, banners)).build();
+        return Response.ok(new ConfigurationDTO(version, banners, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
     }
 
     @GET
