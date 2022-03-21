@@ -47,7 +47,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             resourceLinks.add(
                     ResourceLinkDTO.create(
                             ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
-                            "",
+                            "Sök / skriv intyg",
                             "",
                             true
                     )
@@ -58,7 +58,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             resourceLinks.add(
                     ResourceLinkDTO.create(
                             ResourceLinkTypeDTO.LOG_OUT,
-                            "",
+                            "Logga ut",
                             "",
                             true
                     )
