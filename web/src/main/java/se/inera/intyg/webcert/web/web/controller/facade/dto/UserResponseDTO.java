@@ -22,22 +22,22 @@ import se.inera.intyg.common.support.facade.model.user.User;
 
 public class UserResponseDTO {
 
-    private User user;
+    private User loggedInUser;
     private ResourceLinkDTO[] links;
 
     public static UserResponseDTO create(User user, ResourceLinkDTO[] links) {
-        final var certificateDTO = new UserResponseDTO();
-        certificateDTO.setUser(user);
-        certificateDTO.setLinks(links);
-        return certificateDTO;
+        final var userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setLoggedInUser(user);
+        userResponseDTO.setLinks(links);
+        return userResponseDTO;
     }
 
-    private User getUser() {
-        return user;
+    public User getLoggedInUser() {
+        return loggedInUser;
     }
 
-    private void setUser(User user) {
-        this.user = user;
+    public void setLoggedInUser(User loggedInUser) {
+        this.loggedInUser = loggedInUser;
     }
 
     public ResourceLinkDTO[] getLinks() {
