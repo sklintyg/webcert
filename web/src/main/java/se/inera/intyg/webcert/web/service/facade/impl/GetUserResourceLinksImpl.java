@@ -43,7 +43,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForUser(WebCertUser user) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        if (isCreateCertificateAvailable(user)) {
+        if (hasAccessToSearchCreatePage(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
                             ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
@@ -67,15 +67,19 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         return resourceLinks;
     }
 
-    private boolean isCreateCertificateAvailable(WebCertUser user) {
-        return isOriginNormal(user.getOrigin());
+    private boolean hasAccessToSearchCreatePage(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean isLogOutAvailable(WebCertUser user) {
-        return isOriginNormal(user.getOrigin());
+        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean isOriginNormal(String origin) {
         return origin.equals("NORMAL");
+    }
+
+    private boolean isOriginUthopp(String origin) {
+        return origin.equals("UTHOPP");
     }
 }

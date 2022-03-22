@@ -50,7 +50,14 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallNotIncludeLogoutIfOriginIsNotNormal() {
+        void shallIncludeLogoutIfOriginIsUthopp() {
+            final var user = getUser("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
+        }
+
+        @Test
+        void shallNotIncludeLogoutIfOriginIsDjupintegration() {
             final var user = getUser("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
@@ -64,7 +71,14 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallNotIncludeCreateCertificateIfOriginIsNotNormal() {
+        void shallIncludeCreateCertificateIfOriginIsUthopp() {
+            final var user = getUser("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
+
+        @Test
+        void shallNotIncludeCreateCertificateIfOriginIsDjupintegration() {
             final var user = getUser("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
