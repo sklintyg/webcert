@@ -18,12 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-public class PatientStatusesDTO {
+public class PatientListInfoDTO {
+    private String id;
     private boolean protectedPerson;
     private boolean deceased;
     private boolean testIndicator;
 
-    public PatientStatusesDTO(boolean protectedPerson, boolean deceased, boolean testIndicator) {
+    public PatientListInfoDTO(String id, boolean protectedPerson, boolean deceased, boolean testIndicator) {
+        this.id = id;
         this.protectedPerson = protectedPerson;
         this.deceased = deceased;
         this.testIndicator = testIndicator;
@@ -51,5 +53,13 @@ public class PatientStatusesDTO {
 
     public void setTestIndicator(boolean testIndicator) {
         this.testIndicator = testIndicator;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

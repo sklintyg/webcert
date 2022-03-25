@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -32,6 +31,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListColumnTypeDTO;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
@@ -88,7 +88,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private void logListUsage(WebCertUser user, List<CertificateListItemDTO> paginatedList) {
-        paginatedList.stream().map((item) -> item.getPatientId().getId()).distinct().forEach(
+        paginatedList.stream().map((item) -> item.getPatientListInfo().getId()).distinct().forEach(
                 id -> performPDLLogging(user, id)
         );
     }
@@ -184,34 +184,29 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
     private CertificateListItemDTO convertListItem(ListIntygEntry listIntygEntry) {
         final var listItem = new CertificateListItemDTO();
-        final var patientStatuses = new PatientStatusesDTO(listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
+        final var patientListInfo = new PatientListInfoDTO(listIntygEntry.getPatientId().getPersonnummerWithDash(), listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
         listItem.setCertificateId(listIntygEntry.getIntygId());
         listItem.setCertificateType(listIntygEntry.getIntygType());
         listItem.setForwarded(listIntygEntry.isVidarebefordrad());
-        listItem.setPatientStatuses(patientStatuses);
+        listItem.setPatientListInfo(patientListInfo);
         listItem.setStatus(convertStatus(UtkastStatus.fromValue(listIntygEntry.getStatus())));
         listItem.setSaved(listIntygEntry.getLastUpdatedSigned());
         listItem.setSavedBy(listIntygEntry.getUpdatedSignedBy());
         listItem.setCertificateTypeName(listIntygEntry.getIntygTypeName());
-        listItem.setPatientId(
-                PersonId.builder()
-                        .id(listIntygEntry.getPatientId().getPersonnummerWithDash())
-                        .build()
-        );
         return listItem;
     }
 
-    private Comparator<CertificateListItemDTO> getCertificateComparator(CertificateListOrderTypeDTO orderBy, Boolean ascending) {
+    private Comparator<CertificateListItemDTO> getCertificateComparator(ListColumnTypeDTO orderBy, Boolean ascending) {
         Comparator<CertificateListItemDTO> comparator;
         switch (orderBy) {
-            case CERTIFICATE_TYPE:
+            case CERTIFICATE_TYPE_NAME:
                 comparator = Comparator.comparing(CertificateListItemDTO::getCertificateTypeName);
                 break;
             case STATUS:
                 comparator = Comparator.comparing(item -> item.getStatus().getName());
                 break;
             case PATIENT_ID:
-                comparator = Comparator.comparing(ie -> ie.getPatientId().getId());
+                comparator = Comparator.comparing(item -> item.getPatientListInfo().getId());
                 break;
             case FORWARDED:
                 comparator = (item1, item2) -> Boolean.compare(item1.isForwarded(), item2.isForwarded());

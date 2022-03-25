@@ -18,32 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import se.inera.intyg.common.support.facade.model.PersonId;
-
 import java.time.LocalDateTime;
 
 public class CertificateListItemDTO {
-    private String certificateId;
-    private PersonId patientId;
     private String certificateType;
-    private CertificateStatusDTO status;
-    private String savedBy;
-    private LocalDateTime saved;
-    private boolean forwarded;
-    private PatientStatusesDTO patientStatuses;
     private String certificateTypeName;
+    private CertificateStatusDTO status;
+    private LocalDateTime saved;
+    private PatientListInfoDTO patientListInfo;
+    private String savedBy;
+    private boolean forwarded;
+    private String certificateId;
 
     public CertificateListItemDTO(){}
 
-    public CertificateListItemDTO(String certificateId, PersonId patientId, String certificateType, CertificateStatusDTO status, String savedBy, LocalDateTime saved, boolean forwarded, PatientStatusesDTO patientStatuses, String certificateTypeName) {
+    public CertificateListItemDTO(String certificateId, String certificateType, CertificateStatusDTO status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfoDTO patientListInfo, String certificateTypeName) {
         this.certificateId = certificateId;
-        this.patientId = patientId;
         this.certificateType = certificateType;
         this.status = status;
         this.savedBy = savedBy;
         this.saved = saved;
         this.forwarded = forwarded;
-        this.patientStatuses = patientStatuses;
+        this.patientListInfo = patientListInfo;
         this.certificateTypeName = certificateTypeName;
     }
 
@@ -53,14 +49,6 @@ public class CertificateListItemDTO {
 
     public void setCertificateId(String certificateId) {
         this.certificateId = certificateId;
-    }
-
-    public PersonId getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(PersonId patientId) {
-        this.patientId = patientId;
     }
 
     public String getCertificateType() {
@@ -103,12 +91,12 @@ public class CertificateListItemDTO {
         this.forwarded = forwarded;
     }
 
-    public PatientStatusesDTO getPatientStatuses() {
-        return patientStatuses;
+    public PatientListInfoDTO getPatientListInfo() {
+        return patientListInfo;
     }
 
-    public void setPatientStatuses(PatientStatusesDTO patientStatuses) {
-        this.patientStatuses = patientStatuses;
+    public void setPatientListInfo(PatientListInfoDTO patientListInfo) {
+        this.patientListInfo = patientListInfo;
     }
 
     public String getCertificateTypeName() {

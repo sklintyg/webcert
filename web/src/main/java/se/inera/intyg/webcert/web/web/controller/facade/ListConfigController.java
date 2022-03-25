@@ -22,36 +22,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.DraftListConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
 
-import javax.ws.rs.POST;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/list")
-public class ListController {
+@Path("/list/config")
+public class ListConfigController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ListConfigController.class);
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final ListDraftsFacadeServiceImpl listDraftsFacadeService;
+    private final DraftListConfigFacadeServiceImpl draftListConfigFacadeService;
 
     @Autowired
-    public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService) {
-        this.listDraftsFacadeService = listDraftsFacadeService;
+    public ListConfigController(DraftListConfigFacadeServiceImpl draftListConfigFacadeService) {
+        this.draftListConfigFacadeService = draftListConfigFacadeService;
     }
 
     @Path("/draft")
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getListOfDrafts(ListDraftsRequestDTO request) {
-        LOG.debug("Getting list of drafts");
-        final var drafts = listDraftsFacadeService.get(request.getFilter());
-        return Response.ok(drafts).build();
+    public Response getListOfDraftsConfig() {
+        LOG.debug("Getting config for list of drafts");
+        final var config = draftListConfigFacadeService.get();
+        return Response.ok(config).build();
     }
 }

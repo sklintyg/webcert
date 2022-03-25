@@ -1,10 +1,10 @@
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
-public class ListFilterTextConfigDTO extends ListFilterConfigDTO {
+public class ListFilterPersonIdConfigDTO extends ListFilterConfigDTO {
     private String placeholder;
 
-    public ListFilterTextConfigDTO(String id, String title, String placeholder) {
-        super(ListFilterTypeDTO.TEXT, id, title);
+    public ListFilterPersonIdConfigDTO(String id, String title, String placeholder) {
+        super(ListFilterTypeDTO.PERSON_ID, id, title);
         this.placeholder = placeholder;
     }
 

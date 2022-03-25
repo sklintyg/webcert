@@ -1,5 +1,7 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import se.inera.intyg.webcert.web.service.facade.list.config.ListColumnTypeDTO;
+
 import java.time.LocalDateTime;
 
 public class ListDraftFilterDTO {
@@ -11,12 +13,12 @@ public class ListDraftFilterDTO {
     private String patientId;
     private Integer pageSize;
     private Integer startFrom;
-    private CertificateListOrderTypeDTO orderBy;
+    private ListColumnTypeDTO orderBy;
     private boolean ascending;
 
     public ListDraftFilterDTO() {}
 
-    public ListDraftFilterDTO(boolean forwarded, DraftStatusDTO status, LocalDateTime savedFrom, LocalDateTime savedTo, String savedByHsaID, String patientId, int pageSize, Integer startFrom, CertificateListOrderTypeDTO orderBy, boolean ascending) {
+    public ListDraftFilterDTO(boolean forwarded, DraftStatusDTO status, LocalDateTime savedFrom, LocalDateTime savedTo, String savedByHsaID, String patientId, int pageSize, Integer startFrom, ListColumnTypeDTO orderBy, boolean ascending) {
         this.forwarded = forwarded;
         this.status = status;
         this.savedFrom = savedFrom;
@@ -94,11 +96,11 @@ public class ListDraftFilterDTO {
         this.startFrom = startFrom;
     }
 
-    public CertificateListOrderTypeDTO getOrderBy() {
+    public ListColumnTypeDTO getOrderBy() {
         return orderBy;
     }
 
-    public void setOrderBy(CertificateListOrderTypeDTO orderBy) {
+    public void setOrderBy(ListColumnTypeDTO orderBy) {
         this.orderBy = orderBy;
     }
 

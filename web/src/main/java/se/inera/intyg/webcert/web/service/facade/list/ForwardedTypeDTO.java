@@ -16,10 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list;
 
-public enum ListTypeDTO {
-    DRAFTS,
-    QUESTIONS,
-    CERTIFICATES,
+public enum ForwardedTypeDTO {
+    FORWARDED("Vidarebefordrade"),
+    NOT_FORWARDED("Ej vidarebefordrade"),
+    SHOW_ALL("Visa alla");
+
+    private final String text;
+
+    ForwardedTypeDTO(String text) {
+        this.text = text;
+    }
+
+    public String getName() {
+        return text;
+    }
 }
