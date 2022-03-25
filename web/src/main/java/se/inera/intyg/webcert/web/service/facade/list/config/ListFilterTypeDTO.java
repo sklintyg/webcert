@@ -24,4 +24,7 @@ public enum ListFilterTypeDTO {
     DATE_RANGE,
     DATE,
     PERSON_ID,
+    NUMBER,
+    BOOLEAN,
+    ORDER,
 }

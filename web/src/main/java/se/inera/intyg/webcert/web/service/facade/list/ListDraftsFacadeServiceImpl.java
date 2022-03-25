@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
-import se.inera.intyg.webcert.web.service.facade.list.config.ListColumnTypeDTO;
+import se.inera.intyg.webcert.web.service.facade.list.config.*;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
@@ -70,7 +70,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
 
     @Override
-    public List<CertificateListItemDTO> get(ListDraftFilterDTO filter) {
+    public List<CertificateListItemDTO> get(ListFilterDTO filter) {
         final var user = webCertUserService.getUser();
         final var convertedFilter = convertFilter(filter);
 
@@ -79,9 +79,10 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
         intygEntryList = decorateAndFilterOriginalList(intygEntryList, user);
         List<CertificateListItemDTO> convertedList = convertList(intygEntryList);
-        sortList(convertedList, filter);
+        sortList(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
 
-        final var paginatedList = paginateList(convertedList, filter, originalSize);
+        final var paginatedList = paginateList(convertedList, convertedFilter.getStartFrom(),
+                convertedFilter.getPageSize(), originalSize);
 
         logListUsage(user, paginatedList);
         return paginatedList;
@@ -97,12 +98,13 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         return intygEntryList.stream().map(this::convertListItem).collect(Collectors.toList());
     }
 
-    private List<UtkastStatus> getStatusListFromFilter(ListDraftFilterDTO filter) {
-        if(filter.getStatus() == DraftStatusDTO.INCOMPLETE) {
+    private List<UtkastStatus> getStatusListFromFilter(String status) {
+        final var convertedStatus = DraftStatusDTO.valueOf(status);
+        if(convertedStatus == DraftStatusDTO.INCOMPLETE) {
             return List.of(UtkastStatus.DRAFT_INCOMPLETE);
-        } else if(filter.getStatus() == DraftStatusDTO.COMPLETE) {
+        } else if(convertedStatus == DraftStatusDTO.COMPLETE) {
             return List.of(UtkastStatus.DRAFT_COMPLETE);
-        } else if(filter.getStatus() == DraftStatusDTO.LOCKED) {
+        } else if(convertedStatus == DraftStatusDTO.LOCKED) {
             return List.of(UtkastStatus.DRAFT_LOCKED);
         }
         return Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE);
@@ -117,22 +119,41 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         return DraftStatusDTO.LOCKED;
     }
 
-    private UtkastFilter convertFilter(ListDraftFilterDTO filter) {
+    private UtkastFilter convertFilter(ListFilterDTO filter) {
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
         final var convertedFilter = new UtkastFilter(selectedUnitHsaId);
 
-        convertedFilter.setSavedFrom(filter.getSavedFrom());
-        convertedFilter.setSavedTo(filter.getSavedTo());
-        convertedFilter.setSavedByHsaId(filter.getSavedByHsaID());
-        convertedFilter.setPatientId(filter.getPatientId());
-        convertedFilter.setNotified(filter.isForwarded());
-        convertedFilter.setPageSize(filter.getPageSize() == null ? DEFAULT_PAGE_SIZE : filter.getPageSize());
-        convertedFilter.setStartFrom(filter.getStartFrom() == null ? 0 : filter.getStartFrom());
-        convertedFilter.setOrderBy(filter.getOrderBy() == null ? "" : filter.getOrderBy().toString());
-        convertedFilter.setOrderAscending(filter.isAscending());
-        convertedFilter.setStatusList(getStatusListFromFilter(filter));
+        ListFilterDateRangeValueDTO saved = (ListFilterDateRangeValueDTO) filter.getValue("SAVED");
+        ListFilterTextValueDTO savedBy = (ListFilterTextValueDTO) filter.getValue("SAVED_BY");
+        ListFilterPersonIdValueDTO patientId = (ListFilterPersonIdValueDTO) filter.getValue("PATIENT_ID");
+        ListFilterSelectValueDTO forwarded = (ListFilterSelectValueDTO) filter.getValue("FORWARDED");
+        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGE_SIZE");
+        ListFilterNumberValueDTO startFrom = (ListFilterNumberValueDTO) filter.getValue("START_FROM");
+        ListFilterTextValueDTO orderBy = (ListFilterTextValueDTO) filter.getValue("ORDER_BY");
+        ListFilterBooleanValueDTO ascending = (ListFilterBooleanValueDTO) filter.getValue("ASCENDING");
+        ListFilterSelectValueDTO status = (ListFilterSelectValueDTO) filter.getValue("STATUS");
+
+        convertedFilter.setSavedFrom(saved != null ? saved.getFrom() : null);
+        convertedFilter.setSavedTo(saved != null ? saved.getTo() : null);
+        convertedFilter.setSavedByHsaId(savedBy != null ? savedBy.getValue() : "");
+        convertedFilter.setPatientId(patientId != null ? patientId.getValue() : "");
+        convertedFilter.setNotified(forwarded != null ? getForwardedValue(forwarded.getValue()) : null);
+        convertedFilter.setPageSize(pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue());
+        convertedFilter.setStartFrom(startFrom == null ? 0 : startFrom.getValue());
+        convertedFilter.setOrderBy(orderBy == null ? "" : orderBy.getValue());
+        convertedFilter.setOrderAscending(ascending != null && ascending.getValue());
+        convertedFilter.setStatusList(getStatusListFromFilter(status != null ? status.getValue() : ""));
         return convertedFilter;
+    }
+
+    private Boolean getForwardedValue(String value) {
+        if(value.equals(ForwardedTypeDTO.FORWARDED.toString())) {
+            return true;
+        } else if(value.equals(ForwardedTypeDTO.NOT_FORWARDED.toString())) {
+            return false;
+        }
+        return null;
     }
 
     private boolean isStaffAllowedToViewProtectedPatients(Personnummer patientId, String intygsTyp, WebCertUser user,
@@ -158,7 +179,8 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         return IntygDraftsConverter.convertUtkastsToListIntygEntries(list);
     }
 
-    private List<ListIntygEntry> decorateAndFilterOriginalList(List<ListIntygEntry> listIntygEntries, WebCertUser user) {
+    private List<ListIntygEntry> decorateAndFilterOriginalList(
+            List<ListIntygEntry> listIntygEntries, WebCertUser user) {
         final var patientStatusMap = getPatientStatusMap(listIntygEntries);
 
         listIntygEntries = filterEntriesForProtectedPatients(user, listIntygEntries, patientStatusMap);
@@ -184,7 +206,8 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
     private CertificateListItemDTO convertListItem(ListIntygEntry listIntygEntry) {
         final var listItem = new CertificateListItemDTO();
-        final var patientListInfo = new PatientListInfoDTO(listIntygEntry.getPatientId().getPersonnummerWithDash(), listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
+        final var patientListInfo = new PatientListInfoDTO(listIntygEntry.getPatientId().getPersonnummerWithDash(),
+                listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
         listItem.setCertificateId(listIntygEntry.getIntygId());
         listItem.setCertificateType(listIntygEntry.getIntygType());
         listItem.setForwarded(listIntygEntry.isVidarebefordrad());
@@ -225,18 +248,19 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         return comparator;
     }
 
-    private void sortList(List<CertificateListItemDTO> list, ListDraftFilterDTO filter) {
-        final var comparator = getCertificateComparator(filter.getOrderBy(), filter.isAscending());
+    private void sortList(List<CertificateListItemDTO> list, String orderBy, boolean isAscending) {
+        final var comparator = getCertificateComparator(ListColumnTypeDTO.valueOf(orderBy), isAscending);
         list.sort(comparator);
     }
 
-    private List<CertificateListItemDTO> paginateList(List<CertificateListItemDTO> list, ListDraftFilterDTO filter, int originalSize) {
-        if (filter.getStartFrom() < list.size()) {
-            int toIndex = filter.getStartFrom() + filter.getPageSize();
+    private List<CertificateListItemDTO> paginateList(
+            List<CertificateListItemDTO> list, int startFrom, int pageSize, int originalSize) {
+        if (startFrom < list.size()) {
+            int toIndex = startFrom + pageSize;
             if (toIndex > list.size()) {
                 toIndex = list.size();
             }
-            return list.subList(filter.getStartFrom(), toIndex);
+            return list.subList(startFrom, toIndex);
         } else {
             return Collections.emptyList();
         }

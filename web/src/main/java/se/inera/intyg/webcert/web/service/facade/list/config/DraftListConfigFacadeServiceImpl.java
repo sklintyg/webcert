@@ -39,6 +39,7 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         config.setPageSizes(List.of(10, 20, 50, 100));
         config.setFilters(getListDraftsFilters());
         config.setOpenCertificateTooltip("Öppna utkastet.");
+        config.setSearchCertificateTooltip("Sök efter utkast.");
         config.setTableHeadings(getTableHeadings());
         config.setDefaultOrderBy(ListColumnTypeDTO.SAVED);
         return config;
@@ -62,25 +63,26 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         filters.add(getDraftStatusFilter());
         filters.add(getPatientIdFilter());
         filters.add(getSavedDateRangeFilter());
+        filters.add(getOrderByFilter());
         return filters;
     }
 
     private ListFilterConfigDTO getForwardedFilter() {
         return new ListFilterSelectConfigDTO("FORWARDED", "Vidarebefordrat",
                 List.of(
-                    ListFilterValueDTO.create(ForwardedTypeDTO.SHOW_ALL.toString(), ForwardedTypeDTO.SHOW_ALL.getName(), true),
-                    ListFilterValueDTO.create(ForwardedTypeDTO.FORWARDED.toString(), ForwardedTypeDTO.FORWARDED.getName(), false),
-                    ListFilterValueDTO.create(ForwardedTypeDTO.NOT_FORWARDED.toString(),ForwardedTypeDTO.NOT_FORWARDED.getName(), false)
+                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.SHOW_ALL.toString(), ForwardedTypeDTO.SHOW_ALL.getName(), true),
+                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.FORWARDED.toString(), ForwardedTypeDTO.FORWARDED.getName(), false),
+                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.NOT_FORWARDED.toString(),ForwardedTypeDTO.NOT_FORWARDED.getName(), false)
                 )
         );
     }
 
     private ListFilterConfigDTO getDraftStatusFilter() {
         return new ListFilterSelectConfigDTO("STATUS", "Utkast", List.of(
-                        ListFilterValueDTO.create(DraftStatusDTO.SHOW_ALL.toString(), DraftStatusDTO.SHOW_ALL.getName(), true),
-                        ListFilterValueDTO.create(DraftStatusDTO.INCOMPLETE.toString(), DraftStatusDTO.INCOMPLETE.getName(), false),
-                        ListFilterValueDTO.create(DraftStatusDTO.COMPLETE.toString(), DraftStatusDTO.COMPLETE.getName(), false),
-                        ListFilterValueDTO.create(DraftStatusDTO.LOCKED.toString(), DraftStatusDTO.LOCKED.getName(), false)
+                        ListFilterConfigValueDTO.create(DraftStatusDTO.SHOW_ALL.toString(), DraftStatusDTO.SHOW_ALL.getName(), true),
+                        ListFilterConfigValueDTO.create(DraftStatusDTO.INCOMPLETE.toString(), DraftStatusDTO.INCOMPLETE.getName(), false),
+                        ListFilterConfigValueDTO.create(DraftStatusDTO.COMPLETE.toString(), DraftStatusDTO.COMPLETE.getName(), false),
+                        ListFilterConfigValueDTO.create(DraftStatusDTO.LOCKED.toString(), DraftStatusDTO.LOCKED.getName(), false)
                 )
         );
     }
@@ -93,6 +95,10 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         final var to = new ListFilterDateConfigDTO("TO", "Till");
         final var from = new ListFilterDateConfigDTO("FROM", "Från");
         return new ListFilterDateRangeConfigDTO("SAVED", "Sparat datum", to, from);
+    }
+
+    private ListFilterConfigDTO getOrderByFilter() {
+        return new ListFilterOrderConfigDTO("ORDER_BY", "", ListColumnTypeDTO.SAVED);
     }
 
     // add doctor name

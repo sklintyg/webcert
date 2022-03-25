@@ -8,16 +8,18 @@ public class ListConfigDTO {
     private String title;
     private List<Integer> pageSizes;
     private String openCertificateTooltip;
+    private String searchCertificateTooltip;
     private TableHeadingDTO[] tableHeadings;
     private ListColumnTypeDTO defaultOrderBy;
 
     public ListConfigDTO(){}
 
-    public ListConfigDTO(List<ListFilterConfigDTO> filters, String title, List<Integer> pageSizes, String openCertificateTooltip, TableHeadingDTO[] tableHeadings, ListColumnTypeDTO defaultOrderBy) {
+    public ListConfigDTO(List<ListFilterConfigDTO> filters, String title, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeadingDTO[] tableHeadings, ListColumnTypeDTO defaultOrderBy) {
         this.filters = filters;
         this.title = title;
         this.pageSizes = pageSizes;
         this.openCertificateTooltip = openCertificateTooltip;
+        this.searchCertificateTooltip = searchCertificateTooltip;
         this.tableHeadings = tableHeadings;
         this.defaultOrderBy = defaultOrderBy;
     }
@@ -68,5 +70,13 @@ public class ListConfigDTO {
 
     public void setDefaultOrderBy(ListColumnTypeDTO defaultOrderBy) {
         this.defaultOrderBy = defaultOrderBy;
+    }
+
+    public String getSearchCertificateTooltip() {
+        return searchCertificateTooltip;
+    }
+
+    public void setSearchCertificateTooltip(String searchCertificateTooltip) {
+        this.searchCertificateTooltip = searchCertificateTooltip;
     }
 }
