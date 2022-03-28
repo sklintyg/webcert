@@ -41,7 +41,6 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         config.setOpenCertificateTooltip("Öppna utkastet.");
         config.setSearchCertificateTooltip("Sök efter utkast.");
         config.setTableHeadings(getTableHeadings());
-        config.setDefaultOrderBy(ListColumnTypeDTO.SAVED);
         return config;
     }
 
@@ -64,6 +63,7 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         filters.add(getPatientIdFilter());
         filters.add(getSavedDateRangeFilter());
         filters.add(getOrderByFilter());
+        filters.add(getAscendingFilter());
         return filters;
     }
 
@@ -99,6 +99,10 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
 
     private ListFilterConfigDTO getOrderByFilter() {
         return new ListFilterOrderConfigDTO("ORDER_BY", "", ListColumnTypeDTO.SAVED);
+    }
+
+    private ListFilterConfigDTO getAscendingFilter() {
+        return new ListFilterBooleanConfigDTO("ASCENDING", "", false);
     }
 
     // add doctor name

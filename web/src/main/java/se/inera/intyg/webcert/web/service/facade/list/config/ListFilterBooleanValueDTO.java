@@ -3,6 +3,8 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 public class ListFilterBooleanValueDTO implements ListFilterValueDTO {
     private boolean value;
 
+    public ListFilterBooleanValueDTO() {}
+
     public ListFilterBooleanValueDTO(boolean value) {
         this.value = value;
     }
