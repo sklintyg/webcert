@@ -19,14 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.DraftStatusDTO;
 import se.inera.intyg.webcert.web.service.facade.list.ForwardedTypeDTO;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService {
+
+    private final GetStaffInfoFacadeService getStaffInfoFacadeService;
+
+    @Autowired
+    public DraftListConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService) {
+        this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+    }
 
     @Override
     public ListConfigDTO get() {
@@ -36,7 +45,6 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
     private ListConfigDTO getListDraftsConfig() {
         final var config = new ListConfigDTO();
         config.setTitle("Ej signerade utkast");
-        config.setPageSizes(List.of(10, 20, 50, 100));
         config.setFilters(getListDraftsFilters());
         config.setOpenCertificateTooltip("Öppna utkastet.");
         config.setSearchCertificateTooltip("Sök efter utkast.");
@@ -60,10 +68,12 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         final var filters = new ArrayList<ListFilterConfigDTO>();
         filters.add(getForwardedFilter());
         filters.add(getDraftStatusFilter());
+        filters.add(getSavedByFilter());
         filters.add(getPatientIdFilter());
         filters.add(getSavedDateRangeFilter());
         filters.add(getOrderByFilter());
         filters.add(getAscendingFilter());
+        filters.add(getPageSizesFilter());
         return filters;
     }
 
@@ -105,5 +115,22 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         return new ListFilterBooleanConfigDTO("ASCENDING", "", false);
     }
 
-    // add doctor name
+    private ListFilterConfigDTO getPageSizesFilter() {
+        final var pageSizes = new int[]{10, 20, 50, 100};
+        return new ListFilterPageSizeConfigDTO("PAGESIZE", "Visa antal träffar", pageSizes);
+    }
+
+    private ListFilterConfigDTO getSavedByFilter() {
+        final var savedByList = getStaffInfoFacadeService.get();
+        final var convertedSavedByList = savedByList.stream().map(this::convertStaffInfoIntoSelectFilter).collect(Collectors.toList());
+        return new ListFilterSelectConfigDTO("SAVED_BY", "Sparat av", convertedSavedByList);
+    }
+
+    private ListFilterConfigValueDTO convertStaffInfoIntoSelectFilter(StaffListInfoDTO staffListInfoDTO) {
+        return ListFilterConfigValueDTO.create(staffListInfoDTO.getHsaId(), staffListInfoDTO.getName(), isDefaultSavedBy(staffListInfoDTO));
+    }
+
+    private boolean isDefaultSavedBy(StaffListInfoDTO staffListInfoDTO) {
+        return staffListInfoDTO.getHsaId().equals(getStaffInfoFacadeService.getLoggedInStaffHsaId());
+    }
 }

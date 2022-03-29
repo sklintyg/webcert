@@ -27,4 +27,5 @@ public enum ListFilterTypeDTO {
     NUMBER,
     BOOLEAN,
     ORDER,
+    PAGESIZE,
 }

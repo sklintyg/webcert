@@ -3,6 +3,8 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 public class ListFilterNumberValueDTO implements ListFilterValueDTO {
     private int value;
 
+    public ListFilterNumberValueDTO(){}
+
     public ListFilterNumberValueDTO(int value) {
         this.value = value;
     }

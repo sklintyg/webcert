@@ -125,14 +125,15 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var convertedFilter = new UtkastFilter(selectedUnitHsaId);
 
         ListFilterDateRangeValueDTO saved = (ListFilterDateRangeValueDTO) filter.getValue("SAVED");
-        ListFilterTextValueDTO savedBy = (ListFilterTextValueDTO) filter.getValue("SAVED_BY");
+        ListFilterSelectValueDTO savedBy = (ListFilterSelectValueDTO) filter.getValue("SAVED_BY");
         ListFilterPersonIdValueDTO patientId = (ListFilterPersonIdValueDTO) filter.getValue("PATIENT_ID");
         ListFilterSelectValueDTO forwarded = (ListFilterSelectValueDTO) filter.getValue("FORWARDED");
-        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGE_SIZE");
+        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGESIZE");
         ListFilterNumberValueDTO startFrom = (ListFilterNumberValueDTO) filter.getValue("START_FROM");
         ListFilterTextValueDTO orderBy = (ListFilterTextValueDTO) filter.getValue("ORDER_BY");
         ListFilterBooleanValueDTO ascending = (ListFilterBooleanValueDTO) filter.getValue("ASCENDING");
         ListFilterSelectValueDTO status = (ListFilterSelectValueDTO) filter.getValue("STATUS");
+
 
         convertedFilter.setSavedFrom(saved != null ? saved.getFrom() : null);
         convertedFilter.setSavedTo(saved != null ? saved.getTo() : null);

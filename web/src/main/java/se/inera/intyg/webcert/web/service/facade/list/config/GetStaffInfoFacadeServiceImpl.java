@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.service.facade.list.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService {
+
+    private final WebCertUserService webCertUserService;
+    private final UtkastService utkastService;
+
+    @Autowired
+    public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService) {
+        this.webCertUserService = webCertUserService;
+        this.utkastService = utkastService;
+    }
+
+    @Override
+    public List<StaffListInfoDTO> get() {
+        return getStaffInfo();
+    }
+
+    @Override
+    public String getLoggedInStaffHsaId() {
+        return webCertUserService.getUser().getHsaId();
+    }
+
+    private List<StaffListInfoDTO> getStaffInfo() {
+        //authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
+
+        final var user = webCertUserService.getUser();
+        final var selectedUnitHsaId = user.getValdVardenhet().getId();
+
+        final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+        return convertStaffList(staff);
+    }
+
+    private List<StaffListInfoDTO> convertStaffList(List<Lakare> staff) {
+        return staff.stream().map(this::convertStaff).collect(Collectors.toList());
+    }
+
+    private StaffListInfoDTO convertStaff(Lakare lakare) {
+        return new StaffListInfoDTO(lakare.getHsaId(), lakare.getName());
+    }
+
+
+}
