@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -86,6 +87,7 @@ public class UserServiceImpl implements UserService {
                     .build()
             )
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
             .protectedPerson(webCertUser.isSekretessMarkerad())
             .preferences(webCertUser.getAnvandarPreference())
             .build();
@@ -102,6 +104,10 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalArgumentException(
                     String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
         }
+    }
+
+    private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
+        return LoginMethod.valueOf(authenticationMethod.toString());
     }
 
     private String getRole(WebCertUser webCertUser) {
