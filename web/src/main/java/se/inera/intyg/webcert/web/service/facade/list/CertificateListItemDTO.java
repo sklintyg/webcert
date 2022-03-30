@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class CertificateListItemDTO {
     private String certificateType;
     private String certificateTypeName;
-    private CertificateStatusDTO status;
+    private String status;
     private LocalDateTime saved;
     private PatientListInfoDTO patientListInfo;
     private String savedBy;
@@ -32,7 +32,7 @@ public class CertificateListItemDTO {
 
     public CertificateListItemDTO(){}
 
-    public CertificateListItemDTO(String certificateId, String certificateType, CertificateStatusDTO status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfoDTO patientListInfo, String certificateTypeName) {
+    public CertificateListItemDTO(String certificateId, String certificateType, String status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfoDTO patientListInfo, String certificateTypeName) {
         this.certificateId = certificateId;
         this.certificateType = certificateType;
         this.status = status;
@@ -59,11 +59,11 @@ public class CertificateListItemDTO {
         this.certificateType = certificateType;
     }
 
-    public CertificateStatusDTO getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(CertificateStatusDTO status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

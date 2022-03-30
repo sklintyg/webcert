@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
 
 import javax.ws.rs.POST;
@@ -51,7 +52,7 @@ public class ListController {
     @PrometheusTimeMethod
     public Response getListOfDrafts(ListDraftsRequestDTO request) {
         LOG.debug("Getting list of drafts");
-        final var drafts = listDraftsFacadeService.get(request.getFilter());
-        return Response.ok(drafts).build();
+        final var listInfo = listDraftsFacadeService.get(request.getFilter());
+        return Response.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }
 }

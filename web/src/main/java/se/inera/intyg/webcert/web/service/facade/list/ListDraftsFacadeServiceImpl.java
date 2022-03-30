@@ -68,24 +68,34 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         this.hsaEmployeeService = hsaEmployeeService;
     }
 
-
     @Override
-    public List<CertificateListItemDTO> get(ListFilterDTO filter) {
+    public ListInfoDTO get(ListFilterDTO filter) {
         final var user = webCertUserService.getUser();
         final var convertedFilter = convertFilter(filter);
 
         var intygEntryList = getIntygEntryList(convertedFilter);
-        final var originalSize = intygEntryList.size();
+        final var totalListCount = intygEntryList.size();
 
         intygEntryList = decorateAndFilterOriginalList(intygEntryList, user);
         List<CertificateListItemDTO> convertedList = convertList(intygEntryList);
         sortList(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
 
-        final var paginatedList = paginateList(convertedList, convertedFilter.getStartFrom(),
-                convertedFilter.getPageSize(), originalSize);
+        final var paginatedList = paginateList(
+                convertedList, getStartFrom(filter), getPageSize(filter)
+        );
 
         logListUsage(user, paginatedList);
-        return paginatedList;
+        return new ListInfoDTO(totalListCount, paginatedList);
+    }
+
+    private int getPageSize(ListFilterDTO filter) {
+        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGESIZE");
+        return pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue();
+    }
+
+    private int getStartFrom(ListFilterDTO filter) {
+        ListFilterNumberValueDTO startFrom = (ListFilterNumberValueDTO) filter.getValue("START_FROM");
+       return startFrom == null ? 0 : startFrom.getValue();
     }
 
     private void logListUsage(WebCertUser user, List<CertificateListItemDTO> paginatedList) {
@@ -128,8 +138,6 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         ListFilterSelectValueDTO savedBy = (ListFilterSelectValueDTO) filter.getValue("SAVED_BY");
         ListFilterPersonIdValueDTO patientId = (ListFilterPersonIdValueDTO) filter.getValue("PATIENT_ID");
         ListFilterSelectValueDTO forwarded = (ListFilterSelectValueDTO) filter.getValue("FORWARDED");
-        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGESIZE");
-        ListFilterNumberValueDTO startFrom = (ListFilterNumberValueDTO) filter.getValue("START_FROM");
         ListFilterTextValueDTO orderBy = (ListFilterTextValueDTO) filter.getValue("ORDER_BY");
         ListFilterBooleanValueDTO ascending = (ListFilterBooleanValueDTO) filter.getValue("ASCENDING");
         ListFilterSelectValueDTO status = (ListFilterSelectValueDTO) filter.getValue("STATUS");
@@ -140,8 +148,6 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         convertedFilter.setSavedByHsaId(savedBy != null ? savedBy.getValue() : "");
         convertedFilter.setPatientId(patientId != null ? patientId.getValue() : "");
         convertedFilter.setNotified(forwarded != null ? getForwardedValue(forwarded.getValue()) : null);
-        convertedFilter.setPageSize(pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue());
-        convertedFilter.setStartFrom(startFrom == null ? 0 : startFrom.getValue());
         convertedFilter.setOrderBy(orderBy == null ? "" : orderBy.getValue());
         convertedFilter.setOrderAscending(ascending != null && ascending.getValue());
         convertedFilter.setStatusList(getStatusListFromFilter(status != null ? status.getValue() : ""));
@@ -207,13 +213,14 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
     private CertificateListItemDTO convertListItem(ListIntygEntry listIntygEntry) {
         final var listItem = new CertificateListItemDTO();
+        final var convertedStatus = convertStatus(UtkastStatus.fromValue(listIntygEntry.getStatus()));
         final var patientListInfo = new PatientListInfoDTO(listIntygEntry.getPatientId().getPersonnummerWithDash(),
                 listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
         listItem.setCertificateId(listIntygEntry.getIntygId());
         listItem.setCertificateType(listIntygEntry.getIntygType());
         listItem.setForwarded(listIntygEntry.isVidarebefordrad());
         listItem.setPatientListInfo(patientListInfo);
-        listItem.setStatus(convertStatus(UtkastStatus.fromValue(listIntygEntry.getStatus())));
+        listItem.setStatus(convertedStatus.getName());
         listItem.setSaved(listIntygEntry.getLastUpdatedSigned());
         listItem.setSavedBy(listIntygEntry.getUpdatedSignedBy());
         listItem.setCertificateTypeName(listIntygEntry.getIntygTypeName());
@@ -227,7 +234,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
                 comparator = Comparator.comparing(CertificateListItemDTO::getCertificateTypeName);
                 break;
             case STATUS:
-                comparator = Comparator.comparing(item -> item.getStatus().getName());
+                comparator = Comparator.comparing(CertificateListItemDTO::getStatus);
                 break;
             case PATIENT_ID:
                 comparator = Comparator.comparing(item -> item.getPatientListInfo().getId());
@@ -235,11 +242,12 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
             case FORWARDED:
                 comparator = (item1, item2) -> Boolean.compare(item1.isForwarded(), item2.isForwarded());
                 break;
-            case SAVED:
-                comparator = Comparator.comparing(CertificateListItemDTO::getSaved);
+            case SAVED_BY:
+                comparator = Comparator.comparing((CertificateListItemDTO::getSavedBy));
                 break;
+            case SAVED:
             default:
-                comparator = Comparator.comparing(CertificateListItemDTO::getSavedBy);
+                comparator = Comparator.comparing(CertificateListItemDTO::getSaved);
                 break;
         }
 
@@ -254,8 +262,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         list.sort(comparator);
     }
 
-    private List<CertificateListItemDTO> paginateList(
-            List<CertificateListItemDTO> list, int startFrom, int pageSize, int originalSize) {
+    private List<CertificateListItemDTO> paginateList(List<CertificateListItemDTO> list, int startFrom, int pageSize) {
         if (startFrom < list.size()) {
             int toIndex = startFrom + pageSize;
             if (toIndex > list.size()) {
