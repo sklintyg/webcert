@@ -32,6 +32,8 @@ import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.*;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -107,10 +109,18 @@ public class UserServiceImpl implements UserService {
     }
 
     private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
-        if(authenticationMethod == AuthenticationMethod.MOBILT_BANK_ID) {
-            return LoginMethod.BANK_ID;
+        switch(authenticationMethod) {
+            case FAKE:
+                return LoginMethod.FAKE;
+            case SITHS:
+                return LoginMethod.SITHS;
+            case BANK_ID:
+            case MOBILT_BANK_ID:
+                return LoginMethod.BANK_ID;
+            default:
+                throw new IllegalArgumentException(
+                    String.format("Login method '%s' not yet supported ", authenticationMethod));
         }
-        return LoginMethod.valueOf(authenticationMethod.toString());
     }
 
     private String getRole(WebCertUser webCertUser) {
