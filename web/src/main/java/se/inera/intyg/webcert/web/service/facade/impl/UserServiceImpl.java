@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -33,8 +34,6 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -131,11 +130,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getRole(WebCertUser webCertUser) {
-        if (webCertUser.getRoles() == null || webCertUser.getRoles().values().stream().findFirst().isEmpty()) {
+        try {
+            final var roles = webCertUser.getRoles().values();
+            return roles.stream().findFirst().orElseThrow().getDesc();
+
+        } catch (NullPointerException | NoSuchElementException e) {
             return "Roll ej angiven";
         }
-
-        return webCertUser.getRoles().values().stream().findFirst().get().getDesc();
     }
 
     private SelectableVardenhet getLoggedInUnit(WebCertUser webCertUser) {

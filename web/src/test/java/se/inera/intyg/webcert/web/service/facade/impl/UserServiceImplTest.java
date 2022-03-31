@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -76,33 +74,9 @@ class UserServiceImplTest {
     void setUp() {
         user = mock(WebCertUser.class);
 
-        doReturn(user)
+       doReturn(user)
             .when(webCertUserService)
             .getUser();
-
-        doReturn(HSA_ID)
-            .when(user)
-            .getHsaId();
-
-        doReturn(NAME)
-            .when(user)
-            .getNamn();
-
-        lenient().doReturn(getNavigableCareProvider())
-            .when(user)
-            .getVardgivare();
-
-        lenient().doReturn(getCareProvider())
-            .when(user)
-            .getValdVardgivare();
-
-        lenient().doReturn(getUnit())
-            .when(user)
-            .getValdVardenhet();
-
-        doReturn(PREFERENCES)
-            .when(user)
-            .getAnvandarPreference();
     }
 
     @Nested
@@ -113,6 +87,30 @@ class UserServiceImplTest {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
+
+            doReturn(getCareProvider())
+                .when(user)
+                .getValdVardgivare();
+
+            doReturn(getUnit())
+                .when(user)
+                .getValdVardenhet();
+
+            doReturn(getNavigableCareProvider())
+                .when(user)
+                .getVardgivare();
+
+            doReturn(HSA_ID)
+                .when(user)
+                .getHsaId();
+
+            doReturn(NAME)
+                .when(user)
+                .getNamn();
+
+            doReturn(PREFERENCES)
+                .when(user)
+                .getAnvandarPreference();
         }
 
         @Test
@@ -186,7 +184,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class UsersWithNoSelectedLoginUnits {
+    class UserWithNoSelectedLoginUnits {
 
         @BeforeEach
         void setUp() {
@@ -196,7 +194,7 @@ class UserServiceImplTest {
 
             doReturn(null)
                 .when(user)
-                .getValdVardgivare();
+                .getValdVardenhet();
         }
 
         @Test
@@ -274,13 +272,6 @@ class UserServiceImplTest {
     @Nested
     class SigningMethod {
 
-        @BeforeEach
-        void setUp() {
-            doReturn(Collections.emptyMap())
-                .when(user)
-                .getRoles();
-        }
-
         @Test
         void shallReturnWithSigningMethodFake() {
             doReturn(AuthenticationMethod.FAKE)
@@ -300,23 +291,26 @@ class UserServiceImplTest {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
         }
+
+        @Test
+        void shallReturnWithSigningMethodBankId() {
+            doReturn(AuthenticationMethod.MOBILT_BANK_ID)
+                .when(user)
+                .getAuthenticationMethod();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.BANK_ID, actualUser.getSigningMethod());
+        }
     }
 
     @Nested
     class LoginMethod {
 
-        @BeforeEach
-        void setUp() {
-            doReturn(ROLE)
-                    .when(user)
-                    .getRoleTypeName();
-        }
-
         @Test
         void shallReturnWithLoginMethodFake() {
             doReturn(AuthenticationMethod.FAKE)
-                    .when(user)
-                    .getAuthenticationMethod();
+                .when(user)
+                .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.FAKE, actualUser.getLoginMethod());
@@ -325,8 +319,8 @@ class UserServiceImplTest {
         @Test
         void shallReturnWithLoginMethodSiths() {
             doReturn(AuthenticationMethod.SITHS)
-                    .when(user)
-                    .getAuthenticationMethod();
+                .when(user)
+                .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.SITHS, actualUser.getLoginMethod());
@@ -334,15 +328,12 @@ class UserServiceImplTest {
 
         @Test
         void shallReturnWithLoginMethodBankIdIfMobileBankId() {
-            try {
-                doReturn(AuthenticationMethod.MOBILT_BANK_ID)
-                        .when(user)
-                        .getAuthenticationMethod();
+            doReturn(AuthenticationMethod.MOBILT_BANK_ID)
+                .when(user)
+                .getAuthenticationMethod();
 
-                final var actualUser = userService.getLoggedInUser();
-                assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
-            } catch(IllegalArgumentException e) {
-            }
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
         }
     }
 
@@ -410,14 +401,12 @@ class UserServiceImplTest {
         role.setName(ROLE_NAME);
         role.setDesc(ROLE_DESCRIPTION);
         role.setPrivileges(Collections.emptyList());
-
         return Collections.singletonMap(ROLE, role);
     }
 
     private IntegrationParameters getParameters(Boolean inactiveUnit) {
-        final var params = new IntegrationParameters(null, null, null, null,
+        return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
             false, false, inactiveUnit, false);
-        return params;
     }
 }
