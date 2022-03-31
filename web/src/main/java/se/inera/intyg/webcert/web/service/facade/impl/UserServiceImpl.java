@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
-        switch(authenticationMethod) {
+        switch (authenticationMethod) {
             case FAKE:
                 return LoginMethod.FAKE;
             case SITHS:
