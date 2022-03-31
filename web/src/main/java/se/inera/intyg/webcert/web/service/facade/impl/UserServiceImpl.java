@@ -107,6 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
+        if(authenticationMethod == AuthenticationMethod.MOBILT_BANK_ID) {
+            return LoginMethod.BANK_ID;
+        }
         return LoginMethod.valueOf(authenticationMethod.toString());
     }
 
