@@ -74,9 +74,9 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var convertedFilter = convertFilter(filter);
 
         var intygEntryList = getIntygEntryList(convertedFilter);
+        intygEntryList = decorateAndFilterOriginalList(intygEntryList, user);
         final var totalListCount = intygEntryList.size();
 
-        intygEntryList = decorateAndFilterOriginalList(intygEntryList, user);
         List<CertificateListItemDTO> convertedList = convertList(intygEntryList);
         sortList(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
 
