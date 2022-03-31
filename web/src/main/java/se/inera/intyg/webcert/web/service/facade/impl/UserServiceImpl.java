@@ -25,7 +25,9 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -45,6 +47,8 @@ public class UserServiceImpl implements UserService {
     public User getLoggedInUser() {
         final var webCertUser = webCertUserService.getUser();
         final var loggedInCareUnit = getLoggedInCareUnit(webCertUser);
+        final var loggedInUnit = getLoggedInUnit(webCertUser);
+        final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
 
@@ -55,10 +59,10 @@ public class UserServiceImpl implements UserService {
             .loggedInUnit(
                 Unit.builder()
                     .unitName(
-                        webCertUser.getValdVardenhet().getNamn()
+                        loggedInUnit.getNamn()
                     )
                     .unitId(
-                        webCertUser.getValdVardenhet().getId()
+                        loggedInUnit.getId()
                     )
                     .isInactive(
                         isInactiveUnit
@@ -78,10 +82,10 @@ public class UserServiceImpl implements UserService {
             .loggedInCareProvider(
                 Unit.builder()
                     .unitName(
-                        webCertUser.getValdVardgivare().getNamn()
+                        loggedInCareProvider.getNamn()
                     )
                     .unitId(
-                        webCertUser.getValdVardgivare().getId()
+                        loggedInCareProvider.getId()
                     )
                     .build()
             )
@@ -108,16 +112,31 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getRole(WebCertUser webCertUser) {
-        // TODO This null check is a TEMPORARY FIX and MUST be replaced with proper functionality.
-        if (webCertUser.getRoleTypeName() == null) {
-            return "Läkare";
+        if (webCertUser.getRoles() == null || webCertUser.getRoles().values().stream().findFirst().isEmpty()) {
+            return "Roll ej angiven";
         }
-        return webCertUser.getRoleTypeName().equalsIgnoreCase("VARDADMINISTRATOR") ? "Vårdadministratör"
-            : webCertUser.getRoleTypeName().split(" ")[0];
+
+        return webCertUser.getRoles().values().stream().findFirst().get().getDesc();
+    }
+
+    private SelectableVardenhet getLoggedInUnit(WebCertUser webCertUser) {
+        return hasSelectedLoginUnits(webCertUser) ? webCertUser.getValdVardenhet() : new Vardenhet();
+    }
+
+    private SelectableVardenhet getLoggedInCareProvider(WebCertUser webCertUser) {
+        return hasSelectedLoginUnits(webCertUser) ? webCertUser.getValdVardgivare() : new Vardgivare();
+    }
+
+    private boolean hasSelectedLoginUnits(WebCertUser webCertUser) {
+        return webCertUser.getValdVardenhet() != null && webCertUser.getValdVardgivare() != null;
     }
 
     @Override
     public Vardenhet getLoggedInCareUnit(WebCertUser webCertUser) {
+        if (!hasSelectedLoginUnits(webCertUser)) {
+            return new Vardenhet();
+        }
+
         final var loggedInCareProviderId = webCertUser.getValdVardgivare().getId();
         final var loggedInUnitId = webCertUser.getValdVardenhet().getId();
         final var currentCareProvider = webCertUser.getVardgivare().stream()

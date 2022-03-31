@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +42,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -62,6 +67,8 @@ class UserServiceImplTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
+    public static final String ROLE_NAME = "ROLE_NAME";
+    public static final String ROLE_DESCRIPTION = "ROLE_DESCRIPTION";
     private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
 
     @BeforeEach
@@ -80,15 +87,15 @@ class UserServiceImplTest {
             .when(user)
             .getNamn();
 
-        doReturn(getNavigableCareProvider())
+        lenient().doReturn(getNavigableCareProvider())
             .when(user)
             .getVardgivare();
 
-        doReturn(getCareProvider())
+        lenient().doReturn(getCareProvider())
             .when(user)
             .getValdVardgivare();
 
-        doReturn(getUnit())
+        lenient().doReturn(getUnit())
             .when(user)
             .getValdVardenhet();
 
@@ -105,10 +112,6 @@ class UserServiceImplTest {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
-
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
         }
 
         @Test
@@ -182,7 +185,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class Roles {
+    class UsersWithNoSelectedLoginUnits {
 
         @BeforeEach
         void setUp() {
@@ -190,36 +193,80 @@ class UserServiceImplTest {
                 .when(user)
                 .getAuthenticationMethod();
 
+            doReturn(null)
+                .when(user)
+                .getValdVardgivare();
         }
 
         @Test
-        void shallReturnWithRole() {
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
-
+        void shallReturnUnsetUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(ROLE, actualUser.getRole());
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInUnit().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInUnit().getUnitId())
+            );
         }
 
         @Test
-        void shallReturnWithVardAdministratorRole() {
-            doReturn("VARDADMINISTRATOR")
-                .when(user)
-                .getRoleTypeName();
-
+        void shallReturnUnsetCareUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals("Vårdadministratör", actualUser.getRole());
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInCareUnit().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInCareUnit().getUnitId())
+            );
         }
 
         @Test
-        void shallReturnRoleWithoutExtension() {
-            doReturn("Läkare - inom EU")
+        void shallReturnUnsetCareProviderWhenUserWithNoSelectedLoginUnit() {
+            final var actualUser = userService.getLoggedInUser();
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInCareProvider().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInCareProvider().getUnitId())
+            );
+        }
+    }
+
+    @Nested
+    class Roles {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.SITHS)
                 .when(user)
-                .getRoleTypeName();
+                .getAuthenticationMethod();
+        }
+
+        @Test
+        void shallReturnRoleDescription() {
+            doReturn(getRole())
+                .when(user)
+                .getRoles();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals("Läkare", actualUser.getRole());
+            assertEquals(ROLE_DESCRIPTION, actualUser.getRole());
+        }
+
+        @Test
+        void shallReturnMissingRoleDescriptionWhenUserRoleIsNull() {
+            doReturn(null)
+                .when(user)
+                .getRoles();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("Roll ej angiven", actualUser.getRole());
+        }
+
+        @Test
+        void shallReturnMissingRoleDescriptionWhenUserHasNoRoles() {
+            doReturn(Collections.emptyMap())
+                .when(user)
+                .getRoles();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("Roll ej angiven", actualUser.getRole());
         }
     }
 
@@ -228,9 +275,9 @@ class UserServiceImplTest {
 
         @BeforeEach
         void setUp() {
-            doReturn(ROLE)
+            doReturn(Collections.emptyMap())
                 .when(user)
-                .getRoleTypeName();
+                .getRoles();
         }
 
         @Test
@@ -262,10 +309,6 @@ class UserServiceImplTest {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
-
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
         }
 
         @Test
@@ -315,6 +358,15 @@ class UserServiceImplTest {
         unit.setId(UNIT_ID);
         unit.setNamn(UNIT_NAME);
         return unit;
+    }
+
+    private Map<String, Role> getRole() {
+        final var role = new Role();
+        role.setName(ROLE_NAME);
+        role.setDesc(ROLE_DESCRIPTION);
+        role.setPrivileges(Collections.emptyList());
+
+        return Collections.singletonMap(ROLE, role);
     }
 
     private IntegrationParameters getParameters(Boolean inactiveUnit) {
