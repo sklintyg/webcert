@@ -18,30 +18,33 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    READY_FOR_SIGN,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    COPY_CERTIFICATE_CONTINUE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
-    COMPLEMENT_CERTIFICATE,
-    CANNOT_COMPLEMENT_CERTIFICATE,
-    CREATE_CERTIFICATE_FROM_TEMPLATE,
-    CREATE_CERTIFICATE_FROM_CANDIDATE,
-    ACCESS_SEARCH_CREATE_PAGE,
-    LOG_OUT,
+import se.inera.intyg.common.support.facade.model.user.User;
+
+public class UserResponseDTO {
+
+    private User user;
+    private ResourceLinkDTO[] links;
+
+    public static UserResponseDTO create(User user, ResourceLinkDTO[] links) {
+        final var userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUser(user);
+        userResponseDTO.setLinks(links);
+        return userResponseDTO;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ResourceLinkDTO[] getLinks() {
+        return links;
+    }
+
+    public void setLinks(ResourceLinkDTO[] links) {
+        this.links = links;
+    }
 }
