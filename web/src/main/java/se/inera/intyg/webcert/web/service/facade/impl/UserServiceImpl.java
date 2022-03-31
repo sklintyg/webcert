@@ -88,10 +88,10 @@ public class UserServiceImpl implements UserService {
                     )
                     .build()
             )
-            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
-            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
             .protectedPerson(webCertUser.isSekretessMarkerad())
             .preferences(webCertUser.getAnvandarPreference())
+            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .build();
     }
 
