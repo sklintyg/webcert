@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -30,6 +31,8 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -85,9 +88,10 @@ public class UserServiceImpl implements UserService {
                     )
                     .build()
             )
-            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .protectedPerson(webCertUser.isSekretessMarkerad())
             .preferences(webCertUser.getAnvandarPreference())
+            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .build();
     }
 
@@ -101,6 +105,21 @@ public class UserServiceImpl implements UserService {
             default:
                 throw new IllegalArgumentException(
                     String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
+        }
+    }
+
+    private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
+        switch (authenticationMethod) {
+            case FAKE:
+                return LoginMethod.FAKE;
+            case SITHS:
+                return LoginMethod.SITHS;
+            case BANK_ID:
+            case MOBILT_BANK_ID:
+                return LoginMethod.BANK_ID;
+            default:
+                throw new IllegalArgumentException(
+                    String.format("Login method '%s' not yet supported ", authenticationMethod));
         }
     }
 

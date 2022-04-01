@@ -20,14 +20,13 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.*;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
@@ -66,7 +65,6 @@ import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -839,23 +837,6 @@ class GetCertificatesAvailableFunctionsImplTest {
 
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
         }
-    }
-
-    private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
-    }
-
-    private void assertExclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
-    }
-
-    private ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
-        return resourceLinks.stream()
-            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-            .findFirst()
-            .orElse(null);
     }
 
     private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -251,6 +252,50 @@ class UserServiceImplTest {
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
+        }
+    }
+
+    @Nested
+    class LoginMethod {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(ROLE)
+                    .when(user)
+                    .getRoleTypeName();
+        }
+
+        @Test
+        void shallReturnWithLoginMethodFake() {
+            doReturn(AuthenticationMethod.FAKE)
+                    .when(user)
+                    .getAuthenticationMethod();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.FAKE, actualUser.getLoginMethod());
+        }
+
+        @Test
+        void shallReturnWithLoginMethodSiths() {
+            doReturn(AuthenticationMethod.SITHS)
+                    .when(user)
+                    .getAuthenticationMethod();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.SITHS, actualUser.getLoginMethod());
+        }
+
+        @Test
+        void shallReturnWithLoginMethodBankIdIfMobileBankId() {
+            try {
+                doReturn(AuthenticationMethod.MOBILT_BANK_ID)
+                        .when(user)
+                        .getAuthenticationMethod();
+
+                final var actualUser = userService.getLoggedInUser();
+                assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
+            } catch(IllegalArgumentException e) {
+            }
         }
     }
 

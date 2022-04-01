@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.assertExclude;
+import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.assertInclude;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -268,22 +270,5 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
-    }
-
-    private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
-    }
-
-    private void assertExclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
-    }
-
-    private ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
-        return resourceLinks.stream()
-            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-            .findFirst()
-            .orElse(null);
     }
 }
