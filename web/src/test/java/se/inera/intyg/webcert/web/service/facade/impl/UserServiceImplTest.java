@@ -22,11 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -231,15 +233,12 @@ class UserServiceImplTest {
     @Nested
     class Roles {
 
-        @BeforeEach
-        void setUp() {
+        @Test
+        void shallReturnRoleDescription() {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
-        }
 
-        @Test
-        void shallReturnRoleDescription() {
             doReturn(getRole())
                 .when(user)
                 .getRoles();
@@ -250,6 +249,10 @@ class UserServiceImplTest {
 
         @Test
         void shallReturnMissingRoleDescriptionWhenUserRoleIsNull() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user)
+                .getAuthenticationMethod();
+
             doReturn(null)
                 .when(user)
                 .getRoles();
@@ -260,12 +263,28 @@ class UserServiceImplTest {
 
         @Test
         void shallReturnMissingRoleDescriptionWhenUserHasNoRoles() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user)
+                .getAuthenticationMethod();
+
             doReturn(Collections.emptyMap())
                 .when(user)
                 .getRoles();
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals("Roll ej angiven", actualUser.getRole());
+        }
+
+        @Test
+        void shallThrowNullpointerExceptionIfRolesMapHasNullValues() {
+            final var nullValueRoleMap = new HashMap<String, Role>();
+            nullValueRoleMap.put(ROLE, null);
+            doReturn(nullValueRoleMap)
+                .when(user)
+                .getRoles();
+
+            final var exception = assertThrows(NullPointerException.class, () -> userService.getLoggedInUser());
+            assertEquals(NullPointerException.class, exception.getClass());
         }
     }
 
