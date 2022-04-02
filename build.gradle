@@ -27,6 +27,7 @@ ext {
     geronimoJmsVersion = "1.1.1"
     h2Version = "2.1.210"
     hibernateVersion = "5.3.15.Final" // included because of bug in BOM version 5.4.12
+    springFrameworkVersion = "5.2.20.RELEASE" // included because of vulnerability (CVE-2022-22965) in 5.2.4.RELEASE
     jadiraUserTypeVersion = "6.0.1.GA"
     swaggerJaxrsVersion = "1.6.0"
     jakartaJwsApiVersion = "2.1.0"
@@ -96,6 +97,43 @@ allprojects {
         compile("org.hibernate:hibernate-entitymanager") {
             version {
                 strictly "${hibernateVersion}"
+            }
+        }
+        // Exclude and import of non-BOM version of Spring Framework due to
+        // vulnerability (CVE-2022-22965) in BOM-version 5.2.4.RELEASE.
+        compile("org.springframework:spring-web") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-webmvc") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-aop") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-beans") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-context") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-core") {
+            version {
+                strictly "${springFrameworkVersion}"
+            }
+        }
+        compile("org.springframework:spring-expression") {
+            version {
+                strictly "${springFrameworkVersion}"
             }
         }
 
