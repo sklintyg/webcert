@@ -18,12 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +38,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -63,39 +68,17 @@ class UserServiceImplTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
+    public static final String ROLE_NAME = "ROLE_NAME";
+    public static final String ROLE_DESCRIPTION = "ROLE_DESCRIPTION";
     private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
 
     @BeforeEach
     void setUp() {
         user = mock(WebCertUser.class);
 
-        doReturn(user)
+       doReturn(user)
             .when(webCertUserService)
             .getUser();
-
-        doReturn(HSA_ID)
-            .when(user)
-            .getHsaId();
-
-        doReturn(NAME)
-            .when(user)
-            .getNamn();
-
-        doReturn(getNavigableCareProvider())
-            .when(user)
-            .getVardgivare();
-
-        doReturn(getCareProvider())
-            .when(user)
-            .getValdVardgivare();
-
-        doReturn(getUnit())
-            .when(user)
-            .getValdVardenhet();
-
-        doReturn(PREFERENCES)
-            .when(user)
-            .getAnvandarPreference();
     }
 
     @Nested
@@ -107,9 +90,29 @@ class UserServiceImplTest {
                 .when(user)
                 .getAuthenticationMethod();
 
-            doReturn(ROLE)
+            doReturn(getCareProvider())
                 .when(user)
-                .getRoleTypeName();
+                .getValdVardgivare();
+
+            doReturn(getUnit())
+                .when(user)
+                .getValdVardenhet();
+
+            doReturn(getNavigableCareProvider())
+                .when(user)
+                .getVardgivare();
+
+            doReturn(HSA_ID)
+                .when(user)
+                .getHsaId();
+
+            doReturn(NAME)
+                .when(user)
+                .getNamn();
+
+            doReturn(PREFERENCES)
+                .when(user)
+                .getAnvandarPreference();
         }
 
         @Test
@@ -183,7 +186,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class Roles {
+    class UserWithNoSelectedLoginUnits {
 
         @BeforeEach
         void setUp() {
@@ -191,48 +194,102 @@ class UserServiceImplTest {
                 .when(user)
                 .getAuthenticationMethod();
 
+            doReturn(null)
+                .when(user)
+                .getValdVardenhet();
         }
 
         @Test
-        void shallReturnWithRole() {
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
-
+        void shallReturnUnsetUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(ROLE, actualUser.getRole());
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInUnit().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInUnit().getUnitId())
+            );
         }
 
         @Test
-        void shallReturnWithVardAdministratorRole() {
-            doReturn("VARDADMINISTRATOR")
-                .when(user)
-                .getRoleTypeName();
-
+        void shallReturnUnsetCareUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
-            assertEquals("Vårdadministratör", actualUser.getRole());
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInCareUnit().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInCareUnit().getUnitId())
+            );
         }
 
         @Test
-        void shallReturnRoleWithoutExtension() {
-            doReturn("Läkare - inom EU")
+        void shallReturnUnsetCareProviderWhenUserWithNoSelectedLoginUnit() {
+            final var actualUser = userService.getLoggedInUser();
+
+            assertAll (
+                () -> assertNull(actualUser.getLoggedInCareProvider().getUnitName()),
+                () -> assertNull(actualUser.getLoggedInCareProvider().getUnitId())
+            );
+        }
+    }
+
+    @Nested
+    class Roles {
+
+        @Test
+        void shallReturnRoleDescription() {
+            doReturn(AuthenticationMethod.SITHS)
                 .when(user)
-                .getRoleTypeName();
+                .getAuthenticationMethod();
+
+            doReturn(getRole())
+                .when(user)
+                .getRoles();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals("Läkare", actualUser.getRole());
+            assertEquals(ROLE_DESCRIPTION, actualUser.getRole());
+        }
+
+        @Test
+        void shallReturnMissingRoleDescriptionWhenUserRoleIsNull() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user)
+                .getAuthenticationMethod();
+
+            doReturn(null)
+                .when(user)
+                .getRoles();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("Roll ej angiven", actualUser.getRole());
+        }
+
+        @Test
+        void shallReturnMissingRoleDescriptionWhenUserHasNoRoles() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user)
+                .getAuthenticationMethod();
+
+            doReturn(Collections.emptyMap())
+                .when(user)
+                .getRoles();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("Roll ej angiven", actualUser.getRole());
+        }
+
+        @Test
+        void shallThrowNullpointerExceptionIfRolesMapHasNullValues() {
+            final var nullValueRoleMap = new HashMap<String, Role>();
+            nullValueRoleMap.put(ROLE, null);
+            doReturn(nullValueRoleMap)
+                .when(user)
+                .getRoles();
+
+            final var exception = assertThrows(NullPointerException.class, () -> userService.getLoggedInUser());
+            assertEquals(NullPointerException.class, exception.getClass());
         }
     }
 
     @Nested
     class SigningMethod {
-
-        @BeforeEach
-        void setUp() {
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
-        }
 
         @Test
         void shallReturnWithSigningMethodFake() {
@@ -253,23 +310,26 @@ class UserServiceImplTest {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.DSS, actualUser.getSigningMethod());
         }
+
+        @Test
+        void shallReturnWithSigningMethodBankId() {
+            doReturn(AuthenticationMethod.MOBILT_BANK_ID)
+                .when(user)
+                .getAuthenticationMethod();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.BANK_ID, actualUser.getSigningMethod());
+        }
     }
 
     @Nested
     class LoginMethod {
 
-        @BeforeEach
-        void setUp() {
-            doReturn(ROLE)
-                    .when(user)
-                    .getRoleTypeName();
-        }
-
         @Test
         void shallReturnWithLoginMethodFake() {
             doReturn(AuthenticationMethod.FAKE)
-                    .when(user)
-                    .getAuthenticationMethod();
+                .when(user)
+                .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.FAKE, actualUser.getLoginMethod());
@@ -278,8 +338,8 @@ class UserServiceImplTest {
         @Test
         void shallReturnWithLoginMethodSiths() {
             doReturn(AuthenticationMethod.SITHS)
-                    .when(user)
-                    .getAuthenticationMethod();
+                .when(user)
+                .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
             assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.SITHS, actualUser.getLoginMethod());
@@ -287,15 +347,12 @@ class UserServiceImplTest {
 
         @Test
         void shallReturnWithLoginMethodBankIdIfMobileBankId() {
-            try {
-                doReturn(AuthenticationMethod.MOBILT_BANK_ID)
-                        .when(user)
-                        .getAuthenticationMethod();
+            doReturn(AuthenticationMethod.MOBILT_BANK_ID)
+                .when(user)
+                .getAuthenticationMethod();
 
-                final var actualUser = userService.getLoggedInUser();
-                assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
-            } catch(IllegalArgumentException e) {
-            }
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
         }
     }
 
@@ -307,10 +364,6 @@ class UserServiceImplTest {
             doReturn(AuthenticationMethod.SITHS)
                 .when(user)
                 .getAuthenticationMethod();
-
-            doReturn(ROLE)
-                .when(user)
-                .getRoleTypeName();
         }
 
         @Test
@@ -362,10 +415,17 @@ class UserServiceImplTest {
         return unit;
     }
 
+    private Map<String, Role> getRole() {
+        final var role = new Role();
+        role.setName(ROLE_NAME);
+        role.setDesc(ROLE_DESCRIPTION);
+        role.setPrivileges(Collections.emptyList());
+        return Collections.singletonMap(ROLE, role);
+    }
+
     private IntegrationParameters getParameters(Boolean inactiveUnit) {
-        final var params = new IntegrationParameters(null, null, null, null,
+        return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
             false, false, inactiveUnit, false);
-        return params;
     }
 }

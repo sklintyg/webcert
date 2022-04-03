@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" ID="https___wc2_wc_localtest_me" entityID="https://wc2.wc.localtest.me/siths-wc2">
+  <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor>
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate>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
+          </dsig:X509Certificate>
+        </dsig:X509Data>
+      </dsig:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wc2.wc.localtest.me/saml/SingleLogout/alias/siths-wc2"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://wc2.wc.localtest.me/saml/SingleLogout/alias/siths-wc2"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wc2.wc.localtest.me/saml/SSO/alias/siths-wc2" index="0" isDefault="true"/>
+    <md:AttributeConsumingService index="1">
+      <md:ServiceName xml:lang="sv">Webcert uppdragslöst</md:ServiceName>
+      <md:RequestedAttribute Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId" isRequired="true"/>
+      <md:RequestedAttribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod" isRequired="true"/>
+    </md:AttributeConsumingService>
+  </md:SPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="sv">Inera AB</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="sv">Intyg Webcert DEV</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="sv">https://inera.se</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson xml:lang="sv" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="sv" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>
