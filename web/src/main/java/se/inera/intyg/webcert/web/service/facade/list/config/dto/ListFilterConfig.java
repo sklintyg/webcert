@@ -1,23 +1,21 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-import java.util.List;
-
-public class ListFilterConfigDTO {
-    private ListFilterTypeDTO type;
+public class ListFilterConfig {
+    private ListFilterType type;
     private String id;
     private String title;
 
-    public ListFilterConfigDTO(ListFilterTypeDTO type, String id, String title) {
+    public ListFilterConfig(ListFilterType type, String id, String title) {
         this.type = type;
         this.id = id;
         this.title = title;
     }
 
-    public ListFilterTypeDTO getType() {
+    public ListFilterType getType() {
         return type;
     }
 
-    public void setType(ListFilterTypeDTO type) {
+    public void setType(ListFilterType type) {
         this.type = type;
     }
 

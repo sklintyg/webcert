@@ -21,6 +21,12 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
+import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
+import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 
 import java.util.*;
 
@@ -38,12 +44,12 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
     }
 
     @Override
-    public ListConfigDTO get() {
+    public ListConfig get() {
         return getListDraftsConfig();
     }
 
-    private ListConfigDTO getListDraftsConfig() {
-        final var config = new ListConfigDTO();
+    private ListConfig getListDraftsConfig() {
+        final var config = new ListConfig();
         config.setTitle(TITLE);
         config.setFilters(getListDraftsFilters());
         config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
@@ -52,31 +58,31 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
         return config;
     }
 
-    public TableHeadingDTO[] getTableHeadings() {
-        return new TableHeadingDTO[] {
-                TableHeadingFactory.text(ListColumnTypeDTO.CERTIFICATE_TYPE_NAME),
-                TableHeadingFactory.text(ListColumnTypeDTO.STATUS),
-                TableHeadingFactory.date(ListColumnTypeDTO.SAVED),
-                TableHeadingFactory.patientInfo(ListColumnTypeDTO.PATIENT_ID),
-                TableHeadingFactory.forwarded(ListColumnTypeDTO.FORWARDED),
-                TableHeadingFactory.openButton(ListColumnTypeDTO.CERTIFICATE_ID)
+    public TableHeading[] getTableHeadings() {
+        return new TableHeading[] {
+                TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+                TableHeadingFactory.text(ListColumnType.STATUS),
+                TableHeadingFactory.date(ListColumnType.SAVED),
+                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+                TableHeadingFactory.forwarded(ListColumnType.FORWARDED),
+                TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };
     }
 
-    private List<ListFilterConfigDTO> getListDraftsFilters() {
-        final var filters = new ArrayList<ListFilterConfigDTO>();
+    private List<ListFilterConfig> getListDraftsFilters() {
+        final var filters = new ArrayList<ListFilterConfig>();
         filters.add(ListFilterConfigFactory.forwardedSelect());
         filters.add(ListFilterConfigFactory.draftStatusSelect());
         filters.add(getSavedByFilter());
         filters.add(ListFilterConfigFactory.defaultPersonId());
         filters.add(ListFilterConfigFactory.defaultDateRange());
-        filters.add(ListFilterConfigFactory.orderBy(ListColumnTypeDTO.SAVED));
+        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
         filters.add(ListFilterConfigFactory.ascending());
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;
     }
 
-    private ListFilterConfigDTO getSavedByFilter() {
+    private ListFilterConfig getSavedByFilter() {
         final var savedByList = getStaffInfoFacadeService.get();
         return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, getStaffInfoFacadeService.getLoggedInStaffHsaId());
     }

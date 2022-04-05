@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
-import se.inera.intyg.webcert.web.service.facade.list.config.*;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
@@ -89,12 +89,12 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private int getPageSize(ListFilterDTO filter) {
-        ListFilterNumberValueDTO pageSize = (ListFilterNumberValueDTO) filter.getValue("PAGESIZE");
+        ListFilterNumberValue pageSize = (ListFilterNumberValue) filter.getValue("PAGESIZE");
         return pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue();
     }
 
     private int getStartFrom(ListFilterDTO filter) {
-        ListFilterNumberValueDTO startFrom = (ListFilterNumberValueDTO) filter.getValue("START_FROM");
+        ListFilterNumberValue startFrom = (ListFilterNumberValue) filter.getValue("START_FROM");
        return startFrom == null ? 0 : startFrom.getValue();
     }
 
@@ -134,13 +134,13 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
         final var convertedFilter = new UtkastFilter(selectedUnitHsaId);
 
-        ListFilterDateRangeValueDTO saved = (ListFilterDateRangeValueDTO) filter.getValue("SAVED");
-        ListFilterSelectValueDTO savedBy = (ListFilterSelectValueDTO) filter.getValue("SAVED_BY");
-        ListFilterPersonIdValueDTO patientId = (ListFilterPersonIdValueDTO) filter.getValue("PATIENT_ID");
-        ListFilterSelectValueDTO forwarded = (ListFilterSelectValueDTO) filter.getValue("FORWARDED");
-        ListFilterTextValueDTO orderBy = (ListFilterTextValueDTO) filter.getValue("ORDER_BY");
-        ListFilterBooleanValueDTO ascending = (ListFilterBooleanValueDTO) filter.getValue("ASCENDING");
-        ListFilterSelectValueDTO status = (ListFilterSelectValueDTO) filter.getValue("STATUS");
+        ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SAVED");
+        ListFilterSelectValue savedBy = (ListFilterSelectValue) filter.getValue("SAVED_BY");
+        ListFilterPersonIdValue patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
+        ListFilterSelectValue forwarded = (ListFilterSelectValue) filter.getValue("FORWARDED");
+        ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
+        ListFilterBooleanValue ascending = (ListFilterBooleanValue) filter.getValue("ASCENDING");
+        ListFilterSelectValue status = (ListFilterSelectValue) filter.getValue("STATUS");
 
 
         convertedFilter.setSavedFrom(saved != null ? saved.getFrom() : null);
@@ -227,7 +227,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         return listItem;
     }
 
-    private Comparator<CertificateListItemDTO> getCertificateComparator(ListColumnTypeDTO orderBy, Boolean ascending) {
+    private Comparator<CertificateListItemDTO> getCertificateComparator(ListColumnType orderBy, Boolean ascending) {
         Comparator<CertificateListItemDTO> comparator;
         switch (orderBy) {
             case CERTIFICATE_TYPE_NAME:
@@ -258,7 +258,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private void sortList(List<CertificateListItemDTO> list, String orderBy, boolean isAscending) {
-        final var comparator = getCertificateComparator(ListColumnTypeDTO.valueOf(orderBy), isAscending);
+        final var comparator = getCertificateComparator(ListColumnType.valueOf(orderBy), isAscending);
         list.sort(comparator);
     }
 

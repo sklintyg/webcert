@@ -1,10 +1,10 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public class StaffListInfoDTO {
+public class StaffListInfo {
     private String hsaId;
     private String name;
 
-    public StaffListInfoDTO(String hsaId, String name) {
+    public StaffListInfo(String hsaId, String name) {
         this.hsaId = hsaId;
         this.name = name;
     }

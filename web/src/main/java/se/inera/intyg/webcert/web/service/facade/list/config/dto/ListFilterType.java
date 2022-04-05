@@ -16,13 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public enum CertificateListItemValueType {
+public enum ListFilterType {
     TEXT,
+    SELECT,
+    DATE_RANGE,
     DATE,
-    PATIENT_INFO,
-    FORWARD,
-    HIDDEN,
-    OPEN_BUTTON
+    PERSON_ID,
+    NUMBER,
+    BOOLEAN,
+    ORDER,
+    PAGESIZE,
 }

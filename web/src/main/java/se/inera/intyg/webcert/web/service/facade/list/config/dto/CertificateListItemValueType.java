@@ -16,24 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public enum ListColumnTypeDTO {
-    PATIENT_ID("Patient"),
-    SAVED_BY("Sparat av"),
-    SAVED("Senast sparat"),
-    CERTIFICATE_ID(""),
-    CERTIFICATE_TYPE_NAME("Typ av intyg"),
-    STATUS("Status"),
-    FORWARDED("Vidarebefordrad");
-
-    private final String name;
-
-    ListColumnTypeDTO(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+public enum CertificateListItemValueType {
+    TEXT,
+    DATE,
+    PATIENT_INFO,
+    FORWARD,
+    HIDDEN,
+    OPEN_BUTTON
 }

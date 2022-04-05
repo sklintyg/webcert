@@ -1,19 +1,19 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 import java.util.List;
 
-public class ListConfigDTO {
+public class ListConfig {
 
-    private List<ListFilterConfigDTO> filters;
+    private List<ListFilterConfig> filters;
     private String title;
     private List<Integer> pageSizes;
     private String openCertificateTooltip;
     private String searchCertificateTooltip;
-    private TableHeadingDTO[] tableHeadings;
+    private TableHeading[] tableHeadings;
 
-    public ListConfigDTO(){}
+    public ListConfig(){}
 
-    public ListConfigDTO(List<ListFilterConfigDTO> filters, String title, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeadingDTO[] tableHeadings) {
+    public ListConfig(List<ListFilterConfig> filters, String title, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeading[] tableHeadings) {
         this.filters = filters;
         this.title = title;
         this.pageSizes = pageSizes;
@@ -22,11 +22,11 @@ public class ListConfigDTO {
         this.tableHeadings = tableHeadings;
     }
 
-    public List<ListFilterConfigDTO> getFilters() {
+    public List<ListFilterConfig> getFilters() {
         return filters;
     }
 
-    public void setFilters(List<ListFilterConfigDTO> filters) {
+    public void setFilters(List<ListFilterConfig> filters) {
         this.filters = filters;
     }
 
@@ -54,11 +54,11 @@ public class ListConfigDTO {
         this.openCertificateTooltip = openCertificateTooltip;
     }
 
-    public TableHeadingDTO[] getTableHeadings() {
+    public TableHeading[] getTableHeadings() {
         return tableHeadings;
     }
 
-    public void setTableHeadings(TableHeadingDTO[] tableHeadings) {
+    public void setTableHeadings(TableHeading[] tableHeadings) {
         this.tableHeadings = tableHeadings;
     }
 

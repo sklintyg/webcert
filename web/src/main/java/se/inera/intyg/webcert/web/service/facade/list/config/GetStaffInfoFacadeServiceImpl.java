@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
@@ -41,7 +42,7 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     }
 
     @Override
-    public List<StaffListInfoDTO> get() {
+    public List<StaffListInfo> get() {
         return getStaffInfo();
     }
 
@@ -50,7 +51,7 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
         return webCertUserService.getUser().getHsaId();
     }
 
-    private List<StaffListInfoDTO> getStaffInfo() {
+    private List<StaffListInfo> getStaffInfo() {
         //authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
 
         final var user = webCertUserService.getUser();
@@ -60,12 +61,12 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
         return convertStaffList(staff);
     }
 
-    private List<StaffListInfoDTO> convertStaffList(List<Lakare> staff) {
+    private List<StaffListInfo> convertStaffList(List<Lakare> staff) {
         return staff.stream().map(this::convertStaff).collect(Collectors.toList());
     }
 
-    private StaffListInfoDTO convertStaff(Lakare lakare) {
-        return new StaffListInfoDTO(lakare.getHsaId(), lakare.getName());
+    private StaffListInfo convertStaff(Lakare lakare) {
+        return new StaffListInfo(lakare.getHsaId(), lakare.getName());
     }
 
 

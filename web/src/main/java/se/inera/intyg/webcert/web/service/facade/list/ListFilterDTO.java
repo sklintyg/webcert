@@ -1,27 +1,27 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import se.inera.intyg.webcert.web.service.facade.list.config.ListFilterValueDTO;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
 
 import java.util.Map;
 
 public class ListFilterDTO {
-    private Map<String, ListFilterValueDTO> values;
+    private Map<String, ListFilterValue> values;
 
     public ListFilterDTO() {}
 
-    public ListFilterDTO(Map<String, ListFilterValueDTO> values) {
+    public ListFilterDTO(Map<String, ListFilterValue> values) {
         this.values = values;
     }
 
-    public Map<String, ListFilterValueDTO> getValues() {
+    public Map<String, ListFilterValue> getValues() {
         return values;
     }
 
-    public void setValues(Map<String, ListFilterValueDTO> values) {
+    public void setValues(Map<String, ListFilterValue> values) {
         this.values = values;
     }
 
-    public ListFilterValueDTO getValue(String id) {
+    public ListFilterValue getValue(String id) {
         if (values.containsKey(id)) {
             return values.get(id);
         }

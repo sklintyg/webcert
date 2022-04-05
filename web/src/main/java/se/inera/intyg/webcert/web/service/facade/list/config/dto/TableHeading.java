@@ -1,22 +1,22 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public class TableHeadingDTO {
-    private ListColumnTypeDTO id;
+public class TableHeading {
+    private ListColumnType id;
     private String title;
     private CertificateListItemValueType type;
 
 
-    public TableHeadingDTO(ListColumnTypeDTO id, String title, CertificateListItemValueType type) {
+    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type) {
         this.id = id;
         this.title = title;
         this.type = type;
     }
 
-    public ListColumnTypeDTO getId() {
+    public ListColumnType getId() {
         return id;
     }
 
-    public void setId(ListColumnTypeDTO id) {
+    public void setId(ListColumnType id) {
         this.id = id;
     }
 

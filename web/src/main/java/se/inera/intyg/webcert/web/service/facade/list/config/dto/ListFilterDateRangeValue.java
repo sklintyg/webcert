@@ -1,14 +1,14 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 import java.time.LocalDateTime;
 
-public class ListFilterDateRangeValueDTO implements ListFilterValueDTO {
+public class ListFilterDateRangeValue implements ListFilterValue {
     private LocalDateTime to;
     private LocalDateTime from;
 
-    public ListFilterDateRangeValueDTO(){}
+    public ListFilterDateRangeValue(){}
 
-    public ListFilterDateRangeValueDTO(LocalDateTime to, LocalDateTime from) {
+    public ListFilterDateRangeValue(LocalDateTime to, LocalDateTime from) {
         this.to = to;
         this.from = from;
     }
@@ -30,7 +30,7 @@ public class ListFilterDateRangeValueDTO implements ListFilterValueDTO {
     }
 
     @Override
-    public ListFilterTypeDTO getType() {
-        return ListFilterTypeDTO.DATE_RANGE;
+    public ListFilterType getType() {
+        return ListFilterType.DATE_RANGE;
     }
 }

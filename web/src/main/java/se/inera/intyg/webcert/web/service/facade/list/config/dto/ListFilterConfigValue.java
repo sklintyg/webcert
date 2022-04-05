@@ -1,12 +1,12 @@
-package se.inera.intyg.webcert.web.service.facade.list.config;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public class ListFilterConfigValueDTO {
+public class ListFilterConfigValue {
     private String id;
     private String name;
     private boolean defaultValue;
 
-    public static ListFilterConfigValueDTO create(String id, String name, boolean defaultValue) {
-        final var value = new ListFilterConfigValueDTO();
+    public static ListFilterConfigValue create(String id, String name, boolean defaultValue) {
+        final var value = new ListFilterConfigValue();
         value.setId(id);
         value.setName(name);
         value.setDefaultValue(defaultValue);
