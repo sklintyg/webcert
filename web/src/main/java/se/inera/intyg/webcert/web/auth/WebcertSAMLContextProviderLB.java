@@ -31,7 +31,7 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     @Value("${certificate.view.host.react.client}")
     private String reactClientDomainName;
 
-    @Value("${webcert.cookie.domain.name}")
+    @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
     private static final  String WC2 = "wc2";
