@@ -737,7 +737,7 @@
 
     <bean id="contextProvider" class="se.inera.intyg.webcert.web.auth.WebcertSAMLContextProviderLB">
       <property name="scheme" value="https"/>
-      <property name="serverName" value="${webcert.cookie.domain.name}"/>
+      <property name="serverName" value="${webcert.domain.name}"/>
       <property name="includeServerPortInRequestURL" value="false"/>
       <property name="contextPath" value="/"/>
       <property name="keyManager" ref="keyManager"/>
