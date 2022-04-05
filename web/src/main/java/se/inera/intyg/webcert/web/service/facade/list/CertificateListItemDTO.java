@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import java.time.LocalDateTime;
 
 public class CertificateListItemDTO {
+    // map med ListColumnTypeDTO som id
     private String certificateType;
     private String certificateTypeName;
     private String status;

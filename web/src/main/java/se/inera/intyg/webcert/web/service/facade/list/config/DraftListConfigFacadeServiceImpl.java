@@ -21,16 +21,16 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.DraftStatusDTO;
-import se.inera.intyg.webcert.web.service.facade.list.ForwardedTypeDTO;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService {
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
+    private final String TITLE = "Ej signerade utkast";
+    private final String OPEN_CERTIFICATE_TOOLTIP = "Öppna utkastet.";
+    private final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
 
     @Autowired
     public DraftListConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService) {
@@ -44,93 +44,40 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
 
     private ListConfigDTO getListDraftsConfig() {
         final var config = new ListConfigDTO();
-        config.setTitle("Ej signerade utkast");
+        config.setTitle(TITLE);
         config.setFilters(getListDraftsFilters());
-        config.setOpenCertificateTooltip("Öppna utkastet.");
-        config.setSearchCertificateTooltip("Sök efter utkast.");
+        config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
+        config.setSearchCertificateTooltip(SEARCH_CERTIFICATE_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         return config;
     }
 
     public TableHeadingDTO[] getTableHeadings() {
         return new TableHeadingDTO[] {
-                new TableHeadingDTO(ListColumnTypeDTO.CERTIFICATE_TYPE_NAME,"Typ av intyg"),
-                new TableHeadingDTO(ListColumnTypeDTO.STATUS, "Status"),
-                new TableHeadingDTO(ListColumnTypeDTO.SAVED, "Senast sparat"),
-                new TableHeadingDTO(ListColumnTypeDTO.PATIENT_ID,"Patient"),
-                new TableHeadingDTO(ListColumnTypeDTO.SAVED_BY, "Sparat av"),
-                new TableHeadingDTO(ListColumnTypeDTO.FORWARDED, "Vidarebefordrad"),
-                new TableHeadingDTO(ListColumnTypeDTO.CERTIFICATE_ID, "")
+                TableHeadingFactory.text(ListColumnTypeDTO.CERTIFICATE_TYPE_NAME),
+                TableHeadingFactory.text(ListColumnTypeDTO.STATUS),
+                TableHeadingFactory.date(ListColumnTypeDTO.SAVED),
+                TableHeadingFactory.patientInfo(ListColumnTypeDTO.PATIENT_ID),
+                TableHeadingFactory.forwarded(ListColumnTypeDTO.FORWARDED),
+                TableHeadingFactory.openButton(ListColumnTypeDTO.CERTIFICATE_ID)
         };
     }
 
     private List<ListFilterConfigDTO> getListDraftsFilters() {
         final var filters = new ArrayList<ListFilterConfigDTO>();
-        filters.add(getForwardedFilter());
-        filters.add(getDraftStatusFilter());
+        filters.add(ListFilterConfigFactory.forwardedSelect());
+        filters.add(ListFilterConfigFactory.draftStatusSelect());
         filters.add(getSavedByFilter());
-        filters.add(getPatientIdFilter());
-        filters.add(getSavedDateRangeFilter());
-        filters.add(getOrderByFilter());
-        filters.add(getAscendingFilter());
-        filters.add(getPageSizesFilter());
+        filters.add(ListFilterConfigFactory.defaultPersonId());
+        filters.add(ListFilterConfigFactory.defaultDateRange());
+        filters.add(ListFilterConfigFactory.orderBy(ListColumnTypeDTO.SAVED));
+        filters.add(ListFilterConfigFactory.ascending());
+        filters.add(ListFilterConfigFactory.pageSize());
         return filters;
-    }
-
-    private ListFilterConfigDTO getForwardedFilter() {
-        return new ListFilterSelectConfigDTO("FORWARDED", "Vidarebefordrat",
-                List.of(
-                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.SHOW_ALL.toString(), ForwardedTypeDTO.SHOW_ALL.getName(), true),
-                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.FORWARDED.toString(), ForwardedTypeDTO.FORWARDED.getName(), false),
-                    ListFilterConfigValueDTO.create(ForwardedTypeDTO.NOT_FORWARDED.toString(),ForwardedTypeDTO.NOT_FORWARDED.getName(), false)
-                )
-        );
-    }
-
-    private ListFilterConfigDTO getDraftStatusFilter() {
-        return new ListFilterSelectConfigDTO("STATUS", "Utkast", List.of(
-                        ListFilterConfigValueDTO.create(DraftStatusDTO.SHOW_ALL.toString(), DraftStatusDTO.SHOW_ALL.getName(), true),
-                        ListFilterConfigValueDTO.create(DraftStatusDTO.INCOMPLETE.toString(), DraftStatusDTO.INCOMPLETE.getName(), false),
-                        ListFilterConfigValueDTO.create(DraftStatusDTO.COMPLETE.toString(), DraftStatusDTO.COMPLETE.getName(), false),
-                        ListFilterConfigValueDTO.create(DraftStatusDTO.LOCKED.toString(), DraftStatusDTO.LOCKED.getName(), false)
-                )
-        );
-    }
-
-    private ListFilterConfigDTO getPatientIdFilter() {
-        return new ListFilterPersonIdConfigDTO("PATIENT_ID", "Patient", "åååå-mm-dd");
-    }
-
-    private ListFilterConfigDTO getSavedDateRangeFilter() {
-        final var to = new ListFilterDateConfigDTO("TO", "Till");
-        final var from = new ListFilterDateConfigDTO("FROM", "Från");
-        return new ListFilterDateRangeConfigDTO("SAVED", "Sparat datum", to, from);
-    }
-
-    private ListFilterConfigDTO getOrderByFilter() {
-        return new ListFilterOrderConfigDTO("ORDER_BY", "", ListColumnTypeDTO.SAVED);
-    }
-
-    private ListFilterConfigDTO getAscendingFilter() {
-        return new ListFilterBooleanConfigDTO("ASCENDING", "", false);
-    }
-
-    private ListFilterConfigDTO getPageSizesFilter() {
-        final var pageSizes = new int[]{10, 20, 50, 100};
-        return new ListFilterPageSizeConfigDTO("PAGESIZE", "Visa antal träffar", pageSizes);
     }
 
     private ListFilterConfigDTO getSavedByFilter() {
         final var savedByList = getStaffInfoFacadeService.get();
-        final var convertedSavedByList = savedByList.stream().map(this::convertStaffInfoIntoSelectFilter).collect(Collectors.toList());
-        return new ListFilterSelectConfigDTO("SAVED_BY", "Sparat av", convertedSavedByList);
-    }
-
-    private ListFilterConfigValueDTO convertStaffInfoIntoSelectFilter(StaffListInfoDTO staffListInfoDTO) {
-        return ListFilterConfigValueDTO.create(staffListInfoDTO.getHsaId(), staffListInfoDTO.getName(), isDefaultSavedBy(staffListInfoDTO));
-    }
-
-    private boolean isDefaultSavedBy(StaffListInfoDTO staffListInfoDTO) {
-        return staffListInfoDTO.getHsaId().equals(getStaffInfoFacadeService.getLoggedInStaffHsaId());
+        return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, getStaffInfoFacadeService.getLoggedInStaffHsaId());
     }
 }

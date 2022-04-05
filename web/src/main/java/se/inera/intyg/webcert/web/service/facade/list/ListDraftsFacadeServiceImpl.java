@@ -73,11 +73,11 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var user = webCertUserService.getUser();
         final var convertedFilter = convertFilter(filter);
 
-        var intygEntryList = getIntygEntryList(convertedFilter);
-        intygEntryList = decorateAndFilterOriginalList(intygEntryList, user);
-        final var totalListCount = intygEntryList.size();
+        final var intygEntryList = getIntygEntryList(convertedFilter);
+        final var decoratedAndFilteredList = decorateAndFilterOriginalList(intygEntryList, user);
+        final var totalListCount = decoratedAndFilteredList.size();
 
-        List<CertificateListItemDTO> convertedList = convertList(intygEntryList);
+        final var convertedList = convertList(decoratedAndFilteredList);
         sortList(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
 
         final var paginatedList = paginateList(
