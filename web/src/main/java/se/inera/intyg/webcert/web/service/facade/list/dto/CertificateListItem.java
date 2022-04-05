@@ -16,24 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 import java.time.LocalDateTime;
 
-public class CertificateListItemDTO {
+public class CertificateListItem {
     // map med ListColumnTypeDTO som id
     private String certificateType;
     private String certificateTypeName;
     private String status;
     private LocalDateTime saved;
-    private PatientListInfoDTO patientListInfo;
+    private PatientListInfo patientListInfo;
     private String savedBy;
     private boolean forwarded;
     private String certificateId;
 
-    public CertificateListItemDTO(){}
+    public CertificateListItem(){}
 
-    public CertificateListItemDTO(String certificateId, String certificateType, String status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfoDTO patientListInfo, String certificateTypeName) {
+    public CertificateListItem(String certificateId, String certificateType, String status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfo patientListInfo, String certificateTypeName) {
         this.certificateId = certificateId;
         this.certificateType = certificateType;
         this.status = status;
@@ -92,11 +92,11 @@ public class CertificateListItemDTO {
         this.forwarded = forwarded;
     }
 
-    public PatientListInfoDTO getPatientListInfo() {
+    public PatientListInfo getPatientListInfo() {
         return patientListInfo;
     }
 
-    public void setPatientListInfo(PatientListInfoDTO patientListInfo) {
+    public void setPatientListInfo(PatientListInfo patientListInfo) {
         this.patientListInfo = patientListInfo;
     }
 

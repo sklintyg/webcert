@@ -18,23 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto.list;
 
-import se.inera.intyg.webcert.web.service.facade.list.ListFilterDTO;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 public class ListDraftsRequestDTO {
 
-    private ListFilterDTO filter;
+    private ListFilter filter;
 
     public ListDraftsRequestDTO() {}
 
-    public ListDraftsRequestDTO(ListFilterDTO filter) {
+    public ListDraftsRequestDTO(ListFilter filter) {
         this.filter = filter;
     }
 
-    public ListFilterDTO getFilter() {
+    public ListFilter getFilter() {
         return filter;
     }
 
-    public void setFilter(ListFilterDTO filter) {
+    public void setFilter(ListFilter filter) {
         this.filter = filter;
     }
 }

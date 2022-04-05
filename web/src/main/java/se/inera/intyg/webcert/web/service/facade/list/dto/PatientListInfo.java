@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public class PatientListInfoDTO {
+public class PatientListInfo {
     private String id;
     private boolean protectedPerson;
     private boolean deceased;
     private boolean testIndicator;
 
-    public PatientListInfoDTO(String id, boolean protectedPerson, boolean deceased, boolean testIndicator) {
+    public PatientListInfo(String id, boolean protectedPerson, boolean deceased, boolean testIndicator) {
         this.id = id;
         this.protectedPerson = protectedPerson;
         this.deceased = deceased;

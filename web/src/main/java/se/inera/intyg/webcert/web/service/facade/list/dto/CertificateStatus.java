@@ -16,22 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum DraftStatusDTO implements CertificateStatusDTO {
-    SHOW_ALL("Visa alla"),
-    COMPLETE("Klar för signering"),
-    LOCKED("Låst utkast"),
-    INCOMPLETE("Uppgifter saknas");
-
-    private final String name;
-
-    DraftStatusDTO(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+public interface CertificateStatus {
+    String getName();
 }

@@ -16,8 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public interface CertificateStatusDTO {
-    String getName();
+import java.util.List;
+
+public class ListInfo {
+    private int totalCount;
+    private List<CertificateListItem> list;
+
+    public ListInfo() {}
+
+    public ListInfo(int totalCount, List<CertificateListItem> list) {
+        this.totalCount = totalCount;
+        this.list = list;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public List<CertificateListItem> getList() {
+        return list;
+    }
+
+    public void setList(List<CertificateListItem> list) {
+        this.list = list;
+    }
 }

@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.facade.list.config.factory;
 
-import se.inera.intyg.webcert.web.service.facade.list.DraftStatusDTO;
-import se.inera.intyg.webcert.web.service.facade.list.ForwardedTypeDTO;
+import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 
 import java.util.List;
@@ -27,19 +27,19 @@ public class ListFilterConfigFactory {
     public static ListFilterSelectConfig forwardedSelect() {
         return new ListFilterSelectConfig("FORWARDED", "Vidarebefordrat",
                 List.of(
-                        ListFilterConfigValue.create(ForwardedTypeDTO.SHOW_ALL.toString(), ForwardedTypeDTO.SHOW_ALL.getName(), true),
-                        ListFilterConfigValue.create(ForwardedTypeDTO.FORWARDED.toString(), ForwardedTypeDTO.FORWARDED.getName(), false),
-                        ListFilterConfigValue.create(ForwardedTypeDTO.NOT_FORWARDED.toString(),ForwardedTypeDTO.NOT_FORWARDED.getName(), false)
+                        ListFilterConfigValue.create(ForwardedType.SHOW_ALL.toString(), ForwardedType.SHOW_ALL.getName(), true),
+                        ListFilterConfigValue.create(ForwardedType.FORWARDED.toString(), ForwardedType.FORWARDED.getName(), false),
+                        ListFilterConfigValue.create(ForwardedType.NOT_FORWARDED.toString(), ForwardedType.NOT_FORWARDED.getName(), false)
                 )
         );
     }
 
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
-                ListFilterConfigValue.create(DraftStatusDTO.SHOW_ALL.toString(), DraftStatusDTO.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(DraftStatusDTO.INCOMPLETE.toString(), DraftStatusDTO.INCOMPLETE.getName(), false),
-                ListFilterConfigValue.create(DraftStatusDTO.COMPLETE.toString(), DraftStatusDTO.COMPLETE.getName(), false),
-                ListFilterConfigValue.create(DraftStatusDTO.LOCKED.toString(), DraftStatusDTO.LOCKED.getName(), false)
+                ListFilterConfigValue.create(DraftStatus.SHOW_ALL.toString(), DraftStatus.SHOW_ALL.getName(), true),
+                ListFilterConfigValue.create(DraftStatus.INCOMPLETE.toString(), DraftStatus.INCOMPLETE.getName(), false),
+                ListFilterConfigValue.create(DraftStatus.COMPLETE.toString(), DraftStatus.COMPLETE.getName(), false),
+                ListFilterConfigValue.create(DraftStatus.LOCKED.toString(), DraftStatus.LOCKED.getName(), false)
         )
         );
     }

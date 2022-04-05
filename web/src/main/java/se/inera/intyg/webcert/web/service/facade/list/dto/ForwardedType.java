@@ -16,34 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-import java.util.List;
+public enum ForwardedType {
+    FORWARDED("Vidarebefordrade"),
+    NOT_FORWARDED("Ej vidarebefordrade"),
+    SHOW_ALL("Visa alla");
 
-public class ListInfoDTO {
-    private int totalCount;
-    private List<CertificateListItemDTO> list;
+    private final String text;
 
-    public ListInfoDTO() {}
-
-    public ListInfoDTO(int totalCount, List<CertificateListItemDTO> list) {
-        this.totalCount = totalCount;
-        this.list = list;
+    ForwardedType(String text) {
+        this.text = text;
     }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
-
-    public List<CertificateListItemDTO> getList() {
-        return list;
-    }
-
-    public void setList(List<CertificateListItemDTO> list) {
-        this.list = list;
+    public String getName() {
+        return text;
     }
 }

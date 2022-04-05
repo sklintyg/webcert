@@ -16,20 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum ForwardedTypeDTO {
-    FORWARDED("Vidarebefordrade"),
-    NOT_FORWARDED("Ej vidarebefordrade"),
-    SHOW_ALL("Visa alla");
+public enum DraftStatus implements CertificateStatus {
+    SHOW_ALL("Visa alla"),
+    COMPLETE("Klar för signering"),
+    LOCKED("Låst utkast"),
+    INCOMPLETE("Uppgifter saknas");
 
-    private final String text;
+    private final String name;
 
-    ForwardedTypeDTO(String text) {
-        this.text = text;
+    DraftStatus(String name) {
+        this.name = name;
     }
 
+    @Override
     public String getName() {
-        return text;
+        return name;
     }
 }

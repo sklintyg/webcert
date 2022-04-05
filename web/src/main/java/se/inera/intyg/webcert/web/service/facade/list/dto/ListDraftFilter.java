@@ -1,12 +1,12 @@
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 
 import java.time.LocalDateTime;
 
-public class ListDraftFilterDTO {
+public class ListDraftFilter {
     private boolean forwarded;
-    private DraftStatusDTO status;
+    private DraftStatus status;
     private LocalDateTime savedFrom;
     private LocalDateTime savedTo;
     private String savedByHsaID;
@@ -16,9 +16,9 @@ public class ListDraftFilterDTO {
     private ListColumnType orderBy;
     private boolean ascending;
 
-    public ListDraftFilterDTO() {}
+    public ListDraftFilter() {}
 
-    public ListDraftFilterDTO(boolean forwarded, DraftStatusDTO status, LocalDateTime savedFrom, LocalDateTime savedTo, String savedByHsaID, String patientId, int pageSize, Integer startFrom, ListColumnType orderBy, boolean ascending) {
+    public ListDraftFilter(boolean forwarded, DraftStatus status, LocalDateTime savedFrom, LocalDateTime savedTo, String savedByHsaID, String patientId, int pageSize, Integer startFrom, ListColumnType orderBy, boolean ascending) {
         this.forwarded = forwarded;
         this.status = status;
         this.savedFrom = savedFrom;
@@ -40,11 +40,11 @@ public class ListDraftFilterDTO {
         this.forwarded = forwarded;
     }
 
-    public DraftStatusDTO getStatus() {
+    public DraftStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DraftStatusDTO status) {
+    public void setStatus(DraftStatus status) {
         this.status = status;
     }
 
