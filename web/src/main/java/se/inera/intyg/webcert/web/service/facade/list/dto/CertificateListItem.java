@@ -18,93 +18,50 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CertificateListItem {
-    // map med ListColumnTypeDTO som id
-    private String certificateType;
-    private String certificateTypeName;
-    private String status;
-    private LocalDateTime saved;
-    private PatientListInfo patientListInfo;
-    private String savedBy;
-    private boolean forwarded;
-    private String certificateId;
+    private final Map<String, Object> values;
 
-    public CertificateListItem(){}
-
-    public CertificateListItem(String certificateId, String certificateType, String status, String savedBy, LocalDateTime saved, boolean forwarded, PatientListInfo patientListInfo, String certificateTypeName) {
-        this.certificateId = certificateId;
-        this.certificateType = certificateType;
-        this.status = status;
-        this.savedBy = savedBy;
-        this.saved = saved;
-        this.forwarded = forwarded;
-        this.patientListInfo = patientListInfo;
-        this.certificateTypeName = certificateTypeName;
+    public CertificateListItem() {
+        values = new HashMap<>();
     }
 
-    public String getCertificateId() {
-        return certificateId;
+    public void addValue(ListColumnType type, Object value) {
+        values.put(type.toString(), value);
     }
 
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
+    public Object getValue(String key) {
+        return values.get(key);
     }
 
-    public String getCertificateType() {
-        return certificateType;
+    public Object getValue(ListColumnType type) {
+        return values.get(type.toString());
     }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
+    public Map<String, Object> getValues() {
+        return values;
     }
 
-    public String getStatus() {
-        return status;
+    public String getValueAsString(ListColumnType type) {
+        return getValue(type).toString();
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getValueAsPatientId() {
+        final var value = getValue(ListColumnType.PATIENT_ID);
+        return ((PatientListInfo) value).getId();
     }
 
-    public String getSavedBy() {
-        return savedBy;
+    public Boolean getValueAsBoolean(ListColumnType type) {
+        return (Boolean) getValue(type);
     }
 
-    public void setSavedBy(String savedBy) {
-        this.savedBy = savedBy;
-    }
-
-    public LocalDateTime getSaved() {
-        return saved;
-    }
-
-    public void setSaved(LocalDateTime saved) {
-        this.saved = saved;
-    }
-
-    public boolean isForwarded() {
-        return forwarded;
-    }
-
-    public void setForwarded(boolean forwarded) {
-        this.forwarded = forwarded;
-    }
-
-    public PatientListInfo getPatientListInfo() {
-        return patientListInfo;
-    }
-
-    public void setPatientListInfo(PatientListInfo patientListInfo) {
-        this.patientListInfo = patientListInfo;
-    }
-
-    public String getCertificateTypeName() {
-        return certificateTypeName;
-    }
-
-    public void setCertificateTypeName(String certificateTypeName) {
-        this.certificateTypeName = certificateTypeName;
+    public LocalDateTime getValueAsDate(ListColumnType type) {
+        return (LocalDateTime) getValue(type);
     }
 }

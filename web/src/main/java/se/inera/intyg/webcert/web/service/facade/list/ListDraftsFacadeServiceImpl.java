@@ -100,7 +100,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
-        paginatedList.stream().map((item) -> item.getPatientListInfo().getId()).distinct().forEach(
+        paginatedList.stream().map((item) -> item.getValueAsPatientId()).distinct().forEach(
                 id -> performPDLLogging(user, id)
         );
     }
@@ -215,40 +215,40 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry) {
         final var listItem = new CertificateListItem();
         final var convertedStatus = convertStatus(UtkastStatus.fromValue(listIntygEntry.getStatus()));
-        final var patientListInfo = new PatientListInfo(listIntygEntry.getPatientId().getPersonnummerWithDash(),
-                listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
-        listItem.setCertificateId(listIntygEntry.getIntygId());
-        listItem.setCertificateType(listIntygEntry.getIntygType());
-        listItem.setForwarded(listIntygEntry.isVidarebefordrad());
-        listItem.setPatientListInfo(patientListInfo);
-        listItem.setStatus(convertedStatus.getName());
-        listItem.setSaved(listIntygEntry.getLastUpdatedSigned());
-        listItem.setSavedBy(listIntygEntry.getUpdatedSignedBy());
-        listItem.setCertificateTypeName(listIntygEntry.getIntygTypeName());
+        final var patientListInfo = getPatientListInfo(listIntygEntry);
+
+        listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
+        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
+        listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
+        listItem.addValue(ListColumnType.STATUS, convertedStatus.getName());
+        listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
+        listItem.addValue(ListColumnType.SAVED_BY, listIntygEntry.getUpdatedSignedBy());
+        listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
         return listItem;
+    }
+
+    private PatientListInfo getPatientListInfo(ListIntygEntry listIntygEntry) {
+        return new PatientListInfo(listIntygEntry.getPatientId().getPersonnummerWithDash(),
+                listIntygEntry.isSekretessmarkering(), listIntygEntry.isAvliden(), listIntygEntry.isTestIntyg());
     }
 
     private Comparator<CertificateListItem> getCertificateComparator(ListColumnType orderBy, Boolean ascending) {
         Comparator<CertificateListItem> comparator;
         switch (orderBy) {
             case CERTIFICATE_TYPE_NAME:
-                comparator = Comparator.comparing(CertificateListItem::getCertificateTypeName);
-                break;
             case STATUS:
-                comparator = Comparator.comparing(CertificateListItem::getStatus);
+            case SAVED_BY:
+                comparator = Comparator.comparing((item) -> item.getValueAsString(orderBy));
                 break;
             case PATIENT_ID:
-                comparator = Comparator.comparing(item -> item.getPatientListInfo().getId());
+                comparator = Comparator.comparing(CertificateListItem::getValueAsPatientId);
                 break;
             case FORWARDED:
-                comparator = (item1, item2) -> Boolean.compare(item1.isForwarded(), item2.isForwarded());
-                break;
-            case SAVED_BY:
-                comparator = Comparator.comparing((CertificateListItem::getSavedBy));
+                comparator = Comparator.comparing((item) -> item.getValueAsBoolean(orderBy));
                 break;
             case SAVED:
             default:
-                comparator = Comparator.comparing(CertificateListItem::getSaved);
+                comparator = Comparator.comparing((item) -> item.getValueAsDate(orderBy));
                 break;
         }
 
