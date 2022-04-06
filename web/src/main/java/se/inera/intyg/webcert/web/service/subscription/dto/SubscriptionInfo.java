@@ -43,7 +43,7 @@ public class SubscriptionInfo implements Serializable {
     private static final long serialVersionUID = -1586500199315227249L;
 
     public SubscriptionInfo() {
-
+        this("", "");
     }
 
     public SubscriptionInfo(String subscriptionAdaptationStartDate, String requireSubscriptionStartDate) {
