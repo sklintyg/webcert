@@ -93,10 +93,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         validateRequest(intygId, enhetId);
-
-        final var webCertUser = getWebCertUser();
-        webCertUser.setSubscriptionInfo(new SubscriptionInfo());
-        return handleRedirectToIntyg(uriInfo, intygId, enhetId, webCertUser);
+        return handleRedirectToIntyg(uriInfo, intygId, enhetId, getWebCertUser());
     }
 
     @Autowired
