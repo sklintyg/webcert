@@ -49,7 +49,7 @@ public class ListConfigControllerTest {
     private ListConfigController listConfigController;
 
     @Nested
-    class GetListDraftsConfig {
+    class ListDraftsConfig {
         final ListConfig config = new ListConfig();
 
         @BeforeEach
