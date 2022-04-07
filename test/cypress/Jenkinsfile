@@ -22,7 +22,7 @@ pipeline {
     RESURSRAPPORTERINGSFIL_REL="${RESULTAT_DIR_REL}/resursrapporteringsfil.txt"
     RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${RESURSRAPPORTERINGSFIL_REL}"
     RESURSINTERVALL=30
-    NO_COLOR=1 cypress run
+    NO_COLOR="1 cypress run"
 
     // TODO: cypress-failed-log skriver i dagsläget till <startdir>/cypress/logs oavsett hur
     // man konfigurerar Cypress. Endera låter vi det vara så (katalogen skapas endast när testfall
