@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadin
 import java.util.*;
 
 @Service
-public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService {
+public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
     private final String TITLE = "Ej signerade utkast";
@@ -39,7 +39,7 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
     private final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
 
     @Autowired
-    public DraftListConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService) {
+    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
     }
 
@@ -64,6 +64,7 @@ public class DraftListConfigFacadeServiceImpl implements ListConfigFacadeService
                 TableHeadingFactory.text(ListColumnType.STATUS),
                 TableHeadingFactory.date(ListColumnType.SAVED),
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+                TableHeadingFactory.text(ListColumnType.SAVED_BY),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED),
                 TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };

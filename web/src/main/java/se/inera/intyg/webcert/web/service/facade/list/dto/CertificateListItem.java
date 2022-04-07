@@ -21,15 +21,14 @@ package se.inera.intyg.webcert.web.service.facade.list.dto;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class CertificateListItem {
     private final Map<String, Object> values;
 
     public CertificateListItem() {
-        values = new HashMap<>();
+        values = new TreeMap<>();
     }
 
     public void addValue(ListColumnType type, Object value) {
@@ -48,20 +47,19 @@ public class CertificateListItem {
         return values;
     }
 
-    public String getValueAsString(ListColumnType type) {
+    public String valueAsString(ListColumnType type) {
         return getValue(type).toString();
     }
 
-    public String getValueAsPatientId() {
-        final var value = getValue(ListColumnType.PATIENT_ID);
-        return ((PatientListInfo) value).getId();
+    public String valueAsPatientId() {
+        return ((PatientListInfo) getValue(ListColumnType.PATIENT_ID)).getId();
     }
 
-    public Boolean getValueAsBoolean(ListColumnType type) {
+    public Boolean valueAsBoolean(ListColumnType type) {
         return (Boolean) getValue(type);
     }
 
-    public LocalDateTime getValueAsDate(ListColumnType type) {
+    public LocalDateTime valueAsDate(ListColumnType type) {
         return (LocalDateTime) getValue(type);
     }
 }

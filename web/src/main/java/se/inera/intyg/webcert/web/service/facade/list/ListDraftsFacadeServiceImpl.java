@@ -100,7 +100,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
-        paginatedList.stream().map((item) -> item.getValueAsPatientId()).distinct().forEach(
+        paginatedList.stream().map((item) -> item.valueAsPatientId()).distinct().forEach(
                 id -> performPDLLogging(user, id)
         );
     }
@@ -217,13 +217,13 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var convertedStatus = convertStatus(UtkastStatus.fromValue(listIntygEntry.getStatus()));
         final var patientListInfo = getPatientListInfo(listIntygEntry);
 
-        listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
-        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
-        listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
+        listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
         listItem.addValue(ListColumnType.STATUS, convertedStatus.getName());
         listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
+        listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.SAVED_BY, listIntygEntry.getUpdatedSignedBy());
-        listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
+        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
+        listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
         return listItem;
     }
 
@@ -238,17 +238,17 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
             case CERTIFICATE_TYPE_NAME:
             case STATUS:
             case SAVED_BY:
-                comparator = Comparator.comparing((item) -> item.getValueAsString(orderBy));
+                comparator = Comparator.comparing((item) -> item.valueAsString(orderBy));
                 break;
             case PATIENT_ID:
-                comparator = Comparator.comparing(CertificateListItem::getValueAsPatientId);
+                comparator = Comparator.comparing(CertificateListItem::valueAsPatientId);
                 break;
             case FORWARDED:
-                comparator = Comparator.comparing((item) -> item.getValueAsBoolean(orderBy));
+                comparator = Comparator.comparing((item) -> item.valueAsBoolean(orderBy));
                 break;
             case SAVED:
             default:
-                comparator = Comparator.comparing((item) -> item.getValueAsDate(orderBy));
+                comparator = Comparator.comparing((item) -> item.valueAsDate(orderBy));
                 break;
         }
 

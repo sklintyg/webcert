@@ -22,8 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.list.config.DraftListConfigFacadeServiceImpl;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,10 +37,10 @@ public class ListConfigController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final DraftListConfigFacadeServiceImpl draftListConfigFacadeService;
+    private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
 
     @Autowired
-    public ListConfigController(DraftListConfigFacadeServiceImpl draftListConfigFacadeService) {
+    public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
     }
 
