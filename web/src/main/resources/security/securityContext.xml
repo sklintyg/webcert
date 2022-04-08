@@ -521,6 +521,36 @@
 
             <property name="metadataTrustCheck" value="true"/>
           </bean>
+
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${application.dir}/config/sp-eleg-wc2.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="eleg-wc2"/>
+                <property name="local" value="true"/>
+                <property name="securityProfile" value="metaiop"/>
+                <property name="sslSecurityProfile" value="metaiop"/>    <!-- pkix -->
+                <property name="signMetadata" value="true"/>
+
+                <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="requireArtifactResolveSigned" value="true"/>
+                <property name="requireLogoutRequestSigned" value="true"/>
+                <property name="requireLogoutResponseSigned" value="true"/>
+              </bean>
+            </constructor-arg>
+
+            <property name="metadataTrustCheck" value="true"/>
+          </bean>
           <!-- END SERVICE PROVIDER BEAN FOR E-LEG -->
 
           <!-- START IDENTITY PROVIDER BEAN FOR E-LEG -->
@@ -558,6 +588,34 @@
             <constructor-arg>
               <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
                 <property name="alias" value="defaultAlias"/>
+                <property name="local" value="true"/>
+                <property name="securityProfile" value="metaiop"/>
+                <property name="sslSecurityProfile" value="metaiop"/>
+                <property name="signMetadata" value="true"/>
+                <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="requireArtifactResolveSigned" value="true"/>
+                <property name="requireLogoutRequestSigned" value="false"/>
+                <property name="requireLogoutResponseSigned" value="false"/>
+              </bean>
+            </constructor-arg>
+          </bean>
+
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${application.dir}/config/sp-inera-wc2.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+            <property name="metadataTrustCheck" value="true"/>
+
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="siths-wc2"/>
                 <property name="local" value="true"/>
                 <property name="securityProfile" value="metaiop"/>
                 <property name="sslSecurityProfile" value="metaiop"/>
@@ -677,8 +735,11 @@
       <constructor-arg ref="parserPool"/>
     </bean>
 
-    <!-- Provider of default SAML Context -->
-    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl">
+    <bean id="contextProvider" class="se.inera.intyg.webcert.web.auth.WebcertSAMLContextProviderLB">
+      <property name="scheme" value="https"/>
+      <property name="serverName" value="${webcert.domain.name}"/>
+      <property name="includeServerPortInRequestURL" value="false"/>
+      <property name="contextPath" value="/"/>
       <property name="keyManager" ref="keyManager"/>
     </bean>
 

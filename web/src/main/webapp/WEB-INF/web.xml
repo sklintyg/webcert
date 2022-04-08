@@ -302,7 +302,7 @@
             <param-value>true</param-value>
         </init-param>
         <init-param><param-name>ignoredUrls</param-name>
-            <param-value>/api/config,/api/anvandare,/api/anvandare/andraenhet,/api/jslog,/moduleapi/stat</param-value>
+            <param-value>/api/config,/api/anvandare,/api/anvandare/andraenhet,/api/jslog,/moduleapi/stat,/api/user</param-value>
         </init-param>
     </filter>
     <filter-mapping>

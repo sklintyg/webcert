@@ -40,7 +40,7 @@ public class WebCertUser extends IntygUser {
     private Map<String, String> anvandarPreference = new HashMap<>();
     private IntegrationParameters parameters;
     private boolean useSigningService = false;
-    private SubscriptionInfo subscriptionInfo;
+    private SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
 
     public WebCertUser() {
         super("only-for-test-use");
