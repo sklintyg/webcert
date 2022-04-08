@@ -18,44 +18,31 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.Before;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
+
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
-import se.inera.intyg.webcert.web.service.facade.impl.CopyCertificateFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -88,13 +75,13 @@ class ListDraftsFacadeServiceImplTest {
     private static final String PATIENT_POSTNUMMER = "12345";
     private static final String PATIENT_POSTORT = "Testort";
 
-    private static final Personnummer PATIENT_PERSONNUMMER = createPnr("19121212-1212");
-    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = createPnr("20121212-1212");
+    private static final Personnummer PATIENT_PERSONNUMMER = ListTestHelper.createPnr("19121212-1212");
+    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = ListTestHelper.createPnr("20121212-1212");
 
-    @Before
+    @BeforeEach
     public void setup() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(ListTestHelper.buildPatient());
 
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenAnswer(invocation -> {
             PersonInformationType personInformation = new PersonInformationType();
@@ -114,23 +101,30 @@ class ListDraftsFacadeServiceImplTest {
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
 
-    private static Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    @Test
+    public void shouldExcludeCertificatesIfUndefinedProtectedStatus() {
+        setupUserWithPrivileges();
+        setupUndefinedPatientResponse();
+
+        when(utkastService.filterIntyg(any()))
+                .thenReturn(Arrays.asList(ListTestHelper.buildUtkast(PATIENT_PERSONNUMMER), ListTestHelper.buildUtkast(PATIENT_PERSONNUMMER)));
+
+        final var listInfo = listDraftsFacadeService.get(ListTestHelper.createListFilter());
+        assertEquals(0, listInfo.getTotalCount());
+        assertEquals(0, listInfo.getList().size());
+
     }
 
-    private Patient buildPatient() {
-        Patient patient = new Patient();
-        patient.setPersonId(PATIENT_PERSONNUMMER);
-        patient.setEfternamn(PATIENT_EFTERNAMN);
-        patient.setFornamn(PATIENT_FORNAMN);
-        patient.setMellannamn(PATIENT_MELLANNAMN);
-        patient.setFullstandigtNamn(PATIENT_FORNAMN + " " + PATIENT_MELLANNAMN + " " + PATIENT_EFTERNAMN);
+    private void setupUserWithPrivileges() {
+        ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    }
 
-        patient.setPostadress(PATIENT_POSTADRESS);
-        patient.setPostnummer(PATIENT_POSTNUMMER);
-        patient.setPostort(PATIENT_POSTORT);
-
-        return patient;
+    private void setupUndefinedPatientResponse() {
+        final var statusMap = mock(Map.class);
+        final var patientResponse = new PatientDetailsResolverResponse();
+        patientResponse.setProtectedPerson(SekretessStatus.UNDEFINED);
+        when(statusMap.get(any(Personnummer.class))).thenReturn(patientResponse);
+        when(patientDetailsResolver.getPersonStatusesForList(anyList())).thenReturn(statusMap);
     }
 }
