@@ -18,57 +18,34 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
-import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
-import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
+import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
 
-import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ListTestHelper {
@@ -182,6 +159,42 @@ class ListTestHelper {
 
     public static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId).get();
+    }
+
+    public static CertificateListItem createCertificateListItemWithPersonId(String personId) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.PATIENT_ID, new PatientListInfo(personId, true, true, true));
+        return item;
+    }
+
+    public static CertificateListItem createCertificateListItemWithForwarded(boolean forwarded) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.FORWARDED, forwarded);
+        return item;
+    }
+
+    public static CertificateListItem createCertificateListItemWithSavedBy(String savedBy) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.SAVED_BY, savedBy);
+        return item;
+    }
+
+    public static CertificateListItem createCertificateListItemWithSaved(LocalDateTime saved) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.SAVED, saved);
+        return item;
+    }
+
+    public static CertificateListItem createCertificateListItemWithCertificateTypeName(String name) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, name);
+        return item;
+    }
+
+    public static CertificateListItem createCertificateListItemWithStatus(String name) {
+        final var item = new CertificateListItem();
+        item.addValue(ListColumnType.STATUS, name);
+        return item;
     }
 
     public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded) {

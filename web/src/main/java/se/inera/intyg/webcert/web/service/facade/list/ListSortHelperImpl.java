@@ -25,6 +25,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumbe
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -34,7 +35,8 @@ public class ListSortHelperImpl implements ListSortHelper {
 
     @Override
     public List<CertificateListItem> sort(List<CertificateListItem> list, String order, boolean ascending) {
-        final var comparator = getCertificateComparator(ListColumnType.valueOf(order), ascending);
+        final var isOrderType = Arrays.stream(ListColumnType.values()).anyMatch((value) -> value.toString().equals(order));
+        final var comparator = getCertificateComparator(isOrderType ? ListColumnType.valueOf(order) : ListColumnType.SAVED, ascending);
         list.sort(comparator);
         return list;
     }
