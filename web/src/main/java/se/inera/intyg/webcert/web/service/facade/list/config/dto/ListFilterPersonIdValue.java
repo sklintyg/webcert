@@ -11,7 +11,7 @@ public class ListFilterPersonIdValue implements ListFilterValue {
     public ListFilterPersonIdValue() {
     }
 
-    public ListFilterPersonIdValue(String id, String value) { this.value = value; }
+    public ListFilterPersonIdValue(String value) { this.value = value; }
 
     public String getValue() {
         return value;
