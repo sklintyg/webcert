@@ -21,12 +21,9 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 

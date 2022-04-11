@@ -20,16 +20,10 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

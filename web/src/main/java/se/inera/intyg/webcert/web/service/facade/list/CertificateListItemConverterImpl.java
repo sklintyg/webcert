@@ -28,9 +28,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-import java.util.Comparator;
-import java.util.List;
-
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
 
