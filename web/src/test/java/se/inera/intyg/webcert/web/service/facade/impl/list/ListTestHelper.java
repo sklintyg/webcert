@@ -199,16 +199,17 @@ class ListTestHelper {
 
     public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded) {
         final var listIntygEntry = new ListIntygEntry();
+        listIntygEntry.setIntygType("luse");
         listIntygEntry.setIntygId("CERTIFICATE_ID");
         listIntygEntry.setIntygTypeName("CERTIFICATE_TYPE_NAME");
         listIntygEntry.setStatus(status);
         listIntygEntry.setPatientId(createPnr("191212121212"));
         listIntygEntry.setLastUpdatedSigned(LocalDateTime.now());
         listIntygEntry.setVidarebefordrad(forwarded);
-        listIntygEntry.setUpdatedSignedBy("SAVED_BY");
         listIntygEntry.setAvliden(includePatientStatuses);
         listIntygEntry.setSekretessmarkering(includePatientStatuses);
         listIntygEntry.setTestIntyg(includePatientStatuses);
+        listIntygEntry.setUpdatedSignedById("HSA_ID");
         return listIntygEntry;
     }
 }
