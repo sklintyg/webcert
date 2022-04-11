@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,13 +32,11 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
-import se.inera.intyg.webcert.web.service.facade.list.ListDecorator;
 import se.inera.intyg.webcert.web.service.facade.list.ListDecoratorImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import java.util.ArrayList;
 import java.util.List;
