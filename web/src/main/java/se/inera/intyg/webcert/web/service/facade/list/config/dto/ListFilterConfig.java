@@ -23,11 +23,17 @@ public class ListFilterConfig {
     private ListFilterType type;
     private String id;
     private String title;
+    private boolean alwaysHighlighted;
 
     public ListFilterConfig(ListFilterType type, String id, String title) {
+        this(type, id, title, false);
+    }
+
+    public ListFilterConfig(ListFilterType type, String id, String title, boolean alwaysHighlighted) {
         this.type = type;
         this.id = id;
         this.title = title;
+        this.alwaysHighlighted = alwaysHighlighted;
     }
 
     public ListFilterType getType() {
@@ -52,5 +58,13 @@ public class ListFilterConfig {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isAlwaysHighlighted() {
+        return alwaysHighlighted;
+    }
+
+    public void setAlwaysHighlight(boolean alwaysHighlighted) {
+        this.alwaysHighlighted = alwaysHighlighted;
     }
 }

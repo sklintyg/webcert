@@ -58,7 +58,7 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
 
         convertedFilter.setSavedFrom(saved != null ? saved.getFrom() : null);
         convertedFilter.setSavedTo(saved != null ? saved.getTo() : null);
-        convertedFilter.setSavedByHsaId(savedBy != null ? savedBy.getValue() : "");
+        convertedFilter.setSavedByHsaId(savedBy != null && !savedBy.getValue().equals("SHOW_ALL") ? savedBy.getValue() : "");
         convertedFilter.setPatientId(patientId != null ? patientId.getValue() : "");
         convertedFilter.setNotified(forwarded != null ? getForwardedValue(forwarded.getValue()) : null);
         convertedFilter.setOrderBy(orderBy == null ? "" : orderBy.getValue());

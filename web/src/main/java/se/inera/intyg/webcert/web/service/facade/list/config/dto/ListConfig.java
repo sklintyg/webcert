@@ -25,6 +25,9 @@ public class ListConfig {
 
     private List<ListFilterConfig> filters;
     private String title;
+    private String description;
+    private String emptyListText;
+    private String secondaryTitle;
     private List<Integer> pageSizes;
     private String openCertificateTooltip;
     private String searchCertificateTooltip;
@@ -32,9 +35,12 @@ public class ListConfig {
 
     public ListConfig(){}
 
-    public ListConfig(List<ListFilterConfig> filters, String title, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeading[] tableHeadings) {
+    public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText, String secondaryTitle, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeading[] tableHeadings) {
         this.filters = filters;
         this.title = title;
+        this.description = description;
+        this.emptyListText = emptyListText;
+        this.secondaryTitle = secondaryTitle;
         this.pageSizes = pageSizes;
         this.openCertificateTooltip = openCertificateTooltip;
         this.searchCertificateTooltip = searchCertificateTooltip;
@@ -88,5 +94,29 @@ public class ListConfig {
 
     public void setSearchCertificateTooltip(String searchCertificateTooltip) {
         this.searchCertificateTooltip = searchCertificateTooltip;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getEmptyListText() {
+        return emptyListText;
+    }
+
+    public void setEmptyListText(String emptyListText) {
+        this.emptyListText = emptyListText;
+    }
+
+    public String getSecondaryTitle() {
+        return secondaryTitle;
+    }
+
+    public void setSecondaryTitle(String secondaryTitle) {
+        this.secondaryTitle = secondaryTitle;
     }
 }

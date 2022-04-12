@@ -22,11 +22,13 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 public class ListFilterDateRangeConfig extends ListFilterConfig {
     private ListFilterDateConfig to;
     private ListFilterDateConfig from;
+    private boolean forbidFutureDates;
 
-    public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to, ListFilterDateConfig from) {
+    public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to, ListFilterDateConfig from, boolean forbidFutureDates) {
         super(ListFilterType.DATE_RANGE, id, title);
         this.to = to;
         this.from = from;
+        this.forbidFutureDates = forbidFutureDates;
     }
 
     public ListFilterDateConfig getTo() {
@@ -43,5 +45,13 @@ public class ListFilterDateRangeConfig extends ListFilterConfig {
 
     public void setFrom(ListFilterDateConfig from) {
         this.from = from;
+    }
+
+    public boolean isForbidFutureDates() {
+        return forbidFutureDates;
+    }
+
+    public void setForbidFutureDates(boolean forbidFutureDates) {
+        this.forbidFutureDates = forbidFutureDates;
     }
 }

@@ -27,20 +27,26 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfi
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.*;
 
 @Service
 public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
 
+    private static final String TITLE = "Ej signerade utkast";
+    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppna utkastet.";
+    private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
+    private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
+    private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
+
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
-    private final String TITLE = "Ej signerade utkast";
-    private final String OPEN_CERTIFICATE_TOOLTIP = "Öppna utkastet.";
-    private final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
+    private final WebCertUserService webCertUserService;
 
     @Autowired
-    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService) {
+    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -55,7 +61,15 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
         config.setSearchCertificateTooltip(SEARCH_CERTIFICATE_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
+        config.setDescription(DESCRIPTION);
+        config.setEmptyListText(EMPTY_LIST_TEXT);
+        config.setSecondaryTitle(getSecondaryTitle());
         return config;
+    }
+
+    private String getSecondaryTitle() {
+        final var user = webCertUserService.getUser();
+        return "Intyg visas för " + user.getValdVardenhet().getNamn();
     }
 
     public TableHeading[] getTableHeadings() {
@@ -85,6 +99,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
     private ListFilterConfig getSavedByFilter() {
         final var savedByList = getStaffInfoFacadeService.get();
-        return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, getStaffInfoFacadeService.getLoggedInStaffHsaId());
+        final var defaultValue = getStaffInfoFacadeService.isLoggedInUserDoctor() ? getStaffInfoFacadeService.getLoggedInStaffHsaId() : "";
+        return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
     }
 }

@@ -40,7 +40,7 @@ public class ListFilterConfigFactory {
     }
 
     public static ListFilterDateRangeConfig defaultDateRange() {
-        return new ListFilterDateRangeConfig("SAVED", "Sparat datum", toDate(), fromDate());
+        return new ListFilterDateRangeConfig("SAVED", "Sparat datum", toDate(), fromDate(), true);
     }
 
     public static ListFilterSelectConfig forwardedSelect() {
@@ -77,8 +77,12 @@ public class ListFilterConfigFactory {
     }
 
     public static ListFilterSelectConfig createStaffSelect(String id, String title, List<StaffListInfo> staffInfo, String defaultHsaId) {
-        final var convertedSavedByList = staffInfo.stream().map((info) -> convertStaffInfoIntoSelectFilter(info, defaultHsaId)).collect(Collectors.toList());
-        return new ListFilterSelectConfig(id, title, convertedSavedByList);
+        final var isShowAllDefault = defaultHsaId.length() == 0;
+        final var convertedSavedByList = staffInfo.stream().map(
+                (info) -> convertStaffInfoIntoSelectFilter(info, defaultHsaId)).collect(Collectors.toList()
+        );
+        convertedSavedByList.add(0, ListFilterConfigValue.create("SHOW_ALL", "Visa alla", isShowAllDefault));
+        return new ListFilterSelectConfig(id, title, convertedSavedByList, !isShowAllDefault);
     }
 
     private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(StaffListInfo staffListInfo, String defaultHsaId) {

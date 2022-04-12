@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -34,6 +36,7 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
+    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Autowired
     public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService) {
@@ -51,8 +54,15 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
         return webCertUserService.getUser().getHsaId();
     }
 
+    @Override
+    public boolean isLoggedInUserDoctor() {
+        return webCertUserService.getUser().isLakare() || webCertUserService.getUser().isPrivatLakare();
+    }
+
     private List<StaffListInfo> getStaffInfo() {
-        //authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(
+                webCertUserService.getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST
+        ).orThrow();
 
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();

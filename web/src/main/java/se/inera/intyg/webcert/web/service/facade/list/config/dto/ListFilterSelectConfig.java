@@ -29,6 +29,11 @@ public class ListFilterSelectConfig extends ListFilterConfig {
         this.values = values;
     }
 
+    public ListFilterSelectConfig(String id, String title, List<ListFilterConfigValue> values, boolean alwaysHighlighted) {
+        super(ListFilterType.SELECT, id, title, alwaysHighlighted);
+        this.values = values;
+    }
+
     public List<ListFilterConfigValue> getValues() {
         return values;
     }

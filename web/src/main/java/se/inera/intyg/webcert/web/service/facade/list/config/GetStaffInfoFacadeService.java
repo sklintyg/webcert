@@ -27,4 +27,6 @@ public interface GetStaffInfoFacadeService {
     List<StaffListInfo> get();
 
     String getLoggedInStaffHsaId();
+
+    boolean isLoggedInUserDoctor();
 }
