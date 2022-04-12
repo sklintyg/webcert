@@ -54,6 +54,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasAccessToDraftList(user)) {
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.ACCESS_DRAFT_LIST,
+                            "Ej signerade utkast",
+                            "",
+                            true
+                    )
+            );
+        }
+
         if (isLogOutAvailable(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
@@ -68,6 +79,10 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+    }
+
+    private boolean hasAccessToDraftList(WebCertUser user) {
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
