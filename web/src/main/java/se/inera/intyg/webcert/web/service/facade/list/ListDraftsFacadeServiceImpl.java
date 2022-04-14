@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
-    private final ListType LIST_TYPE = ListType.DRAFTS;
+    private static final ListType LIST_TYPE = ListType.DRAFTS;
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;

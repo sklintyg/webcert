@@ -29,7 +29,7 @@ public class ListFilterSelectValue implements ListFilterValue {
 
     public ListFilterSelectValue() {}
 
-    public ListFilterSelectValue(String value) {this.value = value;}
+    public ListFilterSelectValue(String value) { this.value = value; }
 
     public String getValue() {
         return value;
