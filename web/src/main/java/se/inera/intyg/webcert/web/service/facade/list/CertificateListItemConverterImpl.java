@@ -52,16 +52,16 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private String convertStatus(String status, ListType listType) {
-        if(listType == ListType.DRAFTS) {
+        if (listType == ListType.DRAFTS) {
             return convertDraftStatus(UtkastStatus.valueOf(status)).getName();
         }
         return "";
     }
 
     private DraftStatus convertDraftStatus(UtkastStatus status) {
-        if(status == UtkastStatus.DRAFT_COMPLETE) {
+        if (status == UtkastStatus.DRAFT_COMPLETE) {
             return DraftStatus.COMPLETE;
-        } else if(status == UtkastStatus.DRAFT_INCOMPLETE) {
+        } else if (status == UtkastStatus.DRAFT_INCOMPLETE) {
             return DraftStatus.INCOMPLETE;
         }
         return DraftStatus.LOCKED;

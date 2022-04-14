@@ -29,9 +29,7 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
@@ -65,11 +63,13 @@ class ListTestHelper {
         final var map = new HashMap<String, ListFilterValue>();
         map.put("PAGESIZE", new ListFilterNumberValue(10));
         map.put("STARTFROM", new ListFilterNumberValue(0));
+        map.put("ORDER_BY", new ListFilterTextValue("SAVED"));
+        map.put("ASCENDING", new ListFilterBooleanValue(true));
         filter.setValues(map);
         return filter;
     }
 
-    public static void setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -91,6 +91,7 @@ class ListTestHelper {
         user.setValdVardenhet(buildVardenhet());
         user.setValdVardgivare(buildVardgivare());
         when(webcertUserService.getUser()).thenReturn(user);
+        return user;
     }
 
     public static CreateUtkastRequest buildRequest(String typ) {
@@ -104,37 +105,6 @@ class ListTestHelper {
         request.setPatientPostnummer(PATIENT_POSTNUMMER);
         request.setPatientPostort(PATIENT_POSTORT);
         return request;
-    }
-
-    public static Utkast buildUtkast(Personnummer personnr) {
-        return buildUtkast(personnr, new VardpersonReferens("hsa1", "name"));
-    }
-
-    public static Utkast buildUtkast(Personnummer personnr, VardpersonReferens vardperson) {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsTyp("luse");
-        utkast.setVardgivarId("456");
-        utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
-        utkast.setSenastSparadAv(vardperson);
-        utkast.setSenastSparadDatum(LocalDateTime.now());
-        utkast.setPatientPersonnummer(personnr);
-
-        return utkast;
-    }
-
-    public static Patient buildPatient() {
-        Patient patient = new Patient();
-        patient.setPersonId(PATIENT_PERSONNUMMER);
-        patient.setEfternamn(PATIENT_EFTERNAMN);
-        patient.setFornamn(PATIENT_FORNAMN);
-        patient.setMellannamn(PATIENT_MELLANNAMN);
-        patient.setFullstandigtNamn(PATIENT_FORNAMN + " " + PATIENT_MELLANNAMN + " " + PATIENT_EFTERNAMN);
-
-        patient.setPostadress(PATIENT_POSTADRESS);
-        patient.setPostnummer(PATIENT_POSTNUMMER);
-        patient.setPostort(PATIENT_POSTORT);
-
-        return patient;
     }
 
     public static SelectableVardenhet buildVardgivare() {
@@ -198,12 +168,16 @@ class ListTestHelper {
     }
 
     public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded) {
+        return createListIntygEntry(status, includePatientStatuses, forwarded, "191212121212");
+    }
+
+    public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded, String patientId) {
         final var listIntygEntry = new ListIntygEntry();
         listIntygEntry.setIntygType("luse");
         listIntygEntry.setIntygId("CERTIFICATE_ID");
         listIntygEntry.setIntygTypeName("CERTIFICATE_TYPE_NAME");
         listIntygEntry.setStatus(status);
-        listIntygEntry.setPatientId(createPnr("191212121212"));
+        listIntygEntry.setPatientId(createPnr(patientId));
         listIntygEntry.setLastUpdatedSigned(LocalDateTime.now());
         listIntygEntry.setVidarebefordrad(forwarded);
         listIntygEntry.setAvliden(includePatientStatuses);

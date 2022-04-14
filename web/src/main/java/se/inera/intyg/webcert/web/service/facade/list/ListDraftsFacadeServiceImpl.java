@@ -101,6 +101,6 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private void performPDLLogging(WebCertUser user, String patientId) {
-        logService.logListIntyg(user, patientId); //with dash???
+        logService.logListIntyg(user, patientId);
     }
 }

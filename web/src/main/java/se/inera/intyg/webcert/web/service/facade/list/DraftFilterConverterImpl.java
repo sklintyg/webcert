@@ -70,7 +70,7 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
     private List<UtkastStatus> getStatusListFromFilter(String status) {
         final var showAll = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE);
 
-        if(status.equals("")) {
+        if (status.equals("")) {
             return showAll;
         }
 
@@ -87,9 +87,9 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
     }
 
     private Boolean getForwardedValue(String value) {
-        if(value.equals(ForwardedType.FORWARDED.toString())) {
+        if (value.equals(ForwardedType.FORWARDED.toString())) {
             return true;
-        } else if(value.equals(ForwardedType.NOT_FORWARDED.toString())) {
+        } else if (value.equals(ForwardedType.NOT_FORWARDED.toString())) {
             return false;
         }
         return null;
