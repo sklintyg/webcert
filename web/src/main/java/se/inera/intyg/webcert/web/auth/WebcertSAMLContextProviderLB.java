@@ -34,16 +34,13 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
-    private static final  String WC2 = "wc2";
-
+    private static final  String WC2 = "wc2.";
 
     @Override
     public SAMLMessageContext getLocalAndPeerEntity(
         HttpServletRequest request, HttpServletResponse response) throws MetadataProviderException {
 
-        final var requestUri = request.getRequestURI().split("/");
-        final var alias = requestUri[requestUri.length - 1];
-        final var serverName = alias.endsWith(WC2) ? reactClientDomainName : webcertDomainName;
+        final var serverName = isRequestFromReactClient(request) ? reactClientDomainName : webcertDomainName;
         setServerName(serverName);
 
         SAMLMessageContext context = new SAMLMessageContext();
@@ -53,6 +50,10 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
         populatePeerEntityId(context);
         populatePeerContext(context);
         return context;
+    }
 
+    private boolean isRequestFromReactClient(HttpServletRequest request) {
+        final var referrer = request.getHeader("referer");
+        return referrer != null && referrer.contains(WC2);
     }
 }
