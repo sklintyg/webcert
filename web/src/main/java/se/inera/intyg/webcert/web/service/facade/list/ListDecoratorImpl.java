@@ -49,7 +49,8 @@ public class ListDecoratorImpl implements ListDecorator {
     private final WebCertUserService webCertUserService;
 
 
-    public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, HsatkEmployeeService hsaEmployeeService, PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
+    public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, HsatkEmployeeService hsaEmployeeService,
+                             PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
         this.intygDraftDecorator = intygDraftDecorator;
         this.hsaEmployeeService = hsaEmployeeService;
         this.patientDetailsResolver = patientDetailsResolver;

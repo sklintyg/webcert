@@ -35,7 +35,9 @@ public class ListConfig {
 
     public ListConfig(){}
 
-    public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText, String secondaryTitle, List<Integer> pageSizes, String openCertificateTooltip, String searchCertificateTooltip, TableHeading[] tableHeadings) {
+    public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText,
+                      String secondaryTitle, List<Integer> pageSizes, String openCertificateTooltip,
+                      String searchCertificateTooltip, TableHeading[] tableHeadings) {
         this.filters = filters;
         this.title = title;
         this.description = description;

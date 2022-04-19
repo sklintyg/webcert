@@ -27,9 +27,13 @@ public class ListFilterSelectValue implements ListFilterValue {
         return ListFilterType.SELECT;
     }
 
-    public ListFilterSelectValue() {}
+    public ListFilterSelectValue() {
 
-    public ListFilterSelectValue(String value) { this.value = value; }
+    }
+
+    public ListFilterSelectValue(String value) {
+        this.value = value;
+    }
 
     public String getValue() {
         return value;
