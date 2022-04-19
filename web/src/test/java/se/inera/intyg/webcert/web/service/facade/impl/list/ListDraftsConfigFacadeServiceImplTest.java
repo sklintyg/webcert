@@ -25,9 +25,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.List;
 
@@ -35,10 +40,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ListDraftsConfigFacadeServiceImplTest {
 
     @Mock
     private GetStaffInfoFacadeService getStaffInfoFacadeService;
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @InjectMocks
     private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
@@ -52,14 +60,23 @@ class ListDraftsConfigFacadeServiceImplTest {
     @BeforeEach
     public void setup() {
         when(getStaffInfoFacadeService.getLoggedInStaffHsaId()).thenReturn(DEFAULT_HSA_ID);
+        when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
         when(getStaffInfoFacadeService.get()).thenReturn(List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
+        ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);    }
+
+    @Test
+    public void shouldSetSecondaryTitle() {
+        final var config = listDraftsConfigFacadeService.get();
+        assertEquals(TITLE, config.getTitle());
     }
 
     @Test
     public void shouldSetTitle() {
         final var config = listDraftsConfigFacadeService.get();
-        assertEquals(TITLE, config.getTitle());
+        assertEquals("Intyg visas för Enhetsnamn", config.getSecondaryTitle());
     }
+
     @Test
     public void shouldSetOpenCertificateTooltip() {
         final var config = listDraftsConfigFacadeService.get();
@@ -89,7 +106,6 @@ class ListDraftsConfigFacadeServiceImplTest {
         ListFilterSelectConfig filter;
         ListConfig config;
 
-        @BeforeEach
         public void setupSavedBy() {
             config = listDraftsConfigFacadeService.get();
             filter = (ListFilterSelectConfig) getFilterById(config, "SAVED_BY");
@@ -97,27 +113,46 @@ class ListDraftsConfigFacadeServiceImplTest {
 
         @Test
         public void shouldCreateFilter() {
+            setupSavedBy();
             assertNotNull(filter);
         }
 
         @Test
         public void shouldSetTitle() {
+            setupSavedBy();
             assertEquals("Sparat av", filter.getTitle());
         }
 
         @Test
         public void shouldSetType() {
+            setupSavedBy();
             assertEquals(ListFilterType.SELECT, filter.getType());
         }
 
         @Test
         public void shouldSetList() {
-            assertEquals(2, filter.getValues().size());
+            setupSavedBy();
+            assertEquals(3, filter.getValues().size());
         }
 
         @Test
-        public void shouldSetDefaultValueOfSavedByFilterAsLoggedInHsaId() {
-            assertEquals(DEFAULT_HSA_ID, filter.getValues().get(1).getId());
+        public void shouldSetShowAll() {
+            setupSavedBy();
+            assertEquals("Visa alla", filter.getValues().get(0).getName());
+        }
+
+        @Test
+        public void shouldSetDefaultValueOfSavedByAsLoggedInDoctor() {
+            when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
+            setupSavedBy();
+            assertTrue(filter.getValues().get(2).isDefaultValue());
+        }
+
+        @Test
+        public void shouldSetShowAllAsDefaultIfNotDoctor() {
+            when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(false);
+            setupSavedBy();
+            assertTrue(filter.getValues().get(0).isDefaultValue());
         }
     }
 
