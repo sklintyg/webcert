@@ -76,13 +76,14 @@ class DraftFilterConverterImplTest {
     public void shouldConvertSavedTo() {
         final var filter = new ListFilter();
         final var filterValue = new ListFilterDateRangeValue();
-        filterValue.setFrom(LocalDateTime.now());
-        filterValue.setTo(LocalDateTime.now().plusDays(1));
+        final var now = LocalDateTime.now();
+        filterValue.setFrom(now);
+        filterValue.setTo(now.plusDays(1));
         filter.addValue(filterValue, "SAVED");
 
         final var convertedFilter = draftFilterConverter.convert(filter);
 
-        assertEquals(LocalDateTime.now().plusDays(1), convertedFilter.getSavedTo());
+        assertEquals(now.plusDays(1), convertedFilter.getSavedTo());
     }
 
     @Test
