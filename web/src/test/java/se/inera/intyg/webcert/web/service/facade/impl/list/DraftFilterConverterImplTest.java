@@ -51,7 +51,7 @@ class DraftFilterConverterImplTest {
     private DraftFilterConverterImpl draftFilterConverter;
 
     @BeforeEach
-    private void setup() {
+    public void setup() {
         final var user = new WebCertUser();
         final var unit = ListTestHelper.buildVardenhet();
         user.setValdVardenhet(unit);
@@ -62,13 +62,14 @@ class DraftFilterConverterImplTest {
     public void shouldConvertSavedFrom() {
         final var filter = new ListFilter();
         final var filterValue = new ListFilterDateRangeValue();
-        filterValue.setFrom(LocalDateTime.now());
+        final var now = LocalDateTime.now();
+        filterValue.setFrom(now);
         filterValue.setTo(LocalDateTime.now().plusDays(1));
         filter.addValue(filterValue, "SAVED");
 
         final var convertedFilter = draftFilterConverter.convert(filter);
 
-        assertEquals(LocalDateTime.now(), convertedFilter.getSavedFrom());
+        assertEquals(now, convertedFilter.getSavedFrom());
     }
 
     @Test
