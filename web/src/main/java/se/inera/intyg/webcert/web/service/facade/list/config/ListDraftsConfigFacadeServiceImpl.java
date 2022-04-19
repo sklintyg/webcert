@@ -99,7 +99,6 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
     private ListFilterConfig getSavedByFilter() {
         final var savedByList = getStaffInfoFacadeService.get();
-        final var isDoctor = getStaffInfoFacadeService.isLoggedInUserDoctor();
         final var defaultValue = getStaffInfoFacadeService.isLoggedInUserDoctor() ? getStaffInfoFacadeService.getLoggedInStaffHsaId() : "";
         return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
     }
