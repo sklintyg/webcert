@@ -256,17 +256,6 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Assert.assertEquals(utkastPersonIds.get(16), entry.getPatientId().getPersonnummer());*/
     }
 
-
-    @Test
-    public void testGetQuestion() {
-        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        spec()
-            .pathParams("intygsTyp", "luse", "version", "0.9")
-            .expect().statusCode(200)
-            .when().get("api/utkast/questions/{intygsTyp}/{version}")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
-    }
-
     @Test
     public void testGetPrevious() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
