@@ -25,22 +25,26 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 
 public class TableHeadingFactory {
     public static TableHeading text(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT);
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT, type.getDescription());
+    }
+
+    public static TableHeading text(ListColumnType type, String description) {
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT, description);
     }
 
     public static TableHeading date(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE);
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE, type.getDescription());
     }
 
     public static TableHeading patientInfo(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.PATIENT_INFO);
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.PATIENT_INFO, type.getDescription());
     }
 
-    public static TableHeading forwarded(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.FORWARD);
+    public static TableHeading forwarded(ListColumnType type, String description) {
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.FORWARD, description);
     }
 
     public static TableHeading openButton(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.OPEN_BUTTON);
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.OPEN_BUTTON, type.getDescription());
     }
 }

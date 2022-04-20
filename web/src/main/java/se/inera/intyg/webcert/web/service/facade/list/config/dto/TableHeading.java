@@ -23,12 +23,14 @@ public class TableHeading {
     private ListColumnType id;
     private String title;
     private CertificateListItemValueType type;
+    private String description;
 
 
-    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type) {
+    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type, String description) {
         this.id = id;
         this.title = title;
         this.type = type;
+        this.description = description;
     }
 
     public ListColumnType getId() {
@@ -53,5 +55,13 @@ public class TableHeading {
 
     public void setType(CertificateListItemValueType type) {
         this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

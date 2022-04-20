@@ -75,11 +75,11 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     public TableHeading[] getTableHeadings() {
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-                TableHeadingFactory.text(ListColumnType.STATUS),
+                TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
                 TableHeadingFactory.date(ListColumnType.SAVED),
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SAVED_BY),
-                TableHeadingFactory.forwarded(ListColumnType.FORWARDED),
+                TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
                 TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };
     }
@@ -90,7 +90,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         filters.add(ListFilterConfigFactory.draftStatusSelect());
         filters.add(getSavedByFilter());
         filters.add(ListFilterConfigFactory.defaultPersonId());
-        filters.add(ListFilterConfigFactory.defaultDateRange());
+        filters.add(ListFilterConfigFactory.savedDateRange());
         filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
         filters.add(ListFilterConfigFactory.ascending());
         filters.add(ListFilterConfigFactory.pageSize());
@@ -101,5 +101,9 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         final var savedByList = getStaffInfoFacadeService.get();
         final var defaultValue = getStaffInfoFacadeService.isLoggedInUserDoctor() ? getStaffInfoFacadeService.getLoggedInStaffHsaId() : "";
         return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
+    }
+
+    private String getStatusDescription() {
+        return "<p>Visar utkastets status:<ul><li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li></ul></p>";
     }
 }
