@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.saml.SAMLConstants;
 import org.springframework.security.saml.context.SAMLContextProviderLB;
 import org.springframework.security.saml.context.SAMLMessageContext;
 
@@ -35,13 +36,16 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     private String webcertDomainName;
 
     private static final  String WC2 = "wc2.";
+    private static final  String DEFAULT_ALIAS = "/defaultAlias";
+    private static final  String SITHS_WC2_ALIAS = "/siths-wc2";
 
     @Override
     public SAMLMessageContext getLocalAndPeerEntity(
         HttpServletRequest request, HttpServletResponse response) throws MetadataProviderException {
 
-        final var serverName = isRequestFromReactClient(request) ? reactClientDomainName : webcertDomainName;
-        setServerName(serverName);
+        final var isRequestFromReactClient  = isRequestFromReactClient(request);
+        setServerName(getServerName(isRequestFromReactClient));
+        setLocalEntityId(isRequestFromReactClient, request);
 
         SAMLMessageContext context = new SAMLMessageContext();
         populateGenericContext(request, response, context);
@@ -55,5 +59,21 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     private boolean isRequestFromReactClient(HttpServletRequest request) {
         final var referrer = request.getHeader("referer");
         return referrer != null && referrer.contains(WC2);
+    }
+
+    private String getServerName(boolean isRequestFromReactClient) {
+        return isRequestFromReactClient ? reactClientDomainName : webcertDomainName;
+    }
+
+    private void setLocalEntityId(boolean isRequestFromReactClient, HttpServletRequest request) {
+        if (shouldSetEntityId(request)) {
+            final var domainName = isRequestFromReactClient ? reactClientDomainName + SITHS_WC2_ALIAS : webcertDomainName + DEFAULT_ALIAS;
+            final var entityId = request.getScheme() + "://" + domainName;
+            request.setAttribute(SAMLConstants.LOCAL_ENTITY_ID, entityId);
+        }
+    }
+
+    private boolean shouldSetEntityId(HttpServletRequest request) {
+        return request.getAttribute(SAMLConstants.LOCAL_ENTITY_ID) == null && !request.getRequestURI().contains("/alias/");
     }
 }
