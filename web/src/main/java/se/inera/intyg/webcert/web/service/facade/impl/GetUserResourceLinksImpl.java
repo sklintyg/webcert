@@ -68,7 +68,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         if (hasAccessToSignedCertificatesList(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.LOG_OUT,
+                            ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST,
                             "Signerade intyg",
                             "",
                             true

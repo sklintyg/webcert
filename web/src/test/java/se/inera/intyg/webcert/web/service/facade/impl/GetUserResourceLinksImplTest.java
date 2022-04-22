@@ -27,6 +27,9 @@ import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
 
@@ -36,73 +39,108 @@ class GetUserResourceLinksImplTest {
         @InjectMocks
         private GetUserResourceLinksImpl getUserResourceLinks;
 
-        WebCertUser getUser(String origin) {
-            final var user = new WebCertUser();
-            user.setOrigin(origin);
+        WebCertUser getUserWithOrigin(String origin) {
+            final var user = mock(WebCertUser.class);
+            when(user.getOrigin()).thenReturn(origin);
+            return user;
+        }
+
+        WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor) {
+            final var user = mock(WebCertUser.class);
+            when(user.getOrigin()).thenReturn(origin);
+            when(user.isLakare()).thenReturn(isDoctor);
             return user;
         }
 
         @Test
         void shallIncludeLogoutIfOriginIsNormal() {
-            final var user = getUser("NORMAL");
+            final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallIncludeLogoutIfOriginIsUthopp() {
-            final var user = getUser("UTHOPP");
+            final var user = getUserWithOrigin("UTHOPP");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallNotIncludeLogoutIfOriginIsDjupintegration() {
-            final var user = getUser("DJUPINTEGRATION");
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallIncludeCreateCertificateIfOriginIsNormal() {
-            final var user = getUser("NORMAL");
+            final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallIncludeCreateCertificateIfOriginIsUthopp() {
-            final var user = getUser("UTHOPP");
+            final var user = getUserWithOrigin("UTHOPP");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallNotIncludeCreateCertificateIfOriginIsDjupintegration() {
-            final var user = getUser("DJUPINTEGRATION");
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallIncludeDraftListIfOriginIsNormal() {
-            final var user = getUser("NORMAL");
+            final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallIncludeDraftListIfOriginIsUthopp() {
-            final var user = getUser("UTHOPP");
+            final var user = getUserWithOrigin("UTHOPP");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallNotIncludeDraftListIfOriginIsDjupintegration() {
-            final var user = getUser("DJUPINTEGRATION");
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
+
+        @Test
+        void shallIncludeSignedCertificatesListIfOriginIsNormal() {
+            final var user = getUserWithOriginAndRole("NORMAL", true);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallIncludeSignedCertificatesListIfOriginIsUthopp() {
+            final var user = getUserWithOriginAndRole("UTHOPP", true);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallNotIncludeSignedCertificatesListIfOriginIsDjupintegration() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallNotIncludeSignedCertificatesListIfUserIsNotDoctor() {
+            final var user = getUserWithOriginAndRole("NORMAL", false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
     }
 }
