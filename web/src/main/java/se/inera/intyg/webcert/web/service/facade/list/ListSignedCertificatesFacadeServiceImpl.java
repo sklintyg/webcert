@@ -44,9 +44,11 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     private final CertificateListItemConverter certificateListItemConverter;
 
     @Autowired
-    public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService, CertificateService certificateService, CertificateFilterConverter certificateFilterConverter, CertificateListItemConverter certificateListItemConverter) {
+    public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService,
+                                                   CertificateService certificateService,
+                                                   CertificateFilterConverter certificateFilterConverter,
+                                                   CertificateListItemConverter certificateListItemConverter) {
         this.webCertUserService = webCertUserService;
-
         this.certificateService = certificateService;
         this.certificateFilterConverter = certificateFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
