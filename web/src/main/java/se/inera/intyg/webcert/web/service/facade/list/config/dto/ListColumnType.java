@@ -19,21 +19,28 @@
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public enum ListColumnType {
-    PATIENT_ID("Patient"),
-    SAVED_BY("Sparat av"),
-    SAVED("Senast sparat"),
-    CERTIFICATE_ID(""),
-    CERTIFICATE_TYPE_NAME("Typ av intyg"),
-    STATUS("Status"),
-    FORWARDED("Vidarebefordrad");
+    PATIENT_ID("Patient", "Patientens personnummer."),
+    SAVED_BY("Sparat av", "Person som senast sparade utkastet."),
+    SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
+    CERTIFICATE_ID("", ""),
+    CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
+    STATUS("Status", "Visar intygets status."),
+    FORWARDED("Vidarebefordrad", ""),
+    SIGNED("Signerad", "Datum och klockslag då intyget signerades.");
 
     private final String name;
+    private final String description;
 
-    ListColumnType(String name) {
+    ListColumnType(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
