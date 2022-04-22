@@ -39,7 +39,7 @@ public class ListFilterConfigFactory {
         return new ListFilterDateConfig("FROM", "Från");
     }
 
-    public static ListFilterDateRangeConfig defaultDateRange() {
+    public static ListFilterDateRangeConfig savedDateRange() {
         return new ListFilterDateRangeConfig("SAVED", "Sparat datum", toDate(), fromDate(), true);
     }
 
