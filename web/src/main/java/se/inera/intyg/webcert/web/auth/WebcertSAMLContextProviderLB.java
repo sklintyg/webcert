@@ -36,7 +36,6 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     private String webcertDomainName;
 
     private static final  String WC2 = "wc2.";
-    private static final  String DEFAULT_ALIAS = "/defaultAlias";
     private static final  String SITHS_WC2_ALIAS = "/siths-wc2";
 
     @Override
@@ -67,7 +66,7 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
 
     private void setLocalEntityId(boolean isRequestFromReactClient, HttpServletRequest request) {
         if (shouldSetEntityId(request)) {
-            final var domainName = isRequestFromReactClient ? reactClientDomainName + SITHS_WC2_ALIAS : webcertDomainName + DEFAULT_ALIAS;
+            final var domainName = isRequestFromReactClient ? reactClientDomainName + SITHS_WC2_ALIAS : webcertDomainName;
             final var entityId = request.getScheme() + "://" + domainName;
             request.setAttribute(SAMLConstants.LOCAL_ENTITY_ID, entityId);
         }
