@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -43,28 +44,63 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
     }
 
     private UtkastFilter convertFilter(ListFilter filter) {
+        final var convertedFilter = initializeFilter();
+
+        convertedFilter.setSavedFrom(getSavedFrom(filter));
+        convertedFilter.setSavedTo(getSavedTo(filter));
+        convertedFilter.setSavedByHsaId(getSavedBy(filter));
+        convertedFilter.setPatientId(getPatientId(filter));
+        convertedFilter.setNotified(getForwarded(filter));
+        convertedFilter.setOrderBy(getOrderBy(filter));
+        convertedFilter.setOrderAscending(getAscending(filter));
+        convertedFilter.setStatusList(getStatus(filter));
+        return convertedFilter;
+    }
+
+    private UtkastFilter initializeFilter() {
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
-        final var convertedFilter = new UtkastFilter(selectedUnitHsaId);
+        return new UtkastFilter(selectedUnitHsaId);
+    }
 
+    private LocalDateTime getSavedFrom(ListFilter filter) {
         ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SAVED");
+        return saved != null ? saved.getFrom() : null;
+    }
+
+    private LocalDateTime getSavedTo(ListFilter filter) {
+        ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SAVED");
+        return saved != null ? saved.getTo() : null;
+    }
+
+    private String getSavedBy(ListFilter filter) {
         ListFilterSelectValue savedBy = (ListFilterSelectValue) filter.getValue("SAVED_BY");
+        return savedBy != null && !savedBy.getValue().equals("SHOW_ALL") ? savedBy.getValue() : "";
+    }
+
+    private String getPatientId(ListFilter filter) {
         ListFilterPersonIdValue patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
+        return patientId != null ? patientId.getValue() : "";
+    }
+
+    private Boolean getForwarded(ListFilter filter) {
         ListFilterSelectValue forwarded = (ListFilterSelectValue) filter.getValue("FORWARDED");
+        return forwarded != null ? getForwardedValue(forwarded.getValue()) : null;
+    }
+
+    private String getOrderBy(ListFilter filter) {
         ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
+        return orderBy == null ? "" : orderBy.getValue();
+    }
+
+    private boolean getAscending(ListFilter filter) {
         ListFilterBooleanValue ascending = (ListFilterBooleanValue) filter.getValue("ASCENDING");
+        return ascending != null && ascending.getValue();
+    }
+
+    private List<UtkastStatus> getStatus(ListFilter filter) {
         ListFilterSelectValue status = (ListFilterSelectValue) filter.getValue("STATUS");
-
-
-        convertedFilter.setSavedFrom(saved != null ? saved.getFrom() : null);
-        convertedFilter.setSavedTo(saved != null ? saved.getTo() : null);
-        convertedFilter.setSavedByHsaId(savedBy != null && !savedBy.getValue().equals("SHOW_ALL") ? savedBy.getValue() : "");
-        convertedFilter.setPatientId(patientId != null ? patientId.getValue() : "");
-        convertedFilter.setNotified(forwarded != null ? getForwardedValue(forwarded.getValue()) : null);
-        convertedFilter.setOrderBy(orderBy == null ? "" : orderBy.getValue());
-        convertedFilter.setOrderAscending(ascending != null && ascending.getValue());
-        convertedFilter.setStatusList(getStatusListFromFilter(status != null ? status.getValue() : ""));
-        return convertedFilter;
+        return getStatusListFromFilter(status != null ? status.getValue() : "");
     }
 
     private List<UtkastStatus> getStatusListFromFilter(String status) {
