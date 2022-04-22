@@ -70,17 +70,13 @@ class ListDecoratorImplTest {
 
         @Test
         public void shouldDecorateWithCertificateTypeName() {
-            final var result = listDecorator.decorateWithCertificateTypeName(list);
-            assertEquals(1, result.size());
+             listDecorator.decorateWithCertificateTypeName(list);
+            assertEquals(1, list.size());
         }
     }
 
     @Nested
     class StaffName {
-        final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-        );
-
         public void setupStaffWithOnlyLastName() {
             when(hsaEmployeeService.getEmployee(any(), anyString()))
                     .thenAnswer(
@@ -131,8 +127,8 @@ class ListDecoratorImplTest {
                     List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
-            final var result = listDecorator.decorateWithStaffName(list);
-            assertEquals(1, result.size());
+            listDecorator.decorateWithStaffName(list);
+            assertEquals(1, list.size());
             assertEquals("EXAMPLE_NAME", list.get(0).getUpdatedSignedBy());
         }
 
@@ -143,8 +139,8 @@ class ListDecoratorImplTest {
                     List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
-            final var result = listDecorator.decorateWithStaffName(list);
-            assertEquals(1, result.size());
+            listDecorator.decorateWithStaffName(list);
+            assertEquals(1, list.size());
             assertEquals("FIRST MIDDLE LAST", list.get(0).getUpdatedSignedBy());
         }
 
@@ -155,8 +151,8 @@ class ListDecoratorImplTest {
                     List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
-            final var result = listDecorator.decorateWithStaffName(list);
-            assertEquals(1, result.size());
+            listDecorator.decorateWithStaffName(list);
+            assertEquals(1, list.size());
             assertNull(list.get(0).getUpdatedSignedBy());
         }
     }

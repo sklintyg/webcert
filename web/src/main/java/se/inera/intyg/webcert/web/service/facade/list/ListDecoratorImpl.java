@@ -58,13 +58,12 @@ public class ListDecoratorImpl implements ListDecorator {
     }
 
     @Override
-    public List<ListIntygEntry> decorateWithCertificateTypeName(List<ListIntygEntry> list) {
+    public void decorateWithCertificateTypeName(List<ListIntygEntry> list) {
         intygDraftDecorator.decorateWithCertificateTypeName(list);
-        return list;
     }
 
     @Override
-    public List<ListIntygEntry> decorateWithStaffName(List<ListIntygEntry> list) {
+    public void decorateWithStaffName(List<ListIntygEntry> list) {
         final var hsaIds = list.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
         final var hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
@@ -73,7 +72,6 @@ public class ListDecoratorImpl implements ListDecorator {
                 entry.setUpdatedSignedBy(hsaIdNameMap.get(entry.getUpdatedSignedById()));
             }
         });
-        return list;
     }
 
     private Map<String, String> getNamesByHsaIds(Collection<String> hsaIds) {

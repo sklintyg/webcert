@@ -80,9 +80,9 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private List<ListIntygEntry> decorateList(List<ListIntygEntry> list) {
-        final var listWithTypeName = listDecorator.decorateWithCertificateTypeName(list);
-        final var listWithStaffname = listDecorator.decorateWithStaffName(listWithTypeName);
-        return listDecorator.decorateAndFilterProtectedPerson(listWithStaffname);
+        listDecorator.decorateWithCertificateTypeName(list);
+        listDecorator.decorateWithStaffName(list);
+        return listDecorator.decorateAndFilterProtectedPerson(list);
     }
 
     private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
