@@ -106,7 +106,7 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
     private List<UtkastStatus> getStatusListFromFilter(String status) {
         final var showAll = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE);
 
-        if (status.equals("")) {
+        if (status.isBlank()) {
             return showAll;
         }
 
