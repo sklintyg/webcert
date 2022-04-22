@@ -62,7 +62,7 @@ public class ListController {
     @POST
     @Path("/certificate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getSignedCertificatesForDoctor(ListRequestDTO request) {
+    public Response getListOfSignedCertificates(ListRequestDTO request) {
         final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }

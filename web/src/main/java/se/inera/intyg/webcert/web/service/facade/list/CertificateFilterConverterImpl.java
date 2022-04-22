@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 import java.time.LocalDateTime;
@@ -30,38 +29,59 @@ import java.time.LocalDateTime;
 @Service
 public class CertificateFilterConverterImpl implements CertificateFilterConverter {
 
-    private final WebCertUserService webCertUserService;
-
-    public CertificateFilterConverterImpl(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
-    }
-
     @Override
     public QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units) {
         return convertFilter(filter, hsaId, units);
     }
 
     private QueryIntygParameter convertFilter(ListFilter filter, String hsaId, String[] units) {
-        final var user = webCertUserService.getUser();
         final var convertedFilter = new QueryIntygParameter();
-
-        ListFilterDateRangeValue signed = (ListFilterDateRangeValue) filter.getValue("SIGNED");
-        ListFilterPersonIdValue patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
-        ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
-        ListFilterBooleanValue ascending = (ListFilterBooleanValue) filter.getValue("ASCENDING");
-        ListFilterNumberValue startFrom = (ListFilterNumberValue) filter.getValue("START_FROM");
-        ListFilterNumberValue pageSize = (ListFilterNumberValue) filter.getValue("PAGESIZE");
 
         convertedFilter.setHsaId(hsaId);
         convertedFilter.setUnitIds(units);
-        convertedFilter.setSignedFrom(signed != null ? signed.getFrom() : LocalDateTime.now().minusMonths(3));
-        convertedFilter.setSignedTo(signed != null ? signed.getTo() : null);
-        convertedFilter.setPatientId(patientId != null ? patientId.getValue() : "");
-        convertedFilter.setOrderBy(orderBy == null ? "signedDate" : convertOrderBy(orderBy.getValue()));
-        convertedFilter.setOrderAscending(ascending != null && ascending.getValue());
-        convertedFilter.setStartFrom(startFrom == null ? 0 : startFrom.getValue());
-        convertedFilter.setPageSize(pageSize == null ? 10 : pageSize.getValue());
+        convertedFilter.setSignedFrom(getSignedFrom(filter));
+        convertedFilter.setSignedTo(getSignedTo(filter));
+        convertedFilter.setPatientId(getPatientId(filter));
+        convertedFilter.setOrderBy(getOrderBy(filter));
+        convertedFilter.setOrderAscending(getAscending(filter));
+        convertedFilter.setStartFrom(getStartFrom(filter));
+        convertedFilter.setPageSize(getPageSize(filter));
         return convertedFilter;
+    }
+
+    private LocalDateTime getSignedFrom(ListFilter filter) {
+        ListFilterDateRangeValue signed = (ListFilterDateRangeValue) filter.getValue("SIGNED");
+        return signed != null ? signed.getFrom() : LocalDateTime.now().minusMonths(3);
+    }
+
+    private LocalDateTime getSignedTo(ListFilter filter) {
+        ListFilterDateRangeValue signed = (ListFilterDateRangeValue) filter.getValue("SIGNED");
+        return signed != null ? signed.getTo() : null;
+    }
+
+    private String getPatientId(ListFilter filter) {
+        ListFilterPersonIdValue patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
+        return patientId != null ? patientId.getValue() : "";
+    }
+
+    private String getOrderBy(ListFilter filter) {
+        ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
+        return orderBy == null ? "signedDate" : convertOrderBy(orderBy.getValue());
+    }
+
+    private boolean getAscending(ListFilter filter) {
+        ListFilterBooleanValue ascending = (ListFilterBooleanValue) filter.getValue("ASCENDING");
+        return ascending != null && ascending.getValue();
+    }
+
+    private int getStartFrom(ListFilter filter) {
+        ListFilterNumberValue startFrom = (ListFilterNumberValue) filter.getValue("START_FROM");
+        return startFrom == null ? 0 : startFrom.getValue();
+    }
+
+    private int getPageSize(ListFilter filter) {
+        ListFilterNumberValue pageSize = (ListFilterNumberValue) filter.getValue("PAGESIZE");
+        return pageSize == null ? 10 : pageSize.getValue();
     }
 
     private String convertOrderBy(String orderBy) {

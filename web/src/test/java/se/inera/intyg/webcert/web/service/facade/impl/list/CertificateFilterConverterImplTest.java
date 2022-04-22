@@ -41,19 +41,8 @@ class CertificateFilterConverterImplTest {
     private final static String HSA_ID = "HSA_ID";
     private final static String[] UNITS = {"UNIT1", "UNIT2"};
 
-    @Mock
-    private WebCertUserService webCertUserService;
-
     @InjectMocks
     private CertificateFilterConverterImpl certificateFilterConverter;
-
-    @BeforeEach
-    public void setup() {
-        final var user = new WebCertUser();
-        final var unit = ListTestHelper.buildVardenhet();
-        user.setValdVardenhet(unit);
-        doReturn(user).when(webCertUserService).getUser();
-    }
 
     @Test
     public void shouldConvertSignedFrom() {
