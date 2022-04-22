@@ -36,7 +36,8 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter signerade intyg.";
     private static final String DESCRIPTION = "Nedan visas dina signerade intyg för den enhet du är inloggad på.";
-    private static final String EMPTY_LIST_TEXT = "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
+    private static final String EMPTY_LIST_TEXT =
+            "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
 
     private final WebCertUserService webCertUserService;
 
@@ -88,6 +89,7 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
         return filters;
     }
     private String getStatusDescription() {
-        return "<p>Visar signerade intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren.</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li></p>";
+        return "<p>Visar signerade intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren."
+                + "</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li></p>";
     }
 }

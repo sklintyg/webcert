@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListFilterConfigFactory {
-    private static final String SIGNED_DESCRIPTION = "Av prestanda skäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.";
+    private static final String SIGNED_DESCRIPTION =
+            "Av prestanda skäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.";
 
     public static ListFilterPersonIdConfig defaultPersonId() {
         return new ListFilterPersonIdConfig("PATIENT_ID", "Patient", "åååå-mm-dd");
@@ -57,7 +58,8 @@ public class ListFilterConfigFactory {
 
     public static ListFilterDateRangeConfig signedDateRange() {
         final var min = LocalDateTime.now().minusMonths(3);
-        return new ListFilterDateRangeConfig("SIGNED", "Signeringsdatum", toDate(), fromDateWithLimits(null, min, min),true, SIGNED_DESCRIPTION);
+        return new ListFilterDateRangeConfig("SIGNED", "Signeringsdatum", toDate(),
+                fromDateWithLimits(null, min, min),true, SIGNED_DESCRIPTION);
     }
 
     public static ListFilterSelectConfig forwardedSelect() {
@@ -112,7 +114,8 @@ public class ListFilterConfigFactory {
         return new ListFilterSelectConfig(id, title, convertedSavedByList, !isShowAllDefault);
     }
 
-    private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(StaffListInfo staffListInfo, String defaultHsaId) {
+    private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(
+            StaffListInfo staffListInfo, String defaultHsaId) {
         return ListFilterConfigValue.create(
                 staffListInfo.getHsaId(), staffListInfo.getName(), defaultHsaId.equals(staffListInfo.getHsaId())
         );
