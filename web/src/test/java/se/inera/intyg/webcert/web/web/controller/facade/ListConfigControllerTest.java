@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package se.inera.intyg.webcert.web.web.controller.facade;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
+import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseStatusDTO;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+
+@ExtendWith(MockitoExtension.class)
+public class ListConfigControllerTest {
+
+    @Mock
+    private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
+    @InjectMocks
+    private ListConfigController listConfigController;
+
+    @Nested
+    class ListDraftsConfig {
+        final ListConfig config = new ListConfig();
+
+        @BeforeEach
+        void setup() {
+            doReturn(config)
+                    .when(listDraftsConfigFacadeService)
+                    .get();
+        }
+
+        @Test
+        void shallIncludeConfigInResponse() {
+            final var response = listConfigController.getListOfDraftsConfig().getEntity();
+            assertEquals(config, response);
+        }
+    }
+}

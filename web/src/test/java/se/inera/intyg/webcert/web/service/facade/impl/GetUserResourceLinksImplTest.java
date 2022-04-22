@@ -83,6 +83,27 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
+
+        @Test
+        void shallIncludeDraftListIfOriginIsNormal() {
+            final var user = getUser("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
+
+        @Test
+        void shallIncludeDraftListIfOriginIsUthopp() {
+            final var user = getUser("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
+
+        @Test
+        void shallNotIncludeDraftListIfOriginIsDjupintegration() {
+            final var user = getUser("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
     }
 }
 

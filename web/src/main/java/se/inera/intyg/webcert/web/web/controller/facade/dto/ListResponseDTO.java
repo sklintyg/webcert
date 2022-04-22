@@ -18,31 +18,34 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    READY_FOR_SIGN,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    COPY_CERTIFICATE_CONTINUE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
-    COMPLEMENT_CERTIFICATE,
-    CANNOT_COMPLEMENT_CERTIFICATE,
-    CREATE_CERTIFICATE_FROM_TEMPLATE,
-    CREATE_CERTIFICATE_FROM_CANDIDATE,
-    ACCESS_SEARCH_CREATE_PAGE,
-    ACCESS_DRAFT_LIST,
-    LOG_OUT,
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
+
+import java.util.List;
+
+public class ListResponseDTO {
+    private List<CertificateListItem> list;
+    private int totalCount;
+
+    public static ListResponseDTO create(List<CertificateListItem> list, int totalCount) {
+        final var responseDTO = new ListResponseDTO();
+        responseDTO.setList(list);
+        responseDTO.setTotalCount(totalCount);
+        return responseDTO;
+    }
+
+    public List<CertificateListItem> getList() {
+        return list;
+    }
+
+    public void setList(List<CertificateListItem> list) {
+        this.list = list;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
 }

@@ -16,33 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    READY_FOR_SIGN,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    COPY_CERTIFICATE_CONTINUE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
-    COMPLEMENT_CERTIFICATE,
-    CANNOT_COMPLEMENT_CERTIFICATE,
-    CREATE_CERTIFICATE_FROM_TEMPLATE,
-    CREATE_CERTIFICATE_FROM_CANDIDATE,
-    ACCESS_SEARCH_CREATE_PAGE,
-    ACCESS_DRAFT_LIST,
-    LOG_OUT,
+import java.util.List;
+
+public class ListInfo {
+    private int totalCount;
+    private List<CertificateListItem> list;
+
+    public ListInfo() {}
+
+    public ListInfo(int totalCount, List<CertificateListItem> list) {
+        this.totalCount = totalCount;
+        this.list = list;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public List<CertificateListItem> getList() {
+        return list;
+    }
+
+    public void setList(List<CertificateListItem> list) {
+        this.list = list;
+    }
 }

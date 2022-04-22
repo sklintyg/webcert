@@ -16,33 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum ResourceLinkTypeDTO {
-    EDIT_CERTIFICATE,
-    REMOVE_CERTIFICATE,
-    FORWARD_CERTIFICATE,
-    READY_FOR_SIGN,
-    SIGN_CERTIFICATE,
-    SEND_CERTIFICATE,
-    REVOKE_CERTIFICATE,
-    REPLACE_CERTIFICATE,
-    REPLACE_CERTIFICATE_CONTINUE,
-    RENEW_CERTIFICATE,
-    PRINT_CERTIFICATE,
-    COPY_CERTIFICATE,
-    COPY_CERTIFICATE_CONTINUE,
-    FMB,
-    QUESTIONS,
-    QUESTIONS_NOT_AVAILABLE,
-    CREATE_QUESTIONS,
-    ANSWER_QUESTION,
-    HANDLE_QUESTION,
-    COMPLEMENT_CERTIFICATE,
-    CANNOT_COMPLEMENT_CERTIFICATE,
-    CREATE_CERTIFICATE_FROM_TEMPLATE,
-    CREATE_CERTIFICATE_FROM_CANDIDATE,
-    ACCESS_SEARCH_CREATE_PAGE,
-    ACCESS_DRAFT_LIST,
-    LOG_OUT,
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
+
+public class ListFilterPersonIdValue implements ListFilterValue {
+    private String value;
+
+    @Override
+    public ListFilterType getType() {
+        return ListFilterType.PERSON_ID;
+    }
+
+    public ListFilterPersonIdValue() {
+    }
+
+    public ListFilterPersonIdValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }
