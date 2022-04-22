@@ -104,6 +104,9 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     }
 
     private String getStatusDescription() {
-        return "<p>Visar utkastets status:<ul><li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li></ul></p>";
+        return "<p>Visar utkastets status:<ul>" +
+                "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas." +
+                "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>" +
+                "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
     }
 }
