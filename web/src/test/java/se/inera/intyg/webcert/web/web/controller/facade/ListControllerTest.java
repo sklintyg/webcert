@@ -26,13 +26,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
 import java.util.List;
 
@@ -64,7 +62,7 @@ public class ListControllerTest {
 
         @Test
         void shallIncludeListInResponse() {
-            final var request = new ListDraftsRequestDTO();
+            final var request = new ListRequestDTO();
             request.setFilter(new ListFilter());
             final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
             assertEquals(list, response.getList());
@@ -72,7 +70,7 @@ public class ListControllerTest {
 
         @Test
         void shallIncludeTotalCountInResponse() {
-            final var request = new ListDraftsRequestDTO();
+            final var request = new ListRequestDTO();
             request.setFilter(new ListFilter());
             final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
             assertEquals(1, response.getTotalCount());

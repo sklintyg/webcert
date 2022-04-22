@@ -23,12 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -41,18 +40,30 @@ public class ListController {
 
     private final ListDraftsFacadeServiceImpl listDraftsFacadeService;
 
+    private final ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
+
     @Autowired
-    public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService) {
+    public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService,
+                          ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService) {
         this.listDraftsFacadeService = listDraftsFacadeService;
+        this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
     }
 
     @Path("/draft")
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getListOfDrafts(ListDraftsRequestDTO request) {
+    public Response getListOfDrafts(ListRequestDTO request) {
         LOG.debug("Getting list of drafts");
         final var listInfo = listDraftsFacadeService.get(request.getFilter());
         return Response.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
+    }
+
+    @POST
+    @Path("/certificate")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getSignedCertificatesForDoctor(ListRequestDTO request) {
+        final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
+        return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }
 }
