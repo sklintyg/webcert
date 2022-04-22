@@ -36,7 +36,6 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
-    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Autowired
     public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService) {
@@ -60,10 +59,6 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     }
 
     private List<StaffListInfo> getStaffInfo() {
-        authoritiesValidator.given(
-                webCertUserService.getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST
-        ).orThrow();
-
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
 

@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
@@ -46,6 +48,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     private final ListSortHelper listSortHelper;
     private final ListDecorator listDecorator;
     private final CertificateListItemConverter certificateListItemConverter;
+    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Autowired
     public ListDraftsFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
@@ -65,6 +68,8 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     @Override
     public ListInfo get(ListFilter filter) {
         final var user = webCertUserService.getUser();
+        checkUserAccess(user);
+
         final var convertedFilter = draftFilterConverter.convert(filter);
 
         final var intygEntryList = getIntygEntryList(convertedFilter);
@@ -77,6 +82,10 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
         logListUsage(user, paginatedList);
         return new ListInfo(totalListCount, paginatedList);
+    }
+
+    private void checkUserAccess(WebCertUser user) {
+        authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
     }
 
     private List<ListIntygEntry> decorateList(List<ListIntygEntry> list) {
