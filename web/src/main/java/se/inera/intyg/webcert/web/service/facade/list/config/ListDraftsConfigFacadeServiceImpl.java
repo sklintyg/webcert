@@ -73,10 +73,11 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     }
 
     public TableHeading[] getTableHeadings() {
+        final var saved = TableHeadingFactory.date(ListColumnType.SAVED, false);
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
                 TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-                TableHeadingFactory.date(ListColumnType.SAVED),
+                saved,
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SAVED_BY),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),

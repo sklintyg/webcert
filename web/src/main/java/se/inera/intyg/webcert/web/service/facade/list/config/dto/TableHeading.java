@@ -24,6 +24,7 @@ public class TableHeading {
     private String title;
     private CertificateListItemValueType type;
     private String description;
+    private boolean defaultAscending;
 
 
     public TableHeading(ListColumnType id, String title, CertificateListItemValueType type, String description) {
@@ -31,6 +32,15 @@ public class TableHeading {
         this.title = title;
         this.type = type;
         this.description = description;
+        this.defaultAscending = true;
+    }
+
+    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type, String description, boolean defaultAscending) {
+        this.id = id;
+        this.title = title;
+        this.type = type;
+        this.description = description;
+        this.defaultAscending = defaultAscending;
     }
 
     public ListColumnType getId() {
@@ -63,5 +73,13 @@ public class TableHeading {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isDefaultAscending() {
+        return defaultAscending;
+    }
+
+    public void setDefaultAscending(boolean defaultAscending) {
+        this.defaultAscending = defaultAscending;
     }
 }
