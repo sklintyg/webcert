@@ -62,9 +62,9 @@ public class ListFilterConfigFactory {
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
                 ListFilterConfigValue.create(DraftStatus.SHOW_ALL.toString(), DraftStatus.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(DraftStatus.INCOMPLETE.toString(), DraftStatus.INCOMPLETE.getName(), false),
-                ListFilterConfigValue.create(DraftStatus.COMPLETE.toString(), DraftStatus.COMPLETE.getName(), false),
-                ListFilterConfigValue.create(DraftStatus.LOCKED.toString(), DraftStatus.LOCKED.getName(), false)
+                ListFilterConfigValue.create(DraftStatus.INCOMPLETE.toString(), "Uppgifter saknas", false),
+                ListFilterConfigValue.create(DraftStatus.COMPLETE.toString(), "Kan signeras", false),
+                ListFilterConfigValue.create(DraftStatus.LOCKED.toString(), "Låsta", false)
         )
         );
     }
