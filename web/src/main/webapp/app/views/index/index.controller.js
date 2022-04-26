@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inera AB (http://www.inera.se)
+ * Copyright (C) 2022 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,7 @@
  */
 
 angular.module('webcert').controller('webcert.IndexCtrl',
-    ['$scope', '$http', '$timeout', 'moduleConfig', function($scope, $http, $timeout, moduleConfig) {
+    ['$window', '$scope', '$http', '$timeout', 'moduleConfig', function($window, $scope, $http, $timeout, moduleConfig) {
       'use strict';
 
       $scope.config = moduleConfig;
@@ -39,5 +39,11 @@ angular.module('webcert').controller('webcert.IndexCtrl',
       $timeout(function() {
         _show = true;
       }, 100);
+
+      $scope.showIeEndOfSupportMessage = function() {
+        var re = /(?:Trident\/\d+)|(?:MSIE \d+)/;
+        var userAgent = $window.navigator.userAgent;
+        return re.test(userAgent);
+      };
 
     }]);
