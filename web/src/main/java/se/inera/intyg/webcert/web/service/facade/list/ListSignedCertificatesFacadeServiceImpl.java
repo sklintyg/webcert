@@ -79,6 +79,4 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
 
         return units.toArray(new String[0]);
     }
-
-
 }
