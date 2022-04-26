@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import antlr.collections.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,26 +25,21 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
-import se.inera.intyg.webcert.web.service.facade.list.ListPaginationHelperImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateListItemConverterImplTest {
 
-    private final ListType LIST_TYPE = ListType.DRAFTS;
-
     @InjectMocks
     private CertificateListItemConverterImpl certificateListItemConverter;
 
     @Nested
     class ListDrafts {
+        private final ListType LIST_TYPE = ListType.DRAFTS;
+
         @Test
         public void shouldSetCertificateId() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
@@ -179,6 +173,113 @@ class CertificateListItemConverterImplTest {
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
             assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
+        }
+    }
+
+    @Nested
+    class ListSignedCertificates {
+
+        @Test
+        public void shouldSetCertificateId() {
+            final var entry = ListTestHelper.createCertificateListEntry();
+            final var result = certificateListItemConverter.convert(entry);
+
+            assertEquals(entry.getCertificateId(), result.getValue(ListColumnType.CERTIFICATE_ID));
+        }
+
+        @Test
+        public void shouldSetCertificateTypeName() {
+            final var entry = ListTestHelper.createCertificateListEntry();
+            final var result = certificateListItemConverter.convert(entry);
+
+            assertEquals(entry.getCertificateTypeName(), result.getValue(ListColumnType.CERTIFICATE_TYPE_NAME));
+        }
+
+        @Test
+        public void shouldSetPatientId() {
+            final var entry = ListTestHelper.createCertificateListEntry();
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertEquals(entry.getCivicRegistrationNumber(), patientListInfo.getId());
+        }
+
+        @Test
+        public void shouldSetPatientIsProtectedPerson() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertTrue(patientListInfo.isProtectedPerson());
+        }
+
+        @Test
+        public void shouldSetPatientIsDeceased() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertTrue(patientListInfo.isDeceased());
+        }
+
+        @Test
+        public void shouldSetPatientIsTestIndicated() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertTrue(patientListInfo.isTestIndicator());
+        }
+
+        @Test
+        public void shouldSetIsSent() {
+            final var entry = ListTestHelper.createCertificateListEntry(true, true, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+
+            assertEquals("Skickat", result.getValue("STATUS"));
+        }
+
+        @Test
+        public void shouldSetIsNotSent() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+
+            assertEquals("Ej skickat", result.getValue("STATUS"));
+        }
+
+        @Test
+        public void shouldSetPatientIsNotProtectedPerson() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertFalse(patientListInfo.isProtectedPerson());
+        }
+
+        @Test
+        public void shouldSetPatientIsNotDeceased() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertFalse(patientListInfo.isDeceased());
+        }
+
+        @Test
+        public void shouldSetPatientIsNotTestIndicated() {
+            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+            final var result = certificateListItemConverter.convert(entry);
+            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+            assertFalse(patientListInfo.isTestIndicator());
+        }
+
+        @Test
+        public void shouldSetSigned() {
+            final var entry = ListTestHelper.createCertificateListEntry();
+            final var result = certificateListItemConverter.convert(entry);
+
+            assertEquals(entry.getSignedDate(), result.getValue(ListColumnType.SIGNED));
         }
     }
 }

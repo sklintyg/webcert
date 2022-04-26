@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,10 +39,13 @@ public class ListConfigController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
+    private final ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
 
     @Autowired
-    public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService) {
+    public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
+                                ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
+        this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
     }
 
     @Path("/draft")
@@ -51,6 +55,16 @@ public class ListConfigController {
     public Response getListOfDraftsConfig() {
         LOG.debug("Getting config for list of drafts");
         final var config = draftListConfigFacadeService.get();
+        return Response.ok(config).build();
+    }
+
+    @Path("/certificate")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getListOfSignedCertificatesConfig() {
+        LOG.debug("Getting config for list of drafts");
+        final var config = listSignedCertificatesConfigFacadeService.get();
         return Response.ok(config).build();
     }
 }

@@ -23,10 +23,14 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListFilterConfigFactory {
+    private static final String SIGNED_DESCRIPTION =
+            "Av prestanda skäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.";
+
     public static ListFilterPersonIdConfig defaultPersonId() {
         return new ListFilterPersonIdConfig("PATIENT_ID", "Patient", "åååå-mm-dd");
     }
@@ -35,12 +39,27 @@ public class ListFilterConfigFactory {
         return new ListFilterDateConfig("TO", "Till");
     }
 
+    public static ListFilterDateConfig toDateWithLimits(LocalDateTime max, LocalDateTime min) {
+        return new ListFilterDateConfig("TO", "Till", max, min, null);
+    }
+
     public static ListFilterDateConfig fromDate() {
         return new ListFilterDateConfig("FROM", "Från");
     }
 
+    public static ListFilterDateConfig fromDateWithLimits(LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
+        return new ListFilterDateConfig("FROM", "Från", max, min, defaultValue);
+    }
+
+
     public static ListFilterDateRangeConfig savedDateRange() {
         return new ListFilterDateRangeConfig("SAVED", "Sparat datum", toDate(), fromDate(), true);
+    }
+
+    public static ListFilterDateRangeConfig signedDateRange() {
+        final var min = LocalDateTime.now().minusMonths(3);
+        return new ListFilterDateRangeConfig("SIGNED", "Signeringsdatum", toDate(),
+                fromDateWithLimits(null, min, min),true, SIGNED_DESCRIPTION);
     }
 
     public static ListFilterSelectConfig forwardedSelect() {
@@ -95,7 +114,8 @@ public class ListFilterConfigFactory {
         return new ListFilterSelectConfig(id, title, convertedSavedByList, !isShowAllDefault);
     }
 
-    private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(StaffListInfo staffListInfo, String defaultHsaId) {
+    private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(
+            StaffListInfo staffListInfo, String defaultHsaId) {
         return ListFilterConfigValue.create(
                 staffListInfo.getHsaId(), staffListInfo.getName(), defaultHsaId.equals(staffListInfo.getHsaId())
         );

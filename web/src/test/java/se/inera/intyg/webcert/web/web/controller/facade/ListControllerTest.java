@@ -26,13 +26,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListDraftsRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
 import java.util.List;
 
@@ -45,6 +44,8 @@ public class ListControllerTest {
 
     @Mock
     private ListDraftsFacadeServiceImpl listDraftsFacadeService;
+    @Mock
+    private ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
     @InjectMocks
     private ListController listController;
 
@@ -64,7 +65,7 @@ public class ListControllerTest {
 
         @Test
         void shallIncludeListInResponse() {
-            final var request = new ListDraftsRequestDTO();
+            final var request = new ListRequestDTO();
             request.setFilter(new ListFilter());
             final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
             assertEquals(list, response.getList());
@@ -72,9 +73,40 @@ public class ListControllerTest {
 
         @Test
         void shallIncludeTotalCountInResponse() {
-            final var request = new ListDraftsRequestDTO();
+            final var request = new ListRequestDTO();
             request.setFilter(new ListFilter());
             final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
+            assertEquals(1, response.getTotalCount());
+        }
+    }
+
+    @Nested
+    class ListSignedCertificates {
+        ListInfo listInfo = new ListInfo();
+        final List<CertificateListItem> list = List.of(new CertificateListItem());
+
+        @BeforeEach
+        void setup() {
+            listInfo.setList(list);
+            listInfo.setTotalCount(1);
+            doReturn(listInfo)
+                    .when(listSignedCertificatesFacadeService)
+                    .get(any());
+        }
+
+        @Test
+        void shallIncludeListInResponse() {
+            final var request = new ListRequestDTO();
+            request.setFilter(new ListFilter());
+            final var response = (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
+            assertEquals(list, response.getList());
+        }
+
+        @Test
+        void shallIncludeTotalCountInResponse() {
+            final var request = new ListRequestDTO();
+            request.setFilter(new ListFilter());
+            final var response = (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
             assertEquals(1, response.getTotalCount());
         }
     }

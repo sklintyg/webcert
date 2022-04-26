@@ -21,31 +21,28 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
+public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfigFacadeService {
 
-    private static final String TITLE = "Ej signerade utkast";
-    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppna utkastet.";
-    private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
-    private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
-    private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
+    private static final String TITLE = "Signerade intyg";
+    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget";
+    private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter signerade intyg.";
+    private static final String DESCRIPTION = "Nedan visas dina signerade intyg för den enhet du är inloggad på.";
+    private static final String EMPTY_LIST_TEXT =
+            "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
 
-    private final GetStaffInfoFacadeService getStaffInfoFacadeService;
     private final WebCertUserService webCertUserService;
 
     @Autowired
-    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService) {
-        this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+    public ListSignedCertificatesConfigFacadeServiceImpl(WebCertUserService webCertUserService) {
         this.webCertUserService = webCertUserService;
     }
 
@@ -76,37 +73,23 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
                 TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-                TableHeadingFactory.date(ListColumnType.SAVED, false),
+                TableHeadingFactory.date(ListColumnType.SIGNED),
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-                TableHeadingFactory.text(ListColumnType.SAVED_BY),
-                TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
                 TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };
     }
 
     private List<ListFilterConfig> getListDraftsFilters() {
         final var filters = new ArrayList<ListFilterConfig>();
-        filters.add(ListFilterConfigFactory.forwardedSelect());
-        filters.add(ListFilterConfigFactory.draftStatusSelect());
-        filters.add(getSavedByFilter());
         filters.add(ListFilterConfigFactory.defaultPersonId());
-        filters.add(ListFilterConfigFactory.savedDateRange());
-        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
+        filters.add(ListFilterConfigFactory.signedDateRange());
+        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SIGNED));
         filters.add(ListFilterConfigFactory.ascending());
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;
     }
-
-    private ListFilterConfig getSavedByFilter() {
-        final var savedByList = getStaffInfoFacadeService.get();
-        final var defaultValue = getStaffInfoFacadeService.isLoggedInUserDoctor() ? getStaffInfoFacadeService.getLoggedInStaffHsaId() : "";
-        return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
-    }
-
     private String getStatusDescription() {
-        return "<p>Visar utkastets status:<ul>"
-                + "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas."
-                + "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>"
-                + "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
+        return "<p>Visar signerade intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren."
+                + "</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li></p>";
     }
 }

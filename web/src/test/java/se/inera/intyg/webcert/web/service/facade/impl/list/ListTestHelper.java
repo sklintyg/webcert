@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.impl.list;
 
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -185,5 +186,23 @@ class ListTestHelper {
         listIntygEntry.setTestIntyg(includePatientStatuses);
         listIntygEntry.setUpdatedSignedById("HSA_ID");
         return listIntygEntry;
+    }
+
+    public static CertificateListEntry createCertificateListEntry() {
+        return createCertificateListEntry(true, true, "191212121212");
+    }
+
+        public static CertificateListEntry createCertificateListEntry(boolean isSent, boolean includePatientStatuses, String patientId) {
+        final var entry = new CertificateListEntry();
+        entry.setCertificateType("luse");
+        entry.setCertificateId("CERTIFICATE_ID");
+        entry.setCertificateTypeName("CERTIFICATE_TYPE_NAME");
+        entry.setSent(isSent);
+        entry.setCivicRegistrationNumber(patientId);
+        entry.setSignedDate(LocalDateTime.now());
+        entry.setDeceased(includePatientStatuses);
+        entry.setProtectedIdentity(includePatientStatuses);
+        entry.setTestIndicator(includePatientStatuses);
+        return entry;
     }
 }

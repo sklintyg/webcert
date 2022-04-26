@@ -32,6 +32,14 @@ public class ListFilterDateRangeConfig extends ListFilterConfig {
         this.forbidFutureDates = forbidFutureDates;
     }
 
+    public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to,
+                                     ListFilterDateConfig from, boolean forbidFutureDates, String description) {
+        super(ListFilterType.DATE_RANGE, id, title, false, description);
+        this.to = to;
+        this.from = from;
+        this.forbidFutureDates = forbidFutureDates;
+    }
+
     public ListFilterDateConfig getTo() {
         return to;
     }
