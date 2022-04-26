@@ -124,7 +124,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(DraftStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test
@@ -132,7 +132,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_INCOMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(DraftStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test
@@ -140,7 +140,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_LOCKED.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(DraftStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test

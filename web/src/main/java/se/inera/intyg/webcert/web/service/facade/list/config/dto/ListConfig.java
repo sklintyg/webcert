@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ListConfig {
 
@@ -29,24 +31,22 @@ public class ListConfig {
     private String emptyListText;
     private String secondaryTitle;
     private List<Integer> pageSizes;
-    private String openCertificateTooltip;
-    private String searchCertificateTooltip;
+    private Map<String, String> buttonTooltips;
+    private boolean excludeFilterButtons;
     private TableHeading[] tableHeadings;
 
     public ListConfig(){}
 
     public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText,
-                      String secondaryTitle, List<Integer> pageSizes, String openCertificateTooltip,
-                      String searchCertificateTooltip, TableHeading[] tableHeadings) {
+                      String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings) {
         this.filters = filters;
         this.title = title;
         this.description = description;
         this.emptyListText = emptyListText;
         this.secondaryTitle = secondaryTitle;
         this.pageSizes = pageSizes;
-        this.openCertificateTooltip = openCertificateTooltip;
-        this.searchCertificateTooltip = searchCertificateTooltip;
         this.tableHeadings = tableHeadings;
+        buttonTooltips = new HashMap<>();
     }
 
     public List<ListFilterConfig> getFilters() {
@@ -73,29 +73,12 @@ public class ListConfig {
         this.pageSizes = pageSizes;
     }
 
-    public String getOpenCertificateTooltip() {
-        return openCertificateTooltip;
-    }
-
-    public void setOpenCertificateTooltip(String openCertificateTooltip) {
-        this.openCertificateTooltip = openCertificateTooltip;
-    }
-
     public TableHeading[] getTableHeadings() {
         return tableHeadings;
     }
 
     public void setTableHeadings(TableHeading[] tableHeadings) {
         this.tableHeadings = tableHeadings;
-    }
-
-
-    public String getSearchCertificateTooltip() {
-        return searchCertificateTooltip;
-    }
-
-    public void setSearchCertificateTooltip(String searchCertificateTooltip) {
-        this.searchCertificateTooltip = searchCertificateTooltip;
     }
 
     public String getDescription() {
@@ -120,5 +103,24 @@ public class ListConfig {
 
     public void setSecondaryTitle(String secondaryTitle) {
         this.secondaryTitle = secondaryTitle;
+    }
+
+    public boolean isExcludeFilterButtons() {
+        return excludeFilterButtons;
+    }
+
+    public void setExcludeFilterButtons(boolean excludeFilterButtons) {
+        this.excludeFilterButtons = excludeFilterButtons;
+    }
+
+    public Map<String, String> getButtonTooltips() {
+        return buttonTooltips;
+    }
+
+    public void addButtonTooltip(String key, String value) {
+        if (buttonTooltips == null) {
+            buttonTooltips = new HashMap<>();
+        }
+        buttonTooltips.put(key, value);
     }
 }

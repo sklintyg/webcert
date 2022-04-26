@@ -16,17 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.config.dto;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum ListFilterType {
-    TEXT,
-    SELECT,
-    DATE_RANGE,
-    DATE,
-    PERSON_ID,
-    NUMBER,
-    BOOLEAN,
-    ORDER,
-    PAGESIZE,
-    RADIO,
+public enum FilterStatusType {
+    CURRENT_CERTIFICATES("Aktuella intyg"),
+    MODIFIED_CERTIFICATES("Ersatta, makulerade, låsta och kompletterade intyg"),
+    ALL_CERTIFICATES("Alla intyg");
+
+    private final String name;
+
+    FilterStatusType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

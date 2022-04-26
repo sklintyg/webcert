@@ -24,10 +24,13 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateStatus;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
@@ -51,9 +54,10 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.STATUS, convertedStatus);
         listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
-        listItem.addValue(ListColumnType.SAVED_BY, listIntygEntry.getUpdatedSignedBy());
+        listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY, listIntygEntry.getUpdatedSignedBy());
         listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
+        listItem.addValue(ListColumnType.LINKS, listIntygEntry.getLinks());
         return listItem;
     }
 
@@ -64,24 +68,36 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.SIGNED, entry.getSignedDate());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getCertificateId());
-        listItem.addValue(ListColumnType.STATUS, entry.isSent() ? "Skickat" : "Ej skickat");
+        listItem.addValue(ListColumnType.STATUS, entry.isSent()
+                ? CertificateStatus.SENT.getName() : CertificateStatus.NOT_SENT.getName()
+        );
         return listItem;
     }
 
     private String convertStatus(String status, ListType listType) {
-        if (listType == ListType.DRAFTS) {
-            return convertDraftStatus(UtkastStatus.valueOf(status)).getName();
-        }
-        return "";
+        final var convertedStatus = getCertificateStatus(status);
+        return convertedStatus != null ? convertedStatus.getName() : "Okänd";
     }
 
-    private DraftStatus convertDraftStatus(UtkastStatus status) {
-        if (status == UtkastStatus.DRAFT_COMPLETE) {
-            return DraftStatus.COMPLETE;
-        } else if (status == UtkastStatus.DRAFT_INCOMPLETE) {
-            return DraftStatus.INCOMPLETE;
+    private CertificateStatus getCertificateStatus(String status) {
+        if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
+            return CertificateStatus.COMPLETE;
+        } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
+            return CertificateStatus.INCOMPLETE;
+        } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
+            return CertificateStatus.LOCKED;
+        } else if (status.equals("RENEWED")) {
+            return CertificateStatus.RENEWED;
+        } else if (status.equals("COMPLEMENTED")) {
+            return CertificateStatus.COMPLEMENTED;
+        } else if (status.equals("CANCELLED")) {
+            return CertificateStatus.REVOKED;
+        } else if (status.equals("SENT")  || status.equals("RECEIVED")) {
+            return CertificateStatus.SENT;
+        } else if (status.equals("SIGNED")) {
+            return CertificateStatus.SIGNED;
         }
-        return DraftStatus.LOCKED;
+        return null;
     }
 
     private PatientListInfo getPatientListInfo(ListIntygEntry listIntygEntry) {

@@ -19,7 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.factory;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.FilterStatusType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 
@@ -80,11 +81,11 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
-                ListFilterConfigValue.create(DraftStatus.SHOW_ALL.toString(), DraftStatus.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(DraftStatus.INCOMPLETE.toString(), "Uppgifter saknas", false),
-                ListFilterConfigValue.create(DraftStatus.COMPLETE.toString(), "Kan signeras", false),
-                ListFilterConfigValue.create(DraftStatus.LOCKED.toString(), "Låsta", false)
-        )
+                ListFilterConfigValue.create(CertificateStatus.SHOW_ALL.toString(), CertificateStatus.SHOW_ALL.getName(), true),
+                ListFilterConfigValue.create(CertificateStatus.INCOMPLETE.toString(), "Uppgifter saknas", false),
+                ListFilterConfigValue.create(CertificateStatus.COMPLETE.toString(), "Kan signeras", false),
+                ListFilterConfigValue.create(CertificateStatus.LOCKED.toString(), "Låsta", false)
+            )
         );
     }
 
@@ -118,6 +119,15 @@ public class ListFilterConfigFactory {
             StaffListInfo staffListInfo, String defaultHsaId) {
         return ListFilterConfigValue.create(
                 staffListInfo.getHsaId(), staffListInfo.getName(), defaultHsaId.equals(staffListInfo.getHsaId())
+        );
+    }
+
+    public static ListFilterRadioConfig certificateStatusRadio() {
+        return new ListFilterRadioConfig("STATUS", "", List.of(
+                ListFilterConfigValue.create(FilterStatusType.CURRENT_CERTIFICATES.toString(), FilterStatusType.CURRENT_CERTIFICATES.getName(), true),
+                ListFilterConfigValue.create(FilterStatusType.MODIFIED_CERTIFICATES.toString(), FilterStatusType.MODIFIED_CERTIFICATES.getName(), false),
+                ListFilterConfigValue.create(FilterStatusType.ALL_CERTIFICATES.toString(), FilterStatusType.ALL_CERTIFICATES.getName(), false)
+            )
         );
     }
 }

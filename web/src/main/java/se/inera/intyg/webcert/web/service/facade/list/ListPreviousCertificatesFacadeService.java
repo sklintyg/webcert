@@ -16,22 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum DraftStatus implements CertificateStatus {
-    SHOW_ALL("Visa alla"),
-    COMPLETE("Utkast, kan signeras"),
-    LOCKED("Utkast, låst"),
-    INCOMPLETE("Utkast, uppgifter saknas");
+package se.inera.intyg.webcert.web.service.facade.list;
 
-    private final String name;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 
-    DraftStatus(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+public interface ListPreviousCertificatesFacadeService {
+    ListInfo get(ListFilter filter);
 }

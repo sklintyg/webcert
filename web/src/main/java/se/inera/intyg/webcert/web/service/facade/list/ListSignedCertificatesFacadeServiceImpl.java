@@ -24,13 +24,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.certificate.CertificateService;
+import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,16 +40,18 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     private final CertificateService certificateService;
     private final CertificateFilterConverter certificateFilterConverter;
     private final CertificateListItemConverter certificateListItemConverter;
+    private final GetStaffInfoFacadeService getStaffInfoFacadeService;
 
     @Autowired
     public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService,
                                                    CertificateService certificateService,
                                                    CertificateFilterConverter certificateFilterConverter,
-                                                   CertificateListItemConverter certificateListItemConverter) {
+                                                   CertificateListItemConverter certificateListItemConverter, GetStaffInfoFacadeService getStaffInfoFacadeService) {
         this.webCertUserService = webCertUserService;
         this.certificateService = certificateService;
         this.certificateFilterConverter = certificateFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
+        this.getStaffInfoFacadeService = getStaffInfoFacadeService;
     }
 
     @Override
@@ -72,11 +72,7 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     }
 
     private String[] getUnitsForCurrentUser() {
-        WebCertUser webCertUser = webCertUserService.getUser();
-        final var units = webCertUser.getIdsOfSelectedVardenhet();
-
-        LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
-
+        final var units = getStaffInfoFacadeService.getUnits();
         return units.toArray(new String[0]);
     }
 }

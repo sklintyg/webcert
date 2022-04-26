@@ -16,17 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public enum ListFilterType {
-    TEXT,
-    SELECT,
-    DATE_RANGE,
-    DATE,
-    PERSON_ID,
-    NUMBER,
-    BOOLEAN,
-    ORDER,
-    PAGESIZE,
-    RADIO,
+import java.util.List;
+
+public class ListFilterRadioConfig extends ListFilterConfig {
+    private List<ListFilterConfigValue> values;
+
+    public ListFilterRadioConfig(String id, String title, List<ListFilterConfigValue> values) {
+        super(ListFilterType.RADIO, id, title);
+        this.values = values;
+    }
+
+    public List<ListFilterConfigValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<ListFilterConfigValue> values) {
+        this.values = values;
+    }
 }

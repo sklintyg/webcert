@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public interface CertificateStatus {
-    String getName();
+public enum CertificateStatus {
+    SHOW_ALL("Visa alla"),
+    COMPLETE("Utkast, kan signeras"),
+    LOCKED("Utkast, låst"),
+    INCOMPLETE("Utkast, uppgifter saknas"),
+    SIGNED("Signerat"),
+    REVOKED("Makulerat"),
+    RENEWED("Ersatt"),
+    COMPLEMENTED("Kompletterat"),
+    SENT("Skickat"),
+    NOT_SENT("Ej skickat"),
+    UNKOWN("Okänd status");
+
+    private final String name;
+
+    CertificateStatus(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -55,8 +55,8 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
         final var config = new ListConfig();
         config.setTitle(TITLE);
         config.setFilters(getListDraftsFilters());
-        config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
-        config.setSearchCertificateTooltip(SEARCH_CERTIFICATE_TOOLTIP);
+        //config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
+        //config.setSearchCertificateTooltip(SEARCH_CERTIFICATE_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);

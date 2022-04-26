@@ -19,13 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
+    private static final Logger LOG = LoggerFactory.getLogger(GetStaffInfoFacadeServiceImpl.class);
 
     @Autowired
     public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService) {
@@ -56,6 +58,14 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     @Override
     public boolean isLoggedInUserDoctor() {
         return webCertUserService.getUser().isLakare() || webCertUserService.getUser().isPrivatLakare();
+    }
+
+    @Override
+    public List<String> getUnits() {
+        WebCertUser webCertUser = webCertUserService.getUser();
+        final var units = webCertUser.getIdsOfSelectedVardenhet();
+        LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
+        return units;
     }
 
     private List<StaffListInfo> getStaffInfo() {
