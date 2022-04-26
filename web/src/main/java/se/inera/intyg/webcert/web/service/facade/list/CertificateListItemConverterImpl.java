@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
@@ -36,6 +37,11 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         return convertListItem(listIntygEntry, listType);
     }
 
+    @Override
+    public CertificateListItem convert(CertificateListEntry entry) {
+        return convertListItem(entry);
+    }
+
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
         final var convertedStatus = convertStatus(listIntygEntry.getStatus(), listType);
@@ -48,6 +54,17 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.SAVED_BY, listIntygEntry.getUpdatedSignedBy());
         listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
+        return listItem;
+    }
+
+    private CertificateListItem convertListItem(CertificateListEntry entry) {
+        final var listItem = new CertificateListItem();
+        final var patientListInfo = getPatientListInfo(entry);
+        listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, entry.getCertificateTypeName());
+        listItem.addValue(ListColumnType.SIGNED, entry.getSignedDate());
+        listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
+        listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getCertificateId());
+        listItem.addValue(ListColumnType.STATUS, entry.isSent() ? "Skickat" : "Ej skickat");
         return listItem;
     }
 
@@ -73,6 +90,15 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
                 listIntygEntry.isSekretessmarkering(),
                 listIntygEntry.isAvliden(),
                 listIntygEntry.isTestIntyg()
+        );
+    }
+
+    private PatientListInfo getPatientListInfo(CertificateListEntry certificateListEntry) {
+        return new PatientListInfo(
+                certificateListEntry.getCivicRegistrationNumber(),
+                certificateListEntry.isProtectedIdentity(),
+                certificateListEntry.isDeceased(),
+                certificateListEntry.isTestIndicator()
         );
     }
 }

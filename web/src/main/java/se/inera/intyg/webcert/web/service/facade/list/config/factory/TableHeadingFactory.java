@@ -36,6 +36,10 @@ public class TableHeadingFactory {
         return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE, type.getDescription());
     }
 
+    public static TableHeading date(ListColumnType type, boolean defaultAscending) {
+        return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE, type.getDescription(), defaultAscending);
+    }
+
     public static TableHeading patientInfo(ListColumnType type) {
         return new TableHeading(type, type.getName(), CertificateListItemValueType.PATIENT_INFO, type.getDescription());
     }

@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
@@ -45,6 +46,8 @@ public class ListConfigControllerTest {
 
     @Mock
     private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
+    @Mock
+    private ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
     @InjectMocks
     private ListConfigController listConfigController;
 
@@ -62,6 +65,24 @@ public class ListConfigControllerTest {
         @Test
         void shallIncludeConfigInResponse() {
             final var response = listConfigController.getListOfDraftsConfig().getEntity();
+            assertEquals(config, response);
+        }
+    }
+
+    @Nested
+    class ListSignedCertificatesConfig {
+        final ListConfig config = new ListConfig();
+
+        @BeforeEach
+        void setup() {
+            doReturn(config)
+                    .when(listSignedCertificatesConfigFacadeService)
+                    .get();
+        }
+
+        @Test
+        void shallIncludeConfigInResponse() {
+            final var response = listConfigController.getListOfSignedCertificatesConfig().getEntity();
             assertEquals(config, response);
         }
     }

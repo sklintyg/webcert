@@ -65,6 +65,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasAccessToSignedCertificatesList(user)) {
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST,
+                            "Signerade intyg",
+                            "",
+                            true
+                    )
+            );
+        }
+
         if (isLogOutAvailable(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
@@ -86,6 +97,10 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
+    private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
+        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && isUserDoctor(user);
+    }
+
     private boolean isLogOutAvailable(WebCertUser user) {
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
@@ -96,5 +111,9 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     private boolean isOriginUthopp(String origin) {
         return origin.equals("UTHOPP");
+    }
+
+    private boolean isUserDoctor(WebCertUser user) {
+        return user.isPrivatLakare() || user.isLakare();
     }
 }
