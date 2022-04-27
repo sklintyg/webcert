@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Service
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
@@ -56,8 +61,22 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeInfo.setDescription(module.getDescription());
         certificateTypeInfo.setDetailedDescription(module.getDetailedDescription());
         certificateTypeInfo.setIssuerTypeId(module.getIssuerTypeId());
-        certificateTypeInfo.setLinks(module.getLinks());
+        certificateTypeInfo.setLinks(convertResourceLinks(module.getLinks()));
         return certificateTypeInfo;
+    }
+
+    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links) {
+        return links.stream()
+                .map(this::convertResourceLink)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private ResourceLinkDTO convertResourceLink(ActionLink link) {
+        if (link.getType() == ActionLinkType.SKAPA_UTKAST) {
+            return ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE, "Skapa intyg", "Skapa ett intygsutkast.", true);
+        }
+        return null;
     }
 
     private List<IntygModuleDTO> getCertificateModuleList(Personnummer personnummer) {

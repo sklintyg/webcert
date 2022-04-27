@@ -27,7 +27,7 @@ public class CertificateTypeInfoDTO {
     private String issuerTypeId;
     private String description;
     private String detailedDescription;
-    private List<ActionLink> links;
+    private List<ResourceLinkDTO> links;
 
     public CertificateTypeInfoDTO() { }
 
@@ -71,11 +71,11 @@ public class CertificateTypeInfoDTO {
         this.detailedDescription = detailedDescription;
     }
 
-    public List<ActionLink> getLinks() {
+    public List<ResourceLinkDTO> getLinks() {
         return links;
     }
 
-    public void setLinks(List<ActionLink> links) {
+    public void setLinks(List<ResourceLinkDTO> links) {
         this.links = links;
     }
 }
