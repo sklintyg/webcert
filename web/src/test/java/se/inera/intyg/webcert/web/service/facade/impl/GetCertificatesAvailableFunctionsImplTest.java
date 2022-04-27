@@ -27,10 +27,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.*;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
 import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION_DISABLED;
+import static se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

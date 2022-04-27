@@ -28,5 +28,7 @@ public interface ListDecorator {
 
     void decorateWithStaffName(List<ListIntygEntry> list);
 
+    void decorateWithResourceLinks(List<ListIntygEntry> list);
+
     List<ListIntygEntry> decorateAndFilterProtectedPerson(List<ListIntygEntry> list);
 }

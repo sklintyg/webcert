@@ -26,4 +26,5 @@ public enum CertificateListItemValueType {
     HIDDEN,
     OPEN_BUTTON,
     RENEW_BUTTON,
+    SEARCH_BUTTON,
 }

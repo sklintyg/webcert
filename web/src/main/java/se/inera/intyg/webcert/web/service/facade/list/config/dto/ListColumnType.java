@@ -25,6 +25,7 @@ public enum ListColumnType {
             "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
     SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
     CERTIFICATE_ID("", ""),
+    OPEN_CERTIFICATE("", ""),
     RENEW_CERTIFICATE("", ""),
     CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
     STATUS("Status", "Visar intygets status."),
