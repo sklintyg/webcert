@@ -330,6 +330,15 @@
         <url-pattern>/internalapi/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>ApiOriginFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.web.web.filter.ApiOriginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ApiOriginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>boot-app.jsp</welcome-file>
 

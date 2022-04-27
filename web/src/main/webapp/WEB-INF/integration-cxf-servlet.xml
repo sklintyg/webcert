@@ -45,6 +45,7 @@
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
       <ref bean="webcertRedirectIntegrationExceptionHandler"/>
+      <ref bean="corsFilter" />
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />
@@ -68,5 +69,7 @@
       class="se.inera.intyg.webcert.web.web.controller.integration.UserIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
   </bean>
+
+  <bean id="corsFilter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 
 </beans>
