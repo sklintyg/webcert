@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public enum DraftStatus implements CertificateStatus {
     SHOW_ALL("Visa alla"),
-    COMPLETE("Klar för signering"),
-    LOCKED("Låst utkast"),
-    INCOMPLETE("Uppgifter saknas");
+    COMPLETE("Utkast, kan signeras"),
+    LOCKED("Utkast, låst"),
+    INCOMPLETE("Utkast, uppgifter saknas");
 
     private final String name;
 
