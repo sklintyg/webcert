@@ -67,7 +67,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
     @Test
     public void shouldSetOpenCertificateTooltip() {
         final var config = listSignedCertificatesConfigFacadeService.get();
-        assertTrue(config.getOpenCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
     }
 
     @Test
@@ -85,7 +85,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
     @Test
     public void shouldSetSearchCertificateTooltip() {
         final var config = listSignedCertificatesConfigFacadeService.get();
-        assertTrue(config.getSearchCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("SEARCH_BUTTON"));
     }
 
     @Nested

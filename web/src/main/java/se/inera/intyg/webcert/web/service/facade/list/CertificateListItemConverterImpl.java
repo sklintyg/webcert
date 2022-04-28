@@ -22,43 +22,25 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.UserService;
-import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
+
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
 
-    private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-    private final WebCertUserService webCertUserService;
-    private final UserService userService;
     private final HsaOrganizationsService hsaOrganizationsService;
+    private final ResourceLinkListHelper resourceLinkListHelper;
 
     @Autowired
-    public CertificateListItemConverterImpl(CertificateAccessServiceHelper certificateAccessServiceHelper,
-                                            WebCertUserService webCertUserService, UserService userService, HsaOrganizationsService hsaOrganizationsService) {
-        this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-        this.webCertUserService = webCertUserService;
-        this.userService = userService;
+    public CertificateListItemConverterImpl(HsaOrganizationsService hsaOrganizationsService,
+                                            ResourceLinkListHelper resourceLinkListHelper) {
         this.hsaOrganizationsService = hsaOrganizationsService;
+        this.resourceLinkListHelper = resourceLinkListHelper;
     }
 
     @Override
@@ -83,25 +65,22 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY, listIntygEntry.getUpdatedSignedBy());
         listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
-        listItem.addValue(ListColumnType.LINKS, convertResourceLinks(
-                listIntygEntry.getLinks(), listIntygEntry.getVardenhetId(), listIntygEntry.getIntygType(), listIntygEntry.getStatus())
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, convertedStatus)
         );
         return listItem;
     }
 
     private CertificateListItem convertListItem(CertificateListEntry entry) {
         final var listItem = new CertificateListItem();
+        final var convertedStatus = entry.isSent()
+                ? CertificateStatus.SENT.getName() : CertificateStatus.NOT_SENT.getName();
         final var patientListInfo = getPatientListInfo(entry);
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, entry.getCertificateTypeName());
         listItem.addValue(ListColumnType.SIGNED, entry.getSignedDate());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getCertificateId());
-        listItem.addValue(ListColumnType.STATUS, entry.isSent()
-                ? CertificateStatus.SENT.getName() : CertificateStatus.NOT_SENT.getName()
-        );
-        listItem.addValue(ListColumnType.LINKS, convertResourceLinks(
-                getResourceLinks(entry), "", entry.getCertificateType(), (String) listItem.getValue(ListColumnType.STATUS)
-        ));
+        listItem.addValue(ListColumnType.STATUS, convertedStatus);
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(entry, convertedStatus));
         return listItem;
     }
 
@@ -147,57 +126,6 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
                 certificateListEntry.isDeceased(),
                 certificateListEntry.isTestIndicator()
         );
-    }
-
-    private List<ActionLink> getResourceLinks(CertificateListEntry entry) {
-        final var user = webCertUserService.getUser();
-        final var careUnit = createCareUnit(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
-        final var links = new ArrayList<ActionLink>();
-
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-                entry.getCertificateType(),
-                entry.getCertificateTypeVersion(),
-                careUnit,
-                Personnummer.createPersonnummer(entry.getCivicRegistrationNumber()).get(),
-                entry.isTestIndicator()
-        );
-
-        if (certificateAccessServiceHelper.isAllowToRead(accessEvaluationParameters)) {
-            links.add(new ActionLink(ActionLinkType.LASA_INTYG));
-        }
-
-        if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
-            links.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
-        }
-
-        return links;
-    }
-
-    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, String unitId, String certificateType, String status) {
-        return links.stream()
-                .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    private ResourceLinkDTO getConvertedResourceLink(ActionLink link, String savedUnitId, String certificateType, String status) {
-        if (link.getType() == ActionLinkType.LASA_INTYG) {
-            return ResourceLinkFactory.read();
-        } else if (link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST && !status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
-            return ResourceLinkFactory.forwardGeneric();
-        } else if (link.getType() == ActionLinkType.FORNYA_INTYG) {
-            final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
-            return ResourceLinkFactory.renew(loggedInCareUnitId, savedUnitId, certificateType);
-        }
-        return null;
-    }
-
-    private Vardenhet createCareUnit(String unitId, String caregiverId) {
-        final var vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(unitId);
-        vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(caregiverId);
-        return vardenhet;
     }
 
     private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {

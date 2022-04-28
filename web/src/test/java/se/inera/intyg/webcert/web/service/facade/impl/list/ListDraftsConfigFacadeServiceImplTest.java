@@ -80,7 +80,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetOpenCertificateTooltip() {
         final var config = listDraftsConfigFacadeService.get();
-        assertTrue(config.getOpenCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
     }
 
     @Test
@@ -98,7 +98,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetSearchCertificateTooltip() {
         final var config = listDraftsConfigFacadeService.get();
-        assertTrue(config.getSearchCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("SEARCH_BUTTON"));
     }
 
     @Nested

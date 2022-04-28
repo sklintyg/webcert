@@ -18,26 +18,64 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
+import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateListItemConverterImplTest {
 
+    final String UNIT_NAME = "UNIT_NAME";
+    final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
+    final List<ResourceLinkDTO> LINKS = List.of(ResourceLinkFactory.read());
+
+    @Mock
+    private HsaOrganizationsService hsaOrganizationsService;
+    @Mock
+    private ResourceLinkListHelper resourceLinkListHelper;
     @InjectMocks
     private CertificateListItemConverterImpl certificateListItemConverter;
 
     @Nested
     class ListDrafts {
+        @BeforeEach
+        public void setup() {
+            final var unit = new Vardenhet();
+            final var careProvider = new Vardgivare();
+
+            unit.setNamn(UNIT_NAME);
+            careProvider.setNamn(CARE_PROVIDER_NAME);
+
+            when(resourceLinkListHelper.get(any(ListIntygEntry.class), anyString())).thenReturn(LINKS);
+            when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
+            when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
+        }
+
         private final ListType LIST_TYPE = ListType.DRAFTS;
 
         @Test
@@ -147,16 +185,36 @@ class CertificateListItemConverterImplTest {
         public void shouldSetIsForwarded() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
 
-            assertTrue((boolean) result.getValue(ListColumnType.FORWARDED));
+            assertTrue(forwardedListInfo.isForwarded());
+        }
+
+        @Test
+        public void shouldSetUnitName() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+
+            assertEquals(UNIT_NAME, forwardedListInfo.getUnitName());
+        }
+
+        @Test
+        public void shouldSetCareProviderName() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+
+            assertEquals(CARE_PROVIDER_NAME, forwardedListInfo.getCareProviderName());
         }
 
         @Test
         public void shouldSetIsNotForwarded() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
 
-            assertFalse((boolean) result.getValue(ListColumnType.FORWARDED));
+            assertFalse(forwardedListInfo.isForwarded());
         }
 
         @Test
@@ -174,10 +232,35 @@ class CertificateListItemConverterImplTest {
 
             assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
         }
+
+        @Test
+        public void shouldSetLinks() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+
+            assertTrue(links.size() > 0);
+            assertEquals(LINKS.get(0), links.get(0));
+        }
     }
 
     @Nested
     class ListSignedCertificates {
+
+        @BeforeEach
+        public void setup() {
+            when(resourceLinkListHelper.get(any(CertificateListEntry.class), anyString())).thenReturn(LINKS);
+        }
+
+        @Test
+        public void shouldSetLinks() {
+            final var entry = ListTestHelper.createCertificateListEntry();
+            final var result = certificateListItemConverter.convert(entry);
+            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+
+            assertTrue(links.size() > 0);
+            assertEquals(LINKS.get(0), links.get(0));
+        }
 
         @Test
         public void shouldSetCertificateId() {

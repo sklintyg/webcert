@@ -185,6 +185,8 @@ class ListTestHelper {
         listIntygEntry.setSekretessmarkering(includePatientStatuses);
         listIntygEntry.setTestIntyg(includePatientStatuses);
         listIntygEntry.setUpdatedSignedById("HSA_ID");
+        listIntygEntry.setVardenhetId("UNIT_ID");
+        listIntygEntry.setVardgivarId("CARE_PROVIDER_ID");
         return listIntygEntry;
     }
 

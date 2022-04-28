@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ResourceLinkHelperImplTest {
+public class ResourceLinkListHelperImplTest {
 
     @Mock
     private DraftAccessServiceHelper draftAccessServiceHelper;
