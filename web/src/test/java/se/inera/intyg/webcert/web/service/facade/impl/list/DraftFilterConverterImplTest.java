@@ -83,7 +83,7 @@ class DraftFilterConverterImplTest {
 
         final var convertedFilter = draftFilterConverter.convert(filter);
 
-        assertEquals(now.plusDays(1), convertedFilter.getSavedTo());
+        assertEquals(now.plusDays(2), convertedFilter.getSavedTo());
     }
 
     @Test
