@@ -116,7 +116,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
         final var units = getUnits();
         final var certificates = getCertificates(patientId, units);
-        final var drafts = getDrafts(user, patientId, units, filter);
+        final var drafts = getDrafts(user, patientId, units);
 
         final var mergedList = IntygDraftsConverter.merge(certificates.getLeft(), drafts);
         final var filteredList = filterProtectedPatients(protectedPatientStatus, mergedList);
