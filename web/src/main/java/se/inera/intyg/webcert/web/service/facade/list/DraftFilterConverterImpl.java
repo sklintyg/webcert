@@ -65,12 +65,12 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
 
     private LocalDateTime getSavedFrom(ListFilter filter) {
         ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SAVED");
-        return saved != null ? saved.getFrom() : null;
+        return saved != null && saved.getFrom() != null ? saved.getFrom() : null;
     }
 
     private LocalDateTime getSavedTo(ListFilter filter) {
         ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SAVED");
-        return saved != null ? saved.getTo() : null;
+        return saved != null && saved.getTo() != null ? saved.getTo().plusDays(1) : null;
     }
 
     private String getSavedBy(ListFilter filter) {
