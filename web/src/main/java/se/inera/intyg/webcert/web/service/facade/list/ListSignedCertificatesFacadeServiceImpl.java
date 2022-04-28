@@ -46,7 +46,8 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService,
                                                    CertificateService certificateService,
                                                    CertificateFilterConverter certificateFilterConverter,
-                                                   CertificateListItemConverter certificateListItemConverter, GetStaffInfoFacadeService getStaffInfoFacadeService, ListDecorator listDecorator) {
+                                                   CertificateListItemConverter certificateListItemConverter,
+                                                   GetStaffInfoFacadeService getStaffInfoFacadeService) {
         this.webCertUserService = webCertUserService;
         this.certificateService = certificateService;
         this.certificateFilterConverter = certificateFilterConverter;

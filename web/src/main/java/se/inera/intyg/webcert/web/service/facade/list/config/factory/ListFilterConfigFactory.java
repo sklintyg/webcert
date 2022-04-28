@@ -48,7 +48,8 @@ public class ListFilterConfigFactory {
         return new ListFilterDateConfig("FROM", "Från");
     }
 
-    public static ListFilterDateConfig fromDateWithLimits(LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
+    public static ListFilterDateConfig fromDateWithLimits(
+            LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
         return new ListFilterDateConfig("FROM", "Från", max, min, defaultValue);
     }
 
@@ -81,10 +82,14 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
-                ListFilterConfigValue.create(CertificateStatus.SHOW_ALL.toString(), CertificateStatus.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(CertificateStatus.INCOMPLETE.toString(), "Uppgifter saknas", false),
-                ListFilterConfigValue.create(CertificateStatus.COMPLETE.toString(), "Kan signeras", false),
-                ListFilterConfigValue.create(CertificateStatus.LOCKED.toString(), "Låsta", false)
+                ListFilterConfigValue.create(CertificateStatus.SHOW_ALL.toString(),
+                        CertificateStatus.SHOW_ALL.getName(), true),
+                ListFilterConfigValue.create(CertificateStatus.INCOMPLETE.toString(),
+                        "Uppgifter saknas", false),
+                ListFilterConfigValue.create(CertificateStatus.COMPLETE.toString(),
+                        "Kan signeras", false),
+                ListFilterConfigValue.create(CertificateStatus.LOCKED.toString(),
+                        "Låsta", false)
             )
         );
     }
@@ -124,9 +129,12 @@ public class ListFilterConfigFactory {
 
     public static ListFilterRadioConfig certificateStatusRadio() {
         return new ListFilterRadioConfig("STATUS", "", List.of(
-                ListFilterConfigValue.create(FilterStatusType.CURRENT_CERTIFICATES.toString(), FilterStatusType.CURRENT_CERTIFICATES.getName(), true),
-                ListFilterConfigValue.create(FilterStatusType.MODIFIED_CERTIFICATES.toString(), FilterStatusType.MODIFIED_CERTIFICATES.getName(), false),
-                ListFilterConfigValue.create(FilterStatusType.ALL_CERTIFICATES.toString(), FilterStatusType.ALL_CERTIFICATES.getName(), false)
+                ListFilterConfigValue.create(FilterStatusType.CURRENT_CERTIFICATES.toString(),
+                        FilterStatusType.CURRENT_CERTIFICATES.getName(), true),
+                ListFilterConfigValue.create(FilterStatusType.MODIFIED_CERTIFICATES.toString(),
+                        FilterStatusType.MODIFIED_CERTIFICATES.getName(), false),
+                ListFilterConfigValue.create(FilterStatusType.ALL_CERTIFICATES.toString(),
+                        FilterStatusType.ALL_CERTIFICATES.getName(), false)
             )
         );
     }

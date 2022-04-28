@@ -199,11 +199,10 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         return statusFilter.getValue().equals(statusType.toString());
     }
 
-    private List<Utkast> getDrafts(WebCertUser user, Personnummer patientId, List<String> units, ListFilter filter) {
-        if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .isVerified()) {
-            Set<String> intygstyper = authoritiesHelper.
-                    getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    private List<Utkast> getDrafts(WebCertUser user, Personnummer patientId, List<String> units) {
+        if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified()) {
+            Set<String> intygstyper = authoritiesHelper
+                    .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
             final var drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
                     DaoUtil.formatPnrForPersistence(patientId),
