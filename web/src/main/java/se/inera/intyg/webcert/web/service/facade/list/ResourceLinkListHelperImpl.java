@@ -21,15 +21,22 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateForwardFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateRenewFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.service.facade.util.CertificateRelationsConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -47,24 +54,31 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
     private final WebCertUserService webCertUserService;
     private final UserService userService;
+    private final CertificateRelationsConverter certificateRelationsConverter;
+    private final AuthoritiesHelper authoritiesHelper;
 
     @Autowired
     public ResourceLinkListHelperImpl(CertificateAccessServiceHelper certificateAccessServiceHelper,
-                                      WebCertUserService webCertUserService, UserService userService) {
+                                      WebCertUserService webCertUserService, UserService userService,
+                                      CertificateRelationsConverter certificateRelationsConverter,
+                                      AuthoritiesHelper authoritiesHelper) {
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
+        this.certificateRelationsConverter = certificateRelationsConverter;
+        this.authoritiesHelper = authoritiesHelper;
     }
 
     @Override
-    public List<ResourceLinkDTO> get(CertificateListEntry entry, String status) {
+    public List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status) {
         final var actionLinks = getActionLinks(entry);
         return convertResourceLinks(actionLinks, status);
     }
 
     @Override
-    public List<ResourceLinkDTO> get(ListIntygEntry entry, String status) {
-        return convertResourceLinks(entry.getLinks(), entry.getVardenhetId(), entry.getIntygType(), status);
+    public List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status) {
+        final var convertedRelations = certificateRelationsConverter.convert(entry.getRelations());
+        return convertResourceLinks(entry.getLinks(), entry.getVardenhetId(), entry.getIntygType(), status, convertedRelations);
     }
 
     private List<ActionLink> getActionLinks(CertificateListEntry entry) {
@@ -91,38 +105,63 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
         return links;
     }
 
-    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, String status) {
+    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, CertificateListItemStatus status) {
         return links.stream()
                 .map((link) -> getConvertedResourceLink(link, status))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, String unitId, String certificateType, String status) {
+    private List<ResourceLinkDTO> convertResourceLinks(
+                List<ActionLink> links, String unitId, String certificateType, CertificateListItemStatus status, CertificateRelations relations
+            ) {
         return links.stream()
-                .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status))
+                .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private ResourceLinkDTO getConvertedResourceLink(ActionLink link, String status) {
+    private ResourceLinkDTO getConvertedResourceLink(ActionLink link, CertificateListItemStatus status) {
         if (link.getType() == ActionLinkType.LASA_INTYG) {
             return ResourceLinkFactory.read();
-        } else if (link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST && !status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
-            return ResourceLinkFactory.forwardGeneric();
+        } else if (validateForward(link, getCertificateStatus(status))) {
+            return CertificateForwardFunction.createGenericResourceLink();
         }
         return null;
     }
 
-    private ResourceLinkDTO getConvertedResourceLink(ActionLink link, String savedUnitId, String certificateType, String status) {
+    private CertificateStatus getCertificateStatus(CertificateListItemStatus status) {
+        if(status == CertificateListItemStatus.LOCKED) {
+            return CertificateStatus.LOCKED;
+        } else if (status == CertificateListItemStatus.INCOMPLETE || status == CertificateListItemStatus.COMPLETE) {
+            return CertificateStatus.UNSIGNED;
+        } else if (status == CertificateListItemStatus.REVOKED) {
+            return CertificateStatus.REVOKED;
+        } else {
+            return CertificateStatus.SIGNED;
+        }
+    }
+
+    private boolean validateForward(ActionLink link, CertificateStatus status) {
+        return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST && CertificateForwardFunction.validate(status);
+    }
+
+    private ResourceLinkDTO getConvertedResourceLink(
+                ActionLink link, String savedUnitId, String certificateType, CertificateListItemStatus status, CertificateRelations relations
+            ) {
         final var convertedResourceLink = getConvertedResourceLink(link, status);
         if (convertedResourceLink != null) {
             return convertedResourceLink;
-        } else if (link.getType() == ActionLinkType.FORNYA_INTYG) {
+        } else if (validateRenew(link, certificateType, relations, getCertificateStatus(status))) {
             final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
-            return ResourceLinkFactory.renew(loggedInCareUnitId, savedUnitId, certificateType);
+            return CertificateRenewFunction.createResourceLink(loggedInCareUnitId, savedUnitId, certificateType);
         }
         return null;
+    }
+
+    private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
+        return link.getType() == ActionLinkType.FORNYA_INTYG
+                && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
     }
 
     private Vardenhet createCareUnit(String unitId, String caregiverId) {

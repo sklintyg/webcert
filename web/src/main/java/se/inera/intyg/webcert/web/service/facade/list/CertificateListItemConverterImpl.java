@@ -55,11 +55,11 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
-        final var convertedStatus = convertStatus(listIntygEntry.getStatus());
+        final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
 
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
-        listItem.addValue(ListColumnType.STATUS, convertedStatus);
+        listItem.addValue(ListColumnType.STATUS, convertStatus(certificateListItemStatus));
         listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
@@ -67,49 +67,51 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         );
         listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
-        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, convertedStatus)
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus)
         );
         return listItem;
     }
 
     private CertificateListItem convertListItem(CertificateListEntry entry) {
         final var listItem = new CertificateListItem();
-        final var convertedStatus = entry.isSent()
-                ? CertificateStatus.SENT.getName() : CertificateStatus.NOT_SENT.getName();
+        final var certificateListItemStatus = getCertificateListItemStatus(entry.isSent());
         final var patientListInfo = getPatientListInfo(entry);
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, entry.getCertificateTypeName());
         listItem.addValue(ListColumnType.SIGNED, entry.getSignedDate());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getCertificateId());
-        listItem.addValue(ListColumnType.STATUS, convertedStatus);
-        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(entry, convertedStatus));
+        listItem.addValue(ListColumnType.STATUS, certificateListItemStatus.getName());
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(entry, certificateListItemStatus));
         return listItem;
     }
 
-    private String convertStatus(String status) {
-        final var convertedStatus = getCertificateStatus(status);
-        return convertedStatus != null ? convertedStatus.getName() : "Okänd";
+    private String convertStatus(CertificateListItemStatus status) {
+        return status != null ? status.getName() : "Okänd status";
     }
 
-    private CertificateStatus getCertificateStatus(String status) {
+    private CertificateListItemStatus getCertificateListItemStatus(String status) {
         if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
-            return CertificateStatus.COMPLETE;
+            return CertificateListItemStatus.COMPLETE;
         } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
-            return CertificateStatus.INCOMPLETE;
+            return CertificateListItemStatus.INCOMPLETE;
         } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
-            return CertificateStatus.LOCKED;
+            return CertificateListItemStatus.LOCKED;
         } else if (status.equals("RENEWED")) {
-            return CertificateStatus.RENEWED;
+            return CertificateListItemStatus.RENEWED;
         } else if (status.equals("COMPLEMENTED")) {
-            return CertificateStatus.COMPLEMENTED;
+            return CertificateListItemStatus.COMPLEMENTED;
         } else if (status.equals("CANCELLED")) {
-            return CertificateStatus.REVOKED;
+            return CertificateListItemStatus.REVOKED;
         } else if (status.equals("SENT")  || status.equals("RECEIVED")) {
-            return CertificateStatus.SENT;
+            return CertificateListItemStatus.SENT;
         } else if (status.equals("SIGNED")) {
-            return CertificateStatus.SIGNED;
+            return CertificateListItemStatus.SIGNED;
         }
         return null;
+    }
+
+    private CertificateListItemStatus getCertificateListItemStatus(boolean isSent) {
+        return isSent ? CertificateListItemStatus.SENT : CertificateListItemStatus.NOT_SENT;
     }
 
     private PatientListInfo getPatientListInfo(ListIntygEntry listIntygEntry) {

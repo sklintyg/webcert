@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum CertificateStatus {
+public enum CertificateListItemStatus {
     SHOW_ALL("Visa alla"),
     COMPLETE("Utkast, kan signeras"),
     LOCKED("Utkast, låst"),
@@ -33,7 +33,7 @@ public enum CertificateStatus {
 
     private final String name;
 
-    CertificateStatus(String name) {
+    CertificateListItemStatus(String name) {
         this.name = name;
     }
 

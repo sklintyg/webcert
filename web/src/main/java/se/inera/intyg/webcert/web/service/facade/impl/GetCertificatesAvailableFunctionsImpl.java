@@ -236,7 +236,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         resourceLinks.add(
-            ResourceLinkFactory.forward()
+            CertificateForwardFunction.createResourceLink()
         );
 
         resourceLinks.add(
@@ -313,11 +313,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        if (isRenewCertificateAvailable(certificate)) {
+        if (CertificateRenewFunction.validate(certificate.getMetadata().getType(), certificate.getMetadata().getRelations(), certificate.getMetadata().getStatus(), authoritiesHelper)) {
             final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
             final var savedCareUnitId = certificate.getMetadata().getCareUnit().getUnitId();
             resourceLinks.add(
-                ResourceLinkFactory.renew(loggedInCareUnitId, savedCareUnitId, certificate.getMetadata().getType())
+                CertificateRenewFunction.createResourceLink(loggedInCareUnitId, savedCareUnitId, certificate.getMetadata().getType())
             );
         }
 
@@ -473,12 +473,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
     }
 
-    private boolean hasComplementQuestion(Certificate certificate) {
-        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
-
-        return questions.stream().anyMatch(question -> question.getType().equals(QuestionType.COMPLEMENT));
-    }
-
     private boolean isRevoked(Certificate certificate) {
         return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
 
@@ -551,14 +545,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
         return isReplacementUnsigned(certificate);
-    }
-
-    private boolean isRenewCertificateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate) || hasBeenComplemented(certificate)) {
-            return false;
-        }
-
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, certificate.getMetadata().getType());
     }
 
     private boolean isReplacementUnsigned(Certificate certificate) {

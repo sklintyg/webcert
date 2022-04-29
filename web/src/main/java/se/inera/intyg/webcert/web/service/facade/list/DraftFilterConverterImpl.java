@@ -110,13 +110,13 @@ public class DraftFilterConverterImpl implements DraftFilterConverter {
             return showAll;
         }
 
-        final var convertedStatus = CertificateStatus.valueOf(status);
+        final var convertedStatus = CertificateListItemStatus.valueOf(status);
 
-        if (convertedStatus == CertificateStatus.INCOMPLETE) {
+        if (convertedStatus == CertificateListItemStatus.INCOMPLETE) {
             return List.of(UtkastStatus.DRAFT_INCOMPLETE);
-        } else if (convertedStatus == CertificateStatus.COMPLETE) {
+        } else if (convertedStatus == CertificateListItemStatus.COMPLETE) {
             return List.of(UtkastStatus.DRAFT_COMPLETE);
-        } else if (convertedStatus == CertificateStatus.LOCKED) {
+        } else if (convertedStatus == CertificateListItemStatus.LOCKED) {
             return List.of(UtkastStatus.DRAFT_LOCKED);
         }
         return showAll;

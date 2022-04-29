@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
@@ -71,7 +69,7 @@ class CertificateListItemConverterImplTest {
             unit.setNamn(UNIT_NAME);
             careProvider.setNamn(CARE_PROVIDER_NAME);
 
-            when(resourceLinkListHelper.get(any(ListIntygEntry.class), anyString())).thenReturn(LINKS);
+            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
             when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
             when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
         }
@@ -162,7 +160,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(CertificateStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateListItemStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test
@@ -170,7 +168,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_INCOMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(CertificateStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateListItemStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test
@@ -178,7 +176,7 @@ class CertificateListItemConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_LOCKED.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(CertificateStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
+            assertEquals(CertificateListItemStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
         }
 
         @Test
@@ -249,7 +247,7 @@ class CertificateListItemConverterImplTest {
 
         @BeforeEach
         public void setup() {
-            when(resourceLinkListHelper.get(any(CertificateListEntry.class), anyString())).thenReturn(LINKS);
+            when(resourceLinkListHelper.get(any(CertificateListEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
         }
 
         @Test

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.factory;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.service.facade.list.dto.FilterStatusType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
@@ -82,13 +82,13 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
-                ListFilterConfigValue.create(CertificateStatus.SHOW_ALL.toString(),
-                        CertificateStatus.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(CertificateStatus.INCOMPLETE.toString(),
+                ListFilterConfigValue.create(CertificateListItemStatus.SHOW_ALL.toString(),
+                        CertificateListItemStatus.SHOW_ALL.getName(), true),
+                ListFilterConfigValue.create(CertificateListItemStatus.INCOMPLETE.toString(),
                         "Uppgifter saknas", false),
-                ListFilterConfigValue.create(CertificateStatus.COMPLETE.toString(),
+                ListFilterConfigValue.create(CertificateListItemStatus.COMPLETE.toString(),
                         "Kan signeras", false),
-                ListFilterConfigValue.create(CertificateStatus.LOCKED.toString(),
+                ListFilterConfigValue.create(CertificateListItemStatus.LOCKED.toString(),
                         "Låsta", false)
             )
         );

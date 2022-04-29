@@ -19,8 +19,11 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 public interface CertificateRelationsConverter {
 
     CertificateRelations convert(String certificateId);
+
+    CertificateRelations convert(Relations relations);
 }

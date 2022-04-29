@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.facade.list.DraftFilterConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -185,7 +185,7 @@ class DraftFilterConverterImplTest {
     @Test
     public void shouldConvertStatusComplete() {
         final var filter = new ListFilter();
-        final var filterValue = new ListFilterSelectValue(CertificateStatus.COMPLETE.toString());
+        final var filterValue = new ListFilterSelectValue(CertificateListItemStatus.COMPLETE.toString());
         filter.addValue(filterValue, "STATUS");
 
         final var convertedFilter = draftFilterConverter.convert(filter);
@@ -197,7 +197,7 @@ class DraftFilterConverterImplTest {
     @Test
     public void shouldConvertStatusIncomplete() {
         final var filter = new ListFilter();
-        final var filterValue = new ListFilterSelectValue(CertificateStatus.INCOMPLETE.toString());
+        final var filterValue = new ListFilterSelectValue(CertificateListItemStatus.INCOMPLETE.toString());
         filter.addValue(filterValue, "STATUS");
 
         final var convertedFilter = draftFilterConverter.convert(filter);
@@ -209,7 +209,7 @@ class DraftFilterConverterImplTest {
     @Test
     public void shouldConvertStatusLocked() {
         final var filter = new ListFilter();
-        final var filterValue = new ListFilterSelectValue(CertificateStatus.LOCKED.toString());
+        final var filterValue = new ListFilterSelectValue(CertificateListItemStatus.LOCKED.toString());
         filter.addValue(filterValue, "STATUS");
 
         final var convertedFilter = draftFilterConverter.convert(filter);

@@ -32,7 +32,7 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-class CertificateStatusConverterTest {
+class CertificateListItemStatusConverterTest {
 
     @Nested
     class GetStatusFromUtkastStatus {
