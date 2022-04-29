@@ -330,21 +330,18 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class RenewCertificates {
 
-        void setupRenewData(String unitId, Boolean lisjpCertificate) {
+        void setupRenewData(String unitId) {
             final var webcertUser = Mockito.mock(WebCertUser.class);
             final var careUnit = Mockito.mock(Vardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
-
-            if (lisjpCertificate) {
-                doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
-                doReturn(unitId).when(careUnit).getId();
-            }
+            doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
+            doReturn(unitId).when(careUnit).getId();
         }
 
         @Test
         void shallIncludeRenewCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -356,7 +353,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeComplementWontBeMarkedReadyTextIfDifferentUnit() {
-            setupRenewData("non matching id", true);
+            setupRenewData("non matching id");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -369,7 +366,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeComplementWillBeMarkedReadyTextIfSameUnit() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -382,7 +379,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeCorrectBodyIfLisjpCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -395,7 +392,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeCorrectBodyIfAg7804Certificate() {
-            setupRenewData("unitId", false);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, Ag7804EntryPoint.MODULE_ID);
@@ -434,7 +431,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewIfReplacedByUnsignedCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
