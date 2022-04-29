@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions;
+package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;

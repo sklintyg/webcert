@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions;
+package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
@@ -47,8 +47,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.service.facade.UserService;
-import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.CertificateForwardFunction;
-import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.CertificateRenewFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
