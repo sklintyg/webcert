@@ -30,7 +30,7 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
+import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;

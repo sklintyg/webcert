@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.impl;
+package se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions;
 
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -43,7 +43,8 @@ public class CertificateRenewFunction {
     public static final String EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer att klarmarkeras.";
 
 
-    public static boolean validate(String certificateType, CertificateRelations relations, CertificateStatus status, AuthoritiesHelper authoritiesHelper) {
+    public static boolean validate(String certificateType, CertificateRelations relations,
+                                   CertificateStatus status, AuthoritiesHelper authoritiesHelper) {
         if (isReplacementSigned(relations) || hasBeenComplemented(relations)) {
             return false;
         }

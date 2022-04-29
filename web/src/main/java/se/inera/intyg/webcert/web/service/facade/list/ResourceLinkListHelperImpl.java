@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -32,9 +31,9 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.UserService;
-import se.inera.intyg.webcert.web.service.facade.impl.CertificateForwardFunction;
-import se.inera.intyg.webcert.web.service.facade.impl.CertificateRenewFunction;
-import se.inera.intyg.webcert.web.service.facade.impl.ResourceLinkFactory;
+import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.CertificateForwardFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.CertificateRenewFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.service.facade.util.CertificateRelationsConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -113,7 +112,8 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private List<ResourceLinkDTO> convertResourceLinks(
-                List<ActionLink> links, String unitId, String certificateType, CertificateListItemStatus status, CertificateRelations relations
+                List<ActionLink> links, String unitId, String certificateType,
+                CertificateListItemStatus status, CertificateRelations relations
             ) {
         return links.stream()
                 .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
@@ -131,7 +131,7 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private CertificateStatus getCertificateStatus(CertificateListItemStatus status) {
-        if(status == CertificateListItemStatus.LOCKED) {
+        if (status == CertificateListItemStatus.LOCKED) {
             return CertificateStatus.LOCKED;
         } else if (status == CertificateListItemStatus.INCOMPLETE || status == CertificateListItemStatus.COMPLETE) {
             return CertificateStatus.UNSIGNED;
@@ -147,7 +147,8 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private ResourceLinkDTO getConvertedResourceLink(
-                ActionLink link, String savedUnitId, String certificateType, CertificateListItemStatus status, CertificateRelations relations
+                ActionLink link, String savedUnitId, String certificateType,
+                CertificateListItemStatus status, CertificateRelations relations
             ) {
         final var convertedResourceLink = getConvertedResourceLink(link, status);
         if (convertedResourceLink != null) {

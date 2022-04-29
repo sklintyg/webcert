@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificateFunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
