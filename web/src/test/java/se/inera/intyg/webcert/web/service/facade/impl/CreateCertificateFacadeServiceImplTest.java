@@ -105,7 +105,7 @@ class CreateCertificateFacadeServiceImplTest {
                     .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
             }
 
-            @Test()
+            @Test
             void shallThrowExceptionIfModuleIsDeprecated() throws Exception {
                 doReturn(createDeprecatedIntygModule())
                     .when(intygModuleRegistry)
