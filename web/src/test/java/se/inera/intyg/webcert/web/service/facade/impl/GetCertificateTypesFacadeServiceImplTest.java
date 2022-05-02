@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -37,7 +38,10 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @ExtendWith(MockitoExtension.class)
 class GetCertificateTypesFacadeServiceImplTest {
@@ -76,6 +80,25 @@ class GetCertificateTypesFacadeServiceImplTest {
         assertEquals(module.getDescription(), types.get(0).getDescription());
         assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
         assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+    }
+
+    @Test
+    void shallConvertResourceLinks() throws Exception {
+        final var module = createIntygModule();
+        doReturn(Arrays.asList(module))
+            .when(intygModuleRegistry)
+            .listAllModules();
+
+        doAnswer(invocation -> {
+            List<IntygModuleDTO> DTOs = invocation.getArgument(0);
+            DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+            return null;
+        })
+            .when(resourceLinkHelper)
+            .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+
+        final var types = serviceUnderTest.get(PATIENT_ID);
+        assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
     }
 
     private IntygModule createIntygModule() {
