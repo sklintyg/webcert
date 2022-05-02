@@ -72,12 +72,11 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
         try {
             if (intygModuleRegistry.getIntygModule(certificateType).isDeprecated()) {
                 LOG.error("Request for deprecated module {}", certificateType);
-                throw(new CreateCertificateException("Request for deprecated module"));
+                throw new CreateCertificateException("Request for deprecated module");
             }
-        } catch (
-            ModuleNotFoundException e) {
+        } catch (ModuleNotFoundException e) {
             LOG.error("Request for unknown module {}", certificateType);
-            throw(new CreateCertificateException("Request for unknown module"));
+            throw new CreateCertificateException("Request for unknown module");
         }
 
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
@@ -87,7 +86,7 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
         if (actionResult.isDenied()) {
             if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
                 || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
-                throw(new CreateCertificateException("Certificate already exists"));
+                throw new CreateCertificateException("Certificate already exists");
             } else {
                 accessResultExceptionHelper.throwException(actionResult);
             }
@@ -106,7 +105,7 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
         final var staff = getStaff();
         request.setIntygType(certificateType);
         if (patient == null) {
-            throw(new CreateCertificateException("Patient does not exist"));
+            throw (new CreateCertificateException("Patient does not exist"));
         } else {
             request.setPatient(patient);
         }

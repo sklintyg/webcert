@@ -19,8 +19,10 @@
 package se.inera.intyg.webcert.web.service.facade;
 
 import java.util.List;
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 public interface GetCertificateTypesFacadeService {
-    List<CertificateTypeInfoDTO> get(String patientId);
+
+    List<CertificateTypeInfoDTO> get(String patientId) throws InvalidPersonNummerException;
 }

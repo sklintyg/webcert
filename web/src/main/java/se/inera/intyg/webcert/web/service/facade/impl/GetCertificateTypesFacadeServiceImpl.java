@@ -18,29 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @Service
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateTypesFacadeServiceImpl.class);
-
     private final IntygModuleRegistry intygModuleRegistry;
     private final ResourceLinkHelper resourceLinkHelper;
-
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper) {
@@ -49,8 +43,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     }
 
     @Override
-    public List<CertificateTypeInfoDTO> get(String patientId) {
-        final var certificateModuleList = getCertificateModuleList(patientId);
+    public List<CertificateTypeInfoDTO> get(String patientId) throws InvalidPersonNummerException {
+        final var personnummer = createPnr(patientId);
+        final var certificateModuleList = getCertificateModuleList(personnummer);
         return certificateModuleList.stream().map(this::convertModuleToTypeInfo).collect(Collectors.toList());
     }
 
@@ -65,23 +60,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         return certificateTypeInfo;
     }
 
-    private List<IntygModuleDTO> getCertificateModuleList(String patientId) {
-        try {
-            final var intygModules = intygModuleRegistry.listAllModules();
+    private List<IntygModuleDTO> getCertificateModuleList(Personnummer personnummer) {
+        final var intygModules = intygModuleRegistry.listAllModules();
 
-            final var intygModuleDTOs = intygModules.stream()
-                .map(IntygModuleDTO::new)
-                .collect(Collectors.toList());
+        final var intygModuleDTOs = intygModules.stream()
+            .map(IntygModuleDTO::new)
+            .collect(Collectors.toList());
 
-            final var personnummer = createPnr(patientId);
-            resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
+        resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
-            return intygModuleDTOs;
-
-        } catch (InvalidPersonNummerException e) {
-            LOG.error(e.getMessage());
-            return Collections.emptyList();
-        }
+        return intygModuleDTOs;
     }
 
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {

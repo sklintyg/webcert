@@ -25,13 +25,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
-import se.inera.intyg.webcert.web.service.facade.UserService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 
 @Path("/certificate/type")
 public class CertificateTypeController {
@@ -55,7 +55,12 @@ public class CertificateTypeController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving certificate types for patient");
         }
-        final var certificateTypes = getCertificateTypesFacadeService.get(patientId);
-        return Response.ok(certificateTypes).build();
+        try {
+            final var certificateTypes = getCertificateTypesFacadeService.get(patientId);
+            return Response.ok(certificateTypes).build();
+        } catch (InvalidPersonNummerException e) {
+            LOG.error(e.getMessage());
+            return Response.status(Status.BAD_REQUEST).build();
+        }
     }
 }
