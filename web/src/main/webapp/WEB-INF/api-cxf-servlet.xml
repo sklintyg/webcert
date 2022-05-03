@@ -68,7 +68,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.PatientController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.ListController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.ListConfigController"/>
-
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateTypeController"/>
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider"/>

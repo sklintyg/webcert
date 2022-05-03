@@ -32,7 +32,7 @@ import java.util.*;
 public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
 
     private static final String TITLE = "Ej signerade utkast";
-    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppna utkastet.";
+    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar utkastet.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
     private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
