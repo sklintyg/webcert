@@ -27,6 +27,8 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -38,6 +40,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -62,24 +65,51 @@ class GetCertificateTypesFacadeServiceImplTest {
             "Could not parse personnummer: xxx");
     }
 
-    @Test
-    void shallConvertModuleToTypeInfo() throws Exception {
-        final var module = createIntygModule();
-        doReturn(Arrays.asList(module))
-            .when(intygModuleRegistry)
-            .listAllModules();
+    @Nested
+    class ModuleConversion {
 
-        doNothing()
-            .when(resourceLinkHelper)
-            .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+        private List<CertificateTypeInfoDTO> types;
+        private IntygModule module;
 
-        final var types = serviceUnderTest.get(PATIENT_ID);
+        @BeforeEach
+        void setup() throws Exception {
+            module = createIntygModule();
 
-        assertEquals(module.getId(), types.get(0).getId());
-        assertEquals(module.getLabel(), types.get(0).getLabel());
-        assertEquals(module.getDescription(), types.get(0).getDescription());
-        assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
-        assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+            doReturn(Arrays.asList(module))
+                .when(intygModuleRegistry)
+                .listAllModules();
+
+            doNothing()
+                .when(resourceLinkHelper)
+                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+
+            types = serviceUnderTest.get(PATIENT_ID);
+        }
+
+        @Test
+        void shallConvertId() {
+            assertEquals(module.getId(), types.get(0).getId());
+        }
+
+        @Test
+        void shallConvertLabel() {
+            assertEquals(module.getLabel(), types.get(0).getLabel());
+        }
+
+        @Test
+        void shallConvertDescription() {
+            assertEquals(module.getDescription(), types.get(0).getDescription());
+        }
+
+        @Test
+        void shallConvertDetailedDescription() {
+            assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
+        }
+
+        @Test
+        void shallConvertIssuerTypeId() {
+            assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+        }
     }
 
     @Test
