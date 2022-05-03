@@ -33,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
@@ -56,6 +58,7 @@ import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
@@ -63,6 +66,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificat
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
@@ -113,6 +117,8 @@ public class CertificateController {
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Autowired
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
+    @Autowired
+    private CreateCertificateFacadeService createCertificateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -382,5 +388,21 @@ public class CertificateController {
         }
         final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
         return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
+    }
+
+    @POST
+    @Path("/{certificateType}/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response createCertificate(@PathParam("certificateType") String certificateType, @PathParam("patientId") String patientId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating certificate with type: '{}'", certificateType);
+        }
+        try {
+            final var certificateId = createCertificateFacadeService.create(certificateType, patientId);
+            return Response.ok().entity(new CreateCertificateResponseDTO(certificateId)).build();
+        } catch (CreateCertificateException e) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
     }
 }
