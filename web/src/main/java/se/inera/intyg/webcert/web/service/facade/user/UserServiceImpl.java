@@ -19,8 +19,10 @@
 package se.inera.intyg.webcert.web.service.facade.user;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.CareProvider;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
+        final var careProviders = getCareProviders(webCertUser);
 
         return User.builder()
             .hsaId(webCertUser.getHsaId())
@@ -94,7 +97,17 @@ public class UserServiceImpl implements UserService {
             .preferences(webCertUser.getAnvandarPreference())
             .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+            .careProviders(careProviders)
             .build();
+    }
+
+    private List<CareProvider> getCareProviders(WebCertUser webCertUser) {
+        return webCertUser.getVardgivare().stream().map(vardgivare ->
+            CareProvider.builder()
+                .id(vardgivare.getId())
+                .name(vardgivare.getNamn())
+                .build()
+        ).collect(Collectors.toList());
     }
 
     private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {
