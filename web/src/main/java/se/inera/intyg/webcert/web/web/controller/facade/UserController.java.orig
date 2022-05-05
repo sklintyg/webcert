@@ -71,6 +71,7 @@ public class UserController {
         return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
     }
 
+<<<<<<< HEAD
     @Path("/statistics")
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -79,7 +80,7 @@ public class UserController {
         LOG.debug("Getting user statistics");
         final var result = userStatisticsService.getUserStatistics();
         return Response.ok(result).build();
-    }
+=======
     @GET
     @Path("/careproviders")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -95,5 +96,6 @@ public class UserController {
     public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
         LOG.debug("Changing care unit to {}", unitHsaId);
         return Response.ok().build();
+>>>>>>> 8f5940d91 (INTYGFV-14453: WIP)
     }
 }
