@@ -97,10 +97,48 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                   scope.createDraft(intygType);
                 }
 
-              } else {
-                scope.createDraft(intygType);
               }
-            };
+              // Display info dialog if draft is of type db to make sure the user know.
+              else if (intygType === 'db') {
+                DialogService.showDialog({
+                  dialogId: 'db-info-dialog',
+                  titleText: 'db.label.titleText',
+                  model: {
+                    info: messageService.getProperty('db.label.info',
+                        {fornamn: PatientModel.fornamn,
+                          efternamn: PatientModel.efternamn,
+                          personnummer: PatientModel.personnummer}),
+                    checkboxCheck: function() {
+                      if(document.getElementById('checkboxId').checked){
+                        //Set the disabled property to FALSE and enable the button.
+                        document.getElementById('button1id').disabled = false;
+                      } else{
+                        //Otherwise, disable the submit button.
+                        document.getElementById('button1id').disabled = true;
+                      }
+                    },
+                    checkboxId: 'checkboxId',
+                    checkboxText: 'db.label.checkbox.text'
+                  },
+                  bodyText: 'db.label.bodyText',
+                  templateUrl: '/app/partials/dbInfo.dialog.html',
+
+                  button1click: function(modalInstance) {
+                    scope.createDraft(intygType);
+                    modalInstance.close();
+                  },
+                  button2click: function(modalInstance) {
+                    modalInstance.close();
+                  },
+                  button1id: "button1id",
+                  button1text: 'db.label.button1text',
+                  button2text: 'common.cancel',
+                  autoClose: false
+                });
+              } else {
+                  scope.createDraft(intygType);
+                }
+              };
 
             scope.createDraft = function(intygType) {
 
