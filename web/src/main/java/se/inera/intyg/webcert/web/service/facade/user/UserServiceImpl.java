@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CareProvider;
+import se.inera.intyg.common.support.facade.model.CareUnit;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
@@ -54,7 +55,6 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
-        final var careProviders = getCareProviders(webCertUser);
 
         return User.builder()
             .hsaId(webCertUser.getHsaId())
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
             .preferences(webCertUser.getAnvandarPreference())
             .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
-            .careProviders(careProviders)
+            .careProviders(getCareProviders(webCertUser))
             .build();
     }
 
@@ -106,6 +106,26 @@ public class UserServiceImpl implements UserService {
             CareProvider.builder()
                 .id(vardgivare.getId())
                 .name(vardgivare.getNamn())
+                .careUnits(getCareUnits(vardgivare))
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<CareUnit> getCareUnits(Vardgivare vardgivare) {
+        return vardgivare.getVardenheter().stream().map(vardenhet ->
+            CareUnit.builder()
+                .unitId(vardenhet.getId())
+                .unitName(vardenhet.getNamn())
+                .units(getUnits(vardenhet.getMottagningar()))
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<Unit> getUnits(List<Mottagning> mottagningar) {
+        return mottagningar.stream().map(mottagning ->
+            Unit.builder()
+                .unitId(mottagning.getId())
+                .unitName(mottagning.getNamn())
                 .build()
         ).collect(Collectors.toList());
     }
