@@ -140,7 +140,7 @@ public class CreateLisjpTestabilityUtil {
         values.put(RespConstants.PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
 
         final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil
-                .getCertificateDataValueDateRangeList(true);
+                .getCertificateDataValueDateRangeListWithSeveralPeriods(true);
         values.put(RespConstants.BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         final var motiveringTidigtStartdatum = CertificateDataTextValue.builder()
