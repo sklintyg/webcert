@@ -2,10 +2,6 @@
 
   <h2>Välj inloggning</h2>
 
-  <wc-alert-message alert-severity="warning" ng-show="showELegWarning">
-    Har du Telia e-legitimation rekommenderas webbläsaren Internet Explorer 11.
-  </wc-alert-message>
-
   <div ng-repeat="loginMethod in loginMethods">
     <a ng-href="{{loginMethod.url}}" class="btn btn-login" id="loginBtn{{$index}}">
       {{loginMethod.name}}
