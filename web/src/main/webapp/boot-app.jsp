@@ -49,7 +49,6 @@
 <body>
 
   <wc-service-banner id="service-banners"></wc-service-banner>
-  <wc-cookie-banner></wc-cookie-banner>
 
   <div ui-view="header" autoscroll="true" id="wcHeader"></div>
   <div class="wc-main-menu-wrapper">
