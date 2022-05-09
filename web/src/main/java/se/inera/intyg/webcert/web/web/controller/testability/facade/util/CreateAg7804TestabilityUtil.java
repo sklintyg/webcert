@@ -152,7 +152,7 @@ public class CreateAg7804TestabilityUtil {
         values.put(PLANERADBEHANDLING_SVAR_ID_20, planeradBehandling);
 
         final CertificateDataValueDateRangeList bedomning = createCertificateValuesTestabilityUtil
-                .getCertificateDataValueDateRangeList(true);
+                .getCertificateDataValueDateRangeListWithSeveralPeriods(true);
         values.put(BEHOV_AV_SJUKSKRIVNING_SVAR_ID_32, bedomning);
 
         final var forsakringsMedicinsktBeslutsstod = CertificateDataTextValue.builder()

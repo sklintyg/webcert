@@ -63,7 +63,7 @@ public class CreateAf00213TestabilityUtil {
     public Map<String, CertificateDataValue> createMaximumValuesAf00213() {
         final var values = new HashMap<String, CertificateDataValue>();
 
-        final CertificateDataValueBoolean harFunktionsnedsattning = CertificateDataValueBoolean.builder()
+        final var harFunktionsnedsattning = CertificateDataValueBoolean.builder()
                 .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_11)
                 .selected(true)
                 .build();
@@ -75,18 +75,23 @@ public class CreateAf00213TestabilityUtil {
                 .build();
         values.put(FUNKTIONSNEDSATTNING_DELSVAR_ID_12, funktionsnedsattning);
 
-        final CertificateDataValueBoolean harAktivitetsbegransning = CertificateDataValueBoolean.builder()
+        final var harAktivitetsbegransning = CertificateDataValueBoolean.builder()
                 .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_21)
                 .selected(true)
                 .build();
         values.put(AKTIVITETSBEGRANSNING_DELSVAR_ID_21, harAktivitetsbegransning);
 
-
-        final CertificateDataValueBoolean aktivitetsbegransning = CertificateDataValueBoolean.builder()
+        final var aktivitetsbegransning = CertificateDataTextValue.builder()
                 .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_22)
+                .text(EXAMPLE_TEXT)
+                .build();
+        values.put(AKTIVITETSBEGRANSNING_DELSVAR_ID_22, aktivitetsbegransning);
+
+        final var harUtredningBehandling = CertificateDataValueBoolean.builder()
+                .id(UTREDNING_BEHANDLING_SVAR_JSON_ID_31)
                 .selected(true)
                 .build();
-        values.put(AKTIVITETSBEGRANSNING_DELSVAR_ID_21, aktivitetsbegransning);
+        values.put(UTREDNING_BEHANDLING_DELSVAR_ID_31, harUtredningBehandling);
 
         final var utredningBehandling = CertificateDataTextValue.builder()
                 .id(UTREDNING_BEHANDLING_SVAR_JSON_ID_32)
@@ -94,7 +99,7 @@ public class CreateAf00213TestabilityUtil {
                 .build();
         values.put(UTREDNING_BEHANDLING_DELSVAR_ID_32, utredningBehandling);
 
-        final CertificateDataValueBoolean harArbetspaverkan = CertificateDataValueBoolean.builder()
+        final var harArbetspaverkan = CertificateDataValueBoolean.builder()
                 .id(ARBETETS_PAVERKAN_SVAR_JSON_ID_41)
                 .selected(true)
                 .build();
@@ -110,7 +115,7 @@ public class CreateAf00213TestabilityUtil {
                 .id(OVRIGT_SVAR_JSON_ID_5)
                 .text(EXAMPLE_TEXT)
                 .build();
-        values.put(OVRIGT_SVAR_ID_5, ovrigt);
+        values.put(OVRIGT_DELSVAR_ID_5, ovrigt);
 
         return values;
     }

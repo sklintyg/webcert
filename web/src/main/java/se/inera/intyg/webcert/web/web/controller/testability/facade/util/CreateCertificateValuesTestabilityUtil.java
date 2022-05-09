@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.value.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,27 @@ public class CreateCertificateValuesTestabilityUtil {
                                         .to(LocalDate.now().plusDays(shortPeriod
                                                 ? DEFAULT_SHORT_SICK_LEAVE_LENGTH : DEFAULT_SICK_LEAVE_LENGTH)
                                         )
+                                        .build()
+                        )
+                )
+                .build();
+    }
+
+    public CertificateDataValueDateRangeList getCertificateDataValueDateRangeListWithSeveralPeriods(boolean shortPeriod) {
+        return CertificateDataValueDateRangeList.builder()
+                .list(
+                        Arrays.asList(
+                                CertificateDataValueDateRange.builder()
+                                        .id("HELT_NEDSATT")
+                                        .from(LocalDate.now())
+                                        .to(LocalDate.now().plusDays(shortPeriod
+                                                ? DEFAULT_SHORT_SICK_LEAVE_LENGTH : DEFAULT_SICK_LEAVE_LENGTH)
+                                        )
+                                        .build(),
+                                CertificateDataValueDateRange.builder()
+                                        .id("TRE_FJARDEDEL")
+                                        .from(LocalDate.now().plusWeeks(1))
+                                        .to(LocalDate.now().plusWeeks(1).plusDays(1))
                                         .build()
                         )
                 )
