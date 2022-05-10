@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
+import se.inera.intyg.webcert.web.service.facade.impl.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
