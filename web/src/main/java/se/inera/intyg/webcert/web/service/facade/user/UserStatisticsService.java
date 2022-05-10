@@ -16,15 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade;
+package se.inera.intyg.webcert.web.service.facade.user;
 
-import se.inera.intyg.common.support.facade.model.user.User;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+public interface UserStatisticsService {
 
-public interface UserService {
-
-    User getLoggedInUser();
-
-    Vardenhet getLoggedInCareUnit(WebCertUser webCertUser);
+    long getNumberOfDraftsOnSelectedUnit();
 }
