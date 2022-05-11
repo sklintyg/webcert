@@ -24,24 +24,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.user.UserTabFactory;
 import se.inera.intyg.webcert.web.service.facade.user.UserTabsServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -149,6 +141,17 @@ class UserTabsServiceImplTest {
 
             assertEquals(0, result.size());
         }
+
+        @Test
+        void shouldSetNumberForDraftList() {
+            setupDoctor();
+            setupAllResourceLinks();
+            doReturn(5L).when(userStatisticsService).getNumberOfDraftsOnSelectedUnit();
+
+            final var result = userTabsService.get();
+
+            assertEquals(5L, result.get(1).getNumber());
+        }
     }
 
     @Nested
@@ -191,6 +194,17 @@ class UserTabsServiceImplTest {
             final var result = userTabsService.get();
 
             assertEquals(0, result.size());
+        }
+
+        @Test
+        void shouldSetNumberForDraftList() {
+            setupAdmin();
+            setupAllResourceLinks();
+            doReturn(5L).when(userStatisticsService).getNumberOfDraftsOnSelectedUnit();
+
+            final var result = userTabsService.get();
+
+            assertEquals(5L, result.get(0).getNumber());
         }
     }
 
