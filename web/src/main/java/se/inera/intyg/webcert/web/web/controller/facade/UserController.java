@@ -30,9 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
+import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CareProviderForUserResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
@@ -51,14 +54,17 @@ public class UserController {
     private final WebCertUserService webCertUserService;
 
     private final UserStatisticsService userStatisticsService;
+    private final ChangeUnitService changeUnitService;
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
                           WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
+                          WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
         this.userStatisticsService = userStatisticsService;
+        this.changeUnitService = changeUnitService;
     }
 
     @GET
@@ -94,7 +100,12 @@ public class UserController {
     @PrometheusTimeMethod
     public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
         LOG.debug("Changing care unit to {}", unitHsaId);
-        // TODO: Return updated user object with chosen logged in care unit set
-        return Response.ok().build();
+        try {
+            final var updatedUser = changeUnitService.change(unitHsaId);
+            final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
+            return Response.ok(UserResponseDTO.create(updatedUser, resourceLinks)).build();
+        } catch (ChangeUnitException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
 }
