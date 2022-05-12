@@ -36,11 +36,11 @@ public class ListFilterConfigFactory {
     }
 
     public static ListFilterDateConfig toDate() {
-        return new ListFilterDateConfig("TO", "Till");
+        return new ListFilterDateConfig("TO", "till");
     }
 
     public static ListFilterDateConfig toDateWithLimits(LocalDateTime max, LocalDateTime min) {
-        return new ListFilterDateConfig("TO", "Till", max, min, null);
+        return new ListFilterDateConfig("TO", "till", max, min, null);
     }
 
     public static ListFilterDateConfig fromDate() {
@@ -103,15 +103,13 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig createStaffSelect(
             String id, String title, List<StaffListInfo> staffInfo, String defaultHsaId) {
-        final var isShowAllDefault = defaultHsaId.length() == 0;
         final var convertedSavedByList = staffInfo.stream().map(
                 (info) -> convertStaffInfoIntoSelectFilter(info, defaultHsaId)).collect(Collectors.toList()
         );
         convertedSavedByList.add(0, ListFilterConfigValue.create(
-                "SHOW_ALL", "Visa alla", isShowAllDefault
-                )
+                "SHOW_ALL", "Visa alla", false)
         );
-        return new ListFilterSelectConfig(id, title, convertedSavedByList, !isShowAllDefault);
+        return new ListFilterSelectConfig(id, title, convertedSavedByList, true);
     }
 
     private static ListFilterConfigValue convertStaffInfoIntoSelectFilter(
