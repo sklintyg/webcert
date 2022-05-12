@@ -31,7 +31,7 @@ public class CertificateForwardFunction {
         return status == CertificateStatus.UNSIGNED;
     }
 
-    public static ResourceLinkDTO createResourceLink() {
+    public static ResourceLinkDTO createResourceLinkForDraft() {
         return ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
                 FORWARD_NAME,
@@ -41,7 +41,7 @@ public class CertificateForwardFunction {
     }
 
 
-    public static ResourceLinkDTO createGenericResourceLink() {
+    public static ResourceLinkDTO createResourceLink() {
         return ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
                 "Vidarebefordra",

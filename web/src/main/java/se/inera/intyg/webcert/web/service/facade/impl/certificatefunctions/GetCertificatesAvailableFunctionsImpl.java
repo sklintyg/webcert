@@ -236,7 +236,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         resourceLinks.add(
-            CertificateForwardFunction.createResourceLink()
+            CertificateForwardFunction.createResourceLinkForDraft()
         );
 
         resourceLinks.add(

@@ -73,7 +73,7 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     }
 
     private String[] getUnitsForCurrentUser() {
-        final var units = getStaffInfoFacadeService.getUnits();
+        final var units = getStaffInfoFacadeService.getIdsOfSelectedUnit();
         return units.toArray(new String[0]);
     }
 }

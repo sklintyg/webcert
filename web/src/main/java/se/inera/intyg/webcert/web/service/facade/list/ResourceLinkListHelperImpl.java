@@ -124,9 +124,12 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     private ResourceLinkDTO getConvertedResourceLink(ActionLink link, CertificateListItemStatus status) {
         if (link.getType() == ActionLinkType.LASA_INTYG) {
             return ResourceLinkFactory.read();
-        } else if (validateForward(link, getCertificateStatus(status))) {
-            return CertificateForwardFunction.createGenericResourceLink();
         }
+
+        if (validateForward(link, getCertificateStatus(status))) {
+            return CertificateForwardFunction.createResourceLink();
+        }
+
         return null;
     }
 

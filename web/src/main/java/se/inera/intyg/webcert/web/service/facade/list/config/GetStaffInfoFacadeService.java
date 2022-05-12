@@ -30,5 +30,5 @@ public interface GetStaffInfoFacadeService {
 
     boolean isLoggedInUserDoctor();
 
-    List<String> getUnits();
+    List<String> getIdsOfSelectedUnit();
 }

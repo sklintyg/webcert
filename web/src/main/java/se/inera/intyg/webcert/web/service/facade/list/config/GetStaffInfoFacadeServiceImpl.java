@@ -61,8 +61,8 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     }
 
     @Override
-    public List<String> getUnits() {
-        WebCertUser webCertUser = webCertUserService.getUser();
+    public List<String> getIdsOfSelectedUnit() {
+        final var webCertUser = webCertUserService.getUser();
         final var units = webCertUser.getIdsOfSelectedVardenhet();
         LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
         return units;

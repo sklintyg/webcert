@@ -168,10 +168,10 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     }
 
     private List<String> getUnits() {
-        final var units = getStaffInfoFacadeService.getUnits();
+        final var units = getStaffInfoFacadeService.getIdsOfSelectedUnit();
         if (units.isEmpty()) {
-            LOG.error("Current user has no assignments");
-            //throw exception
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Current user has no assignments");
         }
         return units;
     }
