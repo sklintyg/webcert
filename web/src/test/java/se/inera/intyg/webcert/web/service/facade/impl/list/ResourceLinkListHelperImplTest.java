@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,6 +67,8 @@ class ResourceLinkListHelperImplTest {
     @InjectMocks
     private ResourceLinkListHelperImpl resourceLinkListHelper;
 
+    WebCertUser user = null;
+
     public void setup(boolean renew, boolean read) {
         final var relations = CertificateRelations
                 .builder()
@@ -75,7 +78,7 @@ class ResourceLinkListHelperImplTest {
         final var unit = new Vardenhet();
         unit.setId("UNIT_ID");
 
-        final var user = new WebCertUser();
+        user = new WebCertUser();
 
         when(certificateAccessServiceHelper.isAllowToRenew(any(AccessEvaluationParameters.class))).thenReturn(renew);
         when(certificateAccessServiceHelper.isAllowToRead(any(AccessEvaluationParameters.class))).thenReturn(read);
@@ -153,6 +156,20 @@ class ResourceLinkListHelperImplTest {
             setup(false, false);
             final var entry = setupListIntygEntry(CertificateListItemStatus.COMPLETE.toString(), ActionLinkType.VIDAREBEFORDRA_UTKAST);
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.COMPLETE);
+            assertEquals(1, resourceLinks.size());
+            assertEquals(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, resourceLinks.get(0).getType());
+        }
+
+        @Test
+        public void shouldNotIncludeForwardResourceLinkIfPrivateDoctor() {
+            setup(false, false);
+            final var entry = setupListIntygEntry(CertificateListItemStatus.COMPLETE.toString(), ActionLinkType.VIDAREBEFORDRA_UTKAST);
+            doReturn(true)
+                    .when(user)
+                    .isPrivatLakare();
+
+            final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.COMPLETE);
+
             assertEquals(1, resourceLinks.size());
             assertEquals(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, resourceLinks.get(0).getType());
         }

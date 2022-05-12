@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -27,8 +28,8 @@ public class CertificateForwardFunction {
     private static final String FORWARD_NAME = "Vidarebefodra utkast";
     private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
 
-    public static boolean validate(CertificateStatus status) {
-        return status == CertificateStatus.UNSIGNED;
+    public static boolean validate(CertificateStatus status, WebCertUser user) {
+        return status == CertificateStatus.UNSIGNED && !user.isPrivatLakare();
     }
 
     public static ResourceLinkDTO createResourceLinkForDraft() {

@@ -146,7 +146,8 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private boolean validateForward(ActionLink link, CertificateStatus status) {
-        return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST && CertificateForwardFunction.validate(status);
+        return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST
+                && CertificateForwardFunction.validate(status, webCertUserService.getUser());
     }
 
     private ResourceLinkDTO getConvertedResourceLink(
