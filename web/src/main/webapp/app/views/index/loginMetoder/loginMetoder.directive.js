@@ -26,12 +26,6 @@ angular.module('webcert').directive('wcLoginMetoder', ['$window', '$http', 'modu
       scope: {},
       link: function(scope) {
 
-        scope.showELegWarning = (function() {
-          var re = /(?:Trident\/\d+)|(?:MSIE \d+)/;
-          var userAgent = $window.navigator.userAgent;
-          return !re.test(userAgent);
-        }());
-
         scope.loginMethods = [{
           url: '/saml/login/alias/defaultAlias?idp=' + moduleConfig.SAKERHETSTJANST_IDP_URL,
           name: 'SITHS-kort'
