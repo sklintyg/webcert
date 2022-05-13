@@ -87,7 +87,6 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
             .filter((intygModule) -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
             .collect(Collectors.toList());
 
-
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
         return intygModuleDTOs;
