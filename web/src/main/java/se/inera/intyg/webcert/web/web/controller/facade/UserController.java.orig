@@ -32,15 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
-<<<<<<< HEAD
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
-=======
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
->>>>>>> ffb1f762e (INTYGFV-14453: Added service to change unit)
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CareProviderForUserResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
 @Path("/user")
@@ -56,27 +52,22 @@ public class UserController {
 
     private final WebCertUserService webCertUserService;
 
-<<<<<<< HEAD
     private final UserStatisticsService userStatisticsService;
-
-    @Autowired
-    public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
-        this.userService = userService;
-        this.getUserResourceLinks = getUserResourceLinks;
-        this.webCertUserService = webCertUserService;
-        this.userStatisticsService = userStatisticsService;
-=======
     private final ChangeUnitService changeUnitService;
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
+<<<<<<< HEAD
+                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
                           WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
+=======
+        WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
+>>>>>>> aa87b7ec7 (INTYGFV-14453: Remove unused DTO)
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
+        this.userStatisticsService = userStatisticsService;
         this.changeUnitService = changeUnitService;
->>>>>>> ffb1f762e (INTYGFV-14453: Added service to change unit)
     }
 
     @GET
@@ -89,6 +80,7 @@ public class UserController {
         return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
     }
 
+<<<<<<< HEAD
     @Path("/statistics")
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -106,6 +98,8 @@ public class UserController {
         return Response.ok(CareProviderForUserResponseDTO.create()).build();
     }
 
+=======
+>>>>>>> aa87b7ec7 (INTYGFV-14453: Remove unused DTO)
     @POST
     @Path("/unit/{unitHsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

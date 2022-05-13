@@ -37,7 +37,6 @@ import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CareProviderForUserResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
 @Path("/user")
@@ -58,8 +57,7 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
-                          WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
+                          UserStatisticsService userStatisticsService, WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
