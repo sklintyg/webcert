@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,6 @@ import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.Arrays;
 
 @Service
 public class ChangeUnitServiceImpl implements ChangeUnitService {
@@ -45,9 +44,9 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
 
     @Autowired
     public ChangeUnitServiceImpl(WebCertUserService webCertUserService,
-                                 DssSignatureService dssSignatureService,
-                                 CommonAuthoritiesResolver commonAuthoritiesResolver,
-                                 UserService userService) {
+        DssSignatureService dssSignatureService,
+        CommonAuthoritiesResolver commonAuthoritiesResolver,
+        UserService userService) {
         this.webCertUserService = webCertUserService;
         this.dssSignatureService = dssSignatureService;
         this.commonAuthoritiesResolver = commonAuthoritiesResolver;
@@ -58,22 +57,21 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
     public User change(String unitId) throws ChangeUnitException {
         final var user = webCertUserService.getUser();
 
-        logChangeUnitStarted(user);
+        LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
+            user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
+
         changeUnit(unitId, user);
-        //updateSigningService(unitId, user);  // is this used in react?
-        //setFeaturesForUser(user); // is this used in react?
-        logUnitSuccesfullyChanged(user);
+        updateSigningService(unitId, user);
+        setFeaturesForUser(user);
+
+        LOG.debug("Selected vardenhet is now '{}'", user.getValdVardenhet().getId());
 
         return userService.getLoggedInUser();
     }
 
-    private void logUnitSuccesfullyChanged(WebCertUser user) {
-        LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
-    }
-
     private void setFeaturesForUser(WebCertUser user) {
         user.setFeatures(commonAuthoritiesResolver.getFeatures(
-                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+            Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
     }
 
     private void updateSigningService(String unitId, WebCertUser user) {
@@ -81,11 +79,6 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
         if (chosenUnit != null) {
             user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(unitId));
         }
-    }
-
-    private void logChangeUnitStarted(WebCertUser user) {
-        LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
-                user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
     }
 
     private void changeUnit(String unitId, WebCertUser user) throws ChangeUnitException {
