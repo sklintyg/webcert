@@ -84,7 +84,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)
+            .filter((intygModule) -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
             .collect(Collectors.toList());
+
 
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
