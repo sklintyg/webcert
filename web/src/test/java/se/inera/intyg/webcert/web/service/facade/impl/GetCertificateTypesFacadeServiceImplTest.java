@@ -146,7 +146,6 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
         }
 
-
         @Test
         void shouldFilterOutDeprectatedIntygModules() throws Exception {
             setup(true, false);
