@@ -127,13 +127,13 @@ public class CreateAg7804TestabilityUtil {
                 .getCertificateDataValueDiagnosisList();
         values.put(DIAGNOS_SVAR_ID_6, diagnos);
 
-        final var funktionsnedsattning = CertificateDataIcfValue.builder()
+        final var funktionsnedsattning = CertificateDataTextValue.builder()
                 .id(FUNKTIONSNEDSATTNING_SVAR_JSON_ID_35)
                 .text(EXAMPLE_TEXT)
                 .build();
         values.put(FUNKTIONSNEDSATTNING_SVAR_ID_35, funktionsnedsattning);
 
-        final var aktivitetsbegransning = CertificateDataIcfValue.builder()
+        final var aktivitetsbegransning = CertificateDataTextValue.builder()
                 .id(AKTIVITETSBEGRANSNING_SVAR_JSON_ID_17)
                 .text(EXAMPLE_TEXT)
                 .build();
