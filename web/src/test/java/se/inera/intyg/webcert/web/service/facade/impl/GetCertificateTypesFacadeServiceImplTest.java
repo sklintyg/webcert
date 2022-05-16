@@ -131,9 +131,43 @@ class GetCertificateTypesFacadeServiceImplTest {
         assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
     }
 
+    @Nested
+    class DeprecatedIntygModules {
+
+        void setup(boolean isDeprecated, boolean showDeprecated) throws Exception {
+            final var module = createIntygModule(isDeprecated, showDeprecated);
+
+            doReturn(Arrays.asList(module))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+
+            doNothing()
+                    .when(resourceLinkHelper)
+                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+        }
+
+        @Test
+        void shouldFilterOutDeprectatedIntygModules() throws Exception {
+            setup(true, false);
+            final var result = serviceUnderTest.get(PATIENT_ID);
+            assertEquals(0, result.size());
+        }
+
+        @Test
+        void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
+            setup(true, true);
+            final var result = serviceUnderTest.get(PATIENT_ID);
+            assertEquals(1, result.size());
+        }
+    }
+
     private IntygModule createIntygModule() {
+        return createIntygModule(false, false);
+    }
+
+    private IntygModule createIntygModule(boolean isDeprecated, boolean showDeprecated) {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            false, false);
+                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+                isDeprecated, showDeprecated);
     }
 }
