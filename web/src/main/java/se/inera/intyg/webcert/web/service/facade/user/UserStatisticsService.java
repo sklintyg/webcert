@@ -20,5 +20,6 @@ package se.inera.intyg.webcert.web.service.facade.user;
 
 public interface UserStatisticsService {
 
-    long getNumberOfDraftsOnSelectedUnit();
+    UserStatisticsDTO getUserStatistics();
+
 }

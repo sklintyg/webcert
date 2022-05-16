@@ -16,47 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.user;
 
-public class UserTab {
-    private String title;
-    private String url;
-    private long number;
+import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-    public UserTab(String title, String url, long number) {
-        this.title = title;
-        this.url = url;
-        this.number = number;
+public class UserStatisticsDTO {
+
+    private long nbrOfDraftsOnSelectedUnit;
+
+    public UserStatisticsDTO(){}
+
+    public long getNbrOfDraftsOnSelectedUnit() {
+        return nbrOfDraftsOnSelectedUnit;
     }
 
-    public UserTab(String title, String url) {
-        this.title = title;
-        this.url = url;
-        this.number = 0;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
+    public void setNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
+        this.nbrOfDraftsOnSelectedUnit = nbrOfDraftsOnSelectedUnit;
     }
 }

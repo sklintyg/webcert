@@ -79,7 +79,7 @@ class UserStatisticsServiceImplTest {
     class NumberOfDraftsForSelectedUnit {
         @Test
         void shouldReturn0IfUserIsNull() {
-            final var result = userStatisticsService.getNumberOfDraftsOnSelectedUnit();
+            final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
             assertEquals(0L, result);
         }
 
@@ -88,7 +88,7 @@ class UserStatisticsServiceImplTest {
             setUpUser();
             user.setOrigin("DJUPINTEGRATION");
 
-            final var result = userStatisticsService.getNumberOfDraftsOnSelectedUnit();
+            final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
 
             assertEquals(0L, result);
         }
@@ -102,7 +102,7 @@ class UserStatisticsServiceImplTest {
             map.put(SELECTED_UNIT_ID, expectedValue);
             doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
-            final var result = userStatisticsService.getNumberOfDraftsOnSelectedUnit();
+            final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
 
             assertEquals(expectedValue, result);
         }

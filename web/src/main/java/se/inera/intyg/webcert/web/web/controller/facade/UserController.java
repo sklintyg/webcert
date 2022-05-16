@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
-import se.inera.intyg.webcert.web.service.facade.user.UserTabsService;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
@@ -46,15 +46,15 @@ public class UserController {
 
     private final WebCertUserService webCertUserService;
 
-    private final UserTabsService userTabsService;
+    private final UserStatisticsService userStatisticsService;
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-                          WebCertUserService webCertUserService, UserTabsService userTabsService) {
+                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
-        this.userTabsService = userTabsService;
+        this.userStatisticsService = userStatisticsService;
     }
 
     @GET
@@ -67,13 +67,13 @@ public class UserController {
         return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
     }
 
-    @Path("/tabs")
+    @Path("/statistics")
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getUserTabs() {
-        LOG.debug("Getting user tabs");
-        final var tabs = userTabsService.get();
-        return Response.ok(tabs).build();
+        LOG.debug("Getting user statistics");
+        final var result = userStatisticsService.getUserStatistics();
+        return Response.ok(result).build();
     }
 }

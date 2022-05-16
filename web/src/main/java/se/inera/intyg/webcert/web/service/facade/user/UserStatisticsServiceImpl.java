@@ -44,7 +44,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     @Override
-    public long getNumberOfDraftsOnSelectedUnit() {
+    public UserStatisticsDTO getUserStatistics() {
+        final var statistics = new UserStatisticsDTO();
+        statistics.setNbrOfDraftsOnSelectedUnit(getNumberOfDraftsOnSelectedUnit());
+        return statistics;
+    }
+
+    private long getNumberOfDraftsOnSelectedUnit() {
         final var user = webCertUserService.getUser();
         if (validateUser(user)) {
             return getStatistics(user);
