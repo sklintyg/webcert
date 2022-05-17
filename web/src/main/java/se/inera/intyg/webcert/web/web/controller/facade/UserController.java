@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
-import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.service.facade.user.UserService;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
@@ -45,11 +46,15 @@ public class UserController {
 
     private final WebCertUserService webCertUserService;
 
+    private final UserStatisticsService userStatisticsService;
+
     @Autowired
-    public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks, WebCertUserService webCertUserService) {
+    public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
+                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
+        this.userStatisticsService = userStatisticsService;
     }
 
     @GET
@@ -60,5 +65,15 @@ public class UserController {
         final var loggedInUser = userService.getLoggedInUser();
         final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
         return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
+    }
+
+    @Path("/statistics")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getUserTabs() {
+        LOG.debug("Getting user statistics");
+        final var result = userStatisticsService.getUserStatistics();
+        return Response.ok(result).build();
     }
 }
