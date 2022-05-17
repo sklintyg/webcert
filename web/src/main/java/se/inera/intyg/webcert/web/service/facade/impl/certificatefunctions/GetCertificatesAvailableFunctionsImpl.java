@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.impl;
+package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
@@ -29,7 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -68,9 +68,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String SIGN_NAME = "Signera intyget";
     private static final String SIGN_DESCRIPTION = "Intyget signeras.";
 
-    private static final String FORWARD_NAME = "Vidarebefodra utkast";
-    private static final String FORWARD_DESCRIPTION = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
-
     private static final String READY_FOR_SIGN_NAME = "Markera klart för signering";
     private static final String READY_FOR_SIGN_DESCRIPTION = "Utkastet markeras som klar för signering.";
 
@@ -81,9 +78,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     public static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
     public static final String REPLACE_DESCRIPTION_DISABLED = "Intyget har minst en ohanterad kompletteringsbegäran"
         + " och går inte att ersätta.";
-
-    private static final String RENEW_NAME = "Förnya";
-    private static final String RENEW_DESCRIPTION = "Skapar en redigerbar kopia av intyget på den enhet som du är inloggad på.";
 
     private static final String PRINT_CERTIFICATE_DESCRIPTION = "Laddar ned intyget för utskrift.";
     private static final String REVOKE_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera intyget.";
@@ -137,11 +131,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + " utifrån ett Läkarintyg för sjukpenning innebär att "
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
-
-    public static final String EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer inte "
-        + "att klarmarkeras.";
-    public static final String EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY = "Eventuell kompletteringsbegäran kommer att klarmarkeras.";
-
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private String createFromCandidateBody = "";
@@ -247,12 +236,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
-                FORWARD_NAME,
-                FORWARD_DESCRIPTION,
-                true
-            )
+            CertificateForwardFunction.createResourceLinkForDraft()
         );
 
         resourceLinks.add(
@@ -329,17 +313,15 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        if (isRenewCertificateAvailable(certificate)) {
+        if (CertificateRenewFunction.validate(certificate.getMetadata().getType(), certificate.getMetadata().getRelations(),
+                certificate.getMetadata().getStatus(), authoritiesHelper)) {
+            final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
+            final var savedCareUnitId = certificate.getMetadata().getCareUnit().getUnitId();
             resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.RENEW_CERTIFICATE,
-                    RENEW_NAME,
-                    RENEW_DESCRIPTION,
-                    getRenewBody(certificate),
-                    true
-                )
+                CertificateRenewFunction.createResourceLink(loggedInCareUnitId, savedCareUnitId, certificate.getMetadata().getType())
             );
         }
+
 
         if (isCreateCertificateFromTemplateAvailable(certificate)) {
             resourceLinks.add(
@@ -478,52 +460,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return resourceLinks;
     }
 
-    private String getRenewBody(Certificate certificate) {
-        if (isLisjpCertificate(certificate)) {
-            final var complementaryText =
-                isUserAndCertificateFromSameCareUnit(certificate) ? EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY
-                    : EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
-
-            return String.format(
-                "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                    + " med viss information från det ursprungliga intyget.<br><br>\n"
-                    + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>\n"
-                    + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>\n"
-                    + "<ul>\n"
-                    + "<li>Sjukskrivningsperiod och grad.</li>\n"
-                    + "<li>Valet om man vill ha kontakt med Försäkringskassan.</li>\n"
-                    + "<li>Referenser som intyget baseras på.</li>\n"
-                    + "</ul>\n"
-                    + "<br>%s<br><br>\n"
-                    + "Det nya utkastet skapas på den enhet du är inloggad på.", complementaryText);
-        } else {
-            return
-                "Förnya intyg kan användas vid förlängning av en sjukskrivning. När ett intyg förnyas skapas ett nytt intygsutkast"
-                    + " med viss information från det ursprungliga intyget.<br><br>"
-                    + "Uppgifterna i det nya intygsutkastet går att ändra innan det signeras.<br><br>"
-                    + "De uppgifter som inte kommer med till det nya utkastet är:<br><br>"
-                    + "<ul>"
-                    + "<li>Valet om diagnos ska förmedlas till arbetsgivaren</li>"
-                    + "<li>Valet om funktionsnedsättning ska förmedlas till arbetsgivaren</li>"
-                    + "<li>Sjukskrivningsperiod och grad</li>"
-                    + "<li>Valet om man vill ha kontakt med arbetsgivaren</li>"
-                    + "<li>Referenser som intyget baseras på</li>"
-                    + "</ul>"
-                    + "<br>Det nya utkastet skapas på den enhet du är inloggad på.";
-        }
-    }
-
-    private Boolean isLisjpCertificate(Certificate certificate) {
-        return Objects.equals(certificate.getMetadata().getType(), LisjpEntryPoint.MODULE_ID);
-    }
-
-    private Boolean isUserAndCertificateFromSameCareUnit(Certificate certificate) {
-        final var loggedInCareUnit = userService.getLoggedInCareUnit(webCertUserService.getUser());
-
-        return Objects.equals(loggedInCareUnit.getId(),
-            certificate.getMetadata().getCareUnit().getUnitId());
-    }
-
     private boolean isSent(Certificate certificate) {
         return certificate.getMetadata().isSent();
     }
@@ -536,12 +472,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private boolean isComplementingCertificate(Certificate certificate) {
         return certificate.getMetadata().getRelations() != null && certificate.getMetadata().getRelations().getParent() != null
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
-    }
-
-    private boolean hasComplementQuestion(Certificate certificate) {
-        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
-
-        return questions.stream().anyMatch(question -> question.getType().equals(QuestionType.COMPLEMENT));
     }
 
     private boolean isRevoked(Certificate certificate) {
@@ -616,14 +546,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
         return isReplacementUnsigned(certificate);
-    }
-
-    private boolean isRenewCertificateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate) || hasBeenComplemented(certificate)) {
-            return false;
-        }
-
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, certificate.getMetadata().getType());
     }
 
     private boolean isReplacementUnsigned(Certificate certificate) {

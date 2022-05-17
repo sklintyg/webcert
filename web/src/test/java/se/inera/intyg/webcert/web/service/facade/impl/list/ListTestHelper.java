@@ -38,6 +38,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -169,10 +170,14 @@ class ListTestHelper {
     }
 
     public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded) {
-        return createListIntygEntry(status, includePatientStatuses, forwarded, "191212121212");
+        return createListIntygEntry(status, includePatientStatuses, forwarded, "191212121212", null);
     }
 
-    public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded, String patientId) {
+    public static ListIntygEntry createListIntygEntry(String status, ActionLink link) {
+        return createListIntygEntry(status, false, false, "191212121212", link);
+    }
+
+    public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded, String patientId, ActionLink link) {
         final var listIntygEntry = new ListIntygEntry();
         listIntygEntry.setIntygType("luse");
         listIntygEntry.setIntygId("CERTIFICATE_ID");
@@ -185,6 +190,11 @@ class ListTestHelper {
         listIntygEntry.setSekretessmarkering(includePatientStatuses);
         listIntygEntry.setTestIntyg(includePatientStatuses);
         listIntygEntry.setUpdatedSignedById("HSA_ID");
+        listIntygEntry.setVardenhetId("UNIT_ID");
+        listIntygEntry.setVardgivarId("CARE_PROVIDER_ID");
+        if(link != null) {
+            listIntygEntry.addLink(link);
+        }
         return listIntygEntry;
     }
 

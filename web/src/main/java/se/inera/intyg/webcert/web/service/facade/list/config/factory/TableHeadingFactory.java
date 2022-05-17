@@ -51,4 +51,8 @@ public class TableHeadingFactory {
     public static TableHeading openButton(ListColumnType type) {
         return new TableHeading(type, type.getName(), CertificateListItemValueType.OPEN_BUTTON, type.getDescription());
     }
+
+    public static TableHeading renewButton(ListColumnType type) {
+      return new TableHeading(type, type.getName(), CertificateListItemValueType.RENEW_BUTTON, type.getDescription());
+   }
 }

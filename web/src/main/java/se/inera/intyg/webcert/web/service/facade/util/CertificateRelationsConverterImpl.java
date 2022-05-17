@@ -50,16 +50,20 @@ public class CertificateRelationsConverterImpl implements CertificateRelationsCo
     public CertificateRelations convert(String certificateId) {
         LOG.debug("Retrieving relations for certificate");
         final var relations = certificateRelationService.getRelations(certificateId);
+        return convert(relations);
+    }
 
+    @Override
+    public CertificateRelations convert(Relations relations) {
         LOG.debug("Converting relations for certificate");
         return CertificateRelations.builder()
-            .parent(
-                getRelation(relations.getParent())
-            )
-            .children(
-                getChildRelations(relations.getLatestChildRelations())
-            )
-            .build();
+                .parent(
+                        getRelation(relations.getParent())
+                )
+                .children(
+                        getChildRelations(relations.getLatestChildRelations())
+                )
+                .build();
     }
 
     private CertificateRelation[] getChildRelations(Relations.FrontendRelations latestChildRelations) {

@@ -19,7 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.factory;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.FilterStatusType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 
@@ -47,7 +48,8 @@ public class ListFilterConfigFactory {
         return new ListFilterDateConfig("FROM", "Från");
     }
 
-    public static ListFilterDateConfig fromDateWithLimits(LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
+    public static ListFilterDateConfig fromDateWithLimits(
+            LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
         return new ListFilterDateConfig("FROM", "Från", max, min, defaultValue);
     }
 
@@ -80,11 +82,15 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig draftStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Utkast", List.of(
-                ListFilterConfigValue.create(DraftStatus.SHOW_ALL.toString(), DraftStatus.SHOW_ALL.getName(), true),
-                ListFilterConfigValue.create(DraftStatus.INCOMPLETE.toString(), "Uppgifter saknas", false),
-                ListFilterConfigValue.create(DraftStatus.COMPLETE.toString(), "Kan signeras", false),
-                ListFilterConfigValue.create(DraftStatus.LOCKED.toString(), "Låsta", false)
-        )
+                ListFilterConfigValue.create(CertificateListItemStatus.SHOW_ALL.toString(),
+                        CertificateListItemStatus.SHOW_ALL.getName(), true),
+                ListFilterConfigValue.create(CertificateListItemStatus.INCOMPLETE.toString(),
+                        "Uppgifter saknas", false),
+                ListFilterConfigValue.create(CertificateListItemStatus.COMPLETE.toString(),
+                        "Kan signeras", false),
+                ListFilterConfigValue.create(CertificateListItemStatus.LOCKED.toString(),
+                        "Låsta", false)
+            )
         );
     }
 
@@ -118,6 +124,18 @@ public class ListFilterConfigFactory {
             StaffListInfo staffListInfo, String defaultHsaId) {
         return ListFilterConfigValue.create(
                 staffListInfo.getHsaId(), staffListInfo.getName(), defaultHsaId.equals(staffListInfo.getHsaId())
+        );
+    }
+
+    public static ListFilterRadioConfig certificateStatusRadio() {
+        return new ListFilterRadioConfig("STATUS", "", List.of(
+                ListFilterConfigValue.create(FilterStatusType.CURRENT_CERTIFICATES.toString(),
+                        FilterStatusType.CURRENT_CERTIFICATES.getName(), true),
+                ListFilterConfigValue.create(FilterStatusType.MODIFIED_CERTIFICATES.toString(),
+                        FilterStatusType.MODIFIED_CERTIFICATES.getName(), false),
+                ListFilterConfigValue.create(FilterStatusType.ALL_CERTIFICATES.toString(),
+                        FilterStatusType.ALL_CERTIFICATES.getName(), false)
+            )
         );
     }
 }

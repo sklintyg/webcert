@@ -27,10 +27,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.*;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
-import static se.inera.intyg.webcert.web.service.facade.impl.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION_DISABLED;
+import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
+import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
+import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION_DISABLED;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -60,6 +60,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
@@ -331,21 +332,18 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class RenewCertificates {
 
-        void setupRenewData(String unitId, Boolean lisjpCertificate) {
+        void setupRenewData(String unitId) {
             final var webcertUser = Mockito.mock(WebCertUser.class);
             final var careUnit = Mockito.mock(Vardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
-
-            if (lisjpCertificate) {
-                doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
-                doReturn(unitId).when(careUnit).getId();
-            }
+            doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
+            doReturn(unitId).when(careUnit).getId();
         }
 
         @Test
         void shallIncludeRenewCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -357,7 +355,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeComplementWontBeMarkedReadyTextIfDifferentUnit() {
-            setupRenewData("non matching id", true);
+            setupRenewData("non matching id");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -370,7 +368,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeComplementWillBeMarkedReadyTextIfSameUnit() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -383,7 +381,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeCorrectBodyIfLisjpCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
@@ -396,7 +394,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeCorrectBodyIfAg7804Certificate() {
-            setupRenewData("unitId", false);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, Ag7804EntryPoint.MODULE_ID);
@@ -435,7 +433,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeRenewIfReplacedByUnsignedCertificate() {
-            setupRenewData("unitId", true);
+            setupRenewData("unitId");
             doReturn(true)
                 .when(authoritiesHelper)
                 .isFeatureActive(AuthoritiesConstants.FEATURE_FORNYA_INTYG, LisjpEntryPoint.MODULE_ID);
