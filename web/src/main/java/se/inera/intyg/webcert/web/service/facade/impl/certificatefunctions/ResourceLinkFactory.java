@@ -16,14 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
-public interface CertificateRelationsConverter {
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
-    CertificateRelations convert(String certificateId);
 
-    CertificateRelations convert(Relations relations);
+public class ResourceLinkFactory {
+
+    public static ResourceLinkDTO read() {
+        return ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.READ_CERTIFICATE,
+                "Öppna",
+                "",
+                true
+        );
+    }
 }

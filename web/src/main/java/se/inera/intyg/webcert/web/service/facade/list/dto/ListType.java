@@ -22,4 +22,5 @@ public enum ListType {
     DRAFTS,
     CERTIFICATES,
     QUESTIONS,
+    PREVIOUS_CERTIFICATES,
 }

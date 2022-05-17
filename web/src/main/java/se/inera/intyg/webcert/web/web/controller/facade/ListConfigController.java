@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 
 import javax.ws.rs.GET;
@@ -40,12 +41,15 @@ public class ListConfigController {
 
     private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
     private final ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
+    private final ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService;
 
     @Autowired
     public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
-                                ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService) {
+                                ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
+                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
         this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
+        this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
     }
 
     @Path("/draft")
@@ -63,8 +67,18 @@ public class ListConfigController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getListOfSignedCertificatesConfig() {
-        LOG.debug("Getting config for list of drafts");
+        LOG.debug("Getting config for list of signed certificates");
         final var config = listSignedCertificatesConfigFacadeService.get();
+        return Response.ok(config).build();
+    }
+
+    @Path("/previous")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getListOfPreviousCertificatesConfig() {
+        LOG.debug("Getting config for list of previous certificates");
+        final var config = listPreviousCertificatesConfigFacadeService.get();
         return Response.ok(config).build();
     }
 }

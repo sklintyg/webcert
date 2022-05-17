@@ -16,14 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+package se.inera.intyg.webcert.web.service.facade.list;
 
-public interface CertificateRelationsConverter {
+import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-    CertificateRelations convert(String certificateId);
+import java.util.List;
 
-    CertificateRelations convert(Relations relations);
+public interface ResourceLinkListHelper {
+    List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status);
+
+    List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status);
 }

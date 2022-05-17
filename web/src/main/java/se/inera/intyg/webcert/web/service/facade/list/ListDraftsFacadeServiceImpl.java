@@ -91,6 +91,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     private List<ListIntygEntry> decorateList(List<ListIntygEntry> list) {
         listDecorator.decorateWithCertificateTypeName(list);
         listDecorator.decorateWithStaffName(list);
+        listDecorator.decorateWithResourceLinks(list);
         return listDecorator.decorateAndFilterProtectedPerson(list);
     }
 

@@ -16,8 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public interface CertificateStatus {
-    String getName();
+package se.inera.intyg.webcert.web.service.facade.list;
+
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+
+public interface ListPreviousCertificatesFacadeService {
+    ListInfo get(ListFilter filter);
 }

@@ -19,18 +19,29 @@
 
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
+
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.DraftStatus;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
+
+    private final HsaOrganizationsService hsaOrganizationsService;
+    private final ResourceLinkListHelper resourceLinkListHelper;
+
+    @Autowired
+    public CertificateListItemConverterImpl(HsaOrganizationsService hsaOrganizationsService,
+                                            ResourceLinkListHelper resourceLinkListHelper) {
+        this.hsaOrganizationsService = hsaOrganizationsService;
+        this.resourceLinkListHelper = resourceLinkListHelper;
+    }
 
     @Override
     public CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType) {
@@ -44,44 +55,63 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
-        final var convertedStatus = convertStatus(listIntygEntry.getStatus(), listType);
+        final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
 
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
-        listItem.addValue(ListColumnType.STATUS, convertedStatus);
+        listItem.addValue(ListColumnType.STATUS, convertStatus(certificateListItemStatus));
         listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
-        listItem.addValue(ListColumnType.SAVED_BY, listIntygEntry.getUpdatedSignedBy());
-        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
+        listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
+                listIntygEntry.getUpdatedSignedBy()
+        );
+        listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus)
+        );
         return listItem;
     }
 
     private CertificateListItem convertListItem(CertificateListEntry entry) {
         final var listItem = new CertificateListItem();
+        final var certificateListItemStatus = getCertificateListItemStatus(entry.isSent());
         final var patientListInfo = getPatientListInfo(entry);
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, entry.getCertificateTypeName());
         listItem.addValue(ListColumnType.SIGNED, entry.getSignedDate());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getCertificateId());
-        listItem.addValue(ListColumnType.STATUS, entry.isSent() ? "Skickat" : "Ej skickat");
+        listItem.addValue(ListColumnType.STATUS, certificateListItemStatus.getName());
+        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(entry, certificateListItemStatus));
         return listItem;
     }
 
-    private String convertStatus(String status, ListType listType) {
-        if (listType == ListType.DRAFTS) {
-            return convertDraftStatus(UtkastStatus.valueOf(status)).getName();
-        }
-        return "";
+    private String convertStatus(CertificateListItemStatus status) {
+        return status != null ? status.getName() : "Okänd status";
     }
 
-    private DraftStatus convertDraftStatus(UtkastStatus status) {
-        if (status == UtkastStatus.DRAFT_COMPLETE) {
-            return DraftStatus.COMPLETE;
-        } else if (status == UtkastStatus.DRAFT_INCOMPLETE) {
-            return DraftStatus.INCOMPLETE;
+    private CertificateListItemStatus getCertificateListItemStatus(String status) {
+        if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
+            return CertificateListItemStatus.COMPLETE;
+        } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
+            return CertificateListItemStatus.INCOMPLETE;
+        } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
+            return CertificateListItemStatus.LOCKED;
+        } else if (status.equals("RENEWED")) {
+            return CertificateListItemStatus.RENEWED;
+        } else if (status.equals("COMPLEMENTED")) {
+            return CertificateListItemStatus.COMPLEMENTED;
+        } else if (status.equals("CANCELLED")) {
+            return CertificateListItemStatus.REVOKED;
+        } else if (status.equals("SENT")) {
+            return CertificateListItemStatus.SENT;
+        } else if (status.equals("SIGNED") || status.equals("RECEIVED")) {
+            return CertificateListItemStatus.SIGNED;
         }
-        return DraftStatus.LOCKED;
+        return null;
+    }
+
+    private CertificateListItemStatus getCertificateListItemStatus(boolean isSent) {
+        return isSent ? CertificateListItemStatus.SENT : CertificateListItemStatus.NOT_SENT;
     }
 
     private PatientListInfo getPatientListInfo(ListIntygEntry listIntygEntry) {
@@ -100,5 +130,14 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
                 certificateListEntry.isDeceased(),
                 certificateListEntry.isTestIndicator()
         );
+    }
+
+    private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {
+        final var unit = hsaOrganizationsService.getVardenhet(entry.getVardenhetId());
+        final var careGiver = hsaOrganizationsService.getVardgivareInfo(entry.getVardgivarId());
+        return new ForwardedListInfo(
+                entry.isVidarebefordrad(),
+                unit.getNamn(),
+                careGiver.getNamn());
     }
 }

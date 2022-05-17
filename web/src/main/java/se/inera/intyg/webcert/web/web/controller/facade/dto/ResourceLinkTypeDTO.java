@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public enum ResourceLinkTypeDTO {
     EDIT_CERTIFICATE,
+    READ_CERTIFICATE,
     REMOVE_CERTIFICATE,
     FORWARD_CERTIFICATE,
     READY_FOR_SIGN,

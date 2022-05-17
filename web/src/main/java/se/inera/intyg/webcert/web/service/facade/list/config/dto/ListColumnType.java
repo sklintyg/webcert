@@ -21,12 +21,17 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 public enum ListColumnType {
     PATIENT_ID("Patient", "Patientens personnummer."),
     SAVED_BY("Sparat av", "Person som senast sparade utkastet."),
+    SAVED_SIGNED_BY("Sparat/signerat av",
+            "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
     SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
     CERTIFICATE_ID("", ""),
+    OPEN_CERTIFICATE("", ""),
+    RENEW_CERTIFICATE("", ""),
     CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
     STATUS("Status", "Visar intygets status."),
     FORWARDED("Vidarebefordrad", ""),
-    SIGNED("Signerad", "Datum och klockslag då intyget signerades.");
+    SIGNED("Signerad", "Datum och klockslag då intyget signerades."),
+    LINKS("", "");
 
     private final String name;
     private final String description;

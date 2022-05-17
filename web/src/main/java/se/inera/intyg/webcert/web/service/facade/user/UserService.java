@@ -16,14 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
+package se.inera.intyg.webcert.web.service.facade.user;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public interface CertificateRelationsConverter {
+public interface UserService {
 
-    CertificateRelations convert(String certificateId);
+    User getLoggedInUser();
 
-    CertificateRelations convert(Relations relations);
+    Vardenhet getLoggedInCareUnit(WebCertUser webCertUser);
 }
