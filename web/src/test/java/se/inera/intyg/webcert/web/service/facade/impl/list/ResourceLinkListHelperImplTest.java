@@ -30,6 +30,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelperImpl;
@@ -43,6 +44,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -164,13 +167,13 @@ class ResourceLinkListHelperImplTest {
         public void shouldNotIncludeForwardResourceLinkIfPrivateDoctor() {
             setup(false, false);
             final var entry = setupListIntygEntry(CertificateListItemStatus.COMPLETE.toString(), ActionLinkType.VIDAREBEFORDRA_UTKAST);
-            doReturn(true)
-                    .when(user)
-                    .isPrivatLakare();
+            final var userRoles = new HashMap<String, Role>();
+            userRoles.put("PRIVATLAKARE", new Role());
+            user.setRoles(userRoles);
 
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.COMPLETE);
 
-            assertEquals(1, resourceLinks.size());
+            assertEquals(0, resourceLinks.size());
             assertEquals(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, resourceLinks.get(0).getType());
         }
     }
