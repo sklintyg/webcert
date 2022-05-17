@@ -174,7 +174,6 @@ class ResourceLinkListHelperImplTest {
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.COMPLETE);
 
             assertEquals(0, resourceLinks.size());
-            assertEquals(ResourceLinkTypeDTO.FORWARD_CERTIFICATE, resourceLinks.get(0).getType());
         }
     }
 
