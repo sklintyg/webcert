@@ -149,10 +149,10 @@ class ListDraftsConfigFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldSetShowAllAsDefaultIfNotDoctor() {
+        public void shouldSetUserAsDefaultIfNotDoctor() {
             when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(false);
             setupSavedBy();
-            assertTrue(filter.getValues().get(0).isDefaultValue());
+            assertTrue(filter.getValues().get(2).isDefaultValue());
         }
     }
 
