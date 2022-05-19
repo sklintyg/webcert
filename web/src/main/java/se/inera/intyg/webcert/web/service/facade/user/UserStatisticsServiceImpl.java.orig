@@ -61,6 +61,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     @Override
     public UserStatisticsDTO getUserStatistics() {
         final var user = webCertUserService.getUser();
+<<<<<<< HEAD
 
         if (!validateUser(user)) {
             return null;
@@ -72,9 +73,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
+        final var statistics = new UserStatisticsDTO();
+=======
         validateUser(user); //throw exception
         final var statistics = new UserStatisticsDTO();
         final var unitIds = getUnitIds(user);
+>>>>>>> a1cd5bf83 (INTYGFV-14642: Added statistics of questions and drafts for units)
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
         final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
@@ -91,29 +95,14 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                     getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
             );
         }
-=======
-        statistics.setNbrOfDraftsOnSelectedUnit(
-                getNumberOfDraftsOnSelectedUnit(user, draftsMap)
-        );
-        statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
-        );
-        statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
-        );
->>>>>>> 8c01d0012 (INTYGFV-14642: Separated statistics for unit and sub units)
 
         addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
 
         return statistics;
     }
 
-<<<<<<< HEAD
     private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String,
             Long> draftMap, Map<String, Long> questionMap) {
-=======
-    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap, Map<String, Long> questionMap) {
->>>>>>> 8c01d0012 (INTYGFV-14642: Separated statistics for unit and sub units)
         for (Vardgivare careProvider : careProviders) {
             for (Vardenhet unit : careProvider.getVardenheter()) {
                 final var subUnitIds = unit.getHsaIds();
@@ -124,12 +113,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         }
     }
 
-<<<<<<< HEAD
     private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String,
             Long> draftMap, Map<String, Long> questionMap) {
-=======
-    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
->>>>>>> 8c01d0012 (INTYGFV-14642: Separated statistics for unit and sub units)
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
         final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
         final var draftsOnUnit = getFromMap(unitId, draftMap);
@@ -137,17 +122,42 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
     }
 
-<<<<<<< HEAD
     private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String,
             Long> draftMap, Map<String, Long> questionMap) {
 =======
-    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
->>>>>>> 8c01d0012 (INTYGFV-14642: Separated statistics for unit and sub units)
+        statistics.setNbrOfDraftsOnSelectedUnit(
+                getNumberOfDraftsOnSelectedUnit(user, draftsMap)
+        );
+        statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
+                getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
+        );
+        statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
+        );
+
+        return addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+    }
+
+    private UserStatisticsDTO addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+        for (Vardgivare careProvider : careProviders) {
+            for(Vardenhet unit : careProvider.getVardenheter()) {
+                addUnitStatistics(statistics, unit.getHsaIds(), draftMap, questionMap);
+            }
+        }
+        return statistics;
+    }
+
+    private UserStatisticsDTO addUnitStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+>>>>>>> a1cd5bf83 (INTYGFV-14642: Added statistics of questions and drafts for units)
         for (String unitId : unitIds) {
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
             statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));
         }
+<<<<<<< HEAD
+=======
+        return statistics;
+>>>>>>> a1cd5bf83 (INTYGFV-14642: Added statistics of questions and drafts for units)
     }
 
     private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
@@ -161,7 +171,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return notSelectedUnitIds;
     }
 
+<<<<<<< HEAD
+    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user,
+                                                                 Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+=======
     private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user, Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+>>>>>>> a1cd5bf83 (INTYGFV-14642: Added statistics of questions and drafts for units)
         final var notSelectedUnitIds = getNotSelectedUnitIds(user, unitIds);
         return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
     }
