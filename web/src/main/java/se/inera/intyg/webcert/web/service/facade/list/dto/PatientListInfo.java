@@ -22,13 +22,13 @@ public class PatientListInfo {
     private String id;
     private boolean protectedPerson;
     private boolean deceased;
-    private boolean testIndicator;
+    private boolean testIndicated;
 
-    public PatientListInfo(String id, boolean protectedPerson, boolean deceased, boolean testIndicator) {
+    public PatientListInfo(String id, boolean protectedPerson, boolean deceased, boolean testIndicated) {
         this.id = id;
         this.protectedPerson = protectedPerson;
         this.deceased = deceased;
-        this.testIndicator = testIndicator;
+        this.testIndicated = testIndicated;
     }
 
     public boolean isProtectedPerson() {
@@ -47,12 +47,12 @@ public class PatientListInfo {
         this.deceased = deceased;
     }
 
-    public boolean isTestIndicator() {
-        return testIndicator;
+    public boolean isTestIndicated() {
+        return testIndicated;
     }
 
-    public void setTestIndicator(boolean testIndicator) {
-        this.testIndicator = testIndicator;
+    public void setTestIndicated(boolean testIndicated) {
+        this.testIndicated = testIndicated;
     }
 
     public String getId() {

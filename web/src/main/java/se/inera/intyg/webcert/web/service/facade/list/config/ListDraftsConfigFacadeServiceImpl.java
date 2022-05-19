@@ -36,6 +36,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
     private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
+    private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej signerade utkast.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
     private final WebCertUserService webCertUserService;
@@ -58,6 +59,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         config.setFilters(getListDraftsFilters());
         config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
+        config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);

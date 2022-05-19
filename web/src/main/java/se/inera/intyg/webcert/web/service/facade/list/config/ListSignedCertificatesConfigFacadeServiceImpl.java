@@ -35,6 +35,7 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
     private static final String TITLE = "Signerade intyg";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter signerade intyg.";
+    private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för signerade intyg.";
     private static final String DESCRIPTION = "Nedan visas dina signerade intyg för den enhet du är inloggad på.";
     private static final String EMPTY_LIST_TEXT =
             "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
@@ -57,6 +58,7 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
         config.setFilters(getListDraftsFilters());
         config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
+        config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);
