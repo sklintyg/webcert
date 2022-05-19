@@ -32,10 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
-import se.inera.intyg.webcert.web.service.facade.UserService;
-import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
@@ -57,7 +56,7 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-                          UserStatisticsService userStatisticsService, WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
+        UserStatisticsService userStatisticsService, WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
@@ -83,13 +82,6 @@ public class UserController {
         LOG.debug("Getting user statistics");
         final var result = userStatisticsService.getUserStatistics();
         return Response.ok(result).build();
-    }
-    @GET
-    @Path("/careproviders")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response getCareProvidersForUser() {
-        return Response.ok(CareProviderForUserResponseDTO.create()).build();
     }
 
     @POST

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
-import se.inera.intyg.webcert.web.service.facade.UserService;
+import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
