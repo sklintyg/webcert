@@ -66,10 +66,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     }
 
     private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links) {
-        return links.stream()
+        final var list = links.stream()
                 .map(this::convertResourceLink)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
+        if(list.stream().noneMatch(link -> link.getType() == ResourceLinkTypeDTO.CREATE_CERTIFICATE)) {
+            list.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE, "Skapa intyg", "", false));
+        }
+
+        return list;
     }
 
     private ResourceLinkDTO convertResourceLink(ActionLink link) {

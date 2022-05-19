@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -115,7 +114,7 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Test
     void shallConvertResourceLinks() throws Exception {
         final var module = createIntygModule();
-        doReturn(Arrays.asList(module))
+        doReturn(List.of(module))
             .when(intygModuleRegistry)
             .listAllModules();
 
@@ -129,6 +128,19 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         final var types = serviceUnderTest.get(PATIENT_ID);
         assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+        assertTrue(types.get(0).getLinks().get(0).isEnabled());
+    }
+
+    @Test
+    void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() throws Exception {
+        final var module = createIntygModule();
+        doReturn(List.of(module))
+                .when(intygModuleRegistry)
+                .listAllModules();
+
+        final var types = serviceUnderTest.get(PATIENT_ID);
+        assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+        assertFalse(types.get(0).getLinks().get(0).isEnabled());
     }
 
     @Nested
