@@ -72,7 +72,9 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
+        validateUser(user); //throw exception
         final var statistics = new UserStatisticsDTO();
+        final var unitIds = getUnitIds(user);
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
         final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
@@ -135,8 +137,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return notSelectedUnitIds;
     }
 
-    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user,
-                                                                 Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user, Map<String, Long> draftStats, Map<String, Long> questionsStats) {
         final var notSelectedUnitIds = getNotSelectedUnitIds(user, unitIds);
         return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
     }
