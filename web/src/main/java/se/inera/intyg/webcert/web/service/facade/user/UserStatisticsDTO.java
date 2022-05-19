@@ -18,13 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.user;
 
-import se.inera.intyg.common.support.facade.model.user.User;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserStatisticsDTO {
 
     private long nbrOfDraftsOnSelectedUnit;
+
+    private long nbrOfUnhandledQuestionsOnSelectedUnit;
+
+    private long totalDraftsAndUnhandledQuestionsOnOtherUnits;
+
+    private Map<String, UnitStatisticsDTO> unitStatistics;
 
     public UserStatisticsDTO(){}
 
@@ -34,5 +39,33 @@ public class UserStatisticsDTO {
 
     public void setNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
         this.nbrOfDraftsOnSelectedUnit = nbrOfDraftsOnSelectedUnit;
+    }
+
+    public long getNbrOfUnhandledQuestionsOnSelectedUnit() {
+        return nbrOfUnhandledQuestionsOnSelectedUnit;
+    }
+
+    public void setNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
+        this.nbrOfUnhandledQuestionsOnSelectedUnit = nbrOfUnhandledQuestionsOnSelectedUnit;
+    }
+
+    public long getTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
+        return totalDraftsAndUnhandledQuestionsOnOtherUnits;
+    }
+
+    public void setTotalDraftsAndUnhandledQuestionsOnOtherUnits(long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
+        this.totalDraftsAndUnhandledQuestionsOnOtherUnits = totalDraftsAndUnhandledQuestionsOnOtherUnits;
+    }
+
+    public Map<String, UnitStatisticsDTO> getUnitStatistics() {
+        return unitStatistics;
+    }
+
+    public void addUnitStatistics(String unitId, UnitStatisticsDTO statistics) {
+        if (unitStatistics == null) {
+            unitStatistics = new HashMap<>();
+        }
+
+        unitStatistics.put(unitId, statistics);
     }
 }
