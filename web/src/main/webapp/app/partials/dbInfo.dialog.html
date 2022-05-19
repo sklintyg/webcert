@@ -1,13 +1,12 @@
 <div class="db-info">
     <div id="{{dialogId}}" class="modal-header">
-        <button type="button" class="close" ng-click="$dismiss()"><i class="material-icons">close</i></button>
         <h3 ng-focus="model.focus" tabindex="-1">
             <span dynamic-label key="{{titleText}}"></span>
         </h3>
     </div>
     <wc-bottom-fadeout>
         <div class="modal-body">
-            <span dynamic-label>{{model.info}}</span><br><br>
+            <wc-alert-message alert-severity="warning" class="alert-dialog-warning">{{model.info}}</wc-alert-message>
             <span dynamic-label key="{{bodyText}}"></span>
             <br><br><br>
             <wc-checkbox-wrapper>
