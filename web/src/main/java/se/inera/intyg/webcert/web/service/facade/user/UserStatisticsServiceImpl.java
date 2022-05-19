@@ -66,6 +66,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
+<<<<<<< HEAD
         final var unitIds = getUnitIds(user);
 
         if (unitIds == null) {
@@ -74,7 +75,15 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
         validateUser(user); //throw exception
         final var statistics = new UserStatisticsDTO();
+=======
+>>>>>>> 9c468eaf8 (INTYGFV-14642: Added tests to statistics service)
         final var unitIds = getUnitIds(user);
+
+        if(unitIds == null) {
+            return null;
+        }
+
+        final var statistics = new UserStatisticsDTO();
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
         final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
