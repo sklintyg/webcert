@@ -61,9 +61,18 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     @Override
     public UserStatisticsDTO getUserStatistics() {
         final var user = webCertUserService.getUser();
-        validateUser(user); //throw exception
-        final var statistics = new UserStatisticsDTO();
+
+        if (!validateUser(user)) {
+            return null;
+        }
+
         final var unitIds = getUnitIds(user);
+
+        if(unitIds == null) {
+            return null;
+        }
+
+        final var statistics = new UserStatisticsDTO();
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
         final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
