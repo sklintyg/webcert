@@ -8,9 +8,8 @@
         <div class="modal-body">
             <wc-alert-message alert-severity="warning" class="alert-dialog-warning">{{model.info}}</wc-alert-message>
             <span dynamic-label key="{{bodyText}}"></span>
-            <br><br><br>
             <wc-checkbox-wrapper>
-                <input input type="checkbox" id="{{model.checkboxId}}" value="1" ng-click="model.checkboxCheck()" )><!-- onchange="checkboxCheck()" -->
+                <input input type="checkbox" id="{{model.checkboxId}}" value="1" ng-click="model.checkboxCheck()" )>
                 <label dynamic-label for="{{model.checkboxId}}" key="{{model.checkboxText}}"></label>
             </wc-checkbox-wrapper>
         </div>
