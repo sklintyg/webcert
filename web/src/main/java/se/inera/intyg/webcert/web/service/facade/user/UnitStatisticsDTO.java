@@ -19,27 +19,52 @@
 package se.inera.intyg.webcert.web.service.facade.user;
 
 public class UnitStatisticsDTO {
-    private long drafts;
-    private long questions;
+    private long draftsOnUnit;
+    private long questionsOnUnit;
+    private long draftsOnSubUnits;
+    private long questionsOnSubUnits;
 
-    public UnitStatisticsDTO(long drafts, long questions) {
-        this.drafts = drafts;
-        this.questions = questions;
+    public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit) {
+        this.draftsOnUnit = draftsOnUnit;
+        this.questionsOnUnit = questionsOnUnit;
     }
 
-    public long getDrafts() {
-        return drafts;
+    public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit, long draftsOnSubUnits, long questionsOnSubUnits) {
+        this.draftsOnUnit = draftsOnUnit;
+        this.questionsOnUnit = questionsOnUnit;
+        this.draftsOnSubUnits = draftsOnSubUnits;
+        this.questionsOnSubUnits = questionsOnSubUnits;
     }
 
-    public void setDrafts(long drafts) {
-        this.drafts = drafts;
+    public long getDraftsOnUnit() {
+        return draftsOnUnit;
     }
 
-    public long getQuestions() {
-        return questions;
+    public void setDraftsOnUnit(long draftsOnUnit) {
+        this.draftsOnUnit = draftsOnUnit;
     }
 
-    public void setQuestions(long questions) {
-        this.questions = questions;
+    public long getQuestionsOnUnit() {
+        return questionsOnUnit;
+    }
+
+    public void setQuestionsOnUnit(long questionsOnUnit) {
+        this.questionsOnUnit = questionsOnUnit;
+    }
+
+    public long getDraftsOnSubUnits() {
+        return draftsOnSubUnits;
+    }
+
+    public void setDraftsOnSubUnits(long draftsOnSubUnits) {
+        this.draftsOnSubUnits = draftsOnSubUnits;
+    }
+
+    public long getQuestionsOnSubUnits() {
+        return questionsOnSubUnits;
+    }
+
+    public void setQuestionsOnSubUnits(long questionsOnSubUnits) {
+        this.questionsOnSubUnits = questionsOnSubUnits;
     }
 }

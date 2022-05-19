@@ -78,25 +78,36 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
         );
 
-        return addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
-    }
+        addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
 
-    private UserStatisticsDTO addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap, Map<String, Long> questionMap) {
-        for (Vardgivare careProvider : careProviders) {
-            for(Vardenhet unit : careProvider.getVardenheter()) {
-                addUnitStatistics(statistics, unit.getHsaIds(), draftMap, questionMap);
-            }
-        }
         return statistics;
     }
 
-    private UserStatisticsDTO addUnitStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+        for (Vardgivare careProvider : careProviders) {
+            for (Vardenhet unit : careProvider.getVardenheter()) {
+                final var subUnitIds = unit.getHsaIds();
+                subUnitIds.remove(unit.getId());
+                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap);
+                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap);
+            }
+        }
+    }
+
+    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+        final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
+        final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
+        final var draftsOnUnit = getFromMap(unitId, draftMap);
+        final var questionsOnUnit = getFromMap(unitId, questionMap);
+        statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
+    }
+
+    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
         for (String unitId : unitIds) {
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
             statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));
         }
-        return statistics;
     }
 
     private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
