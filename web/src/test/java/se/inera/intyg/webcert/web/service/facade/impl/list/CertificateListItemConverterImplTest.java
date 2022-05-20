@@ -30,12 +30,14 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 import java.util.List;
@@ -43,7 +45,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateListItemConverterImplTest {
@@ -239,6 +241,119 @@ class CertificateListItemConverterImplTest {
 
             assertTrue(links.size() > 0);
             assertEquals(LINKS.get(0), links.get(0));
+        }
+
+        @Nested
+        class Statuses {
+
+            WebcertCertificateRelation certificateRelation;
+            Relations relations;
+            Relations.FrontendRelations frontendRelations;
+
+            @BeforeEach
+            void setup() {
+                relations = mock(Relations.class);
+                frontendRelations = mock(Relations.FrontendRelations.class);
+                certificateRelation = mock(WebcertCertificateRelation.class);
+
+                doReturn(frontendRelations)
+                        .when(relations)
+                        .getLatestChildRelations();
+            }
+
+            @Nested
+            class Complemented {
+
+                @Test
+                void shouldSetStatusComplementedWhenComplementedByDraftRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getComplementedByUtkast();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+                }
+
+                @Test
+                void shouldSetStatusComplementedWhenComplementedByCertificateRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getComplementedByIntyg();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+                }
+
+                @Test
+                void shouldNotSetStatusComplementedWhenComplementedByRevokedCertificateRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getComplementedByIntyg();
+
+                    doReturn(true)
+                            .when(certificateRelation)
+                            .isMakulerat();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertNotEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+                }
+            }
+
+            @Nested
+            class Replaced {
+
+                @Test
+                void shouldSetStatusReplacedWhenReplacedByDraftRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getReplacedByUtkast();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+                }
+
+                @Test
+                void shouldSetStatusReplacedWhenReplacedByCertificateRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getReplacedByIntyg();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+                }
+
+                @Test
+                void shouldNotSetStatusReplacedWhenReplacedByRevokedCertificateRelation() {
+                    final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                    entry.setRelations(relations);
+                    doReturn(certificateRelation)
+                            .when(frontendRelations)
+                            .getComplementedByIntyg();
+
+                    doReturn(true)
+                            .when(certificateRelation)
+                            .isMakulerat();
+
+                    final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                    assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+                }
+            }
         }
     }
 

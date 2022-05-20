@@ -25,7 +25,7 @@ public enum CertificateListItemStatus {
     INCOMPLETE("Utkast, uppgifter saknas"),
     SIGNED("Signerat"),
     REVOKED("Makulerat"),
-    RENEWED("Ersatt"),
+    REPLACED("Ersatt"),
     COMPLEMENTED("Kompletterat"),
     SENT("Skickat"),
     NOT_SENT("Ej skickat"),
