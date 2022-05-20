@@ -80,7 +80,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetOpenCertificateTooltip() {
         final var config = listDraftsConfigFacadeService.get();
-        assertTrue(config.getOpenCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
     }
 
     @Test
@@ -98,7 +98,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetSearchCertificateTooltip() {
         final var config = listDraftsConfigFacadeService.get();
-        assertTrue(config.getSearchCertificateTooltip().length() > 0);
+        assertTrue(config.getButtonTooltips().containsKey("SEARCH_BUTTON"));
     }
 
     @Nested
@@ -149,10 +149,10 @@ class ListDraftsConfigFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldSetShowAllAsDefaultIfNotDoctor() {
+        public void shouldSetUserAsDefaultIfNotDoctor() {
             when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(false);
             setupSavedBy();
-            assertTrue(filter.getValues().get(0).isDefaultValue());
+            assertTrue(filter.getValues().get(2).isDefaultValue());
         }
     }
 

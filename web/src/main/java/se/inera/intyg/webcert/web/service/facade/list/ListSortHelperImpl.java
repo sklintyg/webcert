@@ -44,6 +44,7 @@ public class ListSortHelperImpl implements ListSortHelper {
             case CERTIFICATE_TYPE_NAME:
             case STATUS:
             case SAVED_BY:
+            case SAVED_SIGNED_BY:
                 comparator = Comparator.comparing((item) -> item.valueAsString(orderBy));
                 break;
             case PATIENT_ID:
@@ -53,6 +54,7 @@ public class ListSortHelperImpl implements ListSortHelper {
                 comparator = Comparator.comparing((item) -> item.valueAsBoolean(orderBy));
                 break;
             case SAVED:
+            case SIGNED:
             default:
                 comparator = Comparator.comparing((item) -> item.valueAsDate(orderBy));
                 break;

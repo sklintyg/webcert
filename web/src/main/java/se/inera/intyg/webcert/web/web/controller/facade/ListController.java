@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.ListPreviousCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
@@ -39,14 +40,16 @@ public class ListController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final ListDraftsFacadeServiceImpl listDraftsFacadeService;
-
     private final ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
+    private final ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
 
     @Autowired
     public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService,
-                          ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService) {
+                          ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
+                          ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService) {
         this.listDraftsFacadeService = listDraftsFacadeService;
         this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
+        this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;
     }
 
     @Path("/draft")
@@ -64,6 +67,14 @@ public class ListController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getListOfSignedCertificates(ListRequestDTO request) {
         final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
+        return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
+    }
+
+    @POST
+    @Path("/previous")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getListOfPreviousCertificates(ListRequestDTO request) {
+        final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }
 }

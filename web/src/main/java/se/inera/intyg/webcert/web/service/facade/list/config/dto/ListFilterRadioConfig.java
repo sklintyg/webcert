@@ -16,14 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-public interface CertificateRelationsConverter {
+import java.util.List;
 
-    CertificateRelations convert(String certificateId);
+public class ListFilterRadioConfig extends ListFilterConfig {
+    private List<ListFilterConfigValue> values;
 
-    CertificateRelations convert(Relations relations);
+    public ListFilterRadioConfig(String id, String title, List<ListFilterConfigValue> values) {
+        super(ListFilterType.RADIO, id, title);
+        this.values = values;
+    }
+
+    public List<ListFilterConfigValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<ListFilterConfigValue> values) {
+        this.values = values;
+    }
 }

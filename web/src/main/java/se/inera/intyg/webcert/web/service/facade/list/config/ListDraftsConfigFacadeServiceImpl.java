@@ -21,10 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -39,12 +36,14 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
     private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
+    private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej signerade utkast.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
     private final WebCertUserService webCertUserService;
 
     @Autowired
-    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService) {
+    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
+                                             WebCertUserService webCertUserService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
         this.webCertUserService = webCertUserService;
     }
@@ -58,8 +57,9 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
         final var config = new ListConfig();
         config.setTitle(TITLE);
         config.setFilters(getListDraftsFilters());
-        config.setOpenCertificateTooltip(OPEN_CERTIFICATE_TOOLTIP);
-        config.setSearchCertificateTooltip(SEARCH_CERTIFICATE_TOOLTIP);
+        config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
+        config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
+        config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);
@@ -80,7 +80,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SAVED_BY),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
-                TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
+                TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
         };
     }
 
@@ -99,7 +99,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
     private ListFilterConfig getSavedByFilter() {
         final var savedByList = getStaffInfoFacadeService.get();
-        final var defaultValue = getStaffInfoFacadeService.isLoggedInUserDoctor() ? getStaffInfoFacadeService.getLoggedInStaffHsaId() : "";
+        final var defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
         return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
     }
 
