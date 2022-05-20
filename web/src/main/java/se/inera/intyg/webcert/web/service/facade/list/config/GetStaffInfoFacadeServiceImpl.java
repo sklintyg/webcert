@@ -73,6 +73,9 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
 
         final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+        if (staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()))) {
+            staff.add(new Lakare(user.getHsaId(), user.getNamn()));
+        }
         return convertStaffList(staff);
     }
 
