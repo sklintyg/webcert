@@ -71,7 +71,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        if(list.stream().noneMatch(link -> link.getType() == ResourceLinkTypeDTO.CREATE_CERTIFICATE)) {
+        if (list.stream().noneMatch(link -> link.getType() == ResourceLinkTypeDTO.CREATE_CERTIFICATE)) {
             list.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE, "Skapa intyg", "", false));
         }
 
