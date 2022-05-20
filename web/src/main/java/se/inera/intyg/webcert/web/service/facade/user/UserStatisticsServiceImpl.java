@@ -89,6 +89,9 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e2b984e7f (INTYGFV-14642: Added null check for if user has chosen unit)
         if (user.getValdVardenhet() != null) {
             statistics.setNbrOfDraftsOnSelectedUnit(
                     getNumberOfDraftsOnSelectedUnit(user, draftsMap)
@@ -100,6 +103,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                     getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
             );
         }
+<<<<<<< HEAD
 =======
         statistics.setNbrOfDraftsOnSelectedUnit(
                 getNumberOfDraftsOnSelectedUnit(user, draftsMap)
@@ -111,6 +115,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
         );
 >>>>>>> 8c01d0012 (INTYGFV-14642: Separated statistics for unit and sub units)
+=======
+>>>>>>> e2b984e7f (INTYGFV-14642: Added null check for if user has chosen unit)
 
         addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
 
