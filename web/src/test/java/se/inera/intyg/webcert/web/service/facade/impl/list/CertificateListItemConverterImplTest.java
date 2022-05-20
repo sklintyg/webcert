@@ -125,7 +125,7 @@ class CertificateListItemConverterImplTest {
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
             final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            assertTrue(patientListInfo.isTestIndicator());
+            assertTrue(patientListInfo.isTestIndicated());
         }
 
         @Test
@@ -152,7 +152,7 @@ class CertificateListItemConverterImplTest {
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
             final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            assertFalse(patientListInfo.isTestIndicator());
+            assertFalse(patientListInfo.isTestIndicated());
         }
 
         @Test
@@ -309,7 +309,7 @@ class CertificateListItemConverterImplTest {
             final var result = certificateListItemConverter.convert(entry);
             final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            assertTrue(patientListInfo.isTestIndicator());
+            assertTrue(patientListInfo.isTestIndicated());
         }
 
         @Test
@@ -352,7 +352,7 @@ class CertificateListItemConverterImplTest {
             final var result = certificateListItemConverter.convert(entry);
             final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            assertFalse(patientListInfo.isTestIndicator());
+            assertFalse(patientListInfo.isTestIndicated());
         }
 
         @Test

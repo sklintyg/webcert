@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class ListFilterConfigFactory {
     private static final String SIGNED_DESCRIPTION =
-            "Av prestanda skäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.";
+            "Av prestandaskäl är det är ej möjligt att välja datum längre än 3 månader bakåt i tiden.";
 
     public static ListFilterPersonIdConfig defaultPersonId() {
         return new ListFilterPersonIdConfig("PATIENT_ID", "Patient", "åååå-mm-dd");
