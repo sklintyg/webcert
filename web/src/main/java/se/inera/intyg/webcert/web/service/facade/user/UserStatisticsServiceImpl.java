@@ -77,15 +77,17 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
 
-        statistics.setNbrOfDraftsOnSelectedUnit(
-                getNumberOfDraftsOnSelectedUnit(user, draftsMap)
-        );
-        statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
-        );
-        statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
-        );
+        if (user.getValdVardenhet() != null) {
+            statistics.setNbrOfDraftsOnSelectedUnit(
+                    getNumberOfDraftsOnSelectedUnit(user, draftsMap)
+            );
+            statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
+                    getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
+            );
+            statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+                    getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
+            );
+        }
 
         addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
 
