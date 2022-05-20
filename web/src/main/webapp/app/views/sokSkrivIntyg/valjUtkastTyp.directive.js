@@ -125,7 +125,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                   button2click: function(modalInstance) {
                     modalInstance.close();
                   },
-                  button1id: "button1id",
+                  button1id: 'button1id',
                   button1text: 'db.label.button1text',
                   button2text: 'common.cancel',
                   autoClose: false
