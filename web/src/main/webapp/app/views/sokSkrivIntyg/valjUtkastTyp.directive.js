@@ -108,14 +108,9 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                         {fornamn: PatientModel.fornamn,
                           efternamn: PatientModel.efternamn,
                           personnummer: PatientModel.personnummer}),
-                    checkboxCheck: function() {
-                      if(document.getElementById('checkboxId').checked){
-                        //Set the disabled property to FALSE and enable the button.
-                        document.getElementById('button1id').disabled = false;
-                      } else{
-                        //Otherwise, disable the submit button.
-                        document.getElementById('button1id').disabled = true;
-                      }
+                    toggleProceed: function() {
+                      document.getElementById('button1id').disabled =
+                          !document.getElementById('checkboxId').checked;
                     },
                     checkboxId: 'checkboxId',
                     checkboxText: 'db.label.checkbox.text'
