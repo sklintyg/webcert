@@ -28,4 +28,5 @@ public enum CertificateListItemValueType {
     RENEW_BUTTON,
     SEARCH_BUTTON,
     RESET_BUTTON,
+    FORWARD_BUTTON,
 }

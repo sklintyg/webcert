@@ -92,7 +92,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetTableHeadings() {
         final var config = listDraftsConfigFacadeService.get();
-        assertEquals(7, config.getTableHeadings().length);
+        assertEquals(8, config.getTableHeadings().length);
     }
 
     @Test

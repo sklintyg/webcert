@@ -65,7 +65,8 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
                 listIntygEntry.getUpdatedSignedBy()
         );
-        listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
+        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
+        listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(listIntygEntry));
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
         listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus)
         );
