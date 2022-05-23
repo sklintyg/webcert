@@ -24,5 +24,8 @@ public enum CertificateListItemValueType {
     PATIENT_INFO,
     FORWARD,
     HIDDEN,
-    OPEN_BUTTON
+    OPEN_BUTTON,
+    RENEW_BUTTON,
+    SEARCH_BUTTON,
+    RESET_BUTTON,
 }

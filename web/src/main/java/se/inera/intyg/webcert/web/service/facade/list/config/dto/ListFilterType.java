@@ -28,4 +28,5 @@ public enum ListFilterType {
     BOOLEAN,
     ORDER,
     PAGESIZE,
+    RADIO,
 }

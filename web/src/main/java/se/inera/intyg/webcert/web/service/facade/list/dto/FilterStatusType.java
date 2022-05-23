@@ -16,14 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+public enum FilterStatusType {
+    CURRENT_CERTIFICATES("Aktuella intyg"),
+    MODIFIED_CERTIFICATES("Ersatta, makulerade, låsta och kompletterade intyg"),
+    ALL_CERTIFICATES("Alla intyg");
 
-public interface CertificateRelationsConverter {
+    private final String name;
 
-    CertificateRelations convert(String certificateId);
+    FilterStatusType(String name) {
+        this.name = name;
+    }
 
-    CertificateRelations convert(Relations relations);
+    public String getName() {
+        return name;
+    }
 }

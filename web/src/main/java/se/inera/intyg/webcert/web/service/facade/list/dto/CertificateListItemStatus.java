@@ -16,14 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+public enum CertificateListItemStatus {
+    SHOW_ALL("Visa alla"),
+    COMPLETE("Utkast, kan signeras"),
+    LOCKED("Utkast, låst"),
+    INCOMPLETE("Utkast, uppgifter saknas"),
+    SIGNED("Signerat"),
+    REVOKED("Makulerat"),
+    RENEWED("Ersatt"),
+    COMPLEMENTED("Kompletterat"),
+    SENT("Skickat"),
+    NOT_SENT("Ej skickat"),
+    UNKOWN("Okänd status");
 
-public interface CertificateRelationsConverter {
+    private final String name;
 
-    CertificateRelations convert(String certificateId);
+    CertificateListItemStatus(String name) {
+        this.name = name;
+    }
 
-    CertificateRelations convert(Relations relations);
+    public String getName() {
+        return name;
+    }
 }

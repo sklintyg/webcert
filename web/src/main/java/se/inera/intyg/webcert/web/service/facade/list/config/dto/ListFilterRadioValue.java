@@ -16,22 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-public enum DraftStatus implements CertificateStatus {
-    SHOW_ALL("Visa alla"),
-    COMPLETE("Utkast, kan signeras"),
-    LOCKED("Utkast, låst"),
-    INCOMPLETE("Utkast, uppgifter saknas");
+package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-    private final String name;
-
-    DraftStatus(String name) {
-        this.name = name;
-    }
+public class ListFilterRadioValue implements ListFilterValue {
+    private String value;
 
     @Override
-    public String getName() {
-        return name;
+    public ListFilterType getType() {
+        return ListFilterType.RADIO;
+    }
+
+    public ListFilterRadioValue() {
+
+    }
+
+    public ListFilterRadioValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

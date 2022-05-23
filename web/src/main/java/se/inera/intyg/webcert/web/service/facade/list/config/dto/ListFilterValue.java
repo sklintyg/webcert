@@ -30,7 +30,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ListFilterPersonIdValue.class, name = "PERSON_ID"),
         @JsonSubTypes.Type(value = ListFilterDateRangeValue.class, name = "DATE_RANGE"),
         @JsonSubTypes.Type(value = ListFilterSelectValue.class, name = "SELECT"),
-        @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"), //CHANGE THIS TYPE!!!!!!!
+        @JsonSubTypes.Type(value = ListFilterRadioValue.class, name = "RADIO"),
+        @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"),
         @JsonSubTypes.Type(value = ListFilterBooleanValue.class, name = "BOOLEAN"),
         @JsonSubTypes.Type(value = ListFilterNumberValue.class, name = "NUMBER")
 

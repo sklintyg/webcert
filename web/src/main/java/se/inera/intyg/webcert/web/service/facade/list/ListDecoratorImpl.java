@@ -30,11 +30,17 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 import javax.xml.ws.WebServiceException;
 import java.util.*;
@@ -47,14 +53,19 @@ public class ListDecoratorImpl implements ListDecorator {
     private final PatientDetailsResolver patientDetailsResolver;
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
     private final WebCertUserService webCertUserService;
+    private final ResourceLinkHelper resourceLinkHelper;
+    private final DraftAccessServiceHelper draftAccessServiceHelper;
 
 
     public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, HsatkEmployeeService hsaEmployeeService,
-                             PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
+                             PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService,
+                             ResourceLinkHelper resourceLinkHelper, DraftAccessServiceHelper draftAccessServiceHelper) {
         this.intygDraftDecorator = intygDraftDecorator;
         this.hsaEmployeeService = hsaEmployeeService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.webCertUserService = webCertUserService;
+        this.resourceLinkHelper = resourceLinkHelper;
+        this.draftAccessServiceHelper = draftAccessServiceHelper;
     }
 
     @Override
@@ -72,6 +83,30 @@ public class ListDecoratorImpl implements ListDecorator {
                 entry.setUpdatedSignedBy(hsaIdNameMap.get(entry.getUpdatedSignedById()));
             }
         });
+    }
+
+    @Override
+    public void decorateWithResourceLinks(List<ListIntygEntry> list) {
+        list.forEach(entry -> {
+            resourceLinkHelper.decorateIntygWithValidActionLinks(entry, entry.getPatientId());
+            decorateWithForwardLink(entry);
+        });
+    }
+
+    private void decorateWithForwardLink(ListIntygEntry entry) {
+        final var isForwardingAllowed = draftAccessServiceHelper.isAllowedToForwardUtkast(
+                AccessEvaluationParameters.create(
+                        entry.getIntygType(),
+                        entry.getIntygTypeVersion(),
+                        UtkastUtil.getCareUnit(entry.getVardgivarId(), entry.getVardenhetId()),
+                        entry.getPatientId(),
+                        entry.isTestIntyg()
+                )
+        );
+
+        if (isForwardingAllowed) {
+            entry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));
+        }
     }
 
     private Map<String, String> getNamesByHsaIds(Collection<String> hsaIds) {

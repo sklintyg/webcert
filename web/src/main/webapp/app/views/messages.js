@@ -162,7 +162,14 @@ angular.module('webcert').constant('webcert.messages', {
     //DOI Dialog
     'doi.label.titleText': 'Dödsbevis saknas',
     'doi.label.bodyText': 'Är du säker att du vill skapa ett dödsorsaksintyg? Det finns inget dödsbevis i nuläget inom vårdgivaren.<br><br> Dödsorsaksintyget bör alltid skapas efter dödsbeviset.',
-    'doi.label.button1text': 'Skapa dödsorsaksintyg'
+    'doi.label.button1text': 'Skapa dödsorsaksintyg',
+    //DB Dialog
+    'db.label.titleText': 'Kontrollera namn och personnummer',
+    'db.label.info': 'Du är på väg att utfärda ett dödsbevis för ${fornamn} ${efternamn} ${personnummer}.',
+    'db.label.bodyText': 'När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.<br>Ett dödsbevis utfärdat på en person får stora konsekvenser för den enskilda personen.<br>Kontrollera därför en extra gång att personuppgifterna stämmer.',
+    'db.draft.label.bodyText': 'När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.<br>Ett dödsbevis utfärdat på en person får stora konsekvenser för den enskilda personen.<br>Kontrollera därför en extra gång att personuppgifterna stämmer.<br><br><b>Obs! Om fel personuppgifter visas ovan, välj radera.</b>',
+    'db.label.button1text': 'Gå vidare',
+    'db.label.checkbox.text': 'Jag har kontrollerat att uppgifterna stämmer.'
   },
   'en': {
     'webcert.header': 'Webcert Application (en)'
