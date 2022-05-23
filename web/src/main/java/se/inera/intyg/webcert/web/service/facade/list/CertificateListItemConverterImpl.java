@@ -29,6 +29,10 @@ import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsSe
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
+
+import java.util.List;
 
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
@@ -57,6 +61,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         final var listItem = new CertificateListItem();
         final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
+        final var convertedLinks = resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus);
 
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
         listItem.addValue(ListColumnType.STATUS, convertStatus(certificateListItemStatus));
@@ -65,10 +70,11 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
                 listIntygEntry.getUpdatedSignedBy()
         );
-        listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
-        listItem.addValue(ListColumnType.LINKS, resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus)
-        );
+        listItem.addValue(ListColumnType.LINKS, convertedLinks);
+        if (isAllowedToForward(convertedLinks)) {
+            listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
+        }
         return listItem;
     }
 
@@ -130,6 +136,10 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
                 certificateListEntry.isDeceased(),
                 certificateListEntry.isTestIndicator()
         );
+    }
+
+    private boolean isAllowedToForward(List<ResourceLinkDTO> links) {
+        return links.stream().anyMatch((link) -> link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
     }
 
     private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {
