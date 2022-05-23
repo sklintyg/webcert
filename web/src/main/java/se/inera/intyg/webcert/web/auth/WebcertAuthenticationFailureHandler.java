@@ -52,8 +52,8 @@ public class WebcertAuthenticationFailureHandler extends ExceptionMappingAuthent
         PRIVATE_PRACTITIONER_AUTH, PrivatePractitionerAuthorizationException.class.getName()
     );
 
-    public static final String WC_IDENTIFIER = "wc";
-    public static final String WC2_IDENTIFIER = "wc2";
+    private static final String WC_IDENTIFIER = "wc";
+    private static final String WC2_IDENTIFIER = "wc2";
     private static final String WC_DEFAULT_FAILURE_URL = "/error.jsp?reason=login.failed";
     private static final String WC2_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
 
