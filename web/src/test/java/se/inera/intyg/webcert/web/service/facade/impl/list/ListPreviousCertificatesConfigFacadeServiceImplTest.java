@@ -142,7 +142,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
         @Test
         public void shouldSetDefaultOrder() {
-            assertEquals(ListColumnType.SAVED_SIGNED_BY, filter.getDefaultValue());
+            assertEquals(ListColumnType.SAVED, filter.getDefaultValue());
         }
     }
 
