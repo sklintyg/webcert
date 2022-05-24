@@ -158,6 +158,17 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
+        void shallNotIncludeSignAndSendCertificateForTestIndicatedPatient() {
+            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, Af00213EntryPoint.MODULE_ID))
+                    .thenReturn(true);
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            certificate.getMetadata().setPatient(Patient.builder().testIndicated(true).build());
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertFalse(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
+        }
+
+        @Test
         void shallIncludeForwardCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
