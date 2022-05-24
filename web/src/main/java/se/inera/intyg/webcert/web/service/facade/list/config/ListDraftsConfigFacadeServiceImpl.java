@@ -80,6 +80,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SAVED_BY),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
+                TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
                 TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
         };
     }

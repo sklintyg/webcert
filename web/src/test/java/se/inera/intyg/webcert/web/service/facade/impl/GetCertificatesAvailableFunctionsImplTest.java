@@ -829,7 +829,7 @@ class GetCertificatesAvailableFunctionsImplTest {
     class QuestionsForRevoked {
 
         @Test
-        void shallIncludeQuestionsWhenRevokedCertificate() {
+        void shallIncludeQuestionsWhenRevokedAndSentCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
             certificate.getMetadata().setRelations(
                 CertificateRelations.builder()
@@ -838,6 +838,7 @@ class GetCertificatesAvailableFunctionsImplTest {
                         .build())
                     .build()
             );
+            certificate.getMetadata().setSent(true);
 
             doReturn(true)
                 .when(authoritiesHelper)
@@ -846,6 +847,26 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
 
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS);
+        }
+
+        @Test
+        void shallIncludeQuestionsNotAvailableWhenRevokedAndNotSentCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            certificate.getMetadata().setRelations(
+                    CertificateRelations.builder()
+                            .parent(CertificateRelation.builder()
+                                    .type(CertificateRelationType.COMPLEMENTED)
+                                    .build())
+                            .build()
+            );
+
+            doReturn(true)
+                    .when(authoritiesHelper)
+                    .isFeatureActive(anyString(), eq(LisjpEntryPoint.MODULE_ID));
+
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
         }
     }
 

@@ -33,7 +33,7 @@ import java.util.List;
 public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfigFacadeService {
 
     private static final String TITLE = "Signerade intyg";
-    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget";
+    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter signerade intyg.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för signerade intyg.";
     private static final String DESCRIPTION = "Nedan visas dina signerade intyg för den enhet du är inloggad på.";
