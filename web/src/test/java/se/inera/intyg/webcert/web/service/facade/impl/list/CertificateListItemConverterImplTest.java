@@ -30,6 +30,7 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateForwardFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
@@ -37,6 +38,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 import java.util.List;
 
@@ -63,15 +65,7 @@ class CertificateListItemConverterImplTest {
     class ListDrafts {
         @BeforeEach
         public void setup() {
-            final var unit = new Vardenhet();
-            final var careProvider = new Vardgivare();
-
-            unit.setNamn(UNIT_NAME);
-            careProvider.setNamn(CARE_PROVIDER_NAME);
-
             when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
-            when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
-            when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
         }
 
         private final ListType LIST_TYPE = ListType.DRAFTS;
@@ -180,6 +174,61 @@ class CertificateListItemConverterImplTest {
         }
 
         @Test
+        public void shouldSetSaved() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+
+            assertEquals(listIntygEntry.getLastUpdatedSigned(), result.getValue(ListColumnType.SAVED));
+        }
+
+        @Test
+        public void shouldSetSavedBy() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+
+            assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
+        }
+
+        @Test
+        public void shouldSetLinks() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+
+            assertTrue(links.size() > 0);
+            assertEquals(LINKS.get(0), links.get(0));
+        }
+
+        @Test
+        public void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwarded = result.getValue(ListColumnType.FORWARDED);
+
+            assertNull(forwarded);
+        }
+    }
+
+
+    @Nested
+    class Forwarded {
+        private final ListType LIST_TYPE = ListType.DRAFTS;
+        final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(), CertificateForwardFunction.createResourceLink());
+
+        @BeforeEach
+        public void setup() {
+            final var unit = new Vardenhet();
+            final var careProvider = new Vardgivare();
+
+            unit.setNamn(UNIT_NAME);
+            careProvider.setNamn(CARE_PROVIDER_NAME);
+
+            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS_WITH_FORWARDED);
+            when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
+            when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
+        }
+
+        @Test
         public void shouldSetIsForwarded() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -213,32 +262,6 @@ class CertificateListItemConverterImplTest {
             final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
 
             assertFalse(forwardedListInfo.isForwarded());
-        }
-
-        @Test
-        public void shouldSetSaved() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getLastUpdatedSigned(), result.getValue(ListColumnType.SAVED));
-        }
-
-        @Test
-        public void shouldSetSavedBy() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
-        }
-
-        @Test
-        public void shouldSetLinks() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
-
-            assertTrue(links.size() > 0);
-            assertEquals(LINKS.get(0), links.get(0));
         }
     }
 
