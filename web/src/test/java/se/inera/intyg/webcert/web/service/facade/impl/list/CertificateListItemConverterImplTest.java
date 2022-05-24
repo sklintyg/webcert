@@ -265,22 +265,6 @@ class CertificateListItemConverterImplTest {
 
             assertFalse(forwardedListInfo.isForwarded());
         }
-
-        @Test
-        public void shouldSetSaved() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getLastUpdatedSigned(), result.getValue(ListColumnType.SAVED));
-        }
-
-        @Test
-        public void shouldSetSavedBy() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
-        }
     }
 
     @Nested
