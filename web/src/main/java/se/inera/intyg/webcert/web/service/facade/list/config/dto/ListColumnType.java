@@ -27,6 +27,7 @@ public enum ListColumnType {
     CERTIFICATE_ID("", ""),
     OPEN_CERTIFICATE("", ""),
     RENEW_CERTIFICATE("", ""),
+    FORWARD_CERTIFICATE("", ""),
     CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
     STATUS("Status", "Visar intygets status."),
     FORWARDED("Vidarebefordrad", ""),

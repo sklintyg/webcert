@@ -67,7 +67,7 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
     private List<ListFilterConfig> getFilters() {
         final var filters = new ArrayList<ListFilterConfig>();
         filters.add(ListFilterConfigFactory.certificateStatusRadio());
-        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED_SIGNED_BY));
+        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
         filters.add(ListFilterConfigFactory.ascending());
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;

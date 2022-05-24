@@ -26,9 +26,11 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -59,7 +61,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
-        final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus());
+        final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus(), listIntygEntry.getRelations());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
         final var convertedLinks = resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus);
 
@@ -73,8 +75,9 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
         listItem.addValue(ListColumnType.LINKS, convertedLinks);
         if (isAllowedToForward(convertedLinks)) {
-            listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
+            listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(listIntygEntry));
         }
+        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
         return listItem;
     }
 
@@ -95,25 +98,51 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         return status != null ? status.getName() : "Okänd status";
     }
 
-    private CertificateListItemStatus getCertificateListItemStatus(String status) {
+    private CertificateListItemStatus getCertificateListItemStatus(String status, Relations relations) {
         if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
             return CertificateListItemStatus.COMPLETE;
         } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
             return CertificateListItemStatus.INCOMPLETE;
         } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
             return CertificateListItemStatus.LOCKED;
-        } else if (status.equals("RENEWED")) {
-            return CertificateListItemStatus.RENEWED;
         } else if (status.equals("COMPLEMENTED")) {
             return CertificateListItemStatus.COMPLEMENTED;
         } else if (status.equals("CANCELLED")) {
             return CertificateListItemStatus.REVOKED;
+        } else if (isComplemented(relations)) {
+            return CertificateListItemStatus.COMPLEMENTED;
         } else if (status.equals("SENT")) {
             return CertificateListItemStatus.SENT;
+        } else if (isReplaced(relations)) {
+            return CertificateListItemStatus.REPLACED;
         } else if (status.equals("SIGNED") || status.equals("RECEIVED")) {
             return CertificateListItemStatus.SIGNED;
         }
         return null;
+    }
+
+    private boolean checkActiveRelation(WebcertCertificateRelation relationFromCertificate, WebcertCertificateRelation relationFromDraft) {
+        return  (relationFromCertificate != null && !relationFromCertificate.isMakulerat()) || relationFromDraft != null;
+    }
+
+    private boolean isReplaced(Relations relations) {
+        if (relations == null) {
+            return false;
+        }
+
+        final var replacedByCertificate = relations.getLatestChildRelations().getReplacedByIntyg();
+        final var replacedByDraft = relations.getLatestChildRelations().getReplacedByUtkast();
+        return checkActiveRelation(replacedByCertificate, replacedByDraft);
+    }
+
+    private boolean isComplemented(Relations relations) {
+        if (relations == null) {
+            return false;
+        }
+
+        final var complementedByCertificate = relations.getLatestChildRelations().getComplementedByIntyg();
+        final var complementedByDraft = relations.getLatestChildRelations().getComplementedByUtkast();
+        return checkActiveRelation(complementedByCertificate, complementedByDraft);
     }
 
     private CertificateListItemStatus getCertificateListItemStatus(boolean isSent) {

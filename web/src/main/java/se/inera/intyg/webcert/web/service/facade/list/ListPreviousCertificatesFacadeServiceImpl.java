@@ -67,8 +67,8 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
                     CertificateListItemStatus.SIGNED.getName(), CertificateListItemStatus.SENT.getName());
 
     private static final List<String> MODIFIED_CERTIFICATES =
-                    Arrays.asList(CertificateListItemStatus.LOCKED.getName(), CertificateListItemStatus.RENEWED.getName(),
-                    CertificateListItemStatus.REVOKED.getName(), CertificateListItemStatus.COMPLEMENTED.getName());
+                    Arrays.asList(CertificateListItemStatus.LOCKED.getName(), CertificateListItemStatus.REVOKED.getName(),
+                            CertificateListItemStatus.REPLACED.getName(), CertificateListItemStatus.COMPLEMENTED.getName());
 
     private final WebCertUserService webCertUserService;
     private final LogService logService;
