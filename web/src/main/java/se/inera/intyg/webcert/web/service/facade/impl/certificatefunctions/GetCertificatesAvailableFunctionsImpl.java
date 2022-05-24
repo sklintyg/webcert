@@ -465,8 +465,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isSignedAndSendDirectly(Certificate certificate) {
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())
-            || isComplementingCertificate(certificate);
+        return (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())
+            || isComplementingCertificate(certificate)) && !certificate.getMetadata().getPatient().isTestIndicated();
     }
 
     private boolean isComplementingCertificate(Certificate certificate) {
