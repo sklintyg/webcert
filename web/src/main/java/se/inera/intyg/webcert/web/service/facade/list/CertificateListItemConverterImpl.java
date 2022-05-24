@@ -112,7 +112,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
             return CertificateListItemStatus.COMPLEMENTED;
         } else if (status.equals("SENT")) {
             return CertificateListItemStatus.SENT;
-        } else if(isReplaced(relations)) {
+        } else if (isReplaced(relations)) {
             return CertificateListItemStatus.REPLACED;
         } else if (status.equals("SIGNED") || status.equals("RECEIVED")) {
             return CertificateListItemStatus.SIGNED;
