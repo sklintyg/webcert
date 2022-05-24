@@ -68,7 +68,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
         final var unitIds = getUnitIds(user);
 
-        if(unitIds == null) {
+        if (unitIds == null) {
             return null;
         }
 
@@ -94,7 +94,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return statistics;
     }
 
-    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String,
+            Long> draftMap, Map<String, Long> questionMap) {
         for (Vardgivare careProvider : careProviders) {
             for (Vardenhet unit : careProvider.getVardenheter()) {
                 final var subUnitIds = unit.getHsaIds();
@@ -105,7 +106,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         }
     }
 
-    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String,
+            Long> draftMap, Map<String, Long> questionMap) {
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
         final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
         final var draftsOnUnit = getFromMap(unitId, draftMap);
@@ -113,7 +115,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
     }
 
-    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap, Map<String, Long> questionMap) {
+    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String,
+            Long> draftMap, Map<String, Long> questionMap) {
         for (String unitId : unitIds) {
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
@@ -132,7 +135,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return notSelectedUnitIds;
     }
 
-    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user, Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user,
+                                                                 Map<String, Long> draftStats, Map<String, Long> questionsStats) {
         final var notSelectedUnitIds = getNotSelectedUnitIds(user, unitIds);
         return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
     }
