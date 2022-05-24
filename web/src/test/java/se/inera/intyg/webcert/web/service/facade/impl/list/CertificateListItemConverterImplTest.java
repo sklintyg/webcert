@@ -205,7 +205,7 @@ class CertificateListItemConverterImplTest {
         public void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwarded = result.getValue(ListColumnType.FORWARDED);
+            final var forwarded = result.getValue(ListColumnType.FORWARD_CERTIFICATE);
 
             assertNull(forwarded);
         }
@@ -234,16 +234,16 @@ class CertificateListItemConverterImplTest {
         public void shouldSetIsForwarded() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+            final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
 
-            assertTrue(forwardedListInfo.isForwarded());
+            assertTrue(forwarded);
         }
 
         @Test
         public void shouldSetUnitName() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
 
             assertEquals(UNIT_NAME, forwardedListInfo.getUnitName());
         }
@@ -252,7 +252,7 @@ class CertificateListItemConverterImplTest {
         public void shouldSetCareProviderName() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
 
             assertEquals(CARE_PROVIDER_NAME, forwardedListInfo.getCareProviderName());
         }
@@ -261,9 +261,9 @@ class CertificateListItemConverterImplTest {
         public void shouldSetIsNotForwarded() {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARDED);
+            final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
 
-            assertFalse(forwardedListInfo.isForwarded());
+            assertFalse(forwarded);
         }
     }
 

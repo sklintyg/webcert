@@ -75,8 +75,9 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
         listItem.addValue(ListColumnType.LINKS, convertedLinks);
         if (isAllowedToForward(convertedLinks)) {
-            listItem.addValue(ListColumnType.FORWARDED, getForwardedListInfo(listIntygEntry));
+            listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(listIntygEntry));
         }
+        listItem.addValue(ListColumnType.FORWARDED, listIntygEntry.isVidarebefordrad());
         return listItem;
     }
 
