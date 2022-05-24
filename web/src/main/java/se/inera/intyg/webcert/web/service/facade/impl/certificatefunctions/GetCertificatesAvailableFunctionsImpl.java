@@ -357,25 +357,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         if (isMessagingAvailable(certificate)) {
-            if (isSent(certificate)) {
-                resourceLinks.add(
-                    ResourceLinkDTO.create(
-                        ResourceLinkTypeDTO.QUESTIONS,
-                        QUESTIONS_NAME,
-                        QUESTIONS_DESCRIPTION,
-                        true
-                    )
-                );
-            } else {
-                resourceLinks.add(
-                    ResourceLinkDTO.create(
-                        ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
-                        QUESTIONS_NAME,
-                        QUESTIONS_DESCRIPTION,
-                        true
-                    )
-                );
-            }
+            resourceLinks.add(getQuestionsResourceLink(certificate));
         }
 
         if (isMessagingAvailable(certificate) && isSent(certificate)) {
@@ -390,6 +372,24 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         return resourceLinks;
+    }
+
+    private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
+        if (isSent(certificate)) {
+            return ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.QUESTIONS,
+                            QUESTIONS_NAME,
+                            QUESTIONS_DESCRIPTION,
+                            true
+                    );
+        } else {
+            return ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
+                            QUESTIONS_NAME,
+                            QUESTIONS_DESCRIPTION,
+                            true
+                    );
+        }
     }
 
     private boolean hasShortSickleavePeriod(Certificate certificate) {
@@ -447,14 +447,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
         if (isMessagingAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.QUESTIONS,
-                    QUESTIONS_NAME,
-                    QUESTIONS_DESCRIPTION,
-                    true
-                )
-            );
+            resourceLinks.add(getQuestionsResourceLink(certificate));
         }
 
         return resourceLinks;
