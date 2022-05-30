@@ -104,10 +104,9 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                   dialogId: 'db-info-dialog',
                   titleText: 'db.label.titleText',
                   model: {
-                    info: messageService.getProperty('db.label.info',
-                        {fornamn: PatientModel.fornamn,
-                          efternamn: PatientModel.efternamn,
-                          personnummer: PatientModel.personnummer}),
+                    fornamn: PatientModel.fornamn,
+                    efternamn: PatientModel.efternamn,
+                    personnummer: PatientModel.personnummer,
                     toggleProceed: function() {
                       document.getElementById('button1id').disabled =
                           !document.getElementById('checkboxId').checked;
