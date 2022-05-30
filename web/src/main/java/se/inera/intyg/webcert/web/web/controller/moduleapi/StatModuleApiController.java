@@ -33,6 +33,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
@@ -99,7 +100,7 @@ public class StatModuleApiController extends AbstractApiController {
         Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds, intygsTyper);
         Map<String, Long> arendeStatsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(allUnitIds, intygsTyper);
 
-        Map<String, Long> mergedMap = mergeArendeAndFragaSvarMaps(fragaSvarStatsMap, arendeStatsMap);
+        Map<String, Long> mergedMap = StatisticsHelper.mergeArendeAndFragaSvarMaps(fragaSvarStatsMap, arendeStatsMap);
         Map<String, Long> intygStatsMap = intygDraftService.getNbrOfUnsignedDraftsByCareUnits(allUnitIds);
 
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
@@ -121,21 +122,6 @@ public class StatModuleApiController extends AbstractApiController {
 
         populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, mergedMap);
         return Response.ok(statsResponse).build();
-    }
-
-    // Package-public for unit testing.
-    Map<String, Long> mergeArendeAndFragaSvarMaps(Map<String, Long> fragaSvarStatsMap, Map<String, Long> arendeStatsMap) {
-        Map<String, Long> mergedMap = new HashMap<>();
-
-        Set<String> uniqueEnhetsId = Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet()).flatMap(Collection::stream).distinct()
-            .collect(Collectors.toSet());
-
-        for (String enhetId : uniqueEnhetsId) {
-            Long sum = (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0)
-                + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
-            mergedMap.put(enhetId, sum);
-        }
-        return mergedMap;
     }
 
     private long calcSumFromSelectedUnits(List<String> unitIdsList, Map<String, Long> statsMap) {
