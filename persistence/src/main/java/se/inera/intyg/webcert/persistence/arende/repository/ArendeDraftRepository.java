@@ -19,7 +19,9 @@
 package se.inera.intyg.webcert.persistence.arende.repository;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public interface ArendeDraftRepository extends CrudRepository<ArendeDraft, Long> {
@@ -36,4 +38,13 @@ public interface ArendeDraftRepository extends CrudRepository<ArendeDraft, Long>
      * Finds single {@linkplain ArendeDraft} with intygdId and questionId.
      */
     ArendeDraft findByIntygIdAndQuestionId(String intygId, String questionId);
+
+    @Query("select ad from ArendeDraft ad where ad.intygId in :certificateIds")
+    List<ArendeDraft> getArendeDraftsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseArendeDraftsByCertificateIds(List<String> certificateIds) {
+        final var arendeDrafts = getArendeDraftsByCertificateIds(certificateIds);
+        deleteAll(arendeDrafts);
+        return arendeDrafts.size();
+    }
 }

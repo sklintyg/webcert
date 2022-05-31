@@ -18,9 +18,20 @@
  */
 package se.inera.intyg.webcert.persistence.event.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEventFailedLoad;
 
 public interface CertificateEventFailedLoadRepository extends JpaRepository<CertificateEventFailedLoad, Long> {
 
+    @Query("select ce from CertificateEventFailedLoad ce where ce.certificateId in :certificateIds")
+    List<CertificateEventFailedLoad> getEventsFailedByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseEventsFailedByCertificateIds(List<String> certificateIds) {
+        final var eventsFailed = getEventsFailedByCertificateIds(certificateIds);
+        deleteAll(eventsFailed);
+        return eventsFailed.size();
+    }
 }

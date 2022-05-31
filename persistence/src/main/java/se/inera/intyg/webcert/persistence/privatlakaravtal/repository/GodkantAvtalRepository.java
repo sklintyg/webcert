@@ -18,12 +18,24 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
 /**
  * Created by eriklupander on 2015-08-05.
  */
 public interface GodkantAvtalRepository extends JpaRepository<GodkantAvtal, Long>, GodkantAvtalRepositoryCustom {
+
+    @Query("select ga from GodkantAvtal ga where ga.hsaId = :careProviderId")
+    List<GodkantAvtal> getGodkantAvtalBycareProviderId(@Param("careProviderId") String careProviderId);
+
+    default int eraseGodkantAvtalByCareProviderId(String careProviderId) {
+        final var godkandaAvtal = getGodkantAvtalBycareProviderId(careProviderId);
+        deleteAll(godkandaAvtal);
+        return godkandaAvtal.size();
+    }
 
 }

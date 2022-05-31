@@ -60,4 +60,13 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
     @Modifying
     @Query("Update NotificationRedelivery n SET n.redeliveryTime=null WHERE n.eventId in (:ids)")
     void clearRedeliveryTime(@Param("ids") List<Long> ids);
+
+    @Query("select nr from NotificationRedelivery nr where nr.eventId in :eventIds")
+    List<NotificationRedelivery> getRedeliveriesByEventIds(@Param("eventIds") List<String> eventIds);
+
+    default int eraseRedeliveriesForEventIds(List<String> eventIds) {
+        final var redeliveries = getRedeliveriesByEventIds(eventIds);
+        deleteAll(redeliveries);
+        return redeliveries.size();
+    }
 }

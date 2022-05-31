@@ -18,9 +18,21 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRepositoryCustom {
+
+    @Query("select a from Arende a where a.intygsId in :certificateIds")
+    List<Arende> getArendenByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseArendenByCertificateIds(List<String> certificateIds) {
+        final var arenden = getArendenByCertificateIds(certificateIds);
+        deleteAll(arenden);
+        return arenden.size();
+    }
 
 }

@@ -20,7 +20,11 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastRepositoryCustom {
@@ -30,5 +34,17 @@ public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastR
     Utkast findByIntygsIdAndIntygsTyp(String intygsId, String intygsTyp);
 
     List<Utkast> findAllByPatientPersonnummerAndIntygsTypIn(String personnummer, Set<String> intygstyp);
+
+    @Query("select u.intygsId from Utkast u where u.vardgivarId = :careProviderId")
+    Page<String> findCertificateIdsForCareProvider(@Param("careProviderId") String careProviderId, Pageable pageable);
+
+    @Query("select u from Utkast u where u.intygsId in :certificateIds")
+    List<Utkast> getCertificatesByIntygsId(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseCertificatesByCertificateIds(List<String> certificateIds) {
+        final var utkastList = getCertificatesByIntygsId(certificateIds);
+        deleteAll(utkastList);
+        return utkastList.size();
+    }
 
 }

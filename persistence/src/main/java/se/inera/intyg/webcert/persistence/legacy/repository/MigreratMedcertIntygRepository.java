@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.repository;
 
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
 /**
@@ -27,5 +30,14 @@ import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
  * @author nikpet
  */
 public interface MigreratMedcertIntygRepository extends CrudRepository<MigreratMedcertIntyg, String> {
+
+    @Query("select mi from MigreratMedcertIntyg mi where mi.intygsId in :certificateIds")
+    List<MigreratMedcertIntyg> getMigreratMedcertIntygByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseMedcertCertificatesByCertificateIds(List<String> certificateIds) {
+        final var certificateList = getMigreratMedcertIntygByIntygsIds(certificateIds);
+        deleteAll(certificateList);
+        return certificateList.size();
+    }
 
 }

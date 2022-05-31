@@ -39,6 +39,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntygInfoApiController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.TestCertificateController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.TermsApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.EraseApiController"/>
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
