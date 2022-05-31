@@ -33,7 +33,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +54,6 @@ import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFaile
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.legacy.repository.MigreratMedcertIntygRepository;
@@ -98,9 +99,13 @@ class EraseServiceImplTest {
     private EraseServiceImpl eraseService;
 
     @Captor
-    ArgumentCaptor<List<String>> captor;
+    ArgumentCaptor<List<String>> certIdCaptor;
 
-    private final List<List<String>> ids = new ArrayList<>();
+    @Captor
+    ArgumentCaptor<List<Long>> eventIdCaptor;
+
+    private final List<List<String>> certIds = new ArrayList<>();
+    private final List<List<Long>> eventIds = new ArrayList<>();
 
     private static final int PAGE = 0;
     private static final int ERASE_SIZE = 4;
@@ -108,8 +113,47 @@ class EraseServiceImplTest {
     private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final Pageable ERASE_PAGEABLE = PageRequest.of(PAGE, ERASE_SIZE, Sort.by(Direction.ASC, "skapad", "intygsId"));
 
+    @AfterEach
+    public void cleanup() {
+        certIds.clear();
+        eventIds.clear();
+    }
+
     @Test
-    public void shouldEraseCertificatesInBatches() {
+    public void shouldCallForNewCertificateIdsForEachBatch() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        verify(utkastRepository, times(3)).findCertificateIdsForCareProvider(CARE_PROVIDER_ID, ERASE_PAGEABLE);
+    }
+
+    @Test
+    public void shouldEraseIntegratedUnitsOnceBasedOnCareProviderId() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        verify(integreradEnhetRepository, times(1)).eraseIntegratedUnitsByCareProviderId(CARE_PROVIDER_ID);
+    }
+
+    @Test
+    public void shouldEraseGodkantAvtalOnceBasedOnCareProviderId() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        verify(godkantAvtalRepository, times(1)).eraseGodkantAvtalByCareProviderId(CARE_PROVIDER_ID);
+    }
+
+    @Test
+    public void shouldEraseArendeDraftsInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -117,21 +161,126 @@ class EraseServiceImplTest {
         eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
 
         assertAll(
-            () -> verify(integreradEnhetRepository, times(1)).eraseIntegratedUnitsByCareProviderId(CARE_PROVIDER_ID),
-            () -> verify(godkantAvtalRepository, times(1)).eraseGodkantAvtalByCareProviderId(CARE_PROVIDER_ID),
-            () -> verify(utkastRepository, times(3)).findCertificateIdsForCareProvider(any(String.class), any(Pageable.class)),
-            () -> verify(arendeDraftRepository, times(3)).eraseArendeDraftsByCertificateIds(any()),
-            () -> verify(certificateEventFailedLoadRepository, times(3)).eraseEventsFailedByCertificateIds(any()),
-            () -> verify(certificateEventProcessedRepository, times(3)).eraseEventsProcessedByCertificateIds(any()),
-            () -> verify(pagaendeSigneringRepository, times(3)).erasePagaendeSigneringByCertificateIds(any()),
-            () -> verify(notificationRedeliveryRepository, times(3)).eraseRedeliveriesForEventIds(any()),
-            () -> verify(referensRepository, times(3)).eraseReferenserByCertificateIds(any()),
-            () -> verify(migreratMedcertIntygRepository, times(3)).eraseMedcertCertificatesByCertificateIds(any()),
-            () -> verify(fragaSvarRepository, times(3)).eraseFragaSvarByCertificateIds(any()),
-            () -> verify(arendeRepository, times(3)).eraseArendenByCertificateIds(any()),
-            () -> verify(handelseRepository, times(3)).eraseHandelseByCertificateIds(any()),
-            () -> verify(certificateEventRepository, times(3)).eraseCertificateEventsByCertificateIds(any()),
-            () -> verify(utkastRepository, times(3)).eraseCertificatesByCertificateIds(any())
+            () -> verify(arendeDraftRepository, times(3)).eraseArendeDraftsByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseCertificateEventFailedLoadInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(certificateEventFailedLoadRepository, times(3)).eraseEventsFailedByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseCertificateEventProcessedInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(certificateEventProcessedRepository, times(3)).eraseEventsProcessedByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldErasePagaendeSigneringInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(pagaendeSigneringRepository, times(3)).erasePagaendeSigneringByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseNotificationRedeliveryInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(handelseRepository, times(3)).findHandelseIdsByCertificateIds(certIdCaptor.capture()),
+            () -> verify(notificationRedeliveryRepository, times(3)).eraseRedeliveriesForEventIds(eventIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2)),
+            () -> assertIterableEquals(eventIdCaptor.getAllValues().get(0), eventIds.get(0)),
+            () -> assertIterableEquals(eventIdCaptor.getAllValues().get(1), eventIds.get(1)),
+            () -> assertIterableEquals(eventIdCaptor.getAllValues().get(2), eventIds.get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseReferensInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(referensRepository, times(3)).eraseReferenserByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseMigreratMedcertIntygInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(migreratMedcertIntygRepository, times(3)).eraseMedcertCertificatesByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseFragaSvarIntygInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(fragaSvarRepository, times(3)).eraseFragaSvarByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
         );
     }
 
@@ -144,15 +293,15 @@ class EraseServiceImplTest {
         eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
 
         assertAll(
-            () -> verify(arendeDraftRepository, times(3)).eraseArendeDraftsByCertificateIds(captor.capture()),
-            () -> assertIterableEquals(captor.getAllValues().get(0), ids.get(0)),
-            () -> assertIterableEquals(captor.getAllValues().get(1), ids.get(1)),
-            () -> assertIterableEquals(captor.getAllValues().get(2), ids.get(2))
+            () -> verify(arendeRepository, times(3)).eraseArendenByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
         );
     }
 
     @Test
-    public void shouldErasecertificateEventFailedLoadInBatches() {
+    public void shouldEraseHandelserInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -160,10 +309,42 @@ class EraseServiceImplTest {
         eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
 
         assertAll(
-            () -> verify(certificateEventFailedLoadRepository, times(3)).eraseEventsFailedByCertificateIds(captor.capture()),
-            () -> assertIterableEquals(captor.getAllValues().get(0), ids.get(0)),
-            () -> assertIterableEquals(captor.getAllValues().get(1), ids.get(1)),
-            () -> assertIterableEquals(captor.getAllValues().get(2), ids.get(2))
+            () -> verify(handelseRepository, times(3)).eraseHandelseByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseCertificateEventsInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(certificateEventRepository, times(3)).eraseCertificateEventsByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
+        );
+    }
+
+    @Test
+    public void shouldEraseUtkastInBatches() {
+        setupPageMock(true);
+        setupEraseByCareProviderIdMocks();
+        setupEraseByCertificateIdMocks(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+
+        assertAll(
+            () -> verify(utkastRepository, times(3)).eraseCertificatesByCertificateIds(certIdCaptor.capture()),
+            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
+            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
+            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
         );
     }
 
@@ -217,7 +398,8 @@ class EraseServiceImplTest {
         doReturn(2).when(arendeRepository).eraseArendenByCertificateIds(any());
         doReturn(2).when(handelseRepository).eraseHandelseByCertificateIds(any());
         doReturn(2).when(certificateEventRepository).eraseCertificateEventsByCertificateIds(any());
-        doReturn(List.of(new Handelse())).when(handelseRepository).findHandelseIdsByCertificateIds(any());
+
+        doReturn(getHandelseIds(), getHandelseIds(), getHandelseIds()).when(handelseRepository).findHandelseIdsByCertificateIds(any());
 
         if (!withException) {
             doReturn(4, 4, 2).when(utkastRepository).eraseCertificatesByCertificateIds(any());
@@ -250,7 +432,19 @@ class EraseServiceImplTest {
         for (int i = 0; i < count; i++) {
             certificateIds.add(UUID.randomUUID().toString());
         }
-        ids.add(certificateIds);
+        certIds.add(certificateIds);
         return certificateIds;
+    }
+
+    private List<Long> getHandelseIds() {
+        final var max = 12345;
+        final var min = 1234;
+        final var random = new Random();
+        final var ids = new ArrayList<Long>();
+        for (int i = 0; i < 3; i++) {
+            ids.add(min + (long)(random.nextDouble()*(max - min)));
+        }
+        eventIds.add(ids);
+        return ids;
     }
 }

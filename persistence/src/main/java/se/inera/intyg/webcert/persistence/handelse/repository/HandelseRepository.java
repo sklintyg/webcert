@@ -50,7 +50,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(String personId, String careProviderId, LocalDateTime to);
 
     @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
-    List<String> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+    List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
     @Query("select h from Handelse h where h.intygsId in :certificateIds")
     List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
