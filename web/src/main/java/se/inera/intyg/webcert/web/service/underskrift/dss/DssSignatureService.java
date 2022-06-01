@@ -379,7 +379,6 @@ public class DssSignatureService {
         conditionsType.setNotBefore(convertToXmlGregorianTime(beforeTime));
 
         var afterTime = dateTimeNow.plusMinutes(signRequestValidityInMinutes);
-
         conditionsType.setNotOnOrAfter(convertToXmlGregorianTime(afterTime));
 
         var audienceRestrictionType = objectFactorySaml.createAudienceRestrictionType();
