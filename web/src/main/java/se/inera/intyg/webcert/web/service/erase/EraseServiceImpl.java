@@ -168,7 +168,7 @@ public class EraseServiceImpl implements EraseService {
 
     private void eraseReferens(List<String> certificateIds, String careProviderId) {
         final var erasedReferensCount = referensRepository.eraseReferenserByCertificateIds(certificateIds);
-        LOG.debug("Erased {} PagaendeSignering for care provider {}.", erasedReferensCount, careProviderId);
+        LOG.debug("Erased {} Referens for care provider {}.", erasedReferensCount, careProviderId);
     }
 
     private void eraseMigratedMedcertCertificates(List<String> certificateIds, String careProviderId) {
