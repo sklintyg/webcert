@@ -177,7 +177,7 @@ public class DssSignatureServiceTest {
             signMessageTemplate);
         ReflectionTestUtils.setField(dssSignatureService, "approvedLoaList", Arrays.asList("http://id.sambi.se/loa/loa2",
             "http://id.sambi.se/loa/loa3"));
-        final var signRequestValidityInMinutes = 10;
+        final var signRequestValidityInMinutes = 8;
         ReflectionTestUtils.setField(dssSignatureService, "signRequestValidityInMinutes", signRequestValidityInMinutes);
 
         var sb = SignaturBiljettBuilder.aSignaturBiljett("ticketId", SignaturTyp.XMLDSIG, SignMethod.SIGN_SERVICE).withIntygsId("intygsId")
@@ -213,7 +213,7 @@ public class DssSignatureServiceTest {
             .getNotBefore().toGregorianCalendar().getTimeInMillis();
         final var notAfter = signRequestExtensionTypeJAXBElement.getValue().getConditions()
             .getNotOnOrAfter().toGregorianCalendar().getTimeInMillis();
-        assertEquals( "SignRequest should be valid for 12 minutes (2 min before and 10 min after", 12, (notAfter - notBefore) / 60000);
+        assertEquals( "SignRequest should be valid for 10 minutes (2 min before and 8 min after", 10, (notAfter - notBefore) / 60000);
 
         // System.out.println(toXmlString(capturedSignRequest));
 
