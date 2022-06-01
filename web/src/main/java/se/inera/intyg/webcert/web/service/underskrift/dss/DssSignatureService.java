@@ -137,6 +137,9 @@ public class DssSignatureService {
     private String dssUnitWhitelistForIeProperty;
     private List<String> dssUnitWhitelistForIe = new ArrayList<>();
 
+    @Value("${dss.service.validity.request.time.in.minutes}")
+    private int signRequestValidityInMinutes;
+
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
         WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService,
@@ -375,7 +378,7 @@ public class DssSignatureService {
         var beforeTime = dateTimeNow.minusMinutes(2);
         conditionsType.setNotBefore(convertToXmlGregorianTime(beforeTime));
 
-        var afterTime = dateTimeNow.plusMinutes(5);
+        var afterTime = dateTimeNow.plusMinutes(signRequestValidityInMinutes);
         conditionsType.setNotOnOrAfter(convertToXmlGregorianTime(afterTime));
 
         var audienceRestrictionType = objectFactorySaml.createAudienceRestrictionType();
