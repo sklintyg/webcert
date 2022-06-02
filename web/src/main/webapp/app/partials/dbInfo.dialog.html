@@ -7,7 +7,7 @@
     <wc-bottom-fadeout>
         <div class="modal-body">
             <wc-alert-message alert-severity="warning" class="alert-dialog-warning">
-                Du är på väg att utfärda ett dödsbevis för <b>{{model.fornamn}} {{model.efternamn}} {{model.personnummer}}</b>.</wc-alert-message>
+                Du är på väg att utfärda ett dödsbevis för <b>{{model.namn}} - {{model.personnummer}}</b>.</wc-alert-message>
             <span dynamic-label key="{{bodyText}}"></span>
             <wc-checkbox-wrapper>
                 <input input type="checkbox" id="{{model.checkboxId}}" value="1" ng-click="model.toggleProceed()" )>
