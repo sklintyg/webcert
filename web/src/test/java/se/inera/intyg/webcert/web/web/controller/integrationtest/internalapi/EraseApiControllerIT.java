@@ -131,12 +131,12 @@ public class EraseApiControllerIT extends IntegrationTest {
         clearCreatedCertificates();
         clearCreatedIntegratedUnits();
         clearCreatedTermsApprovals();
-        clearCreated(ARENDE_DRAFTS_URL);
+        clearCreated(REDELIVERIES_URL);
         clearCreated(EVENTS_URL);
         clearCreated(ARENDEN_URL);
         clearCreated(FRAGA_SVAR_URL);
         clearCreated(REFERENSER_URL);
-        clearCreated(REDELIVERIES_URL);
+        clearCreated(ARENDE_DRAFTS_URL);
         clearCreated(CERTIFICATE_EVENTS_URL);
 
         resetNotificationStub();
