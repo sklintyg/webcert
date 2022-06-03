@@ -121,7 +121,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             + "Försäkringskassans system vilket ska göras i samråd med patienten.</br>"
             + "</br>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.";
 
-    private static final String CREATE_AG7804_NAME = "Skapa Ag7804";
+    private static final String CREATE_AG7804_NAME = "Skapa AG7804";
     private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
     private static final String CREATE_AG7804_BODY = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
         + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
