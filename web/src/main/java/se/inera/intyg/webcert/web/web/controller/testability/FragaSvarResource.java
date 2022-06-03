@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,6 +209,27 @@ public class FragaSvarResource {
                 return Response.ok().build();
             }
         });
+    }
+
+    @GET
+    @Path("/fragaSvarCount")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long getFragaSvarCountCertificateIds(List<String> certificateIds) {
+        final var fragaSvarList = fragasvarRepository.findAll();
+        return fragaSvarList.stream().filter(fragaSvar -> certificateIds.contains(fragaSvar.getIntygsReferens().getIntygsId())).count();
+    }
+
+    @DELETE
+    @Path("/byCertificateIds")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteFragaSvarByCertificateIds(List<String> certificateIds) {
+        final var fragaSvarList = fragasvarRepository.findAll();
+        final var fragaSvarForDeletion = fragaSvarList.stream()
+            .filter(fragaSvar -> certificateIds.contains(fragaSvar.getIntygsReferens().getIntygsId()))
+            .collect(Collectors.toList());
+        fragasvarRepository.deleteAll(fragaSvarForDeletion);
+
+        return Response.ok().build();
     }
 
     // Create a fake SecurityContext for a user which is authorized for the given care giver and unit

@@ -213,6 +213,13 @@ public class IntygResource {
         return Response.ok(resourceLoader.getResource(location).getInputStream()).build();
     }
 
+    @GET
+    @Path("/{careProviderId}/count")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long countCertificatesForCareProvider(@PathParam("careProviderId") String careProviderId) {
+        return utkastRepository.findAll().stream().filter(cert -> cert.getVardgivarId().equals(careProviderId)).count();
+    }
+
     @DELETE
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
