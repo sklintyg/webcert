@@ -100,14 +100,18 @@ angular.module('webcert').directive('wcValjUtkastTyp',
               }
               // Display info dialog if draft is of type db to make sure the user know.
               else if (intygType === 'db') {
+                var namn = PatientModel.fornamn;
+                if(PatientModel.mellannamn !== undefined){
+                  namn = namn + ' ' + PatientModel.mellannamn;
+                }
+                namn = namn + ' ' + PatientModel.efternamn;
+
                 DialogService.showDialog({
                   dialogId: 'db-info-dialog',
                   titleText: 'db.label.titleText',
                   model: {
-                    info: messageService.getProperty('db.label.info',
-                        {fornamn: PatientModel.fornamn,
-                          efternamn: PatientModel.efternamn,
-                          personnummer: PatientModel.personnummer}),
+                    namn: namn,
+                    personnummer: PatientModel.personnummer.slice(0, 7) + '-' + PatientModel.personnummer.slice(8),
                     toggleProceed: function() {
                       document.getElementById('button1id').disabled =
                           !document.getElementById('checkboxId').checked;
