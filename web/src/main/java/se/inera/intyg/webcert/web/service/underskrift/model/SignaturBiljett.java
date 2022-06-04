@@ -38,6 +38,7 @@ public class SignaturBiljett implements Serializable {
     private SignaturTyp signaturTyp;
     private String hash;
     private SignMethod signMethod;
+    private boolean wc2ClientRequest;
 
     public String getTicketId() {
         return ticketId;
@@ -111,6 +112,14 @@ public class SignaturBiljett implements Serializable {
         this.signMethod = signMethod;
     }
 
+    public boolean isWc2ClientRequest() {
+        return wc2ClientRequest;
+    }
+
+    public void setWc2ClientRequest(boolean wc2ClientRequest) {
+        this.wc2ClientRequest = wc2ClientRequest;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -142,6 +151,7 @@ public class SignaturBiljett implements Serializable {
         private SignaturTyp signaturTyp;
         private String hash;
         private SignMethod signMethod;
+        private boolean wc2ClientRequest;
 
         private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
             this.ticketId = ticketId;
@@ -188,6 +198,11 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
+        public SignaturBiljettBuilder withWc2ClientRequest(boolean wc2Client) {
+            this.wc2ClientRequest = wc2Client;
+            return this;
+        }
+
         public SignaturBiljett build() {
             checkArgument(nonNull(ticketId));
             checkArgument(nonNull(signaturTyp));
@@ -203,6 +218,7 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setSignaturTyp(signaturTyp);
             signaturBiljett.setHash(hash);
             signaturBiljett.setSignMethod(signMethod);
+            signaturBiljett.setWc2ClientRequest(wc2ClientRequest);
             return signaturBiljett;
         }
     }

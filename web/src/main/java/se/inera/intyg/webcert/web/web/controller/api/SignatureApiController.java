@@ -63,7 +63,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 
@@ -79,9 +78,6 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired
     private ReactUriFactory reactUriFactory;
-
-    @Autowired
-    private ReactPilotUtil reactPilotUtil;
 
     @Autowired
     private UnderskriftService underskriftService;
@@ -109,7 +105,7 @@ public class SignatureApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-        @PathParam("version") long version, @PathParam("signMethod") String signMethodStr) {
+        @PathParam("version") long version, @PathParam("signMethod") String signMethodStr, @Context HttpServletRequest request) {
 
         SignMethod signMethod = null;
         try {
@@ -131,7 +127,8 @@ public class SignatureApiController extends AbstractApiController {
                 ticketId = UUID.randomUUID().toString();
             }
 
-            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId);
+            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId,
+                isWc2ClientRequest(request));
 
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
@@ -191,14 +188,18 @@ public class SignatureApiController extends AbstractApiController {
         }
     }
 
+    private boolean isWc2ClientRequest(HttpServletRequest request) {
+        final var refererHeader = request.getHeader("referer");
+        return refererHeader != null && refererHeader.contains("wc2.");
+    }
+
     private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
         final var redirectUri = getRedirectUri(signaturBiljett, uriInfo);
         return Response.seeOther(redirectUri).build();
     }
 
     private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
-        final var certificateType = utkastService.getCertificateType(signaturBiljett.getIntygsId());
-        if (reactPilotUtil.useReactClient(getWebCertUserService().getUser(), certificateType)) {
+        if (signaturBiljett.isWc2ClientRequest()) {
             return reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
         }
 

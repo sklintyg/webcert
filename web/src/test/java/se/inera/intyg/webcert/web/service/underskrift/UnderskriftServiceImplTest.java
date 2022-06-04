@@ -181,12 +181,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 ENHET_ID, PERSON_ID)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString()))
+            anyString(), any(Boolean.class)))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID, false);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
     }
@@ -194,7 +194,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -202,7 +202,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -210,7 +210,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test
@@ -224,7 +224,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString()))
+            anyString(), any(Boolean.class)))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
@@ -238,7 +238,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -246,7 +246,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -258,7 +258,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).
             thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
     }
 
     @Test

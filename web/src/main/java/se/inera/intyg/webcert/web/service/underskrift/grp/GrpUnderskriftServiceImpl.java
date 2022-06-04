@@ -83,7 +83,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod, String ticketId) {
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest) {
         String hash = createHash(intygJson);
 
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);
@@ -96,6 +96,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
             .withStatus(SignaturStatus.BEARBETAR)
             .withSkapad(LocalDateTime.now())
             .withHash(intygGRPSignature.getSigningData())
+            .withWc2ClientRequest(isWc2ClientRequest)
             .build();
 
         redisTicketTracker.trackBiljett(biljett);

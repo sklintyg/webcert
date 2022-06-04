@@ -53,7 +53,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
         final var ticketId = UUID.randomUUID().toString();
 
         LOG.debug("Start fake signing process for certificate '{}'", certificateId);
-        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId);
+        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId, true);
 
         LOG.debug("Make fake signature for certificate '{}'", certificateId);
         underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);
