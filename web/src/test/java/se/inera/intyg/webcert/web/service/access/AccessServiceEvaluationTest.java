@@ -238,19 +238,6 @@ public class AccessServiceEvaluationTest {
         assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
     }
 
-    @Test
-    public void shallAllowIfSubscriptionInfoIsNull() {
-        final var selectedCareProviderMock = mock(Vardgivare.class);
-        when(user.getSubscriptionInfo()).thenReturn(null);
-        when(user.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
-            .checkSubscription()
-            .evaluate();
-
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
-
     private void setupMocksForSubscriptionCheck(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions,
         UserOriginType userOriginType) {
         final var subscriptionInfo = getSubscriptionInfo(subscriptionAction, numberOfMissingSubscriptions);
