@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +38,6 @@ import se.inera.intyg.webcert.web.service.facade.UserService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChangeUnitImplTest {
@@ -62,42 +65,39 @@ class ChangeUnitImplTest {
     void setUpUserWithSuccessfulChange() {
         user = mock(WebCertUser.class);
 
-       doReturn(user)
+        doReturn(user)
             .when(webCertUserService)
             .getUser();
 
-       doReturn(getUnit())
-               .when(user)
-               .getValdVardenhet();
+        doReturn(getUnit())
+            .when(user)
+            .getValdVardenhet();
 
-       doReturn(true)
-               .when(user)
-               .changeValdVardenhet(anyString());
-
-        /*doReturn(true)
-                .when(dssSignatureService)
-                .isUnitInIeWhitelist(anyString());*/
+        doReturn(true)
+            .when(user)
+            .changeValdVardenhet(anyString());
     }
 
     void setUpUserWithFailedChange() {
         user = mock(WebCertUser.class);
 
         doReturn(user)
-                .when(webCertUserService)
-                .getUser();
+            .when(webCertUserService)
+            .getUser();
 
         doReturn(getUnit())
-                .when(user)
-                .getValdVardenhet();
+            .when(user)
+            .getValdVardenhet();
 
         doReturn(false)
-                .when(user)
-                .changeValdVardenhet(anyString());
+            .when(user)
+            .changeValdVardenhet(anyString());
     }
 
 
     @Nested
     class ChangeUnit {
+
         @Test
         void shouldUpdateUnitForUser() throws ChangeUnitException {
             setUpUserWithSuccessfulChange();
@@ -113,8 +113,9 @@ class ChangeUnitImplTest {
 
             final var exception = assertThrows(ChangeUnitException.class, () -> changeUnitService.change(NEW_UNIT_ID));
 
-            assertEquals(ChangeUnitException.class, exception.getClass());        }
+            assertEquals(ChangeUnitException.class, exception.getClass());
         }
+    }
 
     private SelectableVardenhet getUnit() {
         final var unit = new Mottagning();
