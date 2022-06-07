@@ -97,12 +97,27 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (isChangeUnitAvailable(user)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CHANGE_UNIT,
+                    "Byta vårdenhet",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
     private boolean isChooseUnitAvailable(WebCertUser user) {
         final var loggedInUnit =  user.getValdVardenhet();
         return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
+    }
+
+    private boolean isChangeUnitAvailable(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
