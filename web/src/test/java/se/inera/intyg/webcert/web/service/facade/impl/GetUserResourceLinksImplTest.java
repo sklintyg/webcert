@@ -179,6 +179,27 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
+
+        @Test
+        void shallNotIncludeChangeUnitIfOriginIsDjupintegration() {
+            final var user = getUserWithOriginAndRole("DJUPINTEGRATION", false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChangeUnitIfOriginIsNormal() {
+            final var user = getUserWithOriginAndRole("NORMAL", false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChangeUnitIfOriginIsUthopp() {
+            final var user = getUserWithOriginAndRole("UTHOPP", false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
     }
 
     private SelectableVardenhet getUnit() {
