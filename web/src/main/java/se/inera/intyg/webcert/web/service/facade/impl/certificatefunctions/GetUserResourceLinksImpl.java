@@ -101,7 +101,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CHANGE_UNIT,
-                    "Byta vårdenhet",
+                    "Byt vårdenhet",
                     "",
                     true
                 )
