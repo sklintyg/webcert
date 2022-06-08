@@ -34,8 +34,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ResourceLinkFacadeTestHelper {
 
@@ -55,6 +54,16 @@ public class ResourceLinkFacadeTestHelper {
 
     public static void assertExclude(ResourceLinkDTO[] availableFunctions, ResourceLinkTypeDTO type) {
         assertExclude(Arrays.asList(availableFunctions), type);
+    }
+
+    public static void assertDisabled(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+        final var actualResourceLink = get(availableFunctions, type);
+        assertFalse(actualResourceLink.isEnabled());
+    }
+
+    public static void assertEnabled(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+        final var actualResourceLink = get(availableFunctions, type);
+        assertTrue(actualResourceLink.isEnabled());
     }
 
     public static ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
