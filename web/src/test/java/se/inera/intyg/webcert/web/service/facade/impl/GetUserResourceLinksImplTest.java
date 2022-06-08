@@ -146,7 +146,7 @@ class GetUserResourceLinksImplTest {
 
         @Test
         void shallNotIncludeChangeUnitIfOriginIsDjupintegration() {
-            final var user = getUserWithOriginAndRole("DJUPINTEGRATION", false);
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
         }
