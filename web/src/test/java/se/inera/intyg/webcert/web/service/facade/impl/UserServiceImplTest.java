@@ -77,7 +77,7 @@ class UserServiceImplTest {
     void setUp() {
         user = mock(WebCertUser.class);
 
-       doReturn(user)
+        doReturn(user)
             .when(webCertUserService)
             .getUser();
     }
@@ -184,6 +184,18 @@ class UserServiceImplTest {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(PREFERENCES, actualUser.getPreferences());
         }
+
+        @Test
+        void shallReturnMapCareProviders() {
+            final var actualUser = userService.getLoggedInUser();
+            final var careProvider = actualUser.getCareProviders().get(0);
+            final var careUnit = careProvider.getCareUnits().get(0);
+            final var unit = careUnit.getUnits().get(0);
+
+            assertEquals(CARE_PROVIDER_ID, careProvider.getId());
+            assertEquals(CARE_UNIT_ID, careUnit.getUnitId());
+            assertEquals(UNIT_ID, unit.getUnitId());
+        }
     }
 
     @Nested
@@ -204,7 +216,7 @@ class UserServiceImplTest {
         void shallReturnUnsetUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
 
-            assertAll (
+            assertAll(
                 () -> assertNull(actualUser.getLoggedInUnit().getUnitName()),
                 () -> assertNull(actualUser.getLoggedInUnit().getUnitId())
             );
@@ -214,7 +226,7 @@ class UserServiceImplTest {
         void shallReturnUnsetCareUnitWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
 
-            assertAll (
+            assertAll(
                 () -> assertNull(actualUser.getLoggedInCareUnit().getUnitName()),
                 () -> assertNull(actualUser.getLoggedInCareUnit().getUnitId())
             );
@@ -224,7 +236,7 @@ class UserServiceImplTest {
         void shallReturnUnsetCareProviderWhenUserWithNoSelectedLoginUnit() {
             final var actualUser = userService.getLoggedInUser();
 
-            assertAll (
+            assertAll(
                 () -> assertNull(actualUser.getLoggedInCareProvider().getUnitName()),
                 () -> assertNull(actualUser.getLoggedInCareProvider().getUnitId())
             );

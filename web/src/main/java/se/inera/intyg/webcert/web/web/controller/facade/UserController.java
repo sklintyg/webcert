@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,7 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -47,14 +52,16 @@ public class UserController {
     private final WebCertUserService webCertUserService;
 
     private final UserStatisticsService userStatisticsService;
+    private final ChangeUnitService changeUnitService;
 
     @Autowired
     public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-                          WebCertUserService webCertUserService, UserStatisticsService userStatisticsService) {
+        UserStatisticsService userStatisticsService, WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
         this.userService = userService;
         this.getUserResourceLinks = getUserResourceLinks;
         this.webCertUserService = webCertUserService;
         this.userStatisticsService = userStatisticsService;
+        this.changeUnitService = changeUnitService;
     }
 
     @GET
@@ -75,5 +82,20 @@ public class UserController {
         LOG.debug("Getting user statistics");
         final var result = userStatisticsService.getUserStatistics();
         return Response.ok(result).build();
+    }
+
+    @POST
+    @Path("/unit/{unitHsaId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
+        LOG.debug("Changing care unit to {}", unitHsaId);
+        try {
+            final var updatedUser = changeUnitService.change(unitHsaId);
+            final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
+            return Response.ok(UserResponseDTO.create(updatedUser, resourceLinks)).build();
+        } catch (ChangeUnitException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
 }
