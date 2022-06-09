@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +30,6 @@ import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
@@ -142,6 +142,27 @@ class GetUserResourceLinksImplTest {
             final var user = getUserWithOriginAndRole("NORMAL", false);
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallNotIncludeChooseUnitIfOriginIsUthopp() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallNotIncludeChooseUnitIfOriginIsDjupintegration() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChooseUnitIfOriginIsNormal() {
+            final var user = getUserWithOriginAndRole("NORMAL", false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
     }
 }
