@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -159,11 +162,23 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallIncludeChooseUnitIfOriginIsNormal() {
+        void shallIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
             final var user = getUserWithOriginAndRole("NORMAL", false);
+
+            doReturn(getUnit())
+                .when(user)
+                .getValdVardenhet();
+
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
+    }
+
+    private SelectableVardenhet getUnit() {
+        final var unit = new Mottagning();
+        unit.setId("UNIT_ID");
+        unit.setNamn("UNIT_NAME");
+        return unit;
     }
 }
 
