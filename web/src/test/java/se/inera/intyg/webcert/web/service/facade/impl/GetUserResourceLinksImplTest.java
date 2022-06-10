@@ -148,27 +148,27 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallNotIncludeChooseUnitIfOriginIsUthopp() {
-            final var user = getUserWithOrigin("UTHOPP");
+        void shallNotIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
+            final var user = getUserWithOrigin("NORMAL");
+
+            doReturn(getUnit())
+                .when(user)
+                .getValdVardenhet();
+
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
 
         @Test
-        void shallNotIncludeChooseUnitIfOriginIsDjupintegration() {
+        void shallNotIncludeChooseUnitIfOriginIsDjupintegrationAnHasNoLoggedInUnit() {
             final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
 
         @Test
-        void shallIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
-            final var user = getUserWithOriginAndRole("NORMAL", false);
-
-            doReturn(getUnit())
-                .when(user)
-                .getValdVardenhet();
-
+        void shallIncludeChooseUnitIfOriginIsNormalAndHasNoLoggedInUnit() {
+            final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }

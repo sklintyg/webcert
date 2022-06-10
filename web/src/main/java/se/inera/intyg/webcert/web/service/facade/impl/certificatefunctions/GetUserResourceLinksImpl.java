@@ -102,7 +102,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     private boolean isChooseUnitAvailable(WebCertUser user) {
         final var loggedInUnit =  user.getValdVardenhet();
-        return isOriginNormal(user.getOrigin()) && loggedInUnit != null;
+        return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
