@@ -48,4 +48,5 @@ public enum ResourceLinkTypeDTO {
     ACCESS_SIGNED_CERTIFICATES_LIST,
     LOG_OUT,
     CREATE_CERTIFICATE,
+    CHOOSE_UNIT,
 }

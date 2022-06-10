@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import java.util.ArrayList;
 
 @Service
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
@@ -45,48 +44,65 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
         if (hasAccessToSearchCreatePage(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
-                            "Sök / skriv intyg",
-                            "",
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
+                    "Sök / skriv intyg",
+                    "",
+                    true
+                )
             );
         }
 
         if (hasAccessToDraftList(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.ACCESS_DRAFT_LIST,
-                            "Ej signerade utkast",
-                            "",
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_DRAFT_LIST,
+                    "Ej signerade utkast",
+                    "",
+                    true
+                )
             );
         }
 
         if (hasAccessToSignedCertificatesList(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST,
-                            "Signerade intyg",
-                            "",
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST,
+                    "Signerade intyg",
+                    "",
+                    true
+                )
             );
         }
 
         if (isLogOutAvailable(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.LOG_OUT,
-                            "Logga ut",
-                            "",
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.LOG_OUT,
+                    "Logga ut",
+                    "",
+                    true
+                )
             );
         }
+
+        if (isChooseUnitAvailable(user)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CHOOSE_UNIT,
+                    "Välj vårdenhet",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
+    }
+
+    private boolean isChooseUnitAvailable(WebCertUser user) {
+        final var loggedInUnit =  user.getValdVardenhet();
+        return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
