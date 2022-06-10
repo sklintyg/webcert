@@ -189,14 +189,14 @@ class GetUserResourceLinksImplTest {
 
         @Test
         void shallIncludeChangeUnitIfOriginIsNormal() {
-            final var user = getUserWithOriginAndRole("NORMAL", false);
+            final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
         }
 
         @Test
         void shallIncludeChangeUnitIfOriginIsUthopp() {
-            final var user = getUserWithOriginAndRole("UTHOPP", false);
+            final var user = getUserWithOrigin("UTHOPP");
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
         }
