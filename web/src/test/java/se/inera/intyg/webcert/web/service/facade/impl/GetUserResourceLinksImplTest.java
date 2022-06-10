@@ -167,6 +167,13 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
+        void shallNotIncludeChooseUnitIfOriginIsUthoppAnHasNoLoggedInUnit() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
         void shallIncludeChooseUnitIfOriginIsNormalAndHasNoLoggedInUnit() {
             final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
