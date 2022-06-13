@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 
@@ -50,6 +51,8 @@ public class PatientController {
             return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
         } catch (PatientSearchErrorException e) {
             return Response.ok(PatientResponseDTO.createErrorResponse()).build();
+        } catch(PatientNoNameException e) {
+            return Response.ok(PatientResponseDTO.createNoNameResponse()).build();
         }
     }
 }
