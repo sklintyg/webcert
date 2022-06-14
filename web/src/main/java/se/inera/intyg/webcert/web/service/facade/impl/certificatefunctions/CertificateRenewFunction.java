@@ -45,7 +45,7 @@ public class CertificateRenewFunction {
 
     public static boolean validate(String certificateType, CertificateRelations relations,
                                    CertificateStatus status, AuthoritiesHelper authoritiesHelper) {
-        if (isReplacementSigned(relations) || hasBeenComplemented(relations)) {
+        if (isReplacementSigned(relations) || hasBeenComplementedBySignedCertificate(relations)) {
             return false;
         }
 
@@ -84,11 +84,11 @@ public class CertificateRenewFunction {
         return relations == null || relations.getChildren() == null;
     }
 
-    private static boolean hasBeenComplemented(CertificateRelations relations) {
+    private static boolean hasBeenComplementedBySignedCertificate(CertificateRelations relations) {
         if (relations != null) {
             return Arrays.stream(relations.getChildren()).anyMatch(
                     relation -> relation.getType().equals(
-                            COMPLEMENTED)
+                            COMPLEMENTED) && relation.getStatus() == SIGNED
             );
         }
         return false;

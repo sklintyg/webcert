@@ -360,7 +360,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(getQuestionsResourceLink(certificate));
         }
 
-        if (isMessagingAvailable(certificate) && isSent(certificate)) {
+        if (isMessagingAvailable(certificate) && isSent(certificate) && !hasUnsignedComplement(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_QUESTIONS,
@@ -534,7 +534,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate) || hasBeenComplemented(certificate));
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate) || hasBeenComplementedBySignedCertificate(certificate));
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
@@ -590,11 +590,19 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
           }
       }
 
-      private boolean hasBeenComplemented(Certificate certificate) {
+      private boolean hasBeenComplementedBySignedCertificate(Certificate certificate) {
         if (certificate.getMetadata().getRelations() != null) {
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
-                relation -> relation.getType().equals(
-                    COMPLEMENTED)
+                relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == SIGNED
+            );
+        }
+        return false;
+    }
+
+    private boolean hasUnsignedComplement(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() != null) {
+            return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
+                    relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == UNSIGNED
             );
         }
         return false;
