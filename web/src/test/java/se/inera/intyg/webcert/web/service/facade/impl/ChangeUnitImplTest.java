@@ -20,20 +20,28 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -44,72 +52,87 @@ class ChangeUnitImplTest {
 
     @Mock
     private WebCertUserService webCertUserService;
-
     @Mock
     private UserService userService;
-
     @Mock
     private DssSignatureService dssSignatureService;
-
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     @InjectMocks
     private ChangeUnitServiceImpl changeUnitService;
 
-    private WebCertUser user;
+    private WebCertUser webcertUser;
 
     private static final String UNIT_ID = "UNIT_ID";
+    private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final String NEW_UNIT_ID = "NEW_UNIT_ID";
+    public static final String TEST_FEATURE = "testFeature";
 
-    void setUpUserWithSuccessfulChange() {
-        user = mock(WebCertUser.class);
+    void setUpUserForSuccessfulChange() {
+        webcertUser = createWebCertUser();
 
-        doReturn(user)
+        doReturn(getFeatures())
+            .when(commonAuthoritiesResolver)
+            .getFeatures(any());
+
+        doReturn(webcertUser)
             .when(webCertUserService)
             .getUser();
 
-        doReturn(getUnit())
-            .when(user)
-            .getValdVardenhet();
+        doReturn(getUser())
+            .when(userService)
+            .getLoggedInUser();
 
         doReturn(true)
-            .when(user)
-            .changeValdVardenhet(anyString());
+            .when(dssSignatureService)
+            .isUnitInIeWhitelist(NEW_UNIT_ID);
     }
 
-    void setUpUserWithFailedChange() {
-        user = mock(WebCertUser.class);
+    void setUpUserForFailedChange() {
+        webcertUser = createWebCertUser();
+        webcertUser.setVardgivare(null);
 
-        doReturn(user)
+        doReturn(webcertUser)
             .when(webCertUserService)
             .getUser();
-
-        doReturn(getUnit())
-            .when(user)
-            .getValdVardenhet();
-
-        doReturn(false)
-            .when(user)
-            .changeValdVardenhet(anyString());
     }
-
 
     @Nested
     class ChangeUnit {
 
         @Test
         void shouldUpdateUnitForUser() throws ChangeUnitException {
-            setUpUserWithSuccessfulChange();
+            setUpUserForSuccessfulChange();
+
+            final var user = changeUnitService.change(NEW_UNIT_ID);
+
+            assertEquals(user.getLoggedInCareUnit().getUnitId(), webcertUser.getValdVardenhet().getId());
+        }
+
+        @Test
+        void shouldUpdateSigningService() throws ChangeUnitException {
+            setUpUserForSuccessfulChange();
 
             changeUnitService.change(NEW_UNIT_ID);
 
-            verify(user).changeValdVardenhet(NEW_UNIT_ID);
+            verify(dssSignatureService, times(1)).isUnitInIeWhitelist(NEW_UNIT_ID);
+            assertTrue(webcertUser.isUseSigningService());
+        }
+
+        @Test
+        void shouldSetFeaturesForUser() throws ChangeUnitException {
+            setUpUserForSuccessfulChange();
+
+            changeUnitService.change(NEW_UNIT_ID);
+
+            verify(commonAuthoritiesResolver, times(1)).getFeatures(any());
+            assertEquals(TEST_FEATURE, webcertUser.getFeatures().get(TEST_FEATURE).getName());
         }
 
         @Test
         void shouldThrowExceptionIfChangeFails() {
-            setUpUserWithFailedChange();
+            setUpUserForFailedChange();
 
             final var exception = assertThrows(ChangeUnitException.class, () -> changeUnitService.change(NEW_UNIT_ID));
 
@@ -117,9 +140,40 @@ class ChangeUnitImplTest {
         }
     }
 
-    private SelectableVardenhet getUnit() {
-        final var unit = new Mottagning();
-        unit.setId(UNIT_ID);
+    private Vardenhet getUnit(String unitId) {
+        final var unit = new Vardenhet();
+        unit.setId(unitId);
+        unit.setMottagningar(List.of(new Mottagning()));
         return unit;
+    }
+
+    private Vardgivare getCareProvider() {
+        final var carerovider = new Vardgivare();
+        carerovider.setId(CARE_PROVIDER_ID);
+        carerovider.setVardenheter(List.of(getUnit(UNIT_ID), getUnit(NEW_UNIT_ID)));
+        return carerovider;
+    }
+
+    private WebCertUser createWebCertUser() {
+        final var user = new WebCertUser();
+        user.setValdVardenhet(getUnit(UNIT_ID));
+        user.setValdVardgivare(getCareProvider());
+        user.setVardgivare(List.of(getCareProvider()));
+        return user;
+    }
+
+    private User getUser() {
+        final var unit = Unit.builder()
+            .unitId(NEW_UNIT_ID).build();
+        return User.builder()
+            .loggedInCareUnit(unit).build();
+    }
+
+    private Map<String, Feature> getFeatures() {
+        final var features = new HashMap<String, Feature>();
+        final var feature = new Feature();
+        feature.setName(TEST_FEATURE);
+        features.put(TEST_FEATURE, feature);
+        return features;
     }
 }
