@@ -31,7 +31,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -97,7 +96,8 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     private List<IntygModuleDTO> getCertificateModuleList(Personnummer personnummer) {
         final var intygModules = intygModuleRegistry.listAllModules();
-        final var allowedCertificateTypes = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        final var allowedCertificateTypes = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)

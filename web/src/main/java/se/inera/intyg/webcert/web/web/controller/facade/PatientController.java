@@ -51,7 +51,7 @@ public class PatientController {
             return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
         } catch (PatientSearchErrorException e) {
             return Response.ok(PatientResponseDTO.createErrorResponse()).build();
-        } catch(PatientNoNameException e) {
+        } catch (PatientNoNameException e) {
             return Response.ok(PatientResponseDTO.createNoNameResponse()).build();
         }
     }

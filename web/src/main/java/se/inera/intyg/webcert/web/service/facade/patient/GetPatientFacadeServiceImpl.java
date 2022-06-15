@@ -58,7 +58,8 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
             throw new PatientSearchErrorException();
         }
 
-        if (personSvar.getPerson() != null && (personSvar.getPerson().getFornamn() == null || personSvar.getPerson().getEfternamn() == null)) {
+        if (personSvar.getPerson() != null && (personSvar.getPerson().getFornamn() == null
+            || personSvar.getPerson().getEfternamn() == null)) {
             throw new PatientNoNameException();
         }
 
