@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 
 import javax.ws.rs.GET;
@@ -42,14 +43,17 @@ public class ListConfigController {
     private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
     private final ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
     private final ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService;
+    private final ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
 
     @Autowired
     public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
                                 ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
-                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService) {
+                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
+                                ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
         this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
         this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
+        this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
     }
 
     @Path("/draft")
@@ -79,6 +83,16 @@ public class ListConfigController {
     public Response getListOfPreviousCertificatesConfig() {
         LOG.debug("Getting config for list of previous certificates");
         final var config = listPreviousCertificatesConfigFacadeService.get();
+        return Response.ok(config).build();
+    }
+
+    @Path("/questions")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getListOfUnhandledQuestions() {
+        LOG.debug("Getting config for list of unhandled questions");
+        final var config = listQuestionsConfigFacadeService.get();
         return Response.ok(config).build();
     }
 }
