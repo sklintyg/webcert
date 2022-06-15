@@ -534,7 +534,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate) || hasBeenComplementedBySignedCertificate(certificate));
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate)
+            || hasBeenComplementedBySignedCertificate(certificate));
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
@@ -617,7 +618,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
         return false;
     }
-  
+
     private boolean isCopyCertificateAvailable(Certificate certificate) {
         return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }
