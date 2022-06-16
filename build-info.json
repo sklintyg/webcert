@@ -1,7 +1,7 @@
 {
-  "appVersion": "6.11.1",
-  "commonVersion": "3.17.1.+",
-  "infraVersion": "3.17.1.+",
+  "appVersion": "6.11.1.255",
+  "commonVersion": "3.17.1.141.147",
+  "infraVersion": "3.17.1.43",
   "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
   "tests": [
     "restAssuredTest"
