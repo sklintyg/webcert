@@ -16,19 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-package se.inera.intyg.webcert.web.service.facade.list;
+public enum QuestionStatusType {
+    NOT_HANDLED("Alla ej hanterade"),
+    HANDLED("Alla hanterade"),
+    COMPLEMENT("Komplettera"),
+    ANSWER("Svara"),
+    READ_ANSWER("Läs inkommet svar"),
+    WAIT("Invänta svar"),
+    SHOW_ALL("Visa alla");
 
-import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+    private final String text;
 
-public interface CertificateListItemConverter {
-    CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType);
+    QuestionStatusType(String text) {
+        this.text = text;
+    }
 
-    CertificateListItem convert(CertificateListEntry entry);
-
-    CertificateListItem convert(ArendeListItem arendeListItem);
+    public String getName() {
+        return text;
+    }
 }

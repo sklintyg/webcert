@@ -21,44 +21,55 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
+import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ListQuestionsConfigFacadeServiceImpl implements ListConfigFacadeService {
+public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigFacadeService {
 
     private static final String TITLE = "Ej hanterade ärenden";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget och frågan/svaret.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter frågor och svar.";
     private static final String FORWARD_CERTIFICATE_TOOLTIP = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
-    private static final String DESCRIPTION = "Nedan visas alla ej hanterade ärenden, så som kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
+    private static final String DESCRIPTION = "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej hanterade ärenden.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
+    private final UserStatisticsService userStatisticsService;
     private final WebCertUserService webCertUserService;
+    private final HsaOrganizationsService hsaOrganizationsService;
 
     @Autowired
     public ListQuestionsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
-                                                WebCertUserService webCertUserService) {
+                                                UserStatisticsService userStatisticsService,
+                                                WebCertUserService webCertUserService,
+                                                HsaOrganizationsService hsaOrganizationsService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+        this.userStatisticsService = userStatisticsService;
         this.webCertUserService = webCertUserService;
+        this.hsaOrganizationsService = hsaOrganizationsService;
     }
 
     @Override
-    public ListConfig get() {
-        return getListDraftsConfig();
+    public ListConfig get(String unitId) {
+        return getListDraftsConfig(unitId);
     }
 
-    private ListConfig getListDraftsConfig() {
+    private ListConfig getListDraftsConfig(String unit) {
         final var config = new ListConfig();
         config.setTitle(TITLE);
-        config.setFilters(getFilters());
+        config.setSecondaryTitle(getSecondaryTitle(unit));
+        config.setFilters(getFilters(unit));
         config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
@@ -66,21 +77,20 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListConfigFacadeSer
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);
-        config.setSecondaryTitle(getSecondaryTitle());
+        config.setShouldUpdateConfigAfterListSearch(true);
         return config;
     }
 
-    private String getSecondaryTitle() {
-        final var user = webCertUserService.getUser();
-        return "Ärenden visas för valda enheter";
+    private String getSecondaryTitle(String unit) {
+        return "Ärenden visas för " + unit;
     }
 
     public TableHeading[] getTableHeadings() {
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
-                TableHeadingFactory.text(ListColumnType.RECIPIENT),
+                TableHeadingFactory.text(ListColumnType.SENDER),
                 TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-                TableHeadingFactory.text(ListColumnType.SIGNED),
+                TableHeadingFactory.text(ListColumnType.SIGNED_BY),
                 TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
                 TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
@@ -88,24 +98,48 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListConfigFacadeSer
         };
     }
 
-    private List<ListFilterConfig> getFilters() {
+    private List<ListFilterConfig> getFilters(String unit) {
         final var filters = new ArrayList<ListFilterConfig>();
-        //filters.add(ListFilterConfigFactory.unitSelect());
+        filters.add(getUnitSelect(unit));
         filters.add(ListFilterConfigFactory.forwardedSelect());
-        //filters.add(ListFilterConfigFactory.reasonSelect());
-        //filters.add(ListFilterConfigFactory.recipientSelect());
-        filters.add(getSignedByFilter());
+        filters.add(ListFilterConfigFactory.questionStatusSelect());
+        filters.add(ListFilterConfigFactory.senderSelect());
+        filters.add(getSignedByFilter(unit));
         filters.add(ListFilterConfigFactory.defaultPersonId());
-        //filters.add(ListFilterConfigFactory.sentDateRange());
+        filters.add(ListFilterConfigFactory.sentDateRange());
         filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SENT_RECEIVED));
         filters.add(ListFilterConfigFactory.ascending());
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;
     }
 
-    private ListFilterConfig getSignedByFilter() {
-        final var savedByList = getStaffInfoFacadeService.get();
+    private ListFilterConfig getSignedByFilter(String unit) {
+        final var savedByList = getStaffInfoFacadeService.get(unit);
         final var defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
         return ListFilterConfigFactory.createStaffSelect("SIGNED_BY", "Signerat av", savedByList, defaultValue);
     }
+
+    private ListFilterSelectConfig getUnitSelect(String unitId) {
+        final var statistics = userStatisticsService.getUserStatistics();
+        return new ListFilterSelectConfig("UNIT", "Enhet",
+                statistics.getUnitStatistics()
+                        .entrySet()
+                        .stream()
+                        .map((unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), unitId.equals(unit.getKey())))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, boolean isDefault) {
+        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), isDefault);
+    }
+
+    private String getUnitText(String unitId, long nbrOfQuestions) {
+        final var user = webCertUserService.getUser();
+        final var selectedUnit = user.getValdVardenhet().getId();
+        final var isSubUnit = !unitId.equals(selectedUnit);
+        final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + '(' + nbrOfQuestions + ')';
+        return isSubUnit ? '\t' + text : text;
+    }
+
 }

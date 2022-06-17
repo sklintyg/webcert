@@ -17,18 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.list;
+package se.inera.intyg.webcert.web.service.facade.list.config;
 
-import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
-public interface CertificateListItemConverter {
-    CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType);
-
-    CertificateListItem convert(CertificateListEntry entry);
-
-    CertificateListItem convert(ArendeListItem arendeListItem);
+public interface ListVariableConfigFacadeService {
+    ListConfig get(String unitId);
 }

@@ -25,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.web.service.facade.list.DraftFilterConverterImpl;
+import se.inera.intyg.webcert.web.service.facade.list.filter.DraftFilterConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;

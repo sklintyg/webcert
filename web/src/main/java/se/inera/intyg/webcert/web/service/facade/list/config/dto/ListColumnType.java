@@ -34,8 +34,9 @@ public enum ListColumnType {
     SIGNED("Signerad", "Datum och klockslag då intyget signerades."),
     LINKS("", ""),
     QUESTION_ACTION("Åtgärd", "Åtgärd som krävs för att frågan/ärendet ska anses hanterad."),
-    RECIPIENT("Avsändare", "Vem som initierade frågan."),
-    SENT_RECEIVED("Skickat/mottaget", "Datum och klockslag för senaste händelse.");
+    SENDER("Avsändare", "Vem som initierade frågan."),
+    SENT_RECEIVED("Skickat/mottaget", "Datum och klockslag för senaste händelse."),
+    SIGNED_BY("Signerat av", "Läkare som signerat intyget.");
 
     private final String name;
     private final String description;
