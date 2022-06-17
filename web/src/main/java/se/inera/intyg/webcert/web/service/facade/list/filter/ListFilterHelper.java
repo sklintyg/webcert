@@ -197,6 +197,6 @@ public class ListFilterHelper {
         ListFilterSelectValue sender = (ListFilterSelectValue) filter.getValue("SENDER");
         return sender != null &&
                 (sender.getValue().equals(QuestionSenderType.SHOW_ALL.toString())
-                        || sender.getValue().equals(recipientName);
+                        || sender.getValue().equals(recipientName));
     }
 }

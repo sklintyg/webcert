@@ -28,6 +28,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfig
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -86,13 +87,13 @@ public class ListConfigController {
         return Response.ok(config).build();
     }
 
-    @Path("/questions")
-    @GET
+    @Path("/question")
+    @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getListOfUnhandledQuestions() {
+    public Response getListOfQuestions(String unitId) {
         LOG.debug("Getting config for list of unhandled questions");
-        final var config = listQuestionsConfigFacadeService.get();
+        final var config = listQuestionsConfigFacadeService.get(unitId);
         return Response.ok(config).build();
     }
 }

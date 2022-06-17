@@ -33,7 +33,7 @@ public class CertificateFilterConverterImpl implements CertificateFilterConverte
     }
 
     @Override
-    QueryFragaSvarParameter convert(ListFilter filter) {
+    public QueryFragaSvarParameter convert(ListFilter filter) {
         return convertFilter(filter);
     }
 

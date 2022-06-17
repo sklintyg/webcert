@@ -64,6 +64,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasAccessToDraftList(user)) {
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
+                            "Ej hanterade ärenden",
+                            "",
+                            true
+                    )
+            );
+        }
+
         if (hasAccessToSignedCertificatesList(user)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
@@ -125,6 +136,10 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasAccessToDraftList(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+    }
+
+    private boolean hasAccessToQuestionList(WebCertUser user) {
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 

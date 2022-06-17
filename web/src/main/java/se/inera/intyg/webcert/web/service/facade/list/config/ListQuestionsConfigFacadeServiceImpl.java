@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
@@ -81,8 +82,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return config;
     }
 
-    private String getSecondaryTitle(String unit) {
-        return "Ärenden visas för " + unit;
+    private String getSecondaryTitle(String unitId) {
+        final var unit = hsaOrganizationsService.getVardenhet(unitId);
+        return "Ärenden visas för " + unit.getNamn();
     }
 
     public TableHeading[] getTableHeadings() {
@@ -121,14 +123,26 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private ListFilterSelectConfig getUnitSelect(String unitId) {
         final var statistics = userStatisticsService.getUserStatistics();
+        final var subUnits = hsaOrganizationsService.getVardenhet(unitId).getMottagningar();
         return new ListFilterSelectConfig("UNIT", "Enhet",
                 statistics.getUnitStatistics()
                         .entrySet()
                         .stream()
-                        .map((unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), unitId.equals(unit.getKey())))
+                        .filter(
+                                (unit) -> subUnits
+                                        .stream()
+                                        .map(AbstractVardenhet::getId)
+                                        .anyMatch(
+                                                (subUnitId) -> subUnitId.equals(unit.getKey()) || unit.getKey().equals(unitId)
+                                        )
+                        )
+                        .map(
+                                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), unitId.equals(unit.getKey()))
+                        )
                         .collect(Collectors.toList())
         );
     }
+
 
     private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, boolean isDefault) {
         return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), isDefault);
@@ -138,8 +152,8 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var user = webCertUserService.getUser();
         final var selectedUnit = user.getValdVardenhet().getId();
         final var isSubUnit = !unitId.equals(selectedUnit);
-        final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + '(' + nbrOfQuestions + ')';
-        return isSubUnit ? '\t' + text : text;
+        final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
+        return isSubUnit ? "     " + text : text;
     }
 
 }
