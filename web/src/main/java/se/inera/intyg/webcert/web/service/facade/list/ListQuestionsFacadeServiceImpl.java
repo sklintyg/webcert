@@ -23,10 +23,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverter;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 import java.util.stream.Collectors;
 
@@ -37,15 +46,21 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
     private final CertificateFilterConverter certificateFilterConverter;
     private final CertificateListItemConverter certificateListItemConverter;
-    private ArendeService arendeService;
+    private final ArendeService arendeService;
+    private final WebCertUserService webCertUserService;
+    private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Autowired
     public ListQuestionsFacadeServiceImpl(CertificateFilterConverter certificateFilterConverter,
                                           CertificateListItemConverter certificateListItemConverter,
-                                          ArendeService arendeService) {
+                                          ArendeService arendeService,
+                                          WebCertUserService webCertUserService,
+                                          CertificateAccessServiceHelper certificateAccessServiceHelper) {
         this.certificateFilterConverter = certificateFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
         this.arendeService = arendeService;
+        this.webCertUserService = webCertUserService;
+        this.certificateAccessServiceHelper = certificateAccessServiceHelper;
     }
 
     @Override
@@ -57,9 +72,44 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
         final var listResponse = arendeService.filterArende(convertedFilter);
         final var convertedList = listResponse.getResults()
                 .stream()
+                .map(this::decorateWithResourceLinks)
                 .map(certificateListItemConverter::convert)
                 .collect(Collectors.toList());
 
         return new ListInfo(listResponse.getTotalCount(), convertedList);
+    }
+
+    private Vardenhet getUnit() {
+        final var user = webCertUserService.getUser();
+        final var unit = user.getValdVardenhet();
+        final var careProvider = user.getValdVardgivare();
+
+        final var convertedCareProvider = new Vardgivare();
+        convertedCareProvider.setVardgivarid(careProvider.getId());
+
+        final var convertedUnit = new Vardenhet();
+        convertedUnit.setEnhetsid(unit.getId());
+        convertedUnit.setVardgivare(convertedCareProvider);
+
+        return convertedUnit;
+    }
+
+    private ArendeListItem decorateWithResourceLinks(ArendeListItem item) {
+        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
+                item.getIntygTyp(),
+                null,
+                getUnit(),
+                Personnummer.createPersonnummer(item.getPatientId()).orElseThrow(),
+                item.isTestIntyg());
+
+        if (certificateAccessServiceHelper.isAllowToForwardQuestions(accessEvaluationParameters)) {
+            item.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+        }
+
+        if (certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)) {
+            item.addLink(new ActionLink(ActionLinkType.LASA_FRAGA));
+        }
+
+        return item;
     }
 }

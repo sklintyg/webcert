@@ -156,7 +156,7 @@ public class ListFilterConfigFactory {
         return new ListFilterSelectConfig("SENDER", "Avsändare", List.of(
                 getConfigValue(QuestionSenderType.SHOW_ALL, true),
                 getConfigValue(QuestionSenderType.FK, false),
-                getConfigValue(QuestionSenderType.UNIT, false)
+                getConfigValue(QuestionSenderType.WC, false)
         )
         );
     }

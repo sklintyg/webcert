@@ -66,6 +66,11 @@ public class ListFilterHelper {
         return patientId != null ? patientId.getValue() : "";
     }
 
+    public static String getPatientIdWithoutDash(ListFilter filter) {
+        ListFilterPersonIdValue patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
+        return patientId != null ? patientId.getValue().replace("-", "") : "";
+    }
+
     public static Boolean getForwarded(ListFilter filter) {
         ListFilterSelectValue forwarded = (ListFilterSelectValue) filter.getValue("FORWARDED");
         return forwarded != null ? getForwardedValue(forwarded.getValue()) : null;
@@ -160,9 +165,9 @@ public class ListFilterHelper {
         return pageSize == null ? 10 : pageSize.getValue();
     }
 
-    public static String convertOrderBy(ListFilter filter) {
+    public static String convertOrderBy(ListFilter filter, ListType listType) {
         ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
-        return convertOrderBy(orderBy.getValue());
+        return listType == ListType.CERTIFICATES ? convertOrderBy(orderBy.getValue()) : convertOrderByForQuestions(orderBy.getValue());
     }
 
     private static String convertOrderBy(String orderBy) {
@@ -180,6 +185,23 @@ public class ListFilterHelper {
         }
     }
 
+    private static String convertOrderByForQuestions(String orderBy) {
+        final var type = ListColumnType.valueOf(orderBy);
+        if (type == ListColumnType.SENT_RECEIVED) {
+            return "receivedDate";
+        } else if (type == ListColumnType.FORWARDED) {
+            return "vidarebefordrad";
+        } else if (type == ListColumnType.SIGNED_BY) {
+            return "signeratAvNamn";
+        } else if (type == ListColumnType.PATIENT_ID) {
+            return "patientId";
+        } else if (type == ListColumnType.QUESTION_ACTION) {
+            return "amne";
+        } else {
+            return "receivedDate";
+        }
+    }
+
     public static String getUnitId(ListFilter filter) {
         ListFilterSelectValue unit = (ListFilterSelectValue) filter.getValue("UNIT");
         return unit != null ? unit.getValue() : "";
@@ -190,13 +212,11 @@ public class ListFilterHelper {
     }
 
     public static boolean includeQuestionFromUnit(ListFilter filter) {
-        return includeQuestionFromSender(filter, QuestionSenderType.UNIT.toString());
+        return includeQuestionFromSender(filter, QuestionSenderType.WC.toString());
     }
 
     private static boolean includeQuestionFromSender(ListFilter filter, String recipientName) {
         ListFilterSelectValue sender = (ListFilterSelectValue) filter.getValue("SENDER");
-        return sender != null &&
-                (sender.getValue().equals(QuestionSenderType.SHOW_ALL.toString())
-                        || sender.getValue().equals(recipientName));
+        return sender != null && sender.getValue().equals(recipientName);
     }
 }

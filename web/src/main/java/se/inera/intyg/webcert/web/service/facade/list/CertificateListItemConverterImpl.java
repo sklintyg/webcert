@@ -27,6 +27,7 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
@@ -93,13 +94,13 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         final var patientListInfo = getPatientListInfo(entry);
         final var convertedLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
 
-        listItem.addValue(ListColumnType.QUESTION_ACTION, entry.getAmne());
+        listItem.addValue(ListColumnType.QUESTION_ACTION, convertQuestionStatus(entry.getAmne(), entry.getStatus(), entry.getFragestallare()));
         listItem.addValue(ListColumnType.SENT_RECEIVED, entry.getReceivedDate());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(ListColumnType.SIGNED_BY, entry.getSigneratAvNamn());
         listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getIntygId());
         listItem.addValue(ListColumnType.FORWARDED, entry.isVidarebefordrad());
-        listItem.addValue(ListColumnType.SENDER, entry.getFragestallare());
+        listItem.addValue(ListColumnType.SENDER, convertSender(entry.getFragestallare()));
         listItem.addValue(ListColumnType.LINKS, convertedLinks);
 
         if (isAllowedToForward(convertedLinks)) {
@@ -107,6 +108,41 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         }
 
         return listItem;
+    }
+
+    private String convertSender(String sender) {
+        return QuestionSenderType.valueOf(sender).getName();
+    }
+
+    private String convertQuestionStatus(String subject, Status status, String sender) {
+        if (subject.equals("KOMPLT")) {
+           return "Komplettera";
+        }
+
+        if (status == Status.ANSWERED) {
+            if (sender.equals("FK")) {
+                return "Hanterat ärende";
+            }
+            return "Läs inkommet svar";
+        }
+
+        if (status == Status.PENDING_INTERNAL_ACTION) {
+            if (subject.equals("PAMINN")) {
+                return "Påminnelse: ";
+            }
+
+            return "Svara";
+        }
+
+        if (status == Status.PENDING_EXTERNAL_ACTION) {
+            return "Invänta svar";
+        }
+
+        if (status == Status.CLOSED) {
+            return "Inget";
+        }
+
+        return "Okänd status";
     }
 
     private CertificateListItem convertListItem(CertificateListEntry entry) {

@@ -31,7 +31,9 @@ import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +42,6 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private static final String TITLE = "Ej hanterade ärenden";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget och frågan/svaret.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter frågor och svar.";
-    private static final String FORWARD_CERTIFICATE_TOOLTIP = "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
     private static final String DESCRIPTION = "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej hanterade ärenden.";
@@ -74,7 +75,6 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
-        config.addButtonTooltip(CertificateListItemValueType.FORWARD_BUTTON.toString(), FORWARD_CERTIFICATE_TOOLTIP);
         config.setTableHeadings(getTableHeadings());
         config.setDescription(DESCRIPTION);
         config.setEmptyListText(EMPTY_LIST_TEXT);
@@ -124,6 +124,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private ListFilterSelectConfig getUnitSelect(String unitId) {
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(unitId).getMottagningar();
+        final var unitName = hsaOrganizationsService.getVardenhet(unitId).getNamn();
         return new ListFilterSelectConfig("UNIT", "Enhet",
                 statistics.getUnitStatistics()
                         .entrySet()
@@ -133,14 +134,28 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
                                         .stream()
                                         .map(AbstractVardenhet::getId)
                                         .anyMatch(
-                                                (subUnitId) -> subUnitId.equals(unit.getKey()) || unit.getKey().equals(unitId)
+                                                (subUnitId) -> isSubUnit(subUnitId, unit.getKey()) || isChosenUnit(unitId, unit.getKey())
                                         )
                         )
+                        .sorted(sortUnitFirstAndSubUnitsAlphabetical(unitId))
                         .map(
-                                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), unitId.equals(unit.getKey()))
+                                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), isChosenUnit(unitId, unit.getKey()))
                         )
                         .collect(Collectors.toList())
         );
+    }
+
+    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
+        return (o1, o2) -> isChosenUnit(o1.getKey(), unitId) ? -1
+                : isChosenUnit(o2.getKey(), unitId) ? 1 : o1.getKey().compareTo(o2.getKey());
+    }
+
+    private boolean isSubUnit(String subUnitId, String unitId) {
+        return subUnitId.equals(unitId);
+    }
+
+    private boolean isChosenUnit(String chosenUnitId, String unitId) {
+        return chosenUnitId.equals(unitId);
     }
 
 
@@ -151,7 +166,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private String getUnitText(String unitId, long nbrOfQuestions) {
         final var user = webCertUserService.getUser();
         final var selectedUnit = user.getValdVardenhet().getId();
-        final var isSubUnit = !unitId.equals(selectedUnit);
+        final var isSubUnit = !isSubUnit(unitId, selectedUnit);
         final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
         return isSubUnit ? "     " + text : text;
     }

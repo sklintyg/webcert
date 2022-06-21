@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list.filter;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
@@ -39,10 +40,11 @@ public class CertificateFilterConverterImpl implements CertificateFilterConverte
 
     private QueryFragaSvarParameter convertFilter(ListFilter filter) {
         final var convertedFilter = new QueryFragaSvarParameter();
+        final var patientId = ListFilterHelper.getPatientIdWithoutDash(filter);
 
-        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter));
+        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.QUESTIONS));
         convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
-        convertedFilter.setPatientPersonId(ListFilterHelper.getPatientId(filter));
+        convertedFilter.setPatientPersonId(patientId.length() == 0 ? null : patientId);
         convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
         convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
         convertedFilter.setVidarebefordrad(ListFilterHelper.getForwarded(filter));
@@ -65,7 +67,7 @@ public class CertificateFilterConverterImpl implements CertificateFilterConverte
         convertedFilter.setSignedFrom(ListFilterHelper.getSignedFrom(filter));
         convertedFilter.setSignedTo(ListFilterHelper.getSignedTo(filter));
         convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
-        convertedFilter.setOrderBy(ListFilterHelper.getOrderBy(filter));
+        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.CERTIFICATES));
         convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
         convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
         convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));

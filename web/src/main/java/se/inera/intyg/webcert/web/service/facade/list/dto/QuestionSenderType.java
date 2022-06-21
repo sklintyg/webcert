@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public enum QuestionSenderType {
     FK("Försäkringskassan"),
-    UNIT("Vårdenheten"),
+    WC("Vårdenheten"),
     SHOW_ALL("Visa alla");
 
     private final String text;
