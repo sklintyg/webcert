@@ -28,6 +28,7 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
@@ -36,6 +37,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -202,7 +204,7 @@ class ListTestHelper {
         return createCertificateListEntry(true, true, "191212121212");
     }
 
-        public static CertificateListEntry createCertificateListEntry(boolean isSent, boolean includePatientStatuses, String patientId) {
+    public static CertificateListEntry createCertificateListEntry(boolean isSent, boolean includePatientStatuses, String patientId) {
         final var entry = new CertificateListEntry();
         entry.setCertificateType("luse");
         entry.setCertificateId("CERTIFICATE_ID");
@@ -213,6 +215,24 @@ class ListTestHelper {
         entry.setDeceased(includePatientStatuses);
         entry.setProtectedIdentity(includePatientStatuses);
         entry.setTestIndicator(includePatientStatuses);
+        return entry;
+    }
+
+    public static ArendeListItem createQuestionListEntry(boolean includePatientStatuses, String patientId) {
+        final var entry = new ArendeListItem();
+        entry.setIntygTyp("luse");
+        entry.setIntygId("CERTIFICATE_ID");
+        entry.setPatientId(patientId);
+        entry.setReceivedDate(LocalDateTime.now());
+        entry.setAvliden(includePatientStatuses);
+        entry.setTestIntyg(includePatientStatuses);
+        entry.setSekretessmarkering(includePatientStatuses);
+        entry.setAmne("AMNE");
+        entry.setEnhetsnamn("UNIT_NAME");
+        entry.setReceivedDate(LocalDateTime.now());
+        entry.setStatus(Status.PENDING_INTERNAL_ACTION);
+        entry.setSigneratAv("SIGNED_BY");
+        entry.setFragestallare("FK");
         return entry;
     }
 }

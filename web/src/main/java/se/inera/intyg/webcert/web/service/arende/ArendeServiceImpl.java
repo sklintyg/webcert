@@ -583,7 +583,7 @@ public class ArendeServiceImpl implements ArendeService {
         ali.setSekretessmarkering(status.isProtectedPerson() == SekretessStatus.TRUE);
     }
 
-    private static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
+    public static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
         String amneString = "";
         if (paminnelse) {
             amneString = "Påminnelse: ";

@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverter;
+import se.inera.intyg.webcert.web.service.facade.list.filter.QuestionFilterConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -44,19 +45,19 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
     private static final Logger LOG = LoggerFactory.getLogger(ListQuestionsFacadeServiceImpl.class);
 
-    private final CertificateFilterConverter certificateFilterConverter;
+    private final QuestionFilterConverter questionFilterConverter;
     private final CertificateListItemConverter certificateListItemConverter;
     private final ArendeService arendeService;
     private final WebCertUserService webCertUserService;
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
     @Autowired
-    public ListQuestionsFacadeServiceImpl(CertificateFilterConverter certificateFilterConverter,
+    public ListQuestionsFacadeServiceImpl(QuestionFilterConverter questionFilterConverter,
                                           CertificateListItemConverter certificateListItemConverter,
                                           ArendeService arendeService,
                                           WebCertUserService webCertUserService,
                                           CertificateAccessServiceHelper certificateAccessServiceHelper) {
-        this.certificateFilterConverter = certificateFilterConverter;
+        this.questionFilterConverter = questionFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
         this.arendeService = arendeService;
         this.webCertUserService = webCertUserService;
@@ -67,7 +68,7 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
     public ListInfo get(ListFilter filter) {
         LOG.debug("Fetching certificates with questions");
 
-        final var convertedFilter = certificateFilterConverter.convert(filter);
+        final var convertedFilter = questionFilterConverter.convert(filter);
 
         final var listResponse = arendeService.filterArende(convertedFilter);
         final var convertedList = listResponse.getResults()

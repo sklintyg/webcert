@@ -26,25 +26,31 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Service
-public class CertificateFilterConverterImpl implements CertificateFilterConverter {
+public class QuestionFilterConverterImpl implements QuestionFilterConverter {
 
     @Override
-    public QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units) {
-        return convertFilter(filter, hsaId, units);
+    public QueryFragaSvarParameter convert(ListFilter filter) {
+        return convertFilter(filter);
     }
 
-    private QueryIntygParameter convertFilter(ListFilter filter, String hsaId, String[] units) {
-        final var convertedFilter = new QueryIntygParameter();
+    private QueryFragaSvarParameter convertFilter(ListFilter filter) {
+        final var convertedFilter = new QueryFragaSvarParameter();
+        final var patientId = ListFilterHelper.getPatientIdWithoutDash(filter);
 
-        convertedFilter.setHsaId(hsaId);
-        convertedFilter.setUnitIds(units);
-        convertedFilter.setSignedFrom(ListFilterHelper.getSignedFrom(filter));
-        convertedFilter.setSignedTo(ListFilterHelper.getSignedTo(filter));
-        convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
-        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.CERTIFICATES));
+        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.QUESTIONS));
         convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
-        convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
+        convertedFilter.setPatientPersonId(patientId.length() == 0 ? null : patientId);
         convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
+        convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
+        convertedFilter.setVidarebefordrad(ListFilterHelper.getForwarded(filter));
+        convertedFilter.setHsaId(ListFilterHelper.getSignedBy(filter));
+        convertedFilter.setChangedFrom(ListFilterHelper.getSentFrom(filter));
+        convertedFilter.setChangedTo(ListFilterHelper.getSentTo(filter));
+        convertedFilter.setVantarPa(ListFilterHelper.getQuestionStatus(filter));
+        convertedFilter.setQuestionFromFK(ListFilterHelper.includeQuestionFromFK(filter));
+        convertedFilter.setQuestionFromWC(ListFilterHelper.includeQuestionFromUnit(filter));
+        convertedFilter.setEnhetId(ListFilterHelper.getUnitId(filter));
+
         return convertedFilter;
     }
 }

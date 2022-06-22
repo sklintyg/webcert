@@ -122,27 +122,33 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private ListFilterSelectConfig getUnitSelect(String unitId) {
+        return new ListFilterSelectConfig("UNIT", "Enhet", getUnitList(unitId));
+    }
+
+    private List<ListFilterConfigValue> getUnitList(String unitId) {
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(unitId).getMottagningar();
-        final var unitName = hsaOrganizationsService.getVardenhet(unitId).getNamn();
-        return new ListFilterSelectConfig("UNIT", "Enhet",
-                statistics.getUnitStatistics()
-                        .entrySet()
-                        .stream()
-                        .filter(
-                                (unit) -> subUnits
-                                        .stream()
-                                        .map(AbstractVardenhet::getId)
-                                        .anyMatch(
-                                                (subUnitId) -> isSubUnit(subUnitId, unit.getKey()) || isChosenUnit(unitId, unit.getKey())
-                                        )
-                        )
-                        .sorted(sortUnitFirstAndSubUnitsAlphabetical(unitId))
-                        .map(
-                                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), isChosenUnit(unitId, unit.getKey()))
-                        )
-                        .collect(Collectors.toList())
-        );
+
+        final var list = statistics.getUnitStatistics()
+                .entrySet()
+                .stream()
+                .filter(
+                        (unit) -> subUnits
+                                .stream()
+                                .map(AbstractVardenhet::getId)
+                                .anyMatch(
+                                        (subUnitId) -> isSubUnit(subUnitId, unit.getKey()) || isChosenUnit(unitId, unit.getKey())
+                                )
+                )
+                .sorted(sortUnitFirstAndSubUnitsAlphabetical(unitId))
+                .map(
+                        (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), isChosenUnit(unitId, unit.getKey()))
+                )
+                .collect(Collectors.toList());
+
+        list.add(0, ListFilterConfigValue.create("", "Visa alla", true));
+
+        return list;
     }
 
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
@@ -168,7 +174,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var selectedUnit = user.getValdVardenhet().getId();
         final var isSubUnit = !isSubUnit(unitId, selectedUnit);
         final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
-        return isSubUnit ? "     " + text : text;
+        return isSubUnit ? "&emsp; " + text : text;
     }
 
 }

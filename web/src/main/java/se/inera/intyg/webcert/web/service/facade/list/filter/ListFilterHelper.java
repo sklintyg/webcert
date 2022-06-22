@@ -47,8 +47,8 @@ public class ListFilterHelper {
     }
 
     public static LocalDateTime getSentTo(ListFilter filter) {
-        ListFilterDateRangeValue saved = (ListFilterDateRangeValue) filter.getValue("SENT");
-        return saved != null && saved.getTo() != null ? saved.getTo().plusDays(1) : null;
+        ListFilterDateRangeValue sent = (ListFilterDateRangeValue) filter.getValue("SENT");
+        return sent != null && sent.getTo() != null ? sent.getTo().plusDays(1) : null;
     }
 
     public static String getSavedBy(ListFilter filter) {
@@ -57,8 +57,8 @@ public class ListFilterHelper {
     }
 
     public static String getSignedBy(ListFilter filter) {
-        ListFilterSelectValue savedBy = (ListFilterSelectValue) filter.getValue("SIGNED_BY");
-        return savedBy != null && !savedBy.getValue().equals("SHOW_ALL") ? savedBy.getValue() : "";
+        ListFilterSelectValue signedBy = (ListFilterSelectValue) filter.getValue("SIGNED_BY");
+        return signedBy != null && !signedBy.getValue().equals("SHOW_ALL") ? signedBy.getValue() : "";
     }
 
     public static String getPatientId(ListFilter filter) {
@@ -167,6 +167,9 @@ public class ListFilterHelper {
 
     public static String convertOrderBy(ListFilter filter, ListType listType) {
         ListFilterTextValue orderBy = (ListFilterTextValue) filter.getValue("ORDER_BY");
+        if (orderBy == null) {
+            return "";
+        }
         return listType == ListType.CERTIFICATES ? convertOrderBy(orderBy.getValue()) : convertOrderByForQuestions(orderBy.getValue());
     }
 
