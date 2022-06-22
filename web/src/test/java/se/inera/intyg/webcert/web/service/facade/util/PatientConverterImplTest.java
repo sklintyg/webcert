@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -58,6 +61,7 @@ class PatientConverterImplTest {
 
     final String PATIENT_ID = "19121212-1212";
     final String ALTERNATE_PATIENT_ID = "19121212-1213";
+    final String PATIENT_RESERVE_ID = "19121212-12AB";
     final String FIRSTNAME = "firstname";
     final String MIDDLENAME = "middlename";
     final String LASTNAME = "lastname";
@@ -74,11 +78,12 @@ class PatientConverterImplTest {
 
     @Nested
     class PatientWithName {
+
         @BeforeEach
         public void setup() {
             doReturn(puPatient)
-                    .when(patientDetailsResolver)
-                    .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(CERTIFICATE_TYPE_VERSION));
+                .when(patientDetailsResolver)
+                .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(CERTIFICATE_TYPE_VERSION));
             doReturn(true).when(webCertUserService).hasAuthenticationContext();
             doReturn(user).when(webCertUserService).getUser();
         }
@@ -137,6 +142,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(ALTERNATE_PATIENT_ID, patient.getPersonId().getId());
                     assertTrue(patient.isPersonIdUpdated());
+                    assertTrue(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -146,6 +152,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPersonId().getId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertFalse(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -155,6 +162,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPersonId().getId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertFalse(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -164,6 +172,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(ALTERNATE_PATIENT_ID, patient.getPersonId().getId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertTrue(patient.isPersonIdChanged());
                 }
             }
 
@@ -177,6 +186,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertNull(patient.getPreviousPersonId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertFalse(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -186,6 +196,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertNull(patient.getPreviousPersonId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertFalse(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -196,6 +207,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
                     assertTrue(patient.isPersonIdUpdated());
+                    assertTrue(patient.isPersonIdChanged());
                 }
 
                 @Test
@@ -206,6 +218,7 @@ class PatientConverterImplTest {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
                     assertFalse(patient.isPersonIdUpdated());
+                    assertTrue(patient.isPersonIdChanged());
                 }
             }
 
@@ -234,6 +247,62 @@ class PatientConverterImplTest {
                 public void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertFalse(patient.isPersonIdUpdated());
+                }
+            }
+
+            @Nested
+            class PersonIdChanged {
+
+                @Test
+                public void shallSetFlagIfAlternateAndBeforeSsnIsSetAndDiffers() {
+                    final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
+                    parameters.setBeforeAlternateSsn(PATIENT_ID);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertTrue(patient.isPersonIdChanged());
+                }
+
+                @Test
+                public void shallSetFlagIfBeforeSsnIsNotSetButPersonIdAndAlternateSsnDiffers() {
+                    final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertTrue(patient.isPersonIdChanged());
+                }
+
+                @Test
+                public void shallNotSetFlagIfPersonIdIsNotValid() {
+                    final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
+                    parameters.setBeforeAlternateSsn(PATIENT_ID);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertFalse(patient.isPersonIdChanged());
+                }
+
+                @Test
+                public void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
+                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertFalse(patient.isPersonIdChanged());
+                }
+            }
+
+            @Nested
+            class ReserveId {
+
+                @Test
+                public void shallSetReserveIdFlagIfPersonIdIsReserveId() {
+                    final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertTrue(patient.isReserveId());
+                }
+
+                @Test
+                public void shallNotSetReserveIdFlagIfPersonIdIsValid() {
+                    final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                    assertFalse(patient.isReserveId());
                 }
             }
 
@@ -322,8 +391,8 @@ class PatientConverterImplTest {
         @BeforeEach
         public void setup() {
             doReturn(createPUPatientWithNoName())
-                    .when(patientDetailsResolver)
-                    .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(CERTIFICATE_TYPE_VERSION));
+                .when(patientDetailsResolver)
+                .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(CERTIFICATE_TYPE_VERSION));
             doReturn(true).when(webCertUserService).hasAuthenticationContext();
             doReturn(user).when(webCertUserService).getUser();
         }

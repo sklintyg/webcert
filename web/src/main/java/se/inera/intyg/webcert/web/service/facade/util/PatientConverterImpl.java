@@ -62,15 +62,42 @@ public class PatientConverterImpl implements PatientConverter {
             .differentNameFromEHR(isPatientNameDifferent(patient, parameters))
             .previousPersonId(getPreviousPersonId(patientId, parameters))
             .personIdUpdated(isPatientIdUpdated(parameters, patientId))
+            .personIdChanged(isPatientIdChanged(parameters, patientId))
+            .reserveId(hasReserveId(parameters, patientId))
             .build();
     }
 
-    private String getString(String s) {
-        return s != null ? s : "";
+    private boolean isPatientIdChanged(IntegrationParameters parameters, Personnummer patientId) {
+        final var personId = isBeforeAlternateSSNSet(parameters)
+            ? Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn())
+            : Personnummer.createPersonnummer(patientId.getPersonnummer());
+
+        if (personId.isEmpty()) {
+            return false;
+        }
+
+        return isAlternateSSNSet(parameters)
+            && !isPersonIdSameAsAlternateSSN(personId.get(), parameters)
+            && isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+    }
+
+    private boolean hasReserveId(IntegrationParameters parameters, Personnummer patientId) {
+        return !isBeforeAlternateSSNSet(parameters)
+            && isAlternateSSNSet(parameters)
+            && !isPersonIdSameAsAlternateSSN(patientId, parameters)
+            && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+    }
+
+    private boolean isValidPersonIdOrCoordinationId(String id) {
+        return Personnummer.createPersonnummer(id).isPresent();
     }
 
     private boolean isPatientIdUpdated(IntegrationParameters parameters, Personnummer patientId) {
         return isBeforeAlternateSSNSet(parameters) && !isPersonIdSameAsBeforeAlternateSSN(patientId, parameters);
+    }
+
+    private String getString(String s) {
+        return s != null ? s : "";
     }
 
     private boolean isBeforeAlternateSSNSet(IntegrationParameters parameters) {
