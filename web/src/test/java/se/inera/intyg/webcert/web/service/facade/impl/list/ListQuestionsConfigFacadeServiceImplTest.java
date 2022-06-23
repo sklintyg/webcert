@@ -67,6 +67,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
     private final String STAFF_NAME = "Name";
     private final String DEFAULT_HSA_ID = "HsaIdDefault";
     private final String DEFAULT_HSA_NAME = "Name default";
+
     private final String UNIT_ID = "UNIT_ID";
     private final String UNIT_NAME = "UNIT_NAME";
     private final String A_UNIT = "A_UNIT";
@@ -83,16 +84,16 @@ class ListQuestionsConfigFacadeServiceImplTest {
         unit.setId(UNIT_ID);
 
         final var aUnit = new Vardenhet();
-        unit.setNamn(A_UNIT_NAME);
-        unit.setId(A_UNIT);
+        aUnit.setNamn(A_UNIT_NAME);
+        aUnit.setId(A_UNIT);
 
         final var bUnit = new Vardenhet();
-        unit.setNamn(B_UNIT_NAME);
-        unit.setId(B_UNIT);
+        bUnit.setNamn(B_UNIT_NAME);
+        bUnit.setId(B_UNIT);
 
         final var cUnit = new Vardenhet();
-        unit.setNamn(C_UNIT_NAME);
-        unit.setId(C_UNIT);
+        cUnit.setNamn(C_UNIT_NAME);
+        cUnit.setId(C_UNIT);
 
         when(hsaOrganizationsService.getVardenhet(UNIT_ID)).thenReturn(unit);
         when(hsaOrganizationsService.getVardenhet(A_UNIT)).thenReturn(aUnit);
@@ -106,6 +107,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
         statistics.addUnitStatistics(UNIT_ID, unitStatistics);
         statistics.addUnitStatistics(A_UNIT, unitStatistics);
         statistics.addUnitStatistics(B_UNIT, unitStatistics);
+        statistics.addUnitStatistics(C_UNIT, unitStatistics);
         when(userStatisticsService.getUserStatistics()).thenReturn(statistics);
 
         when(getStaffInfoFacadeService.getLoggedInStaffHsaId()).thenReturn(DEFAULT_HSA_ID);
@@ -398,6 +400,11 @@ class ListQuestionsConfigFacadeServiceImplTest {
         @Test
         public void shouldSetUnitSelectName() {
             assertEquals(UNIT_NAME + " (2)", filter.getValues().get(1).getName());
+        }
+
+        @Test
+        public void shouldSetUnitSelectNameWithSpacingForSubunit() {
+            assertEquals("&emsp; " + A_UNIT_NAME + " (2)", filter.getValues().get(2).getName());
         }
 
         @Test
