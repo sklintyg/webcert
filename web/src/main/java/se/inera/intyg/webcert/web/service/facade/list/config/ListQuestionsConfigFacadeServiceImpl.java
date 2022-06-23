@@ -64,10 +64,10 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     @Override
     public ListConfig get(String unitId) {
-        return getListDraftsConfig(unitId);
+        return getListConfig(unitId);
     }
 
-    private ListConfig getListDraftsConfig(String unit) {
+    private ListConfig getListConfig(String unit) {
         final var config = new ListConfig();
         config.setTitle(TITLE);
         config.setSecondaryTitle(getSecondaryTitle(unit));
