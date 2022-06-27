@@ -18,18 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
@@ -143,6 +146,67 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
+
+        @Test
+        void shallNotIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
+            final var user = getUserWithOrigin("NORMAL");
+
+            doReturn(getUnit())
+                .when(user)
+                .getValdVardenhet();
+
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallNotIncludeChooseUnitIfOriginIsDjupintegrationAnHasNoLoggedInUnit() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallNotIncludeChooseUnitIfOriginIsUthoppAnHasNoLoggedInUnit() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChooseUnitIfOriginIsNormalAndHasNoLoggedInUnit() {
+            final var user = getUserWithOrigin("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallNotIncludeChangeUnitIfOriginIsDjupintegration() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChangeUnitIfOriginIsNormal() {
+            final var user = getUserWithOrigin("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+
+        @Test
+        void shallIncludeChangeUnitIfOriginIsUthopp() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+    }
+
+    private SelectableVardenhet getUnit() {
+        final var unit = new Mottagning();
+        unit.setId("UNIT_ID");
+        unit.setNamn("UNIT_NAME");
+        return unit;
     }
 }
 

@@ -24,9 +24,13 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -40,11 +44,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     private final IntygModuleRegistry intygModuleRegistry;
     private final ResourceLinkHelper resourceLinkHelper;
+    private final AuthoritiesHelper authoritiesHelper;
+    private final WebCertUserService webCertUserService;
 
     @Autowired
-    public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper) {
+    public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
+                                                AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
+        this.authoritiesHelper = authoritiesHelper;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -72,7 +81,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
                 .collect(Collectors.toList());
 
         if (list.stream().noneMatch(link -> link.getType() == ResourceLinkTypeDTO.CREATE_CERTIFICATE)) {
-            list.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE, "Skapa intyg", "", false));
+            list.add(ResourceLinkFactory.create(false));
         }
 
         return list;
@@ -80,16 +89,19 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     private ResourceLinkDTO convertResourceLink(ActionLink link) {
         if (link.getType() == ActionLinkType.SKAPA_UTKAST) {
-            return ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE, "Skapa intyg", "Skapa ett intygsutkast.", true);
+            return ResourceLinkFactory.create(true);
         }
         return null;
     }
 
     private List<IntygModuleDTO> getCertificateModuleList(Personnummer personnummer) {
         final var intygModules = intygModuleRegistry.listAllModules();
+        final var allowedCertificateTypes = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)
+            .filter((intygModule) -> allowedCertificateTypes.contains(intygModule.getId()))
             .filter((intygModule) -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
             .collect(Collectors.toList());
 

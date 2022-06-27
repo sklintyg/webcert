@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.*;
 
@@ -62,7 +63,7 @@ public class PatientControllerTest {
                 doReturn(null)
                         .when(getPatientFacadeService)
                         .getPatient(anyString());
-            } catch (InvalidPatientIdException | PatientSearchErrorException e) {
+            } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
                 e.printStackTrace();
             }
         }
@@ -72,12 +73,12 @@ public class PatientControllerTest {
                 doReturn(patient)
                     .when(getPatientFacadeService)
                     .getPatient(anyString());
-            } catch (InvalidPatientIdException | PatientSearchErrorException e) {
+            } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
                 e.printStackTrace();
             }
         }
 
-        void setup(Exception e) throws InvalidPatientIdException, PatientSearchErrorException {
+        void setup(Exception e) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             doThrow(e)
                     .when(getPatientFacadeService)
                     .getPatient(anyString());
@@ -107,17 +108,24 @@ public class PatientControllerTest {
         }
 
         @Test
-        void shallSetStatusToErrorIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException {
+        void shallSetStatusToErrorIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             setup(new PatientSearchErrorException());
             final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
             assertEquals(response.getStatus(), PatientResponseStatusDTO.ERROR);
         }
 
         @Test
-        void shallSetStatusToInvalidPatientIdIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException {
+        void shallSetStatusToInvalidPatientIdIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             setup(new InvalidPatientIdException());
             final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
             assertEquals(response.getStatus(), PatientResponseStatusDTO.INVALID_PATIENT_ID);
+        }
+
+        @Test
+        void shallSetStatusNoNameIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+            setup(new PatientNoNameException());
+            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+            assertEquals(response.getStatus(), PatientResponseStatusDTO.NO_NAME);
         }
     }
 }

@@ -121,7 +121,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             + "Försäkringskassans system vilket ska göras i samråd med patienten.</br>"
             + "</br>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.";
 
-    private static final String CREATE_AG7804_NAME = "Skapa Ag7804";
+    private static final String CREATE_AG7804_NAME = "Skapa AG7804";
     private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
     private static final String CREATE_AG7804_BODY = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
         + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
@@ -360,7 +360,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(getQuestionsResourceLink(certificate));
         }
 
-        if (isMessagingAvailable(certificate) && isSent(certificate)) {
+        if (isMessagingAvailable(certificate) && isSent(certificate) && !hasUnsignedComplement(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_QUESTIONS,
@@ -534,7 +534,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
-        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate) || hasBeenComplemented(certificate));
+        return !(isReplacementUnsigned(certificate) || isReplacementSigned(certificate)
+            || hasBeenComplementedBySignedCertificate(certificate));
     }
 
     private boolean isReplaceCertificateContinueAvailable(Certificate certificate) {
@@ -590,11 +591,19 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
           }
       }
 
-      private boolean hasBeenComplemented(Certificate certificate) {
+      private boolean hasBeenComplementedBySignedCertificate(Certificate certificate) {
         if (certificate.getMetadata().getRelations() != null) {
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
-                relation -> relation.getType().equals(
-                    COMPLEMENTED)
+                relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == SIGNED
+            );
+        }
+        return false;
+    }
+
+    private boolean hasUnsignedComplement(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() != null) {
+            return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
+                    relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == UNSIGNED
             );
         }
         return false;
@@ -609,7 +618,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
         return false;
     }
-  
+
     private boolean isCopyCertificateAvailable(Certificate certificate) {
         return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }

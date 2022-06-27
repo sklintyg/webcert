@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public enum PatientResponseStatusDTO {
-    FOUND,
-    NOT_FOUND,
-    ERROR,
-    INVALID_PATIENT_ID,
-    NO_NAME,
+package se.inera.intyg.webcert.web.service.facade.impl;
+
+public class ChangeUnitException extends Exception {
+    ChangeUnitException(String message) {
+        super(message);
+    }
 }

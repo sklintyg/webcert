@@ -52,9 +52,9 @@ public class PatientConverterImpl implements PatientConverter {
             .personId(
                 getPersonId(patientId, parameters)
             )
-            .firstName(patient.getFornamn())
-            .middleName(patient.getMellannamn())
-            .lastName(patient.getEfternamn())
+            .firstName(getString(patient.getFornamn()))
+            .middleName(getString(patient.getMellannamn()))
+            .lastName(getString(patient.getEfternamn()))
             .fullName(patient.getFullstandigtNamn())
             .testIndicated(patient.isTestIndicator())
             .protectedPerson(isProtectedPerson(patientId))
@@ -63,6 +63,10 @@ public class PatientConverterImpl implements PatientConverter {
             .previousPersonId(getPreviousPersonId(patientId, parameters))
             .personIdUpdated(isPatientIdUpdated(parameters, patientId))
             .build();
+    }
+
+    private String getString(String s) {
+        return s != null ? s : "";
     }
 
     private boolean isPatientIdUpdated(IntegrationParameters parameters, Personnummer patientId) {
@@ -110,7 +114,7 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private boolean isStringDifferent(String s1, String s2) {
-        return !s1.equals(s2);
+        return s1 == null || !s1.equals(s2);
     }
 
     private boolean isNameSentAsParameter(IntegrationParameters parameters) {

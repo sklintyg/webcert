@@ -19,8 +19,11 @@
 package se.inera.intyg.webcert.web.service.facade.user;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.CareProvider;
+import se.inera.intyg.common.support.facade.model.CareUnit;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.LoginMethod;
 import se.inera.intyg.common.support.facade.model.user.SigningMethod;
@@ -94,7 +97,37 @@ public class UserServiceImpl implements UserService {
             .preferences(webCertUser.getAnvandarPreference())
             .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+            .careProviders(getCareProviders(webCertUser))
             .build();
+    }
+
+    private List<CareProvider> getCareProviders(WebCertUser webCertUser) {
+        return webCertUser.getVardgivare().stream().map(vardgivare ->
+            CareProvider.builder()
+                .id(vardgivare.getId())
+                .name(vardgivare.getNamn())
+                .careUnits(getCareUnits(vardgivare))
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<CareUnit> getCareUnits(Vardgivare vardgivare) {
+        return vardgivare.getVardenheter().stream().map(vardenhet ->
+            CareUnit.builder()
+                .unitId(vardenhet.getId())
+                .unitName(vardenhet.getNamn())
+                .units(getUnits(vardenhet.getMottagningar()))
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<Unit> getUnits(List<Mottagning> mottagningar) {
+        return mottagningar.stream().map(mottagning ->
+            Unit.builder()
+                .unitId(mottagning.getId())
+                .unitName(mottagning.getNamn())
+                .build()
+        ).collect(Collectors.toList());
     }
 
     private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {

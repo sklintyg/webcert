@@ -48,6 +48,12 @@ public class PatientResponseDTO {
         return responseDTO;
     }
 
+    public static PatientResponseDTO createNoNameResponse() {
+        final var responseDTO = new PatientResponseDTO();
+        responseDTO.status = PatientResponseStatusDTO.NO_NAME;
+        return responseDTO;
+    }
+
     public void setPatient(Patient patient) {
         this.patient = patient;
     }

@@ -19,12 +19,14 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import io.swagger.annotations.Api;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -116,8 +118,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
-    public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
-        return getPdf(intygsTyp, intygsId, false);
+    public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId,
+        @Context HttpServletRequest request) {
+        return getPdf(intygsTyp, intygsId, false, request);
     }
 
     /**
@@ -131,11 +134,11 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp,
-        @PathParam(value = "intygsId") final String intygsId) {
-        return getPdf(intygsTyp, intygsId, true);
+        @PathParam(value = "intygsId") final String intygsId, @Context HttpServletRequest request) {
+        return getPdf(intygsTyp, intygsId, true, request);
     }
 
-    private Response getPdf(String intygsTyp, final String intygsId, boolean isEmployerCopy) {
+    private Response getPdf(String intygsTyp, final String intygsId, boolean isEmployerCopy, HttpServletRequest request) {
         if (!isEmployerCopy) {
             LOG.debug("Fetching signed intyg '{}' as PDF", intygsId);
         } else {
@@ -144,8 +147,11 @@ public class IntygModuleApiController extends AbstractApiController {
 
         IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp, isEmployerCopy);
 
-        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename()))
-            .build();
+        final var userAgent = request.getHeader("User-Agent");
+        final var contentDisposition = userAgent.matches(".*Trident/\\d+.*|.*MSIE \\d+.*")
+            ? buildPdfHeader(intygPdfResponse.getFilename()) : "inline";
+
+        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, contentDisposition).build();
     }
 
     private String buildPdfHeader(String pdfFileName) {

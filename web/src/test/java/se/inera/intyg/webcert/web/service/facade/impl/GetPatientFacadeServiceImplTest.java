@@ -29,6 +29,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
+import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +71,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithPatientId() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithPatientId() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -79,7 +80,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithFirstName() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithFirstName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -88,7 +89,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithLastName() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithLastName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -97,7 +98,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -106,7 +107,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallSetFullNameForPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallSetFullNameForPatientWithMiddleName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -115,7 +116,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallSetFullNameForPatientWithoutMiddleName() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallSetFullNameForPatientWithoutMiddleName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatientWithoutMiddleName();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -124,7 +125,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithProtectedPersonFlag() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithProtectedPersonFlag() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient(true, false, false);
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -135,7 +136,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithDeceasedFlag() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithDeceasedFlag() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient(false, false, true);
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -146,7 +147,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithAllFlags() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithAllFlags() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient(true, true, true);
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -157,7 +158,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallGetPatientWithNoFlags() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallGetPatientWithNoFlags() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -168,7 +169,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallLogPULookupIfPatientIsFound() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallLogPULookupIfPatientIsFound() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatient();
 
         getPatientFacadeService.getPatient(PATIENT_ID);
@@ -177,7 +178,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallLogPULookupIfPatientIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallLogPULookupIfPatientIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatientNotFound();
 
         getPatientFacadeService.getPatient(PATIENT_ID);
@@ -190,7 +191,7 @@ public class GetPatientFacadeServiceImplTest {
         setupPatientError();
         try {
             getPatientFacadeService.getPatient(PATIENT_ID);
-        } catch (InvalidPatientIdException | PatientSearchErrorException e) {
+        } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
             e.printStackTrace();
         }
 
@@ -198,7 +199,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallReturnNullIfPersonIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException {
+    void shallReturnNullIfPersonIsNotFound() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatientNotFound();
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
         assertNull(patient);
@@ -208,6 +209,20 @@ public class GetPatientFacadeServiceImplTest {
     void shallThrowExceptionIfPUError() {
         setupPatientError();
         assertThrows(PatientSearchErrorException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
+    }
+
+    @Test
+    void shallThrowExceptionIfPatientHasNoFirstName() {
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, null, "name", "name", "", "", "");
+        doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
+        assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
+    }
+
+    @Test
+    void shallThrowExceptionIfPatientHasNoLastName() {
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, "", "name", null, "", "", "");
+        doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
+        assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
     }
 
     @Test
