@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.user;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +38,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-import java.util.*;
-
 @Service
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
@@ -49,8 +51,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     @Autowired
     public UserStatisticsServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
-                                     AuthoritiesHelper authoritiesHelper, FragaSvarService fragaSvarService,
-                                     ArendeService arendeService) {
+        AuthoritiesHelper authoritiesHelper, FragaSvarService fragaSvarService,
+        ArendeService arendeService) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.authoritiesHelper = authoritiesHelper;
@@ -79,13 +81,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
         if (user.getValdVardenhet() != null) {
             statistics.setNbrOfDraftsOnSelectedUnit(
-                    getNumberOfDraftsOnSelectedUnit(user, draftsMap)
+                getNumberOfDraftsOnSelectedUnit(user, draftsMap)
             );
             statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                    getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
+                getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
             );
             statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                    getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
+                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
             );
         }
 
@@ -94,8 +96,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return statistics;
     }
 
-    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String,
-            Long> draftMap, Map<String, Long> questionMap) {
+    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap,
+        Map<String, Long> questionMap) {
         for (Vardgivare careProvider : careProviders) {
             for (Vardenhet unit : careProvider.getVardenheter()) {
                 final var subUnitIds = unit.getHsaIds();
@@ -106,8 +108,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         }
     }
 
-    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String,
-            Long> draftMap, Map<String, Long> questionMap) {
+    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap,
+        Map<String, Long> questionMap) {
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
         final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
         final var draftsOnUnit = getFromMap(unitId, draftMap);
@@ -115,8 +117,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
     }
 
-    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String,
-            Long> draftMap, Map<String, Long> questionMap) {
+    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap,
+        Map<String, Long> questionMap) {
         for (String unitId : unitIds) {
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
@@ -135,8 +137,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return notSelectedUnitIds;
     }
 
-    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user,
-                                                                 Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user, Map<String, Long> draftStats,
+        Map<String, Long> questionsStats) {
         final var notSelectedUnitIds = getNotSelectedUnitIds(user, unitIds);
         return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
     }
@@ -172,7 +174,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         final var units = user.getIdsOfAllVardenheter();
         if (units == null || units.isEmpty()) {
             LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
-                    user.getHsaId(), user.getAsJson());
+                user.getHsaId(), user.getAsJson());
             return null;
         }
         return units;

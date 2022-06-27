@@ -22,4 +22,4 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build camelTest -PcodeQuality -DcommonVersion=3.17.1.+ -DinfraVersion=3.17.1.+
+      run: ./gradlew build camelTest -PcodeQuality -DcommonVersion=3.17.2.+ -DinfraVersion=3.17.2.+

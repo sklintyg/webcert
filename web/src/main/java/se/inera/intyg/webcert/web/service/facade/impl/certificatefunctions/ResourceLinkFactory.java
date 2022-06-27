@@ -33,4 +33,13 @@ public class ResourceLinkFactory {
                 true
         );
     }
+
+    public static ResourceLinkDTO create(boolean enabled) {
+        return ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+                "Skapa intyg",
+                enabled ? "Skapa ett intygsutkast." : "",
+                enabled
+        );
+    }
 }

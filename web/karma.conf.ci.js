@@ -46,7 +46,14 @@ module.exports = function(config) {
     logLevel: config.LOG_ERROR,
     singleRun: true,
 
-    browsers: ['ChromeHeadless'],
+    browsers: ['chromeHeadlessNoSandbox'],
+
+    customLaunchers: {
+      chromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
 
     plugins: (function() {
       var plugins = [
