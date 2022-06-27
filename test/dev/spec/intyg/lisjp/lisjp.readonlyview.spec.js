@@ -69,6 +69,7 @@ describe('show lisjp intyg in read-only-view', function() {
       specHelper.setUserOrigin('READONLY').then(function() {
         browser.ignoreSynchronization = false;
         ReadonlyPage.get(intygContent.typ, intygContent.textVersion, intygContent.id);
+        browser.sleep(1000);
         expect(ReadonlyPage.isAt()).toBeTruthy();
         expect(ReadonlyPage.getKompletteringLinkElement(meddelandeId).isDisplayed()).toBe(true);
         expect(ReadonlyPage.getKompletteringFrageTextElement(meddelandeId).isDisplayed()).toBe(true);

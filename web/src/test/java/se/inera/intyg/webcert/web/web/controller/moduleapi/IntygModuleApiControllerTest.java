@@ -48,6 +48,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -152,39 +153,85 @@ public class IntygModuleApiControllerTest {
     }
 
     @Test
-    public void testGetIntygAsPdf() {
-
+    public void testGetIntygAsPdfForInternetExplorer() {
         final String intygType = "fk7263";
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_UTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
+        final var request = new MockHttpServletRequest();
+        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
+
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
 
-        Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID);
+        Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
 
         verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, false);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
-        assertNotNull(response.getHeaders().get(CONTENT_DISPOSITION));
+        assertEquals(List.of("attachment; filename=\"" + PDF_NAME + "\""), response.getHeaders().get(CONTENT_DISPOSITION));
     }
 
     @Test
-    public void testGetIntygAsPdfForEmployer() {
+    public void testGetIntygAsPdf() {
+        final String intygType = "lisjp";
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_UTSKRIFT);
+        IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
+        final var request = new MockHttpServletRequest();
+        request.addHeader("User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
+
+        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
+
+        Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
+
+        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, false);
+
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(PDF_DATA, response.getEntity());
+        assertEquals(List.of("inline"), response.getHeaders().get(CONTENT_DISPOSITION));
+    }
+
+    @Test
+    public void testGetIntygAsPdfForEmployerForInternetExplorer() {
         final String intygType = "fk7263";
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
+        final var request = new MockHttpServletRequest();
+        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
+
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
 
-        Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID);
+        Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
 
         verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, true);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
-        assertNotNull(response.getHeaders().get(CONTENT_DISPOSITION));
+        assertEquals(List.of("attachment; filename=\"" + PDF_NAME + "\""), response.getHeaders().get(CONTENT_DISPOSITION));
+    }
+
+    @Test
+    public void testGetIntygAsPdfForEmployer() {
+        final String intygType = "lisjp";
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT);
+        IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
+
+        final var request = new MockHttpServletRequest();
+        request.addHeader("User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
+
+        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
+
+        Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
+
+        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, true);
+
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(PDF_DATA, response.getEntity());
+        assertEquals(List.of("inline"), response.getHeaders().get(CONTENT_DISPOSITION));
     }
 
     @Test

@@ -111,7 +111,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                   titleText: 'db.label.titleText',
                   model: {
                     namn: namn,
-                    personnummer: PatientModel.personnummer.slice(0, 7) + '-' + PatientModel.personnummer.slice(8),
+                    personnummer: PatientModel.personnummer.slice(0, 8) + '-' + PatientModel.personnummer.slice(8),
                     toggleProceed: function() {
                       document.getElementById('button1id').disabled =
                           !document.getElementById('checkboxId').checked;

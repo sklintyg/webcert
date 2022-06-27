@@ -31,6 +31,10 @@ var DbUtkast = BaseSkvUtkast._extend({
     init._super.call(this);
     this.intygType = 'db';
     this.intygTypeVersion = '1.0';
+    this.dbCreateDialog = {
+      confirmCheckbox: element(by.id('checkboxId')),
+      createButton: element(by.id('button1id'))
+    };
     this.identitetStyrktGenom = { //identitetStyrktGenom är inte samma element som i TS intyg
       container: element(by.id('form_identitetStyrkt')),
       inputText: element(by.id('identitetStyrkt'))

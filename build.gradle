@@ -6,8 +6,8 @@ plugins {
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.17.1-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.17.1-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '3.17.2-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '3.17.2-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
     schemasContractVersion = "2.1.8"
