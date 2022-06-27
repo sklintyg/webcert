@@ -109,7 +109,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
-        String ticketId) {
+        String ticketId, boolean isWc2ClientRequest) {
         WebCertUser user = webCertUserService.getUser();
 
         // Check if Utkast is eligible for signing right now, if so get it.
@@ -127,12 +127,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case NET_ID:
             case FAKE:
                 signaturBiljett = xmlUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
                 break;
         }
 
@@ -172,7 +172,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     /**
      * Called either when:
-     * - the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML
+     * - the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML.
      */
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
