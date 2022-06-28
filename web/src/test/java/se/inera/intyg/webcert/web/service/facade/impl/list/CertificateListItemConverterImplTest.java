@@ -290,7 +290,7 @@ class CertificateListItemConverterImplTest {
         class Complemented {
 
             @Test
-            void shouldSetStatusComplementedWhenComplementedByDraftRelation() {
+            void shouldSetStatusSentWhenComplementedByDraftRelation() {
                 final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
@@ -299,7 +299,7 @@ class CertificateListItemConverterImplTest {
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-                assertEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+                assertEquals(CertificateListItemStatus.SENT.getName(), result.getValue("STATUS"));
             }
 
             @Test
