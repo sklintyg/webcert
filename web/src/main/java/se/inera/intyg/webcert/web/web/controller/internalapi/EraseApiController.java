@@ -25,13 +25,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.web.service.erase.EraseService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 @Path("/v1/certificates")
 public class EraseApiController extends AbstractApiController {
 
-    private static final int ERASE_CERTIFICATES_PAGE_SIZE = 1000;
+    @Value("${erase.certificates.page.size:1000}")
+    private int eraseCertificatesPageSize;
 
     @Autowired
     private EraseService eraseService;
@@ -40,6 +42,6 @@ public class EraseApiController extends AbstractApiController {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
-        eraseService.eraseCertificates(careProviderId, ERASE_CERTIFICATES_PAGE_SIZE);
+        eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
     }
 }
