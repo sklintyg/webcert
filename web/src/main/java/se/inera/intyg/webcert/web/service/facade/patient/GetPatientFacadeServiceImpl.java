@@ -45,7 +45,7 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
     }
 
     @Override
-    public Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException {
+    public Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         Personnummer formattedPatientId = formatPatientId(patientId);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting patient info for: {}", formattedPatientId.getPersonnummerHash());
@@ -56,6 +56,11 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
 
         if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
             throw new PatientSearchErrorException();
+        }
+
+        if (personSvar.getPerson() != null && (personSvar.getPerson().getFornamn() == null
+            || personSvar.getPerson().getEfternamn() == null)) {
+            throw new PatientNoNameException();
         }
 
         return convertPatient(personSvar, patientId);

@@ -20,12 +20,12 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,8 +36,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -52,95 +55,127 @@ class GetCertificateTypesFacadeServiceImplTest {
     private IntygModuleRegistry intygModuleRegistry;
     @Mock
     private ResourceLinkHelper resourceLinkHelper;
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
     private final static String PATIENT_ID = "191212121212";
 
-    @Test
-    void shallThrowExceptionForInvalidPatientId() {
-        assertThrows(InvalidPersonNummerException.class, () -> serviceUnderTest.get("xxx"),
-            "Could not parse personnummer: xxx");
+    @Nested
+    class ErrorCases {
+        @Test
+        void shallThrowExceptionForInvalidPatientId() {
+            assertThrows(InvalidPersonNummerException.class, () -> serviceUnderTest.get("xxx"),
+                    "Could not parse personnummer: xxx");
+        }
     }
 
     @Nested
-    class ModuleConversion {
-
+    class CorrectCases {
         private List<CertificateTypeInfoDTO> types;
-        private IntygModule module;
+        final private IntygModule module = createIntygModule();
+        final private IntygModule notAllowedModule = createIntygModule("notAllowed");
 
         @BeforeEach
         void setup() throws Exception {
-            module = createIntygModule();
-
-            doReturn(Arrays.asList(module))
-                .when(intygModuleRegistry)
-                .listAllModules();
+            doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
 
             doNothing()
-                .when(resourceLinkHelper)
-                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                    .when(resourceLinkHelper)
+                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+
+            final var user = mock(WebCertUser.class);
+            doReturn(user)
+                    .when(webCertUserService)
+                    .getUser();
+
+            doReturn(Set.of(module.getId()))
+                    .when(authoritiesHelper)
+                    .getIntygstyperForPrivilege(any(), any());
 
             types = serviceUnderTest.get(PATIENT_ID);
         }
 
-        @Test
-        void shallConvertId() {
-            assertEquals(module.getId(), types.get(0).getId());
+        @Nested
+        class ModuleConversion {
+
+            @Test
+            void shallConvertId() {
+                assertEquals(module.getId(), types.get(0).getId());
+            }
+
+            @Test
+            void shallConvertLabel() {
+                assertEquals(module.getLabel(), types.get(0).getLabel());
+            }
+
+            @Test
+            void shallConvertDescription() {
+                assertEquals(module.getDescription(), types.get(0).getDescription());
+            }
+
+            @Test
+            void shallConvertDetailedDescription() {
+                assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
+            }
+
+            @Test
+            void shallConvertIssuerTypeId() {
+                assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+            }
         }
 
-        @Test
-        void shallConvertLabel() {
-            assertEquals(module.getLabel(), types.get(0).getLabel());
+        @Nested
+        class ResourceLinks {
+            @Test
+            void shallConvertResourceLinks() throws Exception {
+                final var module = createIntygModule();
+                doReturn(List.of(module))
+                        .when(intygModuleRegistry)
+                        .listAllModules();
+
+                doAnswer(invocation -> {
+                    List<IntygModuleDTO> DTOs = invocation.getArgument(0);
+                    DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+                    return null;
+                })
+                        .when(resourceLinkHelper)
+                        .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertTrue(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() throws Exception {
+                final var module = createIntygModule();
+                doReturn(List.of(module))
+                        .when(intygModuleRegistry)
+                        .listAllModules();
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
         }
 
-        @Test
-        void shallConvertDescription() {
-            assertEquals(module.getDescription(), types.get(0).getDescription());
+        @Nested
+        class AuthorityCheck {
+            @Test
+            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() throws InvalidPersonNummerException {
+                final var types = serviceUnderTest.get(PATIENT_ID);
+
+                assertEquals(1, types.size());
+                assertEquals("id", types.get(0).getId());
+            }
         }
-
-        @Test
-        void shallConvertDetailedDescription() {
-            assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
-        }
-
-        @Test
-        void shallConvertIssuerTypeId() {
-            assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
-        }
-    }
-
-    @Test
-    void shallConvertResourceLinks() throws Exception {
-        final var module = createIntygModule();
-        doReturn(List.of(module))
-            .when(intygModuleRegistry)
-            .listAllModules();
-
-        doAnswer(invocation -> {
-            List<IntygModuleDTO> DTOs = invocation.getArgument(0);
-            DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
-            return null;
-        })
-            .when(resourceLinkHelper)
-            .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
-
-        final var types = serviceUnderTest.get(PATIENT_ID);
-        assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-        assertTrue(types.get(0).getLinks().get(0).isEnabled());
-    }
-
-    @Test
-    void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() throws Exception {
-        final var module = createIntygModule();
-        doReturn(List.of(module))
-                .when(intygModuleRegistry)
-                .listAllModules();
-
-        final var types = serviceUnderTest.get(PATIENT_ID);
-        assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-        assertFalse(types.get(0).getLinks().get(0).isEnabled());
     }
 
     @Nested
@@ -149,13 +184,22 @@ class GetCertificateTypesFacadeServiceImplTest {
         void setup(boolean isDeprecated, boolean showDeprecated) throws Exception {
             final var module = createIntygModule(isDeprecated, showDeprecated);
 
-            doReturn(Arrays.asList(module))
+            doReturn(List.of(module))
                     .when(intygModuleRegistry)
                     .listAllModules();
 
             doNothing()
                     .when(resourceLinkHelper)
                     .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+
+            final var user = mock(WebCertUser.class);
+            doReturn(user)
+                    .when(webCertUserService)
+                    .getUser();
+
+            doReturn(Set.of(module.getId()))
+                    .when(authoritiesHelper)
+                    .getIntygstyperForPrivilege(any(), any());
         }
 
         @Test
@@ -171,6 +215,12 @@ class GetCertificateTypesFacadeServiceImplTest {
             final var result = serviceUnderTest.get(PATIENT_ID);
             assertEquals(1, result.size());
         }
+    }
+
+    private IntygModule createIntygModule(String id) {
+        return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
+                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+                false, false);
     }
 
     private IntygModule createIntygModule() {

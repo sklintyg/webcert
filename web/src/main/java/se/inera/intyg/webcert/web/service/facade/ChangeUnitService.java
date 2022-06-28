@@ -16,21 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift;
+package se.inera.intyg.webcert.web.service.facade;
 
-import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 
-public interface UnderskriftService {
-
-    SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
-        boolean isWc2ClientRequest);
-
-    SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId);
-
-    SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat);
-
-    SignaturBiljett grpSignature(String biljettId, byte[] signatur);
-
-    SignaturBiljett signeringsStatus(String ticketId);
+public interface ChangeUnitService {
+    User change(String unitId) throws ChangeUnitException;
 }

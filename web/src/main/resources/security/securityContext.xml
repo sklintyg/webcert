@@ -98,32 +98,7 @@
       init-method="initialize"/>
   <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder" scope="singleton"/>
 
-  <bean id="failureHandler"
-      class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
-    <property name="exceptionMappings">
-      <props>
-        <prop key="se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException">
-          /error.jsp?reason=login.medarbetaruppdrag
-        </prop>
-        <prop key="org.springframework.security.authentication.BadCredentialsException">
-          /error.jsp?reason=login.failed
-        </prop>
-        <prop key="se.inera.intyg.infra.security.exception.HsaServiceException">
-          /error.jsp?reason=login.hsaerror
-        </prop>
-
-        <!-- Privatläkare specific exception handling here. Not PP-registered, not accepted WC terms etc. -->
-        <prop key="se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException">
-          ${privatepractitioner.portal.registration.url}
-        </prop>
-        <prop key="se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException">
-          /new-error.jsp?reason=auth-exception-subscription
-        </prop>
-
-      </props>
-    </property>
-    <property name="defaultFailureUrl" value="/error.jsp?reason=login.failed"/>
-  </bean>
+  <bean id="failureHandler" class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationFailureHandler" />
 
   <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
     <property name="errorPage" value="/error.jsp?reason=denied"/>

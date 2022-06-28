@@ -22,5 +22,5 @@ import se.inera.intyg.common.support.facade.model.Patient;
 
 public interface GetPatientFacadeService {
 
-    Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException;
+    Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException;
 }

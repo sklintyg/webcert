@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 
@@ -288,7 +289,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
         Map<String, Long> m2 = new HashMap<>();
         m2.put("enhet-2", 2l);
         m2.put("enhet-3", 4l);
-        Map<String, Long> m3 = statController.mergeArendeAndFragaSvarMaps(m1, m2);
+        Map<String, Long> m3 = StatisticsHelper.mergeArendeAndFragaSvarMaps(m1, m2);
         assertEquals(3, m3.size());
         assertEquals((long) 2, (long) m3.get("enhet-1"));
         assertEquals((long) 5, (long) m3.get("enhet-2"));

@@ -22,5 +22,6 @@ public enum PatientResponseStatusDTO {
     FOUND,
     NOT_FOUND,
     ERROR,
-    INVALID_PATIENT_ID
+    INVALID_PATIENT_ID,
+    NO_NAME,
 }

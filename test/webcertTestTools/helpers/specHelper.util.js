@@ -112,6 +112,8 @@ module.exports = {
       utkastPage = pages.intyg.ts.trk1062.utkast;
     } else if (intygType === 'db') {
       utkastPage = pages.intyg.skv.db.utkast;
+      utkastPage.dbCreateDialog.confirmCheckbox.click();
+      utkastPage.dbCreateDialog.createButton.click();
     } else if (intygType === 'doi') {
       utkastPage = pages.intyg.soc.doi.utkast;
       utkastPage.skapaDoiKnapp.click();
