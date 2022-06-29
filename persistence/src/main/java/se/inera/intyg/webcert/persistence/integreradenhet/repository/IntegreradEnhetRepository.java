@@ -18,9 +18,21 @@
  */
 package se.inera.intyg.webcert.persistence.integreradenhet.repository;
 
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 
 public interface IntegreradEnhetRepository extends CrudRepository<IntegreradEnhet, String> {
+
+    @Query("select ie from IntegreradEnhet ie where ie.vardgivarId = :careProviderId")
+    List<IntegreradEnhet> getIntegratedUnitsByCareProviderId(@Param("careProviderId") String careProviderId);
+
+    default int eraseIntegratedUnitsByCareProviderId(String careProviderId) {
+        final var integratedUnits = getIntegratedUnitsByCareProviderId(careProviderId);
+        deleteAll(integratedUnits);
+        return integratedUnits.size();
+    }
 
 }

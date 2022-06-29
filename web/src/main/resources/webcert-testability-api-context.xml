@@ -40,6 +40,8 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntegreradEnhetResource"/>
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.facade.CertificateTestabilityController"/>
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.ConfigurationResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.EventResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.ReferensResource"/>
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider"/>

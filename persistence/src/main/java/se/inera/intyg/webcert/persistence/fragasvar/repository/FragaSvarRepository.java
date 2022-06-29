@@ -18,9 +18,21 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 public interface FragaSvarRepository extends JpaRepository<FragaSvar, Long>, FragaSvarRepositoryCustom {
+
+    @Query("select fs from FragaSvar fs where fs.intygsReferens.intygsId in :certificateIds")
+    List<FragaSvar> getFragaSvarByIntygsId(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseFragaSvarByCertificateIds(List<String> certificateIds) {
+        final var fragaSvarList = getFragaSvarByIntygsId(certificateIds);
+        deleteAll(fragaSvarList);
+        return fragaSvarList.size();
+    }
 
 }

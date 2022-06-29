@@ -18,12 +18,24 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 
 /**
  * Provides a CRUD interface for the {@link PagaendeSignering} entity.
  */
 public interface PagaendeSigneringRepository extends JpaRepository<PagaendeSignering, Long> {
+
+    @Query("select ps from PagaendeSignering ps where ps.intygsId in :certificateIds")
+    List<PagaendeSignering> getPagaendeSigneringByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int erasePagaendeSigneringByCertificateIds(List<String> certificateIds) {
+        final var pagaendeSigneringList = getPagaendeSigneringByIntygsIds(certificateIds);
+        deleteAll(pagaendeSigneringList);
+        return pagaendeSigneringList.size();
+    }
 
 }

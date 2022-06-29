@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.persistence.handelse.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 public interface HandelseRepository extends JpaRepository<Handelse, Long> {
@@ -46,4 +48,16 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampAfter(String personId, String careProviderId, LocalDateTime from);
 
     List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(String personId, String careProviderId, LocalDateTime to);
+
+    @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
+    List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+
+    @Query("select h from Handelse h where h.intygsId in :certificateIds")
+    List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+
+    default int eraseHandelseByCertificateIds(List<String> certificateIds) {
+        final var handelseList = getHandelseByIntygsIds(certificateIds);
+        deleteAll(handelseList);
+        return handelseList.size();
+    }
 }

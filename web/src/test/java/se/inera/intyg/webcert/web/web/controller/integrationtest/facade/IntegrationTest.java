@@ -37,7 +37,9 @@ public class IntegrationTest {
     public static String ALFA_LAKARMOTTAGNING = "TSTNMT2321000156-ALLM";
 
     public static String BETA_REGIONEN = "TSTNMT2321000156-BETA";
+    public static String BETA_REGIONEN_NAME = "Beta Regionen";
     public static String BETA_VARDCENTRAL = "TSTNMT2321000156-BEVC";
+    public static String BETA_VARDCENTRAL_NAME = "Beta Vårdcentral";
     public static String BETA_LAKARMOTTAGNING = "TSTNMT2321000156-BELM";
 
     public static Patient ATHENA_ANDERSSON = createPatient("194011306125", "Athena", "Andersson");

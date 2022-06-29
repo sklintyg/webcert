@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.ArendeAffectedResponse;
@@ -62,6 +64,9 @@ public class ArendeResource {
 
     @Autowired
     private ArendeRepository arendeRepository;
+
+    @Autowired
+    private ArendeDraftRepository arendeDraftRepository;
 
     @GET
     @Path("/intyg/{intygsId}")
@@ -157,4 +162,47 @@ public class ArendeResource {
             }
         });
     }
+
+    @GET
+    @Path("/arendeCount")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long getArendeCountForCertificateIds(List<String> certificateIds) {
+        final var arenden = (List<Arende>) arendeRepository.findAll();
+        return arenden.stream().filter(arende -> certificateIds.contains(arende.getIntygsId())).count();
+    }
+
+    @DELETE
+    @Path("/arende")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteArendenForCertificateIds(List<String> certificateIds) {
+        final var arenden = (List<Arende>) arendeRepository.findAll();
+        final var arendenForDeletion = arenden.stream()
+            .filter(arende -> certificateIds.contains(arende.getIntygsId()))
+            .collect(Collectors.toList());
+        arendeRepository.deleteAll(arendenForDeletion);
+
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/arendeDraftCount")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long getArendeDraftCountForCertificateIds(List<String> certificateIds) {
+        final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
+        return arendeDrafts.stream().filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId())).count();
+    }
+
+    @DELETE
+    @Path("/arendeDraft")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteArendeDraftsForCertificateIds(List<String> certificateIds) {
+        final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
+        final var arendeList = arendeDrafts.stream()
+            .filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId()))
+            .collect(Collectors.toList());
+        arendeDraftRepository.deleteAll(arendeList);
+
+        return Response.ok().build();
+    }
+
 }

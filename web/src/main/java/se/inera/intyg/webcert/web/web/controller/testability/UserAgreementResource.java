@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -62,6 +63,13 @@ public class UserAgreementResource {
     public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
         godkantAvtalRepository.removeAllUserApprovments(hsaId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/approvedTerms/{hsaId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean getTermsApproval(@PathParam("hsaId") String hsaId) {
+        return godkantAvtalRepository.userHasApprovedAvtal(hsaId, avtalRepository.getLatestAvtalVersion());
     }
 
     @DELETE
