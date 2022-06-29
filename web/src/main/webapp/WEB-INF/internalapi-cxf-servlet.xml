@@ -33,6 +33,9 @@
   
   <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.internalapi" />
 
+  <context:property-placeholder location="classpath:application.properties,file:${dev.config.file}"
+      order="2" ignore-unresolvable="true" ignore-resource-not-found="true" />
+
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntegratedUnitsApiController" />
