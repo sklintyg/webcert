@@ -72,7 +72,8 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
 public class EraseApiControllerIT extends IntegrationTest {
 
     private static final String INTERNAL_BASE_URI = System.getProperty("integration.tests.actuatorUrl", "http://localhost:8120");
-    private static final String ERASE_CERTIFICATES_URL = INTERNAL_BASE_URI + "internalapi/v1/certificates/";
+    private static final String ERASE_CERTIFICATES_URL = INTERNAL_BASE_URI + (INTERNAL_BASE_URI.endsWith("/") ? "" : "/")
+        + "internalapi/v1/certificates/";
     private static final String VERSION = "1.3";
 
     private static final String EVENT_COUNT_URL = "testability/event/eventCount";
