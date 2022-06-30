@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.user;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -102,32 +102,38 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<CareProvider> getCareProviders(WebCertUser webCertUser) {
-        return webCertUser.getVardgivare().stream().map(vardgivare ->
-            CareProvider.builder()
+        return webCertUser.getVardgivare().stream()
+            .map(vardgivare -> CareProvider.builder()
                 .id(vardgivare.getId())
                 .name(vardgivare.getNamn())
                 .careUnits(getCareUnits(vardgivare))
                 .build()
-        ).collect(Collectors.toList());
+            )
+            .sorted(Comparator.comparing(careProvider -> careProvider.getName().toLowerCase()))
+            .collect(Collectors.toList());
     }
 
     private List<CareUnit> getCareUnits(Vardgivare vardgivare) {
-        return vardgivare.getVardenheter().stream().map(vardenhet ->
-            CareUnit.builder()
+        return vardgivare.getVardenheter().stream()
+            .map(vardenhet -> CareUnit.builder()
                 .unitId(vardenhet.getId())
                 .unitName(vardenhet.getNamn())
                 .units(getUnits(vardenhet.getMottagningar()))
                 .build()
-        ).collect(Collectors.toList());
+            )
+            .sorted(Comparator.comparing(careUnit -> careUnit.getUnitName().toLowerCase()))
+            .collect(Collectors.toList());
     }
 
     private List<Unit> getUnits(List<Mottagning> mottagningar) {
-        return mottagningar.stream().map(mottagning ->
-            Unit.builder()
+        return mottagningar.stream()
+            .map(mottagning -> Unit.builder()
                 .unitId(mottagning.getId())
                 .unitName(mottagning.getNamn())
                 .build()
-        ).collect(Collectors.toList());
+            )
+            .sorted(Comparator.comparing(unit -> unit.getUnitName().toLowerCase()))
+            .collect(Collectors.toList());
     }
 
     private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {
