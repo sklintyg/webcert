@@ -27,6 +27,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -67,6 +68,23 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return getListConfig(unitId);
     }
 
+    @Override
+    public ListConfig update(ListConfig config, String unitId) {
+        updateUnitFilter(config, unitId);
+        config.setSecondaryTitle(getSecondaryTitle(unitId));
+        return config;
+    }
+
+    private void updateUnitFilter(ListConfig config, String unitId) {
+        final var currentFilters = config.getFilters();
+        final var unitFilter = currentFilters
+                .stream()
+                .filter((filter) -> filter.getId().equals("UNIT"))
+                .findFirst();
+        unitFilter.ifPresent(currentFilters::remove);
+        currentFilters.add(0, getUnitSelect(unitId));
+    }
+
     private ListConfig getListConfig(String unit) {
         final var config = new ListConfig();
         config.setTitle(TITLE);
@@ -83,6 +101,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private String getSecondaryTitle(String unitId) {
+        if (unitId.length() == 0) {
+            return "Ärenden visas för alla enheter";
+        }
         final var unit = hsaOrganizationsService.getVardenhet(unitId);
         return "Ärenden visas för " + unit.getNamn();
     }
@@ -126,8 +147,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private List<ListFilterConfigValue> getUnitList(String unitId) {
+        final var loggedInUnit = webCertUserService.getUser().getValdVardenhet();
         final var statistics = userStatisticsService.getUserStatistics();
-        final var subUnits = hsaOrganizationsService.getVardenhet(unitId).getMottagningar();
+        final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
         final var list = statistics.getUnitStatistics()
                 .entrySet()
@@ -137,42 +159,44 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
                                 .stream()
                                 .map(AbstractVardenhet::getId)
                                 .anyMatch(
-                                        (subUnitId) -> isSubUnit(subUnitId, unit.getKey()) || isChosenUnit(unitId, unit.getKey())
+                                        (subUnitId) -> isMatchedUnit(subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey())
                                 )
                 )
                 .sorted(sortUnitFirstAndSubUnitsAlphabetical(unitId))
                 .map(
-                        (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue(), isChosenUnit(unitId, unit.getKey()))
+                        (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
                 )
                 .collect(Collectors.toList());
 
-        list.add(0, ListFilterConfigValue.create("", "Visa alla", true));
+        list.add(0, ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
 
         return list;
     }
 
-    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
-        return (o1, o2) -> isChosenUnit(o1.getKey(), unitId) ? -1
-                : isChosenUnit(o2.getKey(), unitId) ? 1 : o1.getKey().compareTo(o2.getKey());
+    private String getShowAllText(String unitId, UserStatisticsDTO statistics) {
+        final var unitStatistic = statistics.getUnitStatistics().get(unitId);
+        final var totalQuestions = unitStatistic.getQuestionsOnUnit() + unitStatistic.getQuestionsOnSubUnits();
+        return "Visa alla (" + totalQuestions + ")";
     }
 
-    private boolean isSubUnit(String subUnitId, String unitId) {
+    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
+        return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
+                : isMatchedUnit(o2.getKey(), unitId) ? 1 : o1.getKey().compareTo(o2.getKey());
+    }
+
+    private boolean isMatchedUnit(String subUnitId, String unitId) {
         return subUnitId.equals(unitId);
     }
 
-    private boolean isChosenUnit(String chosenUnitId, String unitId) {
-        return chosenUnitId.equals(unitId);
-    }
 
-
-    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, boolean isDefault) {
-        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), isDefault);
+    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit) {
+        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), false);
     }
 
     private String getUnitText(String unitId, long nbrOfQuestions) {
         final var user = webCertUserService.getUser();
         final var selectedUnit = user.getValdVardenhet().getId();
-        final var isSubUnit = !isSubUnit(unitId, selectedUnit);
+        final var isSubUnit = !isMatchedUnit(unitId, selectedUnit);
         final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
         return isSubUnit ? "&emsp; " + text : text;
     }

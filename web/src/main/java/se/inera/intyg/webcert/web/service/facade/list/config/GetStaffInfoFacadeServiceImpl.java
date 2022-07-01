@@ -79,25 +79,25 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     private List<StaffListInfo> getStaffInfo() {
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
-
         final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
-        if (isUserInList(staff, user)) {
+        addUserToList(staff, user);
+        return convertStaffList(staff);
+    }
+
+    private void addUserToList(List<Lakare> staff, WebCertUser user) {
+        if (isUserMissingFromList(staff, user)) {
             staff.add(new Lakare(user.getHsaId(), user.getNamn()));
         }
-        return convertStaffList(staff);
     }
 
     private List<StaffListInfo> getStaffInfo(String unitId) {
         final var user = webCertUserService.getUser();
-
-        final var staff = arendeService.listSignedByForUnits(unitId);
-        if (isUserInList(staff, user)) {
-            staff.add(new Lakare(user.getHsaId(), user.getNamn()));
-        }
+        final var staff = arendeService.listSignedByForUnits(unitId.length() > 0 ? unitId : null);
+        addUserToList(staff, user);
         return convertStaffList(staff);
     }
 
-    private boolean isUserInList(List<Lakare> staff, WebCertUser user) {
+    private boolean isUserMissingFromList(List<Lakare> staff, WebCertUser user) {
         return staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()));
     }
 

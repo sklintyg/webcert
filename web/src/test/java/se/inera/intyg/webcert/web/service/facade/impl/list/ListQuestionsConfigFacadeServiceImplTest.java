@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -39,11 +40,13 @@ import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,7 +117,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
         when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
         when(getStaffInfoFacadeService.get(any())).thenReturn(List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
         ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);    }
+                LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);    }
 
     @Test
     public void shouldSetSecondaryTitle() {
@@ -548,6 +551,16 @@ class ListQuestionsConfigFacadeServiceImplTest {
         @Test
         public void shouldSetDefaultValue() {
             assertFalse(filter.getDefaultValue());
+        }
+    }
+
+    @Nested
+    public class TestEmptyUnitId {
+        @Test
+        public void shouldReturnCorrectSecondaryTitle() {
+            final var config = listQuestionsConfigFacadeService.get("");
+
+            assertEquals("Ärenden visas för alla enheter", config.getSecondaryTitle());
         }
     }
 

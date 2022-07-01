@@ -23,4 +23,6 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
 public interface ListVariableConfigFacadeService {
     ListConfig get(String unitId);
+
+    ListConfig update(ListConfig config, String unitId);
 }

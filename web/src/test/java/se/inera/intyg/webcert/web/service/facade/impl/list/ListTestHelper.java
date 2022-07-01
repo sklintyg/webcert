@@ -98,17 +98,29 @@ class ListTestHelper {
         return user;
     }
 
-    public static CreateUtkastRequest buildRequest(String typ) {
-        CreateUtkastRequest request = new CreateUtkastRequest();
-        request.setIntygType(typ);
-        request.setPatientEfternamn(PATIENT_EFTERNAMN);
-        request.setPatientFornamn(PATIENT_FORNAMN);
-        request.setPatientMellannamn(PATIENT_MELLANNAMN);
-        request.setPatientPersonnummer(PATIENT_PERSONNUMMER);
-        request.setPatientPostadress(PATIENT_POSTADRESS);
-        request.setPatientPostnummer(PATIENT_POSTNUMMER);
-        request.setPatientPostort(PATIENT_POSTORT);
-        return request;
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features) {
+        WebCertUser user = new WebCertUser();
+        user.setAuthorities(new HashMap<>());
+        user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
+            Feature feature = new Feature();
+            feature.setName(s);
+            feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setGlobal(true);
+            return feature;
+        })));
+        Privilege privilege = new Privilege();
+        privilege.setIntygstyper(Arrays.asList(intygType));
+        RequestOrigin requestOrigin = new RequestOrigin();
+        requestOrigin.setName("NORMAL");
+        requestOrigin.setIntygstyper(privilege.getIntygstyper());
+        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+        user.getAuthorities().put(privilegeString, privilege);
+        user.setOrigin("NORMAL");
+
+        user.setValdVardenhet(unit);
+        user.setValdVardgivare(buildVardgivare());
+        when(webcertUserService.getUser()).thenReturn(user);
+        return user;
     }
 
     public static SelectableVardenhet buildVardgivare() {

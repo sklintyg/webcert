@@ -26,6 +26,8 @@ import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFac
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequestDTO;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -95,5 +97,15 @@ public class ListConfigController {
         LOG.debug("Getting config for list of unhandled questions");
         final var config = listQuestionsConfigFacadeService.get(unitId);
         return Response.ok(config).build();
+    }
+
+    @Path("/question/update")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
+        LOG.debug("Getting updated config for list of unhandled questions");
+        final var updatedConfig = listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());
+        return Response.ok(updatedConfig).build();
     }
 }

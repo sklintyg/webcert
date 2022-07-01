@@ -27,6 +27,10 @@ public class ListFilterOrderConfig extends ListFilterConfig {
         this.defaultValue = defaultValue;
     }
 
+    public ListFilterOrderConfig() {
+
+    }
+
     public ListColumnType getDefaultValue() {
         return defaultValue;
     }
