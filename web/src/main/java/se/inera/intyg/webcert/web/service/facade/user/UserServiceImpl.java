@@ -18,8 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.user;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,11 +42,14 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Collator SORT_SWEDISH = Collator.getInstance(new Locale("sv", "SE"));
+
     private final WebCertUserService webCertUserService;
 
     @Autowired
     public UserServiceImpl(WebCertUserService webCertUserService) {
         this.webCertUserService = webCertUserService;
+        SORT_SWEDISH.setStrength(Collator.PRIMARY);
     }
 
     @Override
@@ -109,7 +114,7 @@ public class UserServiceImpl implements UserService {
                 .careUnits(getCareUnits(vardgivare))
                 .build()
             )
-            .sorted(Comparator.comparing(careProvider -> careProvider.getName().toLowerCase()))
+            .sorted(Comparator.comparing(CareProvider::getName, SORT_SWEDISH))
             .collect(Collectors.toList());
     }
 
@@ -121,7 +126,7 @@ public class UserServiceImpl implements UserService {
                 .units(getUnits(vardenhet.getMottagningar()))
                 .build()
             )
-            .sorted(Comparator.comparing(careUnit -> careUnit.getUnitName().toLowerCase()))
+            .sorted(Comparator.comparing(CareUnit::getUnitName, SORT_SWEDISH))
             .collect(Collectors.toList());
     }
 
@@ -132,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 .unitName(mottagning.getNamn())
                 .build()
             )
-            .sorted(Comparator.comparing(unit -> unit.getUnitName().toLowerCase()))
+            .sorted(Comparator.comparing(Unit::getUnitName, SORT_SWEDISH))
             .collect(Collectors.toList());
     }
 
