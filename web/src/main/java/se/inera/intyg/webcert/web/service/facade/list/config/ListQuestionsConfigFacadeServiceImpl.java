@@ -31,10 +31,7 @@ import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,18 +68,34 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     @Override
     public ListConfig update(ListConfig config, String unitId) {
         updateUnitFilter(config, unitId);
+        updateSignedByFilter(config, unitId);
         config.setSecondaryTitle(getSecondaryTitle(unitId));
         return config;
     }
 
-    private void updateUnitFilter(ListConfig config, String unitId) {
-        final var currentFilters = config.getFilters();
-        final var unitFilter = currentFilters
+    private Optional<ListFilterConfig> getFilterFromId(List<ListFilterConfig> currentFilters, String id) {
+        return currentFilters
                 .stream()
-                .filter((filter) -> filter.getId().equals("UNIT"))
+                .filter((filter) -> filter.getId().equals(id))
                 .findFirst();
+    }
+
+    private List<ListFilterConfig> removeFilter(ListConfig config, String UNIT) {
+        final var currentFilters = config.getFilters();
+        final Optional<ListFilterConfig> unitFilter = getFilterFromId(currentFilters, UNIT);
         unitFilter.ifPresent(currentFilters::remove);
+        return currentFilters;
+    }
+
+    private void updateUnitFilter(ListConfig config, String unitId) {
+        final List<ListFilterConfig> currentFilters = removeFilter(config, "UNIT");
         currentFilters.add(0, getUnitSelect(unitId));
+    }
+
+
+    private void updateSignedByFilter(ListConfig config, String unitId) {
+        final List<ListFilterConfig> currentFilters = removeFilter(config, "SIGNED_BY");
+        currentFilters.add(4, getSignedByFilter(unitId));
     }
 
     private ListConfig getListConfig(String unit) {

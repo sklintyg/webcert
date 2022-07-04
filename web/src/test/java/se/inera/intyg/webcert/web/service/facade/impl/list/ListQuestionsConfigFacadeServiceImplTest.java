@@ -564,6 +564,20 @@ class ListQuestionsConfigFacadeServiceImplTest {
         }
     }
 
+    @Nested
+    public class TestUpdate {
+
+        @Test
+        public void shouldUpdateSecondaryTitle() {
+            final var config = listQuestionsConfigFacadeService.get("");
+            final var originalSecondaryTitle = config.getSecondaryTitle();
+            final var updatedConfig = listQuestionsConfigFacadeService.update(config, B_UNIT);
+
+            assertNotEquals(originalSecondaryTitle, updatedConfig.getSecondaryTitle());
+            assertTrue(updatedConfig.getSecondaryTitle().contains(B_UNIT_NAME));
+        }
+    }
+
     private ListFilterConfig getFilterById(ListConfig config, String id) {
         return config.getFilters().stream().filter((ListFilterConfig filter) -> filter.getId().equals(id)).findAny().orElse(null);
     }
