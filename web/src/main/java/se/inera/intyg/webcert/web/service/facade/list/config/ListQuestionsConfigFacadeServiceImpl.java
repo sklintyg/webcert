@@ -175,7 +175,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
                                         (subUnitId) -> isMatchedUnit(subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey())
                                 )
                 )
-                .sorted(sortUnitFirstAndSubUnitsAlphabetical(unitId))
+                .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))
                 .map(
                         (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
                 )

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -70,7 +71,7 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
         final var convertedFilter = questionFilterConverter.convert(filter);
 
-        final var listResponse = arendeService.filterArende(convertedFilter);
+        final var listResponse = arendeService.filterArende(convertedFilter, true);
         final var convertedList = listResponse.getResults()
                 .stream()
                 .map(this::decorateWithResourceLinks)
