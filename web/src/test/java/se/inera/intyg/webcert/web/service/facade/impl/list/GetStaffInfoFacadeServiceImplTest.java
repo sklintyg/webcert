@@ -182,18 +182,27 @@ class GetStaffInfoFacadeServiceImplTest {
     @Nested
     class TestGetStaffInfoForQuestions {
         private final String UNIT_ID = "UNIT_ID";
-        private final String STAFF_ID = "HSA_ID";
+        private final String LOGGED_IN_STAFF_ID = "HSA_ID";
+        private final String STAFF_ID = "STAFF_ID";
         private final String STAFF_NAME = "STAFF_NAME";
 
-        void setup() {
-            doReturn(List.of(new Lakare(STAFF_ID, STAFF_NAME)))
+        @BeforeEach
+        void beforeEach() {
+            doReturn(LOGGED_IN_STAFF_ID)
+                    .when(user)
+                    .getHsaId();
+        }
+
+        void setup(String id, String name) {
+            final var list = List.of(new Lakare(id, name));
+            doReturn(new ArrayList<>(list))
                     .when(arendeService)
                     .listSignedByForUnits(any());
         }
 
         @Test
         public void shouldConvertLakareName() {
-            setup();
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
             final var result = getStaffInfoFacadeService.get(UNIT_ID);
 
@@ -202,32 +211,31 @@ class GetStaffInfoFacadeServiceImplTest {
 
         @Test
         public void shouldConvertLakareHsaId() {
-            setup();
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
             final var result = getStaffInfoFacadeService.get(UNIT_ID);
 
-            assertEquals(STAFF_ID, result.get(0).getHsaId());
+            assertEquals(LOGGED_IN_STAFF_ID, result.get(0).getHsaId());
         }
 
         @Test
         public void shouldNotAddUserToListIfItExists() {
-            setup();
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
             final var result = getStaffInfoFacadeService.get(UNIT_ID);
 
             assertEquals(1, result.size());
+            assertEquals(result.get(0).getHsaId(), LOGGED_IN_STAFF_ID);
         }
 
         @Test
         public void shouldAddUserToListIfItDoesNotExists() {
-            doReturn(new ArrayList<Lakare>())
-                    .when(arendeService)
-                    .listSignedByForUnits(any());
+            setup(STAFF_ID, STAFF_NAME);
 
-            final var result = getStaffInfoFacadeService.get();
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
 
-            assertEquals(1, result.size());
-            assertEquals(STAFF_ID, result.get(0).getHsaId());
+            assertEquals(2, result.size());
+            assertEquals(LOGGED_IN_STAFF_ID, result.get(1).getHsaId());
         }
     }
 
