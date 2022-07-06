@@ -338,7 +338,7 @@ class CertificateListItemConverterImplTest {
 
             @Test
             void shouldSetStatusReplacedWhenReplacedByDraftRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
                         .when(frontendRelations)
@@ -351,7 +351,7 @@ class CertificateListItemConverterImplTest {
 
             @Test
             void shouldSetStatusReplacedWhenReplacedByCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
                         .when(frontendRelations)
@@ -364,7 +364,7 @@ class CertificateListItemConverterImplTest {
 
             @Test
             void shouldNotSetStatusReplacedWhenReplacedByRevokedCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
                         .when(frontendRelations)
