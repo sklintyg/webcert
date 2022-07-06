@@ -186,6 +186,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         return new ForwardedListInfo(
                 entry.isVidarebefordrad(),
                 unit.getNamn(),
-                careGiver.getNamn());
+                careGiver.getNamn(),
+                entry.getVersion());
     }
 }

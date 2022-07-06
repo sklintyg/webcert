@@ -24,8 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.*;
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
@@ -90,8 +89,15 @@ class GetCertificatesAvailableFunctionsImplTest {
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
 
+    private WebCertUser user = mock(WebCertUser.class);
+
     @Nested
     class Draft {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         @Test
         void shallIncludeEditCertificate() {
@@ -169,10 +175,27 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeForwardCertificate() {
+        void shallIncludeForwardCertificateIfUserIsNotDoctor() {
+            doReturn(false).when(user).isLakare();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeForwardCertificateIfUserIsDoctor() {
+            doReturn(true).when(user).isLakare();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeForwardCertificateIfUserIsPrivateDoctor() {
+            doReturn(true).when(user).isPrivatLakare();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
         }
 
         @Test
@@ -216,6 +239,11 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Nested
     class CreateCertificateFromCandidate {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         void setUpMetadata() {
             when(candidateDataHelper
@@ -312,6 +340,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallExcludeSend() {
+            doReturn(user).when(webCertUserService).getUser();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
@@ -344,8 +373,8 @@ class GetCertificatesAvailableFunctionsImplTest {
     class RenewCertificates {
 
         void setupRenewData(String unitId) {
-            final var webcertUser = Mockito.mock(WebCertUser.class);
-            final var careUnit = Mockito.mock(Vardenhet.class);
+            final var webcertUser = mock(WebCertUser.class);
+            final var careUnit = mock(Vardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
             doReturn(careUnit).when(userService).getLoggedInCareUnit(any());
@@ -834,6 +863,11 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Nested
     class QuestionsForDraft {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         @Test
         void shallIncludeQuestionsWhenComplementDraft() {
