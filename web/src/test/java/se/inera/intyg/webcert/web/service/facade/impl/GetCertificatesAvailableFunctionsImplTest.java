@@ -291,8 +291,77 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     @Nested
+    class CreateCertificateFromTemplate {
+
+        @Test
+        void shallIncludeCreateCertificateFromTemplate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfDraft() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfNotLisjp() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfRevoked() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfReplacedBySignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.SIGNED)
+                            .type(CertificateRelationType.REPLACED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfComplementedBySignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.SIGNED)
+                            .type(CertificateRelationType.COMPLEMENTED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallIncludeCreateCertificateFromTemplateIfComplementedByUnignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.UNSIGNED)
+                            .type(CertificateRelationType.COMPLEMENTED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+    }
+
+    @Nested
     class LockedDraft {
 
+        @Test
         void shallIncludePrintCertificate() {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);

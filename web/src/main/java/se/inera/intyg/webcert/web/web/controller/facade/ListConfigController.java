@@ -24,9 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequestDTO;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -42,14 +46,17 @@ public class ListConfigController {
     private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
     private final ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
     private final ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService;
+    private final ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
 
     @Autowired
     public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
                                 ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
-                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService) {
+                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
+                                ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
         this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
         this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
+        this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
     }
 
     @Path("/draft")
@@ -80,5 +87,25 @@ public class ListConfigController {
         LOG.debug("Getting config for list of previous certificates");
         final var config = listPreviousCertificatesConfigFacadeService.get();
         return Response.ok(config).build();
+    }
+
+    @Path("/question")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getListOfQuestions(String unitId) {
+        LOG.debug("Getting config for list of unhandled questions");
+        final var config = listQuestionsConfigFacadeService.get(unitId);
+        return Response.ok(config).build();
+    }
+
+    @Path("/question/update")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
+        LOG.debug("Getting updated config for list of unhandled questions");
+        final var updatedConfig = listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());
+        return Response.ok(updatedConfig).build();
     }
 }

@@ -28,6 +28,7 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
@@ -36,6 +37,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -96,17 +98,29 @@ class ListTestHelper {
         return user;
     }
 
-    public static CreateUtkastRequest buildRequest(String typ) {
-        CreateUtkastRequest request = new CreateUtkastRequest();
-        request.setIntygType(typ);
-        request.setPatientEfternamn(PATIENT_EFTERNAMN);
-        request.setPatientFornamn(PATIENT_FORNAMN);
-        request.setPatientMellannamn(PATIENT_MELLANNAMN);
-        request.setPatientPersonnummer(PATIENT_PERSONNUMMER);
-        request.setPatientPostadress(PATIENT_POSTADRESS);
-        request.setPatientPostnummer(PATIENT_POSTNUMMER);
-        request.setPatientPostort(PATIENT_POSTORT);
-        return request;
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features) {
+        WebCertUser user = new WebCertUser();
+        user.setAuthorities(new HashMap<>());
+        user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
+            Feature feature = new Feature();
+            feature.setName(s);
+            feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setGlobal(true);
+            return feature;
+        })));
+        Privilege privilege = new Privilege();
+        privilege.setIntygstyper(Arrays.asList(intygType));
+        RequestOrigin requestOrigin = new RequestOrigin();
+        requestOrigin.setName("NORMAL");
+        requestOrigin.setIntygstyper(privilege.getIntygstyper());
+        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+        user.getAuthorities().put(privilegeString, privilege);
+        user.setOrigin("NORMAL");
+
+        user.setValdVardenhet(unit);
+        user.setValdVardgivare(buildVardgivare());
+        when(webcertUserService.getUser()).thenReturn(user);
+        return user;
     }
 
     public static SelectableVardenhet buildVardgivare() {
@@ -202,7 +216,7 @@ class ListTestHelper {
         return createCertificateListEntry(true, true, "191212121212");
     }
 
-        public static CertificateListEntry createCertificateListEntry(boolean isSent, boolean includePatientStatuses, String patientId) {
+    public static CertificateListEntry createCertificateListEntry(boolean isSent, boolean includePatientStatuses, String patientId) {
         final var entry = new CertificateListEntry();
         entry.setCertificateType("luse");
         entry.setCertificateId("CERTIFICATE_ID");
@@ -213,6 +227,24 @@ class ListTestHelper {
         entry.setDeceased(includePatientStatuses);
         entry.setProtectedIdentity(includePatientStatuses);
         entry.setTestIndicator(includePatientStatuses);
+        return entry;
+    }
+
+    public static ArendeListItem createQuestionListEntry(boolean includePatientStatuses, String patientId) {
+        final var entry = new ArendeListItem();
+        entry.setIntygTyp("luse");
+        entry.setIntygId("CERTIFICATE_ID");
+        entry.setPatientId(patientId);
+        entry.setReceivedDate(LocalDateTime.now());
+        entry.setAvliden(includePatientStatuses);
+        entry.setTestIntyg(includePatientStatuses);
+        entry.setSekretessmarkering(includePatientStatuses);
+        entry.setAmne("AMNE");
+        entry.setEnhetsnamn("UNIT_NAME");
+        entry.setReceivedDate(LocalDateTime.now());
+        entry.setStatus(Status.PENDING_INTERNAL_ACTION);
+        entry.setSigneratAv("SIGNED_BY");
+        entry.setFragestallare("FK");
         return entry;
     }
 }

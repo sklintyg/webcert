@@ -26,6 +26,8 @@ import java.util.List;
 public interface GetStaffInfoFacadeService {
     List<StaffListInfo> get();
 
+    List<StaffListInfo> get(String unitId);
+
     String getLoggedInStaffHsaId();
 
     boolean isLoggedInUserDoctor();

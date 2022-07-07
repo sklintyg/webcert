@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
@@ -30,4 +31,6 @@ public interface ResourceLinkListHelper {
     List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status);
 
     List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status);
+
+    List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status);
 }

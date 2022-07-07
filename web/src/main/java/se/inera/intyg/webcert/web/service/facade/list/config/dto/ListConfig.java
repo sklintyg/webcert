@@ -34,11 +34,13 @@ public class ListConfig {
     private Map<String, String> buttonTooltips;
     private boolean excludeFilterButtons;
     private TableHeading[] tableHeadings;
+    private boolean shouldUpdateConfigAfterListSearch;
 
     public ListConfig(){}
 
     public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText,
-                      String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings) {
+                      String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings,
+                      boolean shouldUpdateConfigAfterListSearch) {
         this.filters = filters;
         this.title = title;
         this.description = description;
@@ -46,6 +48,7 @@ public class ListConfig {
         this.secondaryTitle = secondaryTitle;
         this.pageSizes = pageSizes;
         this.tableHeadings = tableHeadings;
+        this.shouldUpdateConfigAfterListSearch = shouldUpdateConfigAfterListSearch;
         buttonTooltips = new HashMap<>();
     }
 
@@ -122,5 +125,13 @@ public class ListConfig {
             buttonTooltips = new HashMap<>();
         }
         buttonTooltips.put(key, value);
+    }
+
+    public boolean isShouldUpdateConfigAfterListSearch() {
+        return shouldUpdateConfigAfterListSearch;
+    }
+
+    public void setShouldUpdateConfigAfterListSearch(boolean shouldUpdateConfigAfterListSearch) {
+        this.shouldUpdateConfigAfterListSearch = shouldUpdateConfigAfterListSearch;
     }
 }

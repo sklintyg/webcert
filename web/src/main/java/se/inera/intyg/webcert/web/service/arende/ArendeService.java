@@ -57,6 +57,8 @@ public interface ArendeService {
 
     QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
 
+    QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters, boolean excludeUnhandledQuestions);
+
     /**
      * Close Arende and set status 'CLOSED'.
      */

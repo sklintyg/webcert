@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -37,17 +38,24 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
+    private final ArendeService arendeService;
     private static final Logger LOG = LoggerFactory.getLogger(GetStaffInfoFacadeServiceImpl.class);
 
     @Autowired
-    public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService) {
+    public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService, ArendeService arendeService) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
+        this.arendeService = arendeService;
     }
 
     @Override
     public List<StaffListInfo> get() {
         return getStaffInfo();
+    }
+
+    @Override
+    public List<StaffListInfo> get(String unitId) {
+        return getStaffInfo(unitId);
     }
 
     @Override
@@ -71,12 +79,26 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     private List<StaffListInfo> getStaffInfo() {
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
-
         final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
-        if (staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()))) {
+        addUserToList(staff, user);
+        return convertStaffList(staff);
+    }
+
+    private void addUserToList(List<Lakare> staff, WebCertUser user) {
+        if (isUserMissingFromList(staff, user)) {
             staff.add(new Lakare(user.getHsaId(), user.getNamn()));
         }
+    }
+
+    private List<StaffListInfo> getStaffInfo(String unitId) {
+        final var user = webCertUserService.getUser();
+        final var staff = arendeService.listSignedByForUnits(unitId.length() > 0 ? unitId : null);
+        addUserToList(staff, user);
         return convertStaffList(staff);
+    }
+
+    private boolean isUserMissingFromList(List<Lakare> staff, WebCertUser user) {
+        return staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()));
     }
 
     private List<StaffListInfo> convertStaffList(List<Lakare> staff) {

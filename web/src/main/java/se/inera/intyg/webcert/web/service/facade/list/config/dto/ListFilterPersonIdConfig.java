@@ -27,6 +27,10 @@ public class ListFilterPersonIdConfig extends ListFilterConfig {
         this.placeholder = placeholder;
     }
 
+    public ListFilterPersonIdConfig() {
+
+    }
+
     public String getPlaceholder() {
         return placeholder;
     }

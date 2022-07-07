@@ -22,10 +22,13 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public interface CertificateListItemConverter {
     CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType);
 
     CertificateListItem convert(CertificateListEntry entry);
+
+    CertificateListItem convert(ArendeListItem arendeListItem);
 }

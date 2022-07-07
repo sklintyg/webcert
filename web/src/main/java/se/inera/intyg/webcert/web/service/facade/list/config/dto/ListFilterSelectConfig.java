@@ -34,6 +34,10 @@ public class ListFilterSelectConfig extends ListFilterConfig {
         this.values = values;
     }
 
+    public ListFilterSelectConfig() {
+
+    }
+
     public List<ListFilterConfigValue> getValues() {
         return values;
     }

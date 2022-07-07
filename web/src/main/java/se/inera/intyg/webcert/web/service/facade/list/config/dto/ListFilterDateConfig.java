@@ -37,6 +37,10 @@ public class ListFilterDateConfig extends ListFilterConfig {
         this.defaultValue = defaultValue;
     }
 
+    public ListFilterDateConfig() {
+
+    }
+
     public LocalDateTime getMax() {
         return max;
     }
