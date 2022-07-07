@@ -17,25 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.list.config.dto;
+package se.inera.intyg.webcert.web.service.facade.list.config;
 
-public class ListFilterBooleanConfig extends ListFilterConfig {
-    private boolean defaultValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
-    public ListFilterBooleanConfig(String id, String title, boolean defaultValue) {
-        super(ListFilterType.BOOLEAN, id, title);
-        this.defaultValue = defaultValue;
-    }
+public interface ListVariableConfigFacadeService {
+    ListConfig get(String unitId);
 
-    public ListFilterBooleanConfig() {
-
-    }
-
-    public boolean getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(boolean defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+    ListConfig update(ListConfig config, String unitId);
 }

@@ -17,25 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.list.config.dto;
+package se.inera.intyg.webcert.web.service.facade.list.filter;
 
-public class ListFilterBooleanConfig extends ListFilterConfig {
-    private boolean defaultValue;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
-    public ListFilterBooleanConfig(String id, String title, boolean defaultValue) {
-        super(ListFilterType.BOOLEAN, id, title);
-        this.defaultValue = defaultValue;
-    }
-
-    public ListFilterBooleanConfig() {
-
-    }
-
-    public boolean getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(boolean defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+public interface CertificateFilterConverter {
+    QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units);
 }

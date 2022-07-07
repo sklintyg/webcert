@@ -19,9 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.factory;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
-import se.inera.intyg.webcert.web.service.facade.list.dto.FilterStatusType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedType;
+import se.inera.intyg.webcert.web.service.facade.list.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 
 import java.time.LocalDateTime;
@@ -56,6 +54,10 @@ public class ListFilterConfigFactory {
 
     public static ListFilterDateRangeConfig savedDateRange() {
         return new ListFilterDateRangeConfig("SAVED", "Sparat datum", toDate(), fromDate(), true);
+    }
+
+    public static ListFilterDateRangeConfig sentDateRange() {
+        return new ListFilterDateRangeConfig("SENT", "Skickat datum", toDate(), fromDate(), true);
     }
 
     public static ListFilterDateRangeConfig signedDateRange() {
@@ -135,5 +137,35 @@ public class ListFilterConfigFactory {
                         FilterStatusType.ALL_CERTIFICATES.getName(), false)
             )
         );
+    }
+
+    public static ListFilterSelectConfig questionStatusSelect() {
+        return new ListFilterSelectConfig("STATUS", "Åtgärd", List.of(
+                getConfigValue(QuestionStatusType.SHOW_ALL, true),
+                getConfigValue(QuestionStatusType.NOT_HANDLED, false),
+                getConfigValue(QuestionStatusType.HANDLED, false),
+                getConfigValue(QuestionStatusType.COMPLEMENT, false),
+                getConfigValue(QuestionStatusType.ANSWER, false),
+                getConfigValue(QuestionStatusType.READ_ANSWER, false),
+                getConfigValue(QuestionStatusType.WAIT, false)
+                )
+        );
+    }
+
+    public static ListFilterSelectConfig senderSelect() {
+        return new ListFilterSelectConfig("SENDER", "Avsändare", List.of(
+                getConfigValue(QuestionSenderType.SHOW_ALL, true),
+                getConfigValue(QuestionSenderType.FK, false),
+                getConfigValue(QuestionSenderType.WC, false)
+        )
+        );
+    }
+
+    private static ListFilterConfigValue getConfigValue(QuestionStatusType type, boolean isDefault) {
+        return ListFilterConfigValue.create(type.toString(), type.getName(), isDefault);
+    }
+
+    private static ListFilterConfigValue getConfigValue(QuestionSenderType type, boolean isDefault) {
+        return ListFilterConfigValue.create(type.toString(), type.getName(), isDefault);
     }
 }

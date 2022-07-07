@@ -16,26 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-package se.inera.intyg.webcert.web.service.facade.list.config.dto;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
-public class ListFilterBooleanConfig extends ListFilterConfig {
-    private boolean defaultValue;
+public class UpdateListConfigRequestDTO {
 
-    public ListFilterBooleanConfig(String id, String title, boolean defaultValue) {
-        super(ListFilterType.BOOLEAN, id, title);
-        this.defaultValue = defaultValue;
+   private String unitId;
+   private ListConfig config;
+
+    public String getUnitId() {
+        return unitId;
     }
 
-    public ListFilterBooleanConfig() {
-
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
     }
 
-    public boolean getDefaultValue() {
-        return defaultValue;
+    public ListConfig getConfig() {
+        return config;
     }
 
-    public void setDefaultValue(boolean defaultValue) {
-        this.defaultValue = defaultValue;
+    public void setConfig(ListConfig config) {
+        this.config = config;
     }
 }

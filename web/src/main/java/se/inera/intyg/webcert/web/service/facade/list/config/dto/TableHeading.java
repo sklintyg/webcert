@@ -43,6 +43,10 @@ public class TableHeading {
         this.defaultAscending = defaultAscending;
     }
 
+    public TableHeading() {
+
+    }
+
     public ListColumnType getId() {
         return id;
     }

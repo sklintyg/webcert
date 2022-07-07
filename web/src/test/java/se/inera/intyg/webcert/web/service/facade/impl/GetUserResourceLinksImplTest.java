@@ -102,21 +102,42 @@ class GetUserResourceLinksImplTest {
         void shallIncludeDraftListIfOriginIsNormal() {
             final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_DRAFT_LIST);
         }
 
         @Test
         void shallIncludeDraftListIfOriginIsUthopp() {
             final var user = getUserWithOrigin("UTHOPP");
             final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_DRAFT_LIST);
         }
 
         @Test
         void shallNotIncludeDraftListIfOriginIsDjupintegration() {
             final var user = getUserWithOrigin("DJUPINTEGRATION");
             final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_DRAFT_LIST);
+        }
+
+        @Test
+        void shallIncludeQuestionListIfOriginIsNormal() {
+            final var user = getUserWithOrigin("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_QUESTION_LIST);
+        }
+
+        @Test
+        void shallIncludeQuestionListIfOriginIsUthopp() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_QUESTION_LIST);
+        }
+
+        @Test
+        void shallNotIncludeQuestionListIfOriginIsDjupintegration() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_QUESTION_LIST);
         }
 
         @Test

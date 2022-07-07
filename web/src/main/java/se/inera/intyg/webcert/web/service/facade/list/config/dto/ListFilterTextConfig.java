@@ -27,6 +27,10 @@ public class ListFilterTextConfig extends ListFilterConfig {
         this.placeholder = placeholder;
     }
 
+    public ListFilterTextConfig() {
+
+    }
+
     public String getPlaceholder() {
         return placeholder;
     }

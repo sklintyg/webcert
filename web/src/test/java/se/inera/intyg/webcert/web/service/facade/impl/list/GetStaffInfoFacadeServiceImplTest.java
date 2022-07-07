@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -52,6 +53,9 @@ class GetStaffInfoFacadeServiceImplTest {
 
     @Mock
     private UtkastService utkastService;
+
+    @Mock
+    private ArendeService arendeService;
 
     @InjectMocks
     private GetStaffInfoFacadeServiceImpl getStaffInfoFacadeService;
@@ -172,6 +176,66 @@ class GetStaffInfoFacadeServiceImplTest {
             final var result = getStaffInfoFacadeService.get();
 
             assertEquals("NAME", result.get(0).getName());
+        }
+    }
+
+    @Nested
+    class TestGetStaffInfoForQuestions {
+        private final String UNIT_ID = "UNIT_ID";
+        private final String LOGGED_IN_STAFF_ID = "HSA_ID";
+        private final String STAFF_ID = "STAFF_ID";
+        private final String STAFF_NAME = "STAFF_NAME";
+
+        @BeforeEach
+        void beforeEach() {
+            doReturn(LOGGED_IN_STAFF_ID)
+                    .when(user)
+                    .getHsaId();
+        }
+
+        void setup(String id, String name) {
+            final var list = List.of(new Lakare(id, name));
+            doReturn(new ArrayList<>(list))
+                    .when(arendeService)
+                    .listSignedByForUnits(any());
+        }
+
+        @Test
+        public void shouldConvertLakareName() {
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
+
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
+
+            assertEquals(STAFF_NAME, result.get(0).getName());
+        }
+
+        @Test
+        public void shouldConvertLakareHsaId() {
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
+
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
+
+            assertEquals(LOGGED_IN_STAFF_ID, result.get(0).getHsaId());
+        }
+
+        @Test
+        public void shouldNotAddUserToListIfItExists() {
+            setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
+
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
+
+            assertEquals(1, result.size());
+            assertEquals(result.get(0).getHsaId(), LOGGED_IN_STAFF_ID);
+        }
+
+        @Test
+        public void shouldAddUserToListIfItDoesNotExists() {
+            setup(STAFF_ID, STAFF_NAME);
+
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
+
+            assertEquals(2, result.size());
+            assertEquals(LOGGED_IN_STAFF_ID, result.get(1).getHsaId());
         }
     }
 

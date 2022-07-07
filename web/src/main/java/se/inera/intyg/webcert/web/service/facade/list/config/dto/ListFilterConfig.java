@@ -19,6 +19,25 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ListFilterTextConfig.class, name = "TEXT"),
+        @JsonSubTypes.Type(value = ListFilterPersonIdConfig.class, name = "PERSON_ID"),
+        @JsonSubTypes.Type(value = ListFilterDateRangeConfig.class, name = "DATE_RANGE"),
+        @JsonSubTypes.Type(value = ListFilterSelectConfig.class, name = "SELECT"),
+        @JsonSubTypes.Type(value = ListFilterRadioConfig.class, name = "RADIO"),
+        @JsonSubTypes.Type(value = ListFilterOrderConfig.class, name = "ORDER"),
+        @JsonSubTypes.Type(value = ListFilterBooleanConfig.class, name = "BOOLEAN"),
+        @JsonSubTypes.Type(value = ListFilterSelectConfig.class, name = "SELECT"),
+        @JsonSubTypes.Type(value = ListFilterDateConfig.class, name = "DATE"),
+        @JsonSubTypes.Type(value = ListFilterPageSizeConfig.class, name = "PAGESIZE")
+})
+
 public class ListFilterConfig {
     private ListFilterType type;
     private String id;
@@ -40,6 +59,10 @@ public class ListFilterConfig {
         this.title = title;
         this.alwaysHighlighted = alwaysHighlighted;
         this.description = description;
+    }
+
+    public ListFilterConfig() {
+
     }
 
     public ListFilterType getType() {

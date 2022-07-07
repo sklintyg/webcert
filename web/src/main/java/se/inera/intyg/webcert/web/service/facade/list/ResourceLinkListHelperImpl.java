@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemSta
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.util.CertificateRelationsConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -78,6 +79,11 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     public List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status) {
         final var convertedRelations = certificateRelationsConverter.convert(entry.getRelations());
         return convertResourceLinks(entry.getLinks(), entry.getVardenhetId(), entry.getIntygType(), status, convertedRelations);
+    }
+
+    @Override
+    public List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status) {
+        return convertResourceLinks(entry.getLinks(), status);
     }
 
     private List<ActionLink> getActionLinks(CertificateListEntry entry) {
@@ -122,8 +128,12 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private ResourceLinkDTO getConvertedResourceLink(ActionLink link, CertificateListItemStatus status) {
-        if (link.getType() == ActionLinkType.LASA_INTYG) {
+        if (link.getType() == ActionLinkType.LASA_INTYG || link.getType() == ActionLinkType.LASA_FRAGA) {
             return ResourceLinkFactory.read();
+        }
+
+        if (link.getType() == ActionLinkType.VIDAREBEFODRA_FRAGA) {
+            return CertificateForwardFunction.createResourceLinkForQuestion();
         }
 
         if (validateForward(link, getCertificateStatus(status))) {

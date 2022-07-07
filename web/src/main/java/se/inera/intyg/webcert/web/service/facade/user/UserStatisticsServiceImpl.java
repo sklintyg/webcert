@@ -84,7 +84,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 getNumberOfDraftsOnSelectedUnit(user, draftsMap)
             );
             statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                getNumberOfUnhandledQuestionsOnSelectedUnit(unitIds, questionsMap)
+                getNumberOfUnhandledQuestionsOnSelectedUnit(user.getIdsOfSelectedVardenhet(), questionsMap)
             );
             statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
                 getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)

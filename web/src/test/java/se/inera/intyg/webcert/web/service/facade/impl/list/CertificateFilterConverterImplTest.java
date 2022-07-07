@@ -18,17 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.service.facade.list.CertificateFilterConverterImpl;
+import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.time.LocalDateTime;
 
