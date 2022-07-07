@@ -105,7 +105,9 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.LINKS, convertedLinks);
 
         if (isAllowedToForward(convertedLinks)) {
-            listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad()));
+            listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(
+                    entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad())
+            );
         }
 
         return listItem;
