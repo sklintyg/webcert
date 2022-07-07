@@ -112,12 +112,12 @@ public class ListFilterHelper {
 
     public static String getQuestionStatus(ListFilter filter) {
         ListFilterSelectValue status = (ListFilterSelectValue) filter.getValue("STATUS");
-        if(status == null) {
+        if (status == null) {
             return "";
         }
 
         final var questionType = QuestionStatusType.valueOf(status.getValue());
-        switch(questionType) {
+        switch (questionType) {
             case HANDLED:
                 return "HANTERADE";
             case NOT_HANDLED:
