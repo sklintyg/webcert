@@ -128,7 +128,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetTitle() {
         final var config = listQuestionsConfigFacadeService.get(UNIT_ID);
-        assertEquals("Intyg visas för " + UNIT_NAME, config.getSecondaryTitle());
+        assertEquals("Ärenden visas för " + UNIT_NAME, config.getSecondaryTitle());
     }
 
     @Test
