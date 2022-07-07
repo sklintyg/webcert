@@ -139,21 +139,35 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     private CertificateListItemStatus getCertificateListItemStatus(String status, Relations relations) {
         if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
             return CertificateListItemStatus.COMPLETE;
-        } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
+        }
+
+        if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
             return CertificateListItemStatus.INCOMPLETE;
-        } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
+        }
+
+        if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
             return CertificateListItemStatus.LOCKED;
-        } else if (status.equals("COMPLEMENTED") || isComplementedBySignedCertificate(relations)) {
+        }
+
+        if (isReplaced(relations)) {
+            return CertificateListItemStatus.REPLACED;
+        }
+
+        if (status.equals("COMPLEMENTED") || isComplementedBySignedCertificate(relations)) {
             return CertificateListItemStatus.COMPLEMENTED;
         } else if (isComplemented(relations)) {
             return CertificateListItemStatus.SENT;
-        } else if (status.equals("CANCELLED")) {
+        }
+
+        if (status.equals("CANCELLED")) {
             return CertificateListItemStatus.REVOKED;
-        } else if (status.equals("SENT")) {
+        }
+
+        if (status.equals("SENT")) {
             return CertificateListItemStatus.SENT;
-        } else if (isReplaced(relations)) {
-            return CertificateListItemStatus.REPLACED;
-        } else if (status.equals("SIGNED") || status.equals("RECEIVED")) {
+        }
+
+        if (status.equals("SIGNED") || status.equals("RECEIVED")) {
             return CertificateListItemStatus.SIGNED;
         }
         return null;
