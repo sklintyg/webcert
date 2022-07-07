@@ -40,6 +40,10 @@ public class ListFilterDateRangeConfig extends ListFilterConfig {
         this.forbidFutureDates = forbidFutureDates;
     }
 
+    public ListFilterDateRangeConfig() {
+
+    }
+
     public ListFilterDateConfig getTo() {
         return to;
     }

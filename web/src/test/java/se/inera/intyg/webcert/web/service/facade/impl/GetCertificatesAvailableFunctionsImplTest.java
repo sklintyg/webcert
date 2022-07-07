@@ -24,8 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.*;
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_REQUEST_WONT_BE_MARKED_READY;
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateRenewFunction.EVENTUAL_COMPLEMENTARY_WILL_BE_MARKED_READY;
@@ -263,8 +262,77 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     @Nested
+    class CreateCertificateFromTemplate {
+
+        @Test
+        void shallIncludeCreateCertificateFromTemplate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfDraft() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfNotLisjp() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfRevoked() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfReplacedBySignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.SIGNED)
+                            .type(CertificateRelationType.REPLACED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfComplementedBySignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.SIGNED)
+                            .type(CertificateRelationType.COMPLEMENTED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallIncludeCreateCertificateFromTemplateIfComplementedByUnignedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
+                    LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
+                            .status(CertificateStatus.UNSIGNED)
+                            .type(CertificateRelationType.COMPLEMENTED)
+                            .build()
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+    }
+
+    @Nested
     class LockedDraft {
 
+        @Test
         void shallIncludePrintCertificate() {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
@@ -344,8 +412,8 @@ class GetCertificatesAvailableFunctionsImplTest {
     class RenewCertificates {
 
         void setupRenewData(String unitId) {
-            final var webcertUser = Mockito.mock(WebCertUser.class);
-            final var careUnit = Mockito.mock(Vardenhet.class);
+            final var webcertUser = mock(WebCertUser.class);
+            final var careUnit = mock(Vardenhet.class);
             doReturn(webcertUser).when(webCertUserService).getUser();
             doReturn("").when(webcertUser).getOrigin();
             doReturn(careUnit).when(userService).getLoggedInCareUnit(any());

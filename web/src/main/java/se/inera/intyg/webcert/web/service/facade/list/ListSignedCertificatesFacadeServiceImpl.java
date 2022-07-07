@@ -27,6 +27,7 @@ import se.inera.intyg.webcert.web.service.certificate.CertificateService;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.stream.Collectors;

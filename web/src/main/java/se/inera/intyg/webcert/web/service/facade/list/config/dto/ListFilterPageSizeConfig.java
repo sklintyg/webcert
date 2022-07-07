@@ -27,6 +27,10 @@ public class ListFilterPageSizeConfig extends ListFilterConfig {
         this.pageSizes = pageSizes;
     }
 
+    public ListFilterPageSizeConfig() {
+
+    }
+
     public int[] getPageSizes() {
         return pageSizes;
     }

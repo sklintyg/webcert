@@ -27,8 +27,12 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.arende.ArendeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -59,6 +63,11 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         return convertListItem(entry);
     }
 
+    @Override
+    public CertificateListItem convert(ArendeListItem entry) {
+        return convertListItem(entry);
+    }
+
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
         final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus(), listIntygEntry.getRelations());
@@ -81,6 +90,37 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         return listItem;
     }
 
+    private CertificateListItem convertListItem(ArendeListItem entry) {
+        final var listItem = new CertificateListItem();
+        final var patientListInfo = getPatientListInfo(entry);
+        final var convertedLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
+
+        listItem.addValue(ListColumnType.QUESTION_ACTION, getQuestionAction(entry));
+        listItem.addValue(ListColumnType.SENT_RECEIVED, entry.getReceivedDate());
+        listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
+        listItem.addValue(ListColumnType.SIGNED_BY, entry.getSigneratAvNamn());
+        listItem.addValue(ListColumnType.CERTIFICATE_ID, entry.getIntygId());
+        listItem.addValue(ListColumnType.FORWARDED, entry.isVidarebefordrad());
+        listItem.addValue(ListColumnType.SENDER, convertSender(entry.getFragestallare()));
+        listItem.addValue(ListColumnType.LINKS, convertedLinks);
+
+        if (isAllowedToForward(convertedLinks)) {
+            listItem.addValue(ListColumnType.FORWARD_CERTIFICATE, getForwardedListInfo(
+                    entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad())
+            );
+        }
+
+        return listItem;
+    }
+
+    private String getQuestionAction(ArendeListItem entry) {
+        return ArendeServiceImpl.getAmneString(entry.getAmne(), entry.getStatus(), entry.isPaminnelse(), entry.getFragestallare());
+    }
+
+    private String convertSender(String sender) {
+        return QuestionSenderType.valueOf(sender).getName();
+    }
+
     private CertificateListItem convertListItem(CertificateListEntry entry) {
         final var listItem = new CertificateListItem();
         final var certificateListItemStatus = getCertificateListItemStatus(entry.isSent());
@@ -101,21 +141,35 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     private CertificateListItemStatus getCertificateListItemStatus(String status, Relations relations) {
         if (status.equals(UtkastStatus.DRAFT_COMPLETE.toString())) {
             return CertificateListItemStatus.COMPLETE;
-        } else if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
+        }
+
+        if (status.equals(UtkastStatus.DRAFT_INCOMPLETE.toString())) {
             return CertificateListItemStatus.INCOMPLETE;
-        } else if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
+        }
+
+        if (status.equals(UtkastStatus.DRAFT_LOCKED.toString())) {
             return CertificateListItemStatus.LOCKED;
-        } else if (status.equals("COMPLEMENTED") || isComplementedBySignedCertificate(relations)) {
+        }
+
+        if (isReplaced(relations)) {
+            return CertificateListItemStatus.REPLACED;
+        }
+
+        if (status.equals("COMPLEMENTED") || isComplementedBySignedCertificate(relations)) {
             return CertificateListItemStatus.COMPLEMENTED;
         } else if (isComplemented(relations)) {
             return CertificateListItemStatus.SENT;
-        } else if (status.equals("CANCELLED")) {
+        }
+
+        if (status.equals("CANCELLED")) {
             return CertificateListItemStatus.REVOKED;
-        } else if (status.equals("SENT")) {
+        }
+
+        if (status.equals("SENT")) {
             return CertificateListItemStatus.SENT;
-        } else if (isReplaced(relations)) {
-            return CertificateListItemStatus.REPLACED;
-        } else if (status.equals("SIGNED") || status.equals("RECEIVED")) {
+        }
+
+        if (status.equals("SIGNED") || status.equals("RECEIVED")) {
             return CertificateListItemStatus.SIGNED;
         }
         return null;
@@ -167,6 +221,15 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         );
     }
 
+    private PatientListInfo getPatientListInfo(ArendeListItem listIntygEntry) {
+        return new PatientListInfo(
+                listIntygEntry.getPatientId(),
+                listIntygEntry.isSekretessmarkering(),
+                listIntygEntry.isAvliden(),
+                listIntygEntry.isTestIntyg()
+        );
+    }
+
     private PatientListInfo getPatientListInfo(CertificateListEntry certificateListEntry) {
         return new PatientListInfo(
                 certificateListEntry.getCivicRegistrationNumber(),
@@ -183,9 +246,13 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {
         final var unit = hsaOrganizationsService.getVardenhet(entry.getVardenhetId());
         final var careGiver = hsaOrganizationsService.getVardgivareInfo(entry.getVardgivarId());
+        return getForwardedListInfo(unit.getNamn(), careGiver.getNamn(), entry.isVidarebefordrad());
+    }
+
+    private ForwardedListInfo getForwardedListInfo(String unitName, String careGiverName, boolean isForwarded) {
         return new ForwardedListInfo(
-                entry.isVidarebefordrad(),
-                unit.getNamn(),
-                careGiver.getNamn());
+                isForwarded,
+                unitName,
+                careGiverName);
     }
 }

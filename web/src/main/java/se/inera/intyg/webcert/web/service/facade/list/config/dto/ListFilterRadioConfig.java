@@ -29,6 +29,10 @@ public class ListFilterRadioConfig extends ListFilterConfig {
         this.values = values;
     }
 
+    public ListFilterRadioConfig() {
+
+    }
+
     public List<ListFilterConfigValue> getValues() {
         return values;
     }
