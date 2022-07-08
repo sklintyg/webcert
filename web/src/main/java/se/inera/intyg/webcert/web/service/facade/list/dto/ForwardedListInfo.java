@@ -22,13 +22,11 @@ public class ForwardedListInfo {
    private boolean forwarded;
    private String unitName;
    private String careProviderName;
-   private long version;
 
-    public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName, long version) {
+    public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName) {
         this.forwarded = forwarded;
         this.unitName = unitName;
         this.careProviderName = careProviderName;
-        this.version = version;
     }
 
     public boolean isForwarded() {
@@ -53,13 +51,5 @@ public class ForwardedListInfo {
 
     public void setCareProviderName(String careProviderName) {
         this.careProviderName = careProviderName;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
     }
 }

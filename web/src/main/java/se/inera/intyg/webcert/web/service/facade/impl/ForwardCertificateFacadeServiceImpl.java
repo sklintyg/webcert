@@ -44,10 +44,13 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
     }
 
     @Override
-    public Certificate forwardCertificate(String certificateId, long version, boolean forwarded) {
-        LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId, version, forwarded);
-        final var certificate = utkastService.setNotifiedOnDraft(certificateId, version, forwarded);
+    public Certificate forwardCertificate(String certificateId, boolean forwarded) {
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+
+        LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId, certificate.getMetadata().getVersion(), forwarded);
+        final var draft = utkastService.setNotifiedOnDraft(certificateId, certificate.getMetadata().getVersion(), forwarded);
+
         LOG.debug("Get the forwarded certificate '{}'", certificateId);
-        return getCertificateFacadeService.getCertificate(certificate.getIntygsId(), false);
+        return getCertificateFacadeService.getCertificate(draft.getIntygsId(), false);
     }
 }
