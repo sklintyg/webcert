@@ -339,16 +339,13 @@ class CertificateListItemConverterImplTest {
         class Replaced {
 
             @Test
-            void shouldSetStatusReplacedWhenReplacedByDraftRelation() {
+            void shouldNotSetStatusReplacedWhenReplacedByDraftRelation() {
                 final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
-                doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getReplacedByUtkast();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-                assertEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+                assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
             }
 
             @Test
