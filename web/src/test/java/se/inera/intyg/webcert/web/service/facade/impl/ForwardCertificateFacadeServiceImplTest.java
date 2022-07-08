@@ -58,6 +58,7 @@ class ForwardCertificateFacadeServiceImplTest {
             .metadata(
                 CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
+                    .version(VERSION)
                     .build()
             )
             .build();
@@ -80,8 +81,8 @@ class ForwardCertificateFacadeServiceImplTest {
 
         certificate.getMetadata().setForwarded(expectedForward);
 
-        final var actualCertificate = forwardCertificateFacadeService.forwardCertificate(
-            CERTIFICATE_ID, VERSION, expectedForward);
+        final var actualCertificate =
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
         assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
     }
@@ -92,8 +93,8 @@ class ForwardCertificateFacadeServiceImplTest {
 
         certificate.getMetadata().setForwarded(expectedForward);
 
-        final var actualCertificate = forwardCertificateFacadeService.forwardCertificate(
-            CERTIFICATE_ID, VERSION, expectedForward);
+        final var actualCertificate =
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
         assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
     }

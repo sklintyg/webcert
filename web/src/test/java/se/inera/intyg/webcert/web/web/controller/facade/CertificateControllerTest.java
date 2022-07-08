@@ -582,7 +582,7 @@ public class CertificateControllerTest {
 
             doReturn(certificate)
                 .when(forwardCertificateFacadeService)
-                .forwardCertificate(anyString(), anyLong(), anyBoolean());
+                .forwardCertificate(anyString(), anyBoolean());
 
             resourceLinks = new ResourceLinkDTO[0];
 
@@ -597,7 +597,7 @@ public class CertificateControllerTest {
             forwardCertificateRequestDTO.setForward(true);
 
             final var response = (CertificateResponseDTO) certificateController
-                .forwardCertificate(CERTIFICATE_ID, CERTIFICATE_VERSION, forwardCertificateRequestDTO).getEntity();
+                .forwardCertificate(CERTIFICATE_ID, forwardCertificateRequestDTO).getEntity();
 
             assertEquals(resourceLinks, response.getCertificate().getLinks());
         }
