@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverterImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -36,11 +38,15 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     private final GetCertificateFacadeService getCertificateFacadeService;
 
+    private final UtkastToCertificateConverter utkastToCertificateConverter;
+
     @Autowired
     public ForwardCertificateFacadeServiceImpl(UtkastService utkastService,
-        GetCertificateFacadeService getCertificateFacadeService) {
+                                               GetCertificateFacadeService getCertificateFacadeService,
+                                               UtkastToCertificateConverter utkastToCertificateConverter) {
         this.utkastService = utkastService;
         this.getCertificateFacadeService = getCertificateFacadeService;
+        this.utkastToCertificateConverter = utkastToCertificateConverter;
     }
 
     @Override
@@ -51,6 +57,6 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
         final var draft = utkastService.setNotifiedOnDraft(certificateId, certificate.getMetadata().getVersion(), forwarded);
 
         LOG.debug("Get the forwarded certificate '{}'", certificateId);
-        return getCertificateFacadeService.getCertificate(draft.getIntygsId(), false);
+        return utkastToCertificateConverter.convert(draft);
     }
 }
