@@ -40,8 +40,10 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private static final String TITLE = "Ej hanterade ärenden";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget och frågan/svaret.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter frågor och svar.";
-    private static final String DESCRIPTION = "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
-    private static final String EMPTY_LIST_TEXT = "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
+    private static final String DESCRIPTION =
+            "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
+    private static final String EMPTY_LIST_TEXT =
+            "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej hanterade ärenden.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
@@ -80,9 +82,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
                 .findFirst();
     }
 
-    private List<ListFilterConfig> removeFilter(ListConfig config, String UNIT) {
+    private List<ListFilterConfig> removeFilter(ListConfig config, String unit) {
         final var currentFilters = config.getFilters();
-        final Optional<ListFilterConfig> unitFilter = getFilterFromId(currentFilters, UNIT);
+        final Optional<ListFilterConfig> unitFilter = getFilterFromId(currentFilters, unit);
         unitFilter.ifPresent(currentFilters::remove);
         return currentFilters;
     }
@@ -172,7 +174,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
                                 .stream()
                                 .map(AbstractVardenhet::getId)
                                 .anyMatch(
-                                        (subUnitId) -> isMatchedUnit(subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey())
+                                        (subUnitId) -> isMatchedUnit(
+                                                subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey()
+                                        )
                                 )
                 )
                 .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))

@@ -487,7 +487,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate) || isDjupintegration() || isRevoked(certificate) || hasBeenComplementedBySignedCertificate(certificate)) {
+        if (isReplacementSigned(certificate)
+                || isDjupintegration()
+                || hasBeenComplementedBySignedCertificate(certificate)
+                || isRevoked(certificate)
+        ) {
             return false;
         }
 

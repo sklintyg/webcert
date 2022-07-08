@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -73,6 +74,11 @@ class UserServiceImplTest {
     public static final String ROLE_DESCRIPTION = "ROLE_DESCRIPTION";
     private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
 
+    private static final String SORT_FIRST = "anakonda";
+    private static final String SORT_SECOND = "Åkersork";
+    private static final String SORT_THIRD = "Älgantilop";
+    private static final List<String> UNSORTED_NAMES = List.of(SORT_THIRD, SORT_FIRST, SORT_SECOND);
+
     @BeforeEach
     void setUp() {
         user = mock(WebCertUser.class);
@@ -91,11 +97,11 @@ class UserServiceImplTest {
                 .when(user)
                 .getAuthenticationMethod();
 
-            doReturn(getCareProvider())
+            doReturn(getCareProvider(CARE_PROVIDER_NAME))
                 .when(user)
                 .getValdVardgivare();
 
-            doReturn(getUnit())
+            doReturn(getUnit(UNIT_NAME))
                 .when(user)
                 .getValdVardenhet();
 
@@ -400,31 +406,87 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class SortCareUnitsAlphabeticallyTests {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user).getAuthenticationMethod();
+
+            doReturn(getUnsortedCareProviders())
+                .when(user).getVardgivare();
+        }
+
+        @Test
+        public void shallSortCareProviders() {
+            final var actualUser = userService.getLoggedInUser();
+
+            final var careProviders = actualUser.getCareProviders();
+            assertAll(
+                () -> assertEquals(SORT_FIRST, careProviders.get(0).getName()),
+                () -> assertEquals(SORT_SECOND, careProviders.get(1).getName()),
+                () -> assertEquals(SORT_THIRD, careProviders.get(2).getName())
+            );
+        }
+
+        @Test
+        public void shallSortCareUnits() {
+            final var actualUser = userService.getLoggedInUser();
+
+            final var careUnits = actualUser.getCareProviders().get(0).getCareUnits();
+            assertAll(
+                () -> assertEquals(SORT_FIRST, careUnits.get(0).getUnitName()),
+                () -> assertEquals(SORT_SECOND, careUnits.get(1).getUnitName()),
+                () -> assertEquals(SORT_THIRD, careUnits.get(2).getUnitName())
+            );
+        }
+
+        @Test
+        public void shallSortUnits() {
+            final var actualUser = userService.getLoggedInUser();
+
+            final var units = actualUser.getCareProviders().get(0).getCareUnits().get(0).getUnits();
+            assertAll(
+                () -> assertEquals(SORT_FIRST, units.get(0).getUnitName()),
+                () -> assertEquals(SORT_SECOND, units.get(1).getUnitName()),
+                () -> assertEquals(SORT_THIRD, units.get(2).getUnitName())
+            );
+        }
+    }
+
     private List<Vardgivare> getNavigableCareProvider() {
-        final var unit = (Mottagning) getUnit();
+        final var unit = (Mottagning) getUnit(UNIT_NAME);
 
         final var careUnit = new Vardenhet();
         careUnit.setId(CARE_UNIT_ID);
         careUnit.setNamn(CARE_UNIT_NAME);
         careUnit.setMottagningar(List.of(unit));
 
-        final var careProvider = (Vardgivare) getCareProvider();
+        final var careProvider = (Vardgivare) getCareProvider(CARE_PROVIDER_NAME);
         careProvider.setVardenheter(List.of(careUnit));
 
         return List.of(careProvider);
     }
 
-    private SelectableVardenhet getCareProvider() {
+    private SelectableVardenhet getCareProvider(String careProviderName) {
         final var careProvider = new Vardgivare();
         careProvider.setId(CARE_PROVIDER_ID);
-        careProvider.setNamn(CARE_PROVIDER_NAME);
+        careProvider.setNamn(careProviderName);
         return careProvider;
     }
 
-    private SelectableVardenhet getUnit() {
+    private SelectableVardenhet getCareUnit(String careUnitName) {
+        final var careUnit = new Vardenhet();
+        careUnit.setId(UNIT_ID);
+        careUnit.setNamn(careUnitName);
+        return careUnit;
+    }
+
+    private SelectableVardenhet getUnit(String unitName) {
         final var unit = new Mottagning();
         unit.setId(UNIT_ID);
-        unit.setNamn(UNIT_NAME);
+        unit.setNamn(unitName);
         return unit;
     }
 
@@ -440,5 +502,21 @@ class UserServiceImplTest {
         return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
             false, false, inactiveUnit, false);
+    }
+
+    private List<Vardgivare> getUnsortedCareProviders() {
+        final var units = UNSORTED_NAMES.stream()
+            .map(name -> (Mottagning) getUnit(name))
+            .collect(Collectors.toList());
+        final var careUnits = UNSORTED_NAMES.stream()
+            .map(name -> (Vardenhet) getCareUnit(name))
+            .collect(Collectors.toList());
+        final var careProviders = UNSORTED_NAMES.stream()
+            .map(name -> (Vardgivare) getCareProvider(name))
+            .collect(Collectors.toList());
+        careUnits.forEach(careUnit -> careUnit.setMottagningar(units));
+        careProviders.forEach(careProvider -> careProvider.setVardenheter(careUnits));
+
+        return careProviders;
     }
 }
