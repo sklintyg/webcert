@@ -67,8 +67,8 @@ public class ConfigControllerTest {
             final var links = Map.of("Test", new DynamicLink());
 
             doReturn(links)
-                .when(dynamicLinkService)
-                .getAllAsMap();
+                    .when(dynamicLinkService)
+                    .getAllAsMap();
 
             final var response = (Map<String, DynamicLink>) configController.getDynamicLinks();
             assertTrue(response.containsKey("Test"));
@@ -100,6 +100,14 @@ public class ConfigControllerTest {
 
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(response.getBanners().size(), 0);
+        }
+
+        @Test
+        void getConfigurationReturnsPrivatePractitionerHost() {
+            final String ppHost = "min_sida";
+            ReflectionTestUtils.setField(configController, "ppHost", ppHost);
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(response.getPpHost(), ppHost);
         }
     }
 }

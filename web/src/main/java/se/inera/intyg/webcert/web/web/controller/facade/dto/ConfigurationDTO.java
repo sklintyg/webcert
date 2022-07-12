@@ -24,14 +24,16 @@ import se.inera.intyg.infra.driftbannerdto.Banner;
 
 public class ConfigurationDTO {
 
+    private String ppHost;
     private String version;
     private List<Banner> banners;
     private String sakerhetstjanstIdpUrl;
     private String cgiFunktionstjansterIdpUrl;
 
-    public ConfigurationDTO(String version, List<Banner> banners, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
+    public ConfigurationDTO(String version, List<Banner> banners, String ppHost, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.banners = banners;
+        this.ppHost = ppHost;
         this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
         this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
     }
@@ -59,4 +61,11 @@ public class ConfigurationDTO {
         return cgiFunktionstjansterIdpUrl;
     }
 
+    public String getPpHost() {
+        return ppHost;
+    }
+
+    public void setPpHost(String ppHost) {
+        this.ppHost = ppHost;
+    }
 }

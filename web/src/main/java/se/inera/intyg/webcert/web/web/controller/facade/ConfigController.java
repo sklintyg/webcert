@@ -54,6 +54,9 @@ public class ConfigController {
     @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
     private String cgiFunktionstjansterIdpUrl;
 
+    @Value("${privatepractitioner.portal.registration.url}")
+    private String ppHost;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -78,7 +81,7 @@ public class ConfigController {
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .collect(Collectors.toList());
 
-        return Response.ok(new ConfigurationDTO(version, banners, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
+        return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
     }
 
     @GET

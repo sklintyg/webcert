@@ -221,6 +221,21 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
         }
+
+        @Test
+        void shallIncludePrivatePractitionerPortalIfUserIsPrivatePractitioner() {
+            final var user = getUserWithOrigin("NORMAL");
+            when(user.isPrivatLakare()).thenReturn(true);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL);
+        }
+
+        @Test
+        void shallNotIncludePrivatePractitionerPortalIfUserIsNotPrivatePractitioner() {
+            final var user = getUserWithOrigin("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL);
+        }
     }
 
     private SelectableVardenhet getUnit() {

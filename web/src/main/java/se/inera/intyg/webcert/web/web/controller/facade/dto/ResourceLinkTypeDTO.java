@@ -51,4 +51,5 @@ public enum ResourceLinkTypeDTO {
     CREATE_CERTIFICATE,
     CHOOSE_UNIT,
     CHANGE_UNIT,
+    PRIVATE_PRACTITIONER_PORTAL,
 }

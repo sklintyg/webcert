@@ -119,6 +119,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (user.isPrivatLakare()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL,
+                    "Min sida",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
