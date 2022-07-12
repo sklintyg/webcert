@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.List;
+
 import se.inera.intyg.infra.driftbannerdto.Banner;
 
 public class ConfigurationDTO {
@@ -30,7 +31,11 @@ public class ConfigurationDTO {
     private String sakerhetstjanstIdpUrl;
     private String cgiFunktionstjansterIdpUrl;
 
-    public ConfigurationDTO(String version, List<Banner> banners, String ppHost, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
+    public ConfigurationDTO(
+            String version, List<Banner> banners,
+            String ppHost,
+            String sakerhetstjanstIdpUrl,
+            String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.banners = banners;
         this.ppHost = ppHost;

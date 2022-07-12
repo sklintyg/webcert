@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
@@ -123,7 +124,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean isChooseUnitAvailable(WebCertUser user) {
-        final var loggedInUnit =  user.getValdVardenhet();
+        final var loggedInUnit = user.getValdVardenhet();
         return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
     }
 
@@ -148,11 +149,11 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean isOriginNormal(String origin) {
-        return origin.equals("NORMAL");
+        return "NORMAL".equals(origin);
     }
 
     private boolean isOriginUthopp(String origin) {
-        return origin.equals("UTHOPP");
+        return "UTHOPP".equals(origin);
     }
 
     private boolean isUserDoctor(WebCertUser user) {
