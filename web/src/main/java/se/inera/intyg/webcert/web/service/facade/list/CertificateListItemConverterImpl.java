@@ -185,8 +185,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         }
 
         final var replacedByCertificate = relations.getLatestChildRelations().getReplacedByIntyg();
-        final var replacedByDraft = relations.getLatestChildRelations().getReplacedByUtkast();
-        return checkActiveRelation(replacedByCertificate, replacedByDraft);
+        return checkActiveRelation(replacedByCertificate, null);
     }
 
     private boolean isComplemented(Relations relations) {
