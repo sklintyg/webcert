@@ -16,3 +16,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Run check style
         uses: nikitasavinov/checkstyle-action@master
+        with:
+          #checkstyle_config: gradle-intyg-plugin/src/main/resources/checkstyle/checkstyle.xml
+          checkstyle_version: 8.23
