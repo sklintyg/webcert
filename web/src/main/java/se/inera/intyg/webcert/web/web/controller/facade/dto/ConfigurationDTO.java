@@ -30,12 +30,7 @@ public class ConfigurationDTO {
     private String sakerhetstjanstIdpUrl;
     private String cgiFunktionstjansterIdpUrl;
 
-    public ConfigurationDTO(
-            String version,
-            List<Banner> banners,
-            String ppHost,
-            String sakerhetstjanstIdpUrl,
-            String cgiFunktionstjansterIdpUrl) {
+    public ConfigurationDTO(String version, List<Banner> banners, String ppHost, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.banners = banners;
         this.ppHost = ppHost;
