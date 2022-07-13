@@ -1,4 +1,4 @@
-name: Checkstyle linter
+name: Checkstyle
 
 on: pull_request
 
