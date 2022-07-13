@@ -3,15 +3,19 @@
 
 name: Java CI with Gradle
 
+# Build is currently not working due to dependencies requiring VPN to download
+#on:
+#  pull_request:
+#    branches: [ release/2021-2 ]
+
 on:
   pull_request:
-    branches: [ release/2021-2 ]
+    branches-ignore:
+      - '**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2

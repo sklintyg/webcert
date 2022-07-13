@@ -1,0 +1,22 @@
+name: Checkstyle
+
+on: pull_request
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    name: Checkstyle job
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+      - name: Checkout checkstyle xml
+        uses: actions/checkout@v3
+        with:
+          repository: sklintyg/gradle-intyg-plugin
+          path: gradle-intyg-plugin
+      - name: Run check style
+        uses: nikitasavinov/checkstyle-action@master
+        with:
+          checkstyle_config:  gradle-intyg-plugin/src/main/resources/checkstyle/checkstyle.xml
+          checkstyle_version: 8.23
+          level: error
