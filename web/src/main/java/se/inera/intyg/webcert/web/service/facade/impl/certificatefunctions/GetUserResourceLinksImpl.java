@@ -163,11 +163,11 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean isOriginNormal(String origin) {
-        return origin.equals("NORMAL");
+        return "NORMAL".equals(origin);
     }
 
     private boolean isOriginUthopp(String origin) {
-        return origin.equals("UTHOPP");
+        return "UTHOPP".equals(origin);
     }
 
     private boolean isUserDoctor(WebCertUser user) {
