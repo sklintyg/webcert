@@ -20,3 +20,4 @@ jobs:
           #checkstyle_config: gradle-intyg-plugin/src/main/resources/checkstyle/checkstyle.xml
           checkstyle_version: 8.23
           level: error
+          fail_on_error: true
