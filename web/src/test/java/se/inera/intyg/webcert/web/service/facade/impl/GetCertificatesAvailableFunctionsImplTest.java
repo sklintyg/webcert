@@ -302,6 +302,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallExcludeCreateCertificateFromTemplateIfDraft() {
+            doReturn(user).when(webCertUserService).getUser();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
