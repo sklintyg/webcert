@@ -89,8 +89,15 @@ class GetCertificatesAvailableFunctionsImplTest {
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
 
+    private WebCertUser user = mock(WebCertUser.class);
+
     @Nested
     class Draft {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         @Test
         void shallIncludeEditCertificate() {
@@ -168,10 +175,27 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeForwardCertificate() {
+        void shallIncludeForwardCertificateIfUserIsNotDoctor() {
+            doReturn(false).when(user).isLakare();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeForwardCertificateIfUserIsDoctor() {
+            doReturn(true).when(user).isLakare();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeForwardCertificateIfUserIsPrivateDoctor() {
+            doReturn(true).when(user).isPrivatLakare();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
         }
 
         @Test
@@ -215,6 +239,11 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Nested
     class CreateCertificateFromCandidate {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         void setUpMetadata() {
             when(candidateDataHelper
@@ -380,6 +409,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallExcludeSend() {
+            doReturn(user).when(webCertUserService).getUser();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
@@ -902,6 +932,11 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Nested
     class QuestionsForDraft {
+
+        @BeforeEach
+        void setup() {
+            doReturn(user).when(webCertUserService).getUser();
+        }
 
         @Test
         void shallIncludeQuestionsWhenComplementDraft() {

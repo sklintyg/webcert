@@ -22,5 +22,5 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface ForwardCertificateFacadeService {
 
-    Certificate forwardCertificate(String certificateId, long version, boolean forwarded);
+    Certificate forwardCertificate(String certificateId, boolean forwarded);
 }

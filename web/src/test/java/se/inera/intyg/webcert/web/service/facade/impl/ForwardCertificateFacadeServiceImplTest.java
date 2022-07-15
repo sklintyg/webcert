@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +45,9 @@ class ForwardCertificateFacadeServiceImplTest {
 
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
+
+    @Mock
+    private UtkastToCertificateConverter utkastToCertificateConverter;
 
     @InjectMocks
     private ForwardCertificateFacadeServiceImpl forwardCertificateFacadeService;
@@ -58,6 +62,7 @@ class ForwardCertificateFacadeServiceImplTest {
             .metadata(
                 CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
+                    .version(VERSION)
                     .build()
             )
             .build();
@@ -72,6 +77,10 @@ class ForwardCertificateFacadeServiceImplTest {
         doReturn(certificate)
             .when(getCertificateFacadeService)
             .getCertificate(draft.getIntygsId(), false);
+
+        doReturn(certificate)
+                .when(utkastToCertificateConverter)
+                .convert(draft);
     }
 
     @Test
@@ -80,8 +89,8 @@ class ForwardCertificateFacadeServiceImplTest {
 
         certificate.getMetadata().setForwarded(expectedForward);
 
-        final var actualCertificate = forwardCertificateFacadeService.forwardCertificate(
-            CERTIFICATE_ID, VERSION, expectedForward);
+        final var actualCertificate =
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
         assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
     }
@@ -92,8 +101,8 @@ class ForwardCertificateFacadeServiceImplTest {
 
         certificate.getMetadata().setForwarded(expectedForward);
 
-        final var actualCertificate = forwardCertificateFacadeService.forwardCertificate(
-            CERTIFICATE_ID, VERSION, expectedForward);
+        final var actualCertificate =
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
         assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
     }

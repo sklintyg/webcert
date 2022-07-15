@@ -235,18 +235,20 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        resourceLinks.add(
-            CertificateForwardFunction.createResourceLinkForDraft()
-        );
+        if (!webCertUserService.getUser().isLakare() && !webCertUserService.getUser().isPrivatLakare()) {
+            resourceLinks.add(
+                    CertificateForwardFunction.createResourceLinkForDraft()
+            );
 
-        resourceLinks.add(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.READY_FOR_SIGN,
-                READY_FOR_SIGN_NAME,
-                READY_FOR_SIGN_DESCRIPTION,
-                true
-            )
-        );
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.READY_FOR_SIGN,
+                            READY_FOR_SIGN_NAME,
+                            READY_FOR_SIGN_DESCRIPTION,
+                            true
+                    )
+            );
+        }
 
         if (isLisjp(certificate)) {
             resourceLinks.add(
