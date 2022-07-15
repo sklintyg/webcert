@@ -331,7 +331,8 @@ public class CertificateController {
     @Path("/{certificateId}/forward")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response forwardCertificate(@PathParam("certificateId") @NotNull String certificateId, @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
+    public Response forwardCertificate(@PathParam("certificateId") @NotNull String certificateId,
+        @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Forward certificate with id: '{}' and forwarded: '{}'",
                 certificateId,

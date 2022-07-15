@@ -53,8 +53,10 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
     public Certificate forwardCertificate(String certificateId, boolean forwarded) {
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
 
-        LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId, certificate.getMetadata().getVersion(), forwarded);
-        final var draft = utkastService.setNotifiedOnDraft(certificateId, certificate.getMetadata().getVersion(), forwarded);
+        LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId,
+            certificate.getMetadata().getVersion(), forwarded);
+        final var draft = utkastService.setNotifiedOnDraft(certificateId,
+            certificate.getMetadata().getVersion(), forwarded);
 
         LOG.debug("Get the forwarded certificate '{}'", certificateId);
         return utkastToCertificateConverter.convert(draft);
