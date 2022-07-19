@@ -52,4 +52,6 @@ public enum ResourceLinkTypeDTO {
     CHOOSE_UNIT,
     CHANGE_UNIT,
     PRIVATE_PRACTITIONER_PORTAL,
+
+    NAVIGATE_BACK_BUTTON,
 }

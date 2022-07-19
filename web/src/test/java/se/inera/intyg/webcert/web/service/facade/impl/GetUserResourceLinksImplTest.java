@@ -236,6 +236,20 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL);
         }
+
+        @Test
+        void shallIncludeNavigateBackButtonIfUserHasNormalOrigin() {
+            final var user = getUserWithOrigin("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON);
+        }
+
+        @Test
+        void shallNotIncludeNavigateBackButtonIfUserHasNormalOrigin() {
+            final var user = getUserWithOrigin("UTHOPP");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON);
+        }
     }
 
     private SelectableVardenhet getUnit() {
