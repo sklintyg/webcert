@@ -130,6 +130,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasNavigateBackButton(user)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON,
+                    "Tillbaka",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
@@ -152,6 +163,10 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     private boolean hasAccessToQuestionList(WebCertUser user) {
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+    }
+
+    private boolean hasNavigateBackButton(WebCertUser user) {
+        return isOriginNormal(user.getOrigin());
     }
 
     private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
