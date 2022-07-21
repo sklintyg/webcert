@@ -18,10 +18,10 @@
  */
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-//const chromeVersion = require("./chrome-version");
+const chromeVersion = require("./chrome-version");
 
 (async () => {
-  const version = '103.0.5060.134'; //await chromeVersion();
+  const version = await chromeVersion();
   console.log(`Your Chrome version is ${version}`);
 
   const { stdout } = await exec('node node_modules/webdriver-manager/bin/webdriver-manager update --versions.chrome  ' + version + ' --gecko false --standalone false');
