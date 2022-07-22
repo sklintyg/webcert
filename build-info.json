@@ -6,5 +6,5 @@
   "tests": [
     "restAssuredTest"
   ],
-  "backingService": "intygstjanst:3.16.1.+"
+  "backingService": "intygstjanst:3.16.1.31"
 }
