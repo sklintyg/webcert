@@ -223,7 +223,7 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
 
     private Personnummer getPatientId(Patient patient) {
         String patientId = patient.getPersonId().getId();
-        if (patient.getPreviousPersonId() != null && !patient.isPersonIdUpdated()) {
+        if (patient.getPreviousPersonId() != null) {
             patientId = patient.getPreviousPersonId().getId();
         }
         return Personnummer.createPersonnummer(patientId).orElseThrow();

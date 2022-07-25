@@ -141,7 +141,6 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(ALTERNATE_PATIENT_ID, patient.getPersonId().getId());
-                    assertTrue(patient.isPersonIdUpdated());
                     assertTrue(patient.isPersonIdChanged());
                 }
 
@@ -151,7 +150,6 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPersonId().getId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertFalse(patient.isPersonIdChanged());
                 }
 
@@ -161,17 +159,15 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPersonId().getId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertFalse(patient.isPersonIdChanged());
                 }
 
                 @Test
-                public void shallHaveAlternateSSNAsPatientIdIfPatientIdHasNotBeenReplaced() {
+                public void shallHaveAlternateSSNAsPatientIdIfSet() {
                     final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(ALTERNATE_PATIENT_ID, patient.getPersonId().getId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertTrue(patient.isPersonIdChanged());
                 }
             }
@@ -185,7 +181,6 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertNull(patient.getPreviousPersonId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertFalse(patient.isPersonIdChanged());
                 }
 
@@ -195,7 +190,6 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertNull(patient.getPreviousPersonId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertFalse(patient.isPersonIdChanged());
                 }
 
@@ -206,7 +200,6 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
-                    assertTrue(patient.isPersonIdUpdated());
                     assertTrue(patient.isPersonIdChanged());
                 }
 
@@ -217,36 +210,7 @@ class PatientConverterImplTest {
                     user.setParameters(parameters);
                     final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                     assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
-                    assertFalse(patient.isPersonIdUpdated());
                     assertTrue(patient.isPersonIdChanged());
-                }
-            }
-
-            @Nested
-            class PersonIdUpdatedFlag {
-
-                @Test
-                public void shallSetFlagIfPersonIdIsReplaced() {
-                    final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
-                    parameters.setBeforeAlternateSsn(PATIENT_ID);
-                    user.setParameters(parameters);
-                    final var patient = patientConverter.convert(ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-                    assertTrue(patient.isPersonIdUpdated());
-                }
-
-                @Test
-                public void shallNotSetFlagIfPersonIdIsNotReplaced() {
-                    final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
-                    parameters.setBeforeAlternateSsn(PATIENT_ID);
-                    user.setParameters(parameters);
-                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-                    assertFalse(patient.isPersonIdUpdated());
-                }
-
-                @Test
-                public void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
-                    final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-                    assertFalse(patient.isPersonIdUpdated());
                 }
             }
 
@@ -380,7 +344,7 @@ class PatientConverterImplTest {
             public void shallNotStausesIfNoIntegrationParameters() {
                 final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                 assertFalse(patient.isDifferentNameFromEHR());
-                assertFalse(patient.isPersonIdUpdated());
+                assertFalse(patient.isPersonIdChanged());
             }
         }
     }

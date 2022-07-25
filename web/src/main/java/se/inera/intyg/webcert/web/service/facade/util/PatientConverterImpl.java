@@ -61,7 +61,6 @@ public class PatientConverterImpl implements PatientConverter {
             .deceased(patient.isAvliden())
             .differentNameFromEHR(isPatientNameDifferent(patient, parameters))
             .previousPersonId(getPreviousPersonId(patientId, parameters))
-            .personIdUpdated(isPatientIdUpdated(parameters, patientId))
             .personIdChanged(isPatientIdChanged(parameters, patientId))
             .reserveId(hasReserveId(parameters, patientId))
             .build();
@@ -92,10 +91,6 @@ public class PatientConverterImpl implements PatientConverter {
         return Personnummer.createPersonnummer(id).isPresent();
     }
 
-    private boolean isPatientIdUpdated(IntegrationParameters parameters, Personnummer patientId) {
-        return isBeforeAlternateSSNSet(parameters) && !isPersonIdSameAsBeforeAlternateSSN(patientId, parameters);
-    }
-
     private String getString(String s) {
         return s != null ? s : "";
     }
@@ -113,10 +108,6 @@ public class PatientConverterImpl implements PatientConverter {
             .id(id)
             .type("PERSON_NUMMER")
             .build();
-    }
-
-    private boolean isPersonIdSameAsBeforeAlternateSSN(Personnummer patientId, IntegrationParameters parameters) {
-        return parameters != null && compareWithAndWithoutDash(patientId, parameters.getBeforeAlternateSsn());
     }
 
     private boolean isPersonIdSameAsAlternateSSN(Personnummer patientId, IntegrationParameters parameters) {
@@ -149,7 +140,7 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
-        if (isPatientIdNotChanged(patientId, parameters)) {
+        if (!isPatientIdChanged(parameters, patientId)) {
             return null;
         } else if (!isBeforeAlternateSSNSet(parameters)) {
             return PersonId.builder()
@@ -161,12 +152,6 @@ public class PatientConverterImpl implements PatientConverter {
             .id(parameters.getBeforeAlternateSsn())
             .type("PERSON_NUMMER")
             .build();
-    }
-
-    private boolean isPatientIdNotChanged(Personnummer patientId, IntegrationParameters parameters) {
-        return parameters == null
-            || (isPersonIdSameAsAlternateSSN(patientId, parameters) && !isPatientIdUpdated(parameters, patientId))
-            || !isAlternateSSNSet(parameters);
     }
 
     private boolean isAlternateSSNSet(IntegrationParameters parameters) {
