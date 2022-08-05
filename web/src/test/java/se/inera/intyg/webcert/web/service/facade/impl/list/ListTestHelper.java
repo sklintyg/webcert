@@ -75,8 +75,7 @@ class ListTestHelper {
         return setupUser(webcertUserService, false, privilegeString, intygType, unit, features);
     }
 
-
-        public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
