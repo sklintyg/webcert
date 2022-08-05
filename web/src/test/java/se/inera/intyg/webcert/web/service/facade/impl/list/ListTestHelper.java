@@ -27,10 +27,9 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -38,7 +37,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -73,7 +71,12 @@ class ListTestHelper {
         return filter;
     }
 
-    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features) {
+        return setupUser(webcertUserService, false, privilegeString, intygType, unit, features);
+    }
+
+
+        public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -95,10 +98,11 @@ class ListTestHelper {
         user.setValdVardenhet(buildVardenhet());
         user.setValdVardgivare(buildVardgivare());
         when(webcertUserService.getUser()).thenReturn(user);
+
         return user;
     }
 
-    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features) {
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, boolean isPrivatePractitioner, String privilegeString, String intygType, Vardenhet unit, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -120,6 +124,13 @@ class ListTestHelper {
         user.setValdVardenhet(unit);
         user.setValdVardgivare(buildVardgivare());
         when(webcertUserService.getUser()).thenReturn(user);
+
+        if (isPrivatePractitioner) {
+            final var roles = new HashMap<String, Role>();
+            roles.put("PRIVATLAKARE", new Role());
+            user.setRoles(roles);
+        }
+
         return user;
     }
 
