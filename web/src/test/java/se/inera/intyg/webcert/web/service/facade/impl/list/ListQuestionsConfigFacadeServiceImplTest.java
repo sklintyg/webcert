@@ -73,9 +73,9 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
     private final String UNIT_ID = "UNIT_ID";
     private final String UNIT_NAME = "UNIT_NAME";
-    private final String A_UNIT = "A_UNIT";
+    private final String A_UNIT = "OA_UNIT";
     private final String A_UNIT_NAME = "A_UNIT_NAME";
-    private final String B_UNIT = "B_UNIT";
+    private final String B_UNIT = "AB_UNIT";
     private final String B_UNIT_NAME = "B_UNIT_NAME";
     private final String C_UNIT = "C_UNIT";
     private final String C_UNIT_NAME = "C_UNIT_NAME";
@@ -331,8 +331,8 @@ class ListQuestionsConfigFacadeServiceImplTest {
             }
 
             @Test
-            public void shouldSetFirstValueInListAsDefault() {
-                assertTrue(filter.getValues().get(0).isDefaultValue());
+            public void shouldSetSecondValueInListAsDefault() {
+                assertTrue(filter.getValues().get(1).isDefaultValue());
             }
         }
 
