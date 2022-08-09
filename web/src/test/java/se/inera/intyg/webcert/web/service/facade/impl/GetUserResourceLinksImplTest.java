@@ -261,7 +261,7 @@ class GetUserResourceLinksImplTest {
         @Nested
         class SubscriptionWarning {
 
-            public final static String CARE_PROVIDER = "CARE_PROVIDER";
+            public static final String CARE_PROVIDER = "CARE_PROVIDER";
 
             WebCertUser setupUser(UserOriginType userOriginType, String loggedInCareProvider,
                 List<String> missingSubscriptions, List<String> subscriptionWarning) {
