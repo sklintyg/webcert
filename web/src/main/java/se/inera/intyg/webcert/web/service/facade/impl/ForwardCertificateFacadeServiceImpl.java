@@ -23,10 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
-import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverterImpl;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -40,23 +41,36 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     private final UtkastToCertificateConverter utkastToCertificateConverter;
 
+    private final FragaSvarService fragaSvarService;
+
     @Autowired
     public ForwardCertificateFacadeServiceImpl(UtkastService utkastService,
                                                GetCertificateFacadeService getCertificateFacadeService,
-                                               UtkastToCertificateConverter utkastToCertificateConverter) {
+                                               UtkastToCertificateConverter utkastToCertificateConverter,
+                                               FragaSvarService fragaSvarService) {
         this.utkastService = utkastService;
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
+        this.fragaSvarService = fragaSvarService;
     }
 
     @Override
     public Certificate forwardCertificate(String certificateId, boolean forwarded) {
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
 
+        if (certificate.getMetadata().getStatus() != CertificateStatus.SIGNED) {
+            return forwardDraft(certificateId, certificate, forwarded);
+        } else {
+            fragaSvarService.setVidareBefordrad(certificateId);
+            return certificate;
+        }
+    }
+
+    private Certificate forwardDraft(String certificateId, Certificate certificate, boolean forwarded) {
         LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId,
-            certificate.getMetadata().getVersion(), forwarded);
+                certificate.getMetadata().getVersion(), forwarded);
         final var draft = utkastService.setNotifiedOnDraft(certificateId,
-            certificate.getMetadata().getVersion(), forwarded);
+                certificate.getMetadata().getVersion(), forwarded);
 
         LOG.debug("Get the forwarded certificate '{}'", certificateId);
         return utkastToCertificateConverter.convert(draft);
