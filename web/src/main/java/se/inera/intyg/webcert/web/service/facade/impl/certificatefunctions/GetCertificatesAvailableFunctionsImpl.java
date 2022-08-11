@@ -281,7 +281,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
 
-        if (!webCertUserService.getUser().isPrivatLakare() && hasUnhandledQuestionOrComplement(certificate)) {
+        if (isForwardQuestionAvailable(certificate)) {
             resourceLinks.add(
                     CertificateForwardFunction.createResourceLinkForQuestion()
             );
@@ -380,6 +380,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         return resourceLinks;
+    }
+
+    private boolean isForwardQuestionAvailable(Certificate certificate) {
+        return webCertUserService.getUser() != null && !webCertUserService.getUser().isPrivatLakare() && hasUnhandledQuestionOrComplement(certificate);
     }
 
     private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
