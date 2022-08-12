@@ -505,7 +505,7 @@ class UserServiceImplTest {
         }
 
         @Test
-        void careProviderIsConsideredMissingSubscriptionIfAcdtionIsBlock() {
+        void careProviderIsConsideredMissingSubscriptionIfActionIsBlock() {
             final var subscriptionInfo = new SubscriptionInfo();
             subscriptionInfo.setCareProvidersMissingSubscription(
                 Collections.singletonList(CARE_PROVIDER_ID)
