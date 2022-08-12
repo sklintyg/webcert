@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -66,12 +68,12 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
         if (hasAccessToDraftList(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
-                            "Ej hanterade ärenden",
-                            "",
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
+                    "Ej hanterade ärenden",
+                    "",
+                    true
+                )
             );
         }
 
@@ -145,12 +147,29 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean isChooseUnitAvailable(WebCertUser user) {
-        final var loggedInUnit =  user.getValdVardenhet();
+        final var loggedInUnit = user.getValdVardenhet();
         return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
     }
 
     private boolean isChangeUnitAvailable(WebCertUser user) {
-        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+        return hasMoreThanOneUnitOrSubUnit(user) && (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin()));
+    }
+
+    private boolean hasMoreThanOneUnitOrSubUnit(WebCertUser user) {
+        if ((long) user.getVardgivare().size() > 1) {
+            return true;
+        }
+        for (Vardgivare vg : user.getVardgivare()) {
+            if ((long) vg.getVardenheter().size() > 1) {
+                return true;
+            }
+            for (Vardenhet ve : vg.getVardenheter()) {
+                if ((long) ve.getMottagningar().size() > 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
