@@ -36,6 +36,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -112,10 +113,19 @@ public class UserServiceImpl implements UserService {
                 .id(vardgivare.getId())
                 .name(vardgivare.getNamn())
                 .careUnits(getCareUnits(vardgivare))
+                .missingSubscription(isMissingSubscription(webCertUser, vardgivare.getId()))
                 .build()
             )
             .sorted(Comparator.comparing(CareProvider::getName, SORT_SWEDISH))
             .collect(Collectors.toList());
+    }
+
+    private boolean isMissingSubscription(WebCertUser webCertUser, String careProviderId) {
+        final var subscriptionInfo = webCertUser.getSubscriptionInfo();
+        return subscriptionInfo != null
+                && subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK
+                && subscriptionInfo.getCareProvidersMissingSubscription() != null
+                && subscriptionInfo.getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
     private List<CareUnit> getCareUnits(Vardgivare vardgivare) {

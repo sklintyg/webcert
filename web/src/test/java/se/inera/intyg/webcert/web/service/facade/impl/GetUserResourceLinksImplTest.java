@@ -22,6 +22,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +33,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -294,6 +301,85 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
 
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+        
+        @Nested
+        class SubscriptionWarning {
+
+            public static final String CARE_PROVIDER = "CARE_PROVIDER";
+
+            WebCertUser setupUser(UserOriginType userOriginType, String loggedInCareProvider,
+                List<String> missingSubscriptions, List<String> subscriptionWarning) {
+                final var user = new WebCertUser();
+                user.setOrigin(userOriginType.name());
+
+                if (loggedInCareProvider != null) {
+                    final var careProvider = new Vardgivare();
+                    careProvider.setId(loggedInCareProvider);
+                    user.setValdVardgivare(careProvider);
+                }
+
+                final var subscriptionInfo = new SubscriptionInfo();
+                subscriptionInfo.setRequireSubscriptionStartDate(LocalDate.now().minusDays(1).toString());
+                subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
+                subscriptionInfo.setCareProvidersMissingSubscription(missingSubscriptions);
+                subscriptionInfo.setCareProvidersForSubscriptionModal(subscriptionWarning);
+                user.setSubscriptionInfo(subscriptionInfo);
+
+                return user;
+            }
+
+            @Test
+            void shallIncludeSubscriptionWarningIfUsersLoggedInCareProviderIsMissingSubscription() {
+                final var user = setupUser(
+                    UserOriginType.NORMAL,
+                    CARE_PROVIDER,
+                    Collections.singletonList(CARE_PROVIDER),
+                    Collections.singletonList(CARE_PROVIDER)
+                );
+
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
+            }
+
+            @Test
+            void shallNotIncludeSubscriptionWarningIfUsersLoggedInCareProviderIsMissingSubscriptionButHasBeenDisplayed() {
+                final var user = setupUser(
+                    UserOriginType.NORMAL,
+                    CARE_PROVIDER,
+                    Collections.singletonList(CARE_PROVIDER),
+                    Collections.emptyList()
+                );
+
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
+            }
+
+            @Test
+            void shallNotIncludeSubscriptionWarningIfUsersMissingCareProvider() {
+                final var user = setupUser(
+                    UserOriginType.NORMAL,
+                    null,
+                    Collections.singletonList(CARE_PROVIDER),
+                    Collections.singletonList(CARE_PROVIDER)
+                );
+
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
+            }
+
+            @Test
+            void shallNotIncludeSubscriptionWarningIfUsersLoggedInCareProviderIsMissingSubscriptionWhenDjupintegration() {
+                final var user = setupUser(
+                    UserOriginType.DJUPINTEGRATION,
+                    CARE_PROVIDER,
+                    Collections.singletonList(CARE_PROVIDER),
+                    Collections.singletonList(CARE_PROVIDER)
+                );
+
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
+            }
         }
     }
 
