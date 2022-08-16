@@ -89,9 +89,14 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     private ResourceLinkDTO convertResourceLink(ActionLink link) {
         if (link.getType() == ActionLinkType.SKAPA_UTKAST) {
-            return ResourceLinkFactory.create(true);
+            return ResourceLinkFactory.create(isUserAllowedToCreateDraft());
         }
         return null;
+    }
+
+    private boolean isUserAllowedToCreateDraft() {
+        return !(webCertUserService.getUser().isFeatureActive("BLOCKERA_FRISTAENDE")
+                && webCertUserService.getUser().getOrigin().equals("NORMAL"));
     }
 
     private List<IntygModuleDTO> getCertificateModuleList(Personnummer personnummer) {

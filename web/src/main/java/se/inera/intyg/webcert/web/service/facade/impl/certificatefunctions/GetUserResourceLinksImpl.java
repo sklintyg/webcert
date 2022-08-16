@@ -141,12 +141,31 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasNormalOriginWarning(user)) {
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
+                            "Felaktig inloggningsmetod",
+                            "",
+                            "",
+                            true
+                    )
+            );
+        }
+
         return resourceLinks;
     }
 
+    private boolean hasNormalOriginWarning(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user) ;
+    }
+
+    private boolean hasUserChosenUnit(WebCertUser user) {
+        return user.getValdVardenhet() != null;
+    }
+
     private boolean isChooseUnitAvailable(WebCertUser user) {
-        final var loggedInUnit =  user.getValdVardenhet();
-        return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
+        return isOriginNormal(user.getOrigin()) && !hasUserChosenUnit(user);
     }
 
     private boolean isChangeUnitAvailable(WebCertUser user) {

@@ -79,6 +79,7 @@ class GetCertificateTypesFacadeServiceImplTest {
         private List<CertificateTypeInfoDTO> types;
         final private IntygModule module = createIntygModule();
         final private IntygModule notAllowedModule = createIntygModule("notAllowed");
+        private WebCertUser user;
 
         @BeforeEach
         void setup() throws Exception {
@@ -90,7 +91,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .when(resourceLinkHelper)
                     .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-            final var user = mock(WebCertUser.class);
+            user = mock(WebCertUser.class);
             doReturn(user)
                     .when(webCertUserService)
                     .getUser();
@@ -139,14 +140,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 doReturn(List.of(module))
                         .when(intygModuleRegistry)
                         .listAllModules();
-
-                doAnswer(invocation -> {
-                    List<IntygModuleDTO> DTOs = invocation.getArgument(0);
-                    DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
-                    return null;
-                })
-                        .when(resourceLinkHelper)
-                        .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                setupResourceLinks();
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
@@ -163,6 +157,40 @@ class GetCertificateTypesFacadeServiceImplTest {
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddDisabledResourceLinkIfOriginNormalIsBlocked() throws Exception {
+                doReturn(true)
+                        .when(user)
+                        .isFeatureActive("BLOCKERA_FRISTAENDE");
+
+                doReturn("NORMAL")
+                        .when(user)
+                        .getOrigin();
+
+                setupResourceLinks();
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddEnabledResourceLinkIfOriginNormalIsBlockedButOriginIsNotNormal() throws Exception {
+                doReturn(true)
+                        .when(user)
+                        .isFeatureActive("BLOCKERA_FRISTAENDE");
+
+                doReturn("DJUPINTEGRATION")
+                        .when(user)
+                        .getOrigin();
+
+                setupResourceLinks();
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertTrue(types.get(0).getLinks().get(0).isEnabled());
             }
         }
 
@@ -231,5 +259,15 @@ class GetCertificateTypesFacadeServiceImplTest {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
                 "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
                 isDeprecated, showDeprecated);
+    }
+
+    private void setupResourceLinks() {
+        doAnswer(invocation -> {
+            List<IntygModuleDTO> DTOs = invocation.getArgument(0);
+            DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+            return null;
+        })
+                .when(resourceLinkHelper)
+                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
     }
 }
