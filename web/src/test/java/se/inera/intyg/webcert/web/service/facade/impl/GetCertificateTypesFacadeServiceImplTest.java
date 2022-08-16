@@ -158,40 +158,6 @@ class GetCertificateTypesFacadeServiceImplTest {
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
             }
-
-            @Test
-            void shallAddDisabledResourceLinkIfOriginNormalIsBlocked() throws Exception {
-                doReturn(true)
-                        .when(user)
-                        .isFeatureActive("BLOCKERA_FRISTAENDE");
-
-                doReturn("NORMAL")
-                        .when(user)
-                        .getOrigin();
-
-                setupResourceLinks();
-
-                final var types = serviceUnderTest.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-                assertFalse(types.get(0).getLinks().get(0).isEnabled());
-            }
-
-            @Test
-            void shallAddEnabledResourceLinkIfOriginNormalIsBlockedButOriginIsNotNormal() throws Exception {
-                doReturn(true)
-                        .when(user)
-                        .isFeatureActive("BLOCKERA_FRISTAENDE");
-
-                doReturn("DJUPINTEGRATION")
-                        .when(user)
-                        .getOrigin();
-
-                setupResourceLinks();
-
-                final var types = serviceUnderTest.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-                assertTrue(types.get(0).getLinks().get(0).isEnabled());
-            }
         }
 
         @Nested
