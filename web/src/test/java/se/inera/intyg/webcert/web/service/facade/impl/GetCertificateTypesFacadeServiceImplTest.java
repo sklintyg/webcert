@@ -79,7 +79,6 @@ class GetCertificateTypesFacadeServiceImplTest {
         private List<CertificateTypeInfoDTO> types;
         final private IntygModule module = createIntygModule();
         final private IntygModule notAllowedModule = createIntygModule("notAllowed");
-        private WebCertUser user;
 
         @BeforeEach
         void setup() throws Exception {
@@ -91,7 +90,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .when(resourceLinkHelper)
                     .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-            user = mock(WebCertUser.class);
+            final var user = mock(WebCertUser.class);
             doReturn(user)
                     .when(webCertUserService)
                     .getUser();
@@ -140,7 +139,14 @@ class GetCertificateTypesFacadeServiceImplTest {
                 doReturn(List.of(module))
                         .when(intygModuleRegistry)
                         .listAllModules();
-                setupResourceLinks();
+
+                doAnswer(invocation -> {
+                    List<IntygModuleDTO> DTOs = invocation.getArgument(0);
+                    DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+                    return null;
+                })
+                        .when(resourceLinkHelper)
+                        .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
@@ -225,15 +231,5 @@ class GetCertificateTypesFacadeServiceImplTest {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
                 "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
                 isDeprecated, showDeprecated);
-    }
-
-    private void setupResourceLinks() {
-        doAnswer(invocation -> {
-            List<IntygModuleDTO> DTOs = invocation.getArgument(0);
-            DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
-            return null;
-        })
-                .when(resourceLinkHelper)
-                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
     }
 }
