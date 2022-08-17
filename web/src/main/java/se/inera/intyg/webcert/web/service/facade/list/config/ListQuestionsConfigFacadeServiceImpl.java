@@ -213,7 +213,8 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
         return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
                 : isMatchedUnit(o2.getKey(), unitId) ? 1 :
-                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn().compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
+                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
+                        .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
     }
 
     private boolean isMatchedUnit(String subUnitId, String unitId) {
