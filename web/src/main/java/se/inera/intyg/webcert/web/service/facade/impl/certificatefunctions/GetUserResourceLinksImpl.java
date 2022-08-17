@@ -64,7 +64,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
-        if (hasAccessToDraftList(user)) {
+        if (hasAccessToQuestionList(user)) {
             resourceLinks.add(
                     ResourceLinkDTO.create(
                             ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
@@ -141,6 +141,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (shouldWarnForMissingSubscription(user)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SUBSCRIPTION_WARNING,
+                    "Saknar avtal",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
@@ -187,5 +198,18 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     private boolean isUserDoctor(WebCertUser user) {
         return user.isPrivatLakare() || user.isLakare();
+    }
+
+    private boolean shouldWarnForMissingSubscription(WebCertUser user) {
+        return isOriginNormal(user.getOrigin())
+            && isLoggedInCareProviderMissingSubscription(user);
+    }
+
+    private boolean isLoggedInCareProviderMissingSubscription(WebCertUser user) {
+        return user.getValdVardgivare() != null
+            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
+            && user.getSubscriptionInfo() != null
+            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal()
+            .contains(user.getValdVardgivare().getId());
     }
 }
