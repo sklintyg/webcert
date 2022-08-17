@@ -65,20 +65,20 @@ class ListQuestionsConfigFacadeServiceImplTest {
     @InjectMocks
     private ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
 
-    private final String TITLE = "Ej hanterade ärenden";
-    private final String HSA_ID = "HsaId";
-    private final String STAFF_NAME = "Name";
-    private final String DEFAULT_HSA_ID = "HsaIdDefault";
-    private final String DEFAULT_HSA_NAME = "Name default";
+    private final static String TITLE = "Ej hanterade ärenden";
+    private final static String HSA_ID = "HsaId";
+    private final static String STAFF_NAME = "Name";
+    private final static String DEFAULT_HSA_ID = "HsaIdDefault";
+    private final static String DEFAULT_HSA_NAME = "Name default";
 
-    private final String UNIT_ID = "UNIT_ID";
-    private final String UNIT_NAME = "UNIT_NAME";
-    private final String A_UNIT = "OA_UNIT";
-    private final String A_UNIT_NAME = "A_UNIT_NAME";
-    private final String B_UNIT = "AB_UNIT";
-    private final String B_UNIT_NAME = "B_UNIT_NAME";
-    private final String C_UNIT = "C_UNIT";
-    private final String C_UNIT_NAME = "C_UNIT_NAME";
+    private final static String UNIT_ID = "UNIT_ID";
+    private final static String UNIT_NAME = "UNIT_NAME";
+    private final static String A_UNIT = "OA_UNIT";
+    private final static String A_UNIT_NAME = "A_UNIT_NAME";
+    private final static String B_UNIT = "AB_UNIT";
+    private final static String B_UNIT_NAME = "B_UNIT_NAME";
+    private final static String C_UNIT = "C_UNIT";
+    private final static String C_UNIT_NAME = "C_UNIT_NAME";
     private Vardenhet unit;
 
     @BeforeEach
