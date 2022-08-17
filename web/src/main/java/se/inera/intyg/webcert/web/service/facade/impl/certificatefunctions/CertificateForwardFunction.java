@@ -47,7 +47,7 @@ public class CertificateForwardFunction {
 
     public static ResourceLinkDTO createResourceLinkForQuestion() {
         return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
+            ResourceLinkTypeDTO.FORWARD_QUESTION,
             "Vidarebefordra",
             FORWARD_DESCRIPTION_QUESTION,
             true
