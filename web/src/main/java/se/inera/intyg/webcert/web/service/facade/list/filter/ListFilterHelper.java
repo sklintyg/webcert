@@ -119,7 +119,7 @@ public class ListFilterHelper {
         final var questionType = QuestionStatusType.valueOf(status.getValue());
         switch (questionType) {
             case HANDLED:
-                return "HANTERADE";
+                return "HANTERAD";
             case NOT_HANDLED:
                 return "ALLA_OHANTERADE";
             case COMPLEMENT:

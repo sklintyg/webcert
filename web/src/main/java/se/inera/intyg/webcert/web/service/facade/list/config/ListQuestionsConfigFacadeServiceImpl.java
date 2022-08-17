@@ -129,9 +129,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
                 TableHeadingFactory.text(ListColumnType.SENDER),
-                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SIGNED_BY),
                 TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
+                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
                 TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
                 TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
@@ -212,7 +212,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
         return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
-                : isMatchedUnit(o2.getKey(), unitId) ? 1 : o1.getKey().compareTo(o2.getKey());
+                : isMatchedUnit(o2.getKey(), unitId) ? 1 :
+                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
+                        .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
     }
 
     private boolean isMatchedUnit(String subUnitId, String unitId) {
