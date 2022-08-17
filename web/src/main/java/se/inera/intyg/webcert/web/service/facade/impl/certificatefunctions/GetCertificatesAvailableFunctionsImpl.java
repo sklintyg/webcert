@@ -383,7 +383,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean isForwardQuestionAvailable(Certificate certificate) {
-        return webCertUserService.getUser() != null && !webCertUserService.getUser().isPrivatLakare() && hasUnhandledQuestionOrComplement(certificate);
+        return webCertUserService.getUser() != null
+                && !webCertUserService.getUser().isPrivatLakare()
+                && hasUnhandledQuestionOrComplement(certificate);
     }
 
     private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
