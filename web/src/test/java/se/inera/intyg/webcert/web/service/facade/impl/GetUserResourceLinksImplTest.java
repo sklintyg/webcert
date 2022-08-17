@@ -32,6 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
@@ -40,6 +41,9 @@ import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
+import se.inera.intyg.infra.security.common.model.Feature;
+
+import java.util.HashMap;
 
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
@@ -258,6 +262,47 @@ class GetUserResourceLinksImplTest {
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON);
         }
 
+        @Test
+        void shallNotIncludeWarningNormalOriginIfUserHasIntegrationOrigin() {
+            final var user = getUserWithOrigin("DJUPINTEGRATION");
+
+            final var actualLinks = getUserResourceLinks.get(user);
+
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+
+        @Test
+        void shallIncludeWarningNormalOriginIfUserHasNormalOrigin() {
+            final var user = getUserWithOrigin("NORMAL");
+            when(user.getValdVardenhet()).thenReturn(new Vardenhet());
+            when(user.isFeatureActive("VARNING_FRISTAENDE")).thenReturn(true);
+
+            final var actualLinks = getUserResourceLinks.get(user);
+
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+
+        @Test
+        void shallNotIncludeWarningNormalOriginIfUserIsMissingFeature() {
+            final var user = getUserWithOrigin("NORMAL");
+            when(user.getValdVardenhet()).thenReturn(new Vardenhet());
+            when(user.isFeatureActive("VARNING_FRISTAENDE")).thenReturn(false);
+
+            final var actualLinks = getUserResourceLinks.get(user);
+
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+
+        @Test
+        void shallNotIncludeWarningNormalOriginIfUserHasNotChosenUnit() {
+            final var user = getUserWithOrigin("NORMAL");
+            when(user.isFeatureActive("VARNING_FRISTAENDE")).thenReturn(true);
+
+            final var actualLinks = getUserResourceLinks.get(user);
+
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+        
         @Nested
         class SubscriptionWarning {
 
