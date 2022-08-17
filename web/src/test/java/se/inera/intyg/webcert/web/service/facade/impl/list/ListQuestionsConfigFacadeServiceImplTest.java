@@ -73,9 +73,9 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
     private final String UNIT_ID = "UNIT_ID";
     private final String UNIT_NAME = "UNIT_NAME";
-    private final String A_UNIT = "OA_UNIT";
+    private final String AUNIT = "OA_UNIT";
     private final String A_UNIT_NAME = "A_UNIT_NAME";
-    private final String B_UNIT = "AB_UNIT";
+    private final String BUNIT = "AB_UNIT";
     private final String B_UNIT_NAME = "B_UNIT_NAME";
     private final String C_UNIT = "C_UNIT";
     private final String C_UNIT_NAME = "C_UNIT_NAME";
@@ -89,28 +89,28 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         final var aUnit = new Vardenhet();
         aUnit.setNamn(A_UNIT_NAME);
-        aUnit.setId(A_UNIT);
+        aUnit.setId(AUNIT);
 
         final var bUnit = new Vardenhet();
         bUnit.setNamn(B_UNIT_NAME);
-        bUnit.setId(B_UNIT);
+        bUnit.setId(BUNIT);
 
         final var cUnit = new Vardenhet();
         cUnit.setNamn(C_UNIT_NAME);
         cUnit.setId(C_UNIT);
 
         when(hsaOrganizationsService.getVardenhet(UNIT_ID)).thenReturn(unit);
-        when(hsaOrganizationsService.getVardenhet(A_UNIT)).thenReturn(aUnit);
-        when(hsaOrganizationsService.getVardenhet(B_UNIT)).thenReturn(bUnit);
+        when(hsaOrganizationsService.getVardenhet(AUNIT)).thenReturn(aUnit);
+        when(hsaOrganizationsService.getVardenhet(BUNIT)).thenReturn(bUnit);
         when(hsaOrganizationsService.getVardenhet(C_UNIT)).thenReturn(cUnit);
 
-        unit.setMottagningar(List.of(new Mottagning(B_UNIT, B_UNIT_NAME), new Mottagning(A_UNIT, A_UNIT_NAME)));
+        unit.setMottagningar(List.of(new Mottagning(BUNIT, B_UNIT_NAME), new Mottagning(AUNIT, A_UNIT_NAME)));
 
         final var statistics = new UserStatisticsDTO();
         final var unitStatistics = new UnitStatisticsDTO(1, 2, 3, 4);
         statistics.addUnitStatistics(UNIT_ID, unitStatistics);
-        statistics.addUnitStatistics(A_UNIT, unitStatistics);
-        statistics.addUnitStatistics(B_UNIT, unitStatistics);
+        statistics.addUnitStatistics(AUNIT, unitStatistics);
+        statistics.addUnitStatistics(BUNIT, unitStatistics);
         statistics.addUnitStatistics(C_UNIT, unitStatistics);
         when(userStatisticsService.getUserStatistics()).thenReturn(statistics);
 
@@ -431,7 +431,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
             @Test
             public void shouldOrderUnitsAlphabetically() {
-                assertEquals(A_UNIT, filter.getValues().get(2).getId());
+                assertEquals(AUNIT, filter.getValues().get(2).getId());
             }
         }
 
@@ -580,7 +580,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
             public void shouldUpdateSecondaryTitle() {
                 final var config = listQuestionsConfigFacadeService.get("");
                 final var originalSecondaryTitle = config.getSecondaryTitle();
-                final var updatedConfig = listQuestionsConfigFacadeService.update(config, B_UNIT);
+                final var updatedConfig = listQuestionsConfigFacadeService.update(config, BUNIT);
 
                 assertNotEquals(originalSecondaryTitle, updatedConfig.getSecondaryTitle());
                 assertTrue(updatedConfig.getSecondaryTitle().contains(B_UNIT_NAME));
