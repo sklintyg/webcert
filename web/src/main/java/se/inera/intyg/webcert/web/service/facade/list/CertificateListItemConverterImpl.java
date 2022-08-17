@@ -240,7 +240,9 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private boolean isAllowedToForward(List<ResourceLinkDTO> links) {
-        return links.stream().anyMatch((link) -> link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
+        return links.stream().anyMatch((link) ->
+                link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE || link.getType() == ResourceLinkTypeDTO.FORWARD_QUESTION
+        );
     }
 
     private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {

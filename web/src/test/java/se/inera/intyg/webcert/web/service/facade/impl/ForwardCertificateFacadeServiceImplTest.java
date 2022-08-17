@@ -22,8 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,10 +33,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +53,9 @@ class ForwardCertificateFacadeServiceImplTest {
     @Mock
     private UtkastToCertificateConverter utkastToCertificateConverter;
 
+    @Mock
+    private FragaSvarService fragaSvarService;
+
     @InjectMocks
     private ForwardCertificateFacadeServiceImpl forwardCertificateFacadeService;
 
@@ -57,53 +64,78 @@ class ForwardCertificateFacadeServiceImplTest {
     private Certificate certificate;
 
     @BeforeEach
-    void setup() {
+    void setupGlobal() {
         certificate = CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .version(VERSION)
-                    .build()
-            )
-            .build();
-
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-
-        doReturn(draft)
-            .when(utkastService)
-            .setNotifiedOnDraft(eq(draft.getIntygsId()), eq(VERSION), anyBoolean());
+                .metadata(
+                        CertificateMetadata.builder()
+                                .id(CERTIFICATE_ID)
+                                .version(VERSION)
+                                .build()
+                )
+                .build();
 
         doReturn(certificate)
-            .when(getCertificateFacadeService)
-            .getCertificate(draft.getIntygsId(), false);
-
-        doReturn(certificate)
-                .when(utkastToCertificateConverter)
-                .convert(draft);
+                .when(getCertificateFacadeService)
+                .getCertificate(CERTIFICATE_ID, false);
     }
 
-    @Test
-    void shallForwardCertificate() {
-        final var expectedForward = true;
+    @Nested
+    class TestDraft {
 
-        certificate.getMetadata().setForwarded(expectedForward);
+        @BeforeEach
+        void setup() {
 
-        final var actualCertificate =
-                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
+            final var draft = new Utkast();
+            draft.setIntygsId(CERTIFICATE_ID);
 
-        assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
+            doReturn(draft)
+                    .when(utkastService)
+                    .setNotifiedOnDraft(eq(draft.getIntygsId()), eq(VERSION), anyBoolean());
+
+            doReturn(certificate)
+                    .when(utkastToCertificateConverter)
+                    .convert(draft);
+        }
+
+        @Test
+        void shallForwardCertificate() {
+            final var expectedForward = true;
+
+            certificate.getMetadata().setForwarded(expectedForward);
+
+            final var actualCertificate =
+                    forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
+
+            assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
+        }
+
+        @Test
+        void shallNotForwardCertificate() {
+            final var expectedForward = false;
+
+            certificate.getMetadata().setForwarded(expectedForward);
+
+            final var actualCertificate =
+                    forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
+
+            assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
+        }
     }
 
-    @Test
-    void shallNotForwardCertificate() {
-        final var expectedForward = false;
+    @Nested
+    class TestCertificate {
+        @BeforeEach
+        void setup() {
+            final var updatedMetadata = certificate.getMetadata();
+            updatedMetadata.setStatus(CertificateStatus.SIGNED);
+            certificate.setMetadata(updatedMetadata);
+        }
 
-        certificate.getMetadata().setForwarded(expectedForward);
+        @Test
+        void shouldUseFragaSvarServiceIfCertificateIsSigned() {
+            forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, true);
 
-        final var actualCertificate =
-                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
-
-        assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
+            verify(fragaSvarService).setVidareBefordrad(CERTIFICATE_ID);
+        }
     }
 }
