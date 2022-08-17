@@ -168,7 +168,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasNormalOriginWarning(WebCertUser user) {
-        return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user) ;
+        return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user);
     }
 
     private boolean hasUserChosenUnit(WebCertUser user) {
