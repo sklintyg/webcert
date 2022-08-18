@@ -229,7 +229,7 @@ class QuestionFilterConverterImplTest {
 
         final var convertedFilter = questionFilterConverter.convert(filter);
 
-        assertEquals("HANTERADE", convertedFilter.getVantarPa());
+        assertEquals("HANTERAD", convertedFilter.getVantarPa());
     }
 
     @Test
