@@ -41,9 +41,6 @@ import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-import se.inera.intyg.infra.security.common.model.Feature;
-
-import java.util.HashMap;
 
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
@@ -53,19 +50,6 @@ class GetUserResourceLinksImplTest {
 
         @InjectMocks
         private GetUserResourceLinksImpl getUserResourceLinks;
-
-        WebCertUser getUserWithOrigin(String origin) {
-            final var user = mock(WebCertUser.class);
-            when(user.getOrigin()).thenReturn(origin);
-            return user;
-        }
-
-        WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor) {
-            final var user = mock(WebCertUser.class);
-            when(user.getOrigin()).thenReturn(origin);
-            when(user.isLakare()).thenReturn(isDoctor);
-            return user;
-        }
 
         @Test
         void shallIncludeLogoutIfOriginIsNormal() {
@@ -179,58 +163,119 @@ class GetUserResourceLinksImplTest {
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
 
-        @Test
-        void shallNotIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
-            final var user = getUserWithOrigin("NORMAL");
+        @Nested
+        class ChooseUnit {
 
-            doReturn(getUnit())
-                .when(user)
-                .getValdVardenhet();
+            @Test
+            void shallNotIncludeChooseUnitIfOriginIsNormalAndHasLoggedInUnit() {
+                final var user = getUserWithOrigin("NORMAL");
 
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+                doReturn(getUnit())
+                    .when(user)
+                    .getValdVardenhet();
+
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+            }
+
+            @Test
+            void shallNotIncludeChooseUnitIfOriginIsDjupintegrationAnHasNoLoggedInUnit() {
+                final var user = getUserWithOrigin("DJUPINTEGRATION");
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+            }
+
+            @Test
+            void shallNotIncludeChooseUnitIfOriginIsUthoppAnHasNoLoggedInUnit() {
+                final var user = getUserWithOrigin("UTHOPP");
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+            }
+
+            @Test
+            void shallIncludeChooseUnitIfOriginIsNormalAndHasNoLoggedInUnit() {
+                final var user = getUserWithOrigin("NORMAL");
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+            }
         }
 
-        @Test
-        void shallNotIncludeChooseUnitIfOriginIsDjupintegrationAnHasNoLoggedInUnit() {
-            final var user = getUserWithOrigin("DJUPINTEGRATION");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
-        }
+        @Nested
+        class ChangeUnit {
 
-        @Test
-        void shallNotIncludeChooseUnitIfOriginIsUthoppAnHasNoLoggedInUnit() {
-            final var user = getUserWithOrigin("UTHOPP");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
-        }
+            @Test
+            void shallNotIncludeChangeUnitIfOriginIsDjupintegration() {
+                final var user = getUserWithOrigin("DJUPINTEGRATION");
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
 
-        @Test
-        void shallIncludeChooseUnitIfOriginIsNormalAndHasNoLoggedInUnit() {
-            final var user = getUserWithOrigin("NORMAL");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
-        }
+            @Test
+            void shallIncludeChangeUnitIfOriginIsNormal() {
+                final var user = getUserWithOriginAndUnits(
+                    "NORMAL",
+                    List.of(new Vardgivare("id", "namn"), new Vardgivare("id2", "namn"))
+                );
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
 
-        @Test
-        void shallNotIncludeChangeUnitIfOriginIsDjupintegration() {
-            final var user = getUserWithOrigin("DJUPINTEGRATION");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
-        }
+            @Test
+            void shallIncludeChangeUnitIfOriginIsUthopp() {
+                final var user = getUserWithOriginAndUnits(
+                    "UTHOPP",
+                    List.of(new Vardgivare("id", "namn"), new Vardgivare("id2", "namn"))
+                );
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
 
-        @Test
-        void shallIncludeChangeUnitIfOriginIsNormal() {
-            final var user = getUserWithOrigin("NORMAL");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
-        }
+            @Test
+            void shallNotIncludeChangeUnitIfOnlyOneCareProvider() {
+                final var user = getUserWithOriginAndUnits("NORMAL", List.of(new Vardgivare("id", "namn")));
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
 
-        @Test
-        void shallIncludeChangeUnitIfOriginIsUthopp() {
-            final var user = getUserWithOrigin("UTHOPP");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            @Test
+            void shallNotIncludeChangeUnitIfOnlyOneCareProviderWithOneCareUnit() {
+                final var careProvider = mock(Vardgivare.class);
+                when(careProvider.getVardenheter()).thenReturn(List.of(new Vardenhet()));
+                final var user = getUserWithOriginAndUnits("NORMAL", List.of(careProvider));
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
+
+            @Test
+            void shallNotIncludeChangeUnitIfOnlyOneCareProviderWithOneUnit() {
+                final var careProvider = mock(Vardgivare.class);
+                final var careUnit = mock(Vardenhet.class);
+                when(careUnit.getMottagningar()).thenReturn(List.of(new Mottagning()));
+                when(careProvider.getVardenheter()).thenReturn(List.of(careUnit));
+                final var user = getUserWithOriginAndUnits("NORMAL", List.of(careProvider));
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
+
+            @Test
+            void shallIncludeChangeUnitIfOneCareProviderWithMultipleCareUnits() {
+                final var careProvider = mock(Vardgivare.class);
+                when(careProvider.getVardenheter()).thenReturn(List.of(new Vardenhet(), new Vardenhet()));
+                final var user = getUserWithOriginAndUnits("NORMAL", List.of(careProvider));
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
+
+            @Test
+            void shallIncludeChangeUnitIfOneCareProviderWithOneCareUnitWithMultipleUnits() {
+                final var careProvider = mock(Vardgivare.class);
+                final var careUnit = mock(Vardenhet.class);
+                when(careUnit.getMottagningar()).thenReturn(List.of(new Mottagning(), new Mottagning()));
+                when(careProvider.getVardenheter()).thenReturn(List.of(careUnit));
+                final var user = getUserWithOriginAndUnits("NORMAL", List.of(careProvider));
+                final var actualLinks = getUserResourceLinks.get(user);
+                ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+            }
         }
 
         @Test
@@ -302,7 +347,7 @@ class GetUserResourceLinksImplTest {
 
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
         }
-        
+
         @Nested
         class SubscriptionWarning {
 
@@ -388,6 +433,26 @@ class GetUserResourceLinksImplTest {
         unit.setId("UNIT_ID");
         unit.setNamn("UNIT_NAME");
         return unit;
+    }
+
+    WebCertUser getUserWithOrigin(String origin) {
+        final var user = mock(WebCertUser.class);
+        when(user.getOrigin()).thenReturn(origin);
+        return user;
+    }
+
+    WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor) {
+        final var user = mock(WebCertUser.class);
+        when(user.getOrigin()).thenReturn(origin);
+        when(user.isLakare()).thenReturn(isDoctor);
+        return user;
+    }
+
+    WebCertUser getUserWithOriginAndUnits(String origin, List<Vardgivare> units) {
+        final var user = mock(WebCertUser.class);
+        when(user.getOrigin()).thenReturn(origin);
+        when(user.getVardgivare()).thenReturn(units);
+        return user;
     }
 }
 
