@@ -66,7 +66,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
-        if (hasAccessToDraftList(user)) {
+        if (hasAccessToQuestionList(user)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
@@ -143,12 +143,42 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (hasNormalOriginWarning(user)) {
+            resourceLinks.add(
+                    ResourceLinkDTO.create(
+                            ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
+                            "Felaktig inloggningsmetod",
+                            "",
+                            "",
+                            true
+                    )
+             );
+        }
+
+        if (shouldWarnForMissingSubscription(user)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SUBSCRIPTION_WARNING,
+                    "Saknar avtal",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
+    private boolean hasNormalOriginWarning(WebCertUser user) {
+        return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user);
+    }
+
+    private boolean hasUserChosenUnit(WebCertUser user) {
+        return user.getValdVardenhet() != null;
+    }
+
     private boolean isChooseUnitAvailable(WebCertUser user) {
-        final var loggedInUnit = user.getValdVardenhet();
-        return isOriginNormal(user.getOrigin()) && loggedInUnit == null;
+        return isOriginNormal(user.getOrigin()) && !hasUserChosenUnit(user);
     }
 
     private boolean isChangeUnitAvailable(WebCertUser user) {
@@ -206,5 +236,18 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     private boolean isUserDoctor(WebCertUser user) {
         return user.isPrivatLakare() || user.isLakare();
+    }
+
+    private boolean shouldWarnForMissingSubscription(WebCertUser user) {
+        return isOriginNormal(user.getOrigin())
+            && isLoggedInCareProviderMissingSubscription(user);
+    }
+
+    private boolean isLoggedInCareProviderMissingSubscription(WebCertUser user) {
+        return user.getValdVardgivare() != null
+            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
+            && user.getSubscriptionInfo() != null
+            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal()
+            .contains(user.getValdVardgivare().getId());
     }
 }

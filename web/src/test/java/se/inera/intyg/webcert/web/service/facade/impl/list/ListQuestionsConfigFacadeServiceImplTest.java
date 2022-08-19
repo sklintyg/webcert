@@ -65,20 +65,20 @@ class ListQuestionsConfigFacadeServiceImplTest {
     @InjectMocks
     private ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
 
-    private final String TITLE = "Ej hanterade ärenden";
-    private final String HSA_ID = "HsaId";
-    private final String STAFF_NAME = "Name";
-    private final String DEFAULT_HSA_ID = "HsaIdDefault";
-    private final String DEFAULT_HSA_NAME = "Name default";
+    private static final String TITLE = "Ej hanterade ärenden";
+    private static final String HSA_ID = "HsaId";
+    private static final String STAFF_NAME = "Name";
+    private static final String DEFAULT_HSA_ID = "HsaIdDefault";
+    private static final String DEFAULT_HSA_NAME = "Name default";
 
-    private final String UNIT_ID = "UNIT_ID";
-    private final String UNIT_NAME = "UNIT_NAME";
-    private final String A_UNIT = "A_UNIT";
-    private final String A_UNIT_NAME = "A_UNIT_NAME";
-    private final String B_UNIT = "B_UNIT";
-    private final String B_UNIT_NAME = "B_UNIT_NAME";
-    private final String C_UNIT = "C_UNIT";
-    private final String C_UNIT_NAME = "C_UNIT_NAME";
+    private static final String UNIT_ID = "UNIT_ID";
+    private static final String UNIT_NAME = "UNIT_NAME";
+    private static final String A_UNIT = "OA_UNIT";
+    private static final String A_UNIT_NAME = "A_UNIT_NAME";
+    private static final String B_UNIT = "AB_UNIT";
+    private static final String B_UNIT_NAME = "B_UNIT_NAME";
+    private static final String C_UNIT = "C_UNIT";
+    private static final String C_UNIT_NAME = "C_UNIT_NAME";
     private Vardenhet unit;
 
     @BeforeEach
@@ -331,8 +331,8 @@ class ListQuestionsConfigFacadeServiceImplTest {
             }
 
             @Test
-            public void shouldSetFirstValueInListAsDefault() {
-                assertTrue(filter.getValues().get(0).isDefaultValue());
+            public void shouldSetSecondValueInListAsDefault() {
+                assertTrue(filter.getValues().get(1).isDefaultValue());
             }
         }
 
