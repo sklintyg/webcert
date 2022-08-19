@@ -156,15 +156,15 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasMoreThanOneUnitOrSubUnit(WebCertUser user) {
-        if ((long) user.getVardgivare().size() > 1) {
+        if (user.getVardgivare().size() > 1) {
             return true;
         }
         for (Vardgivare vg : user.getVardgivare()) {
-            if ((long) vg.getVardenheter().size() > 1) {
+            if (vg.getVardenheter().size() > 1) {
                 return true;
             }
             for (Vardenhet ve : vg.getVardenheter()) {
-                if ((long) ve.getMottagningar().size() > 1) {
+                if (ve.getMottagningar().size() > 1) {
                     return true;
                 }
             }
