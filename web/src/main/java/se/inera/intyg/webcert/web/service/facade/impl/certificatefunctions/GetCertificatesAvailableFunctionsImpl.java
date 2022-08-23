@@ -79,11 +79,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     public static final String REPLACE_DESCRIPTION_DISABLED = "Intyget har minst en ohanterad kompletteringsbegäran"
         + " och går inte att ersätta.";
 
-    private static final String PRINT_CERTIFICATE_DESCRIPTION = "Laddar ned intyget för utskrift.";
+    private static final String PRINT_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att skriva ut eller spara intyget "
+        + "som PDF.";
     private static final String REVOKE_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera intyget.";
 
     private static final String PRINT_NAME = "Skriv ut";
-    private static final String PRINT_DRAFT_DESCRIPTION = "Laddar ned intygsutkastet för utskrift.";
+    private static final String PRINT_DRAFT_DESCRIPTION = "Öppnar ett fönster där du kan välja att skriva ut eller spara intygsutkastet "
+        + "som PDF.";
     private static final String PRINT_PROTECTED_PERSON_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
         + "<i class='ic-alert__icon ic-info-icon'></i><p>Patienten har skyddade personuppgifter. Hantera utskriften varsamt.</p></div>";
 
