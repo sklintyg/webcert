@@ -34,6 +34,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -59,6 +60,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private WebCertUserService webCertUserService;
+    @Mock
+    private IntygTextsService intygTextsService;
 
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
@@ -85,6 +88,10 @@ class GetCertificateTypesFacadeServiceImplTest {
             doReturn(Arrays.asList(module, notAllowedModule))
                     .when(intygModuleRegistry)
                     .listAllModules();
+
+            doReturn("1.0")
+                    .when(intygTextsService)
+                    .getLatestVersion(anyString());
 
             doNothing()
                     .when(resourceLinkHelper)
@@ -181,8 +188,14 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Nested
     class DeprecatedIntygModules {
 
-        void setup(boolean isDeprecated, boolean showDeprecated) throws Exception {
+        void setup(boolean isDeprecated, boolean showDeprecated, boolean hasTextVersion) throws Exception {
             final var module = createIntygModule(isDeprecated, showDeprecated);
+
+            if (hasTextVersion) {
+                doReturn("1.0")
+                        .when(intygTextsService)
+                        .getLatestVersion(anyString());
+            }
 
             doReturn(List.of(module))
                     .when(intygModuleRegistry)
@@ -204,16 +217,23 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         @Test
         void shouldFilterOutDeprectatedIntygModules() throws Exception {
-            setup(true, false);
+            setup(true, false, false);
             final var result = serviceUnderTest.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
 
         @Test
         void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
-            setup(true, true);
+            setup(true, true, true);
             final var result = serviceUnderTest.get(PATIENT_ID);
             assertEquals(1, result.size());
+        }
+
+        @Test
+        void shouldNotFilterOutIntygModulesWithoutTextVersion() throws Exception {
+            setup(true, true, false);
+            final var result = serviceUnderTest.get(PATIENT_ID);
+            assertEquals(0, result.size());
         }
     }
 
