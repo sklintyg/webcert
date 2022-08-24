@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -46,14 +47,17 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final ResourceLinkHelper resourceLinkHelper;
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
+    private final IntygTextsService intygTextsService;
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
-                                                AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService) {
+                                                AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
+                                                IntygTextsService intygTextsService) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
+        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -103,6 +107,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
             .map(IntygModuleDTO::new)
             .filter((intygModule) -> allowedCertificateTypes.contains(intygModule.getId()))
             .filter((intygModule) -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
+            .filter((intygModule) -> intygTextsService.getLatestVersion(intygModule.getId()) != null)
             .collect(Collectors.toList());
 
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
