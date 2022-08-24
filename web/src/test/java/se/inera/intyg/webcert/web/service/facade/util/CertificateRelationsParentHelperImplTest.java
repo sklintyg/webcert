@@ -77,15 +77,15 @@ class CertificateRelationsParentHelperImplTest {
     @Nested
     class ParentInIntygstjanst {
 
-        private final String PARENT_CERTIFICATE_ID = "PARENT_CERTIFICATE_ID";
-        private final RelationKod PARENT_RELATION_CODE = RelationKod.KOMPLT;
-        private final LocalDateTime RELATION_CREATED = LocalDateTime.now();
+        private final String parentCertificateId = "PARENT_CERTIFICATE_ID";
+        private final RelationKod parentRelationCode = RelationKod.KOMPLT;
+        private final LocalDateTime relationCreated = LocalDateTime.now();
         private IntygContentHolder certifificate;
 
         @BeforeEach
         void setUp() {
             final var webcertCertificateRelation = new WebcertCertificateRelation(
-                PARENT_CERTIFICATE_ID, PARENT_RELATION_CODE, RELATION_CREATED, null,
+                parentCertificateId, parentRelationCode, relationCreated, null,
                 false);
 
             doReturn(List.of(webcertCertificateRelation))
@@ -94,24 +94,24 @@ class CertificateRelationsParentHelperImplTest {
             certifificate = mock(IntygContentHolder.class);
 
             doReturn(certifificate)
-                .when(intygService).fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false);
+                .when(intygService).fetchIntygDataForInternalUse(parentCertificateId, false);
         }
 
         @Test
         void shallReturnParentCertificateId() {
-            assertEquals(PARENT_CERTIFICATE_ID,
+            assertEquals(parentCertificateId,
                 certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getIntygsId());
         }
 
         @Test
         void shallReturnParentRelationCode() {
-            assertEquals(PARENT_RELATION_CODE,
+            assertEquals(parentRelationCode,
                 certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getRelationKod());
         }
 
         @Test
         void shallReturnRelationCreated() {
-            assertEquals(RELATION_CREATED,
+            assertEquals(relationCreated,
                 certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getSkapad());
         }
 
