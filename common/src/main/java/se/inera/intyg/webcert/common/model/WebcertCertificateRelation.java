@@ -56,6 +56,10 @@ public class WebcertCertificateRelation {
      */
     private boolean makulerat;
 
+    public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad) {
+        this(intygsId, relationKod, skapad, null, false);
+    }
+
     public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad,
         UtkastStatus status, boolean makulerat) {
         this.intygsId = intygsId;

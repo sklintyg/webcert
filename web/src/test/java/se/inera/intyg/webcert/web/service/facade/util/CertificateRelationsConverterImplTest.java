@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 
@@ -48,6 +49,9 @@ class CertificateRelationsConverterImplTest {
 
     @Mock
     private CertificateRelationService certificateRelationService;
+
+    @Mock
+    private CertificateRelationsParentHelper certificateRelationsParentHelper;
 
     @InjectMocks
     private CertificateRelationsConverterImpl certificateRelationsConverter;
@@ -208,6 +212,23 @@ class CertificateRelationsConverterImplTest {
             final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
 
             assertEquals(expectedRelationsType, actualRelations.getParent().getType());
+        }
+
+        @Test
+        void shallGetParentRelationFromITIfNotExistsInWC() {
+            relations.setParent(null);
+
+            doReturn(new WebcertCertificateRelation(
+                "ParentId",
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false
+            )).when(certificateRelationsParentHelper).getParentFromITIfExists(CERTIFICATE_ID);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertNotNull(actualRelations.getParent());
         }
     }
 

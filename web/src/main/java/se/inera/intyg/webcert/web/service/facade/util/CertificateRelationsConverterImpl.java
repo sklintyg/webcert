@@ -41,15 +41,26 @@ public class CertificateRelationsConverterImpl implements CertificateRelationsCo
 
     private final CertificateRelationService certificateRelationService;
 
+    private final CertificateRelationsParentHelper certificateRelationsParentHelper;
+
     @Autowired
-    public CertificateRelationsConverterImpl(CertificateRelationService certificateRelationService) {
+    public CertificateRelationsConverterImpl(CertificateRelationService certificateRelationService,
+        CertificateRelationsParentHelper certificateRelationsParentHelper) {
         this.certificateRelationService = certificateRelationService;
+        this.certificateRelationsParentHelper = certificateRelationsParentHelper;
     }
 
     @Override
     public CertificateRelations convert(String certificateId) {
         LOG.debug("Retrieving relations for certificate");
         final var relations = certificateRelationService.getRelations(certificateId);
+
+        if (relations.getParent() == null) {
+            relations.setParent(
+                certificateRelationsParentHelper.getParentFromITIfExists(certificateId)
+            );
+        }
+
         return convert(relations);
     }
 
@@ -57,13 +68,13 @@ public class CertificateRelationsConverterImpl implements CertificateRelationsCo
     public CertificateRelations convert(Relations relations) {
         LOG.debug("Converting relations for certificate");
         return CertificateRelations.builder()
-                .parent(
-                        getRelation(relations.getParent())
-                )
-                .children(
-                        getChildRelations(relations.getLatestChildRelations())
-                )
-                .build();
+            .parent(
+                getRelation(relations.getParent())
+            )
+            .children(
+                getChildRelations(relations.getLatestChildRelations())
+            )
+            .build();
     }
 
     private CertificateRelation[] getChildRelations(Relations.FrontendRelations latestChildRelations) {
