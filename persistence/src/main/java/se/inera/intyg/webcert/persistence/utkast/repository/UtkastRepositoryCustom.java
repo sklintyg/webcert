@@ -125,6 +125,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<WebcertCertificateRelation> findParentRelation(@Param("intygsId") String intygsId);
 
     /**
+     * Returns the parent relation even if the parent doesn't exists in the database e.g. it only exists in Intygstjanst.
+     */
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(relationIntygsId, relationKod, senastSparadDatum) FROM Utkast WHERE intygsId = :intygsId AND relationIntygsId IS NOT NULL")
+    List<WebcertCertificateRelation> findParentRelationWhenParentMissing(@Param("intygsId") String intygsId);
+
+    /**
      * Returns 0..n child relations of the specified intygsId.
      */
     @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
