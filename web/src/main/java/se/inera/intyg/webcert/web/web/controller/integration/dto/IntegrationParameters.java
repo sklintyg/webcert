@@ -40,6 +40,7 @@ public final class IntegrationParameters implements Serializable {
     private final boolean patientDeceased;
     private final boolean inactiveUnit;
     private final boolean fornyaOk;
+    private final String launchId;
 
     private String beforeAlternateSsn = ""; // Sätts när alternateSsn skiljer från intygets patientId för att kunna visa det i utkastet.
 
@@ -50,7 +51,7 @@ public final class IntegrationParameters implements Serializable {
     // CHECKSTYLE:OFF ParameterNumber
     public IntegrationParameters(String reference, String responsibleHospName, String alternateSsn, String fornamn,
         String mellannamn, String efternamn, String postadress, String postnummer, String postort,
-        boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk) {
+        boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk, String launchId) {
 
         this.reference = reference;
         this.responsibleHospName = responsibleHospName;
@@ -65,6 +66,7 @@ public final class IntegrationParameters implements Serializable {
         this.patientDeceased = patientDeceased;
         this.inactiveUnit = inactiveUnit;
         this.fornyaOk = fornyaOk;
+        this.launchId = launchId;
     }
 
     public static IntegrationParameters of(
@@ -95,7 +97,41 @@ public final class IntegrationParameters implements Serializable {
             sjf,
             patientDeceased,
             inactiveUnit,
-            fornyaOk);
+            fornyaOk,
+            null);
+    }
+
+    public static IntegrationParameters of(
+        final String reference,
+        final String responsibleHospName,
+        final String alternateSsn,
+        final String fornamn,
+        final String mellannamn,
+        final String efternamn,
+        final String postadress,
+        final String postnummer,
+        final String postort,
+        final boolean sjf,
+        final boolean patientDeceased,
+        final boolean inactiveUnit,
+        final boolean fornyaOk,
+        final String launchId) {
+
+        return new IntegrationParameters(
+            StringUtils.trimToNull(reference),
+            responsibleHospName,
+            alternateSsn,
+            fornamn,
+            mellannamn,
+            efternamn,
+            postadress,
+            postnummer,
+            postort,
+            sjf,
+            patientDeceased,
+            inactiveUnit,
+            fornyaOk,
+            launchId);
     }
 
     // CHECKSTYLE:ON ParameterNumber
@@ -170,6 +206,10 @@ public final class IntegrationParameters implements Serializable {
 
     public void setState(IntegrationState state) {
         this.state = state;
+    }
+
+    public String getLaunchId() {
+        return launchId;
     }
 
     @Override

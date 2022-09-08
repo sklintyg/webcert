@@ -24,6 +24,7 @@ import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,6 +78,8 @@ public class IntygIntegrationControllerTest {
     private static final String INTYGSTYPVERSION = "1.0";
     private static final String INTYGSID = "A1234-B5678-C90123-D4567";
     private static final String ENHETSID = "11111";
+    private static final String LAUNCH_ID_1 = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+    private static final String LAUNCH_ID_2 = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
     private UriInfo uriInfo;
 
     @Mock
@@ -107,7 +110,7 @@ public class IntygIntegrationControllerTest {
     public void referenceGetsPersistedCorrectly() {
         final var ref = "referens";
         final var parameters = new IntegrationParameters(ref, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false);
+            null, null, false, false, false, false, null);
 
         final var user = createDefaultUser();
         user.setParameters(parameters);
@@ -190,6 +193,12 @@ public class IntygIntegrationControllerTest {
         );
     }
 
+    @Test
+    public void launchIdShouldBePresentAsIntegrationParameter() {
+        final var user = createDefaultUserWithIntegrationParametersAndLaunchId1();
+        assertEquals(LAUNCH_ID_1, user.getParameters().getLaunchId());
+    }
+
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
         PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
         redirect.setIntygId(INTYGSID);
@@ -261,7 +270,14 @@ public class IntygIntegrationControllerTest {
     private WebCertUser createDefaultUserWithIntegrationParameters() {
         final var user = createDefaultUser();
         user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false));
+            null, null, false, false, false, false, null));
+        return user;
+    }
+
+    private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
+        final var user = createDefaultUser();
+        user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
+            null, null, false, false, false, false, "97f279ba-7d2b-4b0a-8665-7adde08f26f4"));
         return user;
     }
 

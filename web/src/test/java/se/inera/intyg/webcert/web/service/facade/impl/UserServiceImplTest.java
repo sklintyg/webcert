@@ -566,7 +566,7 @@ class UserServiceImplTest {
     private IntegrationParameters getParameters(Boolean inactiveUnit) {
         return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
-            false, false, inactiveUnit, false);
+            false, false, inactiveUnit, false, null);
     }
 
     private List<Vardgivare> getUnsortedCareProviders() {
