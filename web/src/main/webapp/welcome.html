@@ -406,7 +406,8 @@
               sjf: true,
               kopieringOK: true,
               ref: '',
-              enhet: undefined
+              enhet: undefined,
+              launchId: null,
           },
           excludedFields: {
               fornamn: false,
@@ -451,6 +452,7 @@
               function success(response) {
                   if ($scope.environment.origin === 'DJUPINTEGRATION') {
                       loginDjupintegration(method);
+
                   } else if ($scope.environment.origin === 'READONLY') {
                       loginReadonly(method);
                   }
@@ -672,7 +674,7 @@
           <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="form-group col-xs-4" style="padding-top: 0.5em;">
             <p>Genväg länkinloggning för djupintegration: Välj journalsystem-parametrar och tryck på GET alt. POST.</p>
 
-            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="deeplink.certId" placeholder="utkast/intygsid"><br>
+            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="deeplink.certId" placeholder="utkast/intygsid">92dadd43-f4f4-4db5-85b8-a0c110735d3a<br>
             <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="deeplink.certType" placeholder="Intygstyp"><br>
             <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="deeplink.formData.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
             <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="deeplink.formData.fornamn" placeholder="Förnamn" ng-disabled="deeplink.excludedFields.fornamn">exclude?<input type="checkbox" id="fornamn-disable-box" ng-model="deeplink.excludedFields.fornamn"><br><br>
@@ -683,6 +685,7 @@
             <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="deeplink.formData.ref" placeholder="Ref"><br>
             <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="deeplink.formData.enhet" placeholder="enhetsid"><br>
             <label for="responsibleHospName" class="control-label">responsibleHospName:</label> <input type="text" class="form-control" size="20" id="responsibleHospName" ng-model="deeplink.formData.responsibleHospName" placeholder="responsibleHospName"><br>
+            <label for="launchId" class="control-label">launchId:</label> <input type="text" class="form-control" size="20" id="launchId" ng-model="deeplink.formData.launchId" placeholder="launchId"><br>
             <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="deeplink.formData.sjf"> <br>
             <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="deeplink.formData.kopieringOK"> <br>
             <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="deeplink.formData.avliden"> <br>

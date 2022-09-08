@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
@@ -297,7 +296,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser user = new WebCertUser();
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true, launchId));
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 

@@ -226,7 +226,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
+        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true, launchId));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setNamn(person.getFullstandigtNamn());
         user.setHsaId(person.getPersonId());

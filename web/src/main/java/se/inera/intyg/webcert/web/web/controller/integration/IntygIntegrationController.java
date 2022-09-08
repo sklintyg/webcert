@@ -20,12 +20,14 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.itextpdf.xmp.impl.Base64;
 import io.swagger.annotations.Api;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -43,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -87,6 +90,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_REFERENCE = "ref";
     public static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
     public static final String INTYG_TYP = "intygTyp";
+    public static final String PARAM_LAUNCHID = "launchId";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -119,6 +123,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+    @Autowired
+    private Cache launchIdCache;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -252,6 +258,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @PrometheusTimeMethod
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
+        @Context HttpServletRequest request,
         @PathParam(PARAM_CERT_ID) String intygId,
         @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
         @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
@@ -266,7 +273,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         @FormParam(PARAM_REFERENCE) String reference,
         @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
         @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
+        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk,
+        @FormParam(PARAM_LAUNCHID) String launchId) {
 
         final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -274,10 +282,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
             reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
+            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk, launchId);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
+
+        if(launchId != null){
+            launchIdCache.put(launchId, Base64.encode(request.getSession().getId()));
+        }
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }

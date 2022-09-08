@@ -664,7 +664,7 @@ public class UtkastModuleApiControllerTest {
 
     private void setupUser(String intygType, boolean coherentJournaling, String origin, List<String> privileges, List<String> features) {
         IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling,
-            false, false, true);
+            false, false, true, launchId);
         setupUser(intygType, integrationParameters, origin, privileges, features);
     }
 

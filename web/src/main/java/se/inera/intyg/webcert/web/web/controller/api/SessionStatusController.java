@@ -23,14 +23,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.saml.storage.HttpSessionStorage;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import se.inera.intyg.infra.security.filter.SessionTimeoutFilter;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusResponse;
+
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Reports basic information about the current session status. This controller works in cooperation with SessionTimeoutFilter that makes
@@ -53,12 +62,32 @@ public class SessionStatusController {
     public static final String SESSION_STATUS_PING = "/ping";
     public static final String SESSION_STATUS_EXTEND = "/extend";
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
+    private static final String SESSION_STATUS_PING_LAUNCHID = "/ping/{launchId}";
 
+    @Autowired
+    private WebCertUserService user;
+
+    @Autowired
+    private InvalidateRequestService invalidateRequestService;
 
     @GET
     @Path(SESSION_STATUS_PING)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getSessionStatus(@Context HttpServletRequest request) {
+        return Response.ok().entity(createStatusResponse(request)).build();
+    }
+    @GET
+    @Path(SESSION_STATUS_PING_LAUNCHID)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getSessionStatusWithLaunchId(@Context HttpServletRequest request, @PathParam("launchId") String launchId) {
+       // if(user.getUser().getParameters().getLaunchId() != null){
+       //     final var userLaunchId = user.getUser().getParameters().getLaunchId();
+       //     if (!invalidateRequestService.checkIfLaunchIdMatchesWithCurrentSession(userLaunchId, launchId)) {
+       //         if (user.getUser().getHsaId().equals(invalidateRequestService.getHsaIdFromRedisSession(launchId))) {
+       //             return Response.status(403).build();
+       //         }
+       //     }
+       // }
         return Response.ok().entity(createStatusResponse(request)).build();
     }
 

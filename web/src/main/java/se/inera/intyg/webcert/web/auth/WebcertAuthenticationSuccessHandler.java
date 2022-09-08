@@ -104,7 +104,8 @@ public class WebcertAuthenticationSuccessHandler extends
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COHERENT_JOURNALING),
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_PATIENT_DECEASED),
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_INACTIVE_UNIT),
-                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_FORNYA_OK, true));
+                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_FORNYA_OK, true),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_LAUNCHID));
 
             webCertUser.setParameters(integrationParameters);
 

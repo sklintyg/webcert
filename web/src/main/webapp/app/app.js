@@ -168,6 +168,9 @@
       // Add cache buster interceptor
       $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
+      // Add launchId interceptor
+      $httpProvider.interceptors.push('common.httpRequestLaunchId');
+
       // Configure 403 interceptor provider
       http403ResponseInterceptorProvider.setRedirectUrl('/new-error.jsp');
       $httpProvider.interceptors.push('common.http403ResponseInterceptor');
@@ -421,6 +424,12 @@
     // Get a list of all modules to find all files to load.
     getUser().then(function(data) {
       user = data;
+      if(user.parameters != null && user.parameters.launchId != null) {
+        if(sessionStorage.getItem("launchId") == null){
+          // Saves the launchId to sessionStorage
+          sessionStorage.launchId = user.parameters.launchId;
+        }
+      }
 
       getDynamicLinks().then(function(links) {
         _links = links;

@@ -107,7 +107,7 @@ public class IntygIntegrationControllerTest {
     public void referenceGetsPersistedCorrectly() {
         final var ref = "referens";
         final var parameters = new IntegrationParameters(ref, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false);
+            null, null, false, false, false, false, "");
 
         final var user = createDefaultUser();
         user.setParameters(parameters);
@@ -168,7 +168,7 @@ public class IntygIntegrationControllerTest {
             () -> {
                 intygIntegrationController.getRedirectToIntyg(null, intygTyp, "intygId", null, null, null, null,
                     null, null, null, null, null, null, false, false,
-                    false, true);
+                    false, true, "");
             },
             "Expected getRedirectToIntyg() to throw, but it didn't"
         );
@@ -261,7 +261,7 @@ public class IntygIntegrationControllerTest {
     private WebCertUser createDefaultUserWithIntegrationParameters() {
         final var user = createDefaultUser();
         user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false));
+            null, null, false, false, false, false, ""));
         return user;
     }
 

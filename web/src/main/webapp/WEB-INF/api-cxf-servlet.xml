@@ -57,6 +57,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SignatureApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ReceiverApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SessionStatusController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.InvalidateLaunchIdController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SubscriptionController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.facade.QuestionController"/>

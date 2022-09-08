@@ -37,7 +37,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -170,7 +169,7 @@ abstract public class AccessServiceTestToolkit {
             false,
             false,
             inactiveUnit,
-            fornyaOk);
+            fornyaOk, null);
     }
 
     private static Map<String, Role> getRolesMap(String roleName) {

@@ -113,7 +113,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -141,7 +141,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -171,7 +171,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -199,7 +199,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         Privilege p = createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
@@ -233,7 +233,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            true, false, false, false);
+            true, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -255,7 +255,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            true, false, false, false);
+            true, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -277,7 +277,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -293,7 +293,7 @@ public class IntygIntegrationServiceImplTest {
     public void ensureDraftPatientInfoUpdated() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             null, null, null, null, null, null,
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -307,7 +307,7 @@ public class IntygIntegrationServiceImplTest {
     public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsEmptyString() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, "",
             null, null, null, null, null, null,
-            false, false, false, false);
+            false, false, false, false, launchId);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);

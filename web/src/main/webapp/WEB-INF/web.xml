@@ -310,9 +310,18 @@
         <url-pattern>/api/*</url-pattern>
         <url-pattern>/moduleapi/*</url-pattern>
     </filter-mapping>
-
-    <!-- Filter to add http headers for security -->
+    <!-- Filter for launchId -->
     <filter>
+        <filter-name>sessionInvalidateFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>sessionInvalidateFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/moduleapi/*</url-pattern>
+    </filter-mapping>
+    <filter>
+    <!-- Filter to add http headers for security -->
         <filter-name>securityHeadersFilter</filter-name>
         <filter-class>se.inera.intyg.infra.security.filter.SecurityHeadersFilter</filter-class>
     </filter>
