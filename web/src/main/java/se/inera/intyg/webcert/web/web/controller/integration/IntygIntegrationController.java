@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -497,6 +498,18 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private void validateRequest(Map<String, Object> pathParameters) {
         super.validateParameters(pathParameters);
         super.validateAuthorities();
+    }
+
+    public boolean assertLaunchIdFormat(String launchId) {
+        if (launchId != null) {
+            try {
+                UUID uuid = UUID.fromString(launchId);
+                return true;
+            } catch (IllegalArgumentException exception) {
+                return false;
+            }
+        }
+        return false;
     }
 }
 // CHECKSTYLE:ON ParameterNumber

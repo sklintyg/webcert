@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -196,7 +197,27 @@ public class IntygIntegrationControllerTest {
     @Test
     public void launchIdShouldBePresentAsIntegrationParameter() {
         final var user = createDefaultUserWithIntegrationParametersAndLaunchId1();
+        final var secondUser = createDefaultUserWithIntegrationParameters();
+        assertEquals(null, secondUser.getParameters().getLaunchId());
         assertEquals(LAUNCH_ID_1, user.getParameters().getLaunchId());
+    }
+    @Test
+    public void assertThatLaunchIdIsGuid() {
+        boolean expected = true;
+        boolean acctual = intygIntegrationController.assertLaunchIdFormat(LAUNCH_ID_1);
+
+        assertEquals(expected, acctual);
+    }
+    @Test
+    public void assertThatLaunchIdIsNotGuid() {
+        boolean expected = false;
+        boolean acctual = intygIntegrationController.assertLaunchIdFormat("LAUNCH_ID_1");
+
+        assertEquals(expected, acctual);
+
+        acctual = intygIntegrationController.assertLaunchIdFormat(null);
+
+        assertEquals(expected, acctual);
     }
 
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
@@ -277,7 +298,15 @@ public class IntygIntegrationControllerTest {
     private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
         final var user = createDefaultUser();
         user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, "97f279ba-7d2b-4b0a-8665-7adde08f26f4"));
+            null, null, false, false, false, false, LAUNCH_ID_1));
+
+        return user;
+    }
+
+    private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId2() {
+        final var user = createDefaultUser();
+        user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
+            null, null, false, false, false, false, LAUNCH_ID_2));
         return user;
     }
 
