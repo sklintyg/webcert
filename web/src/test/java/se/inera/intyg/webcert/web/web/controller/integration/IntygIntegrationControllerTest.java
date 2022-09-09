@@ -77,10 +77,10 @@ public class IntygIntegrationControllerTest {
     private static final String ALTERNATE_SSN = "19010101-0101";
     private static final String INTYGSTYP = "lisjp";
     private static final String INTYGSTYPVERSION = "1.0";
+    private static final String INTYGSID_POST = "6ce5fa9f-58d6-4a43-bc65-841c9646eb78";
     private static final String INTYGSID = "A1234-B5678-C90123-D4567";
     private static final String ENHETSID = "11111";
-    private static final String LAUNCH_ID_1 = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String LAUNCH_ID_2 = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
+    private static final String LAUNCHID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private UriInfo uriInfo;
 
     @Mock
@@ -195,16 +195,38 @@ public class IntygIntegrationControllerTest {
     }
 
     @Test
+    public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
+        uriInfo = mock(UriInfo.class);
+        final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
+        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+
+        when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+            .thenReturn(createPrepareRedirectToIntyg());
+        when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+
+        final var user = createDefaultUser();
+
+        when(webCertUserService.getUser()).thenReturn(user);
+
+        intygIntegrationController.postRedirectToIntyg(uriInfo, INTYGSID_POST, "", "", "",
+            "", "", "", "", "", "", true, "", false,
+            false, true, LAUNCHID);
+
+        assertEquals(user.getParameters().getLaunchId(), LAUNCHID);
+    }
+
+    @Test
     public void launchIdShouldBePresentAsIntegrationParameter() {
         final var user = createDefaultUserWithIntegrationParametersAndLaunchId1();
         final var secondUser = createDefaultUserWithIntegrationParameters();
         assertEquals(null, secondUser.getParameters().getLaunchId());
-        assertEquals(LAUNCH_ID_1, user.getParameters().getLaunchId());
+        assertEquals(LAUNCHID, user.getParameters().getLaunchId());
     }
+
     @Test
     public void assertThatLaunchIdIsGuid() {
         boolean expected = true;
-        boolean acctual = intygIntegrationController.assertLaunchIdFormat(LAUNCH_ID_1);
+        boolean acctual = intygIntegrationController.assertLaunchIdFormat(LAUNCHID);
 
         assertEquals(expected, acctual);
     }
@@ -298,18 +320,10 @@ public class IntygIntegrationControllerTest {
     private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
         final var user = createDefaultUser();
         user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, LAUNCH_ID_1));
+            null, null, false, false, false, false, LAUNCHID));
 
         return user;
     }
-
-    private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId2() {
-        final var user = createDefaultUser();
-        user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, LAUNCH_ID_2));
-        return user;
-    }
-
     private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
         final var feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);

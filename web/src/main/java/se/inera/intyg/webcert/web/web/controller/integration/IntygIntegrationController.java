@@ -88,6 +88,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_REFERENCE = "ref";
     public static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
     public static final String INTYG_TYP = "intygTyp";
+    public static final String PARAM_LAUNCH_ID = "launchId";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -267,7 +268,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         @FormParam(PARAM_REFERENCE) String reference,
         @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
         @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
+        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk,
+        @FormParam(PARAM_LAUNCH_ID) String launchId) {
 
         final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -275,7 +277,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
             reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
+            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk,
+            assertLaunchIdFormat(launchId) ? launchId : null);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -503,7 +506,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public boolean assertLaunchIdFormat(String launchId) {
         if (launchId != null) {
             try {
-                UUID uuid = UUID.fromString(launchId);
+                UUID.fromString(launchId);
                 return true;
             } catch (IllegalArgumentException exception) {
                 return false;
