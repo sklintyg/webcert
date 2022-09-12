@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -35,14 +37,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -51,6 +56,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.Cache;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -104,6 +110,11 @@ public class IntygIntegrationControllerTest {
     @Spy
     private ReactPilotUtil reactPilotUtil;
 
+    @Mock
+    private @Context HttpServletRequest httpServletRequest;
+
+    @Mock
+    private Cache redisCacheLaunchId;
     @InjectMocks
     private IntygIntegrationController intygIntegrationController;
 
@@ -194,54 +205,6 @@ public class IntygIntegrationControllerTest {
         );
     }
 
-    @Test
-    public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
-        uriInfo = mock(UriInfo.class);
-        final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
-        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
-        when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
-            .thenReturn(createPrepareRedirectToIntyg());
-        when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
-
-        final var user = createDefaultUser();
-
-        when(webCertUserService.getUser()).thenReturn(user);
-
-        intygIntegrationController.postRedirectToIntyg(uriInfo, INTYGSID_POST, "", "", "",
-            "", "", "", "", "", "", true, "", false,
-            false, true, LAUNCHID);
-
-        assertEquals(user.getParameters().getLaunchId(), LAUNCHID);
-    }
-
-    @Test
-    public void launchIdShouldBePresentAsIntegrationParameter() {
-        final var user = createDefaultUserWithIntegrationParametersAndLaunchId1();
-        final var secondUser = createDefaultUserWithIntegrationParameters();
-        assertEquals(null, secondUser.getParameters().getLaunchId());
-        assertEquals(LAUNCHID, user.getParameters().getLaunchId());
-    }
-
-    @Test
-    public void assertThatLaunchIdIsGuid() {
-        boolean expected = true;
-        boolean acctual = intygIntegrationController.assertLaunchIdFormat(LAUNCHID);
-
-        assertEquals(expected, acctual);
-    }
-    @Test
-    public void assertThatLaunchIdIsNotGuid() {
-        boolean expected = false;
-        boolean acctual = intygIntegrationController.assertLaunchIdFormat("LAUNCH_ID_1");
-
-        assertEquals(expected, acctual);
-
-        acctual = intygIntegrationController.assertLaunchIdFormat(null);
-
-        assertEquals(expected, acctual);
-    }
-
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
         PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
         redirect.setIntygId(INTYGSID);
@@ -324,12 +287,88 @@ public class IntygIntegrationControllerTest {
 
         return user;
     }
+
     private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
         final var feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
         feature.setIntygstyper(certificateTypes);
         feature.setGlobal(global);
         return feature;
+    }
+
+    @Nested
+    class LaunchIdPostVerification {
+
+        private WebCertUser user;
+
+        @BeforeEach
+        public void setup() {
+            uriInfo = mock(UriInfo.class);
+            final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
+
+            when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+
+            when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+                .thenReturn(createPrepareRedirectToIntyg());
+            when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+            this.user = createDefaultUser();
+            when(webCertUserService.getUser()).thenReturn(user);
+        }
+
+        @Nested
+        class PostiviteLaunchIdVerification {
+            @BeforeEach
+            public void setup() {
+                HttpSession session = mock(HttpSession.class);
+                when(httpServletRequest.getSession()).thenReturn(session);
+                when(httpServletRequest.getSession().getId()).thenReturn("12345");
+            }
+            @Test
+            public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
+                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                    "", "", "", "", "", "", true, "", false,
+                    false, true, LAUNCHID);
+
+                assertEquals(user.getParameters().getLaunchId(), LAUNCHID);
+            }
+
+            @Test
+            public void assertThatRedisAddsLaunchIdToCache() {
+                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                    "", "", "", "", "", "", true, "", false,
+                    false, true, LAUNCHID);
+
+                verify(redisCacheLaunchId).put(anyString(), anyString());
+            }
+        }
+        @Nested
+        class NegativeLaunchIdVerification {
+            @Test
+            public void assertThatLaunchIdIsNotGuid() {
+                assertThrows(
+                    IllegalArgumentException.class,
+                    () -> {
+                        intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                            "", "", "", "", "", "", true, "", false,
+                            false, true, "LAUNCH_ID_1");
+                    },
+                    "Provided launchId is not guid: LAUNCH_ID_1"
+                );
+                assertDoesNotThrow(() ->
+                    intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                        "", "", "", "", "", "", true, "", false,
+                        false, true, null)
+                );
+            }
+            @Test
+            public void launchIdShouldBeAddedEvenIfNull(){
+                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                    "", "", "", "", "", "", true, "", false,
+                    false, true, null);
+
+                assertEquals(user.getParameters().getLaunchId(), null);
+            }
+        }
     }
 
     @Nested
