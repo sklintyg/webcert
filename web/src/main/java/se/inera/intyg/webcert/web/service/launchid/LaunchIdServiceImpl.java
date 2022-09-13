@@ -43,7 +43,7 @@ public class LaunchIdServiceImpl implements LaunchIdService {
 
     public void invalidateSessionIfActive(InvalidateRequest invalidateRequest) {
         LOG.info("InvalidateSession called - Checking if launchId has ongoing session stored in redis");
-        if (launchIdMissing(invalidateRequest.getLaunchId())) {
+        if (launchIdMissing(invalidateRequest.getLaunchId()) || sessionIsMissing(invalidateRequest.getLaunchId())) {
             LOG.info("InvalidateSession called - LaunchId has no ongoing session stored in redis");
             return;
         }
@@ -54,6 +54,11 @@ public class LaunchIdServiceImpl implements LaunchIdService {
                 invalidateRequest.getLaunchId()));
             removeSession(invalidateRequest.getLaunchId());
         }
+    }
+
+    private boolean sessionIsMissing(String launchId) {
+        final var sessionKey = Base64.decode(getSessionKey(launchId));
+        return sessionRepository.findById(sessionKey) == null;
     }
 
     private boolean launchIdMissing(String launchId) {
