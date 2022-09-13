@@ -19,24 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.launchid;
 
+import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+public interface LaunchIdService {
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.webcert.web.service.user.WebCertUserServiceImpl;
-
-@RunWith(MockitoJUnitRunner.class)
-public class LaunchIdServiceTest {
-    private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    @InjectMocks
-    public LaunchIdServiceImpl launchIdService = new LaunchIdServiceImpl();
-
-    @Test
-    public void checkIfLaunchIdIsPresentInRedis() {
-        // neeed to add it REDIS
-        assertTrue(launchIdService.launchIdPresentInRedis(LAUNCH_ID));
-    }
+    void invalidateSessionIfActive(InvalidateRequest invalidateRequest);
 }

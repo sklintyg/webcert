@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,7 +46,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -317,12 +315,14 @@ public class IntygIntegrationControllerTest {
 
         @Nested
         class PostiviteLaunchIdVerification {
+
             @BeforeEach
             public void setup() {
                 HttpSession session = mock(HttpSession.class);
                 when(httpServletRequest.getSession()).thenReturn(session);
                 when(httpServletRequest.getSession().getId()).thenReturn("12345");
             }
+
             @Test
             public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
@@ -340,9 +340,12 @@ public class IntygIntegrationControllerTest {
 
                 verify(redisCacheLaunchId).put(anyString(), anyString());
             }
+
         }
+
         @Nested
         class NegativeLaunchIdVerification {
+
             @Test
             public void assertThatLaunchIdIsNotGuid() {
                 assertThrows(
@@ -360,8 +363,9 @@ public class IntygIntegrationControllerTest {
                         false, true, null)
                 );
             }
+
             @Test
-            public void launchIdShouldBeAddedEvenIfNull(){
+            public void launchIdShouldBeAddedEvenIfNull() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
                     false, true, null);

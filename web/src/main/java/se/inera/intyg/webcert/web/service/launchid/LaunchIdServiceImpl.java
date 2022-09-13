@@ -19,12 +19,65 @@
 
 package se.inera.intyg.webcert.web.service.launchid;
 
+import com.itextpdf.xmp.impl.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
+import se.inera.intyg.webcert.web.web.filter.UnitSelectedAssuranceFilter;
+
 
 @Service
-public class LaunchIdServiceImpl {
+public class LaunchIdServiceImpl implements LaunchIdService {
 
-    public boolean launchIdPresentInRedis(String launchId) {
-        return false;
+    private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
+    @Autowired
+    private Cache redisCacheLaunchId;
+    @Autowired
+    private FindByIndexNameSessionRepository<?> sessionRepository;
+
+    public void invalidateSessionIfActive(InvalidateRequest invalidateRequest) {
+        LOG.info("InvalidateSession called - Checking if launchId has ongoing session stored in redis");
+        if (launchIdMissing(invalidateRequest.getLaunchId())) {
+            LOG.info("InvalidateSession called - LaunchId has no ongoing session stored in redis");
+            return;
+        }
+        final var user = getUserStoredInRedisSession(invalidateRequest.getLaunchId());
+        if (valuesMatchWithSession(user, invalidateRequest)) {
+            LOG.info(String.format(
+                "InvalidateSession called - LaunchId: %s has ongoing session stored in redis with matching session, session is removed",
+                invalidateRequest.getLaunchId()));
+            removeSession(invalidateRequest.getLaunchId());
+        }
+    }
+
+    private boolean launchIdMissing(String launchId) {
+        return redisCacheLaunchId.get(launchId, String.class) == null;
+    }
+
+    private WebCertUser getUserStoredInRedisSession(String launchId) {
+        final var sessionKey = Base64.decode(getSessionKey(launchId));
+        final var session = sessionRepository.findById(sessionKey);
+        final var authenticator = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        return (WebCertUser) authenticator.getAuthentication().getPrincipal();
+    }
+
+    private boolean valuesMatchWithSession(WebCertUser user, InvalidateRequest invalidateRequest) {
+        return user.getParameters().getLaunchId().equals(invalidateRequest.getLaunchId()) && user.getHsaId()
+            .equals(invalidateRequest.getUserHsaId());
+    }
+
+    private void removeSession(String launchId) {
+        final var sessionKey = Base64.decode(getSessionKey(launchId));
+        sessionRepository.deleteById(sessionKey);
+    }
+
+    private String getSessionKey(String launchId) {
+        return redisCacheLaunchId.get(launchId, String.class);
     }
 }

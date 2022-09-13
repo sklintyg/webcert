@@ -19,16 +19,12 @@
 
 package se.inera.intyg.webcert.web.web.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -71,6 +65,7 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test
@@ -80,6 +75,7 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test
@@ -101,6 +97,7 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     private WebCertUser createUserWithIntegrationsParameters() {

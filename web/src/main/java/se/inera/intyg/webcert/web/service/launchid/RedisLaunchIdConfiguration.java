@@ -28,9 +28,9 @@ import se.inera.intyg.infra.rediscache.core.RedisCacheOptionsSetter;
 
 @Configuration
 public class RedisLaunchIdConfiguration {
+
     @Value("${app.name:webcert}")
     private String appName;
-
     @Value("${redisCacheLaunchId.cache.expiry}")
     private String launchCacheExpirySeconds;
 

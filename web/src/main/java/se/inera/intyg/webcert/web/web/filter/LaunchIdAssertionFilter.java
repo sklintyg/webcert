@@ -24,14 +24,12 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component(value = "launchIdAssertionFilter")
 public class LaunchIdAssertionFilter extends OncePerRequestFilter {
@@ -45,16 +43,18 @@ public class LaunchIdAssertionFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         if (continueFilterChain(request)) {
             filterChain.doFilter(request, response);
-        } else {
-            WebCertUser user = webCertUserService.getUser();
-            String launchId = request.getHeader("launchId");
-            if (!user.getParameters().getLaunchId().equals(launchId)) {
-                LOG.error("launchId does not match with current session - session will be invalidated");
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                filterChain.doFilter(request, response);
-            }
+            return;
         }
+        final var user = webCertUserService.getUser();
+        final var launchId = request.getHeader("launchId");
+        if (user.getParameters().getLaunchId().equals(launchId)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        LOG.info(
+            String.format("launchId: %s, does not match with current session launchId: %s - session will be invalidated", launchId,
+                user.getParameters().getLaunchId()));
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     private boolean continueFilterChain(HttpServletRequest request) {
