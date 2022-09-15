@@ -46,6 +46,8 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
+import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -455,6 +457,68 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class Subscriptions {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.SITHS)
+                .when(user).getAuthenticationMethod();
+
+            doReturn(getNavigableCareProvider())
+                .when(user)
+                .getVardgivare();
+        }
+
+        @Test
+        void careProviderIsNotConsideredAsMissingSubscription() {
+            final var loggedInUser = userService.getLoggedInUser();
+            assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
+        }
+
+        @Test
+        void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsWarn() {
+            final var subscriptionInfo = new SubscriptionInfo();
+            subscriptionInfo.setCareProvidersMissingSubscription(
+                Collections.singletonList(CARE_PROVIDER_ID)
+            );
+            subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
+
+            doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
+
+            final var loggedInUser = userService.getLoggedInUser();
+            assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
+        }
+
+        @Test
+        void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
+            final var subscriptionInfo = new SubscriptionInfo();
+            subscriptionInfo.setCareProvidersMissingSubscription(
+                Collections.singletonList(CARE_PROVIDER_ID)
+            );
+            subscriptionInfo.setSubscriptionAction(SubscriptionAction.NONE);
+
+            doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
+
+            final var loggedInUser = userService.getLoggedInUser();
+            assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
+        }
+
+        @Test
+        void careProviderIsConsideredMissingSubscriptionIfActionIsBlock() {
+            final var subscriptionInfo = new SubscriptionInfo();
+            subscriptionInfo.setCareProvidersMissingSubscription(
+                Collections.singletonList(CARE_PROVIDER_ID)
+            );
+            subscriptionInfo.setSubscriptionAction(SubscriptionAction.BLOCK);
+
+            doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
+
+            final var loggedInUser = userService.getLoggedInUser();
+            assertTrue(loggedInUser.getCareProviders().get(0).isMissingSubscription());
+        }
+    }
+
     private List<Vardgivare> getNavigableCareProvider() {
         final var unit = (Mottagning) getUnit(UNIT_NAME);
 
@@ -464,6 +528,7 @@ class UserServiceImplTest {
         careUnit.setMottagningar(List.of(unit));
 
         final var careProvider = (Vardgivare) getCareProvider(CARE_PROVIDER_NAME);
+        careProvider.setId(CARE_PROVIDER_ID);
         careProvider.setVardenheter(List.of(careUnit));
 
         return List.of(careProvider);

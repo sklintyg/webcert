@@ -69,9 +69,11 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     @Override
     public ListConfig update(ListConfig config, String unitId) {
-        updateUnitFilter(config, unitId);
-        updateSignedByFilter(config, unitId);
-        config.setSecondaryTitle(getSecondaryTitle(unitId));
+        if (!webCertUserService.getUser().isPrivatLakare()) {
+            updateUnitFilter(config);
+            updateSignedByFilter(config, unitId);
+            config.setSecondaryTitle(getSecondaryTitle(unitId));
+        }
         return config;
     }
 
@@ -89,9 +91,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return currentFilters;
     }
 
-    private void updateUnitFilter(ListConfig config, String unitId) {
+    private void updateUnitFilter(ListConfig config) {
         final List<ListFilterConfig> currentFilters = removeFilter(config, "UNIT");
-        currentFilters.add(0, getUnitSelect(unitId));
+        currentFilters.add(0, getUnitSelect());
     }
 
 
@@ -116,7 +118,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private String getSecondaryTitle(String unitId) {
-        if (unitId.length() == 0) {
+        if (unitId.length() == 0 || webCertUserService.getUser().isPrivatLakare()) {
             return "Ärenden visas för alla enheter";
         }
         final var unit = hsaOrganizationsService.getVardenhet(unitId);
@@ -127,9 +129,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return new TableHeading[] {
                 TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
                 TableHeadingFactory.text(ListColumnType.SENDER),
-                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.text(ListColumnType.SIGNED_BY),
                 TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
+                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
                 TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
                 TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
                 TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
@@ -138,7 +140,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private List<ListFilterConfig> getFilters(String unit) {
         final var filters = new ArrayList<ListFilterConfig>();
-        filters.add(getUnitSelect(unit));
+        filters.add(getUnitFilter());
         filters.add(ListFilterConfigFactory.forwardedSelect());
         filters.add(ListFilterConfigFactory.questionStatusSelect());
         filters.add(ListFilterConfigFactory.senderSelect());
@@ -157,11 +159,23 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return ListFilterConfigFactory.createStaffSelect("SIGNED_BY", "Signerat av", savedByList, defaultValue);
     }
 
-    private ListFilterSelectConfig getUnitSelect(String unitId) {
-        return new ListFilterSelectConfig("UNIT", "Enhet", getUnitList(unitId));
+    private ListFilterConfig getUnitFilter() {
+        if (webCertUserService.getUser().isPrivatLakare()) {
+            return getUnitStaticFilter();
+        }
+
+        return getUnitSelect();
     }
 
-    private List<ListFilterConfigValue> getUnitList(String unitId) {
+    private ListFilterSelectConfig getUnitSelect() {
+        return new ListFilterSelectConfig("UNIT", "Enhet", getUnitList());
+    }
+
+    private ListFilterConfig getUnitStaticFilter() {
+        return new ListFilterSelectConfig("UNIT", webCertUserService.getUser().getValdVardenhet().getId(), Collections.emptyList());
+    }
+
+    private List<ListFilterConfigValue> getUnitList() {
         final var loggedInUnit = webCertUserService.getUser().getValdVardenhet();
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
@@ -198,7 +212,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
         return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
-                : isMatchedUnit(o2.getKey(), unitId) ? 1 : o1.getKey().compareTo(o2.getKey());
+                : isMatchedUnit(o2.getKey(), unitId) ? 1 :
+                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
+                        .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
     }
 
     private boolean isMatchedUnit(String subUnitId, String unitId) {

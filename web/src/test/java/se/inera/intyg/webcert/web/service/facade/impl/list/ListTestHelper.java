@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -27,10 +25,9 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -38,7 +35,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -51,16 +47,6 @@ import java.util.stream.Stream;
 import static org.mockito.Mockito.when;
 
 class ListTestHelper {
-    private static final String PATIENT_EFTERNAMN = "Tolvansson";
-    private static final String PATIENT_FORNAMN = "Tolvan";
-    private static final String PATIENT_MELLANNAMN = "Von";
-    private static final String PATIENT_POSTADRESS = "Testadress";
-    private static final String PATIENT_POSTNUMMER = "12345";
-    private static final String PATIENT_POSTORT = "Testort";
-
-    private static final Personnummer PATIENT_PERSONNUMMER = createPnr("19121212-1212");
-    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = createPnr("20121212-1212");
-    private static final java.lang.String INTYG_TYPE_VERSION = "1.2";
 
     public static ListFilter createListFilter() {
         final var filter = new ListFilter();
@@ -73,7 +59,15 @@ class ListTestHelper {
         return filter;
     }
 
-    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, String... features) {
+    public static WebCertUser setupUser(
+            WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features
+    ) {
+        return setupUser(webcertUserService, false, privilegeString, intygType, unit, features);
+    }
+
+    public static WebCertUser setupUser(
+            WebCertUserService webcertUserService, String privilegeString, String intygType, String... features
+    ) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -95,10 +89,12 @@ class ListTestHelper {
         user.setValdVardenhet(buildVardenhet());
         user.setValdVardgivare(buildVardgivare());
         when(webcertUserService.getUser()).thenReturn(user);
+
         return user;
     }
 
-    public static WebCertUser setupUser(WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features) {
+    public static WebCertUser setupUser(WebCertUserService webcertUserService, boolean isPrivatePractitioner,
+                                        String privilegeString, String intygType, Vardenhet unit, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -120,6 +116,13 @@ class ListTestHelper {
         user.setValdVardenhet(unit);
         user.setValdVardgivare(buildVardgivare());
         when(webcertUserService.getUser()).thenReturn(user);
+
+        if (isPrivatePractitioner) {
+            final var roles = new HashMap<String, Role>();
+            roles.put("PRIVATLAKARE", new Role());
+            user.setRoles(roles);
+        }
+
         return user;
     }
 
@@ -191,7 +194,8 @@ class ListTestHelper {
         return createListIntygEntry(status, false, false, "191212121212", link);
     }
 
-    public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses, boolean forwarded, String patientId, ActionLink link) {
+    public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses,
+                                                      boolean forwarded, String patientId, ActionLink link) {
         final var listIntygEntry = new ListIntygEntry();
         listIntygEntry.setIntygType("luse");
         listIntygEntry.setIntygId("CERTIFICATE_ID");

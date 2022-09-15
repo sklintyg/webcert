@@ -141,8 +141,8 @@ public class ListFilterConfigFactory {
 
     public static ListFilterSelectConfig questionStatusSelect() {
         return new ListFilterSelectConfig("STATUS", "Åtgärd", List.of(
-                getConfigValue(QuestionStatusType.SHOW_ALL, true),
-                getConfigValue(QuestionStatusType.NOT_HANDLED, false),
+                getConfigValue(QuestionStatusType.SHOW_ALL, false),
+                getConfigValue(QuestionStatusType.NOT_HANDLED, true),
                 getConfigValue(QuestionStatusType.HANDLED, false),
                 getConfigValue(QuestionStatusType.COMPLEMENT, false),
                 getConfigValue(QuestionStatusType.ANSWER, false),
