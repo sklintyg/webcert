@@ -164,8 +164,9 @@ public class UserServiceImpl implements UserService {
             case SITHS:
                 return LoginMethod.SITHS;
             case BANK_ID:
-            case MOBILT_BANK_ID:
                 return LoginMethod.BANK_ID;
+            case MOBILT_BANK_ID:
+                return LoginMethod.BANK_ID_MOBILE;
             default:
                 throw new IllegalArgumentException(
                     String.format("Login method '%s' not yet supported ", authenticationMethod));
