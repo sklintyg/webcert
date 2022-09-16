@@ -58,7 +58,9 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
      * @return A list that contains an array with fragasvar represented by id, enhets id and personnummer.
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(fs.internReferens, fs.vardperson.enhetsId, fs.intygsReferens.patientId, fs.intygsReferens.intygsTyp) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(fs.internReferens, fs.vardperson.enhetsId, "
+        + "fs.intygsReferens.patientId, fs.intygsReferens.intygsTyp) FROM FragaSvar fs "
+        + "WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
     List<GroupableItem> getUnhandledWithEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
         @Param("intygsTyper") Set<String> intygsTyper);
 
@@ -68,13 +70,15 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      *
      * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
      */
-    @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")
+    @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) "
+        + "ORDER BY fs.vardperson.namn ASC")
     List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("idList") List<String> enhetsIds);
 
     /**
      * Returns a list of FragaSvarStatus object for all FragaSvar belonging to an intyg.
      */
-    @Query("SELECT NEW se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    @Query("SELECT NEW se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, "
+        + "fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
     List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
 
     /**

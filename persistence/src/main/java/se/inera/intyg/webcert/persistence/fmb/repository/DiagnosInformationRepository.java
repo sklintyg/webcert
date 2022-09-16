@@ -36,15 +36,16 @@ public interface DiagnosInformationRepository extends JpaRepository<DiagnosInfor
     // CHECKSTYLE:OFF OperatorWrap
     // CHECKSTYLE:OFF LineLength
     @Query(
-        "SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, max(typfall.maximalSjukrivningstidDagar), typfall.maximalSjukrivningstidSourceValue, typfall.maximalSjukrivningstidSourceUnit) FROM DiagnosInformation diagnosInfo "
-            +
-            "JOIN diagnosInfo.icd10KodList icd10Kod " +
-            "JOIN icd10Kod.typFallList typfall " +
-            "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL " +
-            "AND icd10Kod.kod IN :koder " +
-            "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar, typfall.maximalSjukrivningstidSourceValue, typfall.maximalSjukrivningstidSourceUnit "
-            +
-            "ORDER BY typfall.maximalSjukrivningstidDagar DESC"
+        "SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, "
+            + "max(typfall.maximalSjukrivningstidDagar), typfall.maximalSjukrivningstidSourceValue, "
+            + "typfall.maximalSjukrivningstidSourceUnit) FROM DiagnosInformation diagnosInfo "
+            + "JOIN diagnosInfo.icd10KodList icd10Kod "
+            + "JOIN icd10Kod.typFallList typfall "
+            + "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL "
+            + "AND icd10Kod.kod IN :koder "
+            + "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar, typfall.maximalSjukrivningstidSourceValue, "
+            + "typfall.maximalSjukrivningstidSourceUnit "
+            + "ORDER BY typfall.maximalSjukrivningstidDagar DESC"
     )
     List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") Set<String> koder);
     // CHECKSTYLE:ON OperatorWrap

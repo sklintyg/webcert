@@ -1,6 +1,6 @@
 apply plugin: 'war'
 apply plugin: 'org.gretty'
-apply plugin: 'com.moowork.grunt'
+apply plugin: 'nebula.grunt'
 apply plugin: 'idea'
 
 def webappOutputDir = 'build/apps/'

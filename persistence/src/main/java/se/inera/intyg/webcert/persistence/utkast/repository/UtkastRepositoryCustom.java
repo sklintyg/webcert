@@ -57,7 +57,9 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      *
      * @param enhetsIds List of hsa unit id's that should match the counted intyg entities
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) FROM Utkast u WHERE u.aterkalladDatum IS NULL AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) "
+        + "FROM Utkast u "
+        + "WHERE u.aterkalladDatum IS NULL AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<GroupableItem> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
         @Param("statuses") Set<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
@@ -65,7 +67,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and
      * having selected statuses.
      */
-    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN "
+        + "(:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds,
         @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
@@ -73,7 +76,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to a caregiver and having
      * selected statuses.
      */
-    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.vardgivarId = :vardgivarId AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.vardgivarId = :vardgivarId AND u.status IN "
+        + "(:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<Utkast> findDraftsByPatientAndVardgivareAndStatus(@Param("patientPnr") String patientPnr, @Param("vardgivarId") String vardgivarId,
         @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
@@ -81,7 +85,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**
      * Returns all {@link Utkast} entities with status not DRAFT_LOCKED or SIGNED that were created before skapad.
      */
-    @Query("SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) AND u.skapad <= :skapad")
+    @Query("SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) "
+        + "AND u.skapad <= :skapad")
     List<Utkast> findDraftsByNotLockedOrSignedAndSkapadBefore(@Param("skapad") LocalDateTime skapad);
 
     /**
@@ -121,19 +126,23 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**
      * Returns (if applicable) the parent relation of the specified intygsId.
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.relationIntygsId, u.relationKod, u.senastSparadDatum, u2.status, u2.aterkalladDatum IS NOT NULL) FROM Utkast u, Utkast u2 WHERE u2.intygsId = u.relationIntygsId AND u.intygsId = :intygsId")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.relationIntygsId, u.relationKod, "
+        + "u.senastSparadDatum, u2.status, u2.aterkalladDatum IS NOT NULL) "
+        + "FROM Utkast u, Utkast u2 WHERE u2.intygsId = u.relationIntygsId AND u.intygsId = :intygsId")
     List<WebcertCertificateRelation> findParentRelation(@Param("intygsId") String intygsId);
 
     /**
      * Returns the parent relation even if the parent doesn't exists in the database e.g. it only exists in Intygstjanst.
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(relationIntygsId, relationKod, senastSparadDatum) FROM Utkast WHERE intygsId = :intygsId AND relationIntygsId IS NOT NULL")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(relationIntygsId, relationKod, senastSparadDatum) "
+        + "FROM Utkast WHERE intygsId = :intygsId AND relationIntygsId IS NOT NULL")
     List<WebcertCertificateRelation> findParentRelationWhenParentMissing(@Param("intygsId") String intygsId);
 
     /**
      * Returns 0..n child relations of the specified intygsId.
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, "
+        + "u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
     List<WebcertCertificateRelation> findChildRelations(@Param("intygsId") String intygsId);
 
     /**

@@ -1,4 +1,4 @@
-apply plugin: 'com.moowork.grunt'
+apply plugin: 'nebula.grunt'
 apply plugin: 'idea'
 
 idea {

@@ -29,6 +29,7 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.xml.crypto.KeySelectorException;
 import javax.xml.crypto.MarshalException;
@@ -88,12 +89,10 @@ public class DssSignMessageService {
 
         String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
         marshaller.setPackagesToScan(packages);
-        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
-            {
-                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
-                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
-            }
-        });
+        marshaller.setMarshallerProperties(Map.of(
+                javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
+                javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
+        );
     }
 
     @PostConstruct
