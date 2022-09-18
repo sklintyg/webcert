@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.service.facade.list.filter;
 
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 public interface CertificateFilterConverter {

@@ -16,7 +16,7 @@ dependencies {
   compile "org.hibernate:hibernate-hikaricp"
   compile "org.hibernate:hibernate-entitymanager"
 
-  compile "com.h2database:h2:${h2Version}"
+  compile "com.h2database:h2"
   compile "mysql:mysql-connector-java"
 
   testCompile "org.springframework:spring-test"

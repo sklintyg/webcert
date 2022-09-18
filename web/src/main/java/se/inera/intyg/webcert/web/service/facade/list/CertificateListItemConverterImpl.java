@@ -27,11 +27,9 @@ import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.*;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;

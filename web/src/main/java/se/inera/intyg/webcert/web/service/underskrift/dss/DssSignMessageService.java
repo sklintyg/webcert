@@ -28,7 +28,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.xml.crypto.KeySelectorException;
