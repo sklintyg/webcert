@@ -36,10 +36,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
-@Component(value = "launchIdAssertionFilter")
-public class LaunchIdAssertionFilter extends OncePerRequestFilter {
+@Component(value = "launchIdValidationFilter")
+public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdAssertionFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
     @Autowired
     @Qualifier("objectMapper")
     private ObjectMapper mapper;

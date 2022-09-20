@@ -332,11 +332,11 @@
 
     <!-- Filter to check headers for launchId -->
     <filter>
-        <filter-name>launchIdAssertionFilter</filter-name>
+        <filter-name>launchIdValidationFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>launchIdAssertionFilter</filter-name>
+        <filter-name>launchIdValidationFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
         <url-pattern>/moduleapi/*</url-pattern>
     </filter-mapping>

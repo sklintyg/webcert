@@ -42,13 +42,13 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LaunchIdAssertionFilterTest {
+public class LaunchIdValidationFilterTest {
 
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private static final String NEW_LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
 
     @InjectMocks
-    private LaunchIdAssertionFilter filter = new LaunchIdAssertionFilter();
+    private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
     @Mock
     private HttpServletRequest httpServletRequest;
 
