@@ -20,11 +20,14 @@
 package se.inera.intyg.webcert.web.web.filter;
 
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +53,8 @@ public class LaunchIdAssertionFilterTest {
     private HttpServletRequest httpServletRequest;
 
     @Mock
+    private ObjectMapper mapper;
+    @Mock
     private HttpServletResponse httpServletResponse;
 
     @Mock
@@ -65,7 +70,7 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Test
@@ -75,18 +80,19 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Test
     public void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError() throws ServletException, IOException {
         when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
         when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
+        when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
 
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        verify(httpServletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Test
@@ -97,7 +103,7 @@ public class LaunchIdAssertionFilterTest {
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
         verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
     private WebCertUser createUserWithIntegrationsParameters() {

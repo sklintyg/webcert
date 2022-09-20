@@ -40,6 +40,7 @@ public class LaunchIdServiceImpl implements LaunchIdService {
     @Autowired
     private FindByIndexNameSessionRepository<?> sessionRepository;
 
+    @Override
     public void invalidateSessionIfActive(InvalidateRequest invalidateRequest) {
         LOG.info("InvalidateSession called - Checking if launchId has ongoing session stored in redis");
         if (launchIdMissing(invalidateRequest.getLaunchId()) || sessionIsMissing(invalidateRequest.getLaunchId())) {
