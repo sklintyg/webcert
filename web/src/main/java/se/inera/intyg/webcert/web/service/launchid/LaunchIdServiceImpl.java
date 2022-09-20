@@ -29,13 +29,12 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
-import se.inera.intyg.webcert.web.web.filter.UnitSelectedAssuranceFilter;
 
 
 @Service
 public class LaunchIdServiceImpl implements LaunchIdService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdServiceImpl.class);
     @Autowired
     private Cache redisCacheLaunchId;
     @Autowired

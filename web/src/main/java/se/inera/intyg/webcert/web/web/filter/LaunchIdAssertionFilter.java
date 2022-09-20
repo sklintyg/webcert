@@ -19,7 +19,10 @@
 
 package se.inera.intyg.webcert.web.web.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -34,7 +39,10 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Component(value = "launchIdAssertionFilter")
 public class LaunchIdAssertionFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdAssertionFilter.class);
+    @Autowired
+    @Qualifier("objectMapper")
+    private ObjectMapper mapper;
     @Autowired
     WebCertUserService webCertUserService;
 
@@ -51,14 +59,17 @@ public class LaunchIdAssertionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        LOG.info(
-            String.format("launchId: %s, does not match with current session launchId: %s - session will be invalidated", launchId,
-                user.getParameters().getLaunchId()));
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("message", "Invalid launchId");
+        LOG.info(String.format("launchId: %s, does not match with current session launchId: %s - session will be invalidated.", launchId,
+            user.getParameters().getLaunchId()));
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        mapper.writeValue(response.getWriter(), errorDetails);
     }
 
     private boolean continueFilterChain(HttpServletRequest request) {
-        return request.getHeader("launchId") == null || webCertUserService.getUser() == null
+        return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
             || webCertUserService.getUser().getParameters() == null;
     }
 }

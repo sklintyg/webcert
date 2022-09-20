@@ -28,7 +28,6 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -276,7 +275,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
         @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
         @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk,
-        @Nullable @FormParam(PARAM_LAUNCH_ID) String launchId) {
+        @DefaultValue("") @FormParam(PARAM_LAUNCH_ID) String launchId) {
 
         final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -515,13 +514,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private String assertLaunchIdFormat(String launchId) {
+        if (launchId.isEmpty()) {
+            return null;
+        }
         if (launchId != null) {
             try {
                 UUID.fromString(launchId);
             } catch (IllegalArgumentException exception) {
                 // Kolla vilken information som användaren får i webbläsaren för att eventuellt anpassa felet.
                 throw new IllegalArgumentException(
-                    String.format("Provided launchId is not guid: %s", launchId));
+                    String.format("Provided launchId was not correct format: %s. LaunchId should be type GUID", launchId));
             }
         }
         return launchId;

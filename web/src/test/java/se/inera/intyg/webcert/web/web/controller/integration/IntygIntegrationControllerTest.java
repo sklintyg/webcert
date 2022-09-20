@@ -360,15 +360,15 @@ public class IntygIntegrationControllerTest {
                 assertDoesNotThrow(() ->
                     intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                         "", "", "", "", "", "", true, "", false,
-                        false, true, null)
+                        false, true, "")
                 );
             }
 
             @Test
-            public void launchIdShouldBeAddedEvenIfNull() {
+            public void launchIdShouldBeAddedEvenIfNotProvided() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
-                    false, true, null);
+                    false, true, "");
 
                 assertEquals(user.getParameters().getLaunchId(), null);
             }

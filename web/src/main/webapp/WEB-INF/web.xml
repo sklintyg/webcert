@@ -330,6 +330,17 @@
         <url-pattern>/internalapi/*</url-pattern>
     </filter-mapping>
 
+    <!-- Filter to check headers for launchId -->
+    <filter>
+        <filter-name>launchIdAssertionFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>launchIdAssertionFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/moduleapi/*</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>boot-app.jsp</welcome-file>
 
