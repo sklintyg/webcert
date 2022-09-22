@@ -148,6 +148,17 @@ public class UserResource {
         return Response.ok().build();
     }
 
+    @POST
+    @Path("/parameters/launchId")
+    @PrometheusTimeMethod
+    public Response setLaunchId() {
+        webCertUserService.getUser()
+            .setParameters(
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true,
+                    "97f279ba-7d2b-4b0a-8665-7adde08f26f4"));
+        return Response.ok().build();
+    }
+
     @GET
     @Path("/features")
     @Produces(MediaType.APPLICATION_JSON)

@@ -27,8 +27,9 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.BETA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA_BETA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA_BETA_VARDCENTRAL;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.LAUNCH_ID;
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
@@ -136,6 +137,66 @@ public class DeepIntegrationIT {
             () -> assertEquals(HttpServletResponse.SC_SEE_OTHER, response.getStatusCode()),
             () -> assertTrue(response.getHeader(HttpHeaders.LOCATION).contains("/lisjp/1.2/edit/"),
                 () -> "Expect '" + response.getHeader(HttpHeaders.LOCATION) + "' header to refer to route used in the Angular client")
+        );
+    }
+
+    @Test
+    @DisplayName("Shall return response with status code 403 when launchId is not matching")
+    void shallReturnResponseWith403StatusCode() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                DR_BEATA,
+                BETA_VARDCENTRAL,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(DR_BEATA_BETA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .useLaunchId()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .redirects().follow(false)
+            .header("launchId", "WRONG-LAUNCH_ID")
+            .when().get("/api/session-auth-check/ping")
+            .then().extract().response();
+
+        assertAll(
+            () -> assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatusCode())
+        );
+    }
+
+    @Test
+    @DisplayName("Shall return response with status code 200 when launchId is matching")
+    void shallReturnResponseWith200StatusCode() {
+        final var testSetup = TestSetup.create()
+            .draft(
+                LisjpEntryPoint.MODULE_ID,
+                "1.2",
+                CreateCertificateFillType.EMPTY,
+                DR_BEATA,
+                BETA_VARDCENTRAL,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(DR_BEATA_BETA_VARDCENTRAL)
+            .useDjupIntegratedOrigin()
+            .useLaunchId()
+            .setup();
+
+        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+        final var response = given()
+            .redirects().follow(false)
+            .header("launchId", LAUNCH_ID)
+            .when().get("/api/session-auth-check/ping")
+            .then().extract().response();
+
+        assertAll(
+            () -> assertEquals(HttpServletResponse.SC_OK, response.getStatusCode())
         );
     }
 }

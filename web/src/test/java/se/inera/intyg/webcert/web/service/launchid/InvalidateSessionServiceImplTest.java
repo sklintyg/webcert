@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-public class LaunchIdServiceImplTest {
+public class InvalidateSessionServiceImplTest {
 
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private static final String LAUNCH_ID_WRONG = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
@@ -57,7 +57,7 @@ public class LaunchIdServiceImplTest {
     private FindByIndexNameSessionRepository<Session> sessionRepository = mock(FindByIndexNameSessionRepository.class,
         withSettings().lenient());
     @InjectMocks
-    public LaunchIdServiceImpl launchIdService;
+    public InvalidateSessionServiceImpl launchIdService;
     private InvalidateRequest invalidateRequest;
 
     @BeforeEach

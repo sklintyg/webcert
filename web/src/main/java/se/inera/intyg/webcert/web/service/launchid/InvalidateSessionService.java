@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.launchid;
 
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
-public interface LaunchIdService {
+public interface InvalidateSessionService {
 
     void invalidateSessionIfActive(InvalidateRequest invalidateRequest);
 }

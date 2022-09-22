@@ -32,25 +32,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.service.launchid.LaunchIdService;
+import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class LaunchIdApiControllerTest {
+public class InvalidateSessionApiControllerTest {
 
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private static final String USER_HSA_ID = "TSTNMT2321000156-1079";
     @Mock
-    private LaunchIdService launchIdService;
+    private InvalidateSessionService invalidateSessionService;
     private InvalidateRequest invalidateRequest;
     @InjectMocks
-    private LaunchIdApiController controller;
+    private InvalidateSessionApiController controller;
 
     @Test
     public void assertThatControllerRunsWhenGivenCorrectValues() {
         invalidateRequest = getInvalidateRequest();
         Response response = controller.invalidateSession(invalidateRequest);
-        verify(launchIdService).invalidateSessionIfActive(any());
+        verify(invalidateSessionService).invalidateSessionIfActive(any());
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
@@ -60,7 +60,7 @@ public class LaunchIdApiControllerTest {
         invalidateRequest.setLaunchId(null);
 
         Response response = controller.invalidateSession(invalidateRequest);
-        verify(launchIdService, never()).invalidateSessionIfActive(any());
+        verify(invalidateSessionService, never()).invalidateSessionIfActive(any());
 
         assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }

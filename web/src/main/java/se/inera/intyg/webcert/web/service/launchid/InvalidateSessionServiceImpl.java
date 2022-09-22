@@ -32,9 +32,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 
 @Service
-public class LaunchIdServiceImpl implements LaunchIdService {
+public class InvalidateSessionServiceImpl implements InvalidateSessionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionServiceImpl.class);
     @Autowired
     private Cache redisCacheLaunchId;
     @Autowired

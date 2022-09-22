@@ -26,19 +26,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.service.launchid.LaunchIdService;
+import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
-@Path(LaunchIdApiController.SESSION_STATUS_REQUEST_MAPPING)
+@Path(InvalidateSessionApiController.SESSION_STATUS_REQUEST_MAPPING)
 @Api(value = "invalidateSession",
     produces = MediaType.APPLICATION_JSON)
-public class LaunchIdApiController {
+public class InvalidateSessionApiController {
 
     public static final String SESSION_STATUS_REQUEST_MAPPING = "/v1/session";
     public static final String INVALIDATE_ENDPOINT = "/invalidate";
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
     @Autowired
-    private LaunchIdService launchIdService;
+    private InvalidateSessionService invalidateSessionService;
 
     @POST
     @Path(INVALIDATE_ENDPOINT)
@@ -47,7 +47,7 @@ public class LaunchIdApiController {
         if (invalidateRequest.formatIsWrong()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        launchIdService.invalidateSessionIfActive(invalidateRequest);
+        invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
         return Response.noContent().build();
     }
 }
