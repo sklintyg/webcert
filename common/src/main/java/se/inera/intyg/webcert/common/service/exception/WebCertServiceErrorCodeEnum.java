@@ -48,6 +48,7 @@ public enum WebCertServiceErrorCodeEnum {
     MISSING_PARAMETER,
     CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
     MESSAGE_ALREADY_EXISTS,
+    INVALID_LAUNCHID,
 
     // @formatter:on
 }

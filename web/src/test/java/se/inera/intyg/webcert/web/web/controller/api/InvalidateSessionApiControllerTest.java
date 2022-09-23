@@ -62,7 +62,7 @@ public class InvalidateSessionApiControllerTest {
         Response response = controller.invalidateSession(invalidateRequest);
         verify(invalidateSessionService, never()).invalidateSessionIfActive(any());
 
-        assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
 
@@ -83,7 +83,7 @@ public class InvalidateSessionApiControllerTest {
             invalidateRequest.setUserHsaId(null);
             Response response = controller.invalidateSession(invalidateRequest);
 
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
         }
 
         @Test
@@ -94,7 +94,7 @@ public class InvalidateSessionApiControllerTest {
 
             Response response = controller.invalidateSession(invalidateRequest);
 
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
         }
 
         @Test
@@ -105,7 +105,7 @@ public class InvalidateSessionApiControllerTest {
 
             Response response = controller.invalidateSession(invalidateRequest);
 
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
         }
     }
 

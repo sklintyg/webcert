@@ -69,7 +69,7 @@
 
   <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
     <property name="redisNamespace" value="${app.name}"/>
-    <property name="redisFlushMode" value="IMMEDIATE"/>
+    <property name="redisFlushMode" value="IMMEDIATE" />
   </bean>
 
   <!-- Logger for SAML messages and events -->
@@ -98,7 +98,7 @@
       init-method="initialize"/>
   <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder" scope="singleton"/>
 
-  <bean id="failureHandler" class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationFailureHandler"/>
+  <bean id="failureHandler" class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationFailureHandler" />
 
   <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
     <property name="errorPage" value="/error.jsp?reason=denied"/>
@@ -237,7 +237,7 @@
 
       <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
-        <security:authentication-provider ref="jwtAuthenticationProvider"/>
+        <security:authentication-provider ref="jwtAuthenticationProvider" />
         <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
       </security:authentication-manager>
     </beans>
@@ -283,7 +283,7 @@
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
       <security:csrf disabled="true"/>
-      <!-- <security:csrf token-repository-ref="tokenRepository" disabled="true"/> -->
+     <!-- <security:csrf token-repository-ref="tokenRepository" disabled="true"/> -->
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -298,7 +298,7 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
-      <security:authentication-provider ref="jwtAuthenticationProvider"/>
+      <security:authentication-provider ref="jwtAuthenticationProvider" />
       <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
       <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
     </security:authentication-manager>
@@ -318,7 +318,7 @@
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/v2\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <!-- <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/> -->
+     <!-- <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/> -->
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
@@ -343,7 +343,7 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
-      <security:authentication-provider ref="jwtAuthenticationProvider"/>
+      <security:authentication-provider ref="jwtAuthenticationProvider" />
     </security:authentication-manager>
   </beans>
 
@@ -368,7 +368,7 @@
       <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
     <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.FakeJwtAuthenticationFilter">
-      <constructor-arg index="0" ref="saveRequestMatcher"/>
+      <constructor-arg index="0" ref="saveRequestMatcher" />
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
@@ -378,7 +378,7 @@
 
   <beans profile="prod,wc-security-prod">
     <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationFilter">
-      <constructor-arg index="0" ref="saveRequestMatcher"/>
+      <constructor-arg index="0" ref="saveRequestMatcher" />
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
@@ -388,10 +388,10 @@
 
   <beans>
     <bean id="jwtSuccessHandler"
-        class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
+          class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
     </bean>
     <bean id="jwtAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationProvider">
-      <property name="webcertUserDetailsService" ref="webcertUserDetailsService"/>
+      <property name="webcertUserDetailsService" ref="webcertUserDetailsService" />
     </bean>
 
     <!-- Decide which requests should be saved for redirection after successful login.
@@ -401,9 +401,7 @@
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
       <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/v2\/visa\/.*|\/webcert\/.*|\/oauth/token\/.*"/>
-      <constructor-arg index="1">
-        <null/>
-      </constructor-arg>
+      <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 
     <!-- Home-brewn SavedRequestCache storing saved requests in Redis -->
@@ -414,7 +412,7 @@
 
   <beans profile="prod,wc-security-test,wc-security-prod">
 
-    <!-- <bean id="createCsrfTokenFilter" class="se.inera.intyg.webcert.web.security.CreateCsrfTokenFilter"/> -->
+   <!-- <bean id="createCsrfTokenFilter" class="se.inera.intyg.webcert.web.security.CreateCsrfTokenFilter"/> -->
 
     <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
       <security:filter-chain-map request-matcher="ant">
@@ -428,7 +426,7 @@
 
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
-        class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler">
+          class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
       <property name="requestCache" ref="redisSavedRequestCache"/>
     </bean>

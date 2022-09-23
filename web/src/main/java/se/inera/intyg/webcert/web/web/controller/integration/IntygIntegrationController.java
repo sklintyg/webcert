@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -284,13 +285,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
         IntegrationParameters integrationParameters = IntegrationParameters.of(
             reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
             postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk,
-            assertLaunchIdFormat(launchId));
+            launchIdShouldBeAdded(launchId) ? assertLaunchIdFormat(launchId) : null);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
         if (user.getParameters().getLaunchId() != null) {
             redisCacheLaunchId.put(launchId, Base64.encode(request.getSession().getId()));
+            LOG.info(String.format("launchId was successfully added to the session. launchId stored in session is: %s",
+                user.getParameters().getLaunchId()));
         }
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
@@ -513,18 +516,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
         super.validateAuthorities();
     }
 
-    private String assertLaunchIdFormat(String launchId) {
-        if (launchId.isEmpty()) {
-            return null;
+    private boolean launchIdShouldBeAdded(String launchId) {
+        if (launchId == null) {
+            return false;
+        } else {
+            return !launchId.isEmpty();
         }
-        if (launchId != null) {
-            try {
-                UUID.fromString(launchId);
-            } catch (IllegalArgumentException exception) {
-                // Kolla vilken information som användaren får i webbläsaren för att eventuellt anpassa felet.
-                throw new IllegalArgumentException(
-                    String.format("Provided launchId was not correct format: %s. LaunchId should be type GUID", launchId));
-            }
+    }
+
+    private String assertLaunchIdFormat(@NotNull String launchId) {
+        try {
+            UUID.fromString(launchId);
+        } catch (IllegalArgumentException exception) {
+            LOG.info(String.format("Provided launchId was not correct format: %s. LaunchId should be of type GUID", launchId));
+            throw new IllegalArgumentException(
+                String.format("Provided launchId was not correct format: %s. LaunchId should be of type GUID", launchId));
         }
         return launchId;
     }

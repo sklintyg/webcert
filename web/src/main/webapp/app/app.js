@@ -46,10 +46,7 @@
   // Cancel any logout requests if one exists
   window.onload = function() {
     if (window.sessionStorage.getItem('launchId')) {
-      $.get({
-        headers: {'launchId': window.sessionStorage.getItem('launchId')},
-        url: '/api/anvandare/logout/cancel'
-      });
+      $.get(getRequestWithLaunchIdHeader('/api/anvandare/logout/cancel', window));
     } else {
       $.get('/api/anvandare/logout/cancel');
     }
@@ -158,6 +155,17 @@
       return null;
     });
   }
+  
+  app.factory('launchIdInterceptor', function($window){
+    return {
+      request: function(config) {
+        if ($window.sessionStorage.getItem('launchId')) {
+          config.headers.launchId = $window.sessionStorage.getItem('launchId');
+        }
+        return config;
+      }
+    };
+  });
 
   app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider',
     '$animateProvider', '$uibTooltipProvider', '$stateProvider',
@@ -174,17 +182,7 @@
 
       // Add cache buster interceptor
       $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
-
-      $httpProvider.interceptors.push(function($window) {
-        return {
-          request: function(config) {
-            if ($window.sessionStorage.getItem('launchId')) {
-              config.headers.launchId = $window.sessionStorage.getItem('launchId');
-            }
-            return config;
-          }
-        };
-      });
+      $httpProvider.interceptors.push('launchIdInterceptor');
       // Configure 403 interceptor provider
       http403ResponseInterceptorProvider.setRedirectUrl('/new-error.jsp');
       $httpProvider.interceptors.push('common.http403ResponseInterceptor');
@@ -428,16 +426,17 @@
       $window.onbeforeunload = function(event) {
         if (user && user.origin === 'DJUPINTEGRATION' && $stateParams && !$stateParams.signServiceSubmit) {
           if ($window.sessionStorage.getItem('launchId')) {
-            $.get({
-              headers: {'launchId': $window.sessionStorage.getItem('launchId')},
-              url: '/api/anvandare/logout'
-            });
+            $.get(getRequestWithLaunchIdHeader('/api/anvandare/logout', $window));
           } else {
             $.get('/api/anvandare/logout');
           }
         }
       };
     }]);
+  
+  function getRequestWithLaunchIdHeader(url, $window){
+    return {headers: {'launchId': $window.sessionStorage.getItem('launchId')}, url: url};
+  }
 
   // We need to have the moduleConfig available before loading modules
   getModuleConfig().then(function(data) {
@@ -445,8 +444,8 @@
     // Get a list of all modules to find all files to load.
     getUser().then(function(data) {
       user = data;
-      if (user && user.parameters && user.parameters.launchId !== undefined) {
-        if (sessionStorage.getItem('launchId') === null) {
+      if (user && user.parameters && user.parameters.launchId) {
+        if (!sessionStorage.getItem('launchId')) {
           sessionStorage.launchId = user.parameters.launchId;
         }
       }

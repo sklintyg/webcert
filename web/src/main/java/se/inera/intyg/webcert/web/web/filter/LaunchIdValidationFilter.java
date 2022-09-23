@@ -33,7 +33,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 
 @Component(value = "launchIdValidationFilter")
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
@@ -59,9 +61,13 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
             return;
         }
         final var errorDetails = new HashMap<>();
-        errorDetails.put("message", "Invalid launchId");
-        LOG.info(String.format("launchId: %s, does not match with current session launchId: %s - session will be invalidated.", launchId,
+        final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
+        errorDetails.put(webcertRestExceptionResponse.getErrorCode(), webcertRestExceptionResponse.getMessage());
+
+        LOG.info(String.format("provided launchId: %s - does not match with current session launchId: %s - session will be invalidated.",
+            launchId,
             user.getParameters().getLaunchId()));
+
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         mapper.writeValue(response.getWriter(), errorDetails);
@@ -70,5 +76,9 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
     private boolean continueFilterChain(HttpServletRequest request) {
         return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
             || webCertUserService.getUser().getParameters() == null;
+    }
+
+    private WebcertRestExceptionResponse getWebcertRestExceptionResponse() {
+        return new WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum.INVALID_LAUNCHID, "Invalid launchId");
     }
 }
