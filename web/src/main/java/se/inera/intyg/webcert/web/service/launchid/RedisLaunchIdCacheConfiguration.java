@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.infra.rediscache.core.RedisCacheOptionsSetter;
 
 @Configuration
-public class RedisLaunchIdConfiguration {
+public class RedisLaunchIdCacheConfiguration {
 
     @Value("${app.name:webcert}")
     private String appName;

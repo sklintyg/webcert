@@ -25,6 +25,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
@@ -34,6 +36,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
     produces = MediaType.APPLICATION_JSON)
 public class InvalidateSessionApiController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);
     public static final String SESSION_STATUS_REQUEST_MAPPING = "/v1/session";
     public static final String INVALIDATE_ENDPOINT = "/invalidate";
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
@@ -45,7 +48,9 @@ public class InvalidateSessionApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response invalidateSession(InvalidateRequest invalidateRequest) {
         if (invalidateRequest.formatIsWrong()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            LOG.info(String.format("launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",
+                invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId()));
+            return Response.noContent().build();
         }
         invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
         return Response.noContent().build();
