@@ -42,17 +42,24 @@ public class InvalidateSessionServiceImpl implements InvalidateSessionService {
 
     @Override
     public void invalidateSessionIfActive(InvalidateRequest invalidateRequest) {
-        LOG.info("InvalidateSession called - Checking if launchId has ongoing session stored in redis");
         if (launchIdMissing(invalidateRequest.getLaunchId()) || sessionIsMissing(invalidateRequest.getLaunchId())) {
-            LOG.info("InvalidateSession called - LaunchId has no ongoing session stored in redis");
+            LOG.info(String.format("InvalidateSessionServiceImpl called - launchId: %s - has no ongoing session stored in redis.",
+                invalidateRequest.getLaunchId()));
             return;
         }
         final var user = getUserStoredInRedisSession(invalidateRequest.getLaunchId());
         if (valuesMatchWithSession(user, invalidateRequest)) {
             LOG.info(String.format(
-                "InvalidateSession called - LaunchId: %s has ongoing session stored in redis with matching session, session is removed",
-                invalidateRequest.getLaunchId()));
+                "InvalidateSessionServiceImpl called - launchId: %s - has ongoing session stored in redis with matching session"
+                    + " - launchId on user is: %s - session will be removed",
+                invalidateRequest.getLaunchId(),
+                getUserStoredInRedisSession(invalidateRequest.getLaunchId()).getParameters().getLaunchId()));
             removeSession(invalidateRequest.getLaunchId());
+        } else {
+            LOG.info(String.format(
+                "InvalidateSessionServiceImpl called - launchId: %s has no session stored in redis with matching session,"
+                    + " session is not removed",
+                invalidateRequest.getLaunchId()));
         }
     }
 
