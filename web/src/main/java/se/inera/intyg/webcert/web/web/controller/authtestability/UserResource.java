@@ -148,14 +148,14 @@ public class UserResource {
         return Response.ok().build();
     }
 
-    @POST
-    @Path("/parameters/launchId")
+    @PUT
+    @Path("/parameters/launchId/{launchId}")
     @PrometheusTimeMethod
-    public Response setLaunchId() {
+    public Response setLaunchId(@PathParam("launchId") String launchId) {
         webCertUserService.getUser()
             .setParameters(
                 new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true,
-                    "97f279ba-7d2b-4b0a-8665-7adde08f26f4"));
+                    launchId));
         return Response.ok().build();
     }
 

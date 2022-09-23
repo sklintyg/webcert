@@ -154,7 +154,7 @@ public class DeepIntegrationIT {
             )
             .login(DR_BEATA_BETA_VARDCENTRAL)
             .useDjupIntegratedOrigin()
-            .useLaunchId()
+            .useLaunchId(LAUNCH_ID)
             .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
@@ -184,7 +184,7 @@ public class DeepIntegrationIT {
             )
             .login(DR_BEATA_BETA_VARDCENTRAL)
             .useDjupIntegratedOrigin()
-            .useLaunchId()
+            .useLaunchId(LAUNCH_ID)
             .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());

@@ -113,7 +113,7 @@ public class TestSetup {
         private Certificate certificate;
         private String routeId;
         private String csrfToken;
-        private boolean launchId;
+        private String launchId;
 
         private final CustomObjectMapper objectMapper = new CustomObjectMapper();
         private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
@@ -253,8 +253,8 @@ public class TestSetup {
             return this;
         }
 
-        public TestSetupBuilder useLaunchId() {
-            this.launchId = true;
+        public TestSetupBuilder useLaunchId(String launchId) {
+            this.launchId = launchId;
             return this;
         }
 
@@ -294,8 +294,8 @@ public class TestSetup {
             if (clearPdlLogMessages) {
                 deletePdlLogMessagesFromQueue();
             }
-            if (launchId) {
-                setLaunchId();
+            if (launchId != null) {
+                setLaunchId(launchId);
             }
             return new TestSetup(certificateId, certificate, routeId, csrfToken, questionId, questionDraftId);
         }
@@ -406,12 +406,13 @@ public class TestSetup {
                 .post("authtestability/user/parameters/sjf");
         }
 
-        protected void setLaunchId() {
+        private void setLaunchId(String launchId) {
             given()
+                .pathParam("launchId", launchId)
                 .expect()
                 .statusCode(200)
                 .when()
-                .post("authtestability/user/parameters/launchId");
+                .put("authtestability/user/parameters/launchId/{launchId}");
         }
 
         private void changeOriginTo(String newOrigin) {
