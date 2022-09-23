@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.web.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +58,7 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        Map<String, Object> errorDetails = new HashMap<>();
+        final var errorDetails = new HashMap<>();
         errorDetails.put("message", "Invalid launchId");
         LOG.info(String.format("launchId: %s, does not match with current session launchId: %s - session will be invalidated.", launchId,
             user.getParameters().getLaunchId()));
