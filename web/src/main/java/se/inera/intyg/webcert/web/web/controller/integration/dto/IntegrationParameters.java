@@ -235,7 +235,8 @@ public final class IntegrationParameters implements Serializable {
             && Objects.equals(postnummer, that.postnummer)
             && Objects.equals(postort, that.postort)
             && Objects.equals(beforeAlternateSsn, that.beforeAlternateSsn)
-            && Objects.equals(state, that.state);
+            && Objects.equals(state, that.state)
+            && Objects.equals(launchId, that.launchId);
     }
 
     @Override
@@ -254,6 +255,7 @@ public final class IntegrationParameters implements Serializable {
             inactiveUnit,
             fornyaOk,
             beforeAlternateSsn,
-            state);
+            state,
+            launchId);
     }
 }
