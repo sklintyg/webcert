@@ -21,7 +21,7 @@ ext {
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5"
 
     autovalueVersion = "1.9"
-    camelVersion = "2.25.0"
+    camelVersion = "3.18.2"
     commonsIoVersion = "2.11.0"
     cxfVersion = "3.5.3"
     geronimoJmsVersion = "1.1.1"

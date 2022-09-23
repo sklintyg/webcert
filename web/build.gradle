@@ -3,6 +3,7 @@ apply plugin: 'org.gretty'
 apply plugin: 'nebula.grunt'
 apply plugin: 'idea'
 
+
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'
 

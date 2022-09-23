@@ -18,24 +18,24 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
@@ -44,13 +44,13 @@ public class NotificationAggregatorTest {
 
     private static final String INTYGS_ID = "intyg1";
 
-    private ObjectMapper objectMapper = new CustomObjectMapper();
-
-    private NotificationAggregator aggregator = new NotificationAggregator();
+    private final ObjectMapper objectMapper = new CustomObjectMapper();
+    private final NotificationAggregator aggregator = new NotificationAggregator();
 
     @Test
     public void testProcessNoGroupedExchange() {
         Exchange exchange = mock(Exchange.class);
+        when(exchange.getIn()).thenReturn(mock(Message.class));
         List<Message> res = aggregator.process(exchange);
 
         assertNotNull(res);
@@ -59,9 +59,9 @@ public class NotificationAggregatorTest {
 
     @Test
     public void testProcessGroupedExchangeEmpty() {
-        Exchange exchange = mock(Exchange.class);
-        when(exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class)).thenReturn(new ArrayList<>());
-        List<Message> res = aggregator.process(exchange);
+        final var messages = Collections.<Message>emptyList();
+        final var groupedExchange = buildGroupedExchange(messages);
+        List<Message> res = aggregator.process(groupedExchange);
 
         assertNotNull(res);
         assertTrue(res.isEmpty());
@@ -69,21 +69,40 @@ public class NotificationAggregatorTest {
 
     @Test
     public void testProcess() throws Exception {
-        Exchange exchange = mock(Exchange.class);
-        Exchange exchange1 = mock(Exchange.class);
-        Exchange exchange2 = mock(Exchange.class);
-        Exchange exchange3 = mock(Exchange.class);
-        Message message1 = buildMessage(INTYGS_ID, HandelsekodEnum.ANDRAT, LocalDateTime.now());
-        Message message2 = buildMessage(INTYGS_ID, HandelsekodEnum.SIGNAT, LocalDateTime.now());
-        Message message3 = buildMessage("anotherintyg", HandelsekodEnum.ANDRAT, LocalDateTime.now());
-        when(exchange1.getIn()).thenReturn(message1);
-        when(exchange2.getIn()).thenReturn(message2);
-        when(exchange3.getIn()).thenReturn(message3);
-        when(exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class)).thenReturn(Arrays.asList(exchange1, exchange2, exchange3));
-        List<Message> res = aggregator.process(exchange);
+        final var messages = List.of(
+            buildMessage(INTYGS_ID, HandelsekodEnum.ANDRAT, LocalDateTime.now()),
+            buildMessage(INTYGS_ID, HandelsekodEnum.SIGNAT, LocalDateTime.now()),
+            buildMessage("anotherintyg", HandelsekodEnum.ANDRAT, LocalDateTime.now())
+        );
+
+        List<Message> res = aggregator.process(buildGroupedExchange(messages));
 
         assertNotNull(res);
         assertEquals(1, res.size()); // result is filtered through NotificationMessageDiscardFilter
+    }
+
+    private Exchange buildGroupedExchange(List<Message> messages) {
+        Exchange exchange = mock(Exchange.class);
+        Message outerMessage = buildOuterMessage(messages);
+        when(exchange.getIn()).thenReturn(outerMessage);
+        return exchange;
+    }
+
+    private Message buildOuterMessage(List<Message> messages) {
+        Message outerMsg = mock(Message.class);
+        List<Exchange> outerBody = buildOuterBody(messages);
+        when(outerMsg.getBody(List.class)).thenReturn(outerBody);
+        return outerMsg;
+    }
+
+    private List<Exchange> buildOuterBody(List<Message> messages) {
+        List<Exchange> groupedMessages = new ArrayList<>();
+        for (Message message : messages) {
+            Exchange innerExchange = mock(Exchange.class);
+            when(innerExchange.getIn()).thenReturn(message);
+            groupedMessages.add(innerExchange);
+        }
+        return groupedMessages;
     }
 
     private Message buildMessage(String intygsId, HandelsekodEnum ht, LocalDateTime tid) throws JsonProcessingException {

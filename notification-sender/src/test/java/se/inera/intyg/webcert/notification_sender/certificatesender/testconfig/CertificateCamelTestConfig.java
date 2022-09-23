@@ -16,24 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notification_sender.certificatesender.services.mock;
+package se.inera.intyg.webcert.notification_sender.certificatesender.testconfig;
 
-import org.apache.camel.NamedNode;
-import org.apache.camel.Processor;
-import org.apache.camel.Route;
+import org.springframework.context.annotation.ImportResource;
 
-/**
- * Created by eriklupander on 2015-06-05.
- */
-public class MockTransactionPolicy implements org.apache.camel.spi.Policy {
-
-    @Override
-    public void beforeWrap(Route route, NamedNode definition) {
-
-    }
-
-    @Override
-    public Processor wrap(Route route, Processor processor) {
-        return null;
-    }
+@ImportResource(locations = "classpath:certificates/unit-test-certificate-sender-config.xml")
+public class CertificateCamelTestConfig {
 }
