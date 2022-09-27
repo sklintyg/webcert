@@ -45,12 +45,21 @@ public class CertificateForwardFunction {
         );
     }
 
-    public static ResourceLinkDTO createResourceLinkForQuestion() {
+    public static ResourceLinkDTO createResourceLinkForQuestionList() {
         return ResourceLinkDTO.create(
             ResourceLinkTypeDTO.FORWARD_QUESTION,
             "Vidarebefordra",
             FORWARD_DESCRIPTION_QUESTION,
             true
+        );
+    }
+
+    public static ResourceLinkDTO createResourceLinkForQuestionPanel() {
+        return ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.FORWARD_QUESTION,
+                "Vidarebefordra",
+                FORWARD_DESCRIPTION,
+                true
         );
     }
 
