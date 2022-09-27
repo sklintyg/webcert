@@ -61,50 +61,96 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
-
-        return User.builder()
-            .hsaId(webCertUser.getHsaId())
-            .name(webCertUser.getNamn())
-            .role(getRole(webCertUser))
-            .loggedInUnit(
-                Unit.builder()
-                    .unitName(
-                        loggedInUnit.getNamn()
-                    )
-                    .unitId(
-                        loggedInUnit.getId()
-                    )
-                    .isInactive(
-                        isInactiveUnit
-                    )
-                    .build()
-            )
-            .loggedInCareUnit(
-                Unit.builder()
-                    .unitName(
-                        loggedInCareUnit.getNamn()
-                    )
-                    .unitId(
-                        loggedInCareUnit.getId()
-                    )
-                    .build()
-            )
-            .loggedInCareProvider(
-                Unit.builder()
-                    .unitName(
-                        loggedInCareProvider.getNamn()
-                    )
-                    .unitId(
-                        loggedInCareProvider.getId()
-                    )
-                    .build()
-            )
-            .protectedPerson(webCertUser.isSekretessMarkerad())
-            .preferences(webCertUser.getAnvandarPreference())
-            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
-            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
-            .careProviders(getCareProviders(webCertUser))
-            .build();
+        if (params != null && params.getLaunchId() != null) {
+            return User.builder()
+                .hsaId(webCertUser.getHsaId())
+                .name(webCertUser.getNamn())
+                .role(getRole(webCertUser))
+                .launchId(params.getLaunchId())
+                .loggedInUnit(
+                    Unit.builder()
+                        .unitName(
+                            loggedInUnit.getNamn()
+                        )
+                        .unitId(
+                            loggedInUnit.getId()
+                        )
+                        .isInactive(
+                            isInactiveUnit
+                        )
+                        .build()
+                )
+                .loggedInCareUnit(
+                    Unit.builder()
+                        .unitName(
+                            loggedInCareUnit.getNamn()
+                        )
+                        .unitId(
+                            loggedInCareUnit.getId()
+                        )
+                        .build()
+                )
+                .loggedInCareProvider(
+                    Unit.builder()
+                        .unitName(
+                            loggedInCareProvider.getNamn()
+                        )
+                        .unitId(
+                            loggedInCareProvider.getId()
+                        )
+                        .build()
+                )
+                .protectedPerson(webCertUser.isSekretessMarkerad())
+                .preferences(webCertUser.getAnvandarPreference())
+                .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+                .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+                .careProviders(getCareProviders(webCertUser))
+                .build();
+        } else {
+            return User.builder()
+                .hsaId(webCertUser.getHsaId())
+                .name(webCertUser.getNamn())
+                .role(getRole(webCertUser))
+                .loggedInUnit(
+                    Unit.builder()
+                        .unitName(
+                            loggedInUnit.getNamn()
+                        )
+                        .unitId(
+                            loggedInUnit.getId()
+                        )
+                        .isInactive(
+                            isInactiveUnit
+                        )
+                        .build()
+                )
+                .loggedInCareUnit(
+                    Unit.builder()
+                        .unitName(
+                            loggedInCareUnit.getNamn()
+                        )
+                        .unitId(
+                            loggedInCareUnit.getId()
+                        )
+                        .build()
+                )
+                .loggedInCareProvider(
+                    Unit.builder()
+                        .unitName(
+                            loggedInCareProvider.getNamn()
+                        )
+                        .unitId(
+                            loggedInCareProvider.getId()
+                        )
+                        .build()
+                )
+                .protectedPerson(webCertUser.isSekretessMarkerad())
+                .preferences(webCertUser.getAnvandarPreference())
+                .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+                .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+                .careProviders(getCareProviders(webCertUser))
+                .build();
+        }
     }
 
     private List<CareProvider> getCareProviders(WebCertUser webCertUser) {
@@ -123,9 +169,9 @@ public class UserServiceImpl implements UserService {
     private boolean isMissingSubscription(WebCertUser webCertUser, String careProviderId) {
         final var subscriptionInfo = webCertUser.getSubscriptionInfo();
         return subscriptionInfo != null
-                && subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK
-                && subscriptionInfo.getCareProvidersMissingSubscription() != null
-                && subscriptionInfo.getCareProvidersMissingSubscription().contains(careProviderId);
+            && subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK
+            && subscriptionInfo.getCareProvidersMissingSubscription() != null
+            && subscriptionInfo.getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
     private List<CareUnit> getCareUnits(Vardgivare vardgivare) {
