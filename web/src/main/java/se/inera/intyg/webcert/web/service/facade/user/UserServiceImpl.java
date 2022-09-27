@@ -39,6 +39,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -61,96 +62,56 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
-        if (params != null && params.getLaunchId() != null) {
-            return User.builder()
-                .hsaId(webCertUser.getHsaId())
-                .name(webCertUser.getNamn())
-                .role(getRole(webCertUser))
-                .launchId(params.getLaunchId())
-                .loggedInUnit(
-                    Unit.builder()
-                        .unitName(
-                            loggedInUnit.getNamn()
-                        )
-                        .unitId(
-                            loggedInUnit.getId()
-                        )
-                        .isInactive(
-                            isInactiveUnit
-                        )
-                        .build()
-                )
-                .loggedInCareUnit(
-                    Unit.builder()
-                        .unitName(
-                            loggedInCareUnit.getNamn()
-                        )
-                        .unitId(
-                            loggedInCareUnit.getId()
-                        )
-                        .build()
-                )
-                .loggedInCareProvider(
-                    Unit.builder()
-                        .unitName(
-                            loggedInCareProvider.getNamn()
-                        )
-                        .unitId(
-                            loggedInCareProvider.getId()
-                        )
-                        .build()
-                )
-                .protectedPerson(webCertUser.isSekretessMarkerad())
-                .preferences(webCertUser.getAnvandarPreference())
-                .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
-                .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
-                .careProviders(getCareProviders(webCertUser))
-                .build();
-        } else {
-            return User.builder()
-                .hsaId(webCertUser.getHsaId())
-                .name(webCertUser.getNamn())
-                .role(getRole(webCertUser))
-                .loggedInUnit(
-                    Unit.builder()
-                        .unitName(
-                            loggedInUnit.getNamn()
-                        )
-                        .unitId(
-                            loggedInUnit.getId()
-                        )
-                        .isInactive(
-                            isInactiveUnit
-                        )
-                        .build()
-                )
-                .loggedInCareUnit(
-                    Unit.builder()
-                        .unitName(
-                            loggedInCareUnit.getNamn()
-                        )
-                        .unitId(
-                            loggedInCareUnit.getId()
-                        )
-                        .build()
-                )
-                .loggedInCareProvider(
-                    Unit.builder()
-                        .unitName(
-                            loggedInCareProvider.getNamn()
-                        )
-                        .unitId(
-                            loggedInCareProvider.getId()
-                        )
-                        .build()
-                )
-                .protectedPerson(webCertUser.isSekretessMarkerad())
-                .preferences(webCertUser.getAnvandarPreference())
-                .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
-                .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
-                .careProviders(getCareProviders(webCertUser))
-                .build();
-        }
+        final var launchId = getLaunchId(params);
+
+        return User.builder()
+            .hsaId(webCertUser.getHsaId())
+            .name(webCertUser.getNamn())
+            .role(getRole(webCertUser))
+            .launchId(launchId)
+            .loggedInUnit(
+                Unit.builder()
+                    .unitName(
+                        loggedInUnit.getNamn()
+                    )
+                    .unitId(
+                        loggedInUnit.getId()
+                    )
+                    .isInactive(
+                        isInactiveUnit
+                    )
+                    .build()
+            )
+            .loggedInCareUnit(
+                Unit.builder()
+                    .unitName(
+                        loggedInCareUnit.getNamn()
+                    )
+                    .unitId(
+                        loggedInCareUnit.getId()
+                    )
+                    .build()
+            )
+            .loggedInCareProvider(
+                Unit.builder()
+                    .unitName(
+                        loggedInCareProvider.getNamn()
+                    )
+                    .unitId(
+                        loggedInCareProvider.getId()
+                    )
+                    .build()
+            )
+            .protectedPerson(webCertUser.isSekretessMarkerad())
+            .preferences(webCertUser.getAnvandarPreference())
+            .loginMethod(getLoginMethod(webCertUser.getAuthenticationMethod()))
+            .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
+            .careProviders(getCareProviders(webCertUser))
+            .build();
+    }
+
+    private static String getLaunchId(IntegrationParameters params) {
+        return (params != null && params.getLaunchId() != null) ? params.getLaunchId() : null;
     }
 
     private List<CareProvider> getCareProviders(WebCertUser webCertUser) {

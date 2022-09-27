@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -285,7 +284,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         IntegrationParameters integrationParameters = IntegrationParameters.of(
             reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
             postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk,
-            launchIdShouldBeAdded(launchId) ? assertLaunchIdFormat(launchId) : null);
+            launchIdShouldBeAdded(launchId) ? launchId : null);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -517,14 +516,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private boolean launchIdShouldBeAdded(String launchId) {
-        if (launchId == null) {
+        if (launchId == null || launchId.isEmpty()) {
             return false;
-        } else {
-            return !launchId.isEmpty();
         }
-    }
-
-    private String assertLaunchIdFormat(@NotNull String launchId) {
         try {
             UUID.fromString(launchId);
         } catch (IllegalArgumentException exception) {
@@ -532,7 +526,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             throw new IllegalArgumentException(
                 String.format("Provided launchId was not correct format: %s. LaunchId should be of type GUID", launchId));
         }
-        return launchId;
+        return true;
     }
 }
 

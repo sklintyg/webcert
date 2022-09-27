@@ -365,6 +365,15 @@ public class IntygIntegrationControllerTest {
             }
 
             @Test
+            void handleLaunchIdThatIsNull() {
+                assertDoesNotThrow(() ->
+                    intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
+                        "", "", "", "", "", "", true, "", false,
+                        false, true, null)
+                );
+            }
+
+            @Test
             public void launchIdShouldBeAddedEvenIfNotProvided() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,

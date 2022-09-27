@@ -62,8 +62,8 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
         }
         final var errorDetails = new HashMap<>();
         final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
-        errorDetails.put(webcertRestExceptionResponse.getErrorCode(), webcertRestExceptionResponse.getMessage());
-
+        errorDetails.put("errorCode", webcertRestExceptionResponse.getErrorCode());
+        errorDetails.put("message", webcertRestExceptionResponse.getMessage());
         LOG.info(String.format("provided launchId: %s - does not match with current session launchId: %s - session will be invalidated.",
             launchId,
             user.getParameters().getLaunchId()));

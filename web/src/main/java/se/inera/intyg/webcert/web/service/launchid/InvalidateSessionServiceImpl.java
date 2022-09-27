@@ -57,9 +57,10 @@ public class InvalidateSessionServiceImpl implements InvalidateSessionService {
             removeSession(invalidateRequest.getLaunchId());
         } else {
             LOG.info(String.format(
-                "InvalidateSessionServiceImpl called - launchId: %s has no session stored in redis with matching session,"
+                "InvalidateSessionServiceImpl called - launchId: %s - hsaId: %s did not match with session stored in redis,"
                     + " session is not removed",
-                invalidateRequest.getLaunchId()));
+                invalidateRequest.getLaunchId(),
+                invalidateRequest.getUserHsaId()));
         }
     }
 
@@ -80,8 +81,7 @@ public class InvalidateSessionServiceImpl implements InvalidateSessionService {
     }
 
     private boolean valuesMatchWithSession(WebCertUser user, InvalidateRequest invalidateRequest) {
-        return user.getParameters().getLaunchId().equals(invalidateRequest.getLaunchId()) && user.getHsaId()
-            .equals(invalidateRequest.getUserHsaId());
+        return user.getHsaId().equals(invalidateRequest.getUserHsaId());
     }
 
     private void removeSession(String launchId) {
