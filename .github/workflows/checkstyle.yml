@@ -19,5 +19,5 @@ jobs:
         uses: nikitasavinov/checkstyle-action@master
         with:
           checkstyle_config:  gradle-intyg-plugin/src/main/resources/checkstyle/checkstyle_config_java11.xml
-          checkstyle_version: 8.23
+          checkstyle_version: 10.3.2
           level: error
