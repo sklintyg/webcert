@@ -29,7 +29,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -46,8 +45,8 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
-import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -63,7 +62,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String REMOVE_DESCRIPTION = "Raderar intygsutkastet.";
 
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
-    private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till intygsmottagare";
+    private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till Arbetsförmedlingen.";
 
     private static final String SIGN_NAME = "Signera intyget";
     private static final String SIGN_DESCRIPTION = "Intyget signeras.";
@@ -239,16 +238,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         if (!webCertUserService.getUser().isLakare() && !webCertUserService.getUser().isPrivatLakare()) {
             resourceLinks.add(
-                    CertificateForwardFunction.createResourceLinkForDraft()
+                CertificateForwardFunction.createResourceLinkForDraft()
             );
 
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.READY_FOR_SIGN,
-                            READY_FOR_SIGN_NAME,
-                            READY_FOR_SIGN_DESCRIPTION,
-                            true
-                    )
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.READY_FOR_SIGN,
+                    READY_FOR_SIGN_NAME,
+                    READY_FOR_SIGN_DESCRIPTION,
+                    true
+                )
             );
         }
 
@@ -324,14 +323,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         if (CertificateRenewFunction.validate(certificate.getMetadata().getType(), certificate.getMetadata().getRelations(),
-                certificate.getMetadata().getStatus(), authoritiesHelper)) {
+            certificate.getMetadata().getStatus(), authoritiesHelper)) {
             final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
             final var savedCareUnitId = certificate.getMetadata().getCareUnit().getUnitId();
             resourceLinks.add(
                 CertificateRenewFunction.createResourceLink(loggedInCareUnitId, savedCareUnitId, certificate.getMetadata().getType())
             );
         }
-
 
         if (isCreateCertificateFromTemplateAvailable(certificate)) {
             resourceLinks.add(
@@ -386,25 +384,25 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isForwardQuestionAvailable(Certificate certificate) {
         return webCertUserService.getUser() != null
-                && !webCertUserService.getUser().isPrivatLakare()
-                && hasUnhandledQuestionOrComplement(certificate);
+            && !webCertUserService.getUser().isPrivatLakare()
+            && hasUnhandledQuestionOrComplement(certificate);
     }
 
     private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
         if (isSent(certificate)) {
             return ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.QUESTIONS,
-                            QUESTIONS_NAME,
-                            QUESTIONS_DESCRIPTION,
-                            true
-                    );
+                ResourceLinkTypeDTO.QUESTIONS,
+                QUESTIONS_NAME,
+                QUESTIONS_DESCRIPTION,
+                true
+            );
         } else {
             return ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
-                            QUESTIONS_NAME,
-                            QUESTIONS_DESCRIPTION,
-                            true
-                    );
+                ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE,
+                QUESTIONS_NAME,
+                QUESTIONS_DESCRIPTION,
+                true
+            );
         }
     }
 
@@ -502,9 +500,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
         if (isReplacementSigned(certificate)
-                || isDjupintegration()
-                || hasBeenComplementedBySignedCertificate(certificate)
-                || isRevoked(certificate)
+            || isDjupintegration()
+            || hasBeenComplementedBySignedCertificate(certificate)
+            || isRevoked(certificate)
         ) {
             return false;
         }
@@ -608,10 +606,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     PRINT_PROTECTED_PERSON_BODY,
                     true
                 );
-          }
-      }
+        }
+    }
 
-      private boolean hasBeenComplementedBySignedCertificate(Certificate certificate) {
+    private boolean hasBeenComplementedBySignedCertificate(Certificate certificate) {
         if (certificate.getMetadata().getRelations() != null) {
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
                 relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == SIGNED
@@ -623,7 +621,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private boolean hasUnsignedComplement(Certificate certificate) {
         if (certificate.getMetadata().getRelations() != null) {
             return Arrays.stream(certificate.getMetadata().getRelations().getChildren()).anyMatch(
-                    relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == UNSIGNED
+                relation -> relation.getType().equals(COMPLEMENTED) && relation.getStatus() == UNSIGNED
             );
         }
         return false;
@@ -633,7 +631,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
         if (questions != null) {
             return questions.stream().anyMatch(
-                    question -> !question.isHandled() && question.getType() == QuestionType.COMPLEMENT
+                question -> !question.isHandled() && question.getType() == QuestionType.COMPLEMENT
             );
         }
         return false;
