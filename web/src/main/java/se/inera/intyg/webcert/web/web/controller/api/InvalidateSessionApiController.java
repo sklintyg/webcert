@@ -52,11 +52,10 @@ public class InvalidateSessionApiController {
                 invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId()));
             return Response.noContent().build();
         }
-        //TODO: Logga launchId & userHsaId.
         try {
             invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
         } catch (Exception exception) {
-            LOG.error("Invalidate session failed", exception);
+            LOG.error("Invalidate session failed. launchId: %s - userHsaId: %s", exception);
         }
         return Response.noContent().build();
     }
