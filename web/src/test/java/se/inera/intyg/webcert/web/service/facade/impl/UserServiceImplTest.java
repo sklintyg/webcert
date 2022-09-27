@@ -80,6 +80,7 @@ class UserServiceImplTest {
     private static final String SORT_SECOND = "Åkersork";
     private static final String SORT_THIRD = "Älgantilop";
     private static final List<String> UNSORTED_NAMES = List.of(SORT_THIRD, SORT_FIRST, SORT_SECOND);
+    private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
 
     @BeforeEach
     void setUp() {
@@ -517,6 +518,50 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertTrue(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
+    }
+
+    @Nested
+    class LaunchId {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.FAKE)
+                .when(user)
+                .getAuthenticationMethod();
+        }
+
+        @Test
+        void shouldReturnUserWithLaunchId() {
+            doReturn(getParameters(LAUNCH_ID))
+                .when(user).getParameters();
+
+            final var loggedInUser = userService.getLoggedInUser();
+
+            assertEquals(loggedInUser.getLaunchId(), LAUNCH_ID);
+        }
+
+        @Test
+        void shouldNotReturnUserWithLaunchId() {
+            final var loggedInUser = userService.getLoggedInUser();
+
+            assertNull(loggedInUser.getLaunchId());
+        }
+
+        @Test
+        void shouldNotReturnUserWithLaunchIdIfItsNotAddedInIntegrationsParameters() {
+            doReturn(getParameters(true))
+                .when(user).getParameters();
+
+            final var loggedInUser = userService.getLoggedInUser();
+
+            assertNull(loggedInUser.getLaunchId());
+        }
+    }
+
+    private IntegrationParameters getParameters(String launchId) {
+        return new IntegrationParameters(null, null, null, null,
+            null, null, null, null, null,
+            false, false, false, false, launchId);
     }
 
     private List<Vardgivare> getNavigableCareProvider() {
