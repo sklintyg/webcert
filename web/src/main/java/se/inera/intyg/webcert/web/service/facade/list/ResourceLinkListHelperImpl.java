@@ -133,7 +133,7 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
         }
 
         if (link.getType() == ActionLinkType.VIDAREBEFODRA_FRAGA) {
-            return CertificateForwardFunction.createResourceLinkForQuestion();
+            return CertificateForwardFunction.createResourceLinkForQuestionList();
         }
 
         if (validateForward(link, getCertificateStatus(status))) {

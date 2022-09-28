@@ -284,7 +284,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         if (isForwardQuestionAvailable(certificate)) {
             resourceLinks.add(
-                CertificateForwardFunction.createResourceLinkForQuestion()
+                    CertificateForwardFunction.createResourceLinkForQuestionPanel()
             );
         }
 
