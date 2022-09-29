@@ -33,11 +33,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -66,7 +67,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     @InjectMocks
     private GetCertificateEventsFacadeServiceImpl getCertificateEventsFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_ID = "certificateId";
 
     private CertificateEvent certificateEvent;
     private Relations relations;
@@ -82,7 +83,7 @@ class GetCertificateEventsFacadeServiceImplTest {
         certificateEvent.setUser("UserId");
         certificateEvent.setEventCode(EventCode.SKAPAT);
 
-        certificateEvents = new ArrayList<>(Arrays.asList(certificateEvent));
+        certificateEvents = new ArrayList<>(List.of(certificateEvent));
 
         doReturn(certificateEvents)
             .when(certificateEventService)
@@ -142,27 +143,12 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class EventTypesToFilterOut {
-
+    class EventTypesToFilterOutTests {
         /**
          * Event types that should be filtered out because they are currently not relevant for the user
          */
-        Stream<EventCode> eventTypesToFilterOut() {
-            return Stream.of(
-                EventCode.RELINTYGMAKULE,
-                EventCode.NYFRFM,
-                EventCode.NYFRFV,
-                EventCode.HANFRFV,
-                EventCode.HANFRFM,
-                EventCode.NYSVFM,
-                EventCode.PAMINNELSE,
-                EventCode.KFSIGN
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("eventTypesToFilterOut")
+        @ArgumentsSource(EventTypesToFilterOut.class)
         void shallFilterOutType(EventCode eventCode) {
             certificateEvent.setEventCode(eventCode);
 
@@ -173,42 +159,10 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class EventTypes {
-
-        Stream<Arguments> eventTypes() {
-            return Stream.of(
-                Arguments.of(EventCode.SKAPAT, CertificateEventTypeDTO.CREATED),
-                Arguments.of(EventCode.LAST, CertificateEventTypeDTO.LOCKED),
-                Arguments.of(EventCode.SIGNAT, CertificateEventTypeDTO.SIGNED),
-                Arguments.of(EventCode.SKICKAT, CertificateEventTypeDTO.SENT),
-                Arguments.of(EventCode.MAKULERAT, CertificateEventTypeDTO.REVOKED),
-                Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
-                Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
-                Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
-                Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
-                Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
-                Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM)
-            );
-        }
-
-        /**
-         * Event types that should be decorated are specifically tested else-where.
-         */
-        Stream<EventCode> eventTypesNotToDecorate() {
-            return Stream.of(
-                EventCode.SKAPAT,
-                EventCode.LAST,
-                EventCode.SIGNAT,
-                EventCode.SKICKAT,
-                EventCode.MAKULERAT,
-                EventCode.KOMPLBEGARAN,
-                EventCode.SKAPATFRAN
-            );
-        }
+    class EventTypeTests {
 
         @ParameterizedTest
-        @MethodSource("eventTypes")
+        @ArgumentsSource(EventTypes.class)
         void shallIncludeCorrectType(EventCode eventCode, CertificateEventTypeDTO expectedType) {
             certificateEvent.setEventCode(eventCode);
 
@@ -218,7 +172,7 @@ class GetCertificateEventsFacadeServiceImplTest {
         }
 
         @ParameterizedTest
-        @MethodSource("eventTypesNotToDecorate")
+        @ArgumentsSource(EventTypesNotToDecorate.class)
         void shallNotDecorateWithParentInformation(EventCode eventCode) {
             certificateEvent.setEventCode(eventCode);
 
@@ -275,17 +229,15 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class ReplacesEvent {
+    class ReplacesEventTests {
 
         private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-        private WebcertCertificateRelation parentRelation;
 
         @BeforeEach
         void setup() {
             certificateEvent.setEventCode(EventCode.ERSATTER);
 
-            parentRelation = new WebcertCertificateRelation(
+            WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
                 PARENT_CERTIFICATE_ID,
                 RelationKod.ERSATT,
                 LocalDateTime.now(),
@@ -302,17 +254,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
         }
 
-        Stream<Arguments> parentStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentStatuses")
+        @ArgumentsSource(ParentStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
 
@@ -321,15 +264,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> parentRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentRevokedStatuses")
+        @ArgumentsSource(ParentRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
             relations.getParent().setMakulerat(true);
@@ -341,17 +277,15 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class ExtendedEvent {
 
         private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-        private WebcertCertificateRelation parentRelation;
 
         @BeforeEach
         void setup() {
             certificateEvent.setEventCode(EventCode.FORLANGER);
 
-            parentRelation = new WebcertCertificateRelation(
+            WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
                 PARENT_CERTIFICATE_ID,
                 RelationKod.FRLANG,
                 LocalDateTime.now(),
@@ -368,17 +302,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
         }
 
-        Stream<Arguments> parentStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentStatuses")
+        @ArgumentsSource(ParentStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
 
@@ -387,15 +312,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> parentRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentRevokedStatuses")
+        @ArgumentsSource(ParentRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
             relations.getParent().setMakulerat(true);
@@ -407,17 +325,15 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class CopiedFromEvent {
+    class CopiedFromEventTests {
 
         private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-        private WebcertCertificateRelation parentRelation;
 
         @BeforeEach
         void setup() {
             certificateEvent.setEventCode(EventCode.KOPIERATFRAN);
 
-            parentRelation = new WebcertCertificateRelation(
+            WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
                 PARENT_CERTIFICATE_ID,
                 RelationKod.ERSATT,
                 LocalDateTime.now(),
@@ -434,17 +350,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
         }
 
-        Stream<Arguments> parentStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentStatuses")
+        @ArgumentsSource(ParentStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
 
@@ -453,15 +360,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> parentRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentRevokedStatuses")
+        @ArgumentsSource(ParentRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
             relations.getParent().setMakulerat(true);
@@ -473,8 +373,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class ReplacedByCertificateEvent {
+    class ReplacedByCertificateEventTests {
 
         private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
         private WebcertCertificateRelation childRelation;
@@ -517,14 +416,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
         }
 
-        Stream<Arguments> childStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childStatuses")
+        @ArgumentsSource(ChildStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
 
@@ -533,14 +426,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> childRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childRevokedStatuses")
+        @ArgumentsSource(ChildRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
             relations.getLatestChildRelations().getReplacedByIntyg().setMakulerat(true);
@@ -552,7 +439,6 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class ReplacedByDraftEvent {
 
         private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
@@ -596,16 +482,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
         }
 
-        Stream<Arguments> childStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childStatuses")
+        @ArgumentsSource(ChildStatusesForReplacedByDraftEvent.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
 
@@ -614,14 +492,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> childRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childRevokedStatuses")
+        @ArgumentsSource(ChildRevokedStatusesForReplacedByDraftEvent.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
             relations.getLatestChildRelations().getReplacedByUtkast().setMakulerat(true);
@@ -633,7 +505,6 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class CopiedByEvent {
 
         private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
@@ -677,17 +548,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(CertificateEventTypeDTO.COPIED_BY, actualEvents[0].getType());
         }
 
-        Stream<Arguments> childStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childStatuses")
+        @ArgumentsSource(ChildStatusesForCopiedByEvent.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
 
@@ -696,15 +558,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> childRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childRevokedStatuses")
+        @ArgumentsSource(ChildRevokedStatusesForCopiedByEvent.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
             relations.getLatestChildRelations().getUtkastCopy().setMakulerat(true);
@@ -716,8 +571,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class ComplementedCertificateEvent {
+    class ComplementedCertificateEventTests {
 
         private static final String CHILD_CERTIFICATE_ID = "ChildCertificateId";
         private WebcertCertificateRelation childRelation;
@@ -760,14 +614,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(CertificateEventTypeDTO.COMPLEMENTED, actualEvents[0].getType());
         }
 
-        Stream<Arguments> childStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childStatuses")
+        @ArgumentsSource(ChildStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
 
@@ -776,14 +624,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> childRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("childRevokedStatuses")
+        @ArgumentsSource(ChildRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
             relations.getLatestChildRelations().getComplementedByIntyg().setMakulerat(true);
@@ -795,17 +637,15 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class ComplementsEvent {
 
         private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-        private WebcertCertificateRelation parentRelation;
 
         @BeforeEach
         void setup() {
             certificateEvent.setEventCode(EventCode.ERSATTER);
 
-            parentRelation = new WebcertCertificateRelation(
+            WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
                 PARENT_CERTIFICATE_ID,
                 RelationKod.KOMPLT,
                 LocalDateTime.now(),
@@ -822,17 +662,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
         }
 
-        Stream<Arguments> parentStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentStatuses")
+        @ArgumentsSource(ParentStatuses.class)
         void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
 
@@ -841,15 +672,8 @@ class GetCertificateEventsFacadeServiceImplTest {
             assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
         }
 
-        Stream<Arguments> parentRevokedStatuses() {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
-
         @ParameterizedTest
-        @MethodSource("parentRevokedStatuses")
+        @ArgumentsSource(ParentRevokedStatuses.class)
         void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
             relations.getParent().setStatus(parentStatus);
             relations.getParent().setMakulerat(true);
@@ -864,7 +688,7 @@ class GetCertificateEventsFacadeServiceImplTest {
         return Arrays.stream(actualEvents)
             .filter(event -> event.getType() == type)
             .findAny()
-            .get();
+            .orElseThrow();
     }
 
     private CertificateEvent getEvent(long id, LocalDateTime timestamp, EventCode eventCode) {
@@ -876,5 +700,137 @@ class GetCertificateEventsFacadeServiceImplTest {
         event.setUser("UserId");
         event.setEventCode(eventCode);
         return event;
+    }
+
+    private static class EventTypes implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(EventCode.SKAPAT, CertificateEventTypeDTO.CREATED),
+                Arguments.of(EventCode.LAST, CertificateEventTypeDTO.LOCKED),
+                Arguments.of(EventCode.SIGNAT, CertificateEventTypeDTO.SIGNED),
+                Arguments.of(EventCode.SKICKAT, CertificateEventTypeDTO.SENT),
+                Arguments.of(EventCode.MAKULERAT, CertificateEventTypeDTO.REVOKED),
+                Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
+                Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
+                Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
+                Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
+                Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
+                Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM)
+            );
+        }
+    }
+
+    private static class EventTypesNotToDecorate implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(EventCode.SKAPAT),
+                Arguments.of(EventCode.LAST),
+                Arguments.of(EventCode.SIGNAT),
+                Arguments.of(EventCode.SKICKAT),
+                Arguments.of(EventCode.MAKULERAT),
+                Arguments.of(EventCode.KOMPLBEGARAN),
+                Arguments.of(EventCode.SKAPATFRAN)
+            );
+        }
+    }
+
+    private static class EventTypesToFilterOut implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(EventCode.RELINTYGMAKULE),
+                Arguments.of(EventCode.NYFRFM),
+                Arguments.of(EventCode.NYFRFV),
+                Arguments.of(EventCode.HANFRFV),
+                Arguments.of(EventCode.HANFRFM),
+                Arguments.of(EventCode.NYSVFM),
+                Arguments.of(EventCode.PAMINNELSE),
+                Arguments.of(EventCode.KFSIGN)
+            );
+        }
+    }
+
+    private static class ParentStatuses implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
+            );
+        }
+    }
+
+    private static class ParentRevokedStatuses implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
+            );
+        }
+    }
+
+    private static class ChildStatuses implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED)
+            );
+        }
+    }
+
+    private static class ChildRevokedStatuses implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED)
+            );
+        }
+    }
+
+    private static class ChildStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
+            );
+        }
+    }
+
+    private static class ChildRevokedStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
+            );
+        }
+    }
+
+    private static class ChildStatusesForCopiedByEvent implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
+            );
+        }
+    }
+
+    private static class ChildRevokedStatusesForCopiedByEvent implements ArgumentsProvider {
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
+                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
+            );
+        }
     }
 }

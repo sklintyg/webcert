@@ -26,31 +26,21 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
 
-import org.apache.camel.test.spring.CamelSpringRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.camel.test.junit5.params.Test;
+import org.apache.camel.test.spring.junit5.CamelSpringTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
+import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.CertificateCamelIntegrationTestConfig;
 
-@RunWith(CamelSpringRunner.class)
-@ContextConfiguration("/certificates/integration-test-certificate-sender-config.xml")
-@BootstrapWith(CamelTestContextBootstrapper.class)
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class}) // Suppresses warning
+@CamelSpringTest
+@ContextConfiguration(classes = CertificateCamelIntegrationTestConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIT {
 
@@ -71,16 +61,16 @@ public class RouteIT {
     @Autowired
     private MockSendCertificateServiceClientImpl sendCertificateServiceClient;
 
-    @Before
+    @BeforeEach
     public void resetStub() {
         sendCertificateServiceClient.reset();
     }
 
     @Test
     public void ensureStubReceivesAllMessages() {
-        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage(INTYGS_ID_1);
+        sendMessage(INTYGS_ID_1);
+        sendMessage(INTYGS_ID_1);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfReceivedMessages = sendCertificateServiceClient.getNumberOfReceivedMessages();
@@ -90,8 +80,8 @@ public class RouteIT {
 
     @Test
     public void ensureStubReceivesAllMessagesAfterResend() {
-        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2", Constants.SEND_MESSAGE);
-        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2");
+        sendMessage(INTYGS_ID_1);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfSentMessages = sendCertificateServiceClient.getNumberOfSentMessages();
@@ -101,7 +91,7 @@ public class RouteIT {
 
     @Test
     public void ensureMessageEndsUpInDLQ() {
-        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5", Constants.SEND_MESSAGE);
+        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5");
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfDLQMessages = numberOfDLQMessages();
@@ -109,12 +99,12 @@ public class RouteIT {
         });
     }
 
-    private void sendMessage(final String intygsId, final String messageType) {
-        jmsTemplate.send(sendQueue, (MessageCreator) session -> {
+    private void sendMessage(final String intygsId) {
+        jmsTemplate.send(sendQueue, session -> {
             try {
                 TextMessage textMessage = session.createTextMessage("body");
                 textMessage.setStringProperty(Constants.INTYGS_ID, intygsId);
-                textMessage.setStringProperty(Constants.MESSAGE_TYPE, messageType);
+                textMessage.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
                 textMessage.setStringProperty("DELAY_MESSAGE", "true");
                 return textMessage;
             } catch (Exception e) {
@@ -123,18 +113,16 @@ public class RouteIT {
         });
     }
 
-    private int numberOfDLQMessages() throws Exception {
-        Integer count = jmsTemplate.browse(dlq,
-            (session, browser) -> {
-                int counter = 0;
-                Enumeration<?> msgs = browser.getEnumeration();
-                while (msgs.hasMoreElements()) {
-                    msgs.nextElement();
-                    counter++;
-                }
-                return counter;
-            });
-        return count;
+    private Integer numberOfDLQMessages() {
+        return jmsTemplate.browse(dlq, (session, browser) -> {
+            int counter = 0;
+            Enumeration<?> msgs = browser.getEnumeration();
+            while (msgs.hasMoreElements()) {
+                msgs.nextElement();
+                counter++;
+            }
+            return counter;
+        });
     }
 
 }

@@ -25,21 +25,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
-import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
-import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
-import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseStatusDTO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 public class ListConfigControllerTest {

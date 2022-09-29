@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.facade.list.filter;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Service

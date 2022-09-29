@@ -1,7 +1,8 @@
 apply plugin: 'war'
 apply plugin: 'org.gretty'
-apply plugin: 'com.moowork.grunt'
+apply plugin: 'nebula.grunt'
 apply plugin: 'idea'
+
 
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'
@@ -275,13 +276,12 @@ dependencies {
 
     testCompile "io.rest-assured:rest-assured"
     testCompile "io.rest-assured:json-schema-validator"
-    testCompile "com.sun.xml.bind:jaxb-osgi:2.3.2" // Can remove when rest-assured in BOM > version 4.0
 
     testCompile "org.antlr:ST4:${stAntlr4Version}"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
-    gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
+    gretty "org.eclipse.jetty:apache-jstl"
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
-    xsdgen "org.glassfish.jaxb:jaxb-xjc-jdk9:${jaxbXjcVersion}"
+    xsdgen "org.glassfish.jaxb:jaxb-xjc"
 }

@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.notification_sender.certificatesender.testconfig;
 
-package se.inera.intyg.webcert.web.service.facade.list.filter;
+import org.springframework.context.annotation.ImportResource;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-
-public interface CertificateFilterConverter {
-    QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units);
+@ImportResource(locations = "classpath:certificates/integration-test-certificate-sender-config.xml")
+public class CertificateCamelIntegrationTestConfig {
 }

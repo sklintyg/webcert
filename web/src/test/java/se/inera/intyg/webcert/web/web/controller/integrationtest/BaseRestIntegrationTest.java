@@ -113,7 +113,7 @@ public abstract class BaseRestIntegrationTest {
      */
     @Before
     public void setupBase() throws FileNotFoundException {
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
+        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://wc.localtest.me");
         LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.config = RestAssured.config()
             .logConfig(logconfig)

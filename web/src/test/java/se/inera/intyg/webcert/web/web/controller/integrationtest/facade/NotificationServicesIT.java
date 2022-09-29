@@ -46,10 +46,12 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
+import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.TypeRef;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.mapper.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -95,6 +97,7 @@ public class NotificationServicesIT {
     private static final Integer STATUS_UPDATE_RESULT_OK = 0;
     private static final TypeRef<List<CertificateStatusUpdateForCareType>> LIST_NOTIFICATIONS = new TypeRef<>() { };
     private static final TypeRef<List<IntegreradEnhetEntryWithSchemaVersion>> LIST_INTEGRATED_UNIT = new TypeRef<>() { };
+    private static final ObjectMapper OBJECT_MAPPER = new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
 
     private ST requestTemplateAnswer;
     private ST requestTemplateQuestion;
@@ -464,10 +467,10 @@ public class NotificationServicesIT {
     private void configureRestAssured() {
         final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.objectMapper(new Jackson2Mapper(((type, charset) -> new CustomObjectMapper())));
         RestAssured.config = RestAssured.config()
             .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
+            .sessionConfig(new SessionConfig("SESSION", null))
+            .objectMapperConfig(ObjectMapperConfig.objectMapperConfig().defaultObjectMapper(OBJECT_MAPPER));
     }
 
     private List<CertificateStatusUpdateForCareType> getStatusUpdatesOfType(HandelsekodEnum eventEnum, String certificateId) {

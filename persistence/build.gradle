@@ -12,7 +12,11 @@ dependencies {
   compile "org.liquibase:liquibase-core"
   compile "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
 
-  compile "com.h2database:h2:${h2Version}"
+  compile "org.hibernate:hibernate-core"
+  compile "org.hibernate:hibernate-hikaricp"
+  compile "org.hibernate:hibernate-entitymanager"
+
+  compile "com.h2database:h2"
   compile "mysql:mysql-connector-java"
 
   testCompile "org.springframework:spring-test"

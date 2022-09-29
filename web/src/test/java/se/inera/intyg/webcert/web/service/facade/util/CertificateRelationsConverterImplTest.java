@@ -28,10 +28,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,14 +58,8 @@ class CertificateRelationsConverterImplTest {
     @InjectMocks
     private CertificateRelationsConverterImpl certificateRelationsConverter;
 
-    private final Relations relations = new Relations();
-    private final String CERTIFICATE_ID = "certificateId";
-
-    @BeforeEach
-    void setupMocks() throws Exception {
-        doReturn(relations)
-            .when(certificateRelationService).getRelations(CERTIFICATE_ID);
-    }
+    private static final Relations relations = new Relations();
+    private static final String CERTIFICATE_ID = "certificateId";
 
     @Nested
     class ValidateParentRelation {
@@ -81,6 +77,9 @@ class CertificateRelationsConverterImplTest {
             );
 
             relations.setParent(parentRelation);
+
+            doReturn(relations)
+                .when(certificateRelationService).getRelations(CERTIFICATE_ID);
         }
 
         @Test
@@ -233,8 +232,168 @@ class CertificateRelationsConverterImplTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class ValidateChildRelation {
+
+        @BeforeEach
+        void setup() {
+            final var parentRelation = new WebcertCertificateRelation(
+                "ParentId",
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false
+            );
+
+            relations.setParent(parentRelation);
+
+            doReturn(relations)
+                .when(certificateRelationService).getRelations(CERTIFICATE_ID);
+        }
+
+        @Test
+        void shallNotIncludeParent() {
+            relations.setParent(null);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertNull(actualRelations.getParent());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationCreateDateTime(FrontendRelations childRelations) {
+            final var expectedCreatedDateTime = LocalDateTime.now();
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setSkapad(expectedCreatedDateTime);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedCreatedDateTime, actualRelations.getChildren()[0].getCreated());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusUnsignedWhenComplete(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.UNSIGNED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.DRAFT_COMPLETE);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusUnsignedWhenIncomplete(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.UNSIGNED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusSigned(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.SIGNED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.SIGNED);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusRevoked(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.REVOKED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.SIGNED);
+            childRelation.setMakulerat(true);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusLocked(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.LOCKED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AllChildRelations.class)
+        void shallIncludeChildRelationStatusLockedRevoked(FrontendRelations childRelations) {
+            final var expectedStatus = CertificateStatus.LOCKED_REVOKED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
+            childRelation.setMakulerat(true);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ReplacedChildRelations.class)
+        void shallIncludeChildRelationReplaced(FrontendRelations childRelations) {
+            final var expectedRelationsType = CertificateRelationType.REPLACED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setRelationKod(RelationKod.ERSATT);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(CopiedChildRelations.class)
+        void shallIncludeChildRelationCopied(FrontendRelations childRelations) {
+            final var expectedRelationsType = CertificateRelationType.COPIED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setRelationKod(RelationKod.KOPIA);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ComplementedChildRelations.class)
+        void shallIncludeChildRelationComplemented(FrontendRelations childRelations) {
+            final var expectedRelationsType = CertificateRelationType.COMPLEMENTED;
+
+            final var childRelation = getChildRelationToTest(childRelations);
+            childRelation.setRelationKod(RelationKod.KOMPLT);
+
+            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
+
+            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
+        }
+    }
+
+    @Nested
+    class ValidateChildRelatinCertificateId {
 
         @BeforeEach
         void setup() {
@@ -249,210 +408,88 @@ class CertificateRelationsConverterImplTest {
             relations.setParent(parentRelation);
         }
 
-        Stream<FrontendRelations> allChildRelations() {
-            return Stream.of(
-                getReplacedByDraft().getLatestChildRelations(),
-                getReplacedByCertificate().getLatestChildRelations(),
-                getComplementedByDraft().getLatestChildRelations(),
-                getComplementedByCertificate().getLatestChildRelations(),
-                getDraftCopy().getLatestChildRelations()
-            );
-        }
-
-        Stream<FrontendRelations> complementedChildRelations() {
-            return Stream.of(
-                getComplementedByDraft().getLatestChildRelations(),
-                getComplementedByCertificate().getLatestChildRelations()
-            );
-        }
-
-        Stream<FrontendRelations> replacedChildRelations() {
-            return Stream.of(
-                getReplacedByDraft().getLatestChildRelations(),
-                getReplacedByCertificate().getLatestChildRelations()
-            );
-        }
-
-        Stream<FrontendRelations> copiedChildRelations() {
-            return Stream.of(
-                getDraftCopy().getLatestChildRelations()
-            );
-        }
-
-        @Test
-        void shallNotIncludeParent() {
-            relations.setParent(null);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertNull(actualRelations.getParent());
-        }
-
         @ParameterizedTest
-        @MethodSource("allChildRelations")
+        @ArgumentsSource(AllChildRelations.class)
         void shallIncludeChildRelationCertificateId(FrontendRelations childRelations) {
             final var childRelation = getChildRelationToTest(childRelations);
             final var expectedCertificateId = childRelation.getIntygsId();
             childRelation.setIntygsId(expectedCertificateId);
+            doReturn(relations).when(certificateRelationService).getRelations(CERTIFICATE_ID);
 
             final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
 
             assertEquals(expectedCertificateId, actualRelations.getChildren()[0].getCertificateId());
         }
+    }
 
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationCreateDateTime(FrontendRelations childRelations) {
-            final var expectedCreatedDateTime = LocalDateTime.now();
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setSkapad(expectedCreatedDateTime);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedCreatedDateTime, actualRelations.getChildren()[0].getCreated());
+    private static WebcertCertificateRelation getChildRelationToTest(FrontendRelations childRelations) {
+        relations.setLatestChildRelations(childRelations);
+        if (childRelations.getReplacedByUtkast() != null) {
+            return childRelations.getReplacedByUtkast();
         }
-
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusUnsignedWhenComplete(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.UNSIGNED;
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.DRAFT_COMPLETE);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        if (childRelations.getReplacedByIntyg() != null) {
+            return childRelations.getReplacedByIntyg();
         }
-
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusUnsignedWhenIncomplete(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.UNSIGNED;
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        if (childRelations.getComplementedByUtkast() != null) {
+            return childRelations.getComplementedByUtkast();
         }
-
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusSigned(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.SIGNED;
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.SIGNED);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        if (childRelations.getComplementedByIntyg() != null) {
+            return childRelations.getComplementedByIntyg();
         }
-
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusRevoked(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.REVOKED;
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.SIGNED);
-            childRelation.setMakulerat(true);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        if (childRelations.getUtkastCopy() != null) {
+            return childRelations.getUtkastCopy();
         }
+        throw new IllegalArgumentException("Incorrect test data! Please verify!");
+    }
 
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusLocked(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.LOCKED;
+    private static class AllChildRelations implements ArgumentsProvider {
 
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(RelationsProvider.getReplacedByDraft().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getReplacedByCertificate().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getComplementedByDraft().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getComplementedByCertificate().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getDraftCopy().getLatestChildRelations())
+            );
         }
+    }
 
-        @ParameterizedTest
-        @MethodSource("allChildRelations")
-        void shallIncludeChildRelationStatusLockedRevoked(FrontendRelations childRelations) {
-            final var expectedStatus = CertificateStatus.LOCKED_REVOKED;
+    private static class ComplementedChildRelations implements ArgumentsProvider {
 
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setStatus(UtkastStatus.DRAFT_LOCKED);
-            childRelation.setMakulerat(true);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedStatus, actualRelations.getChildren()[0].getStatus());
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(RelationsProvider.getComplementedByDraft().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getComplementedByCertificate().getLatestChildRelations())
+            );
         }
+    }
 
-        @ParameterizedTest
-        @MethodSource("replacedChildRelations")
-        void shallIncludeChildRelationReplaced(FrontendRelations childRelations) {
-            final var expectedRelationsType = CertificateRelationType.REPLACED;
+    private static class ReplacedChildRelations implements ArgumentsProvider {
 
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setRelationKod(RelationKod.ERSATT);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(RelationsProvider.getReplacedByDraft().getLatestChildRelations()),
+                Arguments.of(RelationsProvider.getReplacedByCertificate().getLatestChildRelations())
+                );
         }
+    }
 
-        @ParameterizedTest
-        @MethodSource("copiedChildRelations")
-        void shallIncludeChildRelationCopied(FrontendRelations childRelations) {
-            final var expectedRelationsType = CertificateRelationType.COPIED;
+    private static class CopiedChildRelations implements ArgumentsProvider {
 
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setRelationKod(RelationKod.KOPIA);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(RelationsProvider.getDraftCopy().getLatestChildRelations())
+            );
         }
+    }
+    private static class RelationsProvider {
 
-        @ParameterizedTest
-        @MethodSource("complementedChildRelations")
-        void shallIncludeChildRelationComplemented(FrontendRelations childRelations) {
-            final var expectedRelationsType = CertificateRelationType.COMPLEMENTED;
-
-            final var childRelation = getChildRelationToTest(childRelations);
-            childRelation.setRelationKod(RelationKod.KOMPLT);
-
-            final var actualRelations = certificateRelationsConverter.convert(CERTIFICATE_ID);
-
-            assertEquals(expectedRelationsType, actualRelations.getChildren()[0].getType());
-        }
-
-        private WebcertCertificateRelation getChildRelationToTest(FrontendRelations childRelations) {
-            relations.setLatestChildRelations(childRelations);
-            if (childRelations.getReplacedByUtkast() != null) {
-                return childRelations.getReplacedByUtkast();
-            }
-            if (childRelations.getReplacedByIntyg() != null) {
-                return childRelations.getReplacedByIntyg();
-            }
-            if (childRelations.getComplementedByUtkast() != null) {
-                return childRelations.getComplementedByUtkast();
-            }
-            if (childRelations.getComplementedByIntyg() != null) {
-                return childRelations.getComplementedByIntyg();
-            }
-            if (childRelations.getUtkastCopy() != null) {
-                return childRelations.getUtkastCopy();
-            }
-            throw new IllegalArgumentException("Incorrect test data! Please verify!");
-        }
-
-        private Relations getReplacedByDraft() {
+        private static Relations getReplacedByDraft() {
             final var replacedByDraft = new Relations();
             replacedByDraft.getLatestChildRelations().setReplacedByUtkast(
                 new WebcertCertificateRelation(
@@ -466,7 +503,7 @@ class CertificateRelationsConverterImplTest {
             return replacedByDraft;
         }
 
-        private Relations getReplacedByCertificate() {
+        private static Relations getReplacedByCertificate() {
             final var replacedByIntyg = new Relations();
             replacedByIntyg.getLatestChildRelations().setReplacedByIntyg(
                 new WebcertCertificateRelation(
@@ -480,7 +517,7 @@ class CertificateRelationsConverterImplTest {
             return replacedByIntyg;
         }
 
-        private Relations getComplementedByDraft() {
+        private static Relations getComplementedByDraft() {
             final var complementedByDraft = new Relations();
             complementedByDraft.getLatestChildRelations().setComplementedByUtkast(
                 new WebcertCertificateRelation(
@@ -494,7 +531,7 @@ class CertificateRelationsConverterImplTest {
             return complementedByDraft;
         }
 
-        private Relations getComplementedByCertificate() {
+        private static Relations getComplementedByCertificate() {
             final var complementedByIntyg = new Relations();
             complementedByIntyg.getLatestChildRelations().setComplementedByIntyg(
                 new WebcertCertificateRelation(
@@ -508,7 +545,7 @@ class CertificateRelationsConverterImplTest {
             return complementedByIntyg;
         }
 
-        private Relations getDraftCopy() {
+        private static Relations getDraftCopy() {
             final var draftCopy = new Relations();
             draftCopy.getLatestChildRelations().setUtkastCopy(
                 new WebcertCertificateRelation(
@@ -522,4 +559,5 @@ class CertificateRelationsConverterImplTest {
             return draftCopy;
         }
     }
+
 }
