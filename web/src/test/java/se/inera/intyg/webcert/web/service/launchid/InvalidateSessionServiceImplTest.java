@@ -79,20 +79,9 @@ public class InvalidateSessionServiceImplTest {
     }
 
     @Test
-    public void sessionShouldNotBeRemovedWhenLaunchIdDoesNotMatch() {
-        WebCertUser userWithWrongLaunchId = createUserWithMatchingHsaIdButWrongLaunchId();
-        Session session = createSession(ENCODED_SESSION_ID, userWithWrongLaunchId);
-
-        when(sessionRepository.findById(LAUNCH_ID)).thenReturn(session);
-
-        launchIdService.invalidateSessionIfActive(getInvalidateRequest());
-
-        verify(sessionRepository, never()).deleteById(anyString());
-    }
-
-    @Test
     public void sessionShouldNotBeRemovedWhenHsaIdDoesNotMatch() {
-        WebCertUser userWithWrongHsaId = createUserWithMatchingHsaIdButWrongHsaId();
+        WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
+
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
 
         when(sessionRepository.findById(LAUNCH_ID)).thenReturn(session);
@@ -104,7 +93,7 @@ public class InvalidateSessionServiceImplTest {
 
     @Test
     public void sessionShouldNotBeRemovedWhenLaunchIdIsNotPresentInRedis() {
-        WebCertUser userWithWrongHsaId = createUserWithMatchingHsaIdButWrongHsaId();
+        WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
 
         when(sessionRepository.findById(LAUNCH_ID)).thenReturn(session);
@@ -117,7 +106,7 @@ public class InvalidateSessionServiceImplTest {
 
     @Test
     public void sessionShouldNotBeRemovedWhenSessionIsNotPresentInRedis() {
-        WebCertUser userWithWrongHsaId = createUserWithMatchingHsaIdButWrongHsaId();
+        WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
 
         when(sessionRepository.findById(LAUNCH_ID)).thenReturn(null);
@@ -151,7 +140,7 @@ public class InvalidateSessionServiceImplTest {
         return user;
     }
 
-    private WebCertUser createUserWithMatchingHsaIdButWrongHsaId() {
+    private WebCertUser createUserWithMatchingLaunchIdButWrongHsaId() {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, "", null, null, null, null,
             null, null, false, false, false, false, LAUNCH_ID));
