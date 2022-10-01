@@ -24,7 +24,6 @@ dependencies {
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
 
-    compile "org.apache.activemq:activemq-camel"
     compile "org.apache.camel:camel-activemq:${camelVersion}"
     compile "org.apache.camel:camel-core:${camelVersion}"
     compile "org.apache.camel:camel-cxf-spring-soap:${camelVersion}"
