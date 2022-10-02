@@ -45,7 +45,11 @@
 
   // Cancel any logout requests if one exists
   window.onload = function() {
-    $.get('/api/anvandare/logout/cancel');
+    if (window.sessionStorage.getItem('launchId')) {
+      $.get(getRequestWithLaunchIdHeader('/api/anvandare/logout/cancel', window));
+    } else {
+      $.get('/api/anvandare/logout/cancel');
+    }
   };
 
   // before we do anything.. we need to get the user and moduleConfig
@@ -151,6 +155,17 @@
       return null;
     });
   }
+  
+  app.factory('launchIdInterceptor', function($window){
+    return {
+      request: function(config) {
+        if ($window.sessionStorage.getItem('launchId')) {
+          config.headers.launchId = $window.sessionStorage.getItem('launchId');
+        }
+        return config;
+      }
+    };
+  });
 
   app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider',
     '$animateProvider', '$uibTooltipProvider', '$stateProvider',
@@ -167,7 +182,7 @@
 
       // Add cache buster interceptor
       $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
-
+      $httpProvider.interceptors.push('launchIdInterceptor');
       // Configure 403 interceptor provider
       http403ResponseInterceptorProvider.setRedirectUrl('/new-error.jsp');
       $httpProvider.interceptors.push('common.http403ResponseInterceptor');
@@ -255,7 +270,7 @@
     'common.moduleService', 'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
     'idpConnectivityService', 'moduleConfig', 'common.subscriptionService',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, $stateParams, messageService, moduleService,
-             UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig, subscriptionService) {
+        UserModel, wcMessages, MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig, subscriptionService) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
@@ -410,10 +425,18 @@
 
       $window.onbeforeunload = function(event) {
         if (user && user.origin === 'DJUPINTEGRATION' && $stateParams && !$stateParams.signServiceSubmit) {
-          $.get('/api/anvandare/logout');
+          if ($window.sessionStorage.getItem('launchId')) {
+            $.get(getRequestWithLaunchIdHeader('/api/anvandare/logout', $window));
+          } else {
+            $.get('/api/anvandare/logout');
+          }
         }
       };
     }]);
+  
+  function getRequestWithLaunchIdHeader(url, $window){
+    return {headers: {'launchId': $window.sessionStorage.getItem('launchId')}, url: url};
+  }
 
   // We need to have the moduleConfig available before loading modules
   getModuleConfig().then(function(data) {
@@ -421,7 +444,11 @@
     // Get a list of all modules to find all files to load.
     getUser().then(function(data) {
       user = data;
-
+      if (user && user.parameters && user.parameters.launchId) {
+        if (!sessionStorage.getItem('launchId')) {
+          sessionStorage.launchId = user.parameters.launchId;
+        }
+      }
       getDynamicLinks().then(function(links) {
         _links = links;
 

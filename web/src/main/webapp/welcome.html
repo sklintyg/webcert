@@ -406,7 +406,8 @@
               sjf: true,
               kopieringOK: true,
               ref: '',
-              enhet: undefined
+              enhet: undefined,
+              launchId: ""
           },
           excludedFields: {
               fornamn: false,
@@ -683,6 +684,7 @@
             <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="deeplink.formData.ref" placeholder="Ref"><br>
             <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="deeplink.formData.enhet" placeholder="enhetsid"><br>
             <label for="responsibleHospName" class="control-label">responsibleHospName:</label> <input type="text" class="form-control" size="20" id="responsibleHospName" ng-model="deeplink.formData.responsibleHospName" placeholder="responsibleHospName"><br>
+            <label for="launchId" class="control-label">launchId:</label> <input type="text" class="form-control" size="20" id="launchId" ng-model="deeplink.formData.launchId" placeholder="launchId"><br>
             <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="deeplink.formData.sjf"> <br>
             <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="deeplink.formData.kopieringOK"> <br>
             <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="deeplink.formData.avliden"> <br>
