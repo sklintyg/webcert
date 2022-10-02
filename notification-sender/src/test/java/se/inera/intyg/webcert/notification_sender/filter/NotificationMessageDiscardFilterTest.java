@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultMessage;
+import org.apache.camel.support.DefaultMessage;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,9 +47,9 @@ import se.inera.intyg.webcert.notification_sender.notifications.filter.Notificat
  */
 public class NotificationMessageDiscardFilterTest {
 
-    private ObjectMapper om = new CustomObjectMapper();
-    private NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
-    private CamelContext camelContext = new DefaultCamelContext();
+    private final ObjectMapper om = new CustomObjectMapper();
+    private final NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
+    private final CamelContext camelContext = new DefaultCamelContext();
 
     @Test
     public void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {

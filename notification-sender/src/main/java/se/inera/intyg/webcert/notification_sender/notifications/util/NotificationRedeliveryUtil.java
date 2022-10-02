@@ -54,10 +54,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 public final class NotificationRedeliveryUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryUtil.class);
-
-
-    protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
+    private static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
 
     private NotificationRedeliveryUtil() { }
 

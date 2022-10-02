@@ -25,10 +25,6 @@ import se.inera.intyg.common.support.facade.model.value.*;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.*;
 
 @Component
 public class CreateCertificateValuesTestabilityUtil {

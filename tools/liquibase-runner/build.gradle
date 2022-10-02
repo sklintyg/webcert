@@ -1,24 +1,25 @@
 apply plugin: 'application'
 
-mainClassName = "liquibase.integration.commandline.Main"
-applicationDefaultJvmArgs = ["-Dfile.encoding=utf8"]
+mainClassName = "liquibase.integration.commandline.LiquibaseCommandLine"
+applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dliquibase.headless=true"]
 
 startScripts {
     doLast {
         def persistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
         def originalScript = unixScript.text
-        unixScript.text = unixScript.text.replaceAll(/save \"\$@\"/,
-            'save --driver=com.mysql.cj.jdbc.Driver --classpath=lib/' + persistenceDependency + ' --changeLogFile=changelog/changelog.xml "\\$@"')
-        if (originalScript.equals(unixScript.text)) {
-                throw new RuntimeException("No replacement seems to have been made to the liquibase script.")
+        unixScript.text = unixScript.text.replaceAll(/\s\s"\$@"\n/, '  --driver=com.mysql.cj.jdbc.Driver --classpath=lib/'
+                + persistenceDependency + ' --changeLogFile=changelog/changelog.xml --logLevel=info "\\$@"')
+        if (originalScript == unixScript.text) {
+            throw new RuntimeException("No replacement seems to have been made to the liquibase script.")
         }
 
         def originalWindowsScript = windowsScript.text
-        windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
-            "--driver=com.mysql.cj.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
-        if (originalWindowsScript.equals(windowsScript.text)) {
-                throw new RuntimeException("No replacement seems to have been made to the windows liquibase script.")
+        windowsScript.text = windowsScript.text.replaceAll(/\.LiquibaseCommandLine/, ".LiquibaseCommandLine "
+                + "--driver=com.mysql.cj.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml "
+                + "--logLevel=info")
+        if (originalWindowsScript == windowsScript.text) {
+            throw new RuntimeException("No replacement seems to have been made to the windows liquibase script.")
         }
     }
 }
@@ -37,9 +38,12 @@ sonarqube {
     skipProject = true
 }
 
-dependencies {
-    runtime project(':webcert-persistence')
+def liquibaseVersion = dependencyManagement.managedVersions['org.liquibase:liquibase-core']
 
+dependencies {
+    compile "info.picocli:picocli:${picocliVersion}"
     runtime "mysql:mysql-connector-java"
     runtime "org.liquibase:liquibase-core"
+    runtime "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
+    runtime project(':webcert-persistence')
 }

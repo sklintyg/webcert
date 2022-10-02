@@ -20,9 +20,11 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -237,7 +239,7 @@ public class IntygServiceTest {
         vardpersonReferens.setHsaId(HSA_ID);
         vardpersonReferens.setNamn(CREATED_BY_NAME);
 
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         CertificateMetaData metaData = new CertificateMetaData();
@@ -284,7 +286,7 @@ public class IntygServiceTest {
     @Before
     public void IntygServiceConverter() throws Exception {
         when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenAnswer((invocation) -> invocation.getArgument(0));

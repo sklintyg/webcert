@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.certificatesender.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
@@ -26,33 +27,26 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.camel.test.spring.junit5.CamelSpringTest;
+import org.apache.camel.test.spring.junit5.MockEndpointsAndSkip;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.google.common.collect.ImmutableMap;
 
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.CertificateCamelTestConfig;
 
-@RunWith(CamelSpringRunner.class)
-@ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
-@BootstrapWith(CamelTestContextBootstrapper.class)
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class}) // Suppresses warning
+@CamelSpringTest
+@ContextConfiguration(classes = CertificateCamelTestConfig.class)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|bean:sendMessageToRecipientProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 public class RouteTest {
 
@@ -61,36 +55,29 @@ public class RouteTest {
     @Autowired
     CamelContext camelContext;
 
-    @Produce(uri = "direct://receiveCertificateTransferEndpoint")
+    @Produce("direct://receiveCertificateTransferEndpoint")
     protected ProducerTemplate producerTemplate;
 
-    @EndpointInject(uri = "mock:bean:certificateStoreProcessor")
+    @EndpointInject("mock:bean:certificateStoreProcessor")
     protected MockEndpoint storeProcessor;
 
-    @EndpointInject(uri = "mock:bean:certificateSendProcessor")
+    @EndpointInject("mock:bean:certificateSendProcessor")
     protected MockEndpoint sendProcessor;
 
-    @EndpointInject(uri = "mock:bean:certificateRevokeProcessor")
+    @EndpointInject("mock:bean:certificateRevokeProcessor")
     protected MockEndpoint revokeProcessor;
 
-    @EndpointInject(uri = "mock:bean:sendMessageToRecipientProcessor")
+    @EndpointInject("mock:bean:sendMessageToRecipientProcessor")
     protected MockEndpoint sendMessageProcessor;
 
-    @EndpointInject(uri = "mock:direct:certPermanentErrorHandlerEndpoint")
+    @EndpointInject("mock:direct:certPermanentErrorHandlerEndpoint")
     protected MockEndpoint permanentErrorHandlerEndpoint;
 
-    @EndpointInject(uri = "mock:direct:certTemporaryErrorHandlerEndpoint")
+    @EndpointInject("mock:direct:certTemporaryErrorHandlerEndpoint")
     protected MockEndpoint temporaryErrorHandlerEndpoint;
 
-    @Before
-    public void setup() {
-        MockEndpoint.resetMocks(camelContext);
-    }
-
     @Test
-    @DirtiesContext
     public void testNormalStoreRoute() throws InterruptedException {
-        // Given
         storeProcessor.expectedMessageCount(1);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -98,10 +85,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -112,7 +97,6 @@ public class RouteTest {
 
     @Test
     public void testNormalSendRoute() throws InterruptedException {
-        // Given
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(1);
         revokeProcessor.expectedMessageCount(0);
@@ -120,10 +104,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -134,7 +116,6 @@ public class RouteTest {
 
     @Test
     public void testNormalRevokeRoute() throws InterruptedException {
-        // Given
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(1);
@@ -142,10 +123,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -154,10 +133,9 @@ public class RouteTest {
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
 
-    @Ignore("This test is unstable, INTYGFV-12301")
+    @Disabled("This test is unstable, INTYGFV-12301")
     @Test
     public void testNormalSendMessageRoute() throws InterruptedException {
-        // Given
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -165,10 +143,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -179,7 +155,6 @@ public class RouteTest {
 
     @Test
     public void testUnknownMessageType() throws InterruptedException {
-        // Given
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -187,10 +162,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, "non-existant"));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -201,7 +174,6 @@ public class RouteTest {
 
     @Test
     public void testPermanentException() throws InterruptedException {
-        // Given
         sendProcessor.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("");
         });
@@ -213,10 +185,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -225,9 +195,8 @@ public class RouteTest {
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testTemporaryException() throws InterruptedException {
-        // Given
         revokeProcessor.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("");
         });
@@ -239,10 +208,9 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
-        // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
+        assertThrows(CamelExecutionException.class, () ->
+            producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE)));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
@@ -253,7 +221,6 @@ public class RouteTest {
 
     @Test
     public void testUnexpectedException() throws InterruptedException {
-        // Given
         storeProcessor.whenAnyExchangeReceived(exchange -> {
             throw new IllegalArgumentException();
         });
@@ -265,10 +232,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
-        // When
         producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
 
-        // Then
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);

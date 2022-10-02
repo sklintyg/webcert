@@ -27,14 +27,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -96,7 +96,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Override
     @Before
     public void setupMocks() throws Exception {
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);

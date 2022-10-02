@@ -37,7 +37,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -140,10 +139,6 @@ public class Utkast {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime aterkalladDatum;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Signatur signatur;
-
     @Column(name = "RELATION_INTYG_ID")
     private String relationIntygsId;
 
@@ -157,6 +152,9 @@ public class Utkast {
 
     @Column(name = "TEST_INTYG", columnDefinition = "TINYINT(1)")
     private Boolean isTestIntyg = Boolean.FALSE;
+
+    @OneToOne(mappedBy = "utkast", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Signatur signatur;
 
     @PrePersist
     void onPrePersist() {

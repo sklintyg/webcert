@@ -24,9 +24,9 @@ import javax.xml.namespace.QName;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
-import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PQType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 
-public class NotificationRouteBuilder extends SpringRouteBuilder {
+public class NotificationRouteBuilder extends RouteBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
@@ -125,7 +125,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .log(LoggingLevel.ERROR, LOG,
                 simple("Permanent exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}"
                     + ", with message: ${exception.message}\n ${exception.stacktrace}")
-                    .getText())
+                    .toString())
             .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
@@ -134,11 +134,11 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             .log(LoggingLevel.ERROR, LOG,
                 simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
                     + "with message: ${exception.message}\n ${exception.stacktrace}")
-                    .getText())
+                    .toString())
             .otherwise()
             .log(LoggingLevel.WARN, LOG,
                 simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
-                    + "with message: ${exception.message}").getText())
+                    + "with message: ${exception.message}").toString())
             .stop();
     }
 
@@ -160,8 +160,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         JaxbDataFormat jaxbMessageDataFormatV3 = new JaxbDataFormat(
             JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class,
                 XPathType.class, PQType.class));
-        jaxbMessageDataFormatV3.setPartClass(
-            "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
+        jaxbMessageDataFormatV3.setPartClass(CertificateStatusUpdateForCareType.class);
         jaxbMessageDataFormatV3
             .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3",
                 "CertificateStatusUpdateForCare"));

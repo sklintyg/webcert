@@ -30,12 +30,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,7 +76,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Before
     public void setupIntyg() throws Exception {
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
@@ -118,7 +118,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
 
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
@@ -136,11 +136,9 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntygFailsForReplacedCertificate() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
         WebCertUser webCertUser = createUser();
 
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         utlatande.getGrundData().setRelation(new Relation());
         utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
@@ -168,11 +166,9 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
         WebCertUser webCertUser = createUser();
 
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         utlatande.getGrundData().setRelation(new Relation());
         utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);

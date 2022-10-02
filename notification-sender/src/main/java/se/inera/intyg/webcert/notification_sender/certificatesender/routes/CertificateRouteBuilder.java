@@ -19,14 +19,14 @@
 package se.inera.intyg.webcert.notification_sender.certificatesender.routes;
 
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.spring.SpringRouteBuilder;
+import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
-public class CertificateRouteBuilder extends SpringRouteBuilder {
+public class CertificateRouteBuilder extends RouteBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateRouteBuilder.class);
 
@@ -54,7 +54,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
             throw new IllegalArgumentException(
                 "Cannot build certificate route, supplied message delay could not be parsed: " + e.getMessage());
         }
-        errorHandler(transactionErrorHandler().logExhausted(false));
+        errorHandler(defaultErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
             .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
@@ -73,13 +73,13 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
             .to("bean:registerApprovedReceiversProcessor").stop()
 
             .otherwise()
-            .log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
+            .log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").toString()).stop();
 
         from("direct:certPermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
             .log(LoggingLevel.ERROR, LOG,
                 simple("Permanent exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
                     + "with message: ${exception.message}\n ${exception.stacktrace}")
-                    .getText())
+                    .toString())
             .stop();
 
         from("direct:certTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
@@ -88,11 +88,11 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
             .log(LoggingLevel.ERROR, LOG,
                 simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
                     + "with message: ${exception.message}\n ${exception.stacktrace}")
-                    .getText())
+                    .toString())
             .otherwise()
             .log(LoggingLevel.WARN, LOG,
                 simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
-                    + "with message: ${exception.message}").getText())
+                    + "with message: ${exception.message}").toString())
             .stop();
     }
 

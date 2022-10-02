@@ -20,16 +20,14 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
 
     <jms:annotation-driven/>
 
-    <bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <bean id="jms" class="org.apache.camel.component.activemq.ActiveMQComponent">
         <property name="configuration" ref="jmsConfig"/>
         <property name="transacted" value="true"/>
         <property name="cacheLevelName" value="CACHE_CONSUMER"/>
