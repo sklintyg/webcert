@@ -341,6 +341,15 @@
         <url-pattern>/moduleapi/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>allowCorsFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>allowCorsFilter</filter-name>
+        <url-pattern>/api/v1/session/invalidate</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>boot-app.jsp</welcome-file>
 
