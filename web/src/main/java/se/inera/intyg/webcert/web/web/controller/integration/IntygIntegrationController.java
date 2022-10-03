@@ -20,12 +20,12 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.itextpdf.xmp.impl.Base64;
 import io.swagger.annotations.Api;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -234,7 +234,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("{certId}/saved")
     @PrometheusTimeMethod
-    public Response getRedirectToIntyg(@Context UriInfo uriInfo,
+    public Response getRedirectToIntyg(@Context HttpServletRequest request,
+        @Context UriInfo uriInfo,
         @PathParam(PARAM_CERT_ID) String intygId,
         @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
@@ -250,6 +251,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         // validate the request
         validateRequest(params);
+
+        cacheExistingLaunchIdForSession(user.getParameters().getLaunchId(), request.getSession().getId());
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
@@ -289,11 +292,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        if (user.getParameters().getLaunchId() != null) {
-            redisCacheLaunchId.put(launchId, Base64.encode(request.getSession().getId()));
-            LOG.info(String.format("launchId was successfully added to the session. launchId stored in session is: %s",
-                user.getParameters().getLaunchId()));
-        }
+        cacheExistingLaunchIdForSession(user.getParameters().getLaunchId(), request.getSession().getId());
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
@@ -527,6 +526,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 String.format("Provided launchId was not correct format: %s. LaunchId should be of type GUID", launchId));
         }
         return true;
+    }
+
+    private void cacheExistingLaunchIdForSession(String launchId, String sessionId) {
+        if (launchId != null) {
+            redisCacheLaunchId.put(launchId, Base64.getEncoder().encodeToString(sessionId.getBytes()));
+            LOG.info(String.format("launchId was successfully added to the session. launchId stored in session is: %s", launchId));
+        }
     }
 }
 

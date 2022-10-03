@@ -56,6 +56,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 public class WebcertAuthenticationSuccessHandlerTest {
 
     private static final String PNR = "20121212-1212";
+    private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private static final String URL = "/visa/intyg/intyg-123";
 
     @Mock
@@ -140,10 +141,27 @@ public class WebcertAuthenticationSuccessHandlerTest {
         verifyNoInteractions(redirectStrategy);
     }
 
+    @Test
+    public void shallIncludeLaunchIdIfExists() throws ServletException, IOException {
+        when(savedRequest.getMethod()).thenReturn("POST");
+        when(savedRequest.getRequestURI()).thenReturn(URL);
+        when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+        when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
+
+        testee.onAuthenticationSuccess(req, resp, auth);
+        verify(redirectStrategy, times(1)).sendRedirect(any(HttpServletRequest.class), any(HttpServletResponse.class), eq(URL + "/saved"));
+
+        ArgumentCaptor<IntegrationParameters> captor = ArgumentCaptor.forClass(IntegrationParameters.class);
+        verify(user).setParameters(captor.capture());
+
+        assertEquals(LAUNCH_ID, captor.getValue().getLaunchId());
+    }
+
     private Map<String, String[]> buildParameterMap() {
         Map<String, String[]> map = new HashMap<>();
         map.put(IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN, new String[]{PNR});
         map.put(IntygIntegrationController.PARAM_PATIENT_DECEASED, new String[]{"true"});
+        map.put(IntygIntegrationController.PARAM_LAUNCH_ID, new String[]{LAUNCH_ID});
         return map;
     }
 }
