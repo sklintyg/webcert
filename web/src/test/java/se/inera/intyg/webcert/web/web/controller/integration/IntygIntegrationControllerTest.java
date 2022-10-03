@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +86,7 @@ public class IntygIntegrationControllerTest {
     private static final String INTYGSID = "A1234-B5678-C90123-D4567";
     private static final String ENHETSID = "11111";
     private static final String LAUNCHID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+    private static final String SESSION_ID = "12345";
     private UriInfo uriInfo;
 
     @Mock
@@ -109,7 +111,8 @@ public class IntygIntegrationControllerTest {
     private ReactPilotUtil reactPilotUtil;
 
     @Mock
-    private @Context HttpServletRequest httpServletRequest;
+    private @Context
+    HttpServletRequest httpServletRequest;
 
     @Mock
     private Cache redisCacheLaunchId;
@@ -197,7 +200,7 @@ public class IntygIntegrationControllerTest {
         assertThrows(
             IllegalStateException.class,
             () -> {
-                intygIntegrationController.getRedirectToIntyg(null, INTYGSID, null);
+                intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null);
             },
             "Expected getRedirectToIntyg() to throw, but it didn't"
         );
@@ -311,17 +314,14 @@ public class IntygIntegrationControllerTest {
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
             this.user = createDefaultUser();
             when(webCertUserService.getUser()).thenReturn(user);
+
+            final var session = mock(HttpSession.class);
+            when(httpServletRequest.getSession()).thenReturn(session);
+            when(httpServletRequest.getSession().getId()).thenReturn("12345");
         }
 
         @Nested
         class PostiviteLaunchIdVerification {
-
-            @BeforeEach
-            public void setup() {
-                HttpSession session = mock(HttpSession.class);
-                when(httpServletRequest.getSession()).thenReturn(session);
-                when(httpServletRequest.getSession().getId()).thenReturn("12345");
-            }
 
             @Test
             public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
@@ -385,6 +385,41 @@ public class IntygIntegrationControllerTest {
     }
 
     @Nested
+    class LaunchIdSavedRequestVerification {
+
+        private WebCertUser user;
+
+        @BeforeEach
+        public void setup() {
+            uriInfo = mock(UriInfo.class);
+            final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
+
+            when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+
+            when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+                .thenReturn(createPrepareRedirectToIntyg());
+            when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+            this.user = createDefaultUserWithIntegrationParametersAndLaunchId1();
+            when(webCertUserService.getUser()).thenReturn(user);
+
+            final var session = mock(HttpSession.class);
+            when(httpServletRequest.getSession()).thenReturn(session);
+            when(httpServletRequest.getSession().getId()).thenReturn(SESSION_ID);
+        }
+
+        @Nested
+        class PostiviteLaunchIdVerification {
+
+            @Test
+            public void assertThatRedisAddsLaunchIdToCache() {
+                intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+
+                verify(redisCacheLaunchId).put(LAUNCHID, Base64.getEncoder().encodeToString(SESSION_ID.getBytes()));
+            }
+        }
+    }
+
+    @Nested
     class RedirectToCertificateReact {
 
         @BeforeEach
@@ -403,6 +438,10 @@ public class IntygIntegrationControllerTest {
 
             ReflectionTestUtils.setField(reactUriFactory, "hostReactClient", "wc2.wc.localtest.me");
             ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
+
+            final var session = mock(HttpSession.class);
+            when(httpServletRequest.getSession()).thenReturn(session);
+            when(httpServletRequest.getSession().getId()).thenReturn("12345");
         }
 
         @Test
@@ -413,7 +452,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
         }
@@ -426,7 +465,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
             assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
             assertEquals("https://wc2.wc.localtest.me/certificate/" + INTYGSID,
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
@@ -440,7 +479,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals("https://wc2.wc.localtest.me/certificate/" + INTYGSID,
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
@@ -463,6 +502,10 @@ public class IntygIntegrationControllerTest {
             intygIntegrationController.setUrlBaseTemplate("/");
             intygIntegrationController.setUrlIntygFragmentTemplate("/intyg/{certType}/{certTypeVersion}/{certId}/");
             intygIntegrationController.setUrlUtkastFragmentTemplate("/{certType}/{certTypeVersion}/edit/{certId}/");
+
+            final var session = mock(HttpSession.class);
+            when(httpServletRequest.getSession()).thenReturn(session);
+            when(httpServletRequest.getSession().getId()).thenReturn("12345");
         }
 
         @Test
@@ -473,7 +516,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
         }
@@ -486,7 +529,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals("https://wc.localtest.me/#/" + INTYGSTYP + "/" + INTYGSTYPVERSION + "/edit/" + INTYGSID + "/",
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
@@ -500,7 +543,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals("https://wc.localtest.me/#/" + INTYGSTYP + "/" + INTYGSTYPVERSION + "/edit/" + INTYGSID + "/",
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
@@ -513,7 +556,7 @@ public class IntygIntegrationControllerTest {
             when(webCertUserService.getUser()).thenReturn(user);
             when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.emptyMap());
 
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(uriInfo, INTYGSID, ENHETSID);
+            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
             assertEquals("https://wc.localtest.me/#/" + INTYGSTYP + "/" + INTYGSTYPVERSION + "/edit/" + INTYGSID + "/",
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
