@@ -24,6 +24,7 @@ import io.swagger.annotations.Api;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
@@ -530,7 +531,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private void cacheExistingLaunchIdForSession(String launchId, String sessionId) {
         if (launchId != null) {
-            redisCacheLaunchId.put(launchId, Base64.getEncoder().encodeToString(sessionId.getBytes()));
+            redisCacheLaunchId.put(launchId, Base64.getEncoder().encodeToString(sessionId.getBytes(StandardCharsets.UTF_8)));
             LOG.info(String.format("launchId was successfully added to the session. launchId stored in session is: %s", launchId));
         }
     }
