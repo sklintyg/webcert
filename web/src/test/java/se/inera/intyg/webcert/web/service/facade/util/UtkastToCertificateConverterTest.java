@@ -51,6 +51,7 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -81,6 +82,9 @@ public class UtkastToCertificateConverterTest {
     @Mock
     private HsatkOrganizationService hsatkOrganizationService;
 
+    @Mock
+    private TypeAheadProvider typeAheadProvider;
+
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
 
@@ -100,7 +104,7 @@ public class UtkastToCertificateConverterTest {
             .when(moduleRegistry).getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
 
         doReturn(createCertificate())
-            .when(moduleApi).getCertificateFromJson(draft.getModel());
+            .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
 
         doReturn(certificateRelations)
             .when(certificateRelationsConverter).convert(draft.getIntygsId());

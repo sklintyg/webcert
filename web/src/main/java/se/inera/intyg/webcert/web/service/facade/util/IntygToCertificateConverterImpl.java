@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
@@ -53,17 +54,21 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final HsatkOrganizationService hsatkOrganizationService;
 
+    private final TypeAheadProvider typeAheadProvider;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
-        HsatkOrganizationService hsatkOrganizationService) {
+        HsatkOrganizationService hsatkOrganizationService,
+        TypeAheadProvider typeAheadProvider) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.hsatkOrganizationService = hsatkOrganizationService;
+        this.typeAheadProvider = typeAheadProvider;
     }
 
     @Override
@@ -148,7 +153,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             LOG.debug("Retrieving ModuleAPI for type '{}' version '{}'", certificateType, certificateTypeVersion);
             final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
             LOG.debug("Retrieving Certificate from Json");
-            return moduleApi.getCertificateFromJson(jsonModel);
+            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
