@@ -155,7 +155,12 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private ListFilterConfig getSignedByFilter(String unit) {
         final var savedByList = getStaffInfoFacadeService.get(unit);
-        final var defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
+        final String defaultValue;
+        if (webCertUserService.getUser().isLakare()) {
+            defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
+        } else {
+            defaultValue = "SHOW_ALL";
+        }
         return ListFilterConfigFactory.createStaffSelect("SIGNED_BY", "Signerat av", savedByList, defaultValue);
     }
 
