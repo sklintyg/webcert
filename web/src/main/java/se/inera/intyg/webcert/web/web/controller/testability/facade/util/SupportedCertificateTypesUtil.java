@@ -25,6 +25,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
@@ -61,6 +62,16 @@ public class SupportedCertificateTypesUtil {
                 Ag7804EntryPoint.MODULE_ID,
                 Ag7804EntryPoint.MODULE_NAME,
                 Arrays.asList("1.0", "1.1", "1.2"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+        certificateTypes.add(
+            new CertificateType(
+                DbModuleEntryPoint.ISSUER_TYPE_ID,
+                DbModuleEntryPoint.MODULE_ID,
+                DbModuleEntryPoint.MODULE_NAME,
+                Collections.singletonList("1.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
