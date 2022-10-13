@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.List;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 public class CertificateTypeInfoDTO {
     private String id;

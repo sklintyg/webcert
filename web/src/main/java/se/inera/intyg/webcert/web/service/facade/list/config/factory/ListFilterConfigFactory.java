@@ -115,7 +115,7 @@ public class ListFilterConfigFactory {
                 (info) -> convertStaffInfoIntoSelectFilter(info, defaultHsaId)).collect(Collectors.toList()
         );
         convertedSavedByList.add(0, ListFilterConfigValue.create(
-                "SHOW_ALL", "Visa alla", false)
+                "SHOW_ALL", "Visa alla", defaultHsaId.equals("SHOW_ALL"))
         );
         return new ListFilterSelectConfig(id, title, convertedSavedByList, true);
     }

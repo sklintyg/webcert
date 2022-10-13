@@ -68,6 +68,13 @@
       <wc-footer/>
     </c:when>
 
+    <c:when test="${param.reason eq 'invalid-launchid'}">
+      <div class="webcert-workarea-page container-fluid index-vy">
+        <wc-error error="'error.launchId.text'"></wc-error>
+      </div>
+      <wc-footer />
+    </c:when>
+
   </c:choose>
 
   <c:choose>

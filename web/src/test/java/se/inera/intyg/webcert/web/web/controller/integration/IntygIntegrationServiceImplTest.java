@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +46,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -43,17 +68,6 @@ import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Magnus Ekstrand on 2017-10-13.
@@ -113,7 +127,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -141,7 +155,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -171,7 +185,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -199,7 +213,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, null);
 
         Privilege p = createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
@@ -233,7 +247,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            true, false, false, false);
+            true, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -255,7 +269,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            true, false, false, false);
+            true, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -277,7 +291,7 @@ public class IntygIntegrationServiceImplTest {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -293,7 +307,7 @@ public class IntygIntegrationServiceImplTest {
     public void ensureDraftPatientInfoUpdated() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             null, null, null, null, null, null,
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -307,7 +321,7 @@ public class IntygIntegrationServiceImplTest {
     public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsEmptyString() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, "",
             null, null, null, null, null, null,
-            false, false, false, false);
+            false, false, false, false, null);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);

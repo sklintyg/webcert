@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
@@ -47,21 +47,17 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.impl.DefaultMessage;
-import org.apache.camel.test.spring.CamelSpringRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.apache.camel.test.spring.MockEndpoints;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.apache.camel.support.DefaultExchange;
+import org.apache.camel.support.DefaultMessage;
+import org.apache.camel.test.spring.junit5.CamelSpringTest;
+import org.apache.camel.test.spring.junit5.MockEndpoints;
+import org.apache.camel.test.spring.junit5.MockEndpointsAndSkip;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -74,15 +70,15 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
+import se.inera.intyg.webcert.notification_sender.notifications.testconfig.NotificationCamelTestConfig;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 
-@RunWith(CamelSpringRunner.class)
-@BootstrapWith(CamelTestContextBootstrapper.class)
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-@ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
+@CamelSpringTest
+@ContextConfiguration(classes = NotificationCamelTestConfig.class)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @MockEndpoints("bean:notificationAggregator|direct:signatWireTap")
 @MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSSender|bean:notificationPostProcessor|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class NotificationRouteTest {
@@ -90,31 +86,31 @@ public class NotificationRouteTest {
     @Autowired
     private CamelContext camelContext;
 
-    @Produce(uri = "direct:receiveNotificationForAggregationRequestEndpoint")
+    @Produce("direct:receiveNotificationForAggregationRequestEndpoint")
     protected ProducerTemplate producerTemplateAggregation;
 
-    @EndpointInject(uri = "mock:direct:signatWireTap")
+    @EndpointInject("mock:direct:signatWireTap")
     protected MockEndpoint signatWireTap;
 
-    @EndpointInject(uri = "mock:bean:notificationAggregator")
+    @EndpointInject("mock:bean:notificationAggregator")
     protected MockEndpoint notificationAggregator;
 
-    @EndpointInject(uri = "mock:bean:notificationTransformer")
+    @EndpointInject("mock:bean:notificationTransformer")
     protected MockEndpoint notificationTransformer;
 
-    @EndpointInject(uri = "mock:bean:notificationWSSender")
+    @EndpointInject("mock:bean:notificationWSSender")
     protected MockEndpoint notificationWSSender;
 
-    @Produce(uri = "direct:notificationPostProcessing")
+    @Produce("direct:notificationPostProcessing")
     protected ProducerTemplate producerTemplatePostProcessing;
 
-    @EndpointInject(uri = "mock:bean:notificationPostProcessor")
+    @EndpointInject("mock:bean:notificationPostProcessor")
     protected MockEndpoint notificationPostProcessor;
 
-    @EndpointInject(uri = "mock:direct:permanentErrorHandlerEndpoint")
+    @EndpointInject("mock:direct:permanentErrorHandlerEndpoint")
     protected MockEndpoint permanentErrorHandlerEndpoint;
 
-    @EndpointInject(uri = "mock:direct:temporaryErrorHandlerEndpoint")
+    @EndpointInject("mock:direct:temporaryErrorHandlerEndpoint")
     protected MockEndpoint temporaryErrorHandlerEndpoint;
 
     private final ObjectMapper objectMapper = new CustomObjectMapper();
@@ -127,14 +123,12 @@ public class NotificationRouteTest {
     private static final String ROUTE_START_ENDPOINT = "direct:receiveNotificationForAggregationRequestEndpoint";
     private static final Long ENDPOINT_REASSERT_PERIOD = 100L;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        MockEndpoint.resetMocks(camelContext);
+    @BeforeEach
+    public void setup() {
         setupMockedEndpoints();
     }
 
-    @After
+    @AfterEach
     public void finish() {
         messagesToSend.clear();
     }
@@ -261,7 +255,7 @@ public class NotificationRouteTest {
     @Test
     public void testAggregationOfChangedEvents() throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
-        setEndointReassertPeriod();
+        setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
         addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
@@ -275,7 +269,7 @@ public class NotificationRouteTest {
     @Test
     public void testAggregatorPassesOnLatestChangedEvent() throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(3, 1, 1, 1, 1, 0, 0);
-        setEndointReassertPeriod();
+        setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
         assertDifferentTimestamps();
@@ -298,7 +292,7 @@ public class NotificationRouteTest {
     @Test
     public void testRoutingForFk7263() throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(0, 0,5, 5, 5, 0, 0);
-        setEndointReassertPeriod();
+        setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SKAPAT);
         addMessageToSend(2, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
@@ -314,7 +308,7 @@ public class NotificationRouteTest {
     public void testSignEventFromDifferentCertificatIdShouldNotCancelAggregatedChangedEvents()
         throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(4, 1, 3, 3, 3, 0, 0);
-        setEndointReassertPeriod();
+        setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
         addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
@@ -330,7 +324,7 @@ public class NotificationRouteTest {
     @Test
     public void testSignEventCancelsAggregatedChangedEvents() throws JsonProcessingException, InterruptedException {
         setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
-        setEndointReassertPeriod();
+        setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
         addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
@@ -388,7 +382,7 @@ public class NotificationRouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(temporary);
     }
 
-    private void setEndointReassertPeriod() {
+    private void setEndpointReassertPeriod() {
         signatWireTap.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
         notificationAggregator.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
         notificationTransformer.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);

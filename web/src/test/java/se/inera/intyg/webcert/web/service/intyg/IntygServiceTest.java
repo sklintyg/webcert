@@ -20,9 +20,11 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -237,7 +239,7 @@ public class IntygServiceTest {
         vardpersonReferens.setHsaId(HSA_ID);
         vardpersonReferens.setNamn(CREATED_BY_NAME);
 
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         CertificateMetaData metaData = new CertificateMetaData();
@@ -271,7 +273,7 @@ public class IntygServiceTest {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(webcertUser.getHsaId()).thenReturn((HSA_ID));
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
+            .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true, null));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
     }
@@ -284,7 +286,7 @@ public class IntygServiceTest {
     @Before
     public void IntygServiceConverter() throws Exception {
         when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
-        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenAnswer((invocation) -> invocation.getArgument(0));
@@ -965,7 +967,7 @@ public class IntygServiceTest {
         setupUserAndVardgivare();
         // Set up user
         IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false,
-            false, false);
+            false, false, null);
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters()).thenReturn(parameters);
 
@@ -1384,7 +1386,7 @@ public class IntygServiceTest {
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
+            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true, null));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertFalse(intygData.isDeceased());
     }
@@ -1393,7 +1395,7 @@ public class IntygServiceTest {
     public void testDeceasedIsNotSetForDeadPatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
+            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true, null));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
             .thenReturn(buildPatient(false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);

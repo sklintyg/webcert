@@ -24,7 +24,6 @@ import se.inera.intyg.common.support.facade.model.value.*;
 import java.util.HashMap;
 import java.util.Map;
 import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.*;
-import static se.inera.intyg.common.af00213.v1.model.converter.RespConstants.OVRIGT_SVAR_ID_5;
 
 @Component
 public class CreateAf00213TestabilityUtil {

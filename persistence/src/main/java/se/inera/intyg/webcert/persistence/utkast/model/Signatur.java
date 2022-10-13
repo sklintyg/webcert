@@ -27,6 +27,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -82,6 +84,10 @@ public class Signatur {
     @Column(name = "SIGNATUR_TYP")
     @Enumerated(EnumType.STRING)
     private SignaturTyp signaturTyp;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private Utkast utkast;
 
     public Signatur() {
         // default constructor for hibernate

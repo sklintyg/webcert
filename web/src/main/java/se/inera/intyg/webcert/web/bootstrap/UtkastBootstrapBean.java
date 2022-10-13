@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.bootstrap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.StringReader;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.transaction.annotation.Transactional;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -78,6 +75,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 public class UtkastBootstrapBean {
 
     public static final Logger LOG = LoggerFactory.getLogger(UtkastBootstrapBean.class);
+
     @Autowired
     private IntygModuleRegistry registry;
     @Autowired
@@ -87,57 +85,75 @@ public class UtkastBootstrapBean {
     @Autowired
     private ArendeRepository arendeRepo;
 
-    private CustomObjectMapper mapper = new CustomObjectMapper();
-    private List<Amne> fsAmnen = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
-    private List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
-    private Random rand = new Random();
+    private final Random rand = new Random();
+    private final CustomObjectMapper mapper = new CustomObjectMapper();
+    private final List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
+    private final List<Amne> fsAmnen = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
 
     @PostConstruct
     public void init() throws IOException {
-
         for (Resource resource : getResourceListing("classpath*:module-bootstrap-certificate/*.xml")) {
-            String filename = resource.getFilename();
+            final var filename = resource.getFilename();
+
+            if (filename == null) {
+                continue;
+            }
+
             try {
-                if (filename != null) {
+                final var moduleName = filename.split("__")[0];
+                final var intygMajorTypeVersion = filename.split("\\.")[1];
+                final var utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
 
-                    String moduleName = Iterables.get(Splitter.on("__").split(Objects.requireNonNull(filename)), 0);
-                    String intygMajorTypeVersion = Iterables.get(Splitter.on(".").split(Objects.requireNonNull(filename)), 1);
+                if (utkastRepo.findById(utlatande.getId()).isPresent()) {
+                    LOG.info("Bootstrapping certificate '{}' from module {} (version {}) skipped. Already in database.", filename,
+                        moduleName, intygMajorTypeVersion);
+
+                } else {
                     LOG.info("Bootstrapping certificate '{}' from module {} (version {})", filename, moduleName, intygMajorTypeVersion);
+                    final var status = filename.contains("locked") ? UtkastStatus.DRAFT_LOCKED : UtkastStatus.SIGNED;
+                    final var draft = createUtkast(utlatande, status);
+                    addSignatureIfSignedCertificate(status, draft, utlatande);
+                    utkastRepo.save(draft);
 
-                    Utlatande utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
-
-                    if (utkastRepo.findById(utlatande.getId()).orElse(null) == null) {
-                        UtkastStatus status = UtkastStatus.SIGNED;
-                        if (filename.contains("locked")) {
-                            status = UtkastStatus.DRAFT_LOCKED;
-                        }
-                        utkastRepo.save(createUtkast(utlatande, status));
-
-                        switch (utlatande.getTyp()) {
-                            case Fk7263EntryPoint.MODULE_ID:
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false, "Test person"));
-                                break;
-                            case LuaefsEntryPoint.MODULE_ID:
-                            case LuaenaEntryPoint.MODULE_ID:
-                            case LisjpEntryPoint.MODULE_ID:
-                            case LuseEntryPoint.MODULE_ID:
-                                setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
-                                setupArende(utlatande, false, false, FrageStallare.WEBCERT);
-                                setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
-                                break;
-                            default: // SIT certificates
-                                break;
-                        }
-                    }
+                    addArendeIfFKCertificate(utlatande);
                 }
+
             } catch (ModuleException | ModuleNotFoundException | IOException e) {
                 LOG.error("Could not bootstrap {}", filename, e);
             }
         }
+    }
+
+    private void addArendeIfFKCertificate(Utlatande utlatande) {
+        if (utlatande.getTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
+            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
+            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
+            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
+            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
+            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false, "Test person"));
+        }
+
+        if (utlatande.getTyp().equals(LuaefsEntryPoint.MODULE_ID) || utlatande.getTyp().equals(LuaenaEntryPoint.MODULE_ID)
+            || utlatande.getTyp().equals(LisjpEntryPoint.MODULE_ID) || utlatande.getTyp().equals(LuseEntryPoint.MODULE_ID)) {
+            setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
+            setupArende(utlatande, false, false, FrageStallare.WEBCERT);
+            setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
+        }
+    }
+
+    private void addSignatureIfSignedCertificate(UtkastStatus status, Utkast draft, Utlatande utlatande) {
+        if (status != UtkastStatus.SIGNED) {
+            return;
+        }
+
+        final var certificateId = utlatande.getId();
+        final var signDate = utlatande.getGrundData().getSigneringsdatum();
+        final var createdBy = utlatande.getGrundData().getSkapadAv().getPersonId();
+        final var sentDate = utlatande.getGrundData().getSigneringsdatum().plusMinutes(2);
+        final var signature = new Signatur(signDate, createdBy, certificateId,"intygData","intygHash", "signatur", SignaturTyp.LEGACY);
+        draft.setSignatur(signature);
+        draft.setSkickadTillMottagare("FKASSA");
+        draft.setSkickadTillMottagareDatum(sentDate);
     }
 
     // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
@@ -145,9 +161,8 @@ public class UtkastBootstrapBean {
     private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion)
         throws ModuleException, ModuleNotFoundException, IOException {
 
-        String xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
-        Utlatande utlatande = registry.getModuleApi(moduleName, intygTypeVersion)
-            .getUtlatandeFromXml(xml);
+        final var xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
+        final var utlatande = registry.getModuleApi(moduleName, intygTypeVersion).getUtlatandeFromXml(xml);
 
         switch (moduleName) {
             case "luse":
@@ -205,7 +220,7 @@ public class UtkastBootstrapBean {
             ma.setFrageId("1");
             ma.setInstans(1);
             ma.setText("Kompletteringstext");
-            arende.setKomplettering(Arrays.asList(ma));
+            arende.setKomplettering(List.of(ma));
         }
         arende.setMeddelande("Meddelandetext\n\nblablablablabla\n\n\nArmen");
         String meddelandeId = UUID.randomUUID().toString();
@@ -261,7 +276,7 @@ public class UtkastBootstrapBean {
             Komplettering kompl1 = new Komplettering();
             kompl1.setFalt("fält");
             kompl1.setText("kompletteringstext");
-            fs.setKompletteringar(new HashSet<>(Arrays.asList(kompl1)));
+            fs.setKompletteringar(new HashSet<>(List.of(kompl1)));
         } else if (paminnelse) {
             fs.setAmne(Amne.PAMINNELSE);
         } else {
@@ -281,46 +296,40 @@ public class UtkastBootstrapBean {
     }
 
     private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JsonProcessingException {
-        Utkast utkast = new Utkast();
-        utkast.setEnhetsId(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
-        utkast.setEnhetsNamn(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        final var utkast = new Utkast();
         utkast.setIntygsId(json.getId());
         utkast.setIntygsTyp(json.getTyp());
         utkast.setIntygTypeVersion(json.getTextVersion() == null ? "1.0" : json.getTextVersion());
 
-        LocalDateTime signedDate = json.getGrundData().getSigneringsdatum();
-        if (status != UtkastStatus.SIGNED) {
-            json.getGrundData().setSigneringsdatum(null);
-        }
-        utkast.setModel(mapper.writeValueAsString(json));
-        utkast.setPatientEfternamn(json.getGrundData().getPatient().getEfternamn());
-        utkast.setPatientFornamn(json.getGrundData().getPatient().getFornamn());
-        utkast.setPatientMellannamn(json.getGrundData().getPatient().getMellannamn());
-        utkast.setPatientPersonnummer(json.getGrundData().getPatient().getPersonId());
-        utkast.setRelationIntygsId(null);
-        utkast.setRelationKod(null);
+        utkast.setEnhetsId(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        utkast.setEnhetsNamn(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+        utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
 
-        // Used for both senastSparadAv and skapadAv
-        VardpersonReferens vardRef = new VardpersonReferens();
+        final var vardRef = new VardpersonReferens();
         vardRef.setHsaId(json.getGrundData().getSkapadAv().getPersonId());
         vardRef.setNamn(json.getGrundData().getSkapadAv().getFullstandigtNamn());
         utkast.setSenastSparadAv(vardRef);
         utkast.setSkapadAv(vardRef);
-        utkast.setSkapad(signedDate.minusMinutes(2));
 
-        utkast.setStatus(status);
-        if (status == UtkastStatus.SIGNED) {
-            utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
-                json.getId(), "intygData",
-                "intygHash", "signatur", SignaturTyp.LEGACY));
-            utkast.setSkickadTillMottagare("FKASSA");
-            utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
-        }
+        utkast.setPatientEfternamn(json.getGrundData().getPatient().getEfternamn());
+        utkast.setPatientFornamn(json.getGrundData().getPatient().getFornamn());
+        utkast.setPatientMellannamn(json.getGrundData().getPatient().getMellannamn());
+        utkast.setPatientPersonnummer(json.getGrundData().getPatient().getPersonId());
+
+        final var signedDate = json.getGrundData().getSigneringsdatum();
+        utkast.setSkapad(signedDate.minusMinutes(2));
         utkast.setSenastSparadDatum(signedDate);
-        utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
-        utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
+        utkast.setModel(mapper.writeValueAsString(json));
         utkast.setVersion(1);
+        utkast.setStatus(status);
+        if (status != UtkastStatus.SIGNED) {
+            json.getGrundData().setSigneringsdatum(null);
+        }
+
         utkast.setVidarebefordrad(false);
+        utkast.setRelationIntygsId(null);
+        utkast.setRelationKod(null);
         return utkast;
     }
 

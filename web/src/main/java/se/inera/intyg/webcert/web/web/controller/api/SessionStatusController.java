@@ -54,7 +54,6 @@ public class SessionStatusController {
     public static final String SESSION_STATUS_EXTEND = "/extend";
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
 
-
     @GET
     @Path(SESSION_STATUS_PING)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

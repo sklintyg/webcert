@@ -39,6 +39,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -61,11 +62,13 @@ public class UserServiceImpl implements UserService {
         final var loggedInCareProvider = getLoggedInCareProvider(webCertUser);
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
+        final var launchId = getLaunchId(params);
 
         return User.builder()
             .hsaId(webCertUser.getHsaId())
             .name(webCertUser.getNamn())
             .role(getRole(webCertUser))
+            .launchId(launchId)
             .loggedInUnit(
                 Unit.builder()
                     .unitName(
@@ -107,6 +110,10 @@ public class UserServiceImpl implements UserService {
             .build();
     }
 
+    private static String getLaunchId(IntegrationParameters params) {
+        return (params != null && params.getLaunchId() != null) ? params.getLaunchId() : null;
+    }
+
     private List<CareProvider> getCareProviders(WebCertUser webCertUser) {
         return webCertUser.getVardgivare().stream()
             .map(vardgivare -> CareProvider.builder()
@@ -123,9 +130,9 @@ public class UserServiceImpl implements UserService {
     private boolean isMissingSubscription(WebCertUser webCertUser, String careProviderId) {
         final var subscriptionInfo = webCertUser.getSubscriptionInfo();
         return subscriptionInfo != null
-                && subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK
-                && subscriptionInfo.getCareProvidersMissingSubscription() != null
-                && subscriptionInfo.getCareProvidersMissingSubscription().contains(careProviderId);
+            && subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK
+            && subscriptionInfo.getCareProvidersMissingSubscription() != null
+            && subscriptionInfo.getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
     private List<CareUnit> getCareUnits(Vardgivare vardgivare) {

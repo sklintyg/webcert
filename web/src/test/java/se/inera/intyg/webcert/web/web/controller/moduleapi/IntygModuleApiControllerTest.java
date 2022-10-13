@@ -361,7 +361,7 @@ public class IntygModuleApiControllerTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null,
             newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-            false, false, false, true));
+            false, false, false, true, null));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
@@ -407,7 +407,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newReservnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-            postort, false, false, false, true));
+            postort, false, false, false, true, null));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
@@ -493,7 +493,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-            postort, false, false, false, true));
+            postort, false, false, false, true, null));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG);
         user.setOrigin("NORMAL");
@@ -551,7 +551,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-            postort, false, false, false, true));
+            postort, false, false, false, true, null));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
@@ -643,7 +643,7 @@ public class IntygModuleApiControllerTest {
         addFeatures(user, intygType, features);
         user.setParameters(
             new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false,
-                fornyaOk));
+                fornyaOk, null));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Collections.singletonList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

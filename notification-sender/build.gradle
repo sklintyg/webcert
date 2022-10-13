@@ -24,14 +24,15 @@ dependencies {
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
 
-    compile "org.springframework:spring-jms"
-    compile "org.apache.camel:camel-spring:${camelVersion}"
+    compile "org.apache.camel:camel-activemq:${camelVersion}"
     compile "org.apache.camel:camel-core:${camelVersion}"
-    compile "org.apache.camel:camel-cxf:${camelVersion}"
+    compile "org.apache.camel:camel-cxf-spring-soap:${camelVersion}"
+    compile "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
     compile "org.apache.camel:camel-jms:${camelVersion}"
     compile "org.apache.camel:camel-jackson:${camelVersion}"
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
-    compile "org.apache.activemq:activemq-camel"
+    compile "org.apache.camel:camel-spring:${camelVersion}"
+    compile "org.springframework:spring-jms"
 
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
 
@@ -40,7 +41,7 @@ dependencies {
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
     testCompile "org.awaitility:awaitility"
-    testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
+    testCompile "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
     testCompile "org.springframework:spring-test"
     testCompile "org.apache.activemq:activemq-spring"
     testCompile "org.springframework.data:spring-data-redis"

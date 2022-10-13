@@ -85,7 +85,7 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     }
 
     private void addUserToList(List<Lakare> staff, WebCertUser user) {
-        if (isUserMissingFromList(staff, user)) {
+        if (isUserMissingFromList(staff, user) && user.isLakare()) {
             staff.add(new Lakare(user.getHsaId(), user.getNamn()));
         }
     }

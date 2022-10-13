@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services.mock;
 
+import org.apache.camel.NamedNode;
 import org.apache.camel.Processor;
-import org.apache.camel.model.ProcessorDefinition;
-import org.apache.camel.spi.RouteContext;
+import org.apache.camel.Route;
 
 /**
  * Created by eriklupander on 2015-06-05.
@@ -28,12 +28,12 @@ import org.apache.camel.spi.RouteContext;
 public class MockTransactionPolicy implements org.apache.camel.spi.Policy {
 
     @Override
-    public void beforeWrap(RouteContext routeContext, ProcessorDefinition<?> processorDefinition) {
+    public void beforeWrap(Route route, NamedNode definition) {
 
     }
 
     @Override
-    public Processor wrap(RouteContext routeContext, Processor processor) {
+    public Processor wrap(Route route, Processor processor) {
         return null;
     }
 }
