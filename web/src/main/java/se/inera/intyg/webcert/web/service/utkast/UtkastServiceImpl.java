@@ -114,8 +114,8 @@ public class UtkastServiceImpl implements UtkastService {
     private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
-    private static final String INTYG_INDICATOR = "intyg";
-    private static final String UTKAST_INDICATOR = "utkast";
+    public static final String INTYG_INDICATOR = "intyg";
+    public static final String UTKAST_INDICATOR = "utkast";
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;

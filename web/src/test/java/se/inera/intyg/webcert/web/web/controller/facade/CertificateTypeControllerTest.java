@@ -20,9 +20,8 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -56,19 +56,15 @@ public class CertificateTypeControllerTest {
 
             doReturn(types)
                 .when(getCertificateTypesFacadeService)
-                .get(anyString());
+                .get(any(Personnummer.class));
 
-            final var response = (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("id").getEntity();
+            final var response = (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("19121212-1212").getEntity();
             assertTrue(response.contains(type));
         }
 
         @Test
         void shallReturnBadRequestOnException() throws InvalidPersonNummerException {
-            doThrow(InvalidPersonNummerException.class)
-                .when(getCertificateTypesFacadeService)
-                .get(anyString());
-
-            final var response = controller.getCertificateTypes("id");
+            final var response = controller.getCertificateTypes("19121212");
             assertEquals(400, response.getStatus());
         }
     }

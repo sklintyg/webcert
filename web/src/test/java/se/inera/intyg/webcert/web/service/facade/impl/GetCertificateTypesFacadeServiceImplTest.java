@@ -38,8 +38,8 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -62,20 +62,14 @@ class GetCertificateTypesFacadeServiceImplTest {
     private WebCertUserService webCertUserService;
     @Mock
     private IntygTextsService intygTextsService;
+    @Mock
+    private CertificateTypeMessageService certificateTypeMessageService;
 
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
-    private final static String PATIENT_ID = "191212121212";
-
-    @Nested
-    class ErrorCases {
-        @Test
-        void shallThrowExceptionForInvalidPatientId() {
-            assertThrows(InvalidPersonNummerException.class, () -> serviceUnderTest.get("xxx"),
-                    "Could not parse personnummer: xxx");
-        }
-    }
+    private final static String CERTIFICATE_TYPE = "id";
+    private final static Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     @Nested
     class CorrectCases {
@@ -103,45 +97,82 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .getUser();
 
             doReturn(Set.of(module.getId()))
-                    .when(authoritiesHelper)
-                    .getIntygstyperForPrivilege(any(), any());
-
-            types = serviceUnderTest.get(PATIENT_ID);
+                .when(authoritiesHelper)
+                .getIntygstyperForPrivilege(any(), any());
         }
 
         @Nested
         class ModuleConversion {
 
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
             @Test
             void shallConvertId() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getId(), types.get(0).getId());
             }
 
             @Test
             void shallConvertLabel() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getLabel(), types.get(0).getLabel());
             }
 
             @Test
             void shallConvertDescription() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getDescription(), types.get(0).getDescription());
             }
 
             @Test
             void shallConvertDetailedDescription() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
             }
 
             @Test
             void shallConvertIssuerTypeId() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+            }
+        }
+
+        @Nested
+        class CertificateMessages {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
+            @Test
+            void shallIncludeMessageWhenExists() {
+                final var expectedMessage = "Message for certificate type";
+                doReturn(expectedMessage).when(certificateTypeMessageService).get(CERTIFICATE_TYPE, PATIENT_ID);
+                types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(expectedMessage, types.get(0).getMessage());
+            }
+
+            @Test
+            void shallExludeMessageWhenItDoesntExists() {
+                final String expectedMessage = null;
+                doReturn(null).when(certificateTypeMessageService).get(CERTIFICATE_TYPE, PATIENT_ID);
+                types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(expectedMessage, types.get(0).getMessage());
             }
         }
 
         @Nested
         class ResourceLinks {
             @Test
-            void shallConvertResourceLinks() throws Exception {
+            void shallConvertResourceLinks() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
                         .when(intygModuleRegistry)
@@ -161,7 +192,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() throws Exception {
+            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
                         .when(intygModuleRegistry)
@@ -175,12 +206,20 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         @Nested
         class AuthorityCheck {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
             @Test
-            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() throws InvalidPersonNummerException {
+            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() {
                 final var types = serviceUnderTest.get(PATIENT_ID);
 
                 assertEquals(1, types.size());
-                assertEquals("id", types.get(0).getId());
+                assertEquals(CERTIFICATE_TYPE, types.get(0).getId());
             }
         }
     }

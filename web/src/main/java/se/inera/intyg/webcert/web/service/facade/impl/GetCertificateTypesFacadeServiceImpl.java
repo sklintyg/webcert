@@ -27,8 +27,8 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -48,6 +48,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final IntygTextsService intygTextsService;
+    private final CertificateTypeMessageService certificateTypeMessageService;
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
@@ -58,16 +59,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.intygTextsService = intygTextsService;
+        this.certificateTypeMessageService = certificateTypeMessageService;
     }
 
     @Override
-    public List<CertificateTypeInfoDTO> get(String patientId) throws InvalidPersonNummerException {
-        final var personnummer = createPnr(patientId);
-        final var certificateModuleList = getCertificateModuleList(personnummer);
-        return certificateModuleList.stream().map(this::convertModuleToTypeInfo).collect(Collectors.toList());
+    public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
+        final var certificateModuleList = getCertificateModuleList(patientId);
+        return certificateModuleList.stream().map(module -> convertModuleToTypeInfo(module, patientId)).collect(Collectors.toList());
     }
 
-    private CertificateTypeInfoDTO convertModuleToTypeInfo(IntygModuleDTO module) {
+    private CertificateTypeInfoDTO convertModuleToTypeInfo(IntygModuleDTO module, Personnummer patientId) {
         final var certificateTypeInfo = new CertificateTypeInfoDTO();
         certificateTypeInfo.setId(module.getId());
         certificateTypeInfo.setLabel(module.getLabel());
@@ -75,6 +76,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeInfo.setDetailedDescription(module.getDetailedDescription());
         certificateTypeInfo.setIssuerTypeId(module.getIssuerTypeId());
         certificateTypeInfo.setLinks(convertResourceLinks(module.getLinks()));
+        certificateTypeInfo.setMessage(certificateTypeMessageService.get(module.getId(), patientId));
         return certificateTypeInfo;
     }
 
@@ -113,10 +115,5 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
         return intygModuleDTOs;
-    }
-
-    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 }
