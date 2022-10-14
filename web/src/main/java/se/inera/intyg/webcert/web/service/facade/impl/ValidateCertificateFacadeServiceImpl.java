@@ -179,6 +179,12 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
                 return "ue-icf";
             case CATEGORY:
                 return "ue-kategori";
+            case UE_DATE:
+                return "ue-date";
+            case UE_TEXTFIELD:
+                return "ue-textfield";
+            case UE_TYPE_AHEAD:
+                return "ue-typeahead";
             default:
                 throw new RuntimeException("No conversion specified for componentType: " + componentType);
         }
