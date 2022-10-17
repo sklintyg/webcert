@@ -24,6 +24,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -34,6 +38,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -94,6 +99,41 @@ class GetCertificateResourceLinksImplTest {
 
     @Nested
     class Draft {
+
+        @Test
+        void shallIncludeWarningDeatcertificateIntegrated() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
+            when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+            verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+        }
+
+        @Test
+        void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedEdit() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+            verify(draftAccessServiceHelper, never()).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+        }
+
+        @Test
+        void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedDelete() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
+            when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
+            final var actualResourceLinks = getCertificationResourceLinks
+                .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+            verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+        }
 
         @Test
         void shallIncludeEditCertificate() {

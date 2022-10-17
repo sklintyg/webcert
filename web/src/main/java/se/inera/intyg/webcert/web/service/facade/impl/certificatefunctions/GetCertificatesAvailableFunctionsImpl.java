@@ -134,7 +134,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "</p></div>";
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
+    private static final String DB_WARNING = "Kontrollera namn och personnummer";
+    private static final String DB_WARNING_DESCRIPTION = "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
+        + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
+        + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
     private String createFromCandidateBody = "";
+
+    private static final String DB_TYPE = "db";
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
@@ -185,6 +191,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
+        if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED,
+                    DB_WARNING,
+                    DB_WARNING_DESCRIPTION,
+                    true
+                )
+            );
+        }
+
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.EDIT_CERTIFICATE,
@@ -194,7 +211,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -280,7 +297,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         if (isForwardQuestionAvailable(certificate)) {
             resourceLinks.add(
@@ -422,7 +439,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         if (isCopyCertificateAvailable(certificate)) {
             resourceLinks.add(
@@ -586,7 +603,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
     }
 
-    private ResourceLinkDTO getPrintResourceLink(Certificate certificate, ArrayList<ResourceLinkDTO> resourceLinks) {
+    private ResourceLinkDTO getPrintResourceLink(Certificate certificate) {
         if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
             return
                 ResourceLinkDTO.create(
