@@ -443,27 +443,4 @@ public class ResourceLinkHelperImplTest {
 
         assertLinks(expectedLinks, actualLinks);
     }
-
-    @Test
-    public void noValidActionsForArendeListItemWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
-
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-
-        final ArendeListItem arendeListItem = new ArendeListItem();
-        arendeListItem.setIntygTyp(intygsTyp);
-        arendeListItem.setPatientId("191212121212");
-
-        final List<ArendeListItem> arendeListItemList = Arrays.asList(arendeListItem);
-
-        resourceLinkHelper.decorateArendeWithValidActionLinks(arendeListItemList, vardenhet);
-
-        final List<ActionLink> actualLinks = arendeListItem.getLinks();
-
-        assertLinks(expectedLinks, actualLinks);
-    }
 }

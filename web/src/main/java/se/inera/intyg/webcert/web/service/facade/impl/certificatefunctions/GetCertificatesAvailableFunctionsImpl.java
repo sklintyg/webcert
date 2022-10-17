@@ -194,7 +194,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED,
+                    ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
                     DB_WARNING,
                     DB_WARNING_DESCRIPTION,
                     true
@@ -301,7 +301,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         if (isForwardQuestionAvailable(certificate)) {
             resourceLinks.add(
-                    CertificateForwardFunction.createResourceLinkForQuestionPanel()
+                CertificateForwardFunction.createResourceLinkForQuestionPanel()
             );
         }
 

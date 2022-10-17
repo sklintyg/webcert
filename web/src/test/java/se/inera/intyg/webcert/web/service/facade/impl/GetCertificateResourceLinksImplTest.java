@@ -102,35 +102,35 @@ class GetCertificateResourceLinksImplTest {
 
         @Test
         void shallIncludeWarningDeatcertificateIntegrated() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
             verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
         }
 
         @Test
         void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedEdit() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
             verify(draftAccessServiceHelper, never()).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
         }
 
         @Test
         void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedDelete() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DEATHCERTIFICATE_INTEGRATED);
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
             verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
         }

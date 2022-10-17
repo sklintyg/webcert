@@ -73,28 +73,21 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     @Nested
     class CorrectCases {
+
         private List<CertificateTypeInfoDTO> types;
         final private IntygModule module = createIntygModule();
         final private IntygModule notAllowedModule = createIntygModule("notAllowed");
 
         @BeforeEach
         void setup() throws Exception {
-            doReturn(Arrays.asList(module, notAllowedModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-
             doReturn("1.0")
-                    .when(intygTextsService)
-                    .getLatestVersion(anyString());
-
-            doNothing()
-                    .when(resourceLinkHelper)
-                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                .when(intygTextsService)
+                .getLatestVersion(anyString());
 
             final var user = mock(WebCertUser.class);
             doReturn(user)
-                    .when(webCertUserService)
-                    .getUser();
+                .when(webCertUserService)
+                .getUser();
 
             doReturn(Set.of(module.getId()))
                 .when(authoritiesHelper)
@@ -171,6 +164,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         @Nested
         class ResourceLinks {
+
             @Test
             void shallConvertResourceLinks() {
                 final var module = createIntygModule();
@@ -195,11 +189,27 @@ class GetCertificateTypesFacadeServiceImplTest {
             void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
-                        .when(intygModuleRegistry)
-                        .listAllModules();
+                    .when(intygModuleRegistry)
+                    .listAllModules();
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddCreateConfirmationResourceLinkIfCertificateIsDodsbevis() {
+                final var module = createIntygModule("db");
+                doReturn(List.of(module))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertEquals(ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION, types.get(0).getLinks().get(1).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
             }
         }
