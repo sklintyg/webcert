@@ -52,8 +52,8 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
-                                                AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-                                                IntygTextsService intygTextsService) {
+        AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
+        IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
         this.authoritiesHelper = authoritiesHelper;
@@ -82,9 +82,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
     private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links) {
         final var list = links.stream()
-                .map(this::convertResourceLink)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+            .map(this::convertResourceLink)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
         if (list.stream().noneMatch(link -> link.getType() == ResourceLinkTypeDTO.CREATE_CERTIFICATE)) {
             list.add(ResourceLinkFactory.create(false));

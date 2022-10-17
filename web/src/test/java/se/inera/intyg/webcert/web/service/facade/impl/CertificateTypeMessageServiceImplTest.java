@@ -134,4 +134,17 @@ class CertificateTypeMessageServiceImplTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    void shallReturnCertificateMessageWhenBothCertificateAndDraftMessageIsPresent() {
+        final var expectedMessage = "Det finns ett signerat dödsbevis för detta personnummer. Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.";
+
+        doReturn(Map.of(INTYG_INDICATOR, Map.of(CERTIFICATE_TYPE, PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now())),
+            UTKAST_INDICATOR, Map.of(CERTIFICATE_TYPE, PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+        final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE, PERSON_ID);
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
