@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,7 @@ class PatientConverterImplTest {
     final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
     final Personnummer ALTERNATE_PERSON_NUMMER = Personnummer.createPersonnummer(ALTERNATE_PATIENT_ID).orElseThrow();
     final String CERTIFICATE_TYPE = "certificateType";
+    final String CERTIFICATE_TYPE_DB = "db";
     final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
 
 
@@ -125,6 +127,24 @@ class PatientConverterImplTest {
             public void shallConvertPatientIdType() {
                 final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                 assertEquals("PERSON_NUMMER", patient.getPersonId().getType());
+            }
+
+            @Test
+            public void shallNotConvertPatientZipCode() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertNull(patient.getZipCode());
+            }
+
+            @Test
+            public void shallNotConvertPatientStreet() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertNull(patient.getStreet());
+            }
+
+            @Test
+            public void shallNotConvertPatientCity() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertNull(patient.getCity());
             }
         }
 
@@ -350,6 +370,34 @@ class PatientConverterImplTest {
     }
 
     @Nested
+    class PatientWithCertificateTypeDb {
+
+        @BeforeEach
+        void setup() {
+            when(patientDetailsResolver.resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE_DB),
+                eq(CERTIFICATE_TYPE_VERSION))).thenReturn(puPatient);
+        }
+
+        @Test
+        public void shallConvertPatientCity() {
+            final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE_DB, CERTIFICATE_TYPE_VERSION);
+            assertEquals(puPatient.getPostort(), patient.getCity());
+        }
+
+        @Test
+        public void shallConvertPatientZipCode() {
+            final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE_DB, CERTIFICATE_TYPE_VERSION);
+            assertEquals(puPatient.getPostnummer(), patient.getZipCode());
+        }
+
+        @Test
+        public void shallConvertPatientStreet() {
+            final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE_DB, CERTIFICATE_TYPE_VERSION);
+            assertEquals(puPatient.getPostadress(), patient.getStreet());
+        }
+    }
+
+    @Nested
     class PatientWithNoName {
 
         @BeforeEach
@@ -416,6 +464,9 @@ class PatientConverterImplTest {
         patient.setEfternamn(LASTNAME);
         patient.setFornamn(FIRSTNAME);
         patient.setMellannamn(MIDDLENAME);
+        patient.setPostadress("Storgatan 1");
+        patient.setPostnummer("831 33");
+        patient.setPostort("Östersund");
         return patient;
     }
 

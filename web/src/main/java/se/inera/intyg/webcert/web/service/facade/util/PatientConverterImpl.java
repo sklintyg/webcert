@@ -47,7 +47,7 @@ public class PatientConverterImpl implements PatientConverter {
         final var patient = patientDetailsResolver.resolvePatient(patientId, certificateType, certificateTypeVersion);
         final var user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
         final var parameters = getIntegrationParameters(user);
-
+        final var isDb = "db".equals(certificateType);
         return Patient.builder()
             .personId(
                 getPersonId(patientId, parameters)
@@ -56,6 +56,9 @@ public class PatientConverterImpl implements PatientConverter {
             .middleName(getString(patient.getMellannamn()))
             .lastName(getString(patient.getEfternamn()))
             .fullName(patient.getFullstandigtNamn())
+            .zipCode(isDb ? patient.getPostnummer() : null)
+            .street(isDb ? patient.getPostadress() : null)
+            .city(isDb ? patient.getPostort() : null)
             .testIndicated(patient.isTestIndicator())
             .protectedPerson(isProtectedPerson(patientId))
             .deceased(patient.isAvliden())
