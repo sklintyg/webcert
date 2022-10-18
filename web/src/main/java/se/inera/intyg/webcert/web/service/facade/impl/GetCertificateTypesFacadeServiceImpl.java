@@ -65,7 +65,17 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var certificateModuleList = getCertificateModuleList(patientId);
-        return certificateModuleList.stream().map(module -> convertModuleToTypeInfo(module, patientId)).collect(Collectors.toList());
+        return certificateModuleList.stream()
+            .map(module -> convertModuleToTypeInfo(module, patientId))
+            .map(this::addAdditionalResourceLinks)
+            .collect(Collectors.toList());
+    }
+
+    private CertificateTypeInfoDTO addAdditionalResourceLinks(CertificateTypeInfoDTO intygModule) {
+        if (intygModule.getId().equals("db")) {
+            intygModule.getLinks().add(ResourceLinkFactory.confirmDodsbevis(true));
+        }
+        return intygModule;
     }
 
     private CertificateTypeInfoDTO convertModuleToTypeInfo(IntygModuleDTO module, Personnummer patientId) {
