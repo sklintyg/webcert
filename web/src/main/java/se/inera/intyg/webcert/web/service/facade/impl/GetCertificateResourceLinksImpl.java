@@ -92,7 +92,6 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
         functions.put(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
-                    && draftAccessServiceHelper.isAllowToDeleteUtkast(accessEvaluationParameters)
         );
 
         functions.put(ResourceLinkTypeDTO.EDIT_CERTIFICATE,

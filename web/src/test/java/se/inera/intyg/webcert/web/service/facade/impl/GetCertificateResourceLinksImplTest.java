@@ -24,9 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -104,12 +101,9 @@ class GetCertificateResourceLinksImplTest {
         void shallIncludeWarningDeatcertificateIntegrated() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
-            when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-            verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
         }
 
         @Test
@@ -119,20 +113,6 @@ class GetCertificateResourceLinksImplTest {
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-            verify(draftAccessServiceHelper, never()).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
-        }
-
-        @Test
-        void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedDelete() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
-            when(draftAccessServiceHelper.isAllowToDeleteUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
-            final var actualResourceLinks = getCertificationResourceLinks
-                .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            verify(draftAccessServiceHelper, times(1)).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-            verify(draftAccessServiceHelper, times(1)).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
         }
 
         @Test
