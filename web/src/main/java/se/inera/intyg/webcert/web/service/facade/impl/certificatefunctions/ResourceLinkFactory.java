@@ -43,11 +43,11 @@ public class ResourceLinkFactory {
         );
     }
 
-    public static ResourceLinkDTO confirm(boolean enabled) {
+    public static ResourceLinkDTO confirmDodsbevis(boolean enabled) {
         return ResourceLinkDTO.create(
             ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION,
             "Visa bekräftelsemodal för dödsbevis",
-            enabled ? "Visa modal med ett bekräftelsemeddelande." : "",
+            "Visa modal med ett bekräftelsemeddelande.",
             enabled
         );
     }
