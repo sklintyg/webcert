@@ -415,6 +415,14 @@ public class DraftAccessServiceHelperTest {
         assertFalse(actualResult);
     }
 
+    @Test
+    public void shallAllowToSignWithConfirmation() {
+        final var accessEvaluationParameters = mock(AccessEvaluationParameters.class);
+        doReturn(createAccessResult()).when(draftAccessService).allowToSignWithConfirmation(accessEvaluationParameters);
+        final var actualResult = draftAccessServiceHelper.isAllowToSignWithConfirmation(accessEvaluationParameters);
+        assertTrue(actualResult);
+    }
+
     private AccessResult createAccessResult() {
         return AccessResult.noProblem();
     }

@@ -240,4 +240,8 @@ public final class DraftAccessServiceHelper {
             certificateId
         ).isAllowed();
     }
+
+    public boolean isAllowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters) {
+        return draftAccessService.allowToSignWithConfirmation(accessEvaluationParameters).isAllowed();
+    }
 }

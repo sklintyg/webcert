@@ -477,7 +477,8 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastWhenMissingSubscription() {
         setupMocksForMissingSubscription();
 
-        assertAllowToSignUtkastWhenMissingSubscription(accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+        assertAllowToSignUtkastWhenMissingSubscription(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
     abstract protected void assertAllowToSignUtkastWhenMissingSubscription(AccessResult actualValue);
@@ -579,6 +580,136 @@ abstract public class DraftAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSignUtkastNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToSignWithConfirmationNoConditions(accessService.allowToSignWithConfirmation(
+            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationWhenMissingSubscription() {
+        setupMocksForMissingSubscription();
+
+        assertAllowToSignWithConfirmationWhenMissingSubscription(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationWhenMissingSubscription(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationNotLatestMajorVersion() {
+        setupMocksForNotLatestMajorVersion();
+
+        assertAllowToSignWithConfirmationNotLatestMajorVersion(
+            accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationNotLatestMajorVersion(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToSignWithConfirmationOnDeceasedPatient(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToSignWithConfirmationOnInactiveUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToSignWithConfirmationOnRenewFalse(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToSignWithConfirmationOnSekretessPatientOnSameUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSignWithConfirmationNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToSignWithConfirmationNoConditionsDifferentUnit(
+            accessService.allowToSignWithConfirmation(
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
+    }
+
+    abstract protected void assertAllowToSignWithConfirmationNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToDeleteUtkastNoConditions() {
