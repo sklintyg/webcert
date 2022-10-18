@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import java.util.Objects;
+
 public class ResourceLinkDTO {
 
     private ResourceLinkTypeDTO type;
@@ -83,5 +85,24 @@ public class ResourceLinkDTO {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ResourceLinkDTO that = (ResourceLinkDTO) o;
+        return enabled == that.enabled && type == that.type && name.equals(that.name) && description.equals(that.description)
+            && body.equals(
+            that.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, name, description, body, enabled);
     }
 }
