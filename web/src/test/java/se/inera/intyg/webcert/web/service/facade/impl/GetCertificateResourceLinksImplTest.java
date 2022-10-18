@@ -98,7 +98,7 @@ class GetCertificateResourceLinksImplTest {
     class Draft {
 
         @Test
-        void shallIncludeWarningDeatcertificateIntegrated() {
+        void shallIncludeWarningDodsbevisIntegrated() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             final var actualResourceLinks = getCertificationResourceLinks
@@ -107,12 +107,30 @@ class GetCertificateResourceLinksImplTest {
         }
 
         @Test
-        void shallExcludeWarningDeatcertificateIntegratedIfNotAllowedEdit() {
+        void shallExcludeWarningDodsbevisIntegrated() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
             when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
+        }
+
+        @Test
+        void shallIncludeSignConfirmation() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+            when(draftAccessServiceHelper.isAllowToSignWithConfirmation(any(AccessEvaluationParameters.class))).thenReturn(true);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+        }
+
+        @Test
+        void shallExcludeSignConfirmation() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+            when(draftAccessServiceHelper.isAllowToSignWithConfirmation(any(AccessEvaluationParameters.class))).thenReturn(false);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
         }
 
         @Test

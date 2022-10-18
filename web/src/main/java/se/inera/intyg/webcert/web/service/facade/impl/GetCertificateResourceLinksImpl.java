@@ -89,6 +89,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForDraft() {
         final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
+        functions.put(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToSignWithConfirmation(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
