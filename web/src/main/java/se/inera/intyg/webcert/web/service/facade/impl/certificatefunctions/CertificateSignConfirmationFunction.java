@@ -20,17 +20,10 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
-public class CertificateSignConfirmationFunction {
+public interface CertificateSignConfirmationFunction {
 
-    public ResourceLinkDTO get(Certificate certificate) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-            "Signera och skicka",
-            "Intyget skickas direkt till Skatteverket",
-            "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare. Det är därför inte möjligt att signera detta dödsbevis.",
-            true);
-    }
+    ResourceLinkDTO get(Certificate certificate, WebCertUser webCertUser);
 }
