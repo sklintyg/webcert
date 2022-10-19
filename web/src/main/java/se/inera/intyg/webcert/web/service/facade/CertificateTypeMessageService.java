@@ -19,9 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.facade;
 
+import java.util.Optional;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface CertificateTypeMessageService {
 
-    String get(String certificateType, Personnummer personId);
+    Optional<String> get(String certificateType, Personnummer personId);
 }

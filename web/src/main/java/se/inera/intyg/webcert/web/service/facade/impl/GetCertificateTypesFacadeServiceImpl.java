@@ -86,7 +86,8 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeInfo.setDetailedDescription(module.getDetailedDescription());
         certificateTypeInfo.setIssuerTypeId(module.getIssuerTypeId());
         certificateTypeInfo.setLinks(convertResourceLinks(module.getLinks()));
-        certificateTypeInfo.setMessage(certificateTypeMessageService.get(module.getId(), patientId));
+        certificateTypeMessageService.get(module.getId(), patientId)
+            .ifPresent((message) -> certificateTypeInfo.setMessage(message));
         return certificateTypeInfo;
     }
 
