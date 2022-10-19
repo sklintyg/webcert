@@ -20,6 +20,9 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.Objects;
 
+/**
+ * Object that represent a link and description to a specific resource. Intended use is for buttons, modals, etc.
+ */
 public class ResourceLinkDTO {
 
     private ResourceLinkTypeDTO type;

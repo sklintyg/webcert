@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_INDICATOR;
@@ -63,7 +63,7 @@ class CertificateSignConfirmationFunctionTest {
     private AuthoritiesHelper authoritiesHelper;
 
     @InjectMocks
-    private CertificateSignConfirmationFunction certificateSignConfirmationFunction;
+    private CertificateSignConfirmationFunctionImpl certificateSignConfirmationFunction;
 
     private WebCertUser webCertUser;
     private Certificate dbCertificate;
@@ -122,7 +122,7 @@ class CertificateSignConfirmationFunctionTest {
 
         final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
 
-        assertEquals(expectedResourceLink, actualResourceLink);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
     }
 
     @Test
@@ -132,7 +132,7 @@ class CertificateSignConfirmationFunctionTest {
 
         final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
 
-        assertNull(actualResourceLink, "If no signed dodsbevis exist it should not return a resource link");
+        assertTrue(actualResourceLink.isEmpty(), "If no signed dodsbevis exist it should not return a resource link");
     }
 
     @Test
@@ -160,7 +160,7 @@ class CertificateSignConfirmationFunctionTest {
 
         final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
 
-        assertEquals(expectedResourceLink, actualResourceLink);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
     }
 
     @Test
@@ -170,7 +170,7 @@ class CertificateSignConfirmationFunctionTest {
 
         final var actualResourceLink = certificateSignConfirmationFunction.get(notDbCertificate, webCertUser);
 
-        assertNull(actualResourceLink, "If not dodsbevis it should not return a resource link");
+        assertTrue(actualResourceLink.isEmpty(), "If not dodsbevis it should not return a resource link");
     }
 }
 

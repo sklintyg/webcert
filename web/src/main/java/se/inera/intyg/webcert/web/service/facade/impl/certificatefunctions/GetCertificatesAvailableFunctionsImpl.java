@@ -148,17 +148,28 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final UserService userService;
     private GetQuestionsFacadeService getQuestionsFacadeService;
 
+    private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
+
+    /**
+     * Top level resource for geting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
+     */
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         CandidateDataHelper candidateDataHelper, UserService userService,
-        GetQuestionsFacadeService getQuestionsFacadeService) {
+        GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
         this.userService = userService;
         this.getQuestionsFacadeService = getQuestionsFacadeService;
+        this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
     }
 
+    /**
+     * Resource for geting ResourceLinkDTO.
+     * @param certificate that resource selection is based on.
+     * @return list of resource links.
+     */
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<ResourceLinkDTO>();
@@ -188,6 +199,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return availableFunctions;
     }
 
+    /**
+     * Determine all resource links for certificate that is in the draft stage. A rough filtering determines
+     * what should be added as available links. This is due to the fact that links may not be filtered future on.
+     * @param certificate to be used
+     * @return An array of all valid resource links
+     */
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
@@ -201,6 +218,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 )
             );
         }
+
+        certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
 
         resourceLinks.add(
             ResourceLinkDTO.create(

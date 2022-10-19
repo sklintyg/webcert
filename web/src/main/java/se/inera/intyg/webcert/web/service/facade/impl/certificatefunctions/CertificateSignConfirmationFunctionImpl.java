@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
 import java.util.Collections;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -48,30 +49,30 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
     }
 
     @Override
-    public ResourceLinkDTO get(Certificate certificate, WebCertUser webCertUser) {
+    public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
         if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType())) {
-            return null;
+            return Optional.empty();
         }
         final var personnummer = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
         final var existingIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, webCertUser, certificate.getMetadata().getId());
         final var previousIntygMap = existingIntyg.getOrDefault(INTYG_INDICATOR, Collections.emptyMap());
         if (previousIntygMap.containsKey(certificate.getMetadata().getType())) {
-            return ResourceLinkDTO.create(
+            return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
                 "Intyget skickas direkt till Skatteverket",
                 "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare. Det är därför inte möjligt att signera detta dödsbevis.",
-                true);
+                true));
         }
         final var previousUtkastMap = existingIntyg.getOrDefault(UTKAST_INDICATOR, Collections.emptyMap());
         if (previousUtkastMap.containsKey(certificate.getMetadata().getType())) {
-            return ResourceLinkDTO.create(
+            return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
                 "Intyget skickas direkt till Skatteverket",
                 "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare. Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
-                true);
+                true));
         }
-        return null;
+        return Optional.empty();
     }
 }

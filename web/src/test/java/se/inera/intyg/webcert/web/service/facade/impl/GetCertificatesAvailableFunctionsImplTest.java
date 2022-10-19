@@ -61,6 +61,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
@@ -68,6 +69,7 @@ import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,6 +89,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     GetQuestionsFacadeService getQuestionsFacadeService;
+
+    @Mock
+    CertificateSignConfirmationFunction certificateSignConfirmationFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -227,6 +232,24 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
+
+        @Test
+        void shallIncludeSignConfirmation() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            when(certificateSignConfirmationFunction.get(certificate, user)).thenReturn(Optional.of(ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION, "", "", "", true)));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+        }
+
+        @Test
+        void shallExcludeSignConfirmation() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            when(certificateSignConfirmationFunction.get(certificate, user)).thenReturn(Optional.empty());
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+        }
+
     }
 
     private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson, CertificateStatus certificateStatus) {
