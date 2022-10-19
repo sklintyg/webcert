@@ -26,6 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID;
+import static se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID_MOBILE;
+import static se.inera.intyg.common.support.facade.model.user.LoginMethod.FAKE;
+import static se.inera.intyg.common.support.facade.model.user.LoginMethod.SITHS;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -354,7 +358,7 @@ class UserServiceImplTest {
                 .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.FAKE, actualUser.getLoginMethod());
+            assertEquals(FAKE, actualUser.getLoginMethod());
         }
 
         @Test
@@ -364,17 +368,27 @@ class UserServiceImplTest {
                 .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.SITHS, actualUser.getLoginMethod());
+            assertEquals(SITHS, actualUser.getLoginMethod());
         }
 
         @Test
-        void shallReturnWithLoginMethodBankIdIfMobileBankId() {
+        void shallReturnWithLoginMethodBankId() {
+            doReturn(AuthenticationMethod.BANK_ID)
+                .when(user)
+                .getAuthenticationMethod();
+
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(BANK_ID, actualUser.getLoginMethod());
+        }
+
+        @Test
+        void shallReturnWithLoginMethodBankIdMobile() {
             doReturn(AuthenticationMethod.MOBILT_BANK_ID)
                 .when(user)
                 .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.LoginMethod.BANK_ID, actualUser.getLoginMethod());
+            assertEquals(BANK_ID_MOBILE, actualUser.getLoginMethod());
         }
     }
 
