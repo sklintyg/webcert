@@ -1412,4 +1412,40 @@
     <addNotNullConstraint tableName="FMB_TYPFALL" columnName="TYPFALLSMENING" columnDataType="text"/>
     <modifyDataType tableName="FMB_DIAGNOS_INFORMATION" columnName="INFORMATION_OM_REHABILITERING" newDataType="text"/>
   </changeSet>
+
+  <changeSet id="70" author="mh">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <indexExists tableName="INTYG" indexName="IDX_INTYG_VARDGIVAR_ID"/>
+      </not>
+    </preConditions>
+    <createIndex indexName="IDX_INTYG_VARDGIVAR_ID"
+        tableName="INTYG" unique="false">
+      <column name="VARDGIVAR_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="71" author="mh">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <indexExists tableName="GODKANT_AVTAL_PRIVATLAKARE" indexName="IDX_GODKANT_AVTAL_PRIVATLAKARE_HSA_ID"/>
+      </not>
+    </preConditions>
+    <createIndex indexName="IDX_GODKANT_AVTAL_PRIVATLAKARE_HSA_ID"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE" unique="false">
+      <column name="HSA_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="72" author="mh">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <indexExists tableName="INTEGRERADE_VARDENHETER" indexName="IDX_INTEGRERADE_VARDENHETER_VARDGIVAR_ID"/>
+      </not>
+    </preConditions>
+    <createIndex indexName="IDX_INTEGRERADE_VARDENHETER_VARDGIVAR_ID"
+        tableName="INTEGRERADE_VARDENHETER" unique="false">
+      <column name="VARDGIVAR_ID"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>
