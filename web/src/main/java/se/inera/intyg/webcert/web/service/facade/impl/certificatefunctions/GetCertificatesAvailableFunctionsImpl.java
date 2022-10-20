@@ -135,9 +135,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private static final String DB_WARNING = "Kontrollera namn och personnummer";
-    private static final String DB_WARNING_DESCRIPTION = "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
-        + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
-        + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
+    private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
+    private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
+    private static final String DB_WARNING_DESCRIPTION =
+        "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
+            + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
+            + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
     private String createFromCandidateBody = "";
 
     private static final String DB_TYPE = "db";
@@ -167,6 +170,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     /**
      * Resource for geting ResourceLinkDTO.
+     *
      * @param certificate that resource selection is based on.
      * @return list of resource links.
      */
@@ -202,11 +206,23 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     /**
      * Determine all resource links for certificate that is in the draft stage. A rough filtering determines
      * what should be added as available links. This is due to the fact that links may not be filtered future on.
+     *
      * @param certificate to be used
      * @return An array of all valid resource links
      */
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+        if (certificate.getMetadata().getType().equals(DB_TYPE)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+                    DISPLAY_PATIENT_NAME,
+                    DISPLAY_PATIENT_DESCRIPTION,
+                    true
+                )
+            );
+        }
 
         if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
             resourceLinks.add(

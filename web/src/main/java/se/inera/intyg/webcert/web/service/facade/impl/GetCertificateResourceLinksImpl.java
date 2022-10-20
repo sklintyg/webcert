@@ -63,6 +63,7 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
     /**
      * Fetch all resource links for a specifik certificate in a specific context. The context is things like
      * certificate data, user, integration, other existing certificates etc.
+     *
      * @param certificate to determine resource links.
      * @return a list of resource links.
      */
@@ -84,7 +85,7 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
 
     /**
      * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's
-     * @param certificate
+     *
      * @return all access functions that should be applied to a resource links
      */
     private Map<ResourceLinkTypeDTO, AccessCheck> getAccessFunctions(Certificate certificate) {
@@ -102,10 +103,16 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
 
     /**
      * Get all access-functions that can be applied on list of ResourceLinkTypeDT for the type draft.
+     *
      * @return a map of functions that uses ResourceLinkTypeDTO as key.
      */
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForDraft() {
         final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
+
+        functions.put(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
+        );
 
         functions.put(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
             (accessEvaluationParameters, certificate) ->

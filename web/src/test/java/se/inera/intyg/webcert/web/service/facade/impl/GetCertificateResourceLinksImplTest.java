@@ -124,6 +124,7 @@ class GetCertificateResourceLinksImplTest {
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
         }
 
+
         @Test
         void shallExcludeSignConfirmation() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
@@ -131,6 +132,24 @@ class GetCertificateResourceLinksImplTest {
             final var actualResourceLinks = getCertificationResourceLinks.get(
                 CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION);
+        }
+
+        @Test
+        void shallIncludeDisplayPatientAddressInCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeDisplayPatientAddressInCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
+            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
 
         @Test
