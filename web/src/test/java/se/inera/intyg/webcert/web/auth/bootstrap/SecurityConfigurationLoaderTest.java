@@ -55,9 +55,11 @@ public class SecurityConfigurationLoaderTest {
     private static final String authoritiesConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
     private static final String featuresConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
     private static final String authoritiesConfigurationOutputFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-output.txt";
+    private static final Integer defaultMaxAliasesForCollections = 300;
 
     @InjectMocks
-    private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(authoritiesConfigurationFile, featuresConfigurationFile);
+    private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(authoritiesConfigurationFile, featuresConfigurationFile,
+        defaultMaxAliasesForCollections);
 
     @Before
     public void setupAuthoritiesConfiguration() {
@@ -110,7 +112,7 @@ public class SecurityConfigurationLoaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void loadConfigurationWithBadLocation() {
-        new SecurityConfigurationLoader(null, null);
+        new SecurityConfigurationLoader(null, null, null);
     }
 
     // ~ Private scope
