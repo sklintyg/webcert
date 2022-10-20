@@ -37,7 +37,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -134,10 +133,9 @@ class GetStaffInfoFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldAddUserToListIfItDoesNotExists() {
-            doReturn(new ArrayList<Lakare>())
-                    .when(utkastService)
-                    .getLakareWithDraftsByEnhet(any());
+        public void shouldAddUserToListIfItDoesNotExistsAndIsDoctorOrDentist() {
+            doReturn(new ArrayList<Lakare>()).when(utkastService).getLakareWithDraftsByEnhet(any());
+            doReturn(true).when(user).isLakare();
 
             final var result = getStaffInfoFacadeService.get();
 
@@ -146,7 +144,18 @@ class GetStaffInfoFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldNotAddUserToListIfItExists() {
+        public void shouldNotAddUserToListIfNotDoctorOrDentist() {
+            doReturn(new ArrayList<Lakare>()).when(utkastService).getLakareWithDraftsByEnhet(any());
+            doReturn(false).when(user).isLakare();
+
+            final var result = getStaffInfoFacadeService.get();
+
+            assertEquals(0, result.size());
+        }
+
+        @Test
+        public void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
+            doReturn(true).when(user).isLakare();
             doReturn(List.of(new Lakare("HSA_ID", "NAME")))
                     .when(utkastService)
                     .getLakareWithDraftsByEnhet(any());
@@ -219,7 +228,8 @@ class GetStaffInfoFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldNotAddUserToListIfItExists() {
+        public void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
+            doReturn(true).when(user).isLakare();
             setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
             final var result = getStaffInfoFacadeService.get(UNIT_ID);
@@ -229,13 +239,24 @@ class GetStaffInfoFacadeServiceImplTest {
         }
 
         @Test
-        public void shouldAddUserToListIfItDoesNotExists() {
+        public void shouldAddUserToListIfItDoesNotExistsAndIsDoctor() {
+            doReturn(true).when(user).isLakare();
             setup(STAFF_ID, STAFF_NAME);
 
             final var result = getStaffInfoFacadeService.get(UNIT_ID);
 
             assertEquals(2, result.size());
             assertEquals(LOGGED_IN_STAFF_ID, result.get(1).getHsaId());
+        }
+
+        @Test
+        public void shouldNotAddUserToListIfNotDoctorOrDentist() {
+            doReturn(false).when(user).isLakare();
+            setup(STAFF_ID, STAFF_NAME);
+
+            final var result = getStaffInfoFacadeService.get(UNIT_ID);
+
+            assertEquals(1, result.size());
         }
     }
 

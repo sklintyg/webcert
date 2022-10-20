@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
-import org.junit.Before;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,10 +30,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
@@ -41,7 +41,6 @@ import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
 
@@ -168,61 +167,6 @@ class ListQuestionsConfigFacadeServiceImplTest {
         public void shouldSetClearFiltersTooltip() {
             final var config = listQuestionsConfigFacadeService.get(UNIT_ID);
             assertTrue(config.getButtonTooltips().containsKey("RESET_BUTTON"));
-        }
-
-        @Nested
-        public class TestSignedBy {
-            ListFilterSelectConfig filter;
-            ListConfig config;
-
-            public void setupSignedBy() {
-                config = listQuestionsConfigFacadeService.get(UNIT_ID);
-                filter = (ListFilterSelectConfig) getFilterById(config, "SIGNED_BY");
-            }
-
-            @Test
-            public void shouldCreateFilter() {
-                setupSignedBy();
-                assertNotNull(filter);
-            }
-
-            @Test
-            public void shouldSetTitle() {
-                setupSignedBy();
-                assertEquals("Signerat av", filter.getTitle());
-            }
-
-            @Test
-            public void shouldSetType() {
-                setupSignedBy();
-                assertEquals(ListFilterType.SELECT, filter.getType());
-            }
-
-            @Test
-            public void shouldSetList() {
-                setupSignedBy();
-                assertEquals(3, filter.getValues().size());
-            }
-
-            @Test
-            public void shouldSetShowAll() {
-                setupSignedBy();
-                assertEquals("Visa alla", filter.getValues().get(0).getName());
-            }
-
-            @Test
-            public void shouldSetDefaultValueOfSavedByAsLoggedInDoctor() {
-                when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
-                setupSignedBy();
-                assertTrue(filter.getValues().get(2).isDefaultValue());
-            }
-
-            @Test
-            public void shouldSetUserAsDefaultIfNotDoctor() {
-                when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(false);
-                setupSignedBy();
-                assertTrue(filter.getValues().get(2).isDefaultValue());
-            }
         }
 
         @Nested
@@ -585,6 +529,73 @@ class ListQuestionsConfigFacadeServiceImplTest {
                 assertNotEquals(originalSecondaryTitle, updatedConfig.getSecondaryTitle());
                 assertTrue(updatedConfig.getSecondaryTitle().contains(B_UNIT_NAME));
             }
+        }
+    }
+
+    @Nested
+    public class TestSignedBy {
+        ListFilterSelectConfig filter;
+        ListConfig config;
+
+        public void setupUser(String userRole) {
+            final var user = ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+            user.setRoles(Map.of(userRole, new Role()));
+        }
+
+        public void setupSignedBy() {
+            config = listQuestionsConfigFacadeService.get(UNIT_ID);
+            filter = (ListFilterSelectConfig) getFilterById(config, "SIGNED_BY");
+        }
+
+        @Test
+        public void shouldCreateFilter() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertNotNull(filter);
+        }
+
+        @Test
+        public void shouldSetTitle() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertEquals("Signerat av", filter.getTitle());
+        }
+
+        @Test
+        public void shouldSetType() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertEquals(ListFilterType.SELECT, filter.getType());
+        }
+
+        @Test
+        public void shouldSetList() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertEquals(3, filter.getValues().size());
+        }
+
+        @Test
+        public void shouldSetShowAll() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertEquals("Visa alla", filter.getValues().get(0).getName());
+        }
+
+        @Test
+        public void shouldSetDefaultValueOfSavedByAsLoggedInDoctor() {
+            setupUser(AuthoritiesConstants.ROLE_LAKARE);
+            setupSignedBy();
+            assertTrue(filter.getValues().get(2).isDefaultValue());
+
+        }
+
+        @Test
+        public void shouldSetShowAllAsDefaultIfCareAdmin() {
+            setupUser(AuthoritiesConstants.ROLE_ADMIN);
+            setupSignedBy();
+            assertTrue(filter.getValues().get(0).isDefaultValue());
         }
     }
 
