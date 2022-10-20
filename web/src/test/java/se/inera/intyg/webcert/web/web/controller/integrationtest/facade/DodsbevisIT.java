@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
@@ -30,7 +29,6 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
 import io.restassured.config.SessionConfig;
-import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import java.util.ArrayList;
@@ -42,8 +40,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;

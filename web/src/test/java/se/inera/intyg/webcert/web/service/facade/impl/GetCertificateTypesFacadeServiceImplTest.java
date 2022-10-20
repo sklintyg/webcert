@@ -24,6 +24,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -148,7 +149,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             @Test
             void shallIncludeMessageWhenExists() {
                 final var expectedMessage = "Message for certificate type";
-                doReturn(expectedMessage).when(certificateTypeMessageService).get(CERTIFICATE_TYPE, PATIENT_ID);
+                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(expectedMessage));
                 types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(expectedMessage, types.get(0).getMessage());
             }
@@ -156,7 +157,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             @Test
             void shallExludeMessageWhenItDoesntExists() {
                 final String expectedMessage = null;
-                doReturn(null).when(certificateTypeMessageService).get(CERTIFICATE_TYPE, PATIENT_ID);
+                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.empty());
                 types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(expectedMessage, types.get(0).getMessage());
             }
