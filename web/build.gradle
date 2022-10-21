@@ -83,7 +83,10 @@ war {
 }
 
 test {
-    exclude '**/*IT*'
+    useJUnitPlatform()
+    filter {
+        excludeTestsMatching "*IT*"
+    }
 }
 
 task restAssuredTest(type: Test) {
@@ -91,7 +94,9 @@ task restAssuredTest(type: Test) {
     outputs.upToDateWhen { false }
     systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8020/"
     systemProperty "integration.tests.actuatorUrl", System.properties['actuatorUrl'] ?: "http://localhost:8120/"
-    include '**/*IT*'
+    filter {
+        includeTestsMatching "*IT*"
+    }
 }
 
 gretty {

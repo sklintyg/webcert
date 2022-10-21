@@ -137,19 +137,9 @@ class GetCertificateResourceLinksImplTest {
         @Test
         void shallIncludeDisplayPatientAddressInCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
-            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
             final var actualResourceLinks = getCertificationResourceLinks.get(
                 CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
             assertInclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeDisplayPatientAddressInCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
-            when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
-            final var actualResourceLinks = getCertificationResourceLinks.get(
-                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-            assertExclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
 
         @Test
@@ -343,6 +333,14 @@ class GetCertificateResourceLinksImplTest {
                 .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.REVOKE_CERTIFICATE);
         }
+
+        @Test
+        void shallIncludeDisplayPatientAddressInCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+        }
     }
 
     @Nested
@@ -490,6 +488,14 @@ class GetCertificateResourceLinksImplTest {
             final var actualResourceLinks = getCertificationResourceLinks
                 .get(CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
             assertExclude(actualResourceLinks, ResourceLinkTypeDTO.CREATE_QUESTIONS);
+        }
+
+        @Test
+        void shallIncludeDisplayPatientAddressInCertificate() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+            final var actualResourceLinks = getCertificationResourceLinks.get(
+                CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED));
+            assertInclude(actualResourceLinks, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
     }
 }

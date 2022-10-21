@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -213,17 +214,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        if (certificate.getMetadata().getType().equals(DB_TYPE)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
-                    DISPLAY_PATIENT_NAME,
-                    DISPLAY_PATIENT_DESCRIPTION,
-                    true
-                )
-            );
-        }
-
         if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
@@ -234,9 +224,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 )
             );
         }
-
-        certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
-            .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -327,7 +314,26 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
+
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
+    }
+
+    private Optional<ResourceLinkDTO> getDisplayPatientAddressInCertificate(Certificate certificate) {
+        if (certificate.getMetadata().getType().equals(DB_TYPE)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+                    DISPLAY_PATIENT_NAME,
+                    DISPLAY_PATIENT_DESCRIPTION,
+                    true)
+            );
+        }
+        return Optional.empty();
     }
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
@@ -432,6 +438,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
     }
 
@@ -507,6 +516,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
     }
 
@@ -516,6 +528,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (isMessagingAvailable(certificate)) {
             resourceLinks.add(getQuestionsResourceLink(certificate));
         }
+
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
     }
