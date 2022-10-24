@@ -104,7 +104,8 @@ class CertificateSignConfirmationFunctionTest {
             ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
             "Signera och skicka",
             "Intyget skickas direkt till Skatteverket",
-            "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare. Det är därför inte möjligt att signera detta dödsbevis.",
+            "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                + " Det är därför inte möjligt att signera detta dödsbevis.",
             true);
 
         final var previousIntygDifferentCareProvider = Map.of(
@@ -142,7 +143,9 @@ class CertificateSignConfirmationFunctionTest {
             ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
             "Signera och skicka",
             "Intyget skickas direkt till Skatteverket",
-            "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare. Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
+            "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                + " Senast skapade dödsbevis är det som gäller."
+                + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
             true);
 
         final var previousUtkastDifferentCareProvider = Map.of(
