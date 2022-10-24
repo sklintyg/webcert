@@ -75,8 +75,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
-    private final String CERTIFICATE_TYPE = "id";
-    private final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+    private final static String CERTIFICATE_TYPE = "id";
+    private final static Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     @Nested
     class CorrectCases {
