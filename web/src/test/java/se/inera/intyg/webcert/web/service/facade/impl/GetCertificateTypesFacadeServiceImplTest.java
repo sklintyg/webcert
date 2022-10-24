@@ -18,15 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -69,8 +75,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
-    private final static String CERTIFICATE_TYPE = "id";
-    private final static Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+    private final String CERTIFICATE_TYPE = "id";
+    private final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     @Nested
     class CorrectCases {
@@ -170,16 +176,16 @@ class GetCertificateTypesFacadeServiceImplTest {
             void shallConvertResourceLinks() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
-                        .when(intygModuleRegistry)
-                        .listAllModules();
+                    .when(intygModuleRegistry)
+                    .listAllModules();
 
                 doAnswer(invocation -> {
                     List<IntygModuleDTO> DTOs = invocation.getArgument(0);
                     DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
                     return null;
                 })
-                        .when(resourceLinkHelper)
-                        .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                    .when(resourceLinkHelper)
+                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
@@ -243,26 +249,26 @@ class GetCertificateTypesFacadeServiceImplTest {
 
             if (hasTextVersion) {
                 doReturn("1.0")
-                        .when(intygTextsService)
-                        .getLatestVersion(anyString());
+                    .when(intygTextsService)
+                    .getLatestVersion(anyString());
             }
 
             doReturn(List.of(module))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+                .when(intygModuleRegistry)
+                .listAllModules();
 
             doNothing()
-                    .when(resourceLinkHelper)
-                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                .when(resourceLinkHelper)
+                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
             final var user = mock(WebCertUser.class);
             doReturn(user)
-                    .when(webCertUserService)
-                    .getUser();
+                .when(webCertUserService)
+                .getUser();
 
             doReturn(Set.of(module.getId()))
-                    .when(authoritiesHelper)
-                    .getIntygstyperForPrivilege(any(), any());
+                .when(authoritiesHelper)
+                .getIntygstyperForPrivilege(any(), any());
         }
 
         @Test
@@ -289,8 +295,8 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(String id) {
         return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
-                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-                false, false);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+            false, false);
     }
 
     private IntygModule createIntygModule() {
@@ -299,7 +305,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(boolean isDeprecated, boolean showDeprecated) {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-                isDeprecated, showDeprecated);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+            isDeprecated, showDeprecated);
     }
 }

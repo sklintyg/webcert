@@ -589,7 +589,7 @@ abstract public class DraftAccessTest extends AccessTest {
             AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationNoConditions(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationNoConditions(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationWhenMissingSubscription() {
@@ -600,7 +600,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationWhenMissingSubscription(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationWhenMissingSubscription(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationNotLatestMajorVersion() {
@@ -610,7 +610,7 @@ abstract public class DraftAccessTest extends AccessTest {
             accessService.allowToSignDraft(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, null));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationNotLatestMajorVersion(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationNotLatestMajorVersion(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnDeceasedPatient() {
@@ -621,7 +621,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnDeceasedPatient(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnDeceasedPatient(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnInactiveUnit() {
@@ -632,7 +632,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnInactiveUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnInactiveUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnRenewFalse() {
@@ -643,7 +643,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnRenewFalse(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnRenewFalse(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnSekretessPatientOnSameUnit() {
@@ -654,7 +654,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnSekretessPatientOnSameUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit() {
@@ -665,7 +665,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit() {
@@ -676,7 +676,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit() {
@@ -687,7 +687,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit() {
@@ -698,7 +698,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationOnRenewFalseOnDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToSignWithConfirmationNoConditionsDifferentUnit() {
@@ -709,7 +709,7 @@ abstract public class DraftAccessTest extends AccessTest {
                 AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)));
     }
 
-    abstract protected void assertAllowToSignWithConfirmationNoConditionsDifferentUnit(AccessResult actualValue);
+    abstract void assertAllowToSignWithConfirmationNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
     public void isAllowToDeleteUtkastNoConditions() {
