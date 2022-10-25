@@ -155,7 +155,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
 
     /**
-     * Top level resource for geting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
+     * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
@@ -170,7 +170,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     /**
-     * Resource for geting ResourceLinkDTO.
+     * Resource for getting ResourceLinkDTO.
      *
      * @param certificate that resource selection is based on.
      * @return list of resource links.
