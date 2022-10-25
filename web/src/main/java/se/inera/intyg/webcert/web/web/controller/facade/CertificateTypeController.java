@@ -57,7 +57,7 @@ public class CertificateTypeController {
             LOG.debug("Retrieving certificate types for patient");
         }
         try {
-            final var certificateTypes = getCertificateTypesFacadeService.get(createPnr(patientId));
+            final var certificateTypes = getCertificateTypesFacadeService.get(createPersonnummer(patientId));
             return Response.ok(certificateTypes).build();
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());
@@ -65,7 +65,7 @@ public class CertificateTypeController {
         }
     }
 
-    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
+    private Personnummer createPersonnummer(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
             .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
