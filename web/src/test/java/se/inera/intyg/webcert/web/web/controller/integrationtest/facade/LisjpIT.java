@@ -952,6 +952,8 @@ public class LisjpIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
+            given().expect().statusCode(200).when().get("testability/fmb/updatefmbdata");
+
             final var response = given()
                 .contentType(ContentType.JSON)
                 .body(validateSickLeavePeriodRequest)
@@ -1358,6 +1360,8 @@ public class LisjpIT {
             final var icd10Codes = new String[]{"A02"};
             final IcfRequestDTO icfRequestDTO = new IcfRequestDTO();
             icfRequestDTO.setIcdCodes(icd10Codes);
+
+            given().expect().statusCode(200).when().get("testability/fmb/updatefmbdata");
 
             final var response = given()
                 .contentType(ContentType.JSON)

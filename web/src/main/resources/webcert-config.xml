@@ -110,6 +110,7 @@
     <bean id="securityConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
       <constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}" />
+      <constructor-arg name="maxAliasesForCollections" value="${max.aliases.for.collections:300}" />
     </bean>
 
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />

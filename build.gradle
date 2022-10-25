@@ -1,5 +1,5 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "3.2.0" apply false
+    id "se.inera.intyg.plugin.common" version "3.2.2" apply false
     id "org.gretty" version "3.0.8" apply false
     id "nebula.node" version "1.4.2" apply false
     id "io.spring.dependency-management" version "1.0.13.RELEASE" apply false
@@ -124,6 +124,26 @@ allprojects {
         pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.infra' }.each {
             it.version = se.inera.intyg.IntygPluginKt.findResolvedVersion(project, 'se.inera.intyg.infra')
         }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    def runningRestAssuredTest = false
+    project('webcert-web') { runningRestAssuredTest = gradle.taskGraph.getAllTasks().contains(restAssuredTest) }
+
+    if (runningRestAssuredTest) {
+        project('webcert-web') { npm_install.enabled(false); jsTests.enabled(false); test.enabled(false)  }
+        project('fk-stub') { test.enabled(false) }
+        project('mail-stub') { test.enabled(false) }
+        project('pp-integration') { test.enabled(false) }
+        project('webcert-common') { test.enabled(false) }
+        project('fmb-integration') { test.enabled(false) }
+        project('tak-integration') { test.enabled(false) }
+        project('notification-stub') { test.enabled(false) }
+        project('intygstjanst-stub') { test.enabled(false) }
+        project('webcert-persistence') { test.enabled(false) }
+        project('notification-sender') { test.enabled(false) }
+        project('kundportalen-integration') { test.enabled(false) }
     }
 }
 
