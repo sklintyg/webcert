@@ -61,11 +61,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
     }
 
     /**
-     * Fetch all resource links for a specifik certificate in a specific context. The context is things like
+     * Fetch all resource links for a specific certificate in a specific context. The context is things like
      * certificate data, user, integration, other existing certificates etc.
      *
      * @param certificate to determine resource links.
-     * @return a list of resource links.
+     * @return array of resource links.
      */
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
