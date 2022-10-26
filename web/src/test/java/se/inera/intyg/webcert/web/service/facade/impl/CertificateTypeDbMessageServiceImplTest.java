@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateTypeMessageServiceImplTest {
+class CertificateTypeDbMessageServiceImplTest {
 
     private static final String CERTIFICATE_TYPE_DB = "db";
     private static final String CERTIFICATE_TYPE_NOT_DB = "not db";
@@ -58,7 +58,7 @@ class CertificateTypeMessageServiceImplTest {
     private UtkastService utkastService;
 
     @InjectMocks
-    private CertificateTypeMessageServiceImpl certificateTypeMessageService;
+    private CertificateTypeDbMessageServiceImpl certificateTypeMessageService;
 
     private WebCertUser mockedUser;
 

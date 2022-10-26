@@ -36,14 +36,14 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @Service
-public class CertificateTypeMessageServiceImpl implements CertificateTypeMessageService {
+public class CertificateTypeDbMessageServiceImpl implements CertificateTypeMessageService {
 
     private final UtkastService utkastService;
     private final WebCertUserService webCertUserService;
     private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
-    public CertificateTypeMessageServiceImpl(UtkastService utkastService,
+    public CertificateTypeDbMessageServiceImpl(UtkastService utkastService,
         WebCertUserService webCertUserService, AuthoritiesHelper authoritiesHelper) {
         this.utkastService = utkastService;
         this.webCertUserService = webCertUserService;

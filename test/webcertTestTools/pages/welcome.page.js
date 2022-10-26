@@ -30,8 +30,7 @@ module.exports = {
   loginButton: element(by.id('loginBtn')),
   get: function() {
     logger.silly('Går till ' + process.env.WEBCERT_URL + 'welcome.html');
-    // return browser.get(process.env.WEBCERT_URL + 'welcome.html');
-    return 'http://wc.localtest.me/welcome.html';
+    return browser.get(process.env.WEBCERT_URL + 'welcome.html');
   },
   isAt: function() {
     return this.loginButton.isDisplayed();
