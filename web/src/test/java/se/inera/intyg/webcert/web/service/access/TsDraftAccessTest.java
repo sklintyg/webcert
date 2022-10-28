@@ -290,7 +290,7 @@ public class TsDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToSignWithConfirmationNotLatestMajorVersion(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
     }
 
     @Override
