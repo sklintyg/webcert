@@ -57,6 +57,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -97,6 +98,9 @@ public class IntygToCertificateConverterImplTest {
     @Mock
     private HsatkOrganizationService hsatkOrganizationService;
 
+    @Mock
+    private TypeAheadProvider typeAheadProvider;
+
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
 
@@ -113,7 +117,7 @@ public class IntygToCertificateConverterImplTest {
             .getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
 
         doReturn(createCertificate())
-            .when(moduleApi).getCertificateFromJson(CONTENT_JSON);
+            .when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider);
 
         doReturn(certificateRelations)
             .when(certificateRelationsConverter).convert(CERTIFICATE_ID);

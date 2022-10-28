@@ -37,6 +37,9 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctio
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
+/**
+ * Class that handles the different resource links for a specific certificate.
+ */
 @Service
 public class GetCertificateResourceLinksImpl implements GetCertificateResourceLinks {
 
@@ -57,6 +60,13 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
     }
 
+    /**
+     * Fetch all resource links for a specific certificate in a specific context. The context is things like
+     * certificate data, user, integration, other existing certificates etc.
+     *
+     * @param certificate to determine resource links.
+     * @return array of resource links.
+     */
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
         final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
@@ -73,6 +83,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
             .toArray(ResourceLinkDTO[]::new);
     }
 
+    /**
+     * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's
+     *
+     * @return all access functions that should be applied to a resource links
+     */
     private Map<ResourceLinkTypeDTO, AccessCheck> getAccessFunctions(Certificate certificate) {
         switch (certificate.getMetadata().getStatus()) {
             case UNSIGNED:
@@ -86,8 +101,23 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
         }
     }
 
+    /**
+     * Get all access-functions that can be applied on list of ResourceLinkTypeDT for the type draft.
+     *
+     * @return a map of functions that uses ResourceLinkTypeDTO as key.
+     */
     private Map<ResourceLinkTypeDTO, AccessCheck> getFunctionsForDraft() {
         final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
+
+        functions.put(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToSignWithConfirmation(accessEvaluationParameters)
+        );
+
+        functions.put(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
+        );
 
         functions.put(ResourceLinkTypeDTO.EDIT_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->

@@ -26,13 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.value.*;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -75,15 +76,17 @@ public class CreateCertificateTestabilityUtil {
     private final CreateAg7804TestabilityUtil createAg7804TestabilityUtil;
 
     private final CreateAf00213TestabilityUtil createAf00213TestabilityUtil;
+    private final CreateDbTestabilityUtil createDbTestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
-                                            WebcertUserDetailsService webcertUserDetailsService,
-                                            PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
-                                            UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-                                            IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
-                                            CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
-                                            CreateAf00213TestabilityUtil createAf00213TestabilityUtil) {
+        WebcertUserDetailsService webcertUserDetailsService,
+        PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
+        UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
+        IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
+        CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
+        CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
+        CreateDbTestabilityUtil createDbTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -94,6 +97,7 @@ public class CreateCertificateTestabilityUtil {
         this.createLisjpTestabilityUtil = createLisjpTestabilityUtil;
         this.createAg7804TestabilityUtil = createAg7804TestabilityUtil;
         this.createAf00213TestabilityUtil = createAf00213TestabilityUtil;
+        this.createDbTestabilityUtil = createDbTestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -206,6 +210,14 @@ public class CreateCertificateTestabilityUtil {
                 return createAg7804TestabilityUtil.createMinimumValuesAg7804();
             } else {
                 return createAg7804TestabilityUtil.createMaximumValuesAg7804();
+            }
+        }
+
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(DbModuleEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createDbTestabilityUtil.createMinimumValuesDb();
+            } else {
+                return createDbTestabilityUtil.createMaximumValuesDb();
             }
         }
 

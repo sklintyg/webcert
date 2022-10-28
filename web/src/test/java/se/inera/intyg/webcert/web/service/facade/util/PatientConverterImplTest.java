@@ -126,6 +126,24 @@ class PatientConverterImplTest {
                 final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
                 assertEquals("PERSON_NUMMER", patient.getPersonId().getType());
             }
+
+            @Test
+            public void shallConvertPatientCity() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertEquals(puPatient.getPostort(), patient.getCity());
+            }
+
+            @Test
+            public void shallConvertPatientZipCode() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertEquals(puPatient.getPostnummer(), patient.getZipCode());
+            }
+
+            @Test
+            public void shallConvertPatientStreet() {
+                final var patient = patientConverter.convert(PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                assertEquals(puPatient.getPostadress(), patient.getStreet());
+            }
         }
 
         @Nested
@@ -349,6 +367,7 @@ class PatientConverterImplTest {
         }
     }
 
+
     @Nested
     class PatientWithNoName {
 
@@ -416,6 +435,9 @@ class PatientConverterImplTest {
         patient.setEfternamn(LASTNAME);
         patient.setFornamn(FIRSTNAME);
         patient.setMellannamn(MIDDLENAME);
+        patient.setPostadress("Storgatan 1");
+        patient.setPostnummer("831 33");
+        patient.setPostort("Östersund");
         return patient;
     }
 

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 
 @Path("/certificate/type")
@@ -56,11 +57,16 @@ public class CertificateTypeController {
             LOG.debug("Retrieving certificate types for patient");
         }
         try {
-            final var certificateTypes = getCertificateTypesFacadeService.get(patientId);
+            final var certificateTypes = getCertificateTypesFacadeService.get(createPersonnummer(patientId));
             return Response.ok(certificateTypes).build();
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());
             return Response.status(Status.BAD_REQUEST).build();
         }
+    }
+
+    private Personnummer createPersonnummer(String personId) throws InvalidPersonNummerException {
+        return Personnummer.createPersonnummer(personId)
+            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 }

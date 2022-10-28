@@ -42,4 +42,5 @@ public interface DraftAccessService {
 
     AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters);
 
+    AccessResult allowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters);
 }

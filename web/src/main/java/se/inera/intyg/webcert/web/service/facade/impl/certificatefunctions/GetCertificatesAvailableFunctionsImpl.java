@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -134,7 +135,16 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         + "</p></div>";
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
+    private static final String DB_WARNING = "Kontrollera namn och personnummer";
+    private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
+    private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
+    private static final String DB_WARNING_DESCRIPTION =
+        "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
+            + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
+            + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
     private String createFromCandidateBody = "";
+
+    private static final String DB_TYPE = "db";
 
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
@@ -142,17 +152,29 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final UserService userService;
     private GetQuestionsFacadeService getQuestionsFacadeService;
 
+    private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
+
+    /**
+     * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
+     */
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         CandidateDataHelper candidateDataHelper, UserService userService,
-        GetQuestionsFacadeService getQuestionsFacadeService) {
+        GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
         this.userService = userService;
         this.getQuestionsFacadeService = getQuestionsFacadeService;
+        this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
     }
 
+    /**
+     * Resource for getting ResourceLinkDTO.
+     *
+     * @param certificate that resource selection is based on.
+     * @return list of resource links.
+     */
     @Override
     public List<ResourceLinkDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<ResourceLinkDTO>();
@@ -182,8 +204,26 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return availableFunctions;
     }
 
+    /**
+     * Determine all resource links for certificate that is in the draft stage. A rough filtering determines
+     * what should be added as available links. This is due to the fact that links may not be filtered future on.
+     *
+     * @param certificate to be used
+     * @return An array of all valid resource links
+     */
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+        if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
+                    DB_WARNING,
+                    DB_WARNING_DESCRIPTION,
+                    true
+                )
+            );
+        }
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -194,7 +234,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         resourceLinks.add(
             ResourceLinkDTO.create(
@@ -274,17 +314,36 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
+
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
+    }
+
+    private Optional<ResourceLinkDTO> getDisplayPatientAddressInCertificate(Certificate certificate) {
+        if (certificate.getMetadata().getType().equals(DB_TYPE)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+                    DISPLAY_PATIENT_NAME,
+                    DISPLAY_PATIENT_DESCRIPTION,
+                    true)
+            );
+        }
+        return Optional.empty();
     }
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         if (isForwardQuestionAvailable(certificate)) {
             resourceLinks.add(
-                    CertificateForwardFunction.createResourceLinkForQuestionPanel()
+                CertificateForwardFunction.createResourceLinkForQuestionPanel()
             );
         }
 
@@ -379,6 +438,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
     }
 
@@ -422,7 +484,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForLockedDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-        resourceLinks.add(getPrintResourceLink(certificate, resourceLinks));
+        resourceLinks.add(getPrintResourceLink(certificate));
 
         if (isCopyCertificateAvailable(certificate)) {
             resourceLinks.add(
@@ -454,6 +516,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+
         return resourceLinks;
     }
 
@@ -463,6 +528,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (isMessagingAvailable(certificate)) {
             resourceLinks.add(getQuestionsResourceLink(certificate));
         }
+
+        getDisplayPatientAddressInCertificate(certificate)
+            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
     }
@@ -586,7 +654,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, certificate.getMetadata().getType());
     }
 
-    private ResourceLinkDTO getPrintResourceLink(Certificate certificate, ArrayList<ResourceLinkDTO> resourceLinks) {
+    private ResourceLinkDTO getPrintResourceLink(Certificate certificate) {
         if (!certificate.getMetadata().getPatient().isProtectedPerson()) {
             return
                 ResourceLinkDTO.create(

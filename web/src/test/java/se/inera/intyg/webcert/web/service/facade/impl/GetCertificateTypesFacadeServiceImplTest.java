@@ -18,14 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,8 +45,8 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -62,98 +69,123 @@ class GetCertificateTypesFacadeServiceImplTest {
     private WebCertUserService webCertUserService;
     @Mock
     private IntygTextsService intygTextsService;
+    @Mock
+    private CertificateTypeMessageService certificateTypeMessageService;
 
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
-    private final static String PATIENT_ID = "191212121212";
-
-    @Nested
-    class ErrorCases {
-        @Test
-        void shallThrowExceptionForInvalidPatientId() {
-            assertThrows(InvalidPersonNummerException.class, () -> serviceUnderTest.get("xxx"),
-                    "Could not parse personnummer: xxx");
-        }
-    }
+    private static final String CERTIFICATE_TYPE = "id";
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     @Nested
     class CorrectCases {
+
         private List<CertificateTypeInfoDTO> types;
         final private IntygModule module = createIntygModule();
         final private IntygModule notAllowedModule = createIntygModule("notAllowed");
 
         @BeforeEach
         void setup() throws Exception {
-            doReturn(Arrays.asList(module, notAllowedModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-
             doReturn("1.0")
-                    .when(intygTextsService)
-                    .getLatestVersion(anyString());
-
-            doNothing()
-                    .when(resourceLinkHelper)
-                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                .when(intygTextsService)
+                .getLatestVersion(anyString());
 
             final var user = mock(WebCertUser.class);
             doReturn(user)
-                    .when(webCertUserService)
-                    .getUser();
+                .when(webCertUserService)
+                .getUser();
 
             doReturn(Set.of(module.getId()))
-                    .when(authoritiesHelper)
-                    .getIntygstyperForPrivilege(any(), any());
-
-            types = serviceUnderTest.get(PATIENT_ID);
+                .when(authoritiesHelper)
+                .getIntygstyperForPrivilege(any(), any());
         }
 
         @Nested
         class ModuleConversion {
 
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
             @Test
             void shallConvertId() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getId(), types.get(0).getId());
             }
 
             @Test
             void shallConvertLabel() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getLabel(), types.get(0).getLabel());
             }
 
             @Test
             void shallConvertDescription() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getDescription(), types.get(0).getDescription());
             }
 
             @Test
             void shallConvertDetailedDescription() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
             }
 
             @Test
             void shallConvertIssuerTypeId() {
+                types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
             }
         }
 
         @Nested
-        class ResourceLinks {
+        class CertificateMessages {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
             @Test
-            void shallConvertResourceLinks() throws Exception {
+            void shallIncludeMessageWhenExists() {
+                final var expectedMessage = "Message for certificate type";
+                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(expectedMessage));
+                types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(expectedMessage, types.get(0).getMessage());
+            }
+
+            @Test
+            void shallExludeMessageWhenItDoesntExists() {
+                final String expectedMessage = null;
+                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.empty());
+                types = serviceUnderTest.get(PATIENT_ID);
+                assertEquals(expectedMessage, types.get(0).getMessage());
+            }
+        }
+
+        @Nested
+        class ResourceLinks {
+
+            @Test
+            void shallConvertResourceLinks() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
-                        .when(intygModuleRegistry)
-                        .listAllModules();
+                    .when(intygModuleRegistry)
+                    .listAllModules();
 
                 doAnswer(invocation -> {
                     List<IntygModuleDTO> DTOs = invocation.getArgument(0);
                     DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
                     return null;
                 })
-                        .when(resourceLinkHelper)
-                        .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                    .when(resourceLinkHelper)
+                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
@@ -161,26 +193,50 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() throws Exception {
+            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() {
                 final var module = createIntygModule();
                 doReturn(List.of(module))
-                        .when(intygModuleRegistry)
-                        .listAllModules();
+                    .when(intygModuleRegistry)
+                    .listAllModules();
 
                 final var types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddCreateConfirmationResourceLinkIfCertificateIsDodsbevis() {
+                final var module = createIntygModule("db");
+                doReturn(List.of(module))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertEquals(ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION, types.get(0).getLinks().get(1).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
             }
         }
 
         @Nested
         class AuthorityCheck {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(module, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
             @Test
-            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() throws InvalidPersonNummerException {
+            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() {
                 final var types = serviceUnderTest.get(PATIENT_ID);
 
                 assertEquals(1, types.size());
-                assertEquals("id", types.get(0).getId());
+                assertEquals(CERTIFICATE_TYPE, types.get(0).getId());
             }
         }
     }
@@ -193,26 +249,26 @@ class GetCertificateTypesFacadeServiceImplTest {
 
             if (hasTextVersion) {
                 doReturn("1.0")
-                        .when(intygTextsService)
-                        .getLatestVersion(anyString());
+                    .when(intygTextsService)
+                    .getLatestVersion(anyString());
             }
 
             doReturn(List.of(module))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+                .when(intygModuleRegistry)
+                .listAllModules();
 
             doNothing()
-                    .when(resourceLinkHelper)
-                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+                .when(resourceLinkHelper)
+                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
             final var user = mock(WebCertUser.class);
             doReturn(user)
-                    .when(webCertUserService)
-                    .getUser();
+                .when(webCertUserService)
+                .getUser();
 
             doReturn(Set.of(module.getId()))
-                    .when(authoritiesHelper)
-                    .getIntygstyperForPrivilege(any(), any());
+                .when(authoritiesHelper)
+                .getIntygstyperForPrivilege(any(), any());
         }
 
         @Test
@@ -239,8 +295,8 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(String id) {
         return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
-                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-                false, false);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+            false, false);
     }
 
     private IntygModule createIntygModule() {
@@ -249,7 +305,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(boolean isDeprecated, boolean showDeprecated) {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-                "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-                isDeprecated, showDeprecated);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
+            isDeprecated, showDeprecated);
     }
 }

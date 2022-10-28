@@ -27,19 +27,28 @@ public class ResourceLinkFactory {
 
     public static ResourceLinkDTO read() {
         return ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.READ_CERTIFICATE,
-                "Öppna",
-                "",
-                true
+            ResourceLinkTypeDTO.READ_CERTIFICATE,
+            "Öppna",
+            "",
+            true
         );
     }
 
     public static ResourceLinkDTO create(boolean enabled) {
         return ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.CREATE_CERTIFICATE,
-                "Skapa intyg",
-                enabled ? "Skapa ett intygsutkast." : "",
-                enabled
+            ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+            "Skapa intyg",
+            enabled ? "Skapa ett intygsutkast." : "",
+            enabled
+        );
+    }
+
+    public static ResourceLinkDTO confirmDodsbevis(boolean enabled) {
+        return ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION,
+            "Visa bekräftelsemodal för dödsbevis",
+            "Visa modal med ett bekräftelsemeddelande.",
+            enabled
         );
     }
 }

@@ -154,6 +154,23 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
+    public AccessResult allowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters) {
+        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
+            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+            .careUnit(accessEvaluationParameters.getUnit())
+            .patient(accessEvaluationParameters.getPatient())
+            .checkPatientDeceased(true)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .checkSubscription()
+            .evaluate();
+    }
+
+    @Override
     public AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters) {
         return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
             .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)

@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.facade;
 
-import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-public interface GetCertificateTypesFacadeService {
+public interface CertificateTypeMessageService {
 
-    List<CertificateTypeInfoDTO> get(Personnummer patientId);
+    Optional<String> get(String certificateType, Personnummer personId);
 }

@@ -21,14 +21,17 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 import java.util.List;
 
 public class CertificateTypeInfoDTO {
+
     private String id;
     private String label;
     private String issuerTypeId;
     private String description;
     private String detailedDescription;
     private List<ResourceLinkDTO> links;
+    private String message;
 
-    public CertificateTypeInfoDTO() { }
+    public CertificateTypeInfoDTO() {
+    }
 
     public String getId() {
         return id;
@@ -76,5 +79,13 @@ public class CertificateTypeInfoDTO {
 
     public void setLinks(List<ResourceLinkDTO> links) {
         this.links = links;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

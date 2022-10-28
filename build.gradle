@@ -52,6 +52,12 @@ allprojects {
     apply plugin: 'idea'
     apply plugin: "io.spring.dependency-management"
 
+    idea {
+        module {
+            downloadJavadoc = true
+        }
+    }
+
     repositories {
         mavenLocal()
         maven { url "https://nexus.drift.inera.se/repository/it-public/" }
