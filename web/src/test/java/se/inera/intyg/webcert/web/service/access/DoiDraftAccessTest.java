@@ -284,7 +284,7 @@ public class DoiDraftAccessTest extends DraftAccessTest {
 
     @Override
     protected void assertAllowToSignWithConfirmationNotLatestMajorVersion(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
