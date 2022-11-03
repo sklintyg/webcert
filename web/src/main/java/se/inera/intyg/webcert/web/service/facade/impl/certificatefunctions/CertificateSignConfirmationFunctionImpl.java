@@ -53,15 +53,16 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (isUniqueFeatureActive(certificate)) {
+        if (!isUniqueFeatureActive(certificate)) {
             return Optional.empty();
         }
+        final var certificateType = certificate.getMetadata().getType();
         final var personnummer = getPersonnummer(certificate);
         final var existingIntyg = getExistingIntyg(certificate, webCertUser, personnummer);
         final var previousIntygMap = existingIntygWithStatus(existingIntyg, INTYG_INDICATOR);
         final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
         final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
-        if (previousIntygExists(certificate, previousIntygMap) && !previousIntygExists(certificate, previousReplacedMap)) {
+        if (previousIntygMap.containsKey(certificateType) && !previousReplacedMap.containsKey(certificateType)) {
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
@@ -70,7 +71,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
                     + " Det är därför inte möjligt att signera detta dödsbevis.",
                 true));
         }
-        if (previousIntygExists(certificate, previousUtkastMap) || previousIntygExists(certificate, previousReplacedMap)) {
+        if (previousUtkastMap.containsKey(certificateType) || previousReplacedMap.containsKey(certificateType)) {
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
@@ -84,11 +85,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
     }
 
     private boolean isUniqueFeatureActive(Certificate certificate) {
-        return !authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType());
-    }
-
-    private static boolean previousIntygExists(Certificate certificate, Map<String, PreviousIntyg> previousMap) {
-        return previousMap.containsKey(certificate.getMetadata().getType());
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType());
     }
 
     private static Personnummer getPersonnummer(Certificate certificate) {
