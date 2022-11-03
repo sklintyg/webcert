@@ -19,10 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.ERSATT_INDICATOR;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_INDICATOR;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -50,13 +53,15 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType())) {
+        if (isUniqueFeatureActive(certificate)) {
             return Optional.empty();
         }
-        final var personnummer = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
-        final var existingIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, webCertUser, certificate.getMetadata().getId());
-        final var previousIntygMap = existingIntyg.getOrDefault(INTYG_INDICATOR, Collections.emptyMap());
-        if (previousIntygMap.containsKey(certificate.getMetadata().getType())) {
+        final var personnummer = getPersonnummer(certificate);
+        final var existingIntyg = getExistingIntyg(certificate, webCertUser, personnummer);
+        final var previousIntygMap = existingIntygWithStatus(existingIntyg, INTYG_INDICATOR);
+        final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
+        final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
+        if (previousIntygExists(certificate, previousIntygMap) && !previousIntygExists(certificate, previousReplacedMap)) {
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
@@ -65,8 +70,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
                     + " Det är därför inte möjligt att signera detta dödsbevis.",
                 true));
         }
-        final var previousUtkastMap = existingIntyg.getOrDefault(UTKAST_INDICATOR, Collections.emptyMap());
-        if (previousUtkastMap.containsKey(certificate.getMetadata().getType())) {
+        if (previousIntygExists(certificate, previousUtkastMap) || previousIntygExists(certificate, previousReplacedMap)) {
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
@@ -77,5 +81,27 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
                 true));
         }
         return Optional.empty();
+    }
+
+    private boolean isUniqueFeatureActive(Certificate certificate) {
+        return !authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType());
+    }
+
+    private static boolean previousIntygExists(Certificate certificate, Map<String, PreviousIntyg> previousMap) {
+        return previousMap.containsKey(certificate.getMetadata().getType());
+    }
+
+    private static Personnummer getPersonnummer(Certificate certificate) {
+        return Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
+    }
+
+    private Map<String, Map<String, PreviousIntyg>> getExistingIntyg(Certificate certificate, WebCertUser webCertUser,
+        Personnummer personnummer) {
+        return utkastService.checkIfPersonHasExistingIntyg(personnummer, webCertUser, certificate.getMetadata().getId());
+    }
+
+    private static Map<String, PreviousIntyg> existingIntygWithStatus(Map<String, Map<String, PreviousIntyg>> existingIntyg,
+        String intygType) {
+        return existingIntyg.getOrDefault(intygType, Collections.emptyMap());
     }
 }
