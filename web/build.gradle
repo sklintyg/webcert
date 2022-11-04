@@ -121,7 +121,9 @@ gretty {
                "-Ddev.config.file=${applicationDir}/config/application-dev.properties",
                "-DuseMinifiedJavaScript=${minified}",
                "-Ddev.http.port=${useHttpPort}",
-               "-Ddev.http.port.internal=${useInternalHttpPort}"]
+               "-Ddev.http.port.internal=${useInternalHttpPort}",
+               "-Dxml.catalog.cacheEnabled=false"
+    ]
 
     extraResourceBase webappOutputDir
 }
