@@ -40,8 +40,17 @@ public class CertificateFacadeTestHelper {
         return createCertificateWithChildRelation(certificateType, status, null);
     }
 
+    public static Certificate createCertificate(String certificateType, CertificateStatus status, boolean addressFromPU) {
+        return createCertificateWithChildRelation(certificateType, status, null, addressFromPU);
+    }
+
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
         CertificateRelation relation) {
+        return createCertificateWithChildRelation(certificateType, status, relation, true);
+    }
+
+    public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
+        CertificateRelation relation, boolean addressFromPU) {
         final var metadataBuilder = CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
@@ -54,6 +63,7 @@ public class CertificateFacadeTestHelper {
                             .id("191212121212")
                             .build()
                     )
+                    .addressFromPU(addressFromPU)
                     .build()
             )
             .unit(
@@ -203,10 +213,10 @@ public class CertificateFacadeTestHelper {
             .value(
                 CertificateDataValueDateRangeList.builder()
                     .list(Arrays.asList(
-                        CertificateDataValueDateRange.builder()
-                            .from(LocalDate.now())
-                            .to(LocalDate.now().plusDays(numberOfDays))
-                            .build()
+                            CertificateDataValueDateRange.builder()
+                                .from(LocalDate.now())
+                                .to(LocalDate.now().plusDays(numberOfDays))
+                                .build()
                         )
                     )
                     .build()

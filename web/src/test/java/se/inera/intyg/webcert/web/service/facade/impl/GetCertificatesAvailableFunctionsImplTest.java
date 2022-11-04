@@ -64,6 +64,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.DisplayPatientAddressInCertificate;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
@@ -94,6 +95,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     CertificateSignConfirmationFunction certificateSignConfirmationFunction;
+
+    @Mock
+    DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -279,8 +283,12 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeDisplayPatientAddress() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("ORIGIN"));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE, "", "", "", true)
+                ))
+                .when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
@@ -288,6 +296,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallExcludeDisplayPatientAddress() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            doReturn(Optional.empty()).when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
@@ -500,6 +509,11 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeDisplayPatientAddress() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE, "", "", "", true)
+                ))
+                .when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
@@ -575,6 +589,11 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeDisplayPatientAddress() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE, "", "", "", true)
+                ))
+                .when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
@@ -593,6 +612,11 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeDisplayPatientAddress() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE, "", "", "", true)
+                ))
+                .when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
