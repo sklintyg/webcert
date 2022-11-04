@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.ERSATT_INDICATOR;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_INDICATOR;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
@@ -164,6 +165,42 @@ class CertificateSignConfirmationFunctionTest {
         final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
 
         assertEquals(expectedResourceLink, actualResourceLink.get());
+    }
+
+    @Test
+    void shallReturnResourceLinkIfReplacedDodsbevisExistsForAnotherCareprovider() {
+
+        final var expectedResourceLink = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+            "Signera och skicka",
+            "Intyget skickas direkt till Skatteverket",
+            "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                + " Senast skapade dödsbevis är det som gäller."
+                + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
+            true);
+
+        final var previousUtkastDifferentCareProvider = Map.of(
+            INTYG_INDICATOR,
+            Map.of(
+                DB_TYPE,
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
+            ),
+            ERSATT_INDICATOR,
+            Map.of(
+                DB_TYPE,
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
+            )
+        );
+
+        doReturn(previousUtkastDifferentCareProvider)
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, CERTIFICATE_ID);
+        doReturn(true)
+            .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, DB_TYPE);
+
+        final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
+
+        assertEquals(expectedResourceLink, actualResourceLink.get(),
+            "If a signed intyg exists & replaced also exists, the replaced one should be prioritized");
     }
 
     @Test

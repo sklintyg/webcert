@@ -63,7 +63,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String REMOVE_DESCRIPTION = "Raderar intygsutkastet.";
 
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
-    private static final String SIGN_AND_SEND_DESCRIPTION = "Intyget skickas direkt till Arbetsförmedlingen.";
+    private static final String SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN = "Intyget skickas direkt till Arbetsförmedlingen.";
+    private static final String SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET = "Intyget skickas direkt till Skatteverket.";
 
     private static final String SIGN_NAME = "Signera intyget";
     private static final String SIGN_DESCRIPTION = "Intyget signeras.";
@@ -250,7 +251,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE,
                     SIGN_AND_SEND_NAME,
-                    SIGN_AND_SEND_DESCRIPTION,
+                    sendToDescription(certificate.getMetadata().getType()),
                     true
                 )
             );
@@ -321,6 +322,13 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
+    }
+
+    private String sendToDescription(String certificateType) {
+        if ("db".equals(certificateType)) {
+            return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
+        }
+        return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
     }
 
     private Optional<ResourceLinkDTO> getDisplayPatientAddressInCertificate(Certificate certificate) {
