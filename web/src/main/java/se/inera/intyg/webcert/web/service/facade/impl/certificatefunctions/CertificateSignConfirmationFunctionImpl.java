@@ -71,7 +71,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
                     + " Det är därför inte möjligt att signera detta dödsbevis.",
                 true));
         }
-        if (previousUtkastMap.containsKey(certificateType) || previousReplacedMap.containsKey(certificateType)) {
+        if (previousUtkastMap.containsKey(certificateType)) {
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signera och skicka",
