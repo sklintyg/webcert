@@ -44,6 +44,7 @@ public class IntegrationTest {
 
     public static Patient ATHENA_ANDERSSON = createPatient("194011306125", "Athena", "Andersson");
     public static Patient ALEXA_VALFRIDSSON = createPatient("194110299221", "Alexa", "Valfridsson");
+    public static Patient BOSTADSLOSE_ANDERSSON = createPatient("194110147495", "Bostadslöse", "Andersson");
     public static String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
 
     private static Patient createPatient(String id, String firstName, String lastName) {

@@ -20,15 +20,20 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.BOSTADSLOSE_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
 import io.restassured.config.SessionConfig;
+import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import java.util.ArrayList;
@@ -39,9 +44,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 /**
@@ -81,9 +88,8 @@ public class DodsbevisIT {
     class Draft {
 
         @Test
-        @DisplayName("Shall create draft with resource links")
         void shallCreateDraftWithResourceLinks() {
-            final var testSetup = createTestDraft();
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -93,9 +99,8 @@ public class DodsbevisIT {
         }
 
         @Test
-        @DisplayName("Shall create draft with data")
         void shallCreateDraftWithData() {
-            final var testSetup = createTestDraft();
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -105,15 +110,101 @@ public class DodsbevisIT {
         }
 
         @Test
-        @DisplayName("Shall create draft with meta data")
         void shallCreateDraftWithMetaData() {
-            final var testSetup = createTestDraft();
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
             final var response = getTestDraft(testSetup);
 
             assertNotNull(response.getMetadata(), "Expect draft to include meta data");
+        }
+
+        @Test
+        void shallIncludePatientAddressIfExistsInPU() {
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = getTestDraft(testSetup);
+
+            assertAll(
+                () -> assertEquals(true, response.getMetadata().getPatient().isAddressFromPU()),
+                () -> assertNotNull(response.getMetadata().getPatient().getStreet(), "Expect draft to include street"),
+                () -> assertNotNull(response.getMetadata().getPatient().getCity(), "Expect draft to include city"),
+                () -> assertNotNull(response.getMetadata().getPatient().getZipCode(), "Expect draft to include zipCode")
+            );
+        }
+
+        @Test
+        void shallExcludePatientAddressIfMissingInPU() {
+            final var testSetup = createTestDraft(BOSTADSLOSE_ANDERSSON);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = getTestDraft(testSetup);
+
+            assertAll(
+                () -> assertEquals(false, response.getMetadata().getPatient().isAddressFromPU()),
+                () -> assertNull(response.getMetadata().getPatient().getStreet(), "Expect draft to exclude street"),
+                () -> assertNull(response.getMetadata().getPatient().getCity(), "Expect draft to exclude city"),
+                () -> assertNull(response.getMetadata().getPatient().getZipCode(), "Expect draft to exclude zipCode")
+            );
+        }
+
+        @Test
+        void shallIncludePatientAddressIfMissingInPUAndEnteredByUser() {
+            final var testSetup = createTestDraft(BOSTADSLOSE_ANDERSSON);
+
+            final var expectedZipCode = "99999";
+            final var expectedStreet = "New Street address";
+            final var expectedCity = "New City";
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var originalDraft = getTestDraft(testSetup);
+            originalDraft.getMetadata().setPatient(
+                getPatientWithAddress(expectedZipCode, expectedStreet, expectedCity, originalDraft.getMetadata().getPatient())
+            );
+
+            given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(originalDraft)
+                .expect().statusCode(200)
+                .when()
+                .put("api/certificate/{certificateId}")
+                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            final var updatedDraft = getTestDraft(testSetup);
+
+            assertAll(
+                () -> assertEquals(false, updatedDraft.getMetadata().getPatient().isAddressFromPU()),
+                () -> assertEquals(expectedStreet, updatedDraft.getMetadata().getPatient().getStreet()),
+                () -> assertEquals(expectedCity, updatedDraft.getMetadata().getPatient().getCity()),
+                () -> assertEquals(expectedZipCode, updatedDraft.getMetadata().getPatient().getZipCode())
+            );
+        }
+
+        private Patient getPatientWithAddress(String expectedZipCode, String expectedStreet, String expectedCity, Patient currentPatient) {
+            return Patient.builder()
+                .personId(currentPatient.getPersonId())
+                .firstName(currentPatient.getFirstName())
+                .middleName(currentPatient.getMiddleName())
+                .lastName(currentPatient.getLastName())
+                .fullName(currentPatient.getFullName())
+                .zipCode(expectedZipCode)
+                .street(expectedStreet)
+                .city(expectedCity)
+                .addressFromPU(currentPatient.isAddressFromPU())
+                .testIndicated(currentPatient.isTestIndicated())
+                .protectedPerson(currentPatient.isProtectedPerson())
+                .deceased(currentPatient.isDeceased())
+                .differentNameFromEHR(currentPatient.isDifferentNameFromEHR())
+                .previousPersonId(currentPatient.getPreviousPersonId())
+                .personIdChanged(currentPatient.isPersonIdChanged())
+                .reserveId(currentPatient.isReserveId())
+                .build();
         }
 
         private CertificateDTO getTestDraft(TestSetup testSetup) {
@@ -125,7 +216,7 @@ public class DodsbevisIT {
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
         }
 
-        private TestSetup createTestDraft() {
+        private TestSetup createTestDraft(Patient patient) {
             return TestSetup.create()
                 .draft(
                     DbModuleEntryPoint.MODULE_ID,
@@ -133,7 +224,7 @@ public class DodsbevisIT {
                     CreateCertificateFillType.EMPTY,
                     DR_AJLA,
                     ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
+                    patient.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();

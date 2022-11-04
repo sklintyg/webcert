@@ -23,5 +23,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface PatientConverter {
 
-    Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion);
+    Patient convert(Patient originalPatient, Personnummer patientId, String certificateType,
+        String certificateTypeVersion);
 }

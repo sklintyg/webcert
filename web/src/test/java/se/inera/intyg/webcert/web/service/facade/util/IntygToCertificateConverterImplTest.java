@@ -124,6 +124,7 @@ public class IntygToCertificateConverterImplTest {
 
         doReturn(patient)
             .when(patientConverter).convert(
+                patient,
                 PATIENT_PERSONNUMMER,
                 CERTIFICATE_TYPE,
                 CERTIFICATE_TYPE_VERSION
@@ -380,6 +381,9 @@ public class IntygToCertificateConverterImplTest {
                             .personId(PERSON_ID_FROM_JSON)
                             .fullName(PERSON_NAME_FROM_JSON)
                             .build()
+                    )
+                    .patient(
+                        patient
                     )
                     .build()
             )

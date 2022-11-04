@@ -104,6 +104,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
         certificateToReturn.getMetadata().setPatient(
             patientConverter.convert(
+                certificateToReturn.getMetadata().getPatient(),
                 certificate.getPatientPersonnummer(),
                 certificate.getIntygsTyp(),
                 certificate.getIntygTypeVersion()
