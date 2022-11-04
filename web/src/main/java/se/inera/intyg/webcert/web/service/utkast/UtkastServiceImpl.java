@@ -116,6 +116,7 @@ public class UtkastServiceImpl implements UtkastService {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
     public static final String INTYG_INDICATOR = "intyg";
     public static final String UTKAST_INDICATOR = "utkast";
+    public static final String ERSATT_INDICATOR = "ersatt";
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
@@ -361,7 +362,14 @@ public class UtkastServiceImpl implements UtkastService {
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
             .collect(Collectors.toList());
 
+        List<Utkast> replacedList = toFilter.stream()
+            .filter(utkast -> utkast.getRelationKod() == RelationKod.ERSATT && utkast.getIntygsId().equals(currentDraftId))
+            .collect(Collectors.toList());
+
         Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
+
+        ret.put(ERSATT_INDICATOR, replacedList.stream()
+            .collect(getUtkastMapCollector(user)));
 
         ret.put(INTYG_INDICATOR, signedList.stream()
             .collect(getUtkastMapCollector(user)));
