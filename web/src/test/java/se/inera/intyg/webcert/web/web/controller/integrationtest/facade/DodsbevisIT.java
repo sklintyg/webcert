@@ -138,17 +138,7 @@ public class DodsbevisIT {
 
         @Test
         void shallExcludePatientAddressIfMissingInPU() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    DbModuleEntryPoint.MODULE_ID,
-                    "1.0",
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    BOSTADSLOSE_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
+            final var testSetup = createTestDraft(BOSTADSLOSE_ANDERSSON);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
