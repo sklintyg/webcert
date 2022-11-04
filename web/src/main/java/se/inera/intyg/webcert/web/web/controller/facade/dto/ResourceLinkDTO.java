@@ -99,13 +99,26 @@ public class ResourceLinkDTO {
             return false;
         }
         ResourceLinkDTO that = (ResourceLinkDTO) o;
-        return enabled == that.enabled && type == that.type && name.equals(that.name) && description.equals(that.description)
-            && body.equals(
-            that.body);
+        return enabled == that.enabled
+            && Objects.equals(type, that.type)
+            && Objects.equals(name, that.name)
+            && Objects.equals(description, that.description)
+            && Objects.equals(body, that.body);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(type, name, description, body, enabled);
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceLinkDTO{"
+            + "type=" + type
+            + ", name='" + name + '\''
+            + ", description='" + description + '\''
+            + ", body='" + body + '\''
+            + ", enabled=" + enabled
+            + '}';
     }
 }
