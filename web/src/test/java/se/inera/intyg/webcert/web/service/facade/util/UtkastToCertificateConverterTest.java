@@ -111,6 +111,7 @@ public class UtkastToCertificateConverterTest {
 
         doReturn(patient)
             .when(patientConverter).convert(
+                patient,
                 draft.getPatientPersonnummer(),
                 draft.getIntygsTyp(),
                 draft.getIntygTypeVersion()
@@ -408,6 +409,9 @@ public class UtkastToCertificateConverterTest {
                             .personId(PERSON_ID_FROM_JSON)
                             .fullName(PERSON_NAME_FROM_JSON)
                             .build()
+                    )
+                    .patient(
+                        patient
                     )
                     .build()
             )

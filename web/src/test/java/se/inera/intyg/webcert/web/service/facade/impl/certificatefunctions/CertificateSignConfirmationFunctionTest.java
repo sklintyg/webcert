@@ -168,7 +168,7 @@ class CertificateSignConfirmationFunctionTest {
     }
 
     @Test
-    void shallReturnResourceLinkIfReplacedDodsbevisExistsForAnotherCareprovider() {
+    void shallReturnResourceLinkIfReplacedAndDraftDodsbevisExistsForAnotherCareprovider() {
 
         final var expectedResourceLink = ResourceLinkDTO.create(
             ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
@@ -189,6 +189,11 @@ class CertificateSignConfirmationFunctionTest {
             Map.of(
                 DB_TYPE,
                 PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
+            ),
+            UTKAST_INDICATOR,
+            Map.of(
+                DB_TYPE,
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
             )
         );
 
@@ -200,7 +205,33 @@ class CertificateSignConfirmationFunctionTest {
         final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
 
         assertEquals(expectedResourceLink, actualResourceLink.get(),
-            "If a signed intyg exists & replaced also exists, the replaced one should be prioritized");
+            "If a signed intyg, replaced and draft exist, it should return resourcelink for draft");
+    }
+
+    @Test
+    void shallNotReturnResourceLinkIfOnlyReplacedDodsbevisExistsFromAnotherCareprovider() {
+        final var previousUtkastDifferentCareProvider = Map.of(
+            INTYG_INDICATOR,
+            Map.of(
+                DB_TYPE,
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
+            ),
+            ERSATT_INDICATOR,
+            Map.of(
+                DB_TYPE,
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
+            )
+        );
+
+        doReturn(previousUtkastDifferentCareProvider)
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, CERTIFICATE_ID);
+        doReturn(true)
+            .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, DB_TYPE);
+
+        final var actualResourceLink = certificateSignConfirmationFunction.get(dbCertificate, webCertUser);
+
+        assertTrue(actualResourceLink.isEmpty(),
+            "If a signed intyg exists & replaced also exists, but no draft. Resourcelink should not be returned");
     }
 
     @Test

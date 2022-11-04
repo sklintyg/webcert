@@ -16,13 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.util;
 
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.schemas.contract.Personnummer;
+package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
-public interface PatientConverter {
+import java.util.Optional;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-    Patient convert(Patient originalPatient, Personnummer patientId, String certificateType,
-        String certificateTypeVersion);
+public interface DisplayPatientAddressInCertificate {
+
+    Optional<ResourceLinkDTO> get(Certificate certificate);
 }

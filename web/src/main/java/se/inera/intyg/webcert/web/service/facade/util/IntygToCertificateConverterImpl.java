@@ -108,6 +108,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
         certificateToReturn.getMetadata().setPatient(
             patientConverter.convert(
+                certificateToReturn.getMetadata().getPatient(),
                 certificate.getUtlatande().getGrundData().getPatient().getPersonId(),
                 certificate.getUtlatande().getTyp(),
                 certificate.getUtlatande().getTextVersion()

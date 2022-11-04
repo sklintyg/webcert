@@ -43,7 +43,8 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     @Override
-    public Patient convert(Personnummer patientId, String certificateType, String certificateTypeVersion) {
+    public Patient convert(Patient originalPatient, Personnummer patientId, String certificateType,
+        String certificateTypeVersion) {
         final var patient = patientDetailsResolver.resolvePatient(patientId, certificateType, certificateTypeVersion);
         final var user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
         final var parameters = getIntegrationParameters(user);
@@ -55,9 +56,10 @@ public class PatientConverterImpl implements PatientConverter {
             .middleName(getString(patient.getMellannamn()))
             .lastName(getString(patient.getEfternamn()))
             .fullName(patient.getFullstandigtNamn())
-            .zipCode(patient.getPostnummer())
-            .street(patient.getPostadress())
-            .city(patient.getPostort())
+            .zipCode(getZipCode(originalPatient, patient))
+            .street(getStreet(originalPatient, patient))
+            .city(getCity(originalPatient, patient))
+            .addressFromPU(patient.isAddressDetailsSourcePU())
             .testIndicated(patient.isTestIndicator())
             .protectedPerson(isProtectedPerson(patientId))
             .deceased(patient.isAvliden())
@@ -170,5 +172,26 @@ public class PatientConverterImpl implements PatientConverter {
             return null;
         }
         return user.getParameters();
+    }
+
+    private String getZipCode(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
+        if (!patient.isAddressDetailsSourcePU()) {
+            return originalPatient.getZipCode();
+        }
+        return patient.getPostnummer();
+    }
+
+    private String getStreet(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
+        if (!patient.isAddressDetailsSourcePU()) {
+            return originalPatient.getStreet();
+        }
+        return patient.getPostadress();
+    }
+
+    private String getCity(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
+        if (!patient.isAddressDetailsSourcePU()) {
+            return originalPatient.getCity();
+        }
+        return patient.getPostort();
     }
 }

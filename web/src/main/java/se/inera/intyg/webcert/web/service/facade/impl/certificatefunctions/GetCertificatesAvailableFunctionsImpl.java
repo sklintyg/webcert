@@ -29,7 +29,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
@@ -137,8 +136,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private static final String DB_WARNING = "Kontrollera namn och personnummer";
-    private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
-    private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
     private static final String DB_WARNING_DESCRIPTION =
         "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
             + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
@@ -154,6 +151,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private GetQuestionsFacadeService getQuestionsFacadeService;
 
     private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
+    private final DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
 
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
@@ -161,13 +159,15 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         CandidateDataHelper candidateDataHelper, UserService userService,
-        GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction) {
+        GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction,
+        DisplayPatientAddressInCertificate displayPatientAddressInCertificate) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
         this.userService = userService;
         this.getQuestionsFacadeService = getQuestionsFacadeService;
         this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
+        this.displayPatientAddressInCertificate = displayPatientAddressInCertificate;
     }
 
     /**
@@ -318,7 +318,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
             .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
 
-        getDisplayPatientAddressInCertificate(certificate)
+        displayPatientAddressInCertificate.get(certificate)
             .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
@@ -329,19 +329,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
         }
         return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
-    }
-
-    private Optional<ResourceLinkDTO> getDisplayPatientAddressInCertificate(Certificate certificate) {
-        if (certificate.getMetadata().getType().equals(DB_TYPE)) {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
-                    DISPLAY_PATIENT_NAME,
-                    DISPLAY_PATIENT_DESCRIPTION,
-                    true)
-            );
-        }
-        return Optional.empty();
     }
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
@@ -446,7 +433,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        getDisplayPatientAddressInCertificate(certificate)
+        displayPatientAddressInCertificate.get(certificate)
             .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
@@ -524,7 +511,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        getDisplayPatientAddressInCertificate(certificate)
+        displayPatientAddressInCertificate.get(certificate)
             .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;
@@ -537,7 +524,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             resourceLinks.add(getQuestionsResourceLink(certificate));
         }
 
-        getDisplayPatientAddressInCertificate(certificate)
+        displayPatientAddressInCertificate.get(certificate)
             .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
 
         return resourceLinks;

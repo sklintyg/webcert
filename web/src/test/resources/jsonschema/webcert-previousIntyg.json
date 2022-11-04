@@ -3,7 +3,8 @@
   "type": "object",
   "properties" : {
     "intyg" : {},
-    "utkast" : {}
+    "utkast" : {},
+    "ersatt" : {}
   },
   "additionalProperties": false
 }
