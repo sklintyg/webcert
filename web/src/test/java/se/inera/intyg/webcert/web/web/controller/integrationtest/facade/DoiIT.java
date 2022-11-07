@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
@@ -92,6 +93,27 @@ public class DoiIT {
             final var response = getTestDraft(certificateId);
 
             assertNotNull(response.getMetadata(), "Expect draft to include meta data");
+        }
+
+        @Test
+        void shallCreateDraftWithData() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var certificateId = given()
+                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
+                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateType}/{patientId}")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = getTestDraft(certificateId);
+
+            assertTrue(response.getData().size() > 0, "Expect draft to include data");
         }
 
         private CertificateDTO getTestDraft(String certificateId) {
