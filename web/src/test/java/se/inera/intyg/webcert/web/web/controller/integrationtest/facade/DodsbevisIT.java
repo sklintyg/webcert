@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.BOSTADSLOSE_ANDERSSON;
@@ -40,15 +41,18 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 /**
@@ -56,6 +60,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
  */
 public class DodsbevisIT {
 
+    private static final String CURRENT_VERSION = "1.0";
     private List<String> certificateIdsToCleanAfterTest;
 
     @BeforeEach
@@ -186,6 +191,65 @@ public class DodsbevisIT {
             );
         }
 
+        @Test
+        public void shallReturnValidationErrorsForDraft() {
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(testSetup.certificate())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateId}/validate")
+                .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertNotNull(response.getValidationErrors(), "Expect response to include validation errors")
+            );
+        }
+
+        @Test
+        public void shallBeAbleToDeleteDraft() {
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("version", 1)
+                .when()
+                .delete("api/certificate/{certificateId}/{version}")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        public void shallReturnNewVersionWhenSaving() {
+            final var testSetup = createTestDraft(ATHENA_ANDERSSON);
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(testSetup.certificate())
+                .expect().statusCode(200)
+                .when()
+                .put("api/certificate/{certificateId}")
+                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertAll(
+                () -> assertTrue(response.getVersion() > testSetup.certificate().getMetadata().getVersion(),
+                    "Expect version after save to be incremented")
+            );
+        }
+
         private Patient getPatientWithAddress(String expectedZipCode, String expectedStreet, String expectedCity, Patient currentPatient) {
             return Patient.builder()
                 .personId(currentPatient.getPersonId())
@@ -220,7 +284,7 @@ public class DodsbevisIT {
             return TestSetup.create()
                 .draft(
                     DbModuleEntryPoint.MODULE_ID,
-                    "1.0",
+                    CURRENT_VERSION,
                     CreateCertificateFillType.EMPTY,
                     DR_AJLA,
                     ALFA_VARDCENTRAL,
@@ -236,7 +300,6 @@ public class DodsbevisIT {
     class Certificate {
 
         @Test
-        @DisplayName("Shall create certificate with resource links")
         void shallCreateCertificateWithResourceLinks() {
             final var testSetup = createTestCertificate();
 
@@ -248,7 +311,6 @@ public class DodsbevisIT {
         }
 
         @Test
-        @DisplayName("Shall create certificate with data")
         void shallCreateCertificateWithData() {
             final var testSetup = createTestCertificate();
 
@@ -260,7 +322,6 @@ public class DodsbevisIT {
         }
 
         @Test
-        @DisplayName("Shall create certificate with meta data")
         void shallCreateCertificateWithMetaData() {
             final var testSetup = createTestCertificate();
 
@@ -269,6 +330,99 @@ public class DodsbevisIT {
             final var response = getTestCertificate(testSetup);
 
             assertNotNull(response.getMetadata(), "Expect certificate to include meta data");
+        }
+
+        @Test
+        public void shallBeAbleToPrintCertificate() {
+            final var testSetup = createTestCertificate();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
+                .when()
+                .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        void shallReturnCertificateOfCurrentVersionAfterReplace() {
+            final var testSetup = createTestCertificate();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
+            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(newCertificateRequestDTO)
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/replace")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = given()
+                .pathParam("certificateId", certificateId)
+                .expect().statusCode(200)
+                .when()
+                .get("api/certificate/{certificateId}")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertAll(
+                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
+            );
+        }
+
+        @Test
+        public void shallBeAbleToRevokeCertificate() {
+            final var testSetup = createTestCertificate();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
+            revokeCertificateRequest.setReason("Reason");
+            revokeCertificateRequest.setMessage("Message");
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(revokeCertificateRequest)
+                .when().post("api/certificate/{certificateId}/revoke")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
+        }
+
+        @Test
+        public void shallBeAbleToRevokeLockedCertificate() {
+            final var testSetup = createLockedTestCertificate();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
+            revokeCertificateRequest.setReason("Reason");
+            revokeCertificateRequest.setMessage("Message");
+
+            final var response = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .contentType(ContentType.JSON)
+                .body(revokeCertificateRequest)
+                .when().post("api/certificate/{certificateId}/revoke")
+                .then().extract().response();
+
+            assertAll(
+                () -> assertEquals(200, response.getStatusCode())
+            );
         }
 
         private CertificateDTO getTestCertificate(TestSetup testSetup) {
@@ -284,9 +438,22 @@ public class DodsbevisIT {
             return TestSetup.create()
                 .certificate(
                     DbModuleEntryPoint.MODULE_ID,
-                    "1.0",
+                    CURRENT_VERSION,
                     ALFA_VARDCENTRAL,
                     DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+        }
+
+        private TestSetup createLockedTestCertificate() {
+            return TestSetup.create()
+                .lockedDraft(
+                    Ag7804EntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    DR_AJLA,
+                    ALFA_VARDCENTRAL,
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
