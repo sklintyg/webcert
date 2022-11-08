@@ -93,12 +93,33 @@ public class DodsbevisIT {
     class Draft {
 
         @Test
+        void shallCreateDbDraft() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var certificateId = given()
+                .pathParam("certificateType", DbModuleEntryPoint.MODULE_ID)
+                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateType}/{patientId}")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = getTestDraft(certificateId);
+
+            assertEquals(response.getMetadata().getType(), "db", "Expect to create draft of type db");
+        }
+
+        @Test
         void shallCreateDraftWithResourceLinks() {
             final var testSetup = createTestDraft(ATHENA_ANDERSSON);
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getTestDraft(testSetup);
+            final var response = getTestDraft(testSetup.certificateId());
 
             assertNotNull(response.getLinks(), "Expect draft to include resource links");
         }
@@ -109,7 +130,7 @@ public class DodsbevisIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getTestDraft(testSetup);
+            final var response = getTestDraft(testSetup.certificateId());
 
             assertNotNull(response.getData(), "Expect draft to include data");
         }
@@ -120,7 +141,7 @@ public class DodsbevisIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getTestDraft(testSetup);
+            final var response = getTestDraft(testSetup.certificateId());
 
             assertNotNull(response.getMetadata(), "Expect draft to include meta data");
         }
@@ -131,7 +152,7 @@ public class DodsbevisIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getTestDraft(testSetup);
+            final var response = getTestDraft(testSetup.certificateId());
 
             assertAll(
                 () -> assertEquals(true, response.getMetadata().getPatient().isAddressFromPU()),
@@ -147,7 +168,7 @@ public class DodsbevisIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getTestDraft(testSetup);
+            final var response = getTestDraft(testSetup.certificateId());
 
             assertAll(
                 () -> assertEquals(false, response.getMetadata().getPatient().isAddressFromPU()),
@@ -167,7 +188,7 @@ public class DodsbevisIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var originalDraft = getTestDraft(testSetup);
+            final var originalDraft = getTestDraft(testSetup.certificateId());
             originalDraft.getMetadata().setPatient(
                 getPatientWithAddress(expectedZipCode, expectedStreet, expectedCity, originalDraft.getMetadata().getPatient())
             );
@@ -181,7 +202,7 @@ public class DodsbevisIT {
                 .put("api/certificate/{certificateId}")
                 .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
 
-            final var updatedDraft = getTestDraft(testSetup);
+            final var updatedDraft = getTestDraft(testSetup.certificateId());
 
             assertAll(
                 () -> assertEquals(false, updatedDraft.getMetadata().getPatient().isAddressFromPU()),
@@ -206,9 +227,7 @@ public class DodsbevisIT {
                 .post("api/certificate/{certificateId}/validate")
                 .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
 
-            assertAll(
-                () -> assertNotNull(response.getValidationErrors(), "Expect response to include validation errors")
-            );
+            assertNotNull(response.getValidationErrors(), "Expect response to include validation errors");
         }
 
         @Test
@@ -224,9 +243,7 @@ public class DodsbevisIT {
                 .delete("api/certificate/{certificateId}/{version}")
                 .then().extract().response();
 
-            assertAll(
-                () -> assertEquals(200, response.getStatusCode())
-            );
+            assertEquals(200, response.getStatusCode());
         }
 
         @Test
@@ -244,10 +261,8 @@ public class DodsbevisIT {
                 .put("api/certificate/{certificateId}")
                 .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
 
-            assertAll(
-                () -> assertTrue(response.getVersion() > testSetup.certificate().getMetadata().getVersion(),
-                    "Expect version after save to be incremented")
-            );
+            assertTrue(response.getVersion() > testSetup.certificate().getMetadata().getVersion(),
+                "Expect version after save to be incremented");
         }
 
         private Patient getPatientWithAddress(String expectedZipCode, String expectedStreet, String expectedCity, Patient currentPatient) {
@@ -271,9 +286,9 @@ public class DodsbevisIT {
                 .build();
         }
 
-        private CertificateDTO getTestDraft(TestSetup testSetup) {
+        private CertificateDTO getTestDraft(String certificateId) {
             return given()
-                .pathParam("certificateId", testSetup.certificateId())
+                .pathParam("certificateId", certificateId)
                 .expect().statusCode(200)
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -345,9 +360,7 @@ public class DodsbevisIT {
                 .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
                 .then().extract().response();
 
-            assertAll(
-                () -> assertEquals(200, response.getStatusCode())
-            );
+            assertEquals(200, response.getStatusCode());
         }
 
         @Test
@@ -376,9 +389,8 @@ public class DodsbevisIT {
                 .get("api/certificate/{certificateId}")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
 
-            assertAll(
-                () -> assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion())
-            );
+            assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion());
+
         }
 
         @Test
@@ -398,9 +410,7 @@ public class DodsbevisIT {
                 .when().post("api/certificate/{certificateId}/revoke")
                 .then().extract().response();
 
-            assertAll(
-                () -> assertEquals(200, response.getStatusCode())
-            );
+            assertEquals(200, response.getStatusCode());
         }
 
         @Test
@@ -420,9 +430,7 @@ public class DodsbevisIT {
                 .when().post("api/certificate/{certificateId}/revoke")
                 .then().extract().response();
 
-            assertAll(
-                () -> assertEquals(200, response.getStatusCode())
-            );
+            assertEquals(200, response.getStatusCode());
         }
 
         private CertificateDTO getTestCertificate(TestSetup testSetup) {
