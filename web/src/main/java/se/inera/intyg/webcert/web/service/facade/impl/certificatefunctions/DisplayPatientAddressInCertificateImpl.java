@@ -19,9 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -32,9 +34,14 @@ public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAdd
     private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
     private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
 
+    private final List<String> certificatesTypeToDisplay = List.of(
+        DbModuleEntryPoint.MODULE_ID,
+        DoiModuleEntryPoint.MODULE_ID
+    );
+
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
-        if (certificate.getMetadata().getType().equals(DbModuleEntryPoint.MODULE_ID)) {
+        if (certificatesTypeToDisplay.contains(certificate.getMetadata().getType())) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
