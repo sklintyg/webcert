@@ -147,7 +147,11 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
             return message;
         }
 
-        final var componentType = certificate.getData().get(questionId).getConfig().getType();
+        final var certificateDataElement = certificate.getData().get(questionId);
+        if (certificateDataElement == null) {
+            return message;
+        }
+        final var componentType = certificateDataElement.getConfig().getType();
         final var oldComponentName = convertToOldName(componentType, certificate, questionId);
         return "common.validation." + oldComponentName + "." + validationMessageType.name().toLowerCase();
     }
