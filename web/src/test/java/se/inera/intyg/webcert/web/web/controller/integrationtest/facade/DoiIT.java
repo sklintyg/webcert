@@ -38,9 +38,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
 public class DoiIT {
@@ -82,15 +84,7 @@ public class DoiIT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = given()
-                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
-                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateType}/{patientId}")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
+            final var certificateId = createDoiDraft();
 
             final var response = getTestDraft(certificateId);
 
@@ -103,19 +97,43 @@ public class DoiIT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = given()
-                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
-                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateType}/{patientId}")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
+            final var certificateId = createDoiDraft();
 
             final var response = getTestDraft(certificateId);
 
             assertTrue(response.getData().size() > 0, "Expect draft to include data");
+        }
+
+        @Test
+        void shallSaveDraftWithData() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var certificateId = createDoiDraft();
+
+            final var certificate = getTestDraft(certificateId);
+
+            final var unit = certificate.getMetadata().getUnit();
+            certificate.getMetadata().setUnit(
+                Unit.builder()
+                    .unitId(unit.getUnitId())
+                    .unitName(unit.getUnitName())
+                    .build()
+            );
+
+            final var response = given()
+                .pathParam("certificateId", certificate.getMetadata().getId())
+                .contentType(ContentType.JSON)
+                .body(certificate)
+                .expect().statusCode(200)
+                .when()
+                .put("api/certificate/{certificateId}")
+                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertTrue(response.getVersion() > certificate.getMetadata().getVersion(),
+                "Expect version after save to be incremented");
+            ;
         }
 
         @Test
@@ -124,15 +142,7 @@ public class DoiIT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = given()
-                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
-                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateType}/{patientId}")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
+            final var certificateId = createDoiDraft();
 
             final var response = getTestDraft(certificateId);
 
@@ -154,15 +164,7 @@ public class DoiIT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = given()
-                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
-                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateType}/{patientId}")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
+            final var certificateId = createDoiDraft();
 
             final var response = getTestDraft(certificateId);
 
@@ -176,6 +178,18 @@ public class DoiIT {
                 .when()
                 .get("api/certificate/{certificateId}")
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+        }
+
+        private String createDoiDraft() {
+            final var certificateId = given()
+                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
+                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateType}/{patientId}")
+                .then().extract().path("certificateId").toString();
+            certificateIdsToCleanAfterTest.add(certificateId);
+            return certificateId;
         }
     }
 }
