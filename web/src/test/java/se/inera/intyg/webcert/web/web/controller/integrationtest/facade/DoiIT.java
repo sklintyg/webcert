@@ -28,6 +28,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
 import io.restassured.config.SessionConfig;
+import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
 public class DoiIT {
 
@@ -114,6 +116,57 @@ public class DoiIT {
             final var response = getTestDraft(certificateId);
 
             assertTrue(response.getData().size() > 0, "Expect draft to include data");
+        }
+
+        @Test
+        void shallValidateDraft() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var certificateId = given()
+                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
+                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateType}/{patientId}")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = getTestDraft(certificateId);
+
+            final var validation = given()
+                .pathParam("certificateId", certificateId)
+                .contentType(ContentType.JSON)
+                .body(response)
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateId}/validate")
+                .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
+
+            assertTrue(validation.getValidationErrors().length > 0, "Expect draft to include validationsErrors");
+        }
+
+        @Test
+        void shallCreateDraftWithResourceLinks() {
+            TestSetup.create()
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            final var certificateId = given()
+                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
+                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateType}/{patientId}")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            final var response = getTestDraft(certificateId);
+
+            assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
         }
 
         private CertificateDTO getTestDraft(String certificateId) {
