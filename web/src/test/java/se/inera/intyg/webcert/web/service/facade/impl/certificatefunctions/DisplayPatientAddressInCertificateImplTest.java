@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
@@ -50,6 +51,20 @@ class DisplayPatientAddressInCertificateImplTest {
             false
         );
         final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED,
+            true);
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
+    }
+
+    @Test
+    void shallIncludeDisplayPatientAddressIfDoi() {
+        final var expectedResourceLink = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+            "Patientuppgifter",
+            "Presenterar patientens adressuppgifter",
+            false
+        );
+        final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED,
             true);
         final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
         assertEquals(expectedResourceLink, actualResourceLink.get());

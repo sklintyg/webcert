@@ -187,6 +187,18 @@ class ValidateCertificateFacadeServiceImplTest {
     }
 
     @Test
+    void shallReturnValidationErrorEvenIfQuestionIdIsMissingAndMessageIsEmpty() {
+        final var draftValidationMessage = addValidationMessage();
+
+        draftValidationMessage.setQuestionId(null);
+        draftValidationMessage.setMessage(null);
+
+        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+
+        assertEquals(1, actualValidationErrors.length);
+    }
+
+    @Test
     void shallIncludeTextDependingOnComponentInValidationError() {
         final var draftValidationMessage = addValidationMessage();
 
