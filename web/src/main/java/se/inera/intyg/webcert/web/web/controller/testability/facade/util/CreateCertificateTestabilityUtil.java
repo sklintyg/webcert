@@ -314,6 +314,9 @@ public class CreateCertificateTestabilityUtil {
         patient.setTestIndicator(personFromPUService.getPerson().isTestIndicator());
         patient.setAvliden(personFromPUService.getPerson().isAvliden());
         patient.setSekretessmarkering(personFromPUService.getPerson().isSekretessmarkering());
+        patient.setPostadress(personFromPUService.getPerson().getPostadress());
+        patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
+        patient.setPostort(personFromPUService.getPerson().getPostort());
         return patient;
     }
 }
