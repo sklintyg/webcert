@@ -59,7 +59,8 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
             final var alias = context.getLocalExtendedMetadata().getAlias();
             if (alias.equals(AuthConstants.ALIAS_ELEG) || alias.equals(AuthConstants.ALIAS_ELEG_WC2)) {
                 ssoProfileOptions.setAuthnContexts(new HashSet<>());
-            } else if (alias.equals(AuthConstants.ALIAS_SITHS) || alias.equals(AuthConstants.ALIAS_SITHS_WC2)) {
+            } else if (alias.equals(AuthConstants.ALIAS_SITHS_NORMAL) || alias.equals(AuthConstants.ALIAS_SITHS)
+                || alias.equals(AuthConstants.ALIAS_SITHS_WC2)) {
                 ssoProfileOptions.setAuthnContexts(buildTlsClientAuthContexts());
             }
         } else {
