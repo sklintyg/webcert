@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -30,6 +31,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.MissingRelatedCertificateConfirmation;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
@@ -50,16 +52,20 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final IntygTextsService intygTextsService;
     private final CertificateTypeMessageService certificateTypeMessageService;
 
+    private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
+
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
         AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-        IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService) {
+        IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService,
+        MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.intygTextsService = intygTextsService;
         this.certificateTypeMessageService = certificateTypeMessageService;
+        this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
     }
 
     @Override
@@ -67,14 +73,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         final var certificateModuleList = getCertificateModuleList(patientId);
         return certificateModuleList.stream()
             .map(module -> convertModuleToTypeInfo(module, patientId))
-            .map(this::addAdditionalResourceLinks)
+            .map(certificateTypeInfoDTO -> addAdditionalResourceLinks(certificateTypeInfoDTO, patientId))
             .collect(Collectors.toList());
     }
 
-    private CertificateTypeInfoDTO addAdditionalResourceLinks(CertificateTypeInfoDTO intygModule) {
-        if (intygModule.getId().equals("db")) {
+    private CertificateTypeInfoDTO addAdditionalResourceLinks(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
+        if (intygModule.getId().equals(DbModuleEntryPoint.MODULE_ID)) {
             intygModule.getLinks().add(ResourceLinkFactory.confirmDodsbevis(true));
         }
+        missingRelatedCertificateConfirmation.get(intygModule.getId(), patientId)
+            .ifPresent(resourceLinkDTO -> intygModule.getLinks().add(resourceLinkDTO));
         return intygModule;
     }
 
