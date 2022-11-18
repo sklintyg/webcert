@@ -26,6 +26,7 @@ import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNE
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -50,9 +51,14 @@ public class CreateCertificateFromTemplateFunctionImpl implements CreateCertific
         + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
         + "</p></div>";
 
+    private static final String CREATE_DOI_NAME = "Skapa dödsorsaksintyg";
+    private static final String CREATE_DOI_DESCRIPTION = "Skapar ett dödsorsaksintyg utifrån dödsbeviset.";
+    private static final String CREATE_DOI_BODY = "Skapa ett dödsorsaksintyg utifrån ett dödsbevis innebär att informationsmängder som är "
+        + "gemensamma för båda intygen, automatiskt förifylls.";
+
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (isCreateCertificateFromTemplateAvailable(certificate, webCertUser)) {
+        if (isCreateAg7804FromFk7804(certificate, webCertUser)) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
@@ -63,24 +69,67 @@ public class CreateCertificateFromTemplateFunctionImpl implements CreateCertific
                 )
             );
         }
+
+        if (isCreateDoiFromDb(certificate, webCertUser)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
+                    CREATE_DOI_NAME,
+                    CREATE_DOI_DESCRIPTION,
+                    CREATE_DOI_BODY,
+                    true
+                )
+            );
+        }
+
         return Optional.empty();
     }
 
-    private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate, WebCertUser webCertUser) {
-        if (isReplacementSigned(certificate)
+    private boolean isCreateAg7804FromFk7804(Certificate certificate, WebCertUser webCertUser) {
+        if (notSigned(certificate)
+            || notCorrectCertificateType(certificate, LisjpEntryPoint.MODULE_ID)
+            || isReplacementSigned(certificate)
             || isDjupintegration(webCertUser)
             || hasBeenComplementedBySignedCertificate(certificate)
             || isRevoked(certificate)
-            || certificate.getMetadata().getStatus() != SIGNED
         ) {
             return false;
         }
 
-        return isLisjp(certificate);
+        return true;
+    }
+
+    private boolean isCreateDoiFromDb(Certificate certificate, WebCertUser webCertUser) {
+        if (notSigned(certificate)
+            || notCorrectCertificateType(certificate, DbModuleEntryPoint.MODULE_ID)
+            || isReplacementSigned(certificate)
+            || isDjupintegration(webCertUser)
+            || isRevoked(certificate)
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean notSigned(Certificate certificate) {
+        return certificate.getMetadata().getStatus() != SIGNED;
+    }
+
+    private static boolean notCorrectCertificateType(Certificate certificate, String certificateType) {
+        return !certificate.getMetadata().getType().equalsIgnoreCase(certificateType);
     }
 
     private boolean isReplacementSigned(Certificate certificate) {
         return includesChildRelation(certificate.getMetadata().getRelations(), REPLACED, SIGNED);
+    }
+
+    private boolean isDjupintegration(WebCertUser webCertUser) {
+        return webCertUser != null && webCertUser.getOrigin().contains("DJUPINTEGRATION");
+    }
+
+    private boolean isRevoked(Certificate certificate) {
+        return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
     }
 
     private boolean includesChildRelation(CertificateRelations relations, CertificateRelationType type, CertificateStatus status) {
@@ -104,18 +153,5 @@ public class CreateCertificateFromTemplateFunctionImpl implements CreateCertific
 
     private boolean missingChildRelations(CertificateRelations relations) {
         return relations == null || relations.getChildren() == null;
-    }
-
-    private boolean isDjupintegration(WebCertUser webCertUser) {
-        return webCertUser != null && webCertUser.getOrigin().contains("DJUPINTEGRATION");
-    }
-
-    private boolean isRevoked(Certificate certificate) {
-        return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
-
-    }
-
-    private boolean isLisjp(Certificate certificate) {
-        return certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
     }
 }
