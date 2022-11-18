@@ -163,6 +163,23 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
 
             assertEquals(newCertificateType, certificateTypeArgumentCaptor.getValue());
         }
+
+        @Test
+        void shallSupportCreatingDoiFromDb() {
+            final var originalCertificateType = "db";
+            final var newCertificateType = "doi";
+            setup(originalCertificateType, newCertificateType);
+
+            final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID);
+
+            verify(copyUtkastServiceHelper)
+                .createUtkastFromDifferentIntygTypeRequest(anyString(), certificateTypeArgumentCaptor.capture(), anyString(),
+                    any(CopyIntygRequest.class));
+
+            assertEquals(newCertificateType, certificateTypeArgumentCaptor.getValue());
+        }
     }
 
     private void setup(String originalCertificateType, String newCertificateType) {

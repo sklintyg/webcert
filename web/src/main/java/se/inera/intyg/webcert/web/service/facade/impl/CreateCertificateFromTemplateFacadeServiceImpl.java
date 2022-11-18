@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
@@ -74,9 +76,12 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
     }
 
     private String getNewCertificateType(String templateType) {
+
         switch (templateType) {
             case "lisjp":
                 return "ag7804";
+            case DbModuleEntryPoint.MODULE_ID:
+                return DoiModuleEntryPoint.MODULE_ID;
             default:
                 return "";
         }
