@@ -123,17 +123,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             + "Försäkringskassans system vilket ska göras i samråd med patienten.</br>"
             + "</br>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.";
 
-    private static final String CREATE_AG7804_NAME = "Skapa AG7804";
-    private static final String CREATE_AG7804_DESCRIPTION = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
-    private static final String CREATE_AG7804_BODY = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
-        + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
-        + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
-        + "Gör detta i så fall först.</div>"
-        + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804)"
-        + " utifrån ett Läkarintyg för sjukpenning innebär att "
-        + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
-        + "</p></div>";
-
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
     private static final String DB_WARNING = "Kontrollera namn och personnummer";
     private static final String DB_WARNING_DESCRIPTION =
@@ -148,10 +137,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final WebCertUserService webCertUserService;
     private final CandidateDataHelper candidateDataHelper;
     private final UserService userService;
-    private GetQuestionsFacadeService getQuestionsFacadeService;
+    private final GetQuestionsFacadeService getQuestionsFacadeService;
 
     private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
     private final DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
+
+    private final CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
 
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
@@ -160,7 +151,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         CandidateDataHelper candidateDataHelper, UserService userService,
         GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction,
-        DisplayPatientAddressInCertificate displayPatientAddressInCertificate) {
+        DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
+        CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
@@ -168,6 +160,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.getQuestionsFacadeService = getQuestionsFacadeService;
         this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
         this.displayPatientAddressInCertificate = displayPatientAddressInCertificate;
+        this.createCertificateFromTemplateFunction = createCertificateFromTemplateFunction;
     }
 
     /**
@@ -316,10 +309,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
-            .ifPresent((certificateSignConfirmation) -> resourceLinks.add(certificateSignConfirmation));
+            .ifPresent(resourceLinks::add);
 
         displayPatientAddressInCertificate.get(certificate)
-            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+            .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }
@@ -385,18 +378,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
-        if (isCreateCertificateFromTemplateAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE,
-                    CREATE_AG7804_NAME,
-                    CREATE_AG7804_DESCRIPTION,
-                    CREATE_AG7804_BODY,
-                    true
-                )
-            );
-        }
-
         resourceLinks.add(
             ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
@@ -434,7 +415,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         displayPatientAddressInCertificate.get(certificate)
-            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+            .ifPresent(resourceLinks::add);
+
+        createCertificateFromTemplateFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }
@@ -512,7 +496,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         );
 
         displayPatientAddressInCertificate.get(certificate)
-            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+            .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }
@@ -525,7 +509,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         }
 
         displayPatientAddressInCertificate.get(certificate)
-            .ifPresent((displayPatientAddressInCertificate) -> resourceLinks.add(displayPatientAddressInCertificate));
+            .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }
@@ -544,29 +528,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             && certificate.getMetadata().getRelations().getParent().getType() == COMPLEMENTED;
     }
 
-    private boolean isRevoked(Certificate certificate) {
-        return certificate.getMetadata().getStatus() == CertificateStatus.REVOKED;
-
-    }
-
     private boolean isSendCertificateAvailable(Certificate certificate) {
         if (isSent(certificate)) {
             return false;
         }
 
         if (isReplacementSigned(certificate)) {
-            return false;
-        }
-
-        return isLisjp(certificate);
-    }
-
-    private boolean isCreateCertificateFromTemplateAvailable(Certificate certificate) {
-        if (isReplacementSigned(certificate)
-            || isDjupintegration()
-            || hasBeenComplementedBySignedCertificate(certificate)
-            || isRevoked(certificate)
-        ) {
             return false;
         }
 
