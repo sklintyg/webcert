@@ -71,45 +71,13 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
     private final static String PATIENT_ID = "191212121212";
     private final static String LATEST_VERSION = "2.0";
 
-    @BeforeEach
-    void setup() {
-        doReturn(createCertificate())
-            .when(utkastService)
-            .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
-
-        doReturn(LATEST_VERSION).when(intygTextsService).getLatestVersion(anyString());
-
-        final var serviceRequest = new CreateUtkastFromTemplateRequest(
-            CERTIFICATE_ID,
-            NEW_CERTIFICATE_TYPE,
-            null,
-            null,
-            CERTIFICATE_TYPE
-        );
-
-        doReturn(serviceRequest)
-            .when(copyUtkastServiceHelper)
-            .createUtkastFromDifferentIntygTypeRequest(
-                eq(CERTIFICATE_ID),
-                eq(NEW_CERTIFICATE_TYPE),
-                eq(CERTIFICATE_TYPE),
-                any(CopyIntygRequest.class)
-            );
-
-        final var serviceResponse = new CreateUtkastFromTemplateResponse(
-            CERTIFICATE_TYPE,
-            LATEST_VERSION,
-            NEW_CERTIFICATE_ID,
-            CERTIFICATE_ID
-        );
-
-        doReturn(serviceResponse)
-            .when(copyUtkastService)
-            .createUtkastFromSignedTemplate(serviceRequest);
-    }
-
     @Nested
-    class RenewFromTemplate {
+    class CreateFromTemplate {
+
+        @BeforeEach
+        void setUp() {
+            setup(CERTIFICATE_TYPE, NEW_CERTIFICATE_TYPE);
+        }
 
         @Test
         void shallIncludeCertificateId() {
@@ -133,10 +101,10 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
             final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
             verify(copyUtkastServiceHelper)
-                .createUtkastFromDifferentIntygTypeRequest(anyString(), anyString(), certificateTypeArgumentCaptor.capture(),
+                .createUtkastFromDifferentIntygTypeRequest(anyString(), certificateTypeArgumentCaptor.capture(), anyString(),
                     any(CopyIntygRequest.class));
 
-            assertEquals(CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
+            assertEquals(NEW_CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
         }
 
         @Test
@@ -176,10 +144,67 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
         }
     }
 
-    private Utkast createCertificate() {
+    @Nested
+    class SupportedCertificateTypes {
+
+        @Test
+        void shallSupportCreatingAg7804FromFk7804() {
+            final var originalCertificateType = "lisjp";
+            final var newCertificateType = "ag7804";
+            setup(originalCertificateType, newCertificateType);
+
+            final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID);
+
+            verify(copyUtkastServiceHelper)
+                .createUtkastFromDifferentIntygTypeRequest(anyString(), certificateTypeArgumentCaptor.capture(), anyString(),
+                    any(CopyIntygRequest.class));
+
+            assertEquals(newCertificateType, certificateTypeArgumentCaptor.getValue());
+        }
+    }
+
+    private void setup(String originalCertificateType, String newCertificateType) {
+        doReturn(createCertificate(originalCertificateType))
+            .when(utkastService)
+            .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+
+        doReturn(LATEST_VERSION).when(intygTextsService).getLatestVersion(anyString());
+
+        final var serviceRequest = new CreateUtkastFromTemplateRequest(
+            CERTIFICATE_ID,
+            newCertificateType,
+            null,
+            null,
+            originalCertificateType
+        );
+
+        doReturn(serviceRequest)
+            .when(copyUtkastServiceHelper)
+            .createUtkastFromDifferentIntygTypeRequest(
+                eq(CERTIFICATE_ID),
+                eq(newCertificateType),
+                eq(originalCertificateType),
+                any(CopyIntygRequest.class)
+            );
+
+        final var serviceResponse = new CreateUtkastFromTemplateResponse(
+            newCertificateType,
+            LATEST_VERSION,
+            NEW_CERTIFICATE_ID,
+            CERTIFICATE_ID
+        );
+
+        doReturn(serviceResponse)
+            .when(copyUtkastService)
+            .createUtkastFromSignedTemplate(serviceRequest);
+    }
+
+    private Utkast createCertificate(String certificateType) {
         final var draft = new Utkast();
         draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(CERTIFICATE_TYPE);
+        draft.setIntygsTyp(certificateType);
         draft.setIntygTypeVersion("certificateTypeVersion");
         draft.setModel("draftJson");
         draft.setStatus(UtkastStatus.SIGNED);
