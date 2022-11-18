@@ -433,6 +433,34 @@ public class DodsbevisIT {
             assertEquals(200, response.getStatusCode());
         }
 
+        @Test
+        void shallBeAbleToCreateCertificateFromTemplateCurrentVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(
+                    DbModuleEntryPoint.MODULE_ID,
+                    CURRENT_VERSION,
+                    ALFA_VARDCENTRAL,
+                    DR_AJLA,
+                    ATHENA_ANDERSSON.getPersonId().getId()
+                )
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .setup();
+
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateId = given()
+                .pathParam("certificateId", testSetup.certificateId())
+                .expect().statusCode(200)
+                .when().post("api/certificate/{certificateId}/template")
+                .then().extract().path("certificateId").toString();
+
+            certificateIdsToCleanAfterTest.add(certificateId);
+
+            assertAll(
+                () -> assertNotNull(certificateId, "Expect certificate id to have a value")
+            );
+        }
+
         private CertificateDTO getTestCertificate(TestSetup testSetup) {
             return given()
                 .pathParam("certificateId", testSetup.certificateId())
