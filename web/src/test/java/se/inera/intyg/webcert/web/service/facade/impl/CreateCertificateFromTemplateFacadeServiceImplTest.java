@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -179,6 +180,19 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
                     any(CopyIntygRequest.class));
 
             assertEquals(newCertificateType, certificateTypeArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shallThrowExceptionWhenCertificateTypeNotSupported() {
+            final var originalCertificateType = "orignalNotSupported";
+            
+            doReturn(createCertificate(originalCertificateType))
+                .when(utkastService)
+                .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+
+            assertThrows(IllegalArgumentException.class,
+                () -> createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID)
+            );
         }
     }
 

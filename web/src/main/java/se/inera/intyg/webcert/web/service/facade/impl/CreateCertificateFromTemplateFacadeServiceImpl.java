@@ -84,7 +84,9 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
             case DbModuleEntryPoint.MODULE_ID:
                 return DoiModuleEntryPoint.MODULE_ID;
             default:
-                return "";
+                throw new IllegalArgumentException(
+                    String.format("Cannot create draft from template because certificate type '%s' is not supported", templateType)
+                );
         }
     }
 }
