@@ -47,10 +47,12 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.MissingRelatedCertificateConfirmation;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -71,6 +73,9 @@ class GetCertificateTypesFacadeServiceImplTest {
     private IntygTextsService intygTextsService;
     @Mock
     private CertificateTypeMessageService certificateTypeMessageService;
+
+    @Mock
+    private MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
 
     @InjectMocks
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
@@ -218,6 +223,48 @@ class GetCertificateTypesFacadeServiceImplTest {
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
                 assertEquals(ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION, types.get(0).getLinks().get(1).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddMissingRelatedCertificateConfirmationResourceLinkIfExists() {
+                final var module = createIntygModule("doi");
+                doReturn(List.of(module))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                doReturn(Optional.of(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION,
+                        "name",
+                        "description",
+                        true)))
+                    .when(missingRelatedCertificateConfirmation).get(module.getId(), PATIENT_ID);
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
+                assertEquals(ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION, types.get(0).getLinks().get(1).getType());
+            }
+
+            @Test
+            void shallNotAddMissingRelatedCertificateConfirmationResourceLinkDoesntExists() {
+                final var module = createIntygModule("doi");
+                doReturn(List.of(module))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                doReturn(Optional.empty())
+                    .when(missingRelatedCertificateConfirmation).get(module.getId(), PATIENT_ID);
+
+                final var types = serviceUnderTest.get(PATIENT_ID);
+
+                assertTrue(types.get(0).getLinks().stream().noneMatch(
+                        resourceLinkDTO -> resourceLinkDTO.getType() == ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION),
+                    "Should not contain a ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION");
             }
         }
 

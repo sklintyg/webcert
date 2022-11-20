@@ -29,6 +29,7 @@ public final class AuthConstants {
 
     // CHECKSTYLE:OFF LineLength
     public static final String ALIAS_SITHS = "defaultAlias";
+    public static final String ALIAS_SITHS_NORMAL = "defaultAliasNormal";
     public static final String ALIAS_SITHS_WC2 = "siths-wc2";
     public static final String ALIAS_ELEG = "eleg";
     public static final String ALIAS_ELEG_WC2 = "eleg-wc2";
