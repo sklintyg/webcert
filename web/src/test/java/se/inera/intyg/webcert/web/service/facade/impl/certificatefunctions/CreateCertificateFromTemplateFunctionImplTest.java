@@ -66,6 +66,14 @@ class CreateCertificateFromTemplateFunctionImplTest {
         }
 
         @Test
+        void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
+            webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
         void shallExcludeCreateCertificateFromTemplateIfNotLisjp() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
@@ -171,6 +179,28 @@ class CreateCertificateFromTemplateFunctionImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
             assertTrue(actualLink.isPresent());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfDraft() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
+            webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromTemplateIfRevoked() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+            assertTrue(actualLink.isEmpty());
         }
 
         @Test
