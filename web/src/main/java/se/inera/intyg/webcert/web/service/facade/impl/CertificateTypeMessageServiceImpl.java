@@ -23,12 +23,13 @@ import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -40,20 +41,18 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
 
     private final UtkastService utkastService;
     private final WebCertUserService webCertUserService;
-    private AuthoritiesHelper authoritiesHelper;
+    private final List<String> allowedTypes = List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
 
     @Autowired
     public CertificateTypeMessageServiceImpl(UtkastService utkastService,
-        WebCertUserService webCertUserService, AuthoritiesHelper authoritiesHelper) {
+        WebCertUserService webCertUserService) {
         this.utkastService = utkastService;
         this.webCertUserService = webCertUserService;
-        this.authoritiesHelper = authoritiesHelper;
     }
 
     @Override
     public Optional<String> get(String certificateType, Personnummer patientId) {
-        if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificateType)
-            && !authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, certificateType)) {
+        if (!allowedTypes.contains(certificateType)) {
             return Optional.empty();
         }
         final var user = webCertUserService.getUser();
@@ -64,9 +63,9 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         if (previousCertificateMap.containsKey(certificateType)) {
             final var previousIntyg = previousCertificateMap.get(certificateType);
             if (certificateTypeIsDb(certificateType)) {
-                return getOptionalStringCertificateDb(previousIntyg);
+                return getCertificateMessageDoi(previousIntyg);
             } else {
-                return getOptionalStringCertificateDoi(previousIntyg);
+                return getCertificateMessageDb(previousIntyg);
             }
         }
 
@@ -74,16 +73,16 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         if (previousDraftMap.containsKey(certificateType)) {
             final var previousIntyg = previousDraftMap.get(certificateType);
             if (certificateTypeIsDb(certificateType)) {
-                return getOptionalStringDraftDb(previousIntyg);
+                return getDraftMessageDoi(previousIntyg);
             } else {
-                return getOptionalStringDraftDoi(previousIntyg);
+                return getDraftMessageDb(previousIntyg);
             }
         }
 
         return Optional.empty();
     }
 
-    private static Optional<String> getOptionalStringCertificateDoi(final PreviousIntyg previousIntyg) {
+    private Optional<String> getCertificateMessageDb(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
                 "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
@@ -105,7 +104,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         return Optional.empty();
     }
 
-    private static Optional<String> getOptionalStringCertificateDb(final PreviousIntyg previousIntyg) {
+    private Optional<String> getCertificateMessageDoi(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
                 "Det finns ett signerat dödsbevis för detta personnummer."
@@ -124,7 +123,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         return Optional.empty();
     }
 
-    private static Optional<String> getOptionalStringDraftDoi(final PreviousIntyg previousIntyg) {
+    private Optional<String> getDraftMessageDb(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of("Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
                 + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
@@ -143,7 +142,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         return Optional.empty();
     }
 
-    private static Optional<String> getOptionalStringDraftDb(PreviousIntyg previousIntyg) {
+    private Optional<String> getDraftMessageDoi(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
                 "Det finns ett utkast på dödsbevis för detta personnummer."
@@ -164,6 +163,6 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
     }
 
     private boolean certificateTypeIsDb(final String certificateType) {
-        return "db".equals(certificateType);
+        return DbModuleEntryPoint.MODULE_ID.equals(certificateType);
     }
 }

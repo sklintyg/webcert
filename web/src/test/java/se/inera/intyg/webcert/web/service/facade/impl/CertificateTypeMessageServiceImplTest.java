@@ -35,8 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -51,8 +49,6 @@ class CertificateTypeMessageServiceImplTest {
     private static final String CERTIFICATE_TYPE_DOI = "doi";
     private static final String CERTIFICATE_TYPE_NOT_DOI = "not doi";
     private static final Personnummer PERSON_ID = Personnummer.createPersonnummer("19121212-1212").get();
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
     @Mock
     private WebCertUserService webCertUserService;
 
@@ -85,9 +81,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -103,9 +96,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DB,
                         PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
@@ -124,9 +114,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -142,9 +129,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DB,
                         PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
@@ -162,9 +146,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -180,9 +161,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DB,
                         PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
@@ -203,9 +181,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DB);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -218,8 +193,6 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_NOT_DB);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DB, PERSON_ID);
 
@@ -232,8 +205,6 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_NOT_DOI);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DOI, PERSON_ID);
 
@@ -262,11 +233,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -282,11 +248,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DOI,
                         PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
@@ -305,11 +266,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -325,11 +281,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DOI,
                         PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
@@ -347,11 +298,6 @@ class CertificateTypeMessageServiceImplTest {
                         PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
-
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
             assertEquals(expectedMessage, actualMessage.get());
@@ -368,11 +314,6 @@ class CertificateTypeMessageServiceImplTest {
                     Map.of(CERTIFICATE_TYPE_DOI,
                         PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG, CERTIFICATE_TYPE_DOI);
-            doReturn(false)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, CERTIFICATE_TYPE_DOI);
 
             final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
 
