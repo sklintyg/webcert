@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -77,6 +78,7 @@ public class CreateCertificateTestabilityUtil {
 
     private final CreateAf00213TestabilityUtil createAf00213TestabilityUtil;
     private final CreateDbTestabilityUtil createDbTestabilityUtil;
+    private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -86,7 +88,7 @@ public class CreateCertificateTestabilityUtil {
         IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
         CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
-        CreateDbTestabilityUtil createDbTestabilityUtil) {
+        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -98,6 +100,7 @@ public class CreateCertificateTestabilityUtil {
         this.createAg7804TestabilityUtil = createAg7804TestabilityUtil;
         this.createAf00213TestabilityUtil = createAf00213TestabilityUtil;
         this.createDbTestabilityUtil = createDbTestabilityUtil;
+        this.createDoiTestabilityUtil = createDoiTestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -219,6 +222,15 @@ public class CreateCertificateTestabilityUtil {
             } else {
                 return createDbTestabilityUtil.createMaximumValuesDb();
             }
+        }
+
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(DoiModuleEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createDoiTestabilityUtil.createMinimumValuesDoi();
+            } else {
+                return createDoiTestabilityUtil.createMaximumValuesDoi();
+            }
+
         }
 
         return Collections.emptyMap();
