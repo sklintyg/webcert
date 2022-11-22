@@ -36,6 +36,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -61,7 +64,7 @@ class CreateCertificateFromCandidateFunctionImplTest {
         void shallIncludeCreateCertificateFromCandidateWhenCandidateExists() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            doReturn(Optional.of(createCandidateMetaData(LocalDateTime.now())))
+            doReturn(Optional.of(createCandidateMetaData(LisjpEntryPoint.MODULE_ID, LocalDateTime.now())))
                 .when(candidateDataHelper)
                 .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
@@ -97,7 +100,7 @@ class CreateCertificateFromCandidateFunctionImplTest {
             final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE;
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            doReturn(Optional.of(createCandidateMetaData(LocalDateTime.now())))
+            doReturn(Optional.of(createCandidateMetaData(LisjpEntryPoint.MODULE_ID, LocalDateTime.now())))
                 .when(candidateDataHelper)
                 .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
@@ -110,7 +113,7 @@ class CreateCertificateFromCandidateFunctionImplTest {
             final var expectedName = "Hjälp med ifyllnad?";
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            doReturn(Optional.of(createCandidateMetaData(LocalDateTime.now())))
+            doReturn(Optional.of(createCandidateMetaData(LisjpEntryPoint.MODULE_ID, LocalDateTime.now())))
                 .when(candidateDataHelper)
                 .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
@@ -125,7 +128,8 @@ class CreateCertificateFromCandidateFunctionImplTest {
                 + "på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            doReturn(Optional.of(createCandidateMetaData(LocalDateTime.of(LocalDate.parse("2022-01-01"), LocalTime.now()))))
+            doReturn(Optional.of(
+                createCandidateMetaData(LisjpEntryPoint.MODULE_ID, LocalDateTime.of(LocalDate.parse("2022-01-01"), LocalTime.now()))))
                 .when(candidateDataHelper)
                 .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
@@ -138,7 +142,7 @@ class CreateCertificateFromCandidateFunctionImplTest {
             final var expectedEnabled = true;
             final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            doReturn(Optional.of(createCandidateMetaData(LocalDateTime.now())))
+            doReturn(Optional.of(createCandidateMetaData(LisjpEntryPoint.MODULE_ID, LocalDateTime.now())))
                 .when(candidateDataHelper)
                 .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
@@ -147,9 +151,113 @@ class CreateCertificateFromCandidateFunctionImplTest {
         }
     }
 
-    private UtkastCandidateMetaData createCandidateMetaData(LocalDateTime intygCreated) {
+    @Nested
+    class DbCandidateForDoi {
+
+        @Test
+        void shallIncludeCreateCertificateFromCandidateWhenCandidateExists() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, LocalDateTime.now())))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertTrue(actualLink.isPresent());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfNoCandidate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfNotVersion0() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+            certificate.getMetadata().setVersion(1);
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidateIfParentRelationExists() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+            certificate.getMetadata().setRelations(CertificateRelations.builder().parent(CertificateRelation.builder().build()).build());
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertTrue(actualLink.isEmpty());
+        }
+
+        @Test
+        void shallIncludeResourceLinkDTOType() {
+            final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE;
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, LocalDateTime.now())))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertEquals(expectedType, actualLink.get().getType());
+        }
+
+        @Test
+        void shallIncludeResourceLinkDTOName() {
+            final var expectedName = "Hjälp med ifyllnad?";
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, LocalDateTime.now())))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertEquals(expectedName, actualLink.get().getName());
+        }
+
+        @Test
+        void shallIncludeResourceLinkDTOBody() {
+            final var expectedBody = "<p>Det finns ett signerat dödsbevis "
+                + "(från den <span class='iu-fw-bold'>2022-01-01</span>) "
+                + "för detta personnummer på samma enhet som du är inloggad. "
+                + "Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(
+                createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, LocalDateTime.of(LocalDate.parse("2022-01-01"), LocalTime.now()))))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertEquals(expectedBody, actualLink.get().getBody());
+        }
+
+        @Test
+        void shallIncludeResourceLinkDTOEnabled() {
+            final var expectedEnabled = true;
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, LocalDateTime.now())))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertEquals(expectedEnabled, actualLink.get().isEnabled());
+        }
+    }
+
+    private UtkastCandidateMetaData createCandidateMetaData(String certificateTypeOfCandidate, LocalDateTime intygCreated) {
         return new UtkastCandidateMetaData.Builder()
             .with(builder -> {
+                builder.intygType = certificateTypeOfCandidate;
                 builder.intygCreated = intygCreated;
             })
             .create();

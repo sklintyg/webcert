@@ -22,6 +22,9 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
@@ -63,7 +66,7 @@ public class CreateCertificateFromCandidateFunctionImpl implements CreateCertifi
     }
 
     private boolean missingSupportToCreateFromCandidate(Certificate certificate) {
-        return !(isFirstVersion(certificate) && noParentRelations(certificate) && isAg7804(certificate));
+        return !(isFirstVersion(certificate) && noParentRelations(certificate) && isCertificateTypeSupported(certificate));
     }
 
     private Optional<UtkastCandidateMetaData> getCandidateMetadata(Certificate certificate) {
@@ -82,14 +85,29 @@ public class CreateCertificateFromCandidateFunctionImpl implements CreateCertifi
         return certificate.getMetadata().getRelations() == null || certificate.getMetadata().getRelations().getParent() == null;
     }
 
-    private boolean isAg7804(Certificate certificate) {
-        return certificate.getMetadata().getType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID);
+    private boolean isCertificateTypeSupported(Certificate certificate) {
+        return certificate.getMetadata().getType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID)
+            || certificate.getMetadata().getType().equalsIgnoreCase(DoiModuleEntryPoint.MODULE_ID);
     }
 
     private String getBody(UtkastCandidateMetaData candidateMetaData) {
-        return "<p>Det finns ett Läkarintyg för sjukpenning för denna patient som är utfärdat "
-            + "<span class='iu-fw-bold'>"
-            + candidateMetaData.getIntygCreated().toLocalDate()
-            + "</span> på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+        if (LisjpEntryPoint.MODULE_ID.equalsIgnoreCase(candidateMetaData.getIntygType())) {
+            return "<p>Det finns ett Läkarintyg för sjukpenning för denna patient som är utfärdat "
+                + "<span class='iu-fw-bold'>"
+                + candidateMetaData.getIntygCreated().toLocalDate()
+                + "</span> på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+        }
+
+        if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(candidateMetaData.getIntygType())) {
+            return "<p>Det finns ett signerat dödsbevis (från den "
+                + "<span class='iu-fw-bold'>"
+                + candidateMetaData.getIntygCreated().toLocalDate()
+                + "</span>) för detta personnummer på samma enhet som du är inloggad. "
+                + "Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+        }
+
+        throw new IllegalArgumentException(
+            String.format("Candidate certificate of type '%s' is not supported", candidateMetaData.getIntygType())
+        );
     }
 }
