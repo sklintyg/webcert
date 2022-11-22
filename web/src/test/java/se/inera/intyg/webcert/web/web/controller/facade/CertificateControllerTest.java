@@ -671,8 +671,8 @@ public class CertificateControllerTest {
         void shallSendCertificate() {
             var result = (SendCertificateResponseDTO) certificateController.sendCertificate(CERTIFICATE_ID).getEntity();
             verify(sendCertificateFacadeService).sendCertificate(CERTIFICATE_ID);
-            assertEquals(result.getResult(), IntygServiceResult.OK.toString());
-            assertEquals(result.getCertificateId(), CERTIFICATE_ID);
+            assertEquals(IntygServiceResult.OK.toString(), result.getResult());
+            assertEquals(CERTIFICATE_ID, result.getCertificateId());
         }
     }
 
