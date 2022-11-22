@@ -144,6 +144,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
 
+    private final ShowRelatedCertificateFunction showRelatedCertificateFunction;
+
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
@@ -152,7 +154,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         CandidateDataHelper candidateDataHelper, UserService userService,
         GetQuestionsFacadeService getQuestionsFacadeService, CertificateSignConfirmationFunction certificateSignConfirmationFunction,
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
-        CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction) {
+        CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
+        ShowRelatedCertificateFunction showRelatedCertificateFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.candidateDataHelper = candidateDataHelper;
@@ -161,6 +164,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
         this.displayPatientAddressInCertificate = displayPatientAddressInCertificate;
         this.createCertificateFromTemplateFunction = createCertificateFromTemplateFunction;
+        this.showRelatedCertificateFunction = showRelatedCertificateFunction;
     }
 
     /**
@@ -418,6 +422,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent(resourceLinks::add);
 
         createCertificateFromTemplateFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent(resourceLinks::add);
+
+        showRelatedCertificateFunction.get(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;
