@@ -95,7 +95,8 @@ public class CreateCertificateFromCandidateFunctionImpl implements CreateCertifi
             return "<p>Det finns ett Läkarintyg för sjukpenning för denna patient som är utfärdat "
                 + "<span class='iu-fw-bold'>"
                 + candidateMetaData.getIntygCreated().toLocalDate()
-                + "</span> på en enhet som du har åtkomst till. Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
+                + "</span> på en enhet som du har åtkomst till. "
+                + "Vill du kopiera de svar som givits i det intyget till detta intygsutkast?</p>";
         }
 
         if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(candidateMetaData.getIntygType())) {
