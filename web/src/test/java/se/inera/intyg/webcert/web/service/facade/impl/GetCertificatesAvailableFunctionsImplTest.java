@@ -67,6 +67,7 @@ import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.Certi
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromTemplateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.DisplayPatientAddressInCertificate;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ShowRelatedCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
@@ -102,6 +103,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     private CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
+
+    @Mock
+    private ShowRelatedCertificateFunction showRelatedCertificateFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -557,6 +561,25 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE);
+        }
+
+        @Test
+        void shallIncludeShowRelatedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE, "", "", "", true)
+                ))
+                .when(showRelatedCertificateFunction).get(eq(certificate), any());
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeShowRelatedCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE);
         }
     }
 
