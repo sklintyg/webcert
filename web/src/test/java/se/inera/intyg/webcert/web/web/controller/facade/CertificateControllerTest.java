@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -59,6 +58,7 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetRelatedCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
@@ -75,6 +75,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
@@ -122,6 +123,10 @@ public class CertificateControllerTest {
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Mock
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandiateFacadeService;
+
+    @Mock
+    private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
+
     @InjectMocks
     private CertificateController certificateController;
 
@@ -668,6 +673,26 @@ public class CertificateControllerTest {
             verify(sendCertificateFacadeService).sendCertificate(CERTIFICATE_ID);
             assertEquals(result.getResult(), IntygServiceResult.OK.toString());
             assertEquals(result.getCertificateId(), CERTIFICATE_ID);
+        }
+    }
+
+    @Nested
+    class GetRelatedCertificate {
+
+        @Test
+        void shallReturnRelatedCertificateIdIfExists() {
+            final var expectedRelatedCertificateId = "relatedCertificateId";
+            doReturn(expectedRelatedCertificateId).when(getRelatedCertificateFacadeService).get(CERTIFICATE_ID);
+            final var actualResponse = (GetRelatedCertificateDTO) certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
+            assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
+        }
+
+        @Test
+        void shallReturnNullRelatedCertificateIdIfDoesntExists() {
+            final String expectedRelatedCertificateId = null;
+            doReturn(expectedRelatedCertificateId).when(getRelatedCertificateFacadeService).get(CERTIFICATE_ID);
+            final var actualResponse = (GetRelatedCertificateDTO) certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
+            assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
         }
     }
 }

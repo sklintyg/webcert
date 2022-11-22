@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
+import se.inera.intyg.webcert.web.service.facade.GetRelatedCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
@@ -68,6 +69,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFro
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ReplaceCertificateResponseDTO;
@@ -119,6 +121,9 @@ public class CertificateController {
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
     @Autowired
     private CreateCertificateFacadeService createCertificateFacadeService;
+
+    @Autowired
+    private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -402,5 +407,17 @@ public class CertificateController {
         } catch (CreateCertificateException e) {
             return Response.status(Status.BAD_REQUEST).build();
         }
+    }
+
+    @GET
+    @Path("/{certificateId}/related")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getRelatedCertificate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Get related certificate for certificateId: '{}'", certificateId);
+        }
+        final var relatedCertificateId = getRelatedCertificateFacadeService.get(certificateId);
+        return Response.ok(GetRelatedCertificateDTO.create(relatedCertificateId)).build();
     }
 }
