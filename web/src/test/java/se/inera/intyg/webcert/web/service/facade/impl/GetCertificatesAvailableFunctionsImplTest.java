@@ -61,19 +61,17 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromTemplateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.DisplayPatientAddressInCertificate;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ShowRelatedCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -85,9 +83,6 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     WebCertUserService webCertUserService;
-
-    @Mock
-    CandidateDataHelper candidateDataHelper;
 
     @Mock
     UserServiceImpl userService;
@@ -107,10 +102,13 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Mock
     private ShowRelatedCertificateFunction showRelatedCertificateFunction;
 
+    @Mock
+    private CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction;
+
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
 
-    private WebCertUser user = mock(WebCertUser.class);
+    private final WebCertUser user = mock(WebCertUser.class);
 
     @Nested
     class Draft {
@@ -133,8 +131,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null));
         }
 
         @Test
@@ -142,8 +140,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
         }
 
         @Test
@@ -304,7 +302,6 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallExcludeDisplayPatientAddress() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            doReturn(Optional.empty()).when(displayPatientAddressInCertificate).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
         }
@@ -324,6 +321,25 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
         }
+
+        @Test
+        void shallIncludeCreateCertificateFromCandidate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE, "", "", "", true)
+                ))
+                .when(createCertificateFromCandidateFunction).get(certificate);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
+
+        @Test
+        void shallExcludeCreateCertificateFromCandidate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
     }
 
     private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson, CertificateStatus certificateStatus) {
@@ -337,59 +353,6 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     @Nested
-    class CreateCertificateFromCandidate {
-
-        @BeforeEach
-        void setup() {
-            doReturn(user).when(webCertUserService).getUser();
-        }
-
-        void setUpMetadata() {
-            when(candidateDataHelper
-                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class)))
-                .thenReturn(Optional.of(createCandidateMetaData("candidateId", "candidateType", "version")));
-        }
-
-        @Test
-        void shallIncludeCreateCertificateFromCandidate() {
-            setUpMetadata();
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromCandidateIfNoCandidate() {
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromCandidateIfNotVersion0() {
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var metadata = certificate.getMetadata();
-            metadata.setVersion(1);
-            certificate.setMetadata(metadata);
-
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromCandidateIfLisjp() {
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
-        }
-    }
-
-    @Nested
     class LockedDraft {
 
         @Test
@@ -397,8 +360,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null));
         }
 
         @Test
@@ -406,8 +369,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
         }
 
         @Test
@@ -479,8 +442,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody() == null));
         }
 
         @Test
@@ -488,8 +451,8 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = getCertificateWithProtectedPatient(true, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().filter(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0).findAny().isPresent());
+            assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
         }
 
         @Test
@@ -859,7 +822,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             final var replaceFunction = actualAvailableFunctions.stream()
                 .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
-                .findFirst().get();
+                .findFirst().orElseThrow();
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
             assertTrue(replaceFunction.isEnabled());
             assertEquals(REPLACE_DESCRIPTION, replaceFunction.getDescription());
@@ -873,7 +836,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             final var replaceFunction = actualAvailableFunctions.stream()
                 .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
-                .findFirst().get();
+                .findFirst().orElseThrow();
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
             assertFalse(replaceFunction.isEnabled());
             assertEquals(REPLACE_DESCRIPTION_DISABLED, replaceFunction.getDescription());
@@ -887,7 +850,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             final var replaceFunction = actualAvailableFunctions.stream()
                 .filter(fnc -> fnc.getType().equals(ResourceLinkTypeDTO.REPLACE_CERTIFICATE))
-                .findFirst().get();
+                .findFirst().orElseThrow();
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REPLACE_CERTIFICATE);
             assertTrue(replaceFunction.isEnabled());
             assertEquals(REPLACE_DESCRIPTION, replaceFunction.getDescription());
@@ -1171,17 +1134,6 @@ class GetCertificatesAvailableFunctionsImplTest {
 
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.QUESTIONS_NOT_AVAILABLE);
         }
-    }
-
-    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
-        return new UtkastCandidateMetaData.Builder()
-            .with(builder -> {
-                builder.intygId = intygId;
-                builder.intygType = intygType;
-                builder.intygTypeVersion = intygTypeVersion;
-                builder.intygCreated = LocalDateTime.now();
-            })
-            .create();
     }
 
     private WebCertUser getUserWithOrigin(String origin) {
