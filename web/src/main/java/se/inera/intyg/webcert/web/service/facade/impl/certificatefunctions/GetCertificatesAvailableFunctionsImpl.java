@@ -32,6 +32,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -322,7 +323,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private String sendToDescription(String certificateType) {
-        if ("db".equals(certificateType)) {
+        if (DbModuleEntryPoint.MODULE_ID.equals(certificateType)) {
             return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
         }
         return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
