@@ -24,13 +24,14 @@ import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -42,18 +43,16 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class CertificateSignConfirmationFunctionImpl implements CertificateSignConfirmationFunction {
 
     private final UtkastService utkastService;
-    private final AuthoritiesHelper authoritiesHelper;
+    private final List<String> allowedTypes = List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
 
     @Autowired
-    public CertificateSignConfirmationFunctionImpl(UtkastService utkastService,
-        AuthoritiesHelper authoritiesHelper) {
+    public CertificateSignConfirmationFunctionImpl(UtkastService utkastService) {
         this.utkastService = utkastService;
-        this.authoritiesHelper = authoritiesHelper;
     }
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (!isUniqueFeatureActive(certificate)) {
+        if (!allowedTypes.contains(certificate.getMetadata().getType())) {
             return Optional.empty();
         }
         final var certificateType = certificate.getMetadata().getType();
@@ -63,29 +62,51 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
         final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
         final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
         if (previousIntygMap.containsKey(certificateType) && !previousReplacedMap.containsKey(certificateType)) {
-            return Optional.of(ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                "Signera och skicka",
-                "Intyget skickas direkt till Skatteverket",
-                "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Det är därför inte möjligt att signera detta dödsbevis.",
-                true));
+            if (certificateTypeIsDb(certificateType)) {
+                return Optional.of(ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signera och skicka",
+                    "Intyget skickas direkt till Skatteverket",
+                    "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                        + " Det är därför inte möjligt att signera detta dödsbevis.",
+                    true));
+            } else {
+                return Optional.of(ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signera och skicka",
+                    "Intyget skickas direkt till Socialstyrelsen",
+                    "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                        + "Senast skapade dödsorsaksintyg är det som gäller. "
+                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
+                    true));
+            }
         }
         if (previousUtkastMap.containsKey(certificateType)) {
-            return Optional.of(ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                "Signera och skicka",
-                "Intyget skickas direkt till Skatteverket",
-                "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in "
-                    + "dödsbeviset så blir det därför detta dödsbevis som gäller.",
-                true));
+            if (certificateTypeIsDb(certificateType)) {
+                return Optional.of(ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signera och skicka",
+                    "Intyget skickas direkt till Skatteverket",
+                    "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                        + " Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in "
+                        + "dödsbeviset så blir det därför detta dödsbevis som gäller.",
+                    true));
+            } else {
+                return Optional.of(ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signera och skicka",
+                    "Intyget skickas direkt till Socialstyrelsen",
+                    "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                        + "Senast skapade dödsorsaksintyg är det som gäller. "
+                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
+                    true));
+            }
         }
         return Optional.empty();
     }
 
-    private boolean isUniqueFeatureActive(Certificate certificate) {
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UNIKT_INTYG, certificate.getMetadata().getType());
+    private boolean certificateTypeIsDb(final String certificateType) {
+        return DbModuleEntryPoint.MODULE_ID.equals(certificateType);
     }
 
     private static Personnummer getPersonnummer(Certificate certificate) {
