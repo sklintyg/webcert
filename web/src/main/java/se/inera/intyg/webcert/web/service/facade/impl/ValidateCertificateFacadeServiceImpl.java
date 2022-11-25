@@ -189,6 +189,10 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
                 return "ue-textfield";
             case UE_TYPE_AHEAD:
                 return "ue-typeahead";
+            case UE_CAUSE_OF_DEATH:
+                return "ue-cause-of-death";
+            case UE_CAUSE_OF_DEATH_LIST:
+                return "ue-cause-of-death-list";
             default:
                 throw new RuntimeException("No conversion specified for componentType: " + componentType);
         }
