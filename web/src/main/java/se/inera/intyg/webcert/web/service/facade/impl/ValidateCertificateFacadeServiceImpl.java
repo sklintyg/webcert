@@ -104,7 +104,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
         validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
-            validationMessage.getQuestionId()));
+            validationMessage.getQuestionId(), validationMessage.getDynamicKey()));
         return validationError;
     }
 
@@ -147,7 +147,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
     }
 
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
-        ValidationMessageType validationMessageType, String questionId) {
+        ValidationMessageType validationMessageType, String questionId, String dynamicKey) {
         final var key = resolveKey(certificate, message, validationMessageType, questionId);
         return moduleApi.getMessagesProvider().get(key);
     }
