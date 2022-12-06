@@ -149,7 +149,11 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
         ValidationMessageType validationMessageType, String questionId, String dynamicKey) {
         final var key = resolveKey(certificate, message, validationMessageType, questionId);
-        return moduleApi.getMessagesProvider().get(key);
+        final var messageProvider = moduleApi.getMessagesProvider();
+        if (dynamicKey == null) {
+            return messageProvider.get(key);
+        }
+        return messageProvider.get(key, dynamicKey);
     }
 
     private String resolveKey(Certificate certificate, String message, ValidationMessageType validationMessageType, String questionId) {
