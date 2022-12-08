@@ -62,6 +62,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSendToFk;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromTemplateFunction;
@@ -95,6 +96,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
+
+    @Mock
+    CertificateSendToFk certificateSendToFk;
 
     @Mock
     private CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
@@ -727,88 +731,6 @@ class GetCertificatesAvailableFunctionsImplTest {
 
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RENEW_CERTIFICATE);
-        }
-    }
-
-    @Nested
-    class SendCertificate {
-
-        @Test
-        void shallIncludeSend() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeSendWithWarningIfSickleavePeriodIsShorterThan15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(14);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-            assertTrue(actualAvailableFunctions
-                .stream()
-                .anyMatch(link -> link.getBody() != null && link.getBody()
-                    .contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
-        }
-
-        @Test
-        void shallNotIncludeSendWithWarningIfSickleavePeriodIs15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(15);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-            assertFalse(actualAvailableFunctions
-                .stream()
-                .anyMatch(link ->
-                    link.getBody() != null && link.getBody().contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
-        }
-
-        @Test
-        void shallNotIncludeSendWithWarningIfSickleavePeriodIsLongerThan15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(100);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-            assertFalse(actualAvailableFunctions
-                .stream()
-                .anyMatch(link -> link.getBody() != null && link.getBody()
-                    .contains("Om sjukperioden är kortare än 15 dagar ska intyget inte skickas")));
-        }
-
-        @Test
-        void shallExcludeSendIfAlreadySent() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            certificate.getMetadata().setSent(true);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeSendIfReplacedBySignedCertificate() {
-            final var relation = CertificateRelation.builder()
-                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
-                .created(LocalDateTime.now())
-                .status(CertificateStatus.SIGNED)
-                .type(CertificateRelationType.REPLACED)
-                .build();
-
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeSendIfReplacedByUnsignedCertificate() {
-            final var relation = CertificateRelation.builder()
-                .certificateId("xxxxx-yyyyy-zzzzz-uuuuu")
-                .created(LocalDateTime.now())
-                .status(CertificateStatus.UNSIGNED)
-                .type(CertificateRelationType.REPLACED)
-                .build();
-
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
     }
 
