@@ -49,9 +49,9 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class CertificateSendToFkImplTest {
 
-    private final Certificate luae_na = new Certificate();
-    private final Certificate sent_luae_na = new Certificate();
-    private final Certificate replaced_luae_na = new Certificate();
+    private static final Certificate LUAE_NA = new Certificate();
+    private static final Certificate SENT_LUAE_NA = new Certificate();
+    private static final Certificate REPLACED_LUAE_NA = new Certificate();
 
     @InjectMocks
     CertificateSendToFkImpl sendCertificateToFK;
@@ -68,15 +68,16 @@ class CertificateSendToFkImplTest {
                 ResourceLinkTypeDTO.SEND_CERTIFICATE,
                 "Skicka till Försäkringskassan",
                 "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
-                "Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.",
+                "<p>Om du går vidare kommer intyget skickas direkt till "
+                    + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                 true));
 
-        luae_na.setMetadata(CertificateMetadata.builder()
+        LUAE_NA.setMetadata(CertificateMetadata.builder()
             .type(LuaenaEntryPoint.MODULE_ID)
             .build()
         );
 
-        final var actualResourceLink = sendCertificateToFK.get(luae_na);
+        final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
 
         assertEquals(expectedResourceLink, actualResourceLink);
     }
@@ -85,12 +86,12 @@ class CertificateSendToFkImplTest {
     void shouldNotAddResourceLinkIfWrongType() {
         final var expectedResourceLink = Optional.empty();
 
-        luae_na.setMetadata(CertificateMetadata.builder()
+        LUAE_NA.setMetadata(CertificateMetadata.builder()
             .type(DoiModuleEntryPoint.MODULE_ID)
             .build()
         );
 
-        final var actualResourceLink = sendCertificateToFK.get(luae_na);
+        final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
 
         assertEquals(expectedResourceLink, actualResourceLink);
     }
@@ -99,13 +100,13 @@ class CertificateSendToFkImplTest {
     void shouldNotAddResourceLinkIfCertificateIsSent() {
         final var expectedResourceLink = Optional.empty();
 
-        sent_luae_na.setMetadata(CertificateMetadata.builder()
+        SENT_LUAE_NA.setMetadata(CertificateMetadata.builder()
             .type(LuaenaEntryPoint.MODULE_ID)
             .sent(true)
             .build()
         );
 
-        final var actualResourceLink = sendCertificateToFK.get(sent_luae_na);
+        final var actualResourceLink = sendCertificateToFK.get(SENT_LUAE_NA);
 
         assertEquals(expectedResourceLink, actualResourceLink);
     }
@@ -114,7 +115,7 @@ class CertificateSendToFkImplTest {
     void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
         final var expectedResourceLink = Optional.empty();
 
-        replaced_luae_na.setMetadata(CertificateMetadata.builder()
+        REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
             .type(LuaenaEntryPoint.MODULE_ID)
             .relations(CertificateRelations.builder()
                 .children(new CertificateRelation[]{
@@ -126,7 +127,7 @@ class CertificateSendToFkImplTest {
             .build()
         );
 
-        final var actualResourceLink = sendCertificateToFK.get(replaced_luae_na);
+        final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
 
         assertEquals(expectedResourceLink, actualResourceLink);
     }
@@ -138,10 +139,11 @@ class CertificateSendToFkImplTest {
                 ResourceLinkTypeDTO.SEND_CERTIFICATE,
                 "Skicka till Försäkringskassan",
                 "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
-                "Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.",
+                "<p>Om du går vidare kommer intyget skickas direkt till "
+                    + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                 true));
 
-        replaced_luae_na.setMetadata(CertificateMetadata.builder()
+        REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
             .type(LuaenaEntryPoint.MODULE_ID)
             .relations(CertificateRelations.builder()
                 .children(new CertificateRelation[]{
@@ -153,7 +155,7 @@ class CertificateSendToFkImplTest {
             .build()
         );
 
-        final var actualResourceLink = sendCertificateToFK.get(replaced_luae_na);
+        final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
 
         assertEquals(expectedResourceLink, actualResourceLink);
     }
@@ -240,5 +242,4 @@ class CertificateSendToFkImplTest {
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
     }
-
 }
