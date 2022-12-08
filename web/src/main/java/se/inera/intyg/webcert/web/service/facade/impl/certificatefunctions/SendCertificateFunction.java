@@ -23,7 +23,7 @@ import java.util.Optional;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-public interface CertificateSendToFk {
+public interface SendCertificateFunction {
 
     Optional<ResourceLinkDTO> get(Certificate certificate);
 }

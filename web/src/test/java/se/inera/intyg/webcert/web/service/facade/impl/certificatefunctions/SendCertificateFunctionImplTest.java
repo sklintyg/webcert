@@ -47,14 +47,14 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateSendToFkImplTest {
+class SendCertificateFunctionImplTest {
 
     private static final Certificate LUAE_NA = new Certificate();
     private static final Certificate SENT_LUAE_NA = new Certificate();
     private static final Certificate REPLACED_LUAE_NA = new Certificate();
 
     @InjectMocks
-    CertificateSendToFkImpl sendCertificateToFK;
+    SendFunctionImpl sendCertificateToFK;
 
     @BeforeEach
     void setup() {

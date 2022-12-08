@@ -109,7 +109,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
     private final DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
-    private final CertificateSendToFk certificateSendToFk;
+    private final SendCertificateFunction sendCertificateFunction;
 
     private final CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
 
@@ -125,7 +125,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         UserService userService, GetQuestionsFacadeService getQuestionsFacadeService,
         CertificateSignConfirmationFunction certificateSignConfirmationFunction,
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
-        CertificateSendToFk certificateSendToFk, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
+        SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
         CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction) {
         this.authoritiesHelper = authoritiesHelper;
@@ -134,7 +134,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.getQuestionsFacadeService = getQuestionsFacadeService;
         this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
         this.displayPatientAddressInCertificate = displayPatientAddressInCertificate;
-        this.certificateSendToFk = certificateSendToFk;
+        this.sendCertificateFunction = sendCertificateFunction;
         this.createCertificateFromTemplateFunction = createCertificateFromTemplateFunction;
         this.showRelatedCertificateFunction = showRelatedCertificateFunction;
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
@@ -379,7 +379,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         showRelatedCertificateFunction.get(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
-        certificateSendToFk.get(certificate)
+        sendCertificateFunction.get(certificate)
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;

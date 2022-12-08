@@ -37,7 +37,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
-public class CertificateSendToFkImpl implements CertificateSendToFk {
+public class SendFunctionImpl implements SendCertificateFunction {
 
     private static final long SICKLEAVE_DAYS_LIMIT = 15;
     private static final String SEND_BODY_LUAENA = "<p>Om du går vidare kommer intyget skickas direkt till "

@@ -62,7 +62,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSendToFk;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromTemplateFunction;
@@ -98,7 +98,7 @@ class GetCertificatesAvailableFunctionsImplTest {
     DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
 
     @Mock
-    CertificateSendToFk certificateSendToFk;
+    SendCertificateFunction sendCertificateFunction;
 
     @Mock
     private CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
@@ -556,7 +556,7 @@ class GetCertificatesAvailableFunctionsImplTest {
                 Optional.of(
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "", "", "", true)
                 ))
-                .when(certificateSendToFk).get(eq(certificate));
+                .when(sendCertificateFunction).get(eq(certificate));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
