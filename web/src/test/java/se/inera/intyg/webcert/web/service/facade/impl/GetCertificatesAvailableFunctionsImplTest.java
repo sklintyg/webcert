@@ -548,6 +548,18 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE);
         }
+
+        @Test
+        void shallIncludeSendCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            doReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "", "", "", true)
+                ))
+                .when(certificateSendToFk).get(eq(certificate));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
+        }
     }
 
     @Nested
