@@ -46,6 +46,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData.Builder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -252,13 +253,38 @@ class CreateCertificateFromCandidateFunctionImplTest {
             final var actualLink = createCertificateFromCandidateFunction.get(certificate);
             assertEquals(expectedEnabled, actualLink.get().isEnabled());
         }
+
+        @Test
+        void shallIncludeResourceLinkCandidateMessage() {
+            final var expectedResourceLinkType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE_WITH_MESSAGE;
+            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
+                CertificateStatus.UNSIGNED);
+
+            doReturn(Optional.of(createCandidateMetaDataNotSameVardenhet(DbModuleEntryPoint.MODULE_ID, LocalDateTime.now())))
+                .when(candidateDataHelper)
+                .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+
+            final var actualLink = createCertificateFromCandidateFunction.get(certificate);
+            assertEquals(expectedResourceLinkType, actualLink.get().getType());
+        }
     }
 
     private UtkastCandidateMetaData createCandidateMetaData(String certificateTypeOfCandidate, LocalDateTime intygCreated) {
-        return new UtkastCandidateMetaData.Builder()
+        return new Builder()
             .with(builder -> {
                 builder.intygType = certificateTypeOfCandidate;
                 builder.intygCreated = intygCreated;
+                builder.sameVardenhet = true;
+            })
+            .create();
+    }
+
+    private UtkastCandidateMetaData createCandidateMetaDataNotSameVardenhet(String certificateTypeOfCandidate, LocalDateTime intygCreated) {
+        return new Builder()
+            .with(builder -> {
+                builder.intygType = certificateTypeOfCandidate;
+                builder.intygCreated = intygCreated;
+                builder.sameVardenhet = false;
             })
             .create();
     }
