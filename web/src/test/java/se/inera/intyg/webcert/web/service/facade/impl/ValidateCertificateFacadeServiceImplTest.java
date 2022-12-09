@@ -218,7 +218,7 @@ class ValidateCertificateFacadeServiceImplTest {
             "expectedField",
             ValidationMessageType.EMPTY,
             "expectedMessage",
-            "expectedDynamicKey",
+            null,
             "expectedQuestionId"
         );
         draftValidation.addMessage(validationMessage);
