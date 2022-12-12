@@ -130,7 +130,7 @@ public class ResourceLinkDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, name, description, body, enabled);
+        return Objects.hash(type, name, description, body, enabled, title);
     }
 
     @Override
