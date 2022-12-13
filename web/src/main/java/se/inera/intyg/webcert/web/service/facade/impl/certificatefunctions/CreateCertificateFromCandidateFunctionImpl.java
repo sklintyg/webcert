@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class CreateCertificateFromCandidateFunctionImpl implements CreateCertificateFromCandidateFunction {
 
     private static final String CREATE_FROM_CANDIDATE_NAME = "Hjälp med ifyllnad?";
+    private static final String CREATE_FROM_CANDIDATE_WITH_MESSAGE_NAME = "Information om dödsbevis";
 
     private final CandidateDataHelper candidateDataHelper;
 
@@ -54,15 +55,29 @@ public class CreateCertificateFromCandidateFunctionImpl implements CreateCertifi
             return Optional.empty();
         }
 
-        return Optional.of(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
-                CREATE_FROM_CANDIDATE_NAME,
-                "",
-                getBody(candidateMetadata.get()),
-                true
-            )
-        );
+        if (!candidateMetadata.get().getSameVardenhet() && DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(
+            candidateMetadata.get().getIntygType())) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE_WITH_MESSAGE,
+                    CREATE_FROM_CANDIDATE_WITH_MESSAGE_NAME,
+                    "",
+                    "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet än den du är inloggad på. "
+                        + "Vill du se informationen om vilken vårdenhet det handlar om?",
+                    true
+                )
+            );
+        } else {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE,
+                    CREATE_FROM_CANDIDATE_NAME,
+                    "",
+                    getBody(candidateMetadata.get()),
+                    true
+                )
+            );
+        }
     }
 
     private boolean missingSupportToCreateFromCandidate(Certificate certificate) {

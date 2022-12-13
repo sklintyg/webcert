@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateF
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCandidateMesssageForCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
@@ -124,6 +125,9 @@ public class CertificateController {
 
     @Autowired
     private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
+
+    @Autowired
+    private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
 
     @GET
     @Path("/{certificateId}")
@@ -419,5 +423,16 @@ public class CertificateController {
         }
         final var relatedCertificateId = getRelatedCertificateFacadeService.get(certificateId);
         return Response.ok(GetRelatedCertificateDTO.create(relatedCertificateId)).build();
+    }
+
+    @GET
+    @Path("/{certificateId}/candidatemessage")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response getCandidateMessageForCertificate(@PathParam("certificateId") @NotNull String certificateId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Get candidate message for certificateId: '{}'", certificateId);
+        }
+        return Response.ok(getCandidateMesssageForCertificateFacadeService.get(certificateId)).build();
     }
 }

@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateF
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCandidateMesssageForCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateResourceLinks;
@@ -75,6 +76,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.GetCandidateMessageForCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
@@ -126,6 +128,8 @@ public class CertificateControllerTest {
 
     @Mock
     private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
+    @Mock
+    private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
 
     @InjectMocks
     private CertificateController certificateController;
@@ -693,6 +697,32 @@ public class CertificateControllerTest {
             doReturn(expectedRelatedCertificateId).when(getRelatedCertificateFacadeService).get(CERTIFICATE_ID);
             final var actualResponse = (GetRelatedCertificateDTO) certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
             assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
+        }
+    }
+
+    @Nested
+    class GetCertificateUnit {
+
+        @Test
+        void shallReturnCorrectDtoMessage() {
+            final var expectedDto =
+                GetCandidateMessageForCertificateDTO.create("message", "title");
+            doReturn(expectedDto).when(getCandidateMesssageForCertificateFacadeService).get(CERTIFICATE_ID);
+            final var actualDto = (GetCandidateMessageForCertificateDTO) certificateController.getCandidateMessageForCertificate(
+                    CERTIFICATE_ID)
+                .getEntity();
+            assertEquals(expectedDto.getMessage(), actualDto.getMessage());
+        }
+
+        @Test
+        void shallReturnCorrectDtoTitle() {
+            final var expectedDto =
+                GetCandidateMessageForCertificateDTO.create("message", "title");
+            doReturn(expectedDto).when(getCandidateMesssageForCertificateFacadeService).get(CERTIFICATE_ID);
+            final var actualDto = (GetCandidateMessageForCertificateDTO) certificateController.getCandidateMessageForCertificate(
+                    CERTIFICATE_ID)
+                .getEntity();
+            assertEquals(expectedDto.getTitle(), actualDto.getTitle());
         }
     }
 }
