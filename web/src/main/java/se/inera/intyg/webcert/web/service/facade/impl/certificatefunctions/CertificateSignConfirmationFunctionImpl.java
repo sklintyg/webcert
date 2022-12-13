@@ -65,6 +65,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
             if (certificateTypeIsDb(certificateType)) {
                 return Optional.of(ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signerat dödsbevis finns",
                     "Signera och skicka",
                     "Intyget skickas direkt till Skatteverket",
                     "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
@@ -73,6 +74,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
             } else {
                 return Optional.of(ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Signerat dödsorsaksintyg finns",
                     "Signera och skicka",
                     "Intyget skickas direkt till Socialstyrelsen",
                     "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
@@ -85,6 +87,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
             if (certificateTypeIsDb(certificateType)) {
                 return Optional.of(ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Utkast på dödsbevis finns",
                     "Signera och skicka",
                     "Intyget skickas direkt till Skatteverket",
                     "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
@@ -94,6 +97,7 @@ public class CertificateSignConfirmationFunctionImpl implements CertificateSignC
             } else {
                 return Optional.of(ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                    "Utkast på dödsorsaksintyg finns",
                     "Signera och skicka",
                     "Intyget skickas direkt till Socialstyrelsen",
                     "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "

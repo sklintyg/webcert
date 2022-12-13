@@ -30,6 +30,19 @@ public class ResourceLinkDTO {
     private String description;
     private String body;
     private boolean enabled;
+    private String title;
+
+    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body,
+        boolean enabled) {
+        final var resourceLink = new ResourceLinkDTO();
+        resourceLink.setType(type);
+        resourceLink.setTitle(title);
+        resourceLink.setName(name);
+        resourceLink.setDescription(description);
+        resourceLink.setBody(body);
+        resourceLink.setEnabled(enabled);
+        return resourceLink;
+    }
 
     public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String name, String description, boolean enabled) {
         final var resourceLink = new ResourceLinkDTO();
@@ -90,6 +103,14 @@ public class ResourceLinkDTO {
         this.enabled = enabled;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -103,12 +124,13 @@ public class ResourceLinkDTO {
             && Objects.equals(type, that.type)
             && Objects.equals(name, that.name)
             && Objects.equals(description, that.description)
-            && Objects.equals(body, that.body);
+            && Objects.equals(body, that.body)
+            && Objects.equals(title, that.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, name, description, body, enabled);
+        return Objects.hash(type, name, description, body, enabled, title);
     }
 
     @Override
@@ -118,7 +140,8 @@ public class ResourceLinkDTO {
             + ", name='" + name + '\''
             + ", description='" + description + '\''
             + ", body='" + body + '\''
-            + ", enabled=" + enabled
+            + ", enabled=" + enabled + '\''
+            + ", title=" + title
             + '}';
     }
 }

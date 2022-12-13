@@ -116,6 +116,7 @@ class CertificateSignConfirmationFunctionTest {
         void shallReturnResourceLinkIfSignedDodsbevisExistsForAnotherCareprovider() {
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Signerat dödsbevis finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Skatteverket",
                 "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
@@ -151,6 +152,7 @@ class CertificateSignConfirmationFunctionTest {
 
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsbevis finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Skatteverket",
                 "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
@@ -179,6 +181,7 @@ class CertificateSignConfirmationFunctionTest {
 
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsbevis finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Skatteverket",
                 "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
@@ -253,6 +256,7 @@ class CertificateSignConfirmationFunctionTest {
         void shallReturnResourceLinkIfDraftExistsFromAnotherCareprovider() {
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsorsaksintyg finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Socialstyrelsen",
                 "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
@@ -280,6 +284,7 @@ class CertificateSignConfirmationFunctionTest {
         void shallReturnResourceLinkIfCertificateExistsFromAnotherCareprovider() {
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Signerat dödsorsaksintyg finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Socialstyrelsen",
                 "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
@@ -307,6 +312,7 @@ class CertificateSignConfirmationFunctionTest {
         void shallReturnResourceLinkIfReplacedAndDraftDoiExistsForAnotherCareprovider() {
             final var expectedResourceLink = ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsorsaksintyg finns",
                 "Signera och skicka",
                 "Intyget skickas direkt till Socialstyrelsen",
                 "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
