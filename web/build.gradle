@@ -286,4 +286,6 @@ dependencies {
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
+
+    runtime "xerces:xercesImpl:2.10.0"
 }
