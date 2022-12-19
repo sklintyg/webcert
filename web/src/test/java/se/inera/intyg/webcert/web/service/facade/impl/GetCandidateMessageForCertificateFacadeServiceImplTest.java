@@ -60,7 +60,7 @@ class GetCandidateMessageForCertificateFacadeServiceImplTest {
         final var expectedMessage = "<p>Det finns ett signerat dödsbevis för detta personnummer på "
             + "<span class='iu-fw-bold'>"
             + createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "sopra steria").getEnhetName()
-            + "</span>) Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
+            + "</span> Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
         final var dbCertificate = getDbCertificate();
         doReturn(dbCertificate)
             .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false));
