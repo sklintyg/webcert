@@ -64,7 +64,7 @@ public class GetCandidateMessageForCertificateFacadeServiceImpl implements GetCa
         return "<p>Det finns ett signerat dödsbevis för detta personnummer på "
             + "<span class='iu-fw-bold'>"
             + enhetName
-            + "</span>) Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
+            + "</span> Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
     }
 
     private Optional<UtkastCandidateMetaData> getCandidateMetadata(Certificate certificate) {
