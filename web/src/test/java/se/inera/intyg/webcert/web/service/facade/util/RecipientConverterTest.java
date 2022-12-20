@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 class RecipientConverterTest {
 
     @Test
-    void shallReturnNameForFKASSA() {
+    void shallReturnNameForFkassa() {
         assertEquals("Försäkringskassan", RecipientConverter.getRecipientName("FKASSA"));
     }
 
     @Test
-    void shallReturnNameForTRANSP() {
+    void shallReturnNameForTransp() {
         assertEquals("Transportstyrelsen", RecipientConverter.getRecipientName("TRANSP"));
     }
 
