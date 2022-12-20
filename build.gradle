@@ -6,8 +6,8 @@ plugins {
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.18.0-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.18.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '3.19.0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '3.19.0-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
     schemasContractVersion = "2.1.8"
@@ -23,7 +23,7 @@ ext {
     autovalueVersion = "1.9"
     camelVersion = "3.18.2"
     commonsIoVersion = "2.11.0"
-    cxfVersion = "3.5.3"
+    cxfVersion = "3.5.5"
     geronimoJmsVersion = "1.1.1"
     jadiraUserTypeVersion = "6.0.1.GA"
     jakartaJwsApiVersion = "3.0.0"
@@ -43,7 +43,7 @@ ext {
     nodeJsVersion = "12.22.12"
     npmVersion = "6.14.16"
 
-    springbootMavenBomVersion = "2.7.3"
+    springbootMavenBomVersion = "2.7.6"
 }
 
 allprojects {

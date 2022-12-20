@@ -1,9 +1,9 @@
 {
-  "appVersion": "6.12.0",
-  "commonVersion": "3.18.0.+",
-  "infraVersion": "3.18.0.+",
+  "appVersion": "6.13.0",
+  "commonVersion": "3.19.0.+",
+  "infraVersion": "3.19.0.+",
   "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
   "tests": [ "restAssuredTest"
   ],
-  "backingService": "intygstjanst:3.17.0.+"
+  "backingService": "intygstjanst:3.18.0.+"
 }
