@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
+import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -39,6 +41,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
+    private static final String INTYGSMOTTAGARE = "intygsmottagare";
 
     private final UtkastService utkastService;
 
@@ -54,10 +57,10 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
     @Autowired
     public GetCertificateFacadeServiceImpl(UtkastService utkastService,
-                                           IntygService intygService,
-                                           UtkastToCertificateConverter utkastToCertificateConverter,
-                                           IntygToCertificateConverter intygToCertificateConverter,
-                                           DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService) {
+        IntygService intygService,
+        UtkastToCertificateConverter utkastToCertificateConverter,
+        IntygToCertificateConverter intygToCertificateConverter,
+        DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService) {
         this.utkastService = utkastService;
         this.intygService = intygService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
@@ -81,6 +84,7 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
             final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
             utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
+            utkast.setSkickadTillMottagare(getRecipient(certificateInfo));
         }
 
         LOG.debug("Converting Utkast to Certificate");
@@ -89,6 +93,14 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
     private boolean isSignedButNotSent(Utkast utkast) {
         return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
+    }
+
+    private String getRecipient(ItIntygInfo certificateInfo) {
+        return (String) certificateInfo.getEvents().stream()
+            .filter(intygInfoEvent -> intygInfoEvent.getType() == IntygInfoEventType.IS006)
+            .findFirst()
+            .map(intygInfoEvent -> intygInfoEvent.getData().get(INTYGSMOTTAGARE))
+            .orElse(null);
     }
 
     private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {

@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,6 +46,9 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -44,12 +62,6 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GetCertificateFacadeServiceImplTest {
@@ -84,12 +96,12 @@ class GetCertificateFacadeServiceImplTest {
         @BeforeEach
         void setupMocks() {
             doReturn(draft)
-                    .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
+                .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
 
             utkastArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
 
             doReturn(createCertificate())
-                    .when(utkastToCertificateConverter).convert(utkastArgumentCaptor.capture());
+                .when(utkastToCertificateConverter).convert(utkastArgumentCaptor.capture());
         }
 
         @Test
@@ -105,23 +117,64 @@ class GetCertificateFacadeServiceImplTest {
             assertNotNull(certificate, "Certificate should not be null!");
         }
 
-        @Test
-        void shallGetCertificateStatusFromITIfSignedButNotSent() {
-            draft.setStatus(UtkastStatus.SIGNED);
-            draft.setSkickadTillMottagareDatum(null);
+        @Nested
+        class SentFromMinaIntyg {
 
-            final var expectedSentDateTime = LocalDateTime.now();
-            final var itIntygInfo = new ItIntygInfo();
-            itIntygInfo.setSentToRecipient(expectedSentDateTime);
+            private ItIntygInfo itIntygInfo;
 
-            doReturn(itIntygInfo)
+            @BeforeEach
+            void setUp() {
+                draft.setStatus(UtkastStatus.SIGNED);
+                draft.setSkickadTillMottagareDatum(null);
+                draft.setSkickadTillMottagare(null);
+
+                itIntygInfo = new ItIntygInfo();
+
+                doReturn(itIntygInfo)
                     .when(itIntegrationService)
                     .getCertificateInfo(draft.getIntygsId());
+            }
 
-            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            @Test
+            void shallGetSentDateTimeFromITIfSentFromMinaIntyg() {
+                final var expectedSentDateTime = LocalDateTime.now();
+                itIntygInfo.setSentToRecipient(expectedSentDateTime);
 
-            assertNotNull(certificate);
-            assertEquals(expectedSentDateTime, utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum());
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+
+                assertNotNull(certificate);
+                assertEquals(expectedSentDateTime, utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum());
+            }
+
+            @Test
+            void shallGetRecieverFromITIfSentFromMinaIntyg() {
+                final var expectedReceiver = "FKASSA";
+                itIntygInfo.setSentToRecipient(LocalDateTime.now());
+                final var intygInfoEvent = new IntygInfoEvent(Source.INTYGSTJANSTEN, LocalDateTime.now(), IntygInfoEventType.IS006);
+                intygInfoEvent.addData("intygsmottagare", expectedReceiver);
+                itIntygInfo.setEvents(List.of(intygInfoEvent));
+
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+
+                assertNotNull(certificate);
+                assertEquals(expectedReceiver, utkastArgumentCaptor.getValue().getSkickadTillMottagare());
+            }
+
+            @Test
+            void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+
+                assertNotNull(certificate);
+                assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum(), "Sent datetime should be null if not sent");
+            }
+
+            @Test
+            void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+
+                assertNotNull(certificate);
+                assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagare(), "Receiver should be null if not sent!");
+            }
         }
 
         @Test
@@ -129,7 +182,7 @@ class GetCertificateFacadeServiceImplTest {
             draft.setStatus(UtkastStatus.SIGNED);
             getCertificateService.getCertificate(draft.getIntygsId(), false);
             verify(itIntegrationService, never())
-                    .getCertificateInfo(draft.getIntygsId());
+                .getCertificateInfo(draft.getIntygsId());
         }
 
         @Test
@@ -199,24 +252,24 @@ class GetCertificateFacadeServiceImplTest {
 
         private final String CERTIFICATE_ID = "certificateId";
         private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setTestIntyg(false)
-                .build();
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
+            .build();
 
         @BeforeEach
         void setupMocks() {
             doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
-                    .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
+                .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
 
             doReturn(intygContentHolder)
-                    .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean());
+                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean());
 
             doReturn(createCertificate())
-                    .when(intygToCertificateConverter).convert(intygContentHolder);
+                .when(intygToCertificateConverter).convert(intygContentHolder);
         }
 
         @Test
@@ -248,24 +301,24 @@ class GetCertificateFacadeServiceImplTest {
 
     private Certificate createCertificate() {
         return CertificateBuilder.create()
-                .metadata(
-                        CertificateMetadata.builder()
-                                .id("certificateId")
-                                .type("certificateType")
-                                .typeVersion("certificateTypeVersion")
-                                .unit(
-                                        Unit.builder()
-                                                .unitId("unitId")
-                                                .unitName("unitName")
-                                                .address("address")
-                                                .zipCode("zipCode")
-                                                .city("city")
-                                                .email("email")
-                                                .phoneNumber("phoneNumber")
-                                                .build()
-                                )
-                                .build()
-                )
-                .build();
+            .metadata(
+                CertificateMetadata.builder()
+                    .id("certificateId")
+                    .type("certificateType")
+                    .typeVersion("certificateTypeVersion")
+                    .unit(
+                        Unit.builder()
+                            .unitId("unitId")
+                            .unitName("unitName")
+                            .address("address")
+                            .zipCode("zipCode")
+                            .city("city")
+                            .email("email")
+                            .phoneNumber("phoneNumber")
+                            .build()
+                    )
+                    .build()
+            )
+            .build();
     }
 }

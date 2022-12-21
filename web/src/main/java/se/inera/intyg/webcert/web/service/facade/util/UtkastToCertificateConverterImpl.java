@@ -89,6 +89,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
+        certificateToReturn.getMetadata().setSentTo(
+            certificate.getSkickadTillMottagare() != null
+                ? RecipientConverter.getRecipientName(certificate.getSkickadTillMottagare())
+                : null);
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate)
