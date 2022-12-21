@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static se.inera.intyg.webcert.web.service.facade.util.RecipientConverter.FKASSA;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -184,6 +185,16 @@ public class IntygToCertificateConverterImplTest {
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
             assertEquals(expectedSent, actualCertificate.getMetadata().isSent());
+        }
+
+        @Test
+        void shallIncludeSentToWhenSent() {
+            final var expectedSentTo = RecipientConverter.getRecipientName(FKASSA);
+            statusList.add(new Status(CertificateState.SENT, FKASSA, LocalDateTime.now()));
+
+            final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+            assertEquals(expectedSentTo, actualCertificate.getMetadata().getSentTo());
         }
 
         @Test

@@ -93,6 +93,13 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setSent(
             certificate.getStatuses().stream().anyMatch(status -> status.getType() == CertificateState.SENT)
         );
+        certificateToReturn.getMetadata().setSentTo(
+            certificate.getStatuses().stream()
+                .filter(status -> status.getType() == CertificateState.SENT)
+                .findFirst()
+                .map(status -> RecipientConverter.getRecipientName(status.getTarget()))
+                .orElse(null)
+        );
 
         certificateToReturn.getMetadata().setCareProvider(
             getCareProvider(certificate.getUtlatande().getGrundData().getSkapadAv())

@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.facade.util.RecipientConverter.FKASSA;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -334,6 +335,46 @@ public class UtkastToCertificateConverterTest {
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
             assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+        }
+    }
+
+    @Nested
+    class ValidateSent {
+
+        @BeforeEach
+        void setUp() {
+            draft.setStatus(UtkastStatus.SIGNED);
+        }
+
+        @Test
+        void shallIncludeIsSentTrueIfCertificateIsSent() {
+            final var expectedIsSent = true;
+            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
+            draft.setSkickadTillMottagare(FKASSA);
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+        }
+
+        @Test
+        void shallIncludeIsSentFalseIfCertificateIsSent() {
+            final var expectedIsSent = false;
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+        }
+
+        @Test
+        void shallIncludeReceiverIfCertificateIsSent() {
+            final var expectedSentTo = RecipientConverter.getRecipientName(FKASSA);
+            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
+            draft.setSkickadTillMottagare(FKASSA);
+
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+            assertEquals(expectedSentTo, actualCertificate.getMetadata().getSentTo());
         }
     }
 
