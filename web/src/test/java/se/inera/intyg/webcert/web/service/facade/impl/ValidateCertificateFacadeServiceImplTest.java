@@ -24,7 +24,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -223,91 +222,5 @@ class ValidateCertificateFacadeServiceImplTest {
         );
         draftValidation.addMessage(validationMessage);
         return validationMessage;
-    }
-
-    @Nested
-    class ConvertField {
-
-
-        @Test
-        void shallConvertJsonIdToQuestionId() {
-            final String EXPECTED_ID = "expectedQuestionId";
-            final var draftValidationMessage = addValidationMessage();
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallConvertChildNotationInField() {
-            final String EXPECTED_ID = "expectedQuestionId.childId";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("parentField[childId]");
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallConvertTwoLevelsOfChildNotationInField() {
-            final String EXPECTED_ID = "expectedQuestionId.childId.row";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("parentField[childId].row");
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallIncludeOriginalAndChildIdFieldIfTypeIsNotEmpty() {
-            final String EXPECTED_ID = "parentField.childId.row";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("parentField[childId].row");
-            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallIncludeOriginalFieldIfTypeIsNotEmpty() {
-            final String EXPECTED_ID = "parentField";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("parentField");
-            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallIncludeOriginalFieldAndPositionIfTypeIsNotEmpty() {
-            final String EXPECTED_ID = "parentField.row";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("parentField.row");
-            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
-
-        @Test
-        void shallReturnOriginalFieldIfQuestionIdIsNull() {
-            final String EXPECTED_ID = "original[field].row";
-            final var draftValidationMessage = addValidationMessage();
-            draftValidationMessage.setField("original[field].row");
-            draftValidationMessage.setType(ValidationMessageType.INVALID_FORMAT);
-            draftValidationMessage.setQuestionId(null);
-
-            final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
-
-            assertEquals(EXPECTED_ID, actualValidationErrors[0].getField());
-        }
     }
 }
