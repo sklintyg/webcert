@@ -209,6 +209,8 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
                 return "ue-cause-of-death-list";
             case UE_MEDICAL_INVESTIGATION:
                 return "ue-medical-investigation";
+            case UE_VISUAL_ACUITY:
+                return "ue-visual-acuity";
             default:
                 throw new RuntimeException("No conversion specified for componentType: " + componentType);
         }
