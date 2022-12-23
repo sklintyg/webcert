@@ -264,6 +264,7 @@ class SendCertificateFunctionImplTest {
                     true));
 
             TS_BAS.setMetadata(CertificateMetadata.builder()
+                .latestMajorVersion(true)
                 .type(TsBasEntryPoint.MODULE_ID)
                 .build()
             );
@@ -279,6 +280,21 @@ class SendCertificateFunctionImplTest {
 
             TS_BAS.setMetadata(CertificateMetadata.builder()
                 .type(DoiModuleEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfNotLatestMajorVersion() {
+            final var expectedResourceLink = Optional.empty();
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(DoiModuleEntryPoint.MODULE_ID)
+                .latestMajorVersion(false)
                 .build()
             );
 
@@ -336,6 +352,7 @@ class SendCertificateFunctionImplTest {
 
             TS_BAS.setMetadata(CertificateMetadata.builder()
                 .type(TsBasEntryPoint.MODULE_ID)
+                .latestMajorVersion(true)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
                         CertificateRelation.builder()

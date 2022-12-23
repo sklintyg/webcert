@@ -80,6 +80,10 @@ public class SendFunctionImpl implements SendCertificateFunction {
             return Optional.empty();
         }
 
+        if (certificate.getMetadata().getType().equals(TsBasEntryPoint.MODULE_ID) && !certificate.getMetadata().isLatestMajorVersion()) {
+            return Optional.empty();
+        }
+
         if (certificate.getMetadata().getType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
             return Optional.of(
                 ResourceLinkDTO.create(
