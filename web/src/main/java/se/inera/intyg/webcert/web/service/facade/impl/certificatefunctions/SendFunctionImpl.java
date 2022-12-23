@@ -33,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTy
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -42,6 +43,9 @@ public class SendFunctionImpl implements SendCertificateFunction {
     private static final long SICKLEAVE_DAYS_LIMIT = 15;
     private static final String SEND_BODY_LUAENA = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>";
+    private static final String SEND_BODY_TS_BAS = "<p>Om du går vidare kommer intyget skickas direkt till Transportstyrelsens system"
+        + " vilket ska göras i samråd med patienten.</p>";
+
     private static final String SEND_BODY_LISJP = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
         + "<p>Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.</p>";
@@ -63,12 +67,20 @@ public class SendFunctionImpl implements SendCertificateFunction {
 
 
     private static final String SEND_TO_FK_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
-    private final List<String> fkCertificate = List.of(LuaenaEntryPoint.MODULE_ID, LisjpEntryPoint.MODULE_ID);
+    private static final String SEND_TO_TS_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.";
+    private final List<String> allowedCertificateTypes = List.of(LuaenaEntryPoint.MODULE_ID, LisjpEntryPoint.MODULE_ID,
+        TsBasEntryPoint.MODULE_ID);
     private static final String SEND_TO_FK = "Skicka till Försäkringskassan";
+    private static final String SEND_TO_TS = "Skicka till Transportstyrelsen";
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
-        if (!fkCertificate.contains(certificate.getMetadata().getType()) || isSent(certificate) || isReplacementSigned(certificate)) {
+        if (!allowedCertificateTypes.contains(certificate.getMetadata().getType()) || isSent(certificate) || isReplacementSigned(
+            certificate)) {
+            return Optional.empty();
+        }
+
+        if (certificate.getMetadata().getType().equals(TsBasEntryPoint.MODULE_ID) && !certificate.getMetadata().isLatestMajorVersion()) {
             return Optional.empty();
         }
 
@@ -80,14 +92,23 @@ public class SendFunctionImpl implements SendCertificateFunction {
                     SEND_TO_FK_DESCRIPTION,
                     SEND_BODY_LUAENA,
                     true));
-        } else {
-
+        } else if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
                     SEND_TO_FK,
                     SEND_TO_FK_DESCRIPTION,
                     hasShortSickleavePeriod(certificate) ? SEND_BODY_SHORT_SICKLEAVE_PERIOD : SEND_BODY_LISJP,
+                    true
+                )
+            );
+        } else {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    SEND_TO_TS,
+                    SEND_TO_TS_DESCRIPTION,
+                    SEND_BODY_TS_BAS,
                     true
                 )
             );
