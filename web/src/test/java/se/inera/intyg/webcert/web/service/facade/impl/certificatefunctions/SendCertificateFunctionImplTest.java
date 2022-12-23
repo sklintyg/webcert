@@ -64,7 +64,7 @@ class SendCertificateFunctionImplTest {
     }
 
     @Nested
-    class Luae_na {
+    class LuaeNa {
 
         @Test
         void shouldAddResourceLink() {
@@ -250,7 +250,7 @@ class SendCertificateFunctionImplTest {
     }
 
     @Nested
-    class Ts_bas {
+    class TsBas {
 
         @Test
         void shouldAddResourceLink() {
