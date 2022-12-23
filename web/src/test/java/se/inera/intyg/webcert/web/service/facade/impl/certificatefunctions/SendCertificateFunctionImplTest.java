@@ -42,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -50,6 +51,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 class SendCertificateFunctionImplTest {
 
     private static final Certificate LUAE_NA = new Certificate();
+    private static Certificate TS_BAS = new Certificate();
     private static final Certificate SENT_LUAE_NA = new Certificate();
     private static final Certificate REPLACED_LUAE_NA = new Certificate();
 
@@ -58,110 +60,114 @@ class SendCertificateFunctionImplTest {
 
     @BeforeEach
     void setup() {
-
-    }
-
-    @Test
-    void shouldAddResourceLink() {
-        final var expectedResourceLink = Optional.of(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                "Skicka till Försäkringskassan",
-                "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
-                "<p>Om du går vidare kommer intyget skickas direkt till "
-                    + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
-                true));
-
-        LUAE_NA.setMetadata(CertificateMetadata.builder()
-            .type(LuaenaEntryPoint.MODULE_ID)
-            .build()
-        );
-
-        final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
-
-        assertEquals(expectedResourceLink, actualResourceLink);
-    }
-
-    @Test
-    void shouldNotAddResourceLinkIfWrongType() {
-        final var expectedResourceLink = Optional.empty();
-
-        LUAE_NA.setMetadata(CertificateMetadata.builder()
-            .type(DoiModuleEntryPoint.MODULE_ID)
-            .build()
-        );
-
-        final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
-
-        assertEquals(expectedResourceLink, actualResourceLink);
-    }
-
-    @Test
-    void shouldNotAddResourceLinkIfCertificateIsSent() {
-        final var expectedResourceLink = Optional.empty();
-
-        SENT_LUAE_NA.setMetadata(CertificateMetadata.builder()
-            .type(LuaenaEntryPoint.MODULE_ID)
-            .sent(true)
-            .build()
-        );
-
-        final var actualResourceLink = sendCertificateToFK.get(SENT_LUAE_NA);
-
-        assertEquals(expectedResourceLink, actualResourceLink);
-    }
-
-    @Test
-    void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
-        final var expectedResourceLink = Optional.empty();
-
-        REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
-            .type(LuaenaEntryPoint.MODULE_ID)
-            .relations(CertificateRelations.builder()
-                .children(new CertificateRelation[]{
-                    CertificateRelation.builder()
-                        .type(CertificateRelationType.REPLACED)
-                        .status(CertificateStatus.SIGNED)
-                        .build()
-                }).build())
-            .build()
-        );
-
-        final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
-
-        assertEquals(expectedResourceLink, actualResourceLink);
-    }
-
-    @Test
-    void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
-        final var expectedResourceLink = Optional.of(
-            ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                "Skicka till Försäkringskassan",
-                "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
-                "<p>Om du går vidare kommer intyget skickas direkt till "
-                    + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
-                true));
-
-        REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
-            .type(LuaenaEntryPoint.MODULE_ID)
-            .relations(CertificateRelations.builder()
-                .children(new CertificateRelation[]{
-                    CertificateRelation.builder()
-                        .type(CertificateRelationType.REPLACED)
-                        .status(CertificateStatus.UNSIGNED)
-                        .build()
-                }).build())
-            .build()
-        );
-
-        final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
-
-        assertEquals(expectedResourceLink, actualResourceLink);
+        TS_BAS = new Certificate();
     }
 
     @Nested
-    class SendCertificate {
+    class Luae_na {
+
+        @Test
+        void shouldAddResourceLink() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            LUAE_NA.setMetadata(CertificateMetadata.builder()
+                .type(LuaenaEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfWrongType() {
+            final var expectedResourceLink = Optional.empty();
+
+            LUAE_NA.setMetadata(CertificateMetadata.builder()
+                .type(DoiModuleEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsSent() {
+            final var expectedResourceLink = Optional.empty();
+
+            SENT_LUAE_NA.setMetadata(CertificateMetadata.builder()
+                .type(LuaenaEntryPoint.MODULE_ID)
+                .sent(true)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(SENT_LUAE_NA);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
+            final var expectedResourceLink = Optional.empty();
+
+            REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
+                .type(LuaenaEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.SIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
+                .type(LuaenaEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.UNSIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+    }
+
+    @Nested
+    class Lisjp {
 
         @Test
         void shallIncludeSend() {
@@ -240,6 +246,109 @@ class SendCertificateFunctionImplTest {
 
             final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
+        }
+    }
+
+    @Nested
+    class Ts_bas {
+
+        @Test
+        void shouldAddResourceLink() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Transportstyrelsen",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(TsBasEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfWrongType() {
+            final var expectedResourceLink = Optional.empty();
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(DoiModuleEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsSent() {
+            final var expectedResourceLink = Optional.empty();
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(TsBasEntryPoint.MODULE_ID)
+                .sent(true)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
+            final var expectedResourceLink = Optional.empty();
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(TsBasEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.SIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Transportstyrelsen",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            TS_BAS.setMetadata(CertificateMetadata.builder()
+                .type(TsBasEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.UNSIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
         }
     }
 }
