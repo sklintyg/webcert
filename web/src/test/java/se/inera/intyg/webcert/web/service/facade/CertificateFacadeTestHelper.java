@@ -93,8 +93,8 @@ public class CertificateFacadeTestHelper {
                     .phoneNumber("phoneNumber")
                     .build()
             ).careUnit(
-                Unit.builder().
-                    unitId("unitId")
+                Unit.builder()
+                    .unitId("unitId")
                     .unitName("unitName")
                     .address("address")
                     .zipCode("zipCode")
