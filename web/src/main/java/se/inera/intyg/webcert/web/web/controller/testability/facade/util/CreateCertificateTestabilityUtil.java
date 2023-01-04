@@ -239,6 +239,8 @@ public class CreateCertificateTestabilityUtil {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
             if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
                 return createLuaenaTestabilityUtil.createMinimumValuesLuaena();
+            } else {
+                return createLuaenaTestabilityUtil.createMaximumValuesLuaena();
             }
         }
 

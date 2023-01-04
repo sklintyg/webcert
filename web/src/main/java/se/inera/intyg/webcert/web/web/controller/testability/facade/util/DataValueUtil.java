@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
-import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGNOSES_LIST_ITEM_1_ID;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import se.inera.intyg.common.fkparent.model.internal.Diagnos;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataTextValue;
@@ -91,9 +90,21 @@ public final class DataValueUtil {
             .build();
     }
 
+    public static CertificateDataValueDateList getDataValueDateListMaximal(List<String> listOfIds, LocalDate date, int numberOfDates) {
+        final var certificateDataValueDateList = new ArrayList<CertificateDataValueDate>();
+        for (int i = 0; i < numberOfDates; i++) {
+            certificateDataValueDateList.add(getDataValueDate(listOfIds.get(i), date));
+        }
+        return CertificateDataValueDateList.builder()
+            .list(
+                certificateDataValueDateList
+            )
+            .build();
+    }
+
     public static CertificateDataValueDiagnosisList getDataValueMinimalDiagnosisListFk(String id, Diagnos diagnos) {
         final var certificateDataValueDiagnosis = CertificateDataValueDiagnosis.builder()
-            .id(DIAGNOSES_LIST_ITEM_1_ID)
+            .id(id)
             .code(diagnos.getDiagnosKod())
             .terminology(diagnos.getDiagnosKodSystem())
             .description(diagnos.getDiagnosBeskrivning())
@@ -106,5 +117,24 @@ public final class DataValueUtil {
             ).
             build();
         return certificateDataValueDiagnosisList;
+    }
+
+    public static CertificateDataValueDiagnosisList getDataValueMaximalDiagnosisListFk(List<String> ids, List<Diagnos> diagnosis) {
+        final var certificateDataValueDiagnoses = new ArrayList<CertificateDataValueDiagnosis>();
+        for (int i = 0; i < diagnosis.size(); i++) {
+            certificateDataValueDiagnoses.add(
+                CertificateDataValueDiagnosis.builder()
+                    .id(ids.get(i))
+                    .code(diagnosis.get(i).getDiagnosKod())
+                    .terminology(diagnosis.get(i).getDiagnosKodSystem())
+                    .description(diagnosis.get(i).getDiagnosBeskrivning())
+                    .build()
+            );
+        }
+        return CertificateDataValueDiagnosisList.builder()
+            .list(
+                certificateDataValueDiagnoses
+            ).
+            build();
     }
 }
