@@ -49,6 +49,66 @@ public class CertificateFacadeTestHelper {
         return createCertificateWithChildRelation(certificateType, status, relation, true);
     }
 
+    public static Certificate createCertificateTypeWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
+        String typeVersion) {
+        return createCertificateCertainWithVersion(certificateType, status, addressFromPU, typeVersion);
+    }
+
+    private static Certificate createCertificateCertainWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
+        String typeVersion) {
+        final var metadataBuilder = CertificateMetadata.builder()
+            .id("certificateId")
+            .type(certificateType)
+            .typeVersion(typeVersion)
+            .status(status)
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id("191212121212")
+                            .build()
+                    )
+                    .addressFromPU(addressFromPU)
+                    .build()
+            )
+            .unit(
+                Unit.builder()
+                    .unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            )
+            .careProvider(
+                Unit.builder()
+                    .unitId("careProviderId")
+                    .unitName("careProviderName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            ).careUnit(
+                Unit.builder().
+                    unitId("unitId")
+                    .unitName("unitName")
+                    .address("address")
+                    .zipCode("zipCode")
+                    .city("city")
+                    .email("email")
+                    .phoneNumber("phoneNumber")
+                    .build()
+            );
+
+        return CertificateBuilder.create()
+            .metadata(metadataBuilder.build())
+            .build();
+    }
+
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
         CertificateRelation relation, boolean addressFromPU) {
         final var metadataBuilder = CertificateMetadata.builder()
