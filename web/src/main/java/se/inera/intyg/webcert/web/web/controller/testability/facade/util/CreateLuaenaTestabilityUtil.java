@@ -41,6 +41,7 @@ import static se.inera.intyg.common.luae_na.v1.model.converter.RespConstants.UND
 import static se.inera.intyg.common.luae_na.v1.model.converter.RespConstants.UNDERLAGFINNS_SVAR_JSON_ID_3;
 import static se.inera.intyg.webcert.web.web.controller.testability.facade.util.DataValueUtil.getDataValueBoolean;
 import static se.inera.intyg.webcert.web.web.controller.testability.facade.util.DataValueUtil.getDataValueDate;
+import static se.inera.intyg.webcert.web.web.controller.testability.facade.util.DataValueUtil.getDataValueDateListMinimal;
 import static se.inera.intyg.webcert.web.web.controller.testability.facade.util.DataValueUtil.getDataValueMinimalDiagnosisListFk;
 import static se.inera.intyg.webcert.web.web.controller.testability.facade.util.DataValueUtil.getDataValueText;
 
@@ -54,9 +55,10 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 @Component
 public class CreateLuaenaTestabilityUtil {
 
-    public Map<String, CertificateDataValue> createMinimumValuesDb() {
+    public Map<String, CertificateDataValue> createMinimumValuesLuaena() {
         final var values = new HashMap<String, CertificateDataValue>();
-        final var underlagBaseratPa = getDataValueDate(GRUNDFORMEDICINSKTUNDERLAG_UNDERSOKNING_AV_PATIENT_SVAR_JSON_ID_1, LocalDate.now());
+        final var underlagBaseratPa = getDataValueDateListMinimal(GRUNDFORMEDICINSKTUNDERLAG_UNDERSOKNING_AV_PATIENT_SVAR_JSON_ID_1,
+            LocalDate.now());
         values.put(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1, underlagBaseratPa);
 
         final var kannedomOmPatienten = getDataValueDate(KANNEDOM_SVAR_JSON_ID_2, LocalDate.now());
@@ -66,7 +68,7 @@ public class CreateLuaenaTestabilityUtil {
         values.put(UNDERLAGFINNS_SVAR_ID_3, underlagFinns);
 
         final var diagnos = getDataValueMinimalDiagnosisListFk(DIAGNOSES_LIST_ITEM_1_ID,
-            Diagnos.create("AOO", "ICD-10-SE", "Kolera", "Kolera"));
+            Diagnos.create("A00", "ICD-10-SE", "Kolera", "Kolera"));
         values.put(DIAGNOS_SVAR_ID_6, diagnos);
 
         final var diagnosBakgrund = getDataValueText(DIAGNOSGRUND_SVAR_JSON_ID_7, "diagnosBakgrund");

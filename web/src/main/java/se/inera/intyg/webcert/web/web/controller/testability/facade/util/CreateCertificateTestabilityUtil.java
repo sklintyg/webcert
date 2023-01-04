@@ -29,6 +29,7 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -79,6 +80,7 @@ public class CreateCertificateTestabilityUtil {
     private final CreateAf00213TestabilityUtil createAf00213TestabilityUtil;
     private final CreateDbTestabilityUtil createDbTestabilityUtil;
     private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
+    private final CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -88,7 +90,8 @@ public class CreateCertificateTestabilityUtil {
         IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
         CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
-        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil) {
+        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
+        CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -101,6 +104,7 @@ public class CreateCertificateTestabilityUtil {
         this.createAf00213TestabilityUtil = createAf00213TestabilityUtil;
         this.createDbTestabilityUtil = createDbTestabilityUtil;
         this.createDoiTestabilityUtil = createDoiTestabilityUtil;
+        this.createLuaenaTestabilityUtil = createLuaenaTestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -230,7 +234,12 @@ public class CreateCertificateTestabilityUtil {
             } else {
                 return createDoiTestabilityUtil.createMaximumValuesDoi();
             }
+        }
 
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createLuaenaTestabilityUtil.createMinimumValuesLuaena();
+            }
         }
 
         return Collections.emptyMap();

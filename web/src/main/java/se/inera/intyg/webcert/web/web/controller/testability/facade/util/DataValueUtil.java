@@ -29,6 +29,7 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBool
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCode;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCodeList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 
@@ -76,6 +77,15 @@ public final class DataValueUtil {
         return CertificateDataValueCodeList.builder()
             .list(List.of(
                     getDataValueCode(id, code)
+                )
+            )
+            .build();
+    }
+
+    public static CertificateDataValueDateList getDataValueDateListMinimal(String id, LocalDate date) {
+        return CertificateDataValueDateList.builder()
+            .list(List.of(
+                    getDataValueDate(id, date)
                 )
             )
             .build();
