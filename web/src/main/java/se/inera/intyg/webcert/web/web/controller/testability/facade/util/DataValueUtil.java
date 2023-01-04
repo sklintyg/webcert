@@ -114,8 +114,8 @@ public final class DataValueUtil {
                 List.of(
                     certificateDataValueDiagnosis
                 )
-            ).
-            build();
+            )
+            .build();
         return certificateDataValueDiagnosisList;
     }
 
@@ -134,7 +134,7 @@ public final class DataValueUtil {
         return CertificateDataValueDiagnosisList.builder()
             .list(
                 certificateDataValueDiagnoses
-            ).
-            build();
+            )
+            .build();
     }
 }
