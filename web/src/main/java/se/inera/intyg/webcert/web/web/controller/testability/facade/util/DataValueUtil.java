@@ -18,14 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGNOSES_LIST_ITEM_1_ID;
+
 import java.time.LocalDate;
 import java.util.List;
+import se.inera.intyg.common.fkparent.model.internal.Diagnos;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataTextValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataUncertainDateValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCode;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCodeList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 
 public final class DataValueUtil {
 
@@ -76,4 +81,20 @@ public final class DataValueUtil {
             .build();
     }
 
+    public static CertificateDataValueDiagnosisList getDataValueMinimalDiagnosisListFk(String id, Diagnos diagnos) {
+        final var certificateDataValueDiagnosis = CertificateDataValueDiagnosis.builder()
+            .id(DIAGNOSES_LIST_ITEM_1_ID)
+            .code(diagnos.getDiagnosKod())
+            .terminology(diagnos.getDiagnosKodSystem())
+            .description(diagnos.getDiagnosBeskrivning())
+            .build();
+        final var certificateDataValueDiagnosisList = CertificateDataValueDiagnosisList.builder()
+            .list(
+                List.of(
+                    certificateDataValueDiagnosis
+                )
+            ).
+            build();
+        return certificateDataValueDiagnosisList;
+    }
 }
