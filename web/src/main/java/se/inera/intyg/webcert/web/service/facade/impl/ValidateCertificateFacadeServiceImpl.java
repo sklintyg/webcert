@@ -19,13 +19,10 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import com.google.common.base.Strings;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
-import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -96,54 +93,12 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         DraftValidationMessage validationMessage) {
         final var validationError = new ValidationErrorDTO();
         validationError.setCategory(validationMessage.getCategory());
-        validationError.setField(
-            isFieldConversionNeeded(certificate)
-                ? convertField(validationMessage.getField(), validationMessage.getQuestionId(), validationMessage.getType())
-                : validationMessage.getField()
-        );
+        validationError.setField(validationMessage.getField());
         validationError.setType(validationMessage.getType().name());
         validationError.setId(validationMessage.getQuestionId());
         validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
             validationMessage.getQuestionId(), validationMessage.getDynamicKey()));
         return validationError;
-    }
-
-    private boolean isFieldConversionNeeded(Certificate certificate) {
-        return List.of(LisjpEntryPoint.MODULE_ID, Ag7804EntryPoint.MODULE_ID).contains(certificate.getMetadata().getType());
-    }
-
-    private void mergeFieldParts(String field, StringBuilder stringBuilder, String regexToSplit) {
-        final var parts = field.split(regexToSplit);
-        if (parts.length >= 2) {
-            stringBuilder.append(".").append(parts[1]);
-        }
-    }
-
-    private String getInitialField(String field, String questionId, ValidationMessageType type) {
-        final var shouldKeepOriginalField = type != ValidationMessageType.EMPTY;
-        if (field == null) {
-            return questionId;
-        }
-        final var parts = field.split("\\[").length > 1 ? field.split("\\[") : field.split("\\.");
-        if (shouldKeepOriginalField) {
-            return parts.length <= 1 ? field : parts[0];
-        } else {
-            return questionId;
-        }
-    }
-
-    private String convertField(String field, String questionId, ValidationMessageType type) {
-        if (questionId == null) {
-            return field;
-        }
-        final var fieldWithoutExtraChars = field.replace("]", "");
-        StringBuilder resultingField = new StringBuilder(getInitialField(field, questionId, type));
-        final var resultingFieldLength = resultingField.length();
-        mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\[");
-        if (resultingFieldLength == resultingField.length()) {
-            mergeFieldParts(fieldWithoutExtraChars, resultingField, "\\.");
-        }
-        return resultingField.toString();
     }
 
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
