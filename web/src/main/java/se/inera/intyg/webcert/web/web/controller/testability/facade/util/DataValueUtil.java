@@ -109,14 +109,13 @@ public final class DataValueUtil {
             .terminology(diagnos.getDiagnosKodSystem())
             .description(diagnos.getDiagnosBeskrivning())
             .build();
-        final var certificateDataValueDiagnosisList = CertificateDataValueDiagnosisList.builder()
+        return CertificateDataValueDiagnosisList.builder()
             .list(
                 List.of(
                     certificateDataValueDiagnosis
                 )
             )
             .build();
-        return certificateDataValueDiagnosisList;
     }
 
     public static CertificateDataValueDiagnosisList getDataValueMaximalDiagnosisListFk(List<String> ids, List<Diagnos> diagnosis) {
