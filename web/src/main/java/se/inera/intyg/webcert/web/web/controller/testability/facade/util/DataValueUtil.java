@@ -19,13 +19,18 @@
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import se.inera.intyg.common.fkparent.model.internal.Diagnos;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataTextValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataUncertainDateValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCode;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueCodeList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateList;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
 
 public final class DataValueUtil {
 
@@ -76,4 +81,73 @@ public final class DataValueUtil {
             .build();
     }
 
+    public static CertificateDataValueCodeList getDataValueCodeListMaximumValues(List<String> id, List<String> code) {
+        final var certificateDataValueCodes = new ArrayList<CertificateDataValueCode>();
+        for (int i = 0; i < id.size(); i++) {
+            certificateDataValueCodes.add(
+                getDataValueCode(id.get(i), code.get(i))
+            );
+        }
+        return CertificateDataValueCodeList.builder()
+            .list(
+                certificateDataValueCodes
+            )
+            .build();
+    }
+
+    public static CertificateDataValueDateList getDataValueDateListMinimal(String id, LocalDate date) {
+        return CertificateDataValueDateList.builder()
+            .list(List.of(
+                    getDataValueDate(id, date)
+                )
+            )
+            .build();
+    }
+
+    public static CertificateDataValueDateList getDataValueDateListMaximal(List<String> listOfIds, LocalDate date, int numberOfDates) {
+        final var certificateDataValueDateList = new ArrayList<CertificateDataValueDate>();
+        for (int i = 0; i < numberOfDates; i++) {
+            certificateDataValueDateList.add(getDataValueDate(listOfIds.get(i), date));
+        }
+        return CertificateDataValueDateList.builder()
+            .list(
+                certificateDataValueDateList
+            )
+            .build();
+    }
+
+    public static CertificateDataValueDiagnosisList getDataValueMinimalDiagnosisListFk(String id, Diagnos diagnos) {
+        final var certificateDataValueDiagnosis = CertificateDataValueDiagnosis.builder()
+            .id(id)
+            .code(diagnos.getDiagnosKod())
+            .terminology(diagnos.getDiagnosKodSystem())
+            .description(diagnos.getDiagnosBeskrivning())
+            .build();
+        return CertificateDataValueDiagnosisList.builder()
+            .list(
+                List.of(
+                    certificateDataValueDiagnosis
+                )
+            )
+            .build();
+    }
+
+    public static CertificateDataValueDiagnosisList getDataValueMaximalDiagnosisListFk(List<String> ids, List<Diagnos> diagnosis) {
+        final var certificateDataValueDiagnoses = new ArrayList<CertificateDataValueDiagnosis>();
+        for (int i = 0; i < diagnosis.size(); i++) {
+            certificateDataValueDiagnoses.add(
+                CertificateDataValueDiagnosis.builder()
+                    .id(ids.get(i))
+                    .code(diagnosis.get(i).getDiagnosKod())
+                    .terminology(diagnosis.get(i).getDiagnosKodSystem())
+                    .description(diagnosis.get(i).getDiagnosBeskrivning())
+                    .build()
+            );
+        }
+        return CertificateDataValueDiagnosisList.builder()
+            .list(
+                certificateDataValueDiagnoses
+            )
+            .build();
+    }
 }

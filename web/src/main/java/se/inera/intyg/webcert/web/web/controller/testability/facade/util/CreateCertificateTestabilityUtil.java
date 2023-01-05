@@ -29,6 +29,8 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -41,6 +43,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -79,6 +82,9 @@ public class CreateCertificateTestabilityUtil {
     private final CreateAf00213TestabilityUtil createAf00213TestabilityUtil;
     private final CreateDbTestabilityUtil createDbTestabilityUtil;
     private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
+    private final CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil;
+    private final CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil;
+    private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -88,7 +94,9 @@ public class CreateCertificateTestabilityUtil {
         IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
         CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
-        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil) {
+        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
+        CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
+        CreateTsBasTestabilityUtil createTsBasTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -101,6 +109,9 @@ public class CreateCertificateTestabilityUtil {
         this.createAf00213TestabilityUtil = createAf00213TestabilityUtil;
         this.createDbTestabilityUtil = createDbTestabilityUtil;
         this.createDoiTestabilityUtil = createDoiTestabilityUtil;
+        this.createLuaenaTestabilityUtil = createLuaenaTestabilityUtil;
+        this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
+        this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -230,7 +241,29 @@ public class CreateCertificateTestabilityUtil {
             } else {
                 return createDoiTestabilityUtil.createMaximumValuesDoi();
             }
+        }
 
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createLuaenaTestabilityUtil.createMinimumValuesLuaena();
+            } else {
+                return createLuaenaTestabilityUtil.createMaximumValuesLuaena();
+            }
+        }
+
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaefsEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createLuaefsTestabilityUtil.createMinimumValuesLuaefs();
+            } else {
+                return createLuaefsTestabilityUtil.createMaximumValuesLuaefs();
+            }
+        }
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsBasEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createTsBasTestabilityUtil.createMinimumValuesTsBas();
+            } else {
+                return createTsBasTestabilityUtil.createMaximumValuesTsBas();
+            }
         }
 
         return Collections.emptyMap();

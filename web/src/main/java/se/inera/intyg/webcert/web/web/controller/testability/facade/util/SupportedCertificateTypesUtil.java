@@ -28,7 +28,10 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
@@ -83,6 +86,38 @@ public class SupportedCertificateTypesUtil {
                 DoiModuleEntryPoint.MODULE_ID,
                 DoiModuleEntryPoint.MODULE_NAME,
                 Collections.singletonList("1.0"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+        certificateTypes.add(
+            new CertificateType(
+                LuaenaEntryPoint.ISSUER_TYPE_ID,
+                LuaenaEntryPoint.MODULE_ID,
+                LuaenaEntryPoint.MODULE_NAME,
+                Collections.singletonList("1.2"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                LuaefsEntryPoint.ISSUER_TYPE_ID,
+                LuaefsEntryPoint.MODULE_ID,
+                LuaefsEntryPoint.MODULE_NAME,
+                Collections.singletonList("1.1"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                "",
+                TsBasEntryPoint.MODULE_ID,
+                TsBasEntryPoint.MODULE_NAME,
+                Collections.singletonList("7.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
