@@ -24,12 +24,14 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
 public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAddressInCertificate {
 
+    private static final String TS_BAS_VALID_TYPE_VERSION = "6.8";
     private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
     private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
 
@@ -40,7 +42,7 @@ public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAdd
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
-        if (certificatesTypeToDisplay.contains(certificate.getMetadata().getType())) {
+        if (certificatesTypeToDisplay.contains(certificate.getMetadata().getType()) || isValidTypeVersionForTsBas(certificate)) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
@@ -50,5 +52,10 @@ public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAdd
             );
         }
         return Optional.empty();
+    }
+
+    private boolean isValidTypeVersionForTsBas(Certificate certificate) {
+        return TsBasEntryPoint.MODULE_ID.equals(certificate.getMetadata().getType())
+            && TS_BAS_VALID_TYPE_VERSION.equals(certificate.getMetadata().getTypeVersion());
     }
 }
