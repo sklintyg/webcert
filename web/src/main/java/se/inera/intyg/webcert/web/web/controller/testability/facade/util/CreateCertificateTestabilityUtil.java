@@ -43,6 +43,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -83,6 +84,7 @@ public class CreateCertificateTestabilityUtil {
     private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
     private final CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil;
     private final CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil;
+    private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -93,7 +95,8 @@ public class CreateCertificateTestabilityUtil {
         CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
         CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
-        CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil) {
+        CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
+        CreateTsBasTestabilityUtil createTsBasTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -108,6 +111,7 @@ public class CreateCertificateTestabilityUtil {
         this.createDoiTestabilityUtil = createDoiTestabilityUtil;
         this.createLuaenaTestabilityUtil = createLuaenaTestabilityUtil;
         this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
+        this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -252,6 +256,13 @@ public class CreateCertificateTestabilityUtil {
                 return createLuaefsTestabilityUtil.createMinimumValuesLuaefs();
             } else {
                 return createLuaefsTestabilityUtil.createMaximumValuesLuaefs();
+            }
+        }
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsBasEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createTsBasTestabilityUtil.createMinimumValuesTsBas();
+            } else {
+                return createTsBasTestabilityUtil.createMaximumValuesTsBas();
             }
         }
 

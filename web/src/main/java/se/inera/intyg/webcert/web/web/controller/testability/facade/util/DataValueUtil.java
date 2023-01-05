@@ -81,6 +81,20 @@ public final class DataValueUtil {
             .build();
     }
 
+    public static CertificateDataValueCodeList getDataValueCodeListMaximumValues(List<String> id, List<String> code) {
+        final var certificateDataValueCodes = new ArrayList<CertificateDataValueCode>();
+        for (int i = 0; i < id.size(); i++) {
+            certificateDataValueCodes.add(
+                getDataValueCode(id.get(i), code.get(i))
+            );
+        }
+        return CertificateDataValueCodeList.builder()
+            .list(
+                certificateDataValueCodes
+            )
+            .build();
+    }
+
     public static CertificateDataValueDateList getDataValueDateListMinimal(String id, LocalDate date) {
         return CertificateDataValueDateList.builder()
             .list(List.of(
