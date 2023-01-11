@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -68,7 +69,7 @@ public class SendFunctionImpl implements SendCertificateFunction {
     private static final String SEND_TO_FK_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
     private static final String SEND_TO_TS_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.";
     private final List<String> allowedCertificateTypes = List.of(LuaenaEntryPoint.MODULE_ID, LisjpEntryPoint.MODULE_ID,
-        TsBasEntryPoint.MODULE_ID);
+        TsBasEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID);
     private static final String SEND_TO_FK = "Skicka till Försäkringskassan";
     private static final String SEND_TO_TS = "Skicka till Transportstyrelsen";
 
@@ -83,7 +84,7 @@ public class SendFunctionImpl implements SendCertificateFunction {
             return Optional.empty();
         }
 
-        if (certificate.getMetadata().getType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
+        if (shouldSendToFk(certificate)) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.SEND_CERTIFICATE,
@@ -112,6 +113,11 @@ public class SendFunctionImpl implements SendCertificateFunction {
                 )
             );
         }
+    }
+
+    private static boolean shouldSendToFk(Certificate certificate) {
+        return certificate.getMetadata().getType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID) || certificate.getMetadata().getType()
+            .equalsIgnoreCase(LuseEntryPoint.MODULE_ID);
     }
 
     private boolean isSent(Certificate certificate) {
