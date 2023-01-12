@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -50,6 +51,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 class SendCertificateFunctionImplTest {
 
     private static final Certificate LUAE_NA = new Certificate();
+    private static final Certificate LUSE = new Certificate();
     private static Certificate TS_BAS = new Certificate();
     private static final Certificate SENT_LUAE_NA = new Certificate();
     private static final Certificate REPLACED_LUAE_NA = new Certificate();
@@ -363,6 +365,109 @@ class SendCertificateFunctionImplTest {
             );
 
             final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+    }
+
+    @Nested
+    class Luse {
+
+        @Test
+        void shouldAddResourceLink() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            LUSE.setMetadata(CertificateMetadata.builder()
+                .type(LuseEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfWrongType() {
+            final var expectedResourceLink = Optional.empty();
+
+            LUSE.setMetadata(CertificateMetadata.builder()
+                .type(DoiModuleEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsSent() {
+            final var expectedResourceLink = Optional.empty();
+
+            LUSE.setMetadata(CertificateMetadata.builder()
+                .type(LuseEntryPoint.MODULE_ID)
+                .sent(true)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
+            final var expectedResourceLink = Optional.empty();
+
+            LUSE.setMetadata(CertificateMetadata.builder()
+                .type(LuseEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.SIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            LUSE.setMetadata(CertificateMetadata.builder()
+                .type(LuseEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.UNSIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(LUSE);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
