@@ -30,6 +30,7 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
@@ -118,6 +119,17 @@ public class SupportedCertificateTypesUtil {
                 TsBasEntryPoint.MODULE_ID,
                 TsBasEntryPoint.MODULE_NAME,
                 Collections.singletonList("7.0"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                LuseEntryPoint.ISSUER_TYPE_ID,
+                LuseEntryPoint.MODULE_ID,
+                LuseEntryPoint.MODULE_NAME,
+                Collections.singletonList("1.3"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
