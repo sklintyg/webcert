@@ -27,6 +27,7 @@ import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
@@ -130,6 +131,17 @@ public class SupportedCertificateTypesUtil {
                 LuseEntryPoint.MODULE_ID,
                 LuseEntryPoint.MODULE_NAME,
                 Collections.singletonList("1.3"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                Fk7263EntryPoint.ISSUER_TYPE_ID,
+                Fk7263EntryPoint.MODULE_ID,
+                Fk7263EntryPoint.MODULE_NAME,
+                Collections.singletonList("1.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
