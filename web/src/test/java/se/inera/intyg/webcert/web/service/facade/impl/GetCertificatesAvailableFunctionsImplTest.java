@@ -378,27 +378,6 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeCopyCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
-        }
-
-        @Test
-        void shallIncludeCopyContinueCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            CertificateRelation copied = CertificateRelation.builder().type(CertificateRelationType.COPIED)
-                .status(CertificateStatus.UNSIGNED).build();
-            final var children = new CertificateRelation[]{copied};
-            certificate.getMetadata().setRelations(CertificateRelations.builder().children(children).build());
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
-        }
-
-        @Test
         void shallIncludeInvalidateCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);

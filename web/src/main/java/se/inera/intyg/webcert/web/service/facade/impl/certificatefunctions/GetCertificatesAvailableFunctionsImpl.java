@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
-import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
@@ -83,9 +82,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String PRINT_PROTECTED_PERSON_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
         + "<i class='ic-alert__icon ic-info-icon'></i><p>Patienten har skyddade personuppgifter. Hantera utskriften varsamt.</p></div>";
 
-    private static final String COPY_NAME = "Kopiera";
-    private static final String COPY_DESCRIPTION = "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.";
-
     private static final String REVOKE_NAME = "Makulera";
     private static final String REVOKE_LOCKED_DRAFT_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.";
 
@@ -117,6 +113,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction;
 
+    private final CopyCertificateFunction copyCertificateFunction;
+
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
@@ -127,7 +125,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
-        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction) {
+        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -138,6 +136,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.createCertificateFromTemplateFunction = createCertificateFromTemplateFunction;
         this.showRelatedCertificateFunction = showRelatedCertificateFunction;
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
+        this.copyCertificateFunction = copyCertificateFunction;
     }
 
     /**
@@ -413,28 +412,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
         resourceLinks.add(getPrintResourceLink(certificate));
 
-        if (isCopyCertificateAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
-                    COPY_NAME,
-                    COPY_DESCRIPTION,
-                    true
-                )
-            );
-        }
-
-        if (isCopyCertificateContinueAvailable(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE,
-                    COPY_NAME,
-                    COPY_DESCRIPTION,
-                    true
-                )
-            );
-        }
-
         resourceLinks.add(
             ResourceLinkDTO.create(ResourceLinkTypeDTO.REVOKE_CERTIFICATE,
                 REVOKE_NAME,
@@ -442,6 +419,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 true
             )
         );
+
+        copyCertificateFunction.get(certificate)
+            .ifPresent(resourceLinks::add);
 
         displayPatientAddressInCertificate.get(certificate)
             .ifPresent(resourceLinks::add);
@@ -577,13 +557,5 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return questions.stream().anyMatch(question -> !question.isHandled());
         }
         return false;
-    }
-
-    private boolean isCopyCertificateAvailable(Certificate certificate) {
-        return !includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
-    }
-
-    private boolean isCopyCertificateContinueAvailable(Certificate certificate) {
-        return includesChildRelation(certificate.getMetadata().getRelations(), COPIED, UNSIGNED);
     }
 }
