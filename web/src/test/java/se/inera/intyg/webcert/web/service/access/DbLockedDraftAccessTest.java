@@ -133,17 +133,17 @@ public class DbLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(AccessResult actualValue) {
-        assertEquals(AccessResultCode.UNIQUE_DRAFT, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue) {
-        assertEquals(AccessResultCode.UNIQUE_CERTIFICATE, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(AccessResult actualValue) {
-        assertEquals(AccessResultCode.UNIQUE_CERTIFICATE, actualValue.getCode());
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override

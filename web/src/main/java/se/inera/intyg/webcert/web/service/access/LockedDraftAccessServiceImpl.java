@@ -88,7 +88,6 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
             .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
             .checkInactiveCareUnit(false)
             .checkPatientSecrecy()
-            .checkUnique()
             .checkUnit(true, true)
             .checkSubscription()
             .evaluate();
