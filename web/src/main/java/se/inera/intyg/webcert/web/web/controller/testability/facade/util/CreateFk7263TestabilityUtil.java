@@ -19,18 +19,109 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
+import se.inera.intyg.common.fk7263.model.internal.Rehabilitering;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.model.InternalDate;
+import se.inera.intyg.common.support.model.InternalLocalDateInterval;
+import se.inera.intyg.common.support.model.LocalDateInterval;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 @Component
 public class CreateFk7263TestabilityUtil {
 
-    public Map<String, CertificateDataValue> createMinimumValuesLuse() {
-        final var values = new HashMap<String, CertificateDataValue>();
-
-        return values;
+    public Fk7263Utlatande createMinimumValuesFk7263(Certificate certificate) {
+        final var utlatande = getUtlatande(certificate);
+        utlatande.setAvstangningSmittskydd(false);
+        utlatande.setDiagnosKod("diagnoskod");
+        utlatande.setDiagnosBeskrivning("beskrivning");
+        utlatande.setSjukdomsforlopp("aktuellt sjukdomsförlopp");
+        utlatande.setFunktionsnedsattning("funktionsnedsättning");
+        utlatande.setUndersokningAvPatienten(new InternalDate(LocalDate.now()));
+        utlatande.setAtgardInomSjukvarden("åtgärd inom sjukvården");
+        utlatande.setRehabilitering(Rehabilitering.rehabiliteringGarInteAttBedoma);
+        utlatande.setArbetsformagaPrognos("arbetsförmåga prognos");
+        utlatande.setPrognosBedomning(PrognosBedomning.arbetsformagaPrognosNej);
+        utlatande.setArbetsloshet(true);
+        utlatande.setNedsattMed25(
+            new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
+        return utlatande;
     }
 
+    public Fk7263Utlatande createMaximumValuesFk7263(Certificate certificate) {
+        final var utlatande = getUtlatande(certificate);
+        utlatande.setAvstangningSmittskydd(true);
+        utlatande.setDiagnosKod("diagnoskod");
+        utlatande.setDiagnosBeskrivning("beskrivning");
+        utlatande.setDiagnosBeskrivning1("beskrivning1");
+        utlatande.setDiagnosBeskrivning2("beskrivning2");
+        utlatande.setDiagnosBeskrivning3("beskrivning3");
+        utlatande.setDiagnosKod2("diagnoskod2");
+        utlatande.setDiagnosKod3("diagnoskod3");
+        utlatande.setDiagnosKodsystem1("diagnoskodsystem1");
+        utlatande.setDiagnosKodsystem2("diagnoskodsystem2");
+        utlatande.setDiagnosKodsystem3("diagnoskodsystem3");
+        utlatande.setSjukdomsforlopp("aktuellt sjukdomsförlopp");
+        utlatande.setFunktionsnedsattning("funktionsnedsättning");
+        utlatande.setUndersokningAvPatienten(new InternalDate(LocalDate.now()));
+        utlatande.setTelefonkontaktMedPatienten(new InternalDate(LocalDate.now()));
+        utlatande.setJournaluppgifter(new InternalDate(LocalDate.now()));
+        utlatande.setAnnanReferens(new InternalDate(LocalDate.now()));
+        utlatande.setAktivitetsbegransning("aktivitetsbegränsningar");
+        utlatande.setRekommendationKontaktArbetsformedlingen(true);
+        utlatande.setRekommendationKontaktForetagshalsovarden(true);
+        utlatande.setRekommendationOvrigt("Övrigt");
+        utlatande.setRekommendationOvrigtCheck(true);
+        utlatande.setAtgardInomSjukvarden("åtgärd inom sjukvården");
+        utlatande.setAnnanAtgard("annanÅtgärd");
+        utlatande.setRehabilitering(Rehabilitering.rehabiliteringAktuell);
+        utlatande.setArbetsformagaPrognos("arbetsförmåga prognos");
+        utlatande.setPrognosBedomning(PrognosBedomning.arbetsformagaPrognosNej);
+        utlatande.setArbetsformagaPrognosGarInteAttBedomaBeskrivning("Går inte att bedöma beskrivning");
+        utlatande.setArbetsloshet(true);
+        utlatande.setForaldrarledighet(true);
+        utlatande.setNuvarandeArbete(true);
+        utlatande.setNuvarandeArbetsuppgifter("nuvarande arbetsuppgifter");
+        utlatande.setNedsattMed25(
+            new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
+        utlatande.setNedsattMed50(
+            new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
+        utlatande.setNedsattMed75(
+            new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
+        utlatande.setNedsattMed100(
+            new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
+
+        utlatande.setGiltighet(new LocalDateInterval(LocalDate.now(), LocalDate.now().plusDays(1)));
+        utlatande.setSamsjuklighet(true);
+        utlatande.setRessattTillArbeteAktuellt(true);
+        utlatande.setRessattTillArbeteEjAktuellt(true);
+        utlatande.setKontaktMedFk(true);
+        utlatande.setTjanstgoringstid("tjänstgörningstid");
+        utlatande.setAnnanReferensBeskrivning("annan referens");
+        utlatande.setKommentar("kommentar");
+        return utlatande;
+    }
+
+    private static Fk7263Utlatande getUtlatande(Certificate certificate) {
+        final var utlatande = new Fk7263Utlatande();
+        final var unit = new Vardenhet();
+        final var skapadAv = new HoSPersonal();
+        final var patient = new Patient();
+        final var grundData = new GrundData();
+
+        patient.setPersonId(Personnummer.createPersonnummer("19121212-1212").orElseThrow());
+        skapadAv.setVardenhet(unit);
+        grundData.setSkapadAv(skapadAv);
+        grundData.setPatient(patient);
+        utlatande.setGrundData(grundData);
+        utlatande.setId(certificate.getMetadata().getId());
+        return utlatande;
+    }
 }

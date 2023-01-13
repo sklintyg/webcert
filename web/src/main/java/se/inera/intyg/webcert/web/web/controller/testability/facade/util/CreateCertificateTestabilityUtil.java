@@ -28,6 +28,7 @@ import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
@@ -41,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
@@ -88,6 +90,8 @@ public class CreateCertificateTestabilityUtil {
     private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
     private final CreateLuseTestabilityUtil createLuseTestabilityUtil;
 
+    private final CreateFk7263TestabilityUtil createFk7263TestabilityUtil;
+
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
@@ -98,7 +102,8 @@ public class CreateCertificateTestabilityUtil {
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
         CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
         CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
-        CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil) {
+        CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
+        CreateFk7263TestabilityUtil createFk7263TestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -115,6 +120,7 @@ public class CreateCertificateTestabilityUtil {
         this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
         this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
         this.createLuseTestabilityUtil = createLuseTestabilityUtil;
+        this.createFk7263TestabilityUtil = createFk7263TestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -142,15 +148,49 @@ public class CreateCertificateTestabilityUtil {
 
         final var certificate = utkastToCertificateConverter.convert(utkast);
 
-        updateCertificate(createCertificateRequest, certificate);
-
-        utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+        if (certificate.getMetadata().getType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            final var utlatande = getUtlatande(createCertificateRequest, certificate);
+            utkast.setModel(utlatandeToInteralModelResponse(utlatande));
+        } else {
+            updateCertificate(createCertificateRequest, certificate);
+            utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+        }
 
         updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
 
         utkastRepository.save(utkast);
 
         return certificate.getMetadata().getId();
+    }
+
+    private String utlatandeToInteralModelResponse(Utlatande utlatande) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                utlatande.getTyp(),
+                utlatande.getTextVersion()
+            );
+            return moduleApi.getUtlatandeToInternalModelResponse(utlatande);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Utlatande getUtlatande(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+        if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
+            return null;
+        }
+        return createUtlatande(createCertificateRequest, certificate);
+    }
+
+    private Utlatande createUtlatande(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createFk7263TestabilityUtil.createMinimumValuesFk7263(certificate);
+            } else {
+                return createFk7263TestabilityUtil.createMaximumValuesFk7263(certificate);
+            }
+        }
+        return null;
     }
 
     private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
@@ -164,8 +204,9 @@ public class CreateCertificateTestabilityUtil {
             createNewDraftRequest.getIntygType(),
             createNewDraftRequest.getIntygTypeVersion()
         );
-
-        utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+        if (latestVersionForSameMajorVersion != null) {
+            utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+        }
     }
 
     private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
@@ -276,6 +317,7 @@ public class CreateCertificateTestabilityUtil {
                 return createLuseTestabilityUtil.createMaximumValuesLuse();
             }
         }
+
         return Collections.emptyMap();
     }
 

@@ -142,7 +142,7 @@ public class SupportedCertificateTypesUtil {
                 Fk7263EntryPoint.MODULE_ID,
                 Fk7263EntryPoint.MODULE_NAME,
                 Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
