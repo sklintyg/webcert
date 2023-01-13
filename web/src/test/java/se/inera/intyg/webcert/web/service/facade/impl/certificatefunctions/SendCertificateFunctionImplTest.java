@@ -26,7 +26,6 @@ import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHe
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -50,22 +50,15 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class SendCertificateFunctionImplTest {
 
-    private static final Certificate LUAE_NA = new Certificate();
-    private static final Certificate LUSE = new Certificate();
-    private static Certificate TS_BAS = new Certificate();
-    private static final Certificate SENT_LUAE_NA = new Certificate();
-    private static final Certificate REPLACED_LUAE_NA = new Certificate();
-
     @InjectMocks
     SendFunctionImpl sendCertificateToFK;
 
-    @BeforeEach
-    void setup() {
-        TS_BAS = new Certificate();
-    }
-
     @Nested
     class LuaeNa {
+
+        private final Certificate LUAE_NA = new Certificate();
+        private final Certificate REPLACED_LUAE_NA = new Certificate();
+        private final Certificate SENT_LUAE_NA = new Certificate();
 
         @Test
         void shouldAddResourceLink() {
@@ -253,6 +246,8 @@ class SendCertificateFunctionImplTest {
     @Nested
     class TsBas {
 
+        private Certificate TS_BAS = new Certificate();
+
         @Test
         void shouldAddResourceLink() {
             final var expectedResourceLink = Optional.of(
@@ -373,6 +368,8 @@ class SendCertificateFunctionImplTest {
     @Nested
     class Luse {
 
+        private final Certificate LUSE = new Certificate();
+
         @Test
         void shouldAddResourceLink() {
             final var expectedResourceLink = Optional.of(
@@ -468,6 +465,97 @@ class SendCertificateFunctionImplTest {
             );
 
             final var actualResourceLink = sendCertificateToFK.get(LUSE);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+    }
+
+    @Nested
+    class LuaeFs {
+
+        private final Certificate luaeFs = new Certificate();
+
+        @Test
+        void shouldAddResourceLink() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            luaeFs.setMetadata(CertificateMetadata.builder()
+                .type(LuaefsEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsSent() {
+            final var expectedResourceLink = Optional.empty();
+
+            luaeFs.setMetadata(CertificateMetadata.builder()
+                .type(LuaefsEntryPoint.MODULE_ID)
+                .sent(true)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
+            final var expectedResourceLink = Optional.empty();
+
+            luaeFs.setMetadata(CertificateMetadata.builder()
+                .type(LuaefsEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.SIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Försäkringskassan",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            luaeFs.setMetadata(CertificateMetadata.builder()
+                .type(LuaefsEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.UNSIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
