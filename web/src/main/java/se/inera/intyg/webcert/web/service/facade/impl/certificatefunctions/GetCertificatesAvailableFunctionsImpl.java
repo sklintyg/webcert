@@ -420,7 +420,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        copyCertificateFunction.get(certificate)
+        copyCertificateFunction.get(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
         displayPatientAddressInCertificate.get(certificate)
