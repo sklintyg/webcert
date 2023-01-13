@@ -56,9 +56,9 @@ class SendCertificateFunctionImplTest {
     @Nested
     class LuaeNa {
 
-        private final Certificate LUAE_NA = new Certificate();
-        private final Certificate REPLACED_LUAE_NA = new Certificate();
-        private final Certificate SENT_LUAE_NA = new Certificate();
+        private final Certificate luaeNa = new Certificate();
+        private final Certificate replacedLuaeNa = new Certificate();
+        private final Certificate sentLuaeNa = new Certificate();
 
         @Test
         void shouldAddResourceLink() {
@@ -71,12 +71,12 @@ class SendCertificateFunctionImplTest {
                         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            LUAE_NA.setMetadata(CertificateMetadata.builder()
+            luaeNa.setMetadata(CertificateMetadata.builder()
                 .type(LuaenaEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
+            final var actualResourceLink = sendCertificateToFK.get(luaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -85,12 +85,12 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfWrongType() {
             final var expectedResourceLink = Optional.empty();
 
-            LUAE_NA.setMetadata(CertificateMetadata.builder()
+            luaeNa.setMetadata(CertificateMetadata.builder()
                 .type(DoiModuleEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUAE_NA);
+            final var actualResourceLink = sendCertificateToFK.get(luaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -99,13 +99,13 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsSent() {
             final var expectedResourceLink = Optional.empty();
 
-            SENT_LUAE_NA.setMetadata(CertificateMetadata.builder()
+            sentLuaeNa.setMetadata(CertificateMetadata.builder()
                 .type(LuaenaEntryPoint.MODULE_ID)
                 .sent(true)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(SENT_LUAE_NA);
+            final var actualResourceLink = sendCertificateToFK.get(sentLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -114,7 +114,7 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
             final var expectedResourceLink = Optional.empty();
 
-            REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
+            replacedLuaeNa.setMetadata(CertificateMetadata.builder()
                 .type(LuaenaEntryPoint.MODULE_ID)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
@@ -126,7 +126,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
+            final var actualResourceLink = sendCertificateToFK.get(replacedLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -142,7 +142,7 @@ class SendCertificateFunctionImplTest {
                         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            REPLACED_LUAE_NA.setMetadata(CertificateMetadata.builder()
+            replacedLuaeNa.setMetadata(CertificateMetadata.builder()
                 .type(LuaenaEntryPoint.MODULE_ID)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
@@ -154,7 +154,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(REPLACED_LUAE_NA);
+            final var actualResourceLink = sendCertificateToFK.get(replacedLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -246,7 +246,7 @@ class SendCertificateFunctionImplTest {
     @Nested
     class TsBas {
 
-        private Certificate TS_BAS = new Certificate();
+        private Certificate tsBas = new Certificate();
 
         @Test
         void shouldAddResourceLink() {
@@ -259,13 +259,13 @@ class SendCertificateFunctionImplTest {
                         + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .latestMajorVersion(true)
                 .type(TsBasEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -274,12 +274,12 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfWrongType() {
             final var expectedResourceLink = Optional.empty();
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .type(DoiModuleEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -288,13 +288,13 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfNotLatestMajorVersion() {
             final var expectedResourceLink = Optional.empty();
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .type(DoiModuleEntryPoint.MODULE_ID)
                 .latestMajorVersion(false)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -303,13 +303,13 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsSent() {
             final var expectedResourceLink = Optional.empty();
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .type(TsBasEntryPoint.MODULE_ID)
                 .sent(true)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -318,7 +318,7 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
             final var expectedResourceLink = Optional.empty();
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .type(TsBasEntryPoint.MODULE_ID)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
@@ -330,7 +330,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -346,7 +346,7 @@ class SendCertificateFunctionImplTest {
                         + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            TS_BAS.setMetadata(CertificateMetadata.builder()
+            tsBas.setMetadata(CertificateMetadata.builder()
                 .type(TsBasEntryPoint.MODULE_ID)
                 .latestMajorVersion(true)
                 .relations(CertificateRelations.builder()
@@ -359,7 +359,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(TS_BAS);
+            final var actualResourceLink = sendCertificateToFK.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -368,7 +368,7 @@ class SendCertificateFunctionImplTest {
     @Nested
     class Luse {
 
-        private final Certificate LUSE = new Certificate();
+        private final Certificate luse = new Certificate();
 
         @Test
         void shouldAddResourceLink() {
@@ -381,12 +381,12 @@ class SendCertificateFunctionImplTest {
                         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            LUSE.setMetadata(CertificateMetadata.builder()
+            luse.setMetadata(CertificateMetadata.builder()
                 .type(LuseEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+            final var actualResourceLink = sendCertificateToFK.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -395,12 +395,12 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfWrongType() {
             final var expectedResourceLink = Optional.empty();
 
-            LUSE.setMetadata(CertificateMetadata.builder()
+            luse.setMetadata(CertificateMetadata.builder()
                 .type(DoiModuleEntryPoint.MODULE_ID)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+            final var actualResourceLink = sendCertificateToFK.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -409,13 +409,13 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsSent() {
             final var expectedResourceLink = Optional.empty();
 
-            LUSE.setMetadata(CertificateMetadata.builder()
+            luse.setMetadata(CertificateMetadata.builder()
                 .type(LuseEntryPoint.MODULE_ID)
                 .sent(true)
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+            final var actualResourceLink = sendCertificateToFK.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -424,7 +424,7 @@ class SendCertificateFunctionImplTest {
         void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
             final var expectedResourceLink = Optional.empty();
 
-            LUSE.setMetadata(CertificateMetadata.builder()
+            luse.setMetadata(CertificateMetadata.builder()
                 .type(LuseEntryPoint.MODULE_ID)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
@@ -436,7 +436,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+            final var actualResourceLink = sendCertificateToFK.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -452,7 +452,7 @@ class SendCertificateFunctionImplTest {
                         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>",
                     true));
 
-            LUSE.setMetadata(CertificateMetadata.builder()
+            luse.setMetadata(CertificateMetadata.builder()
                 .type(LuseEntryPoint.MODULE_ID)
                 .relations(CertificateRelations.builder()
                     .children(new CertificateRelation[]{
@@ -464,7 +464,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(LUSE);
+            final var actualResourceLink = sendCertificateToFK.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
