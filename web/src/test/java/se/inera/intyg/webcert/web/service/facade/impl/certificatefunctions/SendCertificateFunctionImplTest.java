@@ -51,7 +51,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 class SendCertificateFunctionImplTest {
 
     @InjectMocks
-    SendFunctionImpl sendCertificateToFK;
+    SendCertificateFunctionImpl sendCertificateToFK;
 
     @Nested
     class LuaeNa {
