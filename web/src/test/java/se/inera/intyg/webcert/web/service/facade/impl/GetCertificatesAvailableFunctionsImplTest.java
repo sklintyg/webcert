@@ -422,7 +422,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeCopyCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            when(copyCertificateFunction.get(certificate, user)).thenReturn(Optional.of(ResourceLinkDTO.create(
+            when(copyCertificateFunction.get(certificate)).thenReturn(Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.COPY_CERTIFICATE, "", "", "", true)));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
@@ -431,7 +431,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallExcludeCopyCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            when(copyCertificateFunction.get(certificate, user)).thenReturn(Optional.empty());
+            when(copyCertificateFunction.get(certificate)).thenReturn(Optional.empty());
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
         }
