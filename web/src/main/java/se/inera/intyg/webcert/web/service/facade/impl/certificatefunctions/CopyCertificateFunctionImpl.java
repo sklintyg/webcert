@@ -22,9 +22,12 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.LOCKED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
+import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.ERSATT_INDICATOR;
+import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.INTYG_INDICATOR;
 import static se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl.UTKAST_INDICATOR;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +62,7 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
         }
 
         if (isDisabledCopyCertificateAvailable(certificate, webCertUser)) {
+            //getDbDoiResourceLink();
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.COPY_CERTIFICATE,
@@ -90,6 +94,56 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
                     COPY_NAME,
                     COPY_DESCRIPTION,
                     true
+                )
+            );
+        }
+        return Optional.empty();
+    }
+
+    private Optional<ResourceLinkDTO> getDbDoiResourceLink(Certificate certificate, WebCertUser webCertUser) {
+        final var certificateType = certificate.getMetadata().getType();
+        final var personnummer = getPersonnummer(certificate);
+        final var existingIntyg = getExistingIntyg(certificate, webCertUser, personnummer);
+        final var previousIntygMap = existingIntygWithStatus(existingIntyg, INTYG_INDICATOR);
+        final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
+        final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
+        final var certificateTypeName = getCertificateTypeName(certificate);
+        if (previousIntygMap.containsKey(certificateType) && !previousReplacedMap.containsKey(certificateType)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    COPY_NAME,
+                    String.format(
+                        "Det finns ett signerat %s för detta personnummer hos annan vårdgivare. "
+                            + "Det är inte möjligt att skapa ett nytt dödsbevis.", certificateTypeName
+                    ),
+                    false
+                )
+            );
+        }
+        if (previousIntygMap.containsKey(certificateType) && !previousReplacedMap.containsKey(certificateType)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    COPY_NAME,
+                    String.format(
+                        "Det finns ett signerat %s för detta personnummer. Du kan inte skapa ett nytt %s men kan "
+                            + "däremot välja att ersätta det befintliga dödsbeviset.", certificateTypeName, certificateTypeName
+                    ),
+                    false
+                )
+            );
+        }
+        if (previousUtkastMap.containsKey(certificateType)) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    COPY_NAME,
+                    String.format(
+                        "Det finns ett utkast på %s för detta personnummer. Du kan inte skapa ett nytt utkast men kan "
+                            + "däremot välja att fortsätta med det befintliga utkastet.", certificateTypeName
+                    ),
+                    false
                 )
             );
         }
@@ -138,11 +192,16 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
     }
 
     private static Personnummer getPersonnummer(Certificate certificate) {
-        return Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow();
+        return Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
     }
 
     private Map<String, Map<String, PreviousIntyg>> getExistingIntyg(Certificate certificate, WebCertUser webCertUser,
         Personnummer personnummer) {
         return utkastService.checkIfPersonHasExistingIntyg(personnummer, webCertUser, certificate.getMetadata().getId());
+    }
+
+    private static Map<String, PreviousIntyg> existingIntygWithStatus(Map<String, Map<String, PreviousIntyg>> existingIntyg,
+        String intygType) {
+        return existingIntyg.getOrDefault(intygType, Collections.emptyMap());
     }
 }
