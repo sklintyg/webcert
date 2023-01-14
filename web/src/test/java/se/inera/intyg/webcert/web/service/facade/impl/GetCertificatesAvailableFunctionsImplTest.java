@@ -363,11 +363,6 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Nested
     class LockedDraft {
 
-        @BeforeEach
-        void setup() {
-            doReturn(user).when(webCertUserService).getUser();
-        }
-
         @Test
         void shallIncludePrintCertificate() {
             final var certificate = getCertificateWithProtectedPatient(false, CertificateStatus.LOCKED);
