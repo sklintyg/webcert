@@ -28,6 +28,7 @@ import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
@@ -145,13 +146,12 @@ public class CreateCertificateTestabilityUtil {
         );
 
         final var utkast = createNewDraft(createNewDraftRequest);
-
-        final var certificate = utkastToCertificateConverter.convert(utkast);
-
-        if (certificate.getMetadata().getType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
-            final var utlatande = getUtlatande(createCertificateRequest, certificate);
-            utkast.setModel(utlatandeToInteralModelResponse(utlatande));
+        if (utkast.getIntygsTyp().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            final var utlatande = getUtlatandeFromJson(utkast);
+            updateUtlatande(createCertificateRequest, utlatande);
+            utkast.setModel(getJsonFromUtlatande(utlatande));
         } else {
+            final var certificate = utkastToCertificateConverter.convert(utkast);
             updateCertificate(createCertificateRequest, certificate);
             utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
         }
@@ -160,34 +160,46 @@ public class CreateCertificateTestabilityUtil {
 
         utkastRepository.save(utkast);
 
-        return certificate.getMetadata().getId();
+        return utkast.getIntygsId();
     }
 
-    private String utlatandeToInteralModelResponse(Utlatande utlatande) {
+    private Utlatande getUtlatandeFromJson(Utkast utkast) {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
-                utlatande.getTyp(),
-                utlatande.getTextVersion()
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion()
             );
-            return moduleApi.getUtlatandeToInternalModelResponse(utlatande);
+            return moduleApi.getUtlatandeFromJson(utkast.getModel());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private Utlatande getUtlatande(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+    private String getJsonFromUtlatande(Utlatande utlatande) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                utlatande.getTyp(),
+                utlatande.getTextVersion()
+            );
+            return moduleApi.getJsonFromUtlatande(utlatande);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Utlatande updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
             return null;
         }
-        return createUtlatande(createCertificateRequest, certificate);
+        return addValuesToUtlatande(createCertificateRequest, utlatande);
     }
 
-    private Utlatande createUtlatande(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
+    private Utlatande addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
             if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createFk7263TestabilityUtil.createMinimumValuesFk7263(certificate);
+                return createFk7263TestabilityUtil.createMinimumValuesFk7263((Fk7263Utlatande) utlatande);
             } else {
-                return createFk7263TestabilityUtil.createMaximumValuesFk7263(certificate);
+                return createFk7263TestabilityUtil.createMaximumValuesFk7263((Fk7263Utlatande) utlatande);
             }
         }
         return null;

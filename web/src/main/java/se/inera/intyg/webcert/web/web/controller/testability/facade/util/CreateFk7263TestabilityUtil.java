@@ -37,8 +37,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 @Component
 public class CreateFk7263TestabilityUtil {
 
-    public Fk7263Utlatande createMinimumValuesFk7263(Certificate certificate) {
-        final var utlatande = getUtlatande(certificate);
+    public Fk7263Utlatande createMinimumValuesFk7263(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(false);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
@@ -55,8 +54,7 @@ public class CreateFk7263TestabilityUtil {
         return utlatande;
     }
 
-    public Fk7263Utlatande createMaximumValuesFk7263(Certificate certificate) {
-        final var utlatande = getUtlatande(certificate);
+    public Fk7263Utlatande createMaximumValuesFk7263(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(true);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
