@@ -62,12 +62,13 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CopyCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromTemplateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.DisplayPatientAddressInCertificate;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ShowRelatedCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
@@ -108,6 +109,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     private CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction;
+
+    @Mock
+    private CopyCertificateFunction copyCertificateFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -378,27 +382,6 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeCopyCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
-        }
-
-        @Test
-        void shallIncludeCopyContinueCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-            CertificateRelation copied = CertificateRelation.builder().type(CertificateRelationType.COPIED)
-                .status(CertificateStatus.UNSIGNED).build();
-            final var children = new CertificateRelation[]{copied};
-            certificate.getMetadata().setRelations(CertificateRelations.builder().children(children).build());
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
-        }
-
-        @Test
         void shallIncludeInvalidateCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
@@ -429,6 +412,23 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeCopyCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            when(copyCertificateFunction.get(certificate)).thenReturn(Optional.of(ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.COPY_CERTIFICATE, "", "", "", true)));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCopyCertificate() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+            when(copyCertificateFunction.get(certificate)).thenReturn(Optional.empty());
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.COPY_CERTIFICATE);
         }
     }
 
