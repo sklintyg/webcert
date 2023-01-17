@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -84,7 +83,7 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
             return Optional.empty();
         }
 
-        return getResourceLinkDTO(certificate).get(certificate.getMetadata().getType());
+        return getResourceLinkDTO(certificate);
     }
 
     private static boolean isWrongMajorVersion(Certificate certificate) {
@@ -93,15 +92,20 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
             .isLatestMajorVersion();
     }
 
-    private Map<String, Optional<ResourceLinkDTO>> getResourceLinkDTO(Certificate certificate) {
-        return Map.of(
-            LisjpEntryPoint.MODULE_ID, getResourceLinkDTOFkLisjp(certificate),
-            LuseEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
-            LuaenaEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
-            LuaefsEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
-            TsBasEntryPoint.MODULE_ID, getResourceLinkDTOTs(),
-            TsDiabetesEntryPoint.MODULE_ID, getResourceLinkDTOTs()
-        );
+    private Optional<ResourceLinkDTO> getResourceLinkDTO(Certificate certificate) {
+        switch (certificate.getMetadata().getType()) {
+            case LisjpEntryPoint.MODULE_ID:
+                return getResourceLinkDTOFkLisjp(certificate);
+            case LuseEntryPoint.MODULE_ID:
+            case LuaefsEntryPoint.MODULE_ID:
+            case LuaenaEntryPoint.MODULE_ID:
+                return getResourceLinkDTOFk();
+            case TsBasEntryPoint.MODULE_ID:
+            case TsDiabetesEntryPoint.MODULE_ID:
+                return getResourceLinkDTOTs();
+            default:
+                return Optional.empty();
+        }
     }
 
     private static Optional<ResourceLinkDTO> getResourceLinkDTOTs() {
@@ -136,12 +140,6 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
                 SEND_TO_FK_DESCRIPTION,
                 SEND_BODY_FK,
                 true));
-    }
-
-    private static boolean shouldSendToFk(Certificate certificate) {
-        return certificate.getMetadata().getType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID) || certificate.getMetadata().getType()
-            .equalsIgnoreCase(LuseEntryPoint.MODULE_ID) || certificate.getMetadata().getType().equalsIgnoreCase(LuaefsEntryPoint.MODULE_ID)
-            || certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
     }
 
     private boolean isSent(Certificate certificate) {
