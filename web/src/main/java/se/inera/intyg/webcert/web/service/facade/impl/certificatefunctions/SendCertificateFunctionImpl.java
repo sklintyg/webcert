@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -35,6 +36,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -42,10 +44,11 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class SendCertificateFunctionImpl implements SendCertificateFunction {
 
     private static final long SICKLEAVE_DAYS_LIMIT = 15;
-    private static final String SEND_BODY_LUAENA = "<p>Om du går vidare kommer intyget skickas direkt till "
+    private static final String SEND_BODY_FK = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>";
-    private static final String SEND_BODY_TS_BAS = "<p>Om du går vidare kommer intyget skickas direkt till Transportstyrelsens system"
-        + " vilket ska göras i samråd med patienten.</p>";
+    private static final String SEND_BODY_TS =
+        "<p>Om du går vidare kommer intyget skickas direkt till Transportstyrelsens system"
+            + " vilket ska göras i samråd med patienten.</p>";
 
     private static final String SEND_BODY_LISJP = "<p>Om du går vidare kommer intyget skickas direkt till "
         + "Försäkringskassans system vilket ska göras i samråd med patienten.</p>"
@@ -70,55 +73,75 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
     private static final String SEND_TO_FK_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Försäkringskassan.";
     private static final String SEND_TO_TS_DESCRIPTION = "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.";
     private final List<String> allowedCertificateTypes = List.of(LuaenaEntryPoint.MODULE_ID, LisjpEntryPoint.MODULE_ID,
-        TsBasEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID);
+        TsBasEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID);
     private static final String SEND_TO_FK = "Skicka till Försäkringskassan";
     private static final String SEND_TO_TS = "Skicka till Transportstyrelsen";
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
         if (!allowedCertificateTypes.contains(certificate.getMetadata().getType()) || isSent(certificate) || isReplacementSigned(
-            certificate)) {
+            certificate) || isWrongMajorVersion(certificate)) {
             return Optional.empty();
         }
 
-        if (certificate.getMetadata().getType().equals(TsBasEntryPoint.MODULE_ID) && !certificate.getMetadata().isLatestMajorVersion()) {
-            return Optional.empty();
-        }
+        return getResourceLinkDTO(certificate).get(certificate.getMetadata().getType());
+    }
 
-        if (shouldSendToFk(certificate)) {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                    SEND_TO_FK,
-                    SEND_TO_FK_DESCRIPTION,
-                    SEND_BODY_LUAENA,
-                    true));
-        } else if (certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                    SEND_TO_FK,
-                    SEND_TO_FK_DESCRIPTION,
-                    hasShortSickleavePeriod(certificate) ? SEND_BODY_SHORT_SICKLEAVE_PERIOD : SEND_BODY_LISJP,
-                    true
-                )
-            );
-        } else {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
-                    SEND_TO_TS,
-                    SEND_TO_TS_DESCRIPTION,
-                    SEND_BODY_TS_BAS,
-                    true
-                )
-            );
-        }
+    private static boolean isWrongMajorVersion(Certificate certificate) {
+        return (certificate.getMetadata().getType().equals(TsBasEntryPoint.MODULE_ID)
+            || certificate.getMetadata().getType().equals(TsDiabetesEntryPoint.MODULE_ID)) && !certificate.getMetadata()
+            .isLatestMajorVersion();
+    }
+
+    private Map<String, Optional<ResourceLinkDTO>> getResourceLinkDTO(Certificate certificate) {
+        return Map.of(
+            LisjpEntryPoint.MODULE_ID, getResourceLinkDTOFkLisjp(certificate),
+            LuseEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
+            LuaenaEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
+            LuaefsEntryPoint.MODULE_ID, getResourceLinkDTOFk(),
+            TsBasEntryPoint.MODULE_ID, getResourceLinkDTOTs(),
+            TsDiabetesEntryPoint.MODULE_ID, getResourceLinkDTOTs()
+        );
+    }
+
+    private static Optional<ResourceLinkDTO> getResourceLinkDTOTs() {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                SEND_TO_TS,
+                SEND_TO_TS_DESCRIPTION,
+                SEND_BODY_TS,
+                true
+            )
+        );
+    }
+
+    private Optional<ResourceLinkDTO> getResourceLinkDTOFkLisjp(Certificate certificate) {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                SEND_TO_FK,
+                SEND_TO_FK_DESCRIPTION,
+                hasShortSickleavePeriod(certificate) ? SEND_BODY_SHORT_SICKLEAVE_PERIOD : SEND_BODY_LISJP,
+                true
+            )
+        );
+    }
+
+    private static Optional<ResourceLinkDTO> getResourceLinkDTOFk() {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                SEND_TO_FK,
+                SEND_TO_FK_DESCRIPTION,
+                SEND_BODY_FK,
+                true));
     }
 
     private static boolean shouldSendToFk(Certificate certificate) {
         return certificate.getMetadata().getType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID) || certificate.getMetadata().getType()
-            .equalsIgnoreCase(LuseEntryPoint.MODULE_ID) || certificate.getMetadata().getType().equalsIgnoreCase(LuaefsEntryPoint.MODULE_ID);
+            .equalsIgnoreCase(LuseEntryPoint.MODULE_ID) || certificate.getMetadata().getType().equalsIgnoreCase(LuaefsEntryPoint.MODULE_ID)
+            || certificate.getMetadata().getType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID);
     }
 
     private boolean isSent(Certificate certificate) {

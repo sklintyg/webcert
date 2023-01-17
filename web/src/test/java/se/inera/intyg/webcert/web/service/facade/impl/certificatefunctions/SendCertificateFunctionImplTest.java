@@ -43,6 +43,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -51,7 +52,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 class SendCertificateFunctionImplTest {
 
     @InjectMocks
-    SendCertificateFunctionImpl sendCertificateToFK;
+    SendCertificateFunctionImpl sendCertificateFunction;
 
     @Nested
     class LuaeNa {
@@ -76,7 +77,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeNa);
+            final var actualResourceLink = sendCertificateFunction.get(luaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -90,7 +91,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeNa);
+            final var actualResourceLink = sendCertificateFunction.get(luaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -105,7 +106,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(sentLuaeNa);
+            final var actualResourceLink = sendCertificateFunction.get(sentLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -126,7 +127,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(replacedLuaeNa);
+            final var actualResourceLink = sendCertificateFunction.get(replacedLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -154,7 +155,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(replacedLuaeNa);
+            final var actualResourceLink = sendCertificateFunction.get(replacedLuaeNa);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -166,14 +167,14 @@ class SendCertificateFunctionImplTest {
         @Test
         void shallIncludeSend() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
 
         @Test
         void shallIncludeSendWithWarningIfSickleavePeriodIsShorterThan15Days() {
             final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(14);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertTrue(actualAvailableFunctions
                 .stream()
@@ -184,7 +185,7 @@ class SendCertificateFunctionImplTest {
         @Test
         void shallNotIncludeSendWithWarningIfSickleavePeriodIs15Days() {
             final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(15);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertFalse(actualAvailableFunctions
                 .stream()
@@ -195,7 +196,7 @@ class SendCertificateFunctionImplTest {
         @Test
         void shallNotIncludeSendWithWarningIfSickleavePeriodIsLongerThan15Days() {
             final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(100);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertFalse(actualAvailableFunctions
                 .stream()
@@ -207,7 +208,7 @@ class SendCertificateFunctionImplTest {
         void shallExcludeSendIfAlreadySent() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             certificate.getMetadata().setSent(true);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertTrue(actualAvailableFunctions.isEmpty());
         }
 
@@ -222,7 +223,7 @@ class SendCertificateFunctionImplTest {
 
             final var certificate = CertificateFacadeTestHelper
                 .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertTrue(actualAvailableFunctions.isEmpty());
         }
 
@@ -238,7 +239,7 @@ class SendCertificateFunctionImplTest {
             final var certificate = CertificateFacadeTestHelper
                 .createCertificateWithChildRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, relation);
 
-            final var actualAvailableFunctions = sendCertificateToFK.get(certificate);
+            final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
     }
@@ -265,7 +266,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -279,7 +280,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -294,7 +295,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -309,7 +310,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -330,7 +331,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -359,7 +360,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(tsBas);
+            final var actualResourceLink = sendCertificateFunction.get(tsBas);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -386,7 +387,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luse);
+            final var actualResourceLink = sendCertificateFunction.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -400,7 +401,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luse);
+            final var actualResourceLink = sendCertificateFunction.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -415,7 +416,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luse);
+            final var actualResourceLink = sendCertificateFunction.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -436,7 +437,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luse);
+            final var actualResourceLink = sendCertificateFunction.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -464,7 +465,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luse);
+            final var actualResourceLink = sendCertificateFunction.get(luse);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -491,7 +492,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+            final var actualResourceLink = sendCertificateFunction.get(luaeFs);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -506,7 +507,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+            final var actualResourceLink = sendCertificateFunction.get(luaeFs);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -527,7 +528,7 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+            final var actualResourceLink = sendCertificateFunction.get(luaeFs);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
@@ -555,7 +556,129 @@ class SendCertificateFunctionImplTest {
                 .build()
             );
 
-            final var actualResourceLink = sendCertificateToFK.get(luaeFs);
+            final var actualResourceLink = sendCertificateFunction.get(luaeFs);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+    }
+
+    @Nested
+    class TsDiabetesV4 {
+
+        private Certificate tsDiabetes = new Certificate();
+
+        @Test
+        void shouldAddResourceLink() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Transportstyrelsen",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .latestMajorVersion(true)
+                .type(TsDiabetesEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfWrongType() {
+            final var expectedResourceLink = Optional.empty();
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .type(DoiModuleEntryPoint.MODULE_ID)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfNotLatestMajorVersion() {
+            final var expectedResourceLink = Optional.empty();
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .type(TsDiabetesEntryPoint.MODULE_ID)
+                .latestMajorVersion(false)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsSent() {
+            final var expectedResourceLink = Optional.empty();
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .type(TsDiabetesEntryPoint.MODULE_ID)
+                .sent(true)
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldNotAddResourceLinkIfCertificateIsReplacedAndSigned() {
+            final var expectedResourceLink = Optional.empty();
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .type(TsDiabetesEntryPoint.MODULE_ID)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.SIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
+
+            assertEquals(expectedResourceLink, actualResourceLink);
+        }
+
+        @Test
+        void shouldAddResourceLinkIfCertificateIsReplacedAndNotSigned() {
+            final var expectedResourceLink = Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.SEND_CERTIFICATE,
+                    "Skicka till Transportstyrelsen",
+                    "Öppnar ett fönster där du kan välja att skicka intyget till Transportstyrelsen.",
+                    "<p>Om du går vidare kommer intyget skickas direkt till "
+                        + "Transportstyrelsens system vilket ska göras i samråd med patienten.</p>",
+                    true));
+
+            tsDiabetes.setMetadata(CertificateMetadata.builder()
+                .type(TsDiabetesEntryPoint.MODULE_ID)
+                .latestMajorVersion(true)
+                .relations(CertificateRelations.builder()
+                    .children(new CertificateRelation[]{
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.REPLACED)
+                            .status(CertificateStatus.UNSIGNED)
+                            .build()
+                    }).build())
+                .build()
+            );
+
+            final var actualResourceLink = sendCertificateFunction.get(tsDiabetes);
 
             assertEquals(expectedResourceLink, actualResourceLink);
         }
