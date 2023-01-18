@@ -189,7 +189,7 @@ public class CreateCertificateTestabilityUtil {
 
     private Utlatande updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
-            return null;
+            return utlatande;
         }
         return addValuesToUtlatande(createCertificateRequest, utlatande);
     }
@@ -202,7 +202,7 @@ public class CreateCertificateTestabilityUtil {
                 return createFk7263TestabilityUtil.createMaximumValuesFk7263((Fk7263Utlatande) utlatande);
             }
         }
-        return null;
+        return utlatande;
     }
 
     private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
