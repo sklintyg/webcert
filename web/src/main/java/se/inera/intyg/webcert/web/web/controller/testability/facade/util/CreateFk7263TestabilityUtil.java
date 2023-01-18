@@ -24,20 +24,14 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
 import se.inera.intyg.common.fk7263.model.internal.Rehabilitering;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.InternalDate;
 import se.inera.intyg.common.support.model.InternalLocalDateInterval;
 import se.inera.intyg.common.support.model.LocalDateInterval;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.schemas.contract.Personnummer;
 
 @Component
 public class CreateFk7263TestabilityUtil {
 
-    public Fk7263Utlatande createMinimumValuesFk7263(Fk7263Utlatande utlatande) {
+    public void createMinimumValuesFk7263(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(false);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
@@ -51,10 +45,9 @@ public class CreateFk7263TestabilityUtil {
         utlatande.setArbetsloshet(true);
         utlatande.setNedsattMed25(
             new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
-        return utlatande;
     }
 
-    public Fk7263Utlatande createMaximumValuesFk7263(Fk7263Utlatande utlatande) {
+    public void createMaximumValuesFk7263(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(true);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
@@ -104,22 +97,5 @@ public class CreateFk7263TestabilityUtil {
         utlatande.setTjanstgoringstid("tjänstgörningstid");
         utlatande.setAnnanReferensBeskrivning("annan referens");
         utlatande.setKommentar("kommentar");
-        return utlatande;
-    }
-
-    private static Fk7263Utlatande getUtlatande(Certificate certificate) {
-        final var utlatande = new Fk7263Utlatande();
-        final var unit = new Vardenhet();
-        final var skapadAv = new HoSPersonal();
-        final var patient = new Patient();
-        final var grundData = new GrundData();
-
-        patient.setPersonId(Personnummer.createPersonnummer("19121212-1212").orElseThrow());
-        skapadAv.setVardenhet(unit);
-        grundData.setSkapadAv(skapadAv);
-        grundData.setPatient(patient);
-        utlatande.setGrundData(grundData);
-        utlatande.setId(certificate.getMetadata().getId());
-        return utlatande;
     }
 }
