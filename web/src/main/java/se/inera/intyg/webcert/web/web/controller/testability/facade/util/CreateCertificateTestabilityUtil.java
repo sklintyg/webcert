@@ -187,22 +187,21 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private Utlatande updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
+    private void updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
-            return utlatande;
+            return;
         }
-        return addValuesToUtlatande(createCertificateRequest, utlatande);
+        addValuesToUtlatande(createCertificateRequest, utlatande);
     }
 
-    private Utlatande addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
+    private void addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
             if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createFk7263TestabilityUtil.createMinimumValuesFk7263((Fk7263Utlatande) utlatande);
+                createFk7263TestabilityUtil.createMinimumValuesFk7263((Fk7263Utlatande) utlatande);
             } else {
-                return createFk7263TestabilityUtil.createMaximumValuesFk7263((Fk7263Utlatande) utlatande);
+                createFk7263TestabilityUtil.createMaximumValuesFk7263((Fk7263Utlatande) utlatande);
             }
         }
-        return utlatande;
     }
 
     private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
