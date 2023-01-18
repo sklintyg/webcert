@@ -71,8 +71,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = "Det finns ett utkast på dödsbevis för detta personnummer."
-                + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+                "Det finns ett utkast på dödsbevis för detta personnummer."
+                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -87,8 +89,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftWithinSameCareProviderButDifferentCareUnit() {
-            final var expectedMessage = "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
-                + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
+                "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
+                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -103,9 +107,11 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftDifferentCareProvider() {
-            final var expectedMessage = "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
-                + " Senast skapade dödsbevis är det som gäller."
-                + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+                "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                    + " Senast skapade dödsbevis är det som gäller."
+                    + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -120,8 +126,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = "Det finns ett signerat dödsbevis för detta personnummer."
-                + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+                "Det finns ett signerat dödsbevis för detta personnummer."
+                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -136,8 +144,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
-            final var expectedMessage = "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
-                + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
+                "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
+                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -152,8 +162,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateDifferentCareProvider() {
-            final var expectedMessage = "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
-                + " Det är inte möjligt att skapa ett nytt dödsbevis.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+                "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                    + " Det är inte möjligt att skapa ett nytt dödsbevis."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -168,8 +180,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnCertificateMessageWhenBothCertificateAndDraftMessageIsPresent() {
-            final var expectedMessage = "Det finns ett signerat dödsbevis för detta personnummer."
-                + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+                "Det finns ett signerat dödsbevis för detta personnummer."
+                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -223,8 +237,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = "Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
-                + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+                "Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
+                    + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -239,8 +255,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftWithinSameCareProviderNotSameCareUnit() {
-            final var expectedMessage = "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
+                "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                    + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -255,9 +273,11 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingDraftNotWithinSameCareProviderNotSameCareUnit() {
-            final var expectedMessage = "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                + "Senast skapade dödsorsaksintyg är det som gäller. "
-                + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+                "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                    + "Senast skapade dödsorsaksintyg är det som gäller. "
+                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller."
+            );
 
             doReturn(
                 Map.of(UTKAST_INDICATOR,
@@ -272,8 +292,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
-                + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+                "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
+                    + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -288,8 +310,10 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
-            final var expectedMessage = "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
+                "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                    + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
@@ -304,9 +328,11 @@ class CertificateTypeMessageServiceImplTest {
 
         @Test
         void shallReturnMessageForExistingCertificateDifferentCareProvider() {
-            final var expectedMessage = "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                + "Senast skapade dödsorsaksintyg är det som gäller. "
-                + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.";
+            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+                "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                    + "Senast skapade dödsorsaksintyg är det som gäller. "
+                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller."
+            );
 
             doReturn(
                 Map.of(INTYG_INDICATOR,
