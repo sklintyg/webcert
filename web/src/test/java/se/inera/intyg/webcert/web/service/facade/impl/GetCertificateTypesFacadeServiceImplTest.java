@@ -160,7 +160,8 @@ class GetCertificateTypesFacadeServiceImplTest {
             @Test
             void shallIncludeMessageWhenExists() {
                 final var expectedMessage = "Message for certificate type";
-                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(expectedMessage));
+                final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT, expectedMessage);
+                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(message));
                 types = serviceUnderTest.get(PATIENT_ID);
                 assertEquals(expectedMessage, types.get(0).getMessage());
             }

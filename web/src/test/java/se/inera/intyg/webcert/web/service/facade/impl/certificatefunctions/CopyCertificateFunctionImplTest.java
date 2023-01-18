@@ -38,6 +38,9 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateMessage;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateMessageType;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -46,6 +49,9 @@ class CopyCertificateFunctionImplTest {
 
     @Mock
     private CertificateTypeMessageService certificateTypeMessageService;
+
+    @Mock
+    private UtkastService utkastService;
 
     @InjectMocks
     private CopyCertificateFunctionImpl copyCertificateFunction;
@@ -56,6 +62,12 @@ class CopyCertificateFunctionImplTest {
             ResourceLinkTypeDTO.COPY_CERTIFICATE,
             "Kopiera",
             "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
+            "<p>"
+                + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
+                + "låsta utkastet. Du kan redigera utkastet innan du signerar det. Det ursprungliga låsta utkastet finns kvar."
+                + "</p>"
+                + "<br/>"
+                + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
             true
         );
 
@@ -94,12 +106,42 @@ class CopyCertificateFunctionImplTest {
 
     @Test
     void shallIncludeDisabledCopyCertificateIfLockedAndSpecificMessageReturned() {
-        final var message = "Specific message for copy description";
+        final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+            "Specific message for copy description");
         final var expected = ResourceLinkDTO.create(
             ResourceLinkTypeDTO.COPY_CERTIFICATE,
             "Kopiera",
-            message,
+            message.getMessage(),
             false
+        );
+
+        doReturn(Optional.of(message)).when(certificateTypeMessageService)
+            .get(DbModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
+
+        final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+
+        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shallIncludeEnabledCopyCertificateIfLockedAndSpecificMessageReturned() {
+        final var message = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+            "Specific message for copy description");
+        final var expected = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.COPY_CERTIFICATE,
+            "Kopiera",
+            "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
+            String.format("<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
+                    + "<i class='ic-alert__icon ic-observe-icon'></i><p>%s</p></div><br/>"
+                    + "<p>"
+                    + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
+                    + "låsta utkastet. Du kan redigera utkastet innan du signerar det. Det ursprungliga låsta utkastet finns kvar."
+                    + "</p>"
+                    + "<br/>"
+                    + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
+                message.getMessage()),
+            true
         );
 
         doReturn(Optional.of(message)).when(certificateTypeMessageService)

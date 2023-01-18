@@ -50,7 +50,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
     }
 
     @Override
-    public Optional<String> get(String certificateType, Personnummer patientId) {
+    public Optional<CertificateMessage> get(String certificateType, Personnummer patientId) {
         if (!allowedTypes.contains(certificateType)) {
             return Optional.empty();
         }
@@ -81,82 +81,107 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         return Optional.empty();
     }
 
-    private Optional<String> getCertificateMessageDb(PreviousIntyg previousIntyg) {
+    private Optional<CertificateMessage> getCertificateMessageDb(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
-                    + "Du kan inte skapa ett nytt dödsorsaksintyg men "
-                    + "kan däremot välja att ersätta det befintliga dödsorsaksintyget.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+                    "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
+                        + "Du kan inte skapa ett nytt dödsorsaksintyg men "
+                        + "kan däremot välja att ersätta det befintliga dödsorsaksintyget.")
+            );
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                    + "Du kan inte skapa ett nytt dödsorsaksintyg men kan "
-                    + "däremot välja att ersätta det befintliga dödsorsaksintyget.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_DIFFERENT_CARE_UNIT,
+                    "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                        + "Du kan inte skapa ett nytt dödsorsaksintyg men kan "
+                        + "däremot välja att ersätta det befintliga dödsorsaksintyget.")
+            );
         }
         if (!previousIntyg.isSameVardgivare()) {
             return Optional.of(
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                    + "Senast skapade dödsorsaksintyg är det som gäller. "
-                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+                    "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                        + "Senast skapade dödsorsaksintyg är det som gäller. "
+                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.")
+            );
         }
         return Optional.empty();
     }
 
-    private Optional<String> getCertificateMessageDoi(PreviousIntyg previousIntyg) {
+    private Optional<CertificateMessage> getCertificateMessageDoi(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett signerat dödsbevis för detta personnummer."
-                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+                    "Det finns ett signerat dödsbevis för detta personnummer."
+                        + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.")
+            );
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
-                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_DIFFERENT_CARE_UNIT,
+                    "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
+                        + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.")
+            );
         }
         if (!previousIntyg.isSameVardgivare()) {
             return Optional.of(
-                "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Det är inte möjligt att skapa ett nytt dödsbevis.");
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+                    "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                        + " Det är inte möjligt att skapa ett nytt dödsbevis.")
+            );
         }
         return Optional.empty();
     }
 
-    private Optional<String> getDraftMessageDb(PreviousIntyg previousIntyg) {
+    private Optional<CertificateMessage> getDraftMessageDb(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
-            return Optional.of("Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
-                + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+            return Optional.of(
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+                    "Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
+                        + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
+            );
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                    + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_DIFFERENT_CARE_UNIT,
+                    "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                        + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
+            );
         }
         if (!previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                    + "Senast skapade dödsorsaksintyg är det som gäller. "
-                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.");
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+                    "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                        + "Senast skapade dödsorsaksintyg är det som gäller. "
+                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.")
+            );
         }
         return Optional.empty();
     }
 
-    private Optional<String> getDraftMessageDoi(PreviousIntyg previousIntyg) {
+    private Optional<CertificateMessage> getDraftMessageDoi(PreviousIntyg previousIntyg) {
         if (previousIntyg.isSameVardgivare() && previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett utkast på dödsbevis för detta personnummer."
-                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+                    "Det finns ett utkast på dödsbevis för detta personnummer."
+                        + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
+            );
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
-                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_DIFFERENT_CARE_UNIT,
+                    "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
+                        + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
+            );
         }
         if (!previousIntyg.isSameVardgivare()) {
             return Optional.of(
-                "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Senast skapade dödsbevis är det som gäller. "
-                    + "Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.");
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+                    "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                        + " Senast skapade dödsbevis är det som gäller. "
+                        + "Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.")
+            );
         }
         return Optional.empty();
     }

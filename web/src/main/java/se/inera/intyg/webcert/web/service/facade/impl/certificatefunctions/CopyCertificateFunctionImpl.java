@@ -30,6 +30,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateMessage;
+import se.inera.intyg.webcert.web.service.facade.impl.CertificateMessageType;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -38,6 +40,16 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
 
     private static final String COPY_NAME = "Kopiera";
     private static final String COPY_DESCRIPTION = "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.";
+
+    private static final String COPY_DESCRIPTION_BODY = "<p>"
+        + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
+        + "låsta utkastet. Du kan redigera utkastet innan du signerar det. Det ursprungliga låsta utkastet finns kvar."
+        + "</p>"
+        + "<br/>"
+        + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>";
+
+    private static final String COPY_DESCRIPTION_BODY_WITH_MESSAGE = "<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
+        + "<i class='ic-alert__icon ic-observe-icon'></i><p>%s</p></div><br/>" + COPY_DESCRIPTION_BODY;
 
     private final CertificateTypeMessageService certificateTypeMessageService;
 
@@ -54,14 +66,7 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
         final var patientId = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow();
         final var message = certificateTypeMessageService.get(certificate.getMetadata().getType(), patientId);
         if (message.isPresent()) {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
-                    COPY_NAME,
-                    message.get(),
-                    false
-                )
-            );
+            return getResourceLineWithMessage(message.get());
         }
 
         if (isCopyCertificateAvailable(certificate)) {
@@ -70,6 +75,7 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
                     ResourceLinkTypeDTO.COPY_CERTIFICATE,
                     COPY_NAME,
                     COPY_DESCRIPTION,
+                    COPY_DESCRIPTION_BODY,
                     true
                 )
             );
@@ -86,6 +92,29 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
             );
         }
         return Optional.empty();
+    }
+
+    private static Optional<ResourceLinkDTO> getResourceLineWithMessage(CertificateMessage message) {
+        if (CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER.equals(message.getMessageType())) {
+            return Optional.of(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                    COPY_NAME,
+                    COPY_DESCRIPTION,
+                    String.format(COPY_DESCRIPTION_BODY_WITH_MESSAGE, message.getMessage()),
+                    true
+                )
+            );
+        }
+
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.COPY_CERTIFICATE,
+                COPY_NAME,
+                message.getMessage(),
+                false
+            )
+        );
     }
 
     private boolean isCopyCertificateAvailable(Certificate certificate) {
