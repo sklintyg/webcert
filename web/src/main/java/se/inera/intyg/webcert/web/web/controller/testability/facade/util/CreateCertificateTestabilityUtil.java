@@ -91,7 +91,7 @@ public class CreateCertificateTestabilityUtil {
     private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
     private final CreateLuseTestabilityUtil createLuseTestabilityUtil;
 
-    private final CreateFk7263TestabilityUtil createFk7263TestabilityUtil;
+    private final DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -104,7 +104,7 @@ public class CreateCertificateTestabilityUtil {
         CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
         CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
         CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
-        CreateFk7263TestabilityUtil createFk7263TestabilityUtil) {
+        DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -121,7 +121,7 @@ public class CreateCertificateTestabilityUtil {
         this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
         this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
         this.createLuseTestabilityUtil = createLuseTestabilityUtil;
-        this.createFk7263TestabilityUtil = createFk7263TestabilityUtil;
+        this.decorateFk7263TestabilityUtil = decorateFk7263TestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -197,9 +197,9 @@ public class CreateCertificateTestabilityUtil {
     private void addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
             if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                createFk7263TestabilityUtil.createMinimumValuesFk7263((Fk7263Utlatande) utlatande);
+                decorateFk7263TestabilityUtil.decorateWithMinimumValues((Fk7263Utlatande) utlatande);
             } else {
-                createFk7263TestabilityUtil.createMaximumValuesFk7263((Fk7263Utlatande) utlatande);
+                decorateFk7263TestabilityUtil.decorateWithMaximumValues((Fk7263Utlatande) utlatande);
             }
         }
     }

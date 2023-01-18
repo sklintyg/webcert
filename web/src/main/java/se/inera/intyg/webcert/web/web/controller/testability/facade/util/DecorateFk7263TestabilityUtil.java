@@ -29,9 +29,9 @@ import se.inera.intyg.common.support.model.InternalLocalDateInterval;
 import se.inera.intyg.common.support.model.LocalDateInterval;
 
 @Component
-public class CreateFk7263TestabilityUtil {
+public class DecorateFk7263TestabilityUtil {
 
-    public void createMinimumValuesFk7263(Fk7263Utlatande utlatande) {
+    public void decorateWithMinimumValues(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(false);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
@@ -47,7 +47,7 @@ public class CreateFk7263TestabilityUtil {
             new InternalLocalDateInterval(LocalDate.now().toString(), LocalDate.now().toString()));
     }
 
-    public void createMaximumValuesFk7263(Fk7263Utlatande utlatande) {
+    public void decorateWithMaximumValues(Fk7263Utlatande utlatande) {
         utlatande.setAvstangningSmittskydd(true);
         utlatande.setDiagnosKod("diagnoskod");
         utlatande.setDiagnosBeskrivning("beskrivning");
