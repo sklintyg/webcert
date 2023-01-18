@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade;
 
-import java.util.Optional;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.facade.impl.CertificateMessage;
+package se.inera.intyg.webcert.web.service.facade.impl;
 
-public interface CertificateTypeMessageService {
-
-    Optional<CertificateMessage> get(String certificateType, Personnummer personId);
+public enum CertificateMessageType {
+    CERTIFICATE_ON_SAME_CARE_UNIT, CERTIFICATE_ON_DIFFERENT_CARE_UNIT, DRAFT_ON_SAME_CARE_UNIT, DRAFT_ON_DIFFERENT_CARE_UNIT,
+    DRAFT_ON_DIFFERENT_CARE_PROVIDER, CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER
 }
