@@ -92,7 +92,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_DIFFERENT_CARE_UNIT,
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
                     "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
                         + "Du kan inte skapa ett nytt dödsorsaksintyg men kan "
                         + "däremot välja att ersätta det befintliga dödsorsaksintyget.")
@@ -119,7 +119,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_DIFFERENT_CARE_UNIT,
+                new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
                     "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
                         + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.")
             );
@@ -144,7 +144,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_DIFFERENT_CARE_UNIT,
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
                     "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
                         + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
             );
@@ -170,7 +170,7 @@ public class CertificateTypeMessageServiceImpl implements CertificateTypeMessage
         }
         if (previousIntyg.isSameVardgivare() && !previousIntyg.isSameEnhet()) {
             return Optional.of(
-                new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_DIFFERENT_CARE_UNIT,
+                new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
                     "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
                         + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.")
             );
