@@ -136,7 +136,7 @@ import se.inera.intyg.common.ts_parent.codes.DiabetesKod;
 import se.inera.intyg.common.ts_parent.codes.IdKontrollKod;
 
 @Component
-public class CreateTsBasTestabilityUtil {
+public class CreateTSTRK1007V7TestabilityUtil {
 
     public Map<String, CertificateDataValue> createMinimumValuesTsBas() {
         final var values = new HashMap<String, CertificateDataValue>();

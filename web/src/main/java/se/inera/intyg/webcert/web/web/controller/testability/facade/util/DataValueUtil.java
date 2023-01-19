@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
+import static se.inera.intyg.common.ts_diabetes.v4.model.converter.RespConstants.ALLMANT_DIABETES_DIAGNOS_AR_JSON_ID;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateList;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosis;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDiagnosisList;
+import se.inera.intyg.common.support.facade.model.value.CertificateDataValueYear;
 
 public final class DataValueUtil {
 
@@ -148,6 +151,13 @@ public final class DataValueUtil {
             .list(
                 certificateDataValueDiagnoses
             )
+            .build();
+    }
+
+    public static CertificateDataValueYear getDataValueYear() {
+        return CertificateDataValueYear.builder()
+            .id(ALLMANT_DIABETES_DIAGNOS_AR_JSON_ID)
+            .year(LocalDate.now().getYear())
             .build();
     }
 }
