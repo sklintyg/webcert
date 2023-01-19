@@ -116,6 +116,9 @@ public class CreateTSTRK1031V4TestabilityUtil {
         final var diabetesDiagnosAr = getDataValueYear();
         values.put(ALLMANT_DIABETES_DIAGNOS_AR_SVAR_ID, diabetesDiagnosAr);
 
+        final var diabetesTyp = getDataValueCode(KvTypAvDiabetes.TYP1.getCode(), KvTypAvDiabetes.TYP1.getCode());
+        values.put(ALLMANT_TYP_AV_DIABETES_SVAR_ID, diabetesTyp);
+
         final var diabetesHarMedicinering = getDataValueBoolean(ALLMANT_MEDICINERING_FOR_DIABETES_JSON_ID, false);
         values.put(ALLMANT_MEDICINERING_FOR_DIABETES_SVAR_ID, diabetesHarMedicinering);
 
