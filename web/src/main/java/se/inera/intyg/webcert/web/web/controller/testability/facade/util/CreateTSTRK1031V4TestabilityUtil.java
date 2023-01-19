@@ -257,14 +257,14 @@ public class CreateTSTRK1031V4TestabilityUtil {
                 BedomningKorkortstyp.VAR1.getType(), BedomningKorkortstyp.VAR2.getType(),
                 BedomningKorkortstyp.VAR3.getType(), BedomningKorkortstyp.VAR4.getType(), BedomningKorkortstyp.VAR5.getType(),
                 BedomningKorkortstyp.VAR6.getType(), BedomningKorkortstyp.VAR7.getType(), BedomningKorkortstyp.VAR8.getType(),
-                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR11.getType(),
+                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR15.getType(),
                 BedomningKorkortstyp.VAR12.getType(), BedomningKorkortstyp.VAR13.getType(), BedomningKorkortstyp.VAR14.getType()
             ),
             List.of(
                 BedomningKorkortstyp.VAR1.getType(), BedomningKorkortstyp.VAR2.getType(),
                 BedomningKorkortstyp.VAR3.getType(), BedomningKorkortstyp.VAR4.getType(), BedomningKorkortstyp.VAR5.getType(),
                 BedomningKorkortstyp.VAR6.getType(), BedomningKorkortstyp.VAR7.getType(), BedomningKorkortstyp.VAR8.getType(),
-                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR11.getType(),
+                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR15.getType(),
                 BedomningKorkortstyp.VAR12.getType(), BedomningKorkortstyp.VAR13.getType(), BedomningKorkortstyp.VAR14.getType())
         );
     }
