@@ -28,6 +28,8 @@ import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
@@ -41,6 +43,7 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
@@ -88,6 +91,8 @@ public class CreateCertificateTestabilityUtil {
     private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
     private final CreateLuseTestabilityUtil createLuseTestabilityUtil;
 
+    private final DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil;
+
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
@@ -98,7 +103,8 @@ public class CreateCertificateTestabilityUtil {
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
         CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
         CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
-        CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil) {
+        CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
+        DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -115,6 +121,7 @@ public class CreateCertificateTestabilityUtil {
         this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
         this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
         this.createLuseTestabilityUtil = createLuseTestabilityUtil;
+        this.decorateFk7263TestabilityUtil = decorateFk7263TestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -139,18 +146,62 @@ public class CreateCertificateTestabilityUtil {
         );
 
         final var utkast = createNewDraft(createNewDraftRequest);
-
-        final var certificate = utkastToCertificateConverter.convert(utkast);
-
-        updateCertificate(createCertificateRequest, certificate);
-
-        utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+        if (utkast.getIntygsTyp().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            final var utlatande = getUtlatandeFromJson(utkast);
+            updateUtlatande(createCertificateRequest, utlatande);
+            utkast.setModel(getJsonFromUtlatande(utlatande));
+        } else {
+            final var certificate = utkastToCertificateConverter.convert(utkast);
+            updateCertificate(createCertificateRequest, certificate);
+            utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+        }
 
         updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
 
         utkastRepository.save(utkast);
 
-        return certificate.getMetadata().getId();
+        return utkast.getIntygsId();
+    }
+
+    private Utlatande getUtlatandeFromJson(Utkast utkast) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion()
+            );
+            return moduleApi.getUtlatandeFromJson(utkast.getModel());
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private String getJsonFromUtlatande(Utlatande utlatande) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                utlatande.getTyp(),
+                utlatande.getTextVersion()
+            );
+            return moduleApi.getJsonFromUtlatande(utlatande);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
+        if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
+            return;
+        }
+        addValuesToUtlatande(createCertificateRequest, utlatande);
+    }
+
+    private void addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                decorateFk7263TestabilityUtil.decorateWithMinimumValues((Fk7263Utlatande) utlatande);
+            } else {
+                decorateFk7263TestabilityUtil.decorateWithMaximumValues((Fk7263Utlatande) utlatande);
+            }
+        }
     }
 
     private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
@@ -164,8 +215,9 @@ public class CreateCertificateTestabilityUtil {
             createNewDraftRequest.getIntygType(),
             createNewDraftRequest.getIntygTypeVersion()
         );
-
-        utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+        if (latestVersionForSameMajorVersion != null) {
+            utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+        }
     }
 
     private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
@@ -276,6 +328,7 @@ public class CreateCertificateTestabilityUtil {
                 return createLuseTestabilityUtil.createMaximumValuesLuse();
             }
         }
+
         return Collections.emptyMap();
     }
 
