@@ -48,6 +48,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -88,10 +89,11 @@ public class CreateCertificateTestabilityUtil {
     private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
     private final CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil;
     private final CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil;
-    private final CreateTsBasTestabilityUtil createTsBasTestabilityUtil;
+    private final CreateTSTRK1007V7TestabilityUtil createTSTRK1007V7TestabilityUtil;
     private final CreateLuseTestabilityUtil createLuseTestabilityUtil;
 
     private final DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil;
+    private final CreateTSTRK1031V4TestabilityUtil createTSTRK1031V4TestabilityUtil;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
@@ -103,8 +105,8 @@ public class CreateCertificateTestabilityUtil {
         CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
         CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
         CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
-        CreateTsBasTestabilityUtil createTsBasTestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
-        DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil) {
+        CreateTSTRK1007V7TestabilityUtil createTSTRK1007V7TestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
+        DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil, CreateTSTRK1031V4TestabilityUtil createTSTRK1031V4TestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -119,9 +121,10 @@ public class CreateCertificateTestabilityUtil {
         this.createDoiTestabilityUtil = createDoiTestabilityUtil;
         this.createLuaenaTestabilityUtil = createLuaenaTestabilityUtil;
         this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
-        this.createTsBasTestabilityUtil = createTsBasTestabilityUtil;
+        this.createTSTRK1007V7TestabilityUtil = createTSTRK1007V7TestabilityUtil;
         this.createLuseTestabilityUtil = createLuseTestabilityUtil;
         this.decorateFk7263TestabilityUtil = decorateFk7263TestabilityUtil;
+        this.createTSTRK1031V4TestabilityUtil = createTSTRK1031V4TestabilityUtil;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -315,9 +318,9 @@ public class CreateCertificateTestabilityUtil {
         }
         if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsBasEntryPoint.MODULE_ID)) {
             if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createTsBasTestabilityUtil.createMinimumValuesTsBas();
+                return createTSTRK1007V7TestabilityUtil.createMinimumValuesTsBas();
             } else {
-                return createTsBasTestabilityUtil.createMaximumValuesTsBas();
+                return createTSTRK1007V7TestabilityUtil.createMaximumValuesTsBas();
             }
         }
 
@@ -329,6 +332,13 @@ public class CreateCertificateTestabilityUtil {
             }
         }
 
+        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsDiabetesEntryPoint.MODULE_ID)) {
+            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
+                return createTSTRK1031V4TestabilityUtil.createMinimumValuesTSTRK1031V4();
+            } else {
+                return createTSTRK1031V4TestabilityUtil.createMaximumValuesTSTRK1031V4();
+            }
+        }
         return Collections.emptyMap();
     }
 

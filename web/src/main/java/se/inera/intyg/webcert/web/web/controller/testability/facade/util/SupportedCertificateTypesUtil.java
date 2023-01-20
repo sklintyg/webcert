@@ -34,6 +34,7 @@ import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
@@ -116,7 +117,7 @@ public class SupportedCertificateTypesUtil {
 
         certificateTypes.add(
             new CertificateType(
-                "",
+                TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
                 TsBasEntryPoint.MODULE_ID,
                 TsBasEntryPoint.MODULE_NAME,
                 Collections.singletonList("7.0"),
@@ -143,6 +144,17 @@ public class SupportedCertificateTypesUtil {
                 Fk7263EntryPoint.MODULE_NAME,
                 Collections.singletonList("1.0"),
                 Arrays.asList(CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+                TsDiabetesEntryPoint.MODULE_ID,
+                TsDiabetesEntryPoint.MODULE_NAME,
+                Collections.singletonList("4.0"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
