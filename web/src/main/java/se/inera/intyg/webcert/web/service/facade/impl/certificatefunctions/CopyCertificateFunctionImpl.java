@@ -22,10 +22,13 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COPIED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.LOCKED;
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
+import static se.inera.intyg.webcert.web.service.facade.impl.CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER;
+import static se.inera.intyg.webcert.web.service.facade.impl.CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER;
 
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -66,7 +69,7 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
         final var patientId = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow();
         final var message = certificateTypeMessageService.get(certificate.getMetadata().getType(), patientId);
         if (message.isPresent()) {
-            return getResourceLineWithMessage(message.get());
+            return getResourceLineWithMessage(message.get(), certificate.getMetadata().getType());
         }
 
         if (isCopyCertificateAvailable(certificate)) {
@@ -94,8 +97,8 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
         return Optional.empty();
     }
 
-    private static Optional<ResourceLinkDTO> getResourceLineWithMessage(CertificateMessage message) {
-        if (CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER.equals(message.getMessageType())) {
+    private Optional<ResourceLinkDTO> getResourceLineWithMessage(CertificateMessage message, String certificateType) {
+        if (isResourceLinkEnabled(message.getMessageType(), certificateType)) {
             return Optional.of(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.COPY_CERTIFICATE,
@@ -115,6 +118,11 @@ public class CopyCertificateFunctionImpl implements CopyCertificateFunction {
                 false
             )
         );
+    }
+
+    private boolean isResourceLinkEnabled(CertificateMessageType messageType, String certificateType) {
+        return (CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER.equals(messageType) && DoiModuleEntryPoint.MODULE_ID.equals(certificateType))
+            || DRAFT_ON_DIFFERENT_CARE_PROVIDER.equals(messageType);
     }
 
     private boolean isCopyCertificateAvailable(Certificate certificate) {
