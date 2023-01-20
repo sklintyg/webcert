@@ -125,9 +125,8 @@ public class CreateTSTRK1031V4TestabilityUtil {
         final var ovrigtKomplikationer = getDataValueBoolean(OVRIGT_KOMPLIKATIONER_AV_SJUKDOMEN_JSON_ID, false);
         values.put(OVRIGT_KOMPLIKATIONER_AV_SJUKDOMEN_SVAR_ID, ovrigtKomplikationer);
 
-        //TODO: Change to name
-        final var bedomningUppfyllerBehorighetskrav = getDataValueCodeList(BedomningKorkortstyp.VAR12.getType(),
-            BedomningKorkortstyp.VAR12.getType());
+        final var bedomningUppfyllerBehorighetskrav = getDataValueCodeList(BedomningKorkortstyp.VAR12.name(),
+            BedomningKorkortstyp.VAR12.name());
         values.put(BEDOMNING_SVAR_ID, bedomningUppfyllerBehorighetskrav);
 
         return values;
@@ -251,21 +250,20 @@ public class CreateTSTRK1031V4TestabilityUtil {
     }
 
     private static CertificateDataValueCodeList getDataValueCodeListMaximumValuesBedomning() {
-        //TODO: Change to name
         return getDataValueCodeListMaximumValues(
             List.of(
-                BedomningKorkortstyp.VAR1.getType(), BedomningKorkortstyp.VAR2.getType(),
-                BedomningKorkortstyp.VAR3.getType(), BedomningKorkortstyp.VAR4.getType(), BedomningKorkortstyp.VAR5.getType(),
-                BedomningKorkortstyp.VAR6.getType(), BedomningKorkortstyp.VAR7.getType(), BedomningKorkortstyp.VAR8.getType(),
-                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR15.getType(),
-                BedomningKorkortstyp.VAR12.getType(), BedomningKorkortstyp.VAR13.getType(), BedomningKorkortstyp.VAR14.getType()
+                BedomningKorkortstyp.VAR1.name(), BedomningKorkortstyp.VAR2.name(),
+                BedomningKorkortstyp.VAR3.name(), BedomningKorkortstyp.VAR4.name(), BedomningKorkortstyp.VAR5.name(),
+                BedomningKorkortstyp.VAR6.name(), BedomningKorkortstyp.VAR7.name(), BedomningKorkortstyp.VAR8.name(),
+                BedomningKorkortstyp.VAR9.name(), BedomningKorkortstyp.VAR15.name(),
+                BedomningKorkortstyp.VAR12.name(), BedomningKorkortstyp.VAR13.name(), BedomningKorkortstyp.VAR14.name()
             ),
             List.of(
-                BedomningKorkortstyp.VAR1.getType(), BedomningKorkortstyp.VAR2.getType(),
-                BedomningKorkortstyp.VAR3.getType(), BedomningKorkortstyp.VAR4.getType(), BedomningKorkortstyp.VAR5.getType(),
-                BedomningKorkortstyp.VAR6.getType(), BedomningKorkortstyp.VAR7.getType(), BedomningKorkortstyp.VAR8.getType(),
-                BedomningKorkortstyp.VAR9.getType(), BedomningKorkortstyp.VAR15.getType(),
-                BedomningKorkortstyp.VAR12.getType(), BedomningKorkortstyp.VAR13.getType(), BedomningKorkortstyp.VAR14.getType())
+                BedomningKorkortstyp.VAR1.name(), BedomningKorkortstyp.VAR2.name(),
+                BedomningKorkortstyp.VAR3.name(), BedomningKorkortstyp.VAR4.name(), BedomningKorkortstyp.VAR5.name(),
+                BedomningKorkortstyp.VAR6.name(), BedomningKorkortstyp.VAR7.name(), BedomningKorkortstyp.VAR8.name(),
+                BedomningKorkortstyp.VAR9.name(), BedomningKorkortstyp.VAR15.name(),
+                BedomningKorkortstyp.VAR12.name(), BedomningKorkortstyp.VAR13.name(), BedomningKorkortstyp.VAR14.name())
         );
     }
 
