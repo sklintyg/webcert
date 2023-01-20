@@ -30,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -125,7 +126,7 @@ class CopyCertificateFunctionImplTest {
     }
 
     @Test
-    void shallIncludeEnabledCopyCertificateIfLockedAndSpecificMessageReturned() {
+    void shallIncludeEnabledCopyCertificateIfLockedAndDraftOnDifferentCareProviderMesssageType() {
         final var message = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
             "Specific message for copy description");
         final var expected = ResourceLinkDTO.create(
@@ -148,6 +149,35 @@ class CopyCertificateFunctionImplTest {
             .get(DbModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
 
         final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+
+        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shallIncludeEnabledCopyCertificateIfLockedAndCertificateOnDifferentCareProviderMesssageTypeIfDoi() {
+        final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+            "Specific message for copy description");
+        final var expected = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.COPY_CERTIFICATE,
+            "Kopiera",
+            "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
+            String.format("<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
+                    + "<i class='ic-alert__icon ic-observe-icon'></i><p>%s</p></div><br/>"
+                    + "<p>"
+                    + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
+                    + "låsta utkastet. Du kan redigera utkastet innan du signerar det. Det ursprungliga låsta utkastet finns kvar."
+                    + "</p>"
+                    + "<br/>"
+                    + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
+                message.getMessage()),
+            true
+        );
+
+        doReturn(Optional.of(message)).when(certificateTypeMessageService)
+            .get(DoiModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
+
+        final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
 
         final var actual = copyCertificateFunction.get(certificate).orElseThrow();
         assertEquals(expected, actual);
