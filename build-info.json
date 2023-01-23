@@ -1,6 +1,6 @@
 {
   "appVersion": "6.12.0.384",
-  "commonVersion": "3.18.0.186.276",
+  "commonVersion": "3.18.0.186.1",
   "infraVersion": "3.18.0.54",
   "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
   "tests": [ "restAssuredTest"
