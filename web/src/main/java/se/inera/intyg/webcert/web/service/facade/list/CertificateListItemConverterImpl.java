@@ -159,7 +159,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
             return CertificateListItemStatus.SENT;
         }
 
-        if (status.equals("CANCELLED")) {
+        if (status.equals("CANCELLED") || status.equals("DRAFT_LOCKED_CANCELLED")) {
             return CertificateListItemStatus.REVOKED;
         }
 

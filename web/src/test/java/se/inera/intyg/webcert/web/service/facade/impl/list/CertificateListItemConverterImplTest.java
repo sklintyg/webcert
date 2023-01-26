@@ -41,7 +41,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 import java.util.List;
 
@@ -376,6 +375,29 @@ class CertificateListItemConverterImplTest {
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
                 assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+            }
+        }
+
+        @Nested
+        class Revoked {
+            @Test
+            void shouldTranslateCancelledIntoRevokedStatus() {
+                final var entry = ListTestHelper.createListIntygEntry("CANCELLED", false, false);
+                entry.setRelations(relations);
+
+                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
+            }
+
+            @Test
+            void shouldTranslateDraftLockedCancelledIntoRevokedStatus() {
+                final var entry = ListTestHelper.createListIntygEntry("DRAFT_LOCKED_CANCELLED", false, false);
+                entry.setRelations(relations);
+
+                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+                assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
             }
         }
     }
