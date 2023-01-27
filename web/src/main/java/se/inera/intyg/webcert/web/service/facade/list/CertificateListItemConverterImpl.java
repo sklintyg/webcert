@@ -40,6 +40,14 @@ import java.util.List;
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
 
+    public static final String DRAFT_LOCKED_CANCELLED = "DRAFT_LOCKED_CANCELLED";
+    public static final String CANCELLED = "CANCELLED";
+    public static final String COMPLEMENTED = "COMPLEMENTED";
+    public static final String SENT = "SENT";
+    public static final String SIGNED = "SIGNED";
+    public static final String RECEIVED = "RECEIVED";
+    public static final String UNKOWN_STATUS = "Okänd status";
+
     private final HsaOrganizationsService hsaOrganizationsService;
     private final ResourceLinkListHelper resourceLinkListHelper;
 
@@ -133,7 +141,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private String convertStatus(CertificateListItemStatus status) {
-        return status != null ? status.getName() : "Okänd status";
+        return status != null ? status.getName() : UNKOWN_STATUS;
     }
 
     private CertificateListItemStatus getCertificateListItemStatus(String status, Relations relations) {
@@ -153,21 +161,21 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
             return CertificateListItemStatus.REPLACED;
         }
 
-        if (status.equals("COMPLEMENTED") || isComplementedBySignedCertificate(relations)) {
+        if (status.equals(COMPLEMENTED) || isComplementedBySignedCertificate(relations)) {
             return CertificateListItemStatus.COMPLEMENTED;
         } else if (isComplemented(relations)) {
             return CertificateListItemStatus.SENT;
         }
 
-        if (status.equals("CANCELLED")) {
+        if (status.equals(CANCELLED) || status.equals(DRAFT_LOCKED_CANCELLED)) {
             return CertificateListItemStatus.REVOKED;
         }
 
-        if (status.equals("SENT")) {
+        if (status.equals(SENT)) {
             return CertificateListItemStatus.SENT;
         }
 
-        if (status.equals("SIGNED") || status.equals("RECEIVED")) {
+        if (status.equals(SIGNED) || status.equals(RECEIVED)) {
             return CertificateListItemStatus.SIGNED;
         }
         return null;
