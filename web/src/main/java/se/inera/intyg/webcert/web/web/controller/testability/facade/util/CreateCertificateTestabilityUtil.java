@@ -18,37 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
+import static se.inera.intyg.common.support.facade.util.TestabilityToolkit.updateCertificate;
+
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
-import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
-import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
-import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
-import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
-import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
+import se.inera.intyg.common.support.modules.support.facade.FillType;
+import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -80,33 +66,14 @@ public class CreateCertificateTestabilityUtil {
 
     private final IntygTextsService intygTextsService;
 
-    private final CreateLisjpTestabilityUtil createLisjpTestabilityUtil;
-
-    private final CreateAg7804TestabilityUtil createAg7804TestabilityUtil;
-
-    private final CreateAf00213TestabilityUtil createAf00213TestabilityUtil;
-    private final CreateDbTestabilityUtil createDbTestabilityUtil;
-    private final CreateDoiTestabilityUtil createDoiTestabilityUtil;
-    private final CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil;
-    private final CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil;
-    private final CreateTSTRK1007V7TestabilityUtil createTSTRK1007V7TestabilityUtil;
-    private final CreateLuseTestabilityUtil createLuseTestabilityUtil;
-
-    private final DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil;
-    private final CreateTSTRK1031V4TestabilityUtil createTSTRK1031V4TestabilityUtil;
+    private final TypeAheadProvider typeAheadProvider;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-        IntygTextsService intygTextsService, CreateLisjpTestabilityUtil createLisjpTestabilityUtil,
-        CreateAg7804TestabilityUtil createAg7804TestabilityUtil,
-        CreateAf00213TestabilityUtil createAf00213TestabilityUtil,
-        CreateDbTestabilityUtil createDbTestabilityUtil, CreateDoiTestabilityUtil createDoiTestabilityUtil,
-        CreateLuaenaTestabilityUtil createLuaenaTestabilityUtil, CreateLuaefsTestabilityUtil createLuaefsTestabilityUtil,
-        CreateTSTRK1007V7TestabilityUtil createTSTRK1007V7TestabilityUtil, CreateLuseTestabilityUtil createLuseTestabilityUtil,
-        DecorateFk7263TestabilityUtil decorateFk7263TestabilityUtil, CreateTSTRK1031V4TestabilityUtil createTSTRK1031V4TestabilityUtil) {
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -114,17 +81,7 @@ public class CreateCertificateTestabilityUtil {
         this.utkastToCertificateConverter = utkastToCertificateConverter;
         this.utkastRepository = utkastRepository;
         this.intygTextsService = intygTextsService;
-        this.createLisjpTestabilityUtil = createLisjpTestabilityUtil;
-        this.createAg7804TestabilityUtil = createAg7804TestabilityUtil;
-        this.createAf00213TestabilityUtil = createAf00213TestabilityUtil;
-        this.createDbTestabilityUtil = createDbTestabilityUtil;
-        this.createDoiTestabilityUtil = createDoiTestabilityUtil;
-        this.createLuaenaTestabilityUtil = createLuaenaTestabilityUtil;
-        this.createLuaefsTestabilityUtil = createLuaefsTestabilityUtil;
-        this.createTSTRK1007V7TestabilityUtil = createTSTRK1007V7TestabilityUtil;
-        this.createLuseTestabilityUtil = createLuseTestabilityUtil;
-        this.decorateFk7263TestabilityUtil = decorateFk7263TestabilityUtil;
-        this.createTSTRK1031V4TestabilityUtil = createTSTRK1031V4TestabilityUtil;
+        this.typeAheadProvider = typeAheadProvider;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -149,15 +106,8 @@ public class CreateCertificateTestabilityUtil {
         );
 
         final var utkast = createNewDraft(createNewDraftRequest);
-        if (utkast.getIntygsTyp().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
-            final var utlatande = getUtlatandeFromJson(utkast);
-            updateUtlatande(createCertificateRequest, utlatande);
-            utkast.setModel(getJsonFromUtlatande(utlatande));
-        } else {
-            final var certificate = utkastToCertificateConverter.convert(utkast);
-            updateCertificate(createCertificateRequest, certificate);
-            utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
-        }
+        final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
+        utkast.setModel(updateJsonModel);
 
         updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
 
@@ -166,44 +116,27 @@ public class CreateCertificateTestabilityUtil {
         return utkast.getIntygsId();
     }
 
-    private Utlatande getUtlatandeFromJson(Utkast utkast) {
+    private String getUpdateJsonModel(Utkast utkast, CreateCertificateRequestDTO createCertificateRequest) {
+        if (CreateCertificateFillType.EMPTY.equals(createCertificateRequest.getFillType())) {
+            return utkast.getModel();
+        }
+
+        if (CreateCertificateFillType.WITH_VALUES.equals(createCertificateRequest.getFillType())) {
+            final var certificate = utkastToCertificateConverter.convert(utkast);
+            updateCertificate(certificate, createCertificateRequest.getValues());
+            utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+        }
+
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
                 utkast.getIntygsTyp(),
                 utkast.getIntygTypeVersion()
             );
-            return moduleApi.getUtlatandeFromJson(utkast.getModel());
+            final var fillType =
+                CreateCertificateFillType.MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL : FillType.MAXIMAL;
+            return moduleApi.getUpdatedJsonWithTestData(utkast.getModel(), fillType, typeAheadProvider);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
-        }
-    }
-
-    private String getJsonFromUtlatande(Utlatande utlatande) {
-        try {
-            final var moduleApi = moduleRegistry.getModuleApi(
-                utlatande.getTyp(),
-                utlatande.getTextVersion()
-            );
-            return moduleApi.getJsonFromUtlatande(utlatande);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private void updateUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
-        if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
-            return;
-        }
-        addValuesToUtlatande(createCertificateRequest, utlatande);
-    }
-
-    private void addValuesToUtlatande(CreateCertificateRequestDTO createCertificateRequest, Utlatande utlatande) {
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                decorateFk7263TestabilityUtil.decorateWithMinimumValues((Fk7263Utlatande) utlatande);
-            } else {
-                decorateFk7263TestabilityUtil.decorateWithMaximumValues((Fk7263Utlatande) utlatande);
-            }
         }
     }
 
@@ -247,116 +180,6 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private void updateCertificate(CreateCertificateRequestDTO createCertificateRequest, Certificate certificate) {
-        if (createCertificateRequest.getFillType() == CreateCertificateFillType.EMPTY) {
-            return;
-        }
-
-        if (createCertificateRequest.getFillType() == CreateCertificateFillType.WITH_VALUES) {
-            updateCertificate(certificate, createCertificateRequest.getValues());
-        }
-
-        final var valueMap = createValues(createCertificateRequest);
-        updateCertificate(certificate, valueMap);
-    }
-
-    private Map<String, CertificateDataValue> createValues(CreateCertificateRequestDTO createCertificateRequest) {
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LisjpEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createLisjpTestabilityUtil.createMinimumValuesLisjp();
-            } else {
-                return createLisjpTestabilityUtil.createMaximumValuesLisjp();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Af00213EntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createAf00213TestabilityUtil.createMinimumValuesAf00213();
-            } else {
-                return createAf00213TestabilityUtil.createMaximumValuesAf00213();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(Ag7804EntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createAg7804TestabilityUtil.createMinimumValuesAg7804();
-            } else {
-                return createAg7804TestabilityUtil.createMaximumValuesAg7804();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(DbModuleEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createDbTestabilityUtil.createMinimumValuesDb();
-            } else {
-                return createDbTestabilityUtil.createMaximumValuesDb();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(DoiModuleEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createDoiTestabilityUtil.createMinimumValuesDoi();
-            } else {
-                return createDoiTestabilityUtil.createMaximumValuesDoi();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaenaEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createLuaenaTestabilityUtil.createMinimumValuesLuaena();
-            } else {
-                return createLuaenaTestabilityUtil.createMaximumValuesLuaena();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuaefsEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createLuaefsTestabilityUtil.createMinimumValuesLuaefs();
-            } else {
-                return createLuaefsTestabilityUtil.createMaximumValuesLuaefs();
-            }
-        }
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsBasEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createTSTRK1007V7TestabilityUtil.createMinimumValuesTsBas();
-            } else {
-                return createTSTRK1007V7TestabilityUtil.createMaximumValuesTsBas();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(LuseEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createLuseTestabilityUtil.createMinimumValuesLuse();
-            } else {
-                return createLuseTestabilityUtil.createMaximumValuesLuse();
-            }
-        }
-
-        if (createCertificateRequest.getCertificateType().equalsIgnoreCase(TsDiabetesEntryPoint.MODULE_ID)) {
-            if (createCertificateRequest.getFillType() == CreateCertificateFillType.MINIMAL) {
-                return createTSTRK1031V4TestabilityUtil.createMinimumValuesTSTRK1031V4();
-            } else {
-                return createTSTRK1031V4TestabilityUtil.createMaximumValuesTSTRK1031V4();
-            }
-        }
-        return Collections.emptyMap();
-    }
-
-    private void updateCertificate(Certificate certificate, Map<String, CertificateDataValue> valueMap) {
-        valueMap.forEach((key, value) -> {
-            final var certificateDataElement = certificate.getData().get(key);
-            final var updatedCertificateDataElement = CertificateDataElement.builder()
-                .id(certificateDataElement.getId())
-                .parent(certificateDataElement.getParent())
-                .index(certificateDataElement.getIndex())
-                .config(certificateDataElement.getConfig())
-                .validation(certificateDataElement.getValidation())
-                .value(value)
-                .build();
-            certificate.getData().put(key, updatedCertificateDataElement);
-        });
-    }
-
     private void updateJsonBeforeSigning(HoSPersonal hosPersonal, Utkast utkast, Signatur signature) {
         try {
             final var updatedJson = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
@@ -375,15 +198,6 @@ public class CreateCertificateTestabilityUtil {
             );
 
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private String createNewInternal(String type, CreateNewDraftHolder createNewDraftHolder) {
-        try {
-            final var moduleApi = moduleRegistry.getModuleApi(type, createNewDraftHolder.getIntygTypeVersion());
-            return moduleApi.createNewInternal(createNewDraftHolder);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
