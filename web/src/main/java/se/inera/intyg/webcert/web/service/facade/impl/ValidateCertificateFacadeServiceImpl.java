@@ -166,6 +166,10 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
                 return "ue-medical-investigation";
             case UE_VISUAL_ACUITY:
                 return "ue-visual-acuity";
+            case UE_INTEGER:
+                return "ue-integer";
+            case UE_DATE_RANGE:
+                return "ue-date-range";
             default:
                 throw new RuntimeException("No conversion specified for componentType: " + componentType);
         }
