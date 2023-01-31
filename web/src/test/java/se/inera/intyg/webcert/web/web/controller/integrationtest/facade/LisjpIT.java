@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGNOSES_LIST_ITEM_1_ID;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
@@ -1390,9 +1391,10 @@ public class LisjpIT {
     private CertificateDataValueDiagnosisList getValueDiagnosisList() {
         var diagnosisValue = CertificateDataValueDiagnosisList.builder()
             .list(Arrays.asList(
-                CertificateDataValueDiagnosis.builder()
-                    .code("F500")
-                    .build()
+                    CertificateDataValueDiagnosis.builder()
+                        .code("F500")
+                        .id(DIAGNOSES_LIST_ITEM_1_ID)
+                        .build()
                 )
             )
             .build();
@@ -1402,11 +1404,11 @@ public class LisjpIT {
     private CertificateDataValueDateRangeList getValueDateRangeList() {
         var sickLeaveValue = CertificateDataValueDateRangeList.builder()
             .list(Arrays.asList(
-                CertificateDataValueDateRange.builder()
-                    .id("HALFTEN")
-                    .from(LocalDate.now())
-                    .to(LocalDate.now().plusYears(5))
-                    .build()
+                    CertificateDataValueDateRange.builder()
+                        .id("HALFTEN")
+                        .from(LocalDate.now())
+                        .to(LocalDate.now().plusYears(5))
+                        .build()
                 )
             )
             .build();

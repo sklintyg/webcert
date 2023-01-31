@@ -124,7 +124,7 @@ public class CreateCertificateTestabilityUtil {
         if (CreateCertificateFillType.WITH_VALUES.equals(createCertificateRequest.getFillType())) {
             final var certificate = utkastToCertificateConverter.convert(utkast);
             updateCertificate(certificate, createCertificateRequest.getValues());
-            utkast.setModel(getJsonFromCertificate(certificate, utkast.getModel()));
+            return getJsonFromCertificate(certificate, utkast.getModel());
         }
 
         try {
