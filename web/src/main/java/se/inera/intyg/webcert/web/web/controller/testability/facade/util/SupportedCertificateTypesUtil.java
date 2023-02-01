@@ -120,7 +120,7 @@ public class SupportedCertificateTypesUtil {
                 TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
                 TsBasEntryPoint.MODULE_ID,
                 TsBasEntryPoint.MODULE_NAME,
-                Collections.singletonList("7.0"),
+                Arrays.asList("6.8", "7.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
