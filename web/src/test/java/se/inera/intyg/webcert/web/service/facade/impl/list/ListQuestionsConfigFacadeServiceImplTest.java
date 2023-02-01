@@ -37,7 +37,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
-import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
