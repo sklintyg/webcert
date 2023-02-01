@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
@@ -49,7 +50,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
 
     private final CertificateEventService certificateEventService;
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+    private final IntygService intygService;
 
     private final List<EventCode> eventCodesToRemove = Arrays.asList(
         EventCode.RELINTYGMAKULE,
@@ -66,10 +67,10 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     public GetCertificateEventsFacadeServiceImpl(
         CertificateRelationService certificateRelationService,
         CertificateEventService certificateEventService,
-        GetCertificateFacadeService getCertificateFacadeService) {
+        GetCertificateFacadeService getCertificateFacadeService, IntygService intygService) {
         this.certificateRelationService = certificateRelationService;
         this.certificateEventService = certificateEventService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+        this.intygService = intygService;
     }
 
     @Override
@@ -80,10 +81,10 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         LOG.debug("Retrieve relations to other certificates for certificate '{}'", certificateId);
         final var relations = certificateRelationService.getRelations(certificateId);
 
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
 
         LOG.debug("Convert events for certificate '{}'", certificateId);
-        return convert(certificateId, eventsToConvert, relations, certificate.getMetadata().getType());
+        return convert(certificateId, eventsToConvert, relations, certificateType);
     }
 
     private CertificateEventDTO[] convert(String certificateId, List<CertificateEvent> eventsToConvert,
