@@ -120,7 +120,7 @@ public class SupportedCertificateTypesUtil {
                 TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
                 TsBasEntryPoint.MODULE_ID,
                 TsBasEntryPoint.MODULE_NAME,
-                Collections.singletonList("7.0"),
+                Arrays.asList("6.8", "7.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
@@ -153,7 +153,7 @@ public class SupportedCertificateTypesUtil {
                 TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
                 TsDiabetesEntryPoint.MODULE_ID,
                 TsDiabetesEntryPoint.MODULE_NAME,
-                Arrays.asList("4.0", "4.1"),
+                Arrays.asList("2.6", "2.8", "4.0", "4.1"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
