@@ -154,7 +154,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private void addAvailableForPatientIfNeeded(List<CertificateEventDTO> events, String certificateType) {
-        if (certificateType.equals("doi") ||certificateType.equals("db")) {
+        if (certificateType.equals("doi") || certificateType.equals("db")) {
             return;
         }
 
