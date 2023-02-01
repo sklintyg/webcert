@@ -20,8 +20,11 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
@@ -44,13 +47,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventTypeDTO;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
@@ -64,6 +70,9 @@ class GetCertificateEventsFacadeServiceImplTest {
     @Mock
     private CertificateEventService certificateEventService;
 
+    @Mock
+    private GetCertificateFacadeService getCertificateFacadeService;
+
     @InjectMocks
     private GetCertificateEventsFacadeServiceImpl getCertificateEventsFacadeService;
 
@@ -72,6 +81,8 @@ class GetCertificateEventsFacadeServiceImplTest {
     private CertificateEvent certificateEvent;
     private Relations relations;
     private List<CertificateEvent> certificateEvents;
+    private Certificate certificate;
+    private CertificateMetadata certificateMetaData;
 
     @BeforeEach
     void setup() {
@@ -84,6 +95,14 @@ class GetCertificateEventsFacadeServiceImplTest {
         certificateEvent.setEventCode(EventCode.SKAPAT);
 
         certificateEvents = new ArrayList<>(List.of(certificateEvent));
+
+        certificate = new Certificate();
+        certificateMetaData = CertificateMetadata.builder().type("lisjp").build();
+        certificate.setMetadata(certificateMetaData);
+
+        doReturn(certificate)
+            .when(getCertificateFacadeService)
+            .getCertificate(anyString(), anyBoolean());
 
         doReturn(certificateEvents)
             .when(certificateEventService)
@@ -199,6 +218,36 @@ class GetCertificateEventsFacadeServiceImplTest {
                 .findAny();
 
             assertTrue(optionalCertificateEventDTO.isPresent());
+        }
+
+        @Test
+        void shallExcludeAvailableForPatientForDoi() {
+            certificateMetaData.setType("doi");
+
+            certificateEvent.setEventCode(EventCode.SIGNAT);
+
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            final var optionalCertificateEventDTO = Arrays.stream(actualEvents)
+                .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
+                .findAny();
+
+            assertFalse(optionalCertificateEventDTO.isPresent());
+        }
+
+        @Test
+        void shallExcludeAvailableForPatientForDb() {
+            certificateMetaData.setType("db");
+
+            certificateEvent.setEventCode(EventCode.SIGNAT);
+
+            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+            final var optionalCertificateEventDTO = Arrays.stream(actualEvents)
+                .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
+                .findAny();
+
+            assertFalse(optionalCertificateEventDTO.isPresent());
         }
 
         @Test
