@@ -167,6 +167,17 @@ class QuestionFilterConverterImplTest {
     }
 
     @Test
+    public void shouldConvertOrderSender() {
+        final var filter = new ListFilter();
+        final var filterValue = new ListFilterTextValue("SENDER");
+        filter.addValue(filterValue, "ORDER_BY");
+
+        final var convertedFilter = questionFilterConverter.convert(filter);
+
+        assertEquals("fragestallare", convertedFilter.getOrderBy());
+    }
+
+    @Test
     public void shouldConvertAscending() {
         final var filter = new ListFilter();
         final var filterValue = new ListFilterBooleanValue(true);

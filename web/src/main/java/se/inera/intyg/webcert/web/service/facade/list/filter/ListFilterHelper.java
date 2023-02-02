@@ -199,6 +199,8 @@ public class ListFilterHelper {
             return "patientId";
         } else if (type == ListColumnType.QUESTION_ACTION) {
             return "amne";
+        } else if (type == ListColumnType.SENDER) {
+            return "fragestallare";
         } else {
             return "receivedDate";
         }
