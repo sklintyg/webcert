@@ -63,7 +63,7 @@ class QuestionFilterConverterImplTest {
 
         final var convertedFilter = questionFilterConverter.convert(filter);
 
-        assertEquals(now.plusDays(2), convertedFilter.getChangedTo());
+        assertEquals(now.plusDays(1), convertedFilter.getChangedTo());
     }
 
     @Test

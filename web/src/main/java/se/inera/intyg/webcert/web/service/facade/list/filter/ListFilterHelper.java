@@ -47,7 +47,7 @@ public class ListFilterHelper {
 
     public static LocalDateTime getSentTo(ListFilter filter) {
         ListFilterDateRangeValue sent = (ListFilterDateRangeValue) filter.getValue("SENT");
-        return sent != null && sent.getTo() != null ? sent.getTo().plusDays(1) : null;
+        return sent != null && sent.getTo() != null ? sent.getTo() : null;
     }
 
     public static String getSavedBy(ListFilter filter) {
