@@ -63,7 +63,7 @@ class QuestionFilterConverterImplTest {
 
         final var convertedFilter = questionFilterConverter.convert(filter);
 
-        assertEquals(now.plusDays(2), convertedFilter.getChangedTo());
+        assertEquals(now.plusDays(1), convertedFilter.getChangedTo());
     }
 
     @Test
@@ -164,6 +164,17 @@ class QuestionFilterConverterImplTest {
         final var convertedFilter = questionFilterConverter.convert(filter);
 
         assertEquals("vidarebefordrad", convertedFilter.getOrderBy());
+    }
+
+    @Test
+    public void shouldConvertOrderSender() {
+        final var filter = new ListFilter();
+        final var filterValue = new ListFilterTextValue("SENDER");
+        filter.addValue(filterValue, "ORDER_BY");
+
+        final var convertedFilter = questionFilterConverter.convert(filter);
+
+        assertEquals("fragestallare", convertedFilter.getOrderBy());
     }
 
     @Test
