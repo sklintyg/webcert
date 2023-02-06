@@ -102,6 +102,21 @@ class DisplayPatientAddressInCertificateImplTest {
     }
 
     @Test
+    void shallIncludeDisplayPatientAddressIfTsDiabetesV26() {
+        final var expectedResourceLink = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+            "Patientuppgifter",
+            "Presenterar patientens adressuppgifter",
+            false
+        );
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            true, "2.6");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
+    }
+
+    @Test
     void shallExcludeDisplayPatientAddressIfNotTsBasV6() {
         final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsBasEntryPoint.MODULE_ID,
             CertificateStatus.UNSIGNED,
