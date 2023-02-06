@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -35,6 +37,8 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
@@ -47,6 +51,8 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     private final CertificateRelationService certificateRelationService;
 
     private final CertificateEventService certificateEventService;
+
+    private final IntygService intygService;
 
     private final List<EventCode> eventCodesToRemove = Arrays.asList(
         EventCode.RELINTYGMAKULE,
@@ -62,9 +68,11 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     @Autowired
     public GetCertificateEventsFacadeServiceImpl(
         CertificateRelationService certificateRelationService,
-        CertificateEventService certificateEventService) {
+        CertificateEventService certificateEventService,
+        GetCertificateFacadeService getCertificateFacadeService, IntygService intygService) {
         this.certificateRelationService = certificateRelationService;
         this.certificateEventService = certificateEventService;
+        this.intygService = intygService;
     }
 
     @Override
@@ -75,17 +83,19 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         LOG.debug("Retrieve relations to other certificates for certificate '{}'", certificateId);
         final var relations = certificateRelationService.getRelations(certificateId);
 
+        final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
+
         LOG.debug("Convert events for certificate '{}'", certificateId);
-        return convert(certificateId, eventsToConvert, relations);
+        return convert(certificateId, eventsToConvert, relations, certificateType);
     }
 
     private CertificateEventDTO[] convert(String certificateId, List<CertificateEvent> eventsToConvert,
-        Relations relations) {
+        Relations relations, String certificateType) {
         final var events = getCertificateEvents(eventsToConvert);
 
         decorateCertificateEventsWithParentInfo(events, relations.getParent());
 
-        addAvailableForPatientIfNeeded(events);
+        addAvailableForPatientIfNeeded(events, certificateType);
 
         addEventsBasedOnChildRelations(events, relations.getLatestChildRelations(), certificateId);
 
@@ -145,7 +155,11 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
         }
     }
 
-    private void addAvailableForPatientIfNeeded(List<CertificateEventDTO> events) {
+    private void addAvailableForPatientIfNeeded(List<CertificateEventDTO> events, String certificateType) {
+        if (certificateType.equals(DbModuleEntryPoint.MODULE_ID) || certificateType.equals(DoiModuleEntryPoint.MODULE_ID)) {
+            return;
+        }
+
         final var signedEvent = events.stream()
             .filter(certificateEventDTO -> certificateEventDTO.getType() == CertificateEventTypeDTO.SIGNED)
             .findAny();
