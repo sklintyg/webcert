@@ -36,6 +36,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -54,7 +55,7 @@ class ForwardCertificateFacadeServiceImplTest {
     private UtkastToCertificateConverter utkastToCertificateConverter;
 
     @Mock
-    private FragaSvarService fragaSvarService;
+    private ArendeService arendeService;
 
     @InjectMocks
     private ForwardCertificateFacadeServiceImpl forwardCertificateFacadeService;
@@ -135,7 +136,7 @@ class ForwardCertificateFacadeServiceImplTest {
         void shouldUseFragaSvarServiceIfCertificateIsSigned() {
             forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, true);
 
-            verify(fragaSvarService).setVidareBefordrad(CERTIFICATE_ID);
+            verify(arendeService).setForwarded(CERTIFICATE_ID);
         }
     }
 }
