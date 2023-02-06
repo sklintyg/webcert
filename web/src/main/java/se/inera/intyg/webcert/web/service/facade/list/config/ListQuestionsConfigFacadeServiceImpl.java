@@ -126,14 +126,14 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     public TableHeading[] getTableHeadings() {
         return new TableHeading[] {
-                TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
-                TableHeadingFactory.text(ListColumnType.SENDER),
-                TableHeadingFactory.text(ListColumnType.SIGNED_BY),
-                TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
-                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-                TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
-                TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
-                TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
+            TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
+            TableHeadingFactory.text(ListColumnType.SENDER),
+            TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+            TableHeadingFactory.text(ListColumnType.SIGNED_BY),
+            TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
+            TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
+            TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
+            TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
         };
     }
 
