@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -32,7 +33,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAddressInCertificate {
 
     private static final String TS_BAS_VALID_TYPE_VERSION = "6.8";
-    private static final String TS_DIABETES_VALID_TYPE_VERSION = "2.8";
+    private static final List<String> TS_DIABETES_VALID_TYPE_VERSIONS = List.of("2.6", "2.8");
     private static final String DISPLAY_PATIENT_NAME = "Patientuppgifter";
     private static final String DISPLAY_PATIENT_DESCRIPTION = "Presenterar patientens adressuppgifter";
 
@@ -58,7 +59,7 @@ public class DisplayPatientAddressInCertificateImpl implements DisplayPatientAdd
             case TsBasEntryPoint.MODULE_ID:
                 return TS_BAS_VALID_TYPE_VERSION.equals(certificate.getMetadata().getTypeVersion());
             case TsDiabetesEntryPoint.MODULE_ID:
-                return TS_DIABETES_VALID_TYPE_VERSION.equals(certificate.getMetadata().getTypeVersion());
+                return TS_DIABETES_VALID_TYPE_VERSIONS.contains(certificate.getMetadata().getTypeVersion());
             default:
                 return false;
         }
