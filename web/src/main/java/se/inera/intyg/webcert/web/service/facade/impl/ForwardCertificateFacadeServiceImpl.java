@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
@@ -41,17 +42,17 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     private final UtkastToCertificateConverter utkastToCertificateConverter;
 
-    private final FragaSvarService fragaSvarService;
+    private final ArendeService arendeService;
 
     @Autowired
     public ForwardCertificateFacadeServiceImpl(UtkastService utkastService,
                                                GetCertificateFacadeService getCertificateFacadeService,
                                                UtkastToCertificateConverter utkastToCertificateConverter,
-                                               FragaSvarService fragaSvarService) {
+                                               ArendeService arendeService) {
         this.utkastService = utkastService;
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
-        this.fragaSvarService = fragaSvarService;
+        this.arendeService = arendeService;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
         if (certificate.getMetadata().getStatus() != CertificateStatus.SIGNED) {
             return forwardDraft(certificateId, certificate, forwarded);
         } else {
-            fragaSvarService.setVidareBefordrad(certificateId);
+            arendeService.setForwarded(certificateId);
             return certificate;
         }
     }

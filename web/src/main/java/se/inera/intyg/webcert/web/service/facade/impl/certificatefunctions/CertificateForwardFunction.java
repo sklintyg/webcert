@@ -28,6 +28,8 @@ public class CertificateForwardFunction {
     private static final String FORWARD_NAME = "Vidarebefordra utkast";
     private static final String FORWARD_DESCRIPTION =
         "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
+    private static final String FORWARD_DESCRIPTION_CERTIFICATE =
+        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till intyget.";
     private static final String FORWARD_DESCRIPTION_QUESTION =
         "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
 
@@ -57,7 +59,7 @@ public class CertificateForwardFunction {
         return ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.FORWARD_QUESTION,
                 "Vidarebefordra",
-                FORWARD_DESCRIPTION,
+                FORWARD_DESCRIPTION_CERTIFICATE,
                 true
         );
     }

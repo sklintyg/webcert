@@ -29,6 +29,7 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -86,16 +87,49 @@ class DisplayPatientAddressInCertificateImplTest {
     }
 
     @Test
-    void shallExcludeDisplayPatientAddressIfNotTsBasV6() {
+    void shallIncludeDisplayPatientAddressIfTsDiabetesV2() {
         final var expectedResourceLink = ResourceLinkDTO.create(
             ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
             "Patientuppgifter",
             "Presenterar patientens adressuppgifter",
             false
         );
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            true, "2.8");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
+    }
+
+    @Test
+    void shallIncludeDisplayPatientAddressIfTsDiabetesV26() {
+        final var expectedResourceLink = ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.DISPLAY_PATIENT_ADDRESS_IN_CERTIFICATE,
+            "Patientuppgifter",
+            "Presenterar patientens adressuppgifter",
+            false
+        );
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            true, "2.6");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertEquals(expectedResourceLink, actualResourceLink.get());
+    }
+
+    @Test
+    void shallExcludeDisplayPatientAddressIfNotTsBasV6() {
         final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsBasEntryPoint.MODULE_ID,
             CertificateStatus.UNSIGNED,
             true, "7.0");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertFalse(actualResourceLink.isPresent(), "Should not return a resource link!");
+    }
+
+    @Test
+    void shallExcludeDisplayPatientAddressIfNotTsDiabetesV2() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            true, "4.0");
         final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
         assertFalse(actualResourceLink.isPresent(), "Should not return a resource link!");
     }
@@ -137,6 +171,24 @@ class DisplayPatientAddressInCertificateImplTest {
         final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsBasEntryPoint.MODULE_ID,
             CertificateStatus.UNSIGNED,
             true, "6.8");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertFalse(actualResourceLink.get().isEnabled(), "Should not be enable if address is from PU!");
+    }
+
+    @Test
+    void shallIncludeDisplayPatientAddressIfTsDiabetesV2WithEnableTrueWhenAddressMissingFromPU() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            false, "2.8");
+        final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
+        assertTrue(actualResourceLink.get().isEnabled(), "Should be enable if address is missing from PU!");
+    }
+
+    @Test
+    void shallIncludeDisplayPatientAddressIfTsDiabetesV2WithEnableFalseWhenAddressFromPU() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion(TsDiabetesEntryPoint.MODULE_ID,
+            CertificateStatus.UNSIGNED,
+            true, "2.8");
         final var actualResourceLink = displayPatientAddressInCertificate.get(certificate);
         assertFalse(actualResourceLink.get().isEnabled(), "Should not be enable if address is from PU!");
     }

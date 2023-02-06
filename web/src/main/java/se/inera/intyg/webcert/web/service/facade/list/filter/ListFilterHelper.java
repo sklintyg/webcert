@@ -47,7 +47,7 @@ public class ListFilterHelper {
 
     public static LocalDateTime getSentTo(ListFilter filter) {
         ListFilterDateRangeValue sent = (ListFilterDateRangeValue) filter.getValue("SENT");
-        return sent != null && sent.getTo() != null ? sent.getTo().plusDays(1) : null;
+        return sent != null && sent.getTo() != null ? sent.getTo() : null;
     }
 
     public static String getSavedBy(ListFilter filter) {
@@ -199,6 +199,8 @@ public class ListFilterHelper {
             return "patientId";
         } else if (type == ListColumnType.QUESTION_ACTION) {
             return "amne";
+        } else if (type == ListColumnType.SENDER) {
+            return "fragestallare";
         } else {
             return "receivedDate";
         }
