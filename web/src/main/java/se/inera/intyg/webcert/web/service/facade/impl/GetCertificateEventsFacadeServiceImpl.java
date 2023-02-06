@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -154,7 +156,7 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
     }
 
     private void addAvailableForPatientIfNeeded(List<CertificateEventDTO> events, String certificateType) {
-        if (certificateType.equals("doi") || certificateType.equals("db")) {
+        if (certificateType.equals(DbModuleEntryPoint.MODULE_ID) || certificateType.equals(DoiModuleEntryPoint.MODULE_ID)) {
             return;
         }
 
