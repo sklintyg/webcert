@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
+import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -154,6 +155,17 @@ public class SupportedCertificateTypesUtil {
                 TsDiabetesEntryPoint.MODULE_ID,
                 TsDiabetesEntryPoint.MODULE_NAME,
                 Arrays.asList("2.6", "2.8", "3.0", "4.0", "4.1"),
+                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
+            )
+        );
+
+        certificateTypes.add(
+            new CertificateType(
+                Ag114EntryPoint.ISSUER_TYPE_ID,
+                Ag114EntryPoint.MODULE_ID,
+                Ag114EntryPoint.MODULE_NAME,
+                Collections.singletonList("1.0"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
