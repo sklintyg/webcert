@@ -530,6 +530,57 @@ class ListQuestionsConfigFacadeServiceImplTest {
                 assertTrue(updatedConfig.getSecondaryTitle().contains(B_UNIT_NAME));
             }
         }
+
+        @Nested
+        public class TestColumnOrder {
+            @Test
+            public void shouldHaveQuestionActionInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.QUESTION_ACTION, config.getTableHeadings()[0].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionSenderInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.SENDER, config.getTableHeadings()[1].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionPatientIdInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.PATIENT_ID, config.getTableHeadings()[2].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionSignedByInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.SIGNED_BY, config.getTableHeadings()[3].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionSentReceivedInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.SENT_RECEIVED, config.getTableHeadings()[4].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionForwardInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.FORWARDED, config.getTableHeadings()[5].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionForwardCertificateInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.FORWARD_CERTIFICATE, config.getTableHeadings()[6].getId());
+            }
+
+            @Test
+            public void shouldHaveQuestionOpenCertificateInCorrectPlace() {
+                final var config = listQuestionsConfigFacadeService.get("");
+                assertEquals(ListColumnType.OPEN_CERTIFICATE, config.getTableHeadings()[7].getId());
+            }
+        }
     }
 
     @Nested
