@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 class FragaSvarToQuestionConverterImplTest {
 
@@ -44,6 +45,9 @@ class FragaSvarToQuestionConverterImplTest {
     void setUp() {
         fragaSvar = new FragaSvar();
         fragaSvar.setInternReferens(1L);
+        final var vardperson = new Vardperson();
+        vardperson.setNamn("namn");
+        fragaSvar.setVardperson(vardperson);
         fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl();
     }
 
@@ -126,7 +130,7 @@ class FragaSvarToQuestionConverterImplTest {
     @Test
     void shallIncludeMessage() {
         final var expectedResult = "message";
-        fragaSvar.setSvarsText(expectedResult);
+        fragaSvar.setFrageText(expectedResult);
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
 
         assertEquals(expectedResult, actualQuestions.getMessage());
@@ -265,6 +269,12 @@ class FragaSvarToQuestionConverterImplTest {
 
             assertEquals(expectedResult, actualQuestions.getType());
         }
+    }
+
+    @Test
+    void shallIncludeReminders() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertNotNull(actualQuestions.getReminders());
     }
 
     private Set<Komplettering> kompletteringTestSetup() {

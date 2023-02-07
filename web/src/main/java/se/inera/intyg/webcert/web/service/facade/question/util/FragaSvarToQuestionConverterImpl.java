@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 
@@ -36,17 +37,17 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
         if (fragaSvar == null) {
             return null;
         }
-
         return Question.builder()
             .id(String.valueOf(fragaSvar.getInternReferens()))
-            .author(fragaSvar.getFrageStallare() != null ? getAuthor(fragaSvar.getFrageStallare()) : null)
+            .author(getAuthor(fragaSvar.getFrageStallare(), fragaSvar.getVardperson().getNamn()))
             .sent(fragaSvar.getFrageSkickadDatum())
-            .complements(getComplements(fragaSvar))
             .lastUpdate(getLastUpdate(fragaSvar))
             .lastDateToReply(fragaSvar.getSistaDatumForSvar())
-            .message(fragaSvar.getSvarsText())
-            .subject(fragaSvar.getAmne() != null ? getSubject(fragaSvar) : null)
-            .type(fragaSvar.getAmne() != null ? getType(fragaSvar.getAmne()) : null)
+            .message(fragaSvar.getFrageText())
+            .subject(getSubject(fragaSvar))
+            .type(getType(fragaSvar.getAmne()))
+            .complements(getComplements(fragaSvar))
+            .reminders(new Reminder[0])
             .build();
     }
 
@@ -58,19 +59,22 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
         }
     }
 
-    private String getAuthor(String frageStallare) {
+    private String getAuthor(String frageStallare, String vardpersonn) {
+        if (frageStallare == null) {
+            return null;
+        }
         switch (frageStallare) {
             case "FK":
                 return "Försäkringskassan";
             case "WC":
-                return "Webcert";
+                return vardpersonn;
             default:
                 return null;
         }
     }
 
-    private Complement[] getComplements(FragaSvar arendeDraft) {
-        final var kompletteringar = arendeDraft.getKompletteringar();
+    private Complement[] getComplements(FragaSvar fragaSvar) {
+        final var kompletteringar = fragaSvar.getKompletteringar();
 
         if (kompletteringar == null || kompletteringar.isEmpty()) {
             return new Complement[0];

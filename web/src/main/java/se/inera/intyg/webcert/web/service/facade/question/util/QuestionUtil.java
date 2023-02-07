@@ -55,6 +55,9 @@ public final class QuestionUtil {
     }
 
     public static QuestionType getType(Amne amne) {
+        if (amne == null) {
+            return null;
+        }
         switch (amne) {
             case AVSTAMNINGSMOTE:
             case PAMINNELSE:
@@ -83,6 +86,9 @@ public final class QuestionUtil {
     }
 
     public static String getSubject(FragaSvar fragaSvar) {
+        if (fragaSvar.getAmne() == null) {
+            return null;
+        }
         final var subjectBuilder = new StringBuilder();
         subjectBuilder.append(getSubjectAsString(fragaSvar.getAmne()));
         if (fragaSvar.getMeddelandeRubrik() != null && !fragaSvar.getMeddelandeRubrik().isBlank()) {
