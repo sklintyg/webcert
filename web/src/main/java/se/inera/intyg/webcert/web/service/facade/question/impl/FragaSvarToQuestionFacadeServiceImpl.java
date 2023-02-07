@@ -25,32 +25,35 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.util.FragaSvarToQuestionConverter;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 
-@Service(value = "GetQuestionsFacadeServiceImpl")
-public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
+@Service(value = "FragaSvarToQuestionFacadeServiceImpl")
+public class FragaSvarToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
-    private final ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService;
+    private final FragaSvarService fragaSvarService;
 
-    private final FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
+    private final FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
 
     @Autowired
-    public GetQuestionsFacadeServiceImpl(ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService,
-        FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService) {
-        this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
-        this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;
+    public FragaSvarToQuestionFacadeServiceImpl(FragaSvarService fragaSvarService,
+        FragaSvarToQuestionConverter fragaSvarToQuestionConverter) {
+        this.fragaSvarService = fragaSvarService;
+        this.fragaSvarToQuestionConverter = fragaSvarToQuestionConverter;
     }
 
     @Override
     public List<Question> getComplementQuestions(String certificateId) {
-        return arendeToQuestionFacadeService.getQuestions(certificateId).stream()
+        return getQuestions(certificateId).stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT)
             .collect(Collectors.toList());
     }
 
     @Override
     public List<Question> getQuestions(String certificateId) {
-        var questions = arendeToQuestionFacadeService.getQuestions(certificateId);
-        questions.addAll(fragaSvarToQuestionFacadeService.getQuestions(certificateId));
-        return questions;
+        final var fragaSvarView = fragaSvarService.getFragaSvar(certificateId);
+        return fragaSvarView.stream()
+            .map(fragaSvarViewElem -> fragaSvarToQuestionConverter.convert(fragaSvarViewElem.getFragaSvar()))
+            .collect(Collectors.toList());
     }
 }

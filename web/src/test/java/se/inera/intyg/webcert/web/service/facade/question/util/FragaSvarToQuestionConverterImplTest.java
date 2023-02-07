@@ -1,0 +1,282 @@
+/*
+ * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.service.facade.question.util;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+
+class FragaSvarToQuestionConverterImplTest {
+
+    private FragaSvarToQuestionConverterImpl fragaSvarToQuestionConverter;
+    private FragaSvar fragaSvar;
+
+    @BeforeEach
+    void setUp() {
+        fragaSvar = new FragaSvar();
+        fragaSvar.setInternReferens(1L);
+        fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl();
+    }
+
+    @Test
+    void shallReturnQuestion() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertNotNull(actualQuestions);
+    }
+
+    @Test
+    void shallHandleNullValue() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(null);
+        assertNull(actualQuestions);
+    }
+
+    @Test
+    void shallIncludeEmptyComplements() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertEquals(0, actualQuestions.getComplements().length);
+    }
+
+    @Test
+    void shallIncludeComplements() {
+        final var expectedQuestionText = "falt1";
+        final var expectedMessage = "text";
+        final var komplettering = new Komplettering();
+        komplettering.setFalt(expectedQuestionText);
+        komplettering.setText(expectedMessage);
+        fragaSvar.setKompletteringar(Set.of(komplettering));
+
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertAll(
+            () -> assertEquals(expectedMessage, actualQuestions.getComplements()[0].getMessage()),
+            () -> assertEquals(expectedQuestionText, actualQuestions.getComplements()[0].getQuestionText())
+        );
+    }
+
+    @Test
+    void shallIncludeId() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertEquals(fragaSvar.getInternReferens().toString(), actualQuestions.getId());
+    }
+
+    @Test
+    void shallIncludeMultipleComplements() {
+        fragaSvar.setKompletteringar(kompletteringTestSetup());
+
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertEquals(3, actualQuestions.getComplements().length);
+    }
+
+    @Test
+    void shallIncludeAuthor() {
+        final var expectedResult = "Försäkringskassan";
+        fragaSvar.setFrageStallare("FK");
+
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getAuthor());
+    }
+
+    @Test
+    void shallIncludeSent() {
+        final var expectedResult = LocalDateTime.now();
+        fragaSvar.setFrageSkickadDatum(expectedResult);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getSent());
+    }
+
+    @Test
+    void shallIncludeLastUpdate() {
+        final var expectedResult = LocalDateTime.now();
+        fragaSvar.setSvarSkickadDatum(expectedResult);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getLastUpdate());
+    }
+
+    @Test
+    void shallIncludeMessage() {
+        final var expectedResult = "message";
+        fragaSvar.setSvarsText(expectedResult);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getMessage());
+    }
+
+    @Nested
+    class IncludeSubjectTests {
+
+        @Test
+        void shallIncludeSubjectKomplettering() {
+            final var expectedResult = "Komplettering";
+            fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+
+        @Test
+        void shallIncludeSubjectOvrigt() {
+            final var expectedResult = "Övrigt";
+            fragaSvar.setAmne(Amne.OVRIGT);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+
+        @Test
+        void shallIncludeSubjectKontakt() {
+            final var expectedResult = "Kontakt";
+            fragaSvar.setAmne(Amne.KONTAKT);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+
+        @Test
+        void shallIncludeSubjectAvstamningsmote() {
+            final var expectedResult = "Avstämningsmöte";
+            fragaSvar.setAmne(Amne.AVSTAMNINGSMOTE);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+
+        @Test
+        void shallIncludeSubjectPaminnelse() {
+            final var expectedResult = "Påminnelse";
+            fragaSvar.setAmne(Amne.PAMINNELSE);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+
+        @Test
+        void shallIncludeSubjectArbetstidsforlaggning() {
+            final var expectedResult = "Arbetstidsförläggning";
+            fragaSvar.setAmne(Amne.ARBETSTIDSFORLAGGNING);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getSubject());
+        }
+    }
+
+    @Test
+    void shallIncludeLastDayToReply() {
+        final var expectedResult = LocalDate.now();
+        fragaSvar.setSistaDatumForSvar(expectedResult);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getLastDateToReply());
+    }
+
+    @Nested
+    class IncludeTypeTests {
+
+        @Test
+        void shallIncludeTypeKomplettering() {
+            final var expectedResult = QuestionType.COMPLEMENT;
+            fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+        @Test
+        void shallIncludeTypeMakulering() {
+            final var expectedResult = QuestionType.COORDINATION;
+            fragaSvar.setAmne(Amne.MAKULERING_AV_LAKARINTYG);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+        @Test
+        void shallIncludeTypeAvstamningsmote() {
+            final var expectedResult = QuestionType.COORDINATION;
+            fragaSvar.setAmne(Amne.AVSTAMNINGSMOTE);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+
+        @Test
+        void shallIncludeTypeKontakt() {
+            final var expectedResult = QuestionType.CONTACT;
+            fragaSvar.setAmne(Amne.KONTAKT);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+        @Test
+        void shallIncludeTypeArbetstidsforlaggning() {
+            final var expectedResult = QuestionType.COORDINATION;
+            fragaSvar.setAmne(Amne.ARBETSTIDSFORLAGGNING);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+        @Test
+        void shallIncludeTypePaminnelse() {
+            final var expectedResult = QuestionType.COORDINATION;
+            fragaSvar.setAmne(Amne.PAMINNELSE);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+
+        @Test
+        void shallIncludeTypeOvrigt() {
+            final var expectedResult = QuestionType.OTHER;
+            fragaSvar.setAmne(Amne.OVRIGT);
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+            assertEquals(expectedResult, actualQuestions.getType());
+        }
+    }
+
+    private Set<Komplettering> kompletteringTestSetup() {
+        final var komplettering = new Komplettering();
+        komplettering.setFalt("falt1");
+        komplettering.setText("text");
+        final var komplettering2 = new Komplettering();
+        komplettering2.setFalt("falt2");
+        komplettering2.setText("text");
+        final var komplettering3 = new Komplettering();
+        komplettering2.setFalt("falt3");
+        komplettering2.setText("text");
+        return Set.of(komplettering, komplettering2, komplettering3);
+    }
+}

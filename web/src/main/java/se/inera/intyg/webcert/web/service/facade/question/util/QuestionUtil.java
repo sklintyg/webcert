@@ -23,6 +23,8 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 public final class QuestionUtil {
 
@@ -52,6 +54,24 @@ public final class QuestionUtil {
         }
     }
 
+    public static QuestionType getType(Amne amne) {
+        switch (amne) {
+            case AVSTAMNINGSMOTE:
+            case PAMINNELSE:
+            case ARBETSTIDSFORLAGGNING:
+            case MAKULERING_AV_LAKARINTYG:
+                return QuestionType.COORDINATION;
+            case KONTAKT:
+                return QuestionType.CONTACT;
+            case OVRIGT:
+                return QuestionType.OTHER;
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return QuestionType.COMPLEMENT;
+            default:
+                throw new IllegalArgumentException("The type is not supported: " + amne);
+        }
+    }
+
     public static String getSubject(Arende arende) {
         final var subjectBuilder = new StringBuilder();
         subjectBuilder.append(arende.getAmne().getDescription());
@@ -60,6 +80,37 @@ public final class QuestionUtil {
             subjectBuilder.append(arende.getRubrik());
         }
         return subjectBuilder.toString();
+    }
+
+    public static String getSubject(FragaSvar fragaSvar) {
+        final var subjectBuilder = new StringBuilder();
+        subjectBuilder.append(getSubjectAsString(fragaSvar.getAmne()));
+        if (fragaSvar.getMeddelandeRubrik() != null && !fragaSvar.getMeddelandeRubrik().isBlank()) {
+            subjectBuilder.append(" - ");
+            subjectBuilder.append(fragaSvar.getMeddelandeRubrik());
+        }
+        return subjectBuilder.toString();
+    }
+
+    private static String getSubjectAsString(Amne amne) {
+        switch (amne) {
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return "Komplettering";
+            case MAKULERING_AV_LAKARINTYG:
+                return "Makulering";
+            case AVSTAMNINGSMOTE:
+                return "Avstämningsmöte";
+            case KONTAKT:
+                return "Kontakt";
+            case ARBETSTIDSFORLAGGNING:
+                return "Arbetstidsförläggning";
+            case PAMINNELSE:
+                return "Påminnelse";
+            case OVRIGT:
+                return "Övrigt";
+            default:
+                throw new IllegalArgumentException("The type is not supported: " + amne);
+        }
     }
 
     public static String getSubjectAsString(QuestionType type) {
