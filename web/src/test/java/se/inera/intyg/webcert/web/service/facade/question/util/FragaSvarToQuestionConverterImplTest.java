@@ -31,15 +31,22 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
+@ExtendWith(MockitoExtension.class)
 class FragaSvarToQuestionConverterImplTest {
 
+    @Mock
+    GetCertificateFacadeService getCertificateFacadeService;
     private FragaSvarToQuestionConverterImpl fragaSvarToQuestionConverter;
     private FragaSvar fragaSvar;
 
@@ -50,7 +57,7 @@ class FragaSvarToQuestionConverterImplTest {
         final var vardperson = new Vardperson();
         vardperson.setNamn("namn");
         fragaSvar.setVardperson(vardperson);
-        fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl();
+        fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl(null);
     }
 
     @Test
@@ -212,6 +219,7 @@ class FragaSvarToQuestionConverterImplTest {
         void shallIncludeTypeKomplettering() {
             final var expectedResult = QuestionType.COMPLEMENT;
             fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+
             final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
 
             assertEquals(expectedResult, actualQuestions.getType());
@@ -291,6 +299,13 @@ class FragaSvarToQuestionConverterImplTest {
         fragaSvar.setVidarebefordrad(true);
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
         assertTrue(actualQuestions.isForwarded());
+    }
+
+    @Test
+    void shallIncludeAnsweredByCertificate() {
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar.setKompletteringar(kompletteringTestSetup());
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
     }
 
     private Set<Komplettering> kompletteringTestSetup() {
