@@ -19,11 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 
 @Service(value = "GetQuestionsFacadeServiceImpl")
@@ -42,9 +40,9 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
     @Override
     public List<Question> getComplementQuestions(String certificateId) {
-        return arendeToQuestionFacadeService.getQuestions(certificateId).stream()
-            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
-            .collect(Collectors.toList());
+        final var complementQuestions = arendeToQuestionFacadeService.getComplementQuestions(certificateId);
+        complementQuestions.addAll(fragaSvarToQuestionFacadeService.getComplementQuestions(certificateId));
+        return complementQuestions;
     }
 
     @Override
