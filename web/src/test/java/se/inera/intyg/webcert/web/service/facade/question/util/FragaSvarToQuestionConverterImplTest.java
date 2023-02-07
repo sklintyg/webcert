@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 class FragaSvarToQuestionConverterImplTest {
 
@@ -275,6 +277,20 @@ class FragaSvarToQuestionConverterImplTest {
     void shallIncludeReminders() {
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
         assertNotNull(actualQuestions.getReminders());
+    }
+
+    @Test
+    void shallIncludeIsHandled() {
+        fragaSvar.setStatus(Status.CLOSED);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertTrue(actualQuestions.isHandled());
+    }
+
+    @Test
+    void shallIncludeIsForwarded() {
+        fragaSvar.setVidarebefordrad(true);
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertTrue(actualQuestions.isForwarded());
     }
 
     private Set<Komplettering> kompletteringTestSetup() {

@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 @Component
 public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConverter {
@@ -46,6 +47,8 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
             .message(fragaSvar.getFrageText())
             .subject(getSubject(fragaSvar))
             .type(getType(fragaSvar.getAmne()))
+            .isHandled(fragaSvar.getStatus() == Status.CLOSED)
+            .isForwarded(fragaSvar.getVidarebefordrad())
             .complements(getComplements(fragaSvar))
             .reminders(new Reminder[0])
             .build();
