@@ -63,6 +63,15 @@ class FragaSvarToQuestionFacadeServiceImplTest {
     }
 
     @Test
+    void shallReturnListOfQuestionsIfPresent() {
+        setupMockToReturnQuestions();
+
+        final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
+
+        assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
+    }
+
+    @Test
     void shallReturnListOfComplementQuestionsIfComplementQuestionsArePresent() {
         final var expectedResult = List.of(
             Question.builder().type(QuestionType.COMPLEMENT).build(),
@@ -72,7 +81,7 @@ class FragaSvarToQuestionFacadeServiceImplTest {
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
         final var fragaSvarViews = List.of(FragaSvarView.create(fragaSvar), FragaSvarView.create(fragaSvar));
-        
+
         doReturn(fragaSvarViews)
             .when(fragaSvarService)
             .getFragaSvar(CERTIFICATE_ID);
@@ -84,15 +93,6 @@ class FragaSvarToQuestionFacadeServiceImplTest {
         final var actualComplementQuestions = fragaSvarToQuestionFacadeService.getComplementQuestions(CERTIFICATE_ID);
 
         assertIterableEquals(expectedResult, actualComplementQuestions);
-    }
-
-    @Test
-    void shallReturnListOfQuestionsIfPresent() {
-        setupMockToReturnQuestions();
-
-        final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
-
-        assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
     }
 
     private void setupMockToReturnQuestions() {
