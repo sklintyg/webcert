@@ -83,12 +83,12 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
 
     @Override
     public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions, String certificateId) {
-        final var questionListHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
+        final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
         for (Question question : questions) {
             final var resourceLinkDTOS = get(question, certificateId);
-            questionListHashMap.put(question, resourceLinkDTOS);
+            questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
         }
-        return questionListHashMap;
+        return questionResourceLinkDTOHashMap;
     }
 
     private AccessEvaluationParameters createAccessEvaluationParameters(Question question, String certificateId) {

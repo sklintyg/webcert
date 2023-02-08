@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 
 public final class QuestionUtil {
 
@@ -97,6 +98,23 @@ public final class QuestionUtil {
             subjectBuilder.append(fragaSvar.getMeddelandeRubrik());
         }
         return subjectBuilder.toString();
+    }
+
+    public static String getMessage(FragaSvar fragaSvar) {
+        final var frageText = fragaSvar.getFrageText();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(frageText);
+
+        final var kompletteringar = fragaSvar.getKompletteringar();
+        if (kompletteringar == null || kompletteringar.isEmpty()) {
+            return stringBuilder.toString();
+        }
+
+        for (Komplettering komplettering : kompletteringar) {
+            stringBuilder.append("\n\n").append(komplettering.getFalt()).append("\n\n").append(komplettering.getText());
+        }
+
+        return stringBuilder.toString();
     }
 
     private static String getSubjectAsString(Amne amne) {

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.question.util;
 import static java.util.Comparator.comparing;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getAuthor;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getLastUpdate;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getMessage;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getType;
 
@@ -73,39 +74,6 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
                 fragaSvar.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG ? getAnsweredByCertificate(fragaSvar,
                     getAnswersByCertificate(fragaSvar.getIntygsReferens().getIntygsId(),
                         fragaSvar.getKompletteringar())) : null)
-            .build();
-    }
-
-    private String getMessage(FragaSvar fragaSvar) {
-        final var frageText = fragaSvar.getFrageText();
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(frageText);
-
-        final var kompletteringar = fragaSvar.getKompletteringar();
-        if (kompletteringar == null || kompletteringar.isEmpty()) {
-            return stringBuilder.toString();
-        }
-
-        for (Komplettering komplettering : kompletteringar) {
-            stringBuilder.append("\n\n").append(komplettering.getFalt()).append("\n\n").append(komplettering.getText());
-        }
-
-        return stringBuilder.toString();
-    }
-
-    private Complement[] getComplements(FragaSvar fragaSvar) {
-        final var kompletteringar = fragaSvar.getKompletteringar();
-
-        if (kompletteringar == null || kompletteringar.isEmpty()) {
-            return new Complement[0];
-        }
-        return kompletteringar.stream().map(this::convertToComplement).toArray(Complement[]::new);
-    }
-
-    private Complement convertToComplement(Komplettering komplettering) {
-        return Complement.builder()
-            .questionText(komplettering.getFalt())
-            .message(komplettering.getText())
             .build();
     }
 
