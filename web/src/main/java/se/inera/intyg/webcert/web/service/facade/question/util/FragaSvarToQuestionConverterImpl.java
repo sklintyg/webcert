@@ -62,13 +62,12 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
             .author(getAuthor(fragaSvar.getFrageStallare(), fragaSvar.getVardperson().getNamn()))
             .sent(fragaSvar.getFrageSkickadDatum())
             .lastUpdate(getLastUpdate(fragaSvar))
-            .lastDateToReply(fragaSvar.getSistaDatumForSvar())
             .message(fragaSvar.getFrageText())
             .subject(getSubject(fragaSvar))
             .type(getType(fragaSvar.getAmne()))
             .isHandled(fragaSvar.getStatus() == Status.CLOSED)
             .isForwarded(fragaSvar.getVidarebefordrad())
-            .complements(getComplements(fragaSvar))
+            .complements(new Complement[0])
             .reminders(new Reminder[0])
             .answeredByCertificate(
                 fragaSvar.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG ? getAnsweredByCertificate(fragaSvar,

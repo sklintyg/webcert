@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 public interface GetQuestionsResourceLinkService {
 
-    List<ResourceLinkDTO> get(Question question);
+    List<ResourceLinkDTO> get(Question question, String certificateId);
 
-    Map<Question, List<ResourceLinkDTO>> get(List<Question> questions);
+    Map<Question, List<ResourceLinkDTO>> get(List<Question> questions, String certificateId);
 }

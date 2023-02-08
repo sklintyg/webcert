@@ -19,14 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -96,33 +94,9 @@ class FragaSvarToQuestionConverterImplTest {
     }
 
     @Test
-    void shallIncludeComplements() {
-        final var expectedQuestionText = "falt1";
-        final var expectedMessage = "text";
-        final var komplettering = new Komplettering();
-        komplettering.setFalt(expectedQuestionText);
-        komplettering.setText(expectedMessage);
-        fragaSvar.setKompletteringar(Set.of(komplettering));
-
-        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
-        assertAll(
-            () -> assertEquals(expectedMessage, actualQuestions.getComplements()[0].getMessage()),
-            () -> assertEquals(expectedQuestionText, actualQuestions.getComplements()[0].getQuestionText())
-        );
-    }
-
-    @Test
     void shallIncludeId() {
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
         assertEquals(fragaSvar.getInternReferens().toString(), actualQuestions.getId());
-    }
-
-    @Test
-    void shallIncludeMultipleComplements() {
-        fragaSvar.setKompletteringar(kompletteringTestSetup());
-
-        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
-        assertEquals(3, actualQuestions.getComplements().length);
     }
 
     @Test
@@ -142,15 +116,6 @@ class FragaSvarToQuestionConverterImplTest {
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
 
         assertEquals(expectedResult, actualQuestions.getSent());
-    }
-
-    @Test
-    void shallIncludeLastUpdate() {
-        final var expectedResult = LocalDateTime.now();
-        fragaSvar.setSvarSkickadDatum(expectedResult);
-        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
-
-        assertEquals(expectedResult, actualQuestions.getLastUpdate());
     }
 
     @Test
@@ -221,12 +186,12 @@ class FragaSvarToQuestionConverterImplTest {
     }
 
     @Test
-    void shallIncludeLastDayToReply() {
-        final var expectedResult = LocalDate.now();
-        fragaSvar.setSistaDatumForSvar(expectedResult);
+    void shallIncludeLastUpdate() {
+        final var expectedResult = LocalDateTime.now();
+        fragaSvar.setSvarSkickadDatum(expectedResult);
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
 
-        assertEquals(expectedResult, actualQuestions.getLastDateToReply());
+        assertEquals(expectedResult, actualQuestions.getLastUpdate());
     }
 
     @Nested
