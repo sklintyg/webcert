@@ -135,7 +135,8 @@ class FragaSvarToQuestionConverterImplTest {
         komplettering.setText("text");
         fragaSvar.setKompletteringar(Set.of(komplettering));
         StringBuilder stringBuilder = new StringBuilder();
-        final var expectedResult = stringBuilder.append(fragaSvar.getFrageText()).append("\n").append("falt").append("\n").append("text")
+        final var expectedResult = stringBuilder.append(fragaSvar.getFrageText()).append("\n\n").append("falt").append("\n\n")
+            .append("text")
             .toString();
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
 

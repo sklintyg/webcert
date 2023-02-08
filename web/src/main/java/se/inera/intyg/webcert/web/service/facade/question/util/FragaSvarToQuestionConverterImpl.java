@@ -87,7 +87,7 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
         }
 
         for (Komplettering komplettering : kompletteringar) {
-            stringBuilder.append("\n").append(komplettering.getFalt()).append("\n").append(komplettering.getText());
+            stringBuilder.append("\n\n").append(komplettering.getFalt()).append("\n\n").append(komplettering.getText());
         }
 
         return stringBuilder.toString();
