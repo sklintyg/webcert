@@ -62,7 +62,7 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
             .author(getAuthor(fragaSvar.getFrageStallare(), fragaSvar.getVardperson().getNamn()))
             .sent(fragaSvar.getFrageSkickadDatum())
             .lastUpdate(getLastUpdate(fragaSvar))
-            .message(fragaSvar.getFrageText())
+            .message(getMessage(fragaSvar))
             .subject(getSubject(fragaSvar))
             .type(getType(fragaSvar.getAmne()))
             .isHandled(fragaSvar.getStatus() == Status.CLOSED)
@@ -74,6 +74,23 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
                     getAnswersByCertificate(fragaSvar.getIntygsReferens().getIntygsId(),
                         fragaSvar.getKompletteringar())) : null)
             .build();
+    }
+
+    private String getMessage(FragaSvar fragaSvar) {
+        final var frageText = fragaSvar.getFrageText();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(frageText);
+
+        final var kompletteringar = fragaSvar.getKompletteringar();
+        if (kompletteringar == null || kompletteringar.isEmpty()) {
+            return stringBuilder.toString();
+        }
+
+        for (Komplettering komplettering : kompletteringar) {
+            stringBuilder.append("\n").append(komplettering.getFalt()).append("\n").append(komplettering.getText());
+        }
+
+        return stringBuilder.toString();
     }
 
     private Complement[] getComplements(FragaSvar fragaSvar) {

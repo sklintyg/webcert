@@ -127,6 +127,21 @@ class FragaSvarToQuestionConverterImplTest {
         assertEquals(expectedResult, actualQuestions.getMessage());
     }
 
+    @Test
+    void shallIncludeMessageWithKompletteringar() {
+        fragaSvar.setFrageText("frageTex");
+        final var komplettering = new Komplettering();
+        komplettering.setFalt("falt");
+        komplettering.setText("text");
+        fragaSvar.setKompletteringar(Set.of(komplettering));
+        StringBuilder stringBuilder = new StringBuilder();
+        final var expectedResult = stringBuilder.append(fragaSvar.getFrageText()).append("\n").append("falt").append("\n").append("text")
+            .toString();
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+
+        assertEquals(expectedResult, actualQuestions.getMessage());
+    }
+
     @Nested
     class IncludeSubjectTests {
 
