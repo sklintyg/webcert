@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,22 +27,12 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
-import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
@@ -53,37 +42,9 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
-public class Af00213IT {
+public class Af00213IT extends BaseFacadeIT {
 
     private static final String CURRENT_VERSION = "1.0";
-
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
-    }
 
     @Nested
     class Af00213ITCurrentVersion {
@@ -103,7 +64,8 @@ public class Af00213IT {
             createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
             createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateType", Af00213EntryPoint.MODULE_ID)
                 .contentType(ContentType.JSON)
                 .body(createUtkastRequest)
@@ -136,7 +98,8 @@ public class Af00213IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .expect().statusCode(200)
                 .when()
@@ -170,7 +133,8 @@ public class Af00213IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -202,7 +166,8 @@ public class Af00213IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -235,7 +200,8 @@ public class Af00213IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
                 .when()
@@ -265,7 +231,8 @@ public class Af00213IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("version", 1)
                 .when()
@@ -297,7 +264,8 @@ public class Af00213IT {
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -332,7 +300,8 @@ public class Af00213IT {
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -368,7 +337,8 @@ public class Af00213IT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
@@ -401,7 +371,8 @@ public class Af00213IT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
