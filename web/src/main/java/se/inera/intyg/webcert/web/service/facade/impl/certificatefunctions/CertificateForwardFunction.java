@@ -29,7 +29,7 @@ public class CertificateForwardFunction {
     private static final String FORWARD_DESCRIPTION =
         "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
     private static final String FORWARD_DESCRIPTION_CERTIFICATE =
-        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till intyget.";
+        "Skapar ett e-postmeddelande med länk till intyget.";
     private static final String FORWARD_DESCRIPTION_QUESTION =
         "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
 
