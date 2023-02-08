@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,20 +27,10 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
-import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
@@ -50,43 +39,16 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
-public class Ag114V1IT {
+public class Ag114V1IT extends BaseFacadeIT {
 
     private static final String CURRENT_VERSION = "1.0";
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
-    }
 
     @Nested
     class Draft {
 
         @Test
         void draftShouldContainData() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .draft(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -96,19 +58,18 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertTrue(response.getData().size() > 0, "Expect draft to include data");
         }
 
         @Test
         void draftShouldContainMetaData() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .draft(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -118,19 +79,18 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertNotNull(response.getMetadata(), "Expect draft to include meta data");
         }
 
         @Test
         void draftShouldContainResourceLinks() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .draft(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -140,19 +100,18 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
         }
 
         @Test
         void shallBeAbleToSaveDraft() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .draft(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -162,14 +121,14 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var certificate = getCertificate(certificateId);
+            final var certificate = getCertificate(testSetup);
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", certificate.getMetadata().getId())
                 .contentType(ContentType.JSON)
                 .body(certificate)
@@ -180,12 +139,11 @@ public class Ag114V1IT {
 
             assertTrue(response.getVersion() > certificate.getMetadata().getVersion(),
                 "Expect version after save to be incremented");
-            ;
         }
 
         @Test
         public void shallBeAbleToDeleteDraft() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .draft(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -195,13 +153,13 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
-                .pathParam("certificateId", certificateId)
+            final var response = testSetup
+                .spec()
+                .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("version", 1)
                 .when()
                 .delete("api/certificate/{certificateId}/{version}")
@@ -215,7 +173,7 @@ public class Ag114V1IT {
 
             @Test
             void shallValidateEmptyDraftAndReturnValidationErrors() {
-                final var certificateId = TestSetup.create()
+                final var testSetup = TestSetup.create()
                     .draft(
                         Ag114EntryPoint.MODULE_ID,
                         CURRENT_VERSION,
@@ -225,15 +183,15 @@ public class Ag114V1IT {
                         ATHENA_ANDERSSON.getPersonId().getId()
                     )
                     .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup()
-                    .certificateId();
+                    .setup();
 
-                certificateIdsToCleanAfterTest.add(certificateId);
+                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-                final var response = getCertificate(certificateId);
+                final var response = getCertificate(testSetup);
 
-                final var validation = given()
-                    .pathParam("certificateId", certificateId)
+                final var validation = testSetup
+                    .spec()
+                    .pathParam("certificateId", testSetup.certificateId())
                     .contentType(ContentType.JSON)
                     .body(response)
                     .expect().statusCode(200)
@@ -246,7 +204,7 @@ public class Ag114V1IT {
 
             @Test
             void shallValidateMinimalDraftAndReturnNoValidationErrors() {
-                final var certificateId = TestSetup.create()
+                final var testSetup = TestSetup.create()
                     .draft(
                         Ag114EntryPoint.MODULE_ID,
                         CURRENT_VERSION,
@@ -256,15 +214,15 @@ public class Ag114V1IT {
                         ATHENA_ANDERSSON.getPersonId().getId()
                     )
                     .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup()
-                    .certificateId();
+                    .setup();
 
-                certificateIdsToCleanAfterTest.add(certificateId);
+                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-                final var response = getCertificate(certificateId);
+                final var response = getCertificate(testSetup);
 
-                final var validation = given()
-                    .pathParam("certificateId", certificateId)
+                final var validation = testSetup
+                    .spec()
+                    .pathParam("certificateId", testSetup.certificateId())
                     .contentType(ContentType.JSON)
                     .body(response)
                     .expect().statusCode(200)
@@ -282,7 +240,7 @@ public class Ag114V1IT {
 
         @Test
         void certificateShouldContainData() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .certificate(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -291,19 +249,18 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertTrue(response.getData().size() > 0, "Expect draft to include data");
         }
 
         @Test
         void certificateShouldContainMetaData() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .certificate(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -312,19 +269,18 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertNotNull(response.getMetadata(), "Expect draft to include meta data");
         }
 
         @Test
         void certificateShouldContainResourceLinks() {
-            final var certificateId = TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .certificate(
                     Ag114EntryPoint.MODULE_ID,
                     CURRENT_VERSION,
@@ -333,12 +289,11 @@ public class Ag114V1IT {
                     ATHENA_ANDERSSON.getPersonId().getId()
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup()
-                .certificateId();
+                .setup();
 
-            certificateIdsToCleanAfterTest.add(certificateId);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = getCertificate(certificateId);
+            final var response = getCertificate(testSetup);
 
             assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
         }
@@ -358,7 +313,8 @@ public class Ag114V1IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
                 .when()
@@ -381,13 +337,15 @@ public class Ag114V1IT {
                 )
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
+
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
             final var newCertificateRequestDTO = new NewCertificateRequestDTO();
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -397,7 +355,8 @@ public class Ag114V1IT {
 
             certificateIdsToCleanAfterTest.add(certificateId);
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", certificateId)
                 .expect().statusCode(200)
                 .when()
@@ -427,7 +386,8 @@ public class Ag114V1IT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
@@ -452,7 +412,8 @@ public class Ag114V1IT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .expect().statusCode(500)
                 .when().post("api/certificate/{certificateId}/template")
@@ -484,7 +445,8 @@ public class Ag114V1IT {
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -516,7 +478,8 @@ public class Ag114V1IT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
@@ -527,9 +490,10 @@ public class Ag114V1IT {
         }
     }
 
-    private CertificateDTO getCertificate(String certificateId) {
-        return given()
-            .pathParam("certificateId", certificateId)
+    private CertificateDTO getCertificate(TestSetup testSetup) {
+        return testSetup
+            .spec()
+            .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
             .get("api/certificate/{certificateId}")

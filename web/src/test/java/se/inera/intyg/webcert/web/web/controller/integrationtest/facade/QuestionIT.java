@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,23 +29,13 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
-import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificateRequestDTO;
@@ -57,31 +46,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
-public class QuestionIT {
-
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
+public class QuestionIT extends BaseFacadeIT {
 
     @Test
     @DisplayName("Shall get question for certificate")
@@ -102,7 +67,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -133,7 +99,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -164,13 +131,15 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        given()
+        testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionDraftId())
             .expect().statusCode(200)
             .when()
             .delete("api/question/{questionId}");
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -205,7 +174,8 @@ public class QuestionIT {
         createQuestionRequestDTO.setCertificateId(testSetup.certificateId());
         createQuestionRequestDTO.setType(QuestionType.COORDINATION);
 
-        final var question = given()
+        final var question = testSetup
+            .spec()
             .contentType(ContentType.JSON)
             .body(createQuestionRequestDTO)
             .expect().statusCode(200)
@@ -244,7 +214,8 @@ public class QuestionIT {
             .id(testSetup.questionDraftId())
             .build());
 
-        given()
+        testSetup
+            .spec()
             .contentType(ContentType.JSON)
             .body(saveQuestionRequestDTO)
             .pathParam("certificateId", testSetup.certificateId())
@@ -252,7 +223,8 @@ public class QuestionIT {
             .when()
             .post("api/question/{certificateId}");
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -293,7 +265,8 @@ public class QuestionIT {
 
         sendQuestionRequestDTO.setQuestion(question);
 
-        final var receivedQuestion = given()
+        final var receivedQuestion = testSetup
+            .spec()
             .contentType(ContentType.JSON)
             .body(sendQuestionRequestDTO)
             .pathParam("questionId", testSetup.questionDraftId())
@@ -326,7 +299,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -357,7 +331,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -394,7 +369,8 @@ public class QuestionIT {
         final var answerRequestDTO = new AnswerRequestDTO();
         answerRequestDTO.setMessage("Det här är vårt svar!");
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON)
             .body(answerRequestDTO)
@@ -427,7 +403,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .expect().statusCode(200)
             .when()
@@ -461,7 +438,8 @@ public class QuestionIT {
         final var answerRequestDTO = new AnswerRequestDTO();
         answerRequestDTO.setMessage("Det här är vårt svar!");
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON)
             .body(answerRequestDTO)
@@ -499,7 +477,8 @@ public class QuestionIT {
         final var handleQuestionRequestDTO = new HandleQuestionRequestDTO();
         handleQuestionRequestDTO.setHandled(true);
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON)
             .body(handleQuestionRequestDTO)
@@ -535,7 +514,8 @@ public class QuestionIT {
         final var handleQuestionRequestDTO = new HandleQuestionRequestDTO();
         handleQuestionRequestDTO.setHandled(false);
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON)
             .body(handleQuestionRequestDTO)
@@ -569,7 +549,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -603,7 +584,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -641,7 +623,8 @@ public class QuestionIT {
         final var handleQuestionRequestDTO = new HandleQuestionRequestDTO();
         handleQuestionRequestDTO.setHandled(true);
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON)
             .body(handleQuestionRequestDTO)
@@ -678,7 +661,8 @@ public class QuestionIT {
         final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
         complementCertificateRequestDTO.setMessage("");
 
-        final var newCertificate = given()
+        final var newCertificate = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON)
             .body(complementCertificateRequestDTO)
@@ -688,7 +672,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -721,7 +706,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var newCertificate = given()
+        final var newCertificate = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON)
             .body(new ComplementCertificateRequestDTO())
@@ -731,7 +717,8 @@ public class QuestionIT {
 
         certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -766,14 +753,16 @@ public class QuestionIT {
         final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
         complementCertificateRequestDTO.setMessage("Det går inte att komplettera detta intyg");
 
-        given()
+        testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON)
             .body(complementCertificateRequestDTO)
             .expect().statusCode(200)
             .when().post("api/certificate/{certificateId}/answercomplement");
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .expect().statusCode(200)
             .when()
@@ -783,9 +772,5 @@ public class QuestionIT {
         assertAll(
             () -> assertEquals(complementCertificateRequestDTO.getMessage(), response.get(0).getAnswer().getMessage())
         );
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
     }
 }

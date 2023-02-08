@@ -24,66 +24,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
-import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
-public class DoiIT {
-
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
-    }
+public class DoiIT extends BaseFacadeIT {
 
     @Nested
     class Draft {
 
         @Test
         void shallCreateDoiDraft() {
-            TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = createDoiDraft();
+            final var certificateId = createDoiDraft(testSetup);
 
             final var response = getTestDraft(certificateId);
 
@@ -92,11 +54,11 @@ public class DoiIT {
 
         @Test
         void shallCreateDraftWithData() {
-            TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = createDoiDraft();
+            final var certificateId = createDoiDraft(testSetup);
 
             final var response = getTestDraft(certificateId);
 
@@ -105,11 +67,11 @@ public class DoiIT {
 
         @Test
         void shallSaveDraftWithData() {
-            TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = createDoiDraft();
+            final var certificateId = createDoiDraft(testSetup);
 
             final var certificate = getTestDraft(certificateId);
 
@@ -121,7 +83,8 @@ public class DoiIT {
                     .build()
             );
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", certificate.getMetadata().getId())
                 .contentType(ContentType.JSON)
                 .body(certificate)
@@ -132,20 +95,20 @@ public class DoiIT {
 
             assertTrue(response.getVersion() > certificate.getMetadata().getVersion(),
                 "Expect version after save to be incremented");
-            ;
         }
 
         @Test
         void shallValidateDraft() {
-            TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = createDoiDraft();
+            final var certificateId = createDoiDraft(testSetup);
 
             final var response = getTestDraft(certificateId);
 
-            final var validation = given()
+            final var validation = testSetup
+                .spec()
                 .pathParam("certificateId", certificateId)
                 .contentType(ContentType.JSON)
                 .body(response)
@@ -159,11 +122,11 @@ public class DoiIT {
 
         @Test
         void shallCreateDraftWithResourceLinks() {
-            TestSetup.create()
+            final var testSetup = TestSetup.create()
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            final var certificateId = createDoiDraft();
+            final var certificateId = createDoiDraft(testSetup);
 
             final var response = getTestDraft(certificateId);
 
@@ -179,8 +142,9 @@ public class DoiIT {
                 .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
         }
 
-        private String createDoiDraft() {
-            final var certificateId = given()
+        private String createDoiDraft(TestSetup testSetup) {
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
                 .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
                 .expect().statusCode(200)
