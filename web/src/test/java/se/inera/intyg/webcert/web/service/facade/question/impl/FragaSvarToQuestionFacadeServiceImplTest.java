@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -32,6 +33,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.facade.question.util.FragaSvarToQuestionConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -57,6 +60,30 @@ class FragaSvarToQuestionFacadeServiceImplTest {
         final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
 
         assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
+    }
+
+    @Test
+    void shallReturnListOfComplementQuestionsIfComplementQuestionsArePresent() {
+        final var expectedResult = List.of(
+            Question.builder().type(QuestionType.COMPLEMENT).build(),
+            Question.builder().type(QuestionType.COMPLEMENT).build());
+
+        final var fragaSvar = new FragaSvar();
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+
+        final var fragaSvarViews = List.of(FragaSvarView.create(fragaSvar), FragaSvarView.create(fragaSvar));
+        
+        doReturn(fragaSvarViews)
+            .when(fragaSvarService)
+            .getFragaSvar(CERTIFICATE_ID);
+
+        doReturn(Question.builder().type(QuestionType.COMPLEMENT).build())
+            .when(fragaSvarToQuestionConverter)
+            .convert(any(FragaSvar.class));
+
+        final var actualComplementQuestions = fragaSvarToQuestionFacadeService.getComplementQuestions(CERTIFICATE_ID);
+
+        assertIterableEquals(expectedResult, actualComplementQuestions);
     }
 
     @Test
