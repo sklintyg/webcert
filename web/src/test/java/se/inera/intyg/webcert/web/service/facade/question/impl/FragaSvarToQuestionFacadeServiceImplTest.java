@@ -47,7 +47,7 @@ class FragaSvarToQuestionFacadeServiceImplTest {
     private FragaSvarService fragaSvarService;
     @Mock
     private FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
-    private final static String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_ID = "certificateId";
     @InjectMocks
     private FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
 

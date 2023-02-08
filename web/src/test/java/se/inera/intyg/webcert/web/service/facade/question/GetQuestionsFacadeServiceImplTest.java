@@ -44,7 +44,7 @@ public class GetQuestionsFacadeServiceImplTest {
     private FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
 
     @InjectMocks
-    private GetQuestionsFacadeServiceImpl GetQuestionsFacadeServiceImpl;
+    private GetQuestionsFacadeServiceImpl getQuestionsFacadeServiceImpl;
 
     private static final String CERTIFICATE_ID = "certificateId";
 
@@ -62,7 +62,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
             doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
 
@@ -77,7 +77,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
             doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
 
@@ -92,7 +92,7 @@ public class GetQuestionsFacadeServiceImplTest {
             doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
             doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
     }
@@ -111,7 +111,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
             doReturn(questions).when(fragaSvarToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
 
@@ -126,7 +126,7 @@ public class GetQuestionsFacadeServiceImplTest {
 
             doReturn(questions).when(arendeToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
 
@@ -142,7 +142,7 @@ public class GetQuestionsFacadeServiceImplTest {
             doReturn(questions).when(arendeToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
             doReturn(questions).when(fragaSvarToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
 
-            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
             assertIterableEquals(expectedResult, actualResult);
         }
     }

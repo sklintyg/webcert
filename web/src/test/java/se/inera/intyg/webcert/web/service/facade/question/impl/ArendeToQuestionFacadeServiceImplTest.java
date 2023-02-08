@@ -81,7 +81,7 @@ public class ArendeToQuestionFacadeServiceImplTest {
     @InjectMocks
     private ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_ID = "certificateId";
     private Certificate certificate;
 
     @Test
