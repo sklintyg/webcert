@@ -95,7 +95,7 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
         final var arende = arendeService.getArende(question.getId());
         if (arende == null) {
             final var fragaSvarViewList = fragaSvarService.getFragaSvar(certificateId);
-            final var fragaSvar = getFragaSvarFromQuestion(question, fragaSvarViewList);
+            final var fragaSvar = getFragaSvarRelatedToQuestion(question, fragaSvarViewList);
             return getAccessEvaluationParameters(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
                 fragaSvar.getIntygsReferens().getPatientId());
         }
@@ -103,7 +103,7 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
             Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow());
     }
 
-    private static FragaSvar getFragaSvarFromQuestion(Question question, List<FragaSvarView> fragaSvarViewList) {
+    private static FragaSvar getFragaSvarRelatedToQuestion(Question question, List<FragaSvarView> fragaSvarViewList) {
         return fragaSvarViewList.stream().map(FragaSvarView::getFragaSvar)
             .filter(fraga -> fraga.getInternReferens().equals(Long.valueOf(question.getId()))).findFirst().orElseThrow();
     }
