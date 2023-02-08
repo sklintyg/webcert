@@ -45,12 +45,12 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.VARDADMIN_ALVA_ALFA_VARDCENTRAL;
 
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.LogConfig;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.mapper.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -95,8 +95,10 @@ public class NotificationServicesIT {
     private static final Integer POLL_INTERVAL = 3;
     private static final Integer WAIT_AT_MOST = 16;
     private static final Integer STATUS_UPDATE_RESULT_OK = 0;
-    private static final TypeRef<List<CertificateStatusUpdateForCareType>> LIST_NOTIFICATIONS = new TypeRef<>() { };
-    private static final TypeRef<List<IntegreradEnhetEntryWithSchemaVersion>> LIST_INTEGRATED_UNIT = new TypeRef<>() { };
+    private static final TypeRef<List<CertificateStatusUpdateForCareType>> LIST_NOTIFICATIONS = new TypeRef<>() {
+    };
+    private static final TypeRef<List<IntegreradEnhetEntryWithSchemaVersion>> LIST_INTEGRATED_UNIT = new TypeRef<>() {
+    };
     private static final ObjectMapper OBJECT_MAPPER = new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
 
     private ST requestTemplateAnswer;
@@ -173,7 +175,8 @@ public class NotificationServicesIT {
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        given()
+        testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON).body(testSetup.certificate())
             .when().post("/api/certificate/{certificateId}/sign")
@@ -229,7 +232,8 @@ public class NotificationServicesIT {
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        given()
+        testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .pathParam("certificateVersion", 1)
             .when().delete("/api/certificate/{certificateId}/{certificateVersion}")
@@ -260,7 +264,8 @@ public class NotificationServicesIT {
         revokeCertificate.setReason("Integration test for MAKULE notification");
         revokeCertificate.setMessage("Integration test for MAKULE notification");
 
-        given()
+        testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .contentType(ContentType.JSON).body(revokeCertificate)
             .when().post("/api/certificate/{certificateId}/revoke")
@@ -287,7 +292,8 @@ public class NotificationServicesIT {
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        given()
+        testSetup
+            .spec()
             .pathParam("certificateId", testSetup.certificateId())
             .when().post("/api/certificate/{certificateId}/send")
             .then().assertThat().statusCode(HttpStatus.OK.value());
@@ -375,11 +381,12 @@ public class NotificationServicesIT {
             .setup();
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var questionResponse =  sendQuestionFromCare(testSetup);
+        final var questionResponse = sendQuestionFromCare(testSetup);
         final var handleQuestionRequest = new HandleQuestionRequestDTO();
         handleQuestionRequest.setHandled(true);
 
-        given()
+        testSetup
+            .spec()
             .pathParam("questionId", questionResponse.getQuestion().getId())
             .contentType(ContentType.JSON).body(handleQuestionRequest)
             .when().post("/api/question/{questionId}/handle")
@@ -446,7 +453,8 @@ public class NotificationServicesIT {
         final var answerRequest = new AnswerRequestDTO();
         answerRequest.setMessage("This is an answer to question from recipient.");
 
-        given()
+        testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionId())
             .contentType(ContentType.JSON).body(answerRequest)
             .when().post("/api/question/{questionId}/sendanswer")
@@ -494,7 +502,8 @@ public class NotificationServicesIT {
 
         sendQuestionRequestDTO.setQuestion(question);
 
-        return given()
+        return testSetup
+            .spec()
             .pathParam("questionId", testSetup.questionDraftId())
             .contentType(ContentType.JSON).body(sendQuestionRequestDTO)
             .when().post("/api/question/{questionId}/send")
@@ -587,6 +596,7 @@ public class NotificationServicesIT {
     }
 
     private static final class CreateDraftCertificateData {
+
         public final String certificateType;
         public final String patientId;
         public final String carePersonId;
@@ -601,6 +611,7 @@ public class NotificationServicesIT {
     }
 
     private static final class SendMessageToCareData {
+
         public final String messageId;
         public final String sentTime;
         public final String certificateId;

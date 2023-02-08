@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,46 +30,15 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA_BETA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.LAUNCH_ID;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
-public class DeepIntegrationIT {
-
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
+public class DeepIntegrationIT extends BaseFacadeIT {
 
     @Test
     @DisplayName("Shall be redirected to React web client if part of pilot")
@@ -92,7 +60,8 @@ public class DeepIntegrationIT {
 
         final var queryParams = Map.of("enhet", ALFA_VARDCENTRAL);
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .redirects().follow(false)
             .pathParam("certificateId", testSetup.certificateId())
             .queryParams(queryParams)
@@ -126,7 +95,8 @@ public class DeepIntegrationIT {
 
         final var queryParams = Map.of("enhet", BETA_VARDCENTRAL);
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .redirects().follow(false)
             .pathParam("certificateId", testSetup.certificateId())
             .queryParams(queryParams)
@@ -159,7 +129,8 @@ public class DeepIntegrationIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .redirects().follow(false)
             .header("launchId", "WRONG-LAUNCH_ID")
             .when().get("/api/session-auth-check/ping")
@@ -189,7 +160,8 @@ public class DeepIntegrationIT {
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = given()
+        final var response = testSetup
+            .spec()
             .redirects().follow(false)
             .header("launchId", LAUNCH_ID)
             .when().get("/api/session-auth-check/ping")
