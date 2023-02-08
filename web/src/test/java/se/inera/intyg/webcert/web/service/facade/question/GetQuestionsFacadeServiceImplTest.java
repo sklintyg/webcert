@@ -23,12 +23,14 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.impl.ArendeToQuestionFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.question.impl.FragaSvarToQuestionFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.question.impl.GetQuestionsFacadeServiceImpl;
@@ -46,48 +48,102 @@ public class GetQuestionsFacadeServiceImplTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
 
-    @Test
-    void shallGetQuestionsFromFragaSvarToQuestionFacadeService() {
-        final var expectedResult = List.of(Question.builder().build());
+    @Nested
+    class IncludeGetQuestionsTest {
 
-        final ArrayList<Question> questions = new ArrayList<>();
-        questions.add(
-            Question.builder().build()
-        );
+        @Test
+        void shallGetQuestionsFromFragaSvarToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().build());
 
-        doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().build()
+            );
 
-        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
-        assertIterableEquals(expectedResult, actualResult);
+            doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
+
+        @Test
+        void shallGetQuestionsFromForArendeToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().build());
+
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().build()
+            );
+
+            doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
+
+        @Test
+        void shallMergeQuestionsFromForArendeToQuestionFacadeServiceAndFragaSvarToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().build(), Question.builder().build());
+
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().build()
+            );
+            doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+            doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+            final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
     }
 
-    @Test
-    void shallGetQuestionsFromForArendeToQuestionFacadeService() {
-        final var expectedResult = List.of(Question.builder().build());
+    @Nested
+    class IncludeGetComplementQuestions {
 
-        final ArrayList<Question> questions = new ArrayList<>();
-        questions.add(
-            Question.builder().build()
-        );
+        @Test
+        void shallGetComplementQuestionsFromFragaSvarToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
 
-        doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().type(QuestionType.COMPLEMENT).build()
+            );
 
-        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
-        assertIterableEquals(expectedResult, actualResult);
-    }
+            doReturn(questions).when(fragaSvarToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
 
-    @Test
-    void shallMergeQuestionsFromForArendeToQuestionFacadeServiceAndFragaSvarToQuestionFacadeService() {
-        final var expectedResult = List.of(Question.builder().build(), Question.builder().build());
+            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
 
-        final ArrayList<Question> questions = new ArrayList<>();
-        questions.add(
-            Question.builder().build()
-        );
-        doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
-        doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+        @Test
+        void shallGetComplementQuestionsFromForArendeToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
 
-        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
-        assertIterableEquals(expectedResult, actualResult);
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().type(QuestionType.COMPLEMENT).build()
+            );
+
+            doReturn(questions).when(arendeToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
+
+            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
+
+        @Test
+        void shallMergeComplementQuestionsFromForArendeToQuestionFacadeServiceAndFragaSvarToQuestionFacadeService() {
+            final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build(),
+                Question.builder().type(QuestionType.COMPLEMENT).build());
+
+            final ArrayList<Question> questions = new ArrayList<>();
+            questions.add(
+                Question.builder().type(QuestionType.COMPLEMENT).build()
+            );
+            doReturn(questions).when(arendeToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
+            doReturn(questions).when(fragaSvarToQuestionFacadeService).getComplementQuestions(CERTIFICATE_ID);
+
+            final var actualResult = GetQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+            assertIterableEquals(expectedResult, actualResult);
+        }
     }
 }
