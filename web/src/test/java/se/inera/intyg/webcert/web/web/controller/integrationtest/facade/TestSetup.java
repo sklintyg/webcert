@@ -22,11 +22,13 @@ import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Strings;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.internal.mapping.Jackson2Mapper;
 import io.restassured.mapper.ObjectMapper;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
@@ -87,6 +89,16 @@ public class TestSetup {
 
     public String csrfToken() {
         return csrfToken;
+    }
+
+    public RequestSpecification spec() {
+        final var spec = given();
+        if (!Strings.isNullOrEmpty(csrfToken)) {
+            spec
+                .cookie("XSRF-TOKEN", csrfToken)
+                .header("X-XSRF-TOKEN", csrfToken);
+        }
+        return spec;
     }
 
     public static class TestSetupBuilder {

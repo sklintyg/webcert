@@ -30,23 +30,13 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA;
 
-import io.restassured.RestAssured;
-import io.restassured.config.LogConfig;
-import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
-import io.restassured.internal.mapping.Jackson2Mapper;
-import io.restassured.mapper.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
@@ -60,34 +50,11 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateReques
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
-public class PdlIT {
+public class PdlIT extends BaseFacadeIT {
 
     private final static String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
     private final static String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
     private final static String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
-    private List<String> certificateIdsToCleanAfterTest;
-
-    @BeforeEach
-    public void setupBase() {
-        final var logConfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:8020");
-        RestAssured.config = RestAssured.config()
-            .logConfig(logConfig)
-            .sessionConfig(new SessionConfig("SESSION", null));
-        certificateIdsToCleanAfterTest = new ArrayList<>();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        certificateIdsToCleanAfterTest.forEach(certificateId ->
-            given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .delete("testability/intyg/{certificateId}")
-        );
-        RestAssured.reset();
-    }
 
     private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
         assertPdlLogMessage(expectedActivityType, certificateId, null);
@@ -121,13 +88,7 @@ public class PdlIT {
     }
 
     private int getPdlLogMessageCountFromQueue() {
-        return Integer.parseInt(
-            given().when().get("testability/logMessages/count").then().extract().response().body().asString()
-        );
-    }
-
-    private ObjectMapper getObjectMapperForDeserialization() {
-        return new Jackson2Mapper(((type, charset) -> new CustomObjectMapper()));
+        return Integer.parseInt(given().when().get("testability/logMessages/count").then().extract().response().body().asString());
     }
 
     private void incrementVersion(Certificate certificate) {
@@ -146,11 +107,13 @@ public class PdlIT {
 
             final var createUtkastRequest = new CreateUtkastRequest();
             createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
-            createUtkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).get());
+            createUtkastRequest.setPatientPersonnummer(
+                Personnummer.createPersonnummer(ATHENA_ANDERSSON.getPersonId().getId()).orElseThrow());
             createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
             createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateType", LisjpEntryPoint.MODULE_ID)
                 .contentType(ContentType.JSON)
                 .body(createUtkastRequest)
@@ -174,11 +137,13 @@ public class PdlIT {
 
             final var createUtkastRequest = new CreateUtkastRequest();
             createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
-            createUtkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(ALEXA_VALFRIDSSON.getPersonId().getId()).get());
+            createUtkastRequest.setPatientPersonnummer(
+                Personnummer.createPersonnummer(ALEXA_VALFRIDSSON.getPersonId().getId()).orElseThrow());
             createUtkastRequest.setPatientFornamn(ALEXA_VALFRIDSSON.getFirstName());
             createUtkastRequest.setPatientEfternamn(ALEXA_VALFRIDSSON.getLastName());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateType", LisjpEntryPoint.MODULE_ID)
                 .contentType(ContentType.JSON)
                 .body(createUtkastRequest)
@@ -188,7 +153,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(certificateId);
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", certificateId)
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -216,7 +182,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -245,7 +212,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -273,7 +241,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -302,7 +271,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -332,7 +302,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -343,7 +314,8 @@ public class PdlIT {
 
             incrementVersion(testSetup.certificate());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -373,7 +345,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
                 .when()
@@ -402,7 +375,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(testSetup.certificate())
@@ -429,7 +403,8 @@ public class PdlIT {
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
                 .setup();
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("version", 1)
                 .when()
@@ -463,7 +438,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -491,7 +467,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -518,7 +495,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when().post("api/certificate/{certificateId}/send")
                 .then()
@@ -544,7 +522,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
                 .when()
@@ -572,7 +551,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .expect().statusCode(200)
                 .when().post("api/certificate/{certificateId}/renew")
@@ -600,7 +580,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
@@ -633,7 +614,8 @@ public class PdlIT {
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
             certificateIdsToCleanAfterTest.add(draftId);
 
-            final var response = given()
+            final var response = testSetup
+                .spec()
                 .pathParam("certificateId", draftId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
@@ -669,7 +651,8 @@ public class PdlIT {
             final var complementCertificateRequestDTO = new ComplementCertificateRequestDTO();
             complementCertificateRequestDTO.setMessage("");
 
-            final var newCertificate = given()
+            final var newCertificate = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(complementCertificateRequestDTO)
@@ -704,7 +687,8 @@ public class PdlIT {
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -738,7 +722,8 @@ public class PdlIT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
@@ -771,7 +756,8 @@ public class PdlIT {
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .when()
                 .get("api/certificate/{certificateId}")
@@ -802,7 +788,8 @@ public class PdlIT {
             newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
             newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
 
-            final var certificateId = given()
+            final var certificateId = testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(newCertificateRequestDTO)
@@ -836,7 +823,8 @@ public class PdlIT {
             revokeCertificateRequest.setReason("Reason");
             revokeCertificateRequest.setMessage("Message");
 
-            given()
+            testSetup
+                .spec()
                 .pathParam("certificateId", testSetup.certificateId())
                 .contentType(ContentType.JSON)
                 .body(revokeCertificateRequest)
@@ -857,7 +845,7 @@ public class PdlIT {
         createUtkastRequest.setPatientFornamn(ATHENA_ANDERSSON.getFirstName());
         createUtkastRequest.setPatientEfternamn(ATHENA_ANDERSSON.getLastName());
 
-        final var draftId = given()
+        return given()
             .pathParam("certificateType", Ag7804EntryPoint.MODULE_ID)
             .contentType(ContentType.JSON)
             .body(createUtkastRequest)
@@ -865,7 +853,5 @@ public class PdlIT {
             .when()
             .post("api/utkast/{certificateType}")
             .then().extract().path("intygsId").toString();
-
-        return draftId;
     }
 }
