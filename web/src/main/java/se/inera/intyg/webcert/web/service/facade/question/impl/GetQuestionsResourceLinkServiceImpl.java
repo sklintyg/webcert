@@ -34,7 +34,6 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -46,17 +45,15 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
     private final ArendeService arendeService;
     private final HsaOrganizationsService hsaOrganizationsService;
-    private final FragaSvarService fragaSvarService;
 
     @Autowired
     public GetQuestionsResourceLinkServiceImpl(GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
         CertificateAccessServiceHelper certificateAccessServiceHelper,
-        ArendeService arendeService, HsaOrganizationsService hsaOrganizationsService, FragaSvarService fragaSvarService) {
+        ArendeService arendeService, HsaOrganizationsService hsaOrganizationsService) {
         this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
         this.arendeService = arendeService;
         this.hsaOrganizationsService = hsaOrganizationsService;
-        this.fragaSvarService = fragaSvarService;
     }
 
     @Override
