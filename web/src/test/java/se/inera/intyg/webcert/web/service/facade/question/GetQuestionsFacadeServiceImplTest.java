@@ -18,7 +18,76 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question;
 
-public class GetQuestionsFacadeServiceImplTest {
-    
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.mockito.Mockito.doReturn;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.service.facade.question.impl.ArendeToQuestionFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.impl.FragaSvarToQuestionFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.question.impl.GetQuestionsFacadeServiceImpl;
+
+@ExtendWith(MockitoExtension.class)
+public class GetQuestionsFacadeServiceImplTest {
+
+    @Mock
+    private ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService;
+    @Mock
+    private FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
+
+    @InjectMocks
+    private GetQuestionsFacadeServiceImpl GetQuestionsFacadeServiceImpl;
+
+    private static final String CERTIFICATE_ID = "certificateId";
+
+    @Test
+    void shallGetQuestionsFromFragaSvarToQuestionFacadeService() {
+        final var expectedResult = List.of(Question.builder().build());
+
+        final ArrayList<Question> questions = new ArrayList<>();
+        questions.add(
+            Question.builder().build()
+        );
+
+        doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+        assertIterableEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void shallGetQuestionsFromForArendeToQuestionFacadeService() {
+        final var expectedResult = List.of(Question.builder().build());
+
+        final ArrayList<Question> questions = new ArrayList<>();
+        questions.add(
+            Question.builder().build()
+        );
+
+        doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+        assertIterableEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void shallMergeQuestionsFromForArendeToQuestionFacadeServiceAndFragaSvarToQuestionFacadeService() {
+        final var expectedResult = List.of(Question.builder().build(), Question.builder().build());
+
+        final ArrayList<Question> questions = new ArrayList<>();
+        questions.add(
+            Question.builder().build()
+        );
+        doReturn(questions).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+        doReturn(questions).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+        final var actualResult = GetQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+        assertIterableEquals(expectedResult, actualResult);
+    }
 }

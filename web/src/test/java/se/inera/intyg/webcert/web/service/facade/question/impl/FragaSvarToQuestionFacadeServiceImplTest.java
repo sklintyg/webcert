@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.question.Complement;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.facade.question.util.FragaSvarToQuestionConverter;
@@ -69,15 +68,6 @@ class FragaSvarToQuestionFacadeServiceImplTest {
         assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
     }
 
-    @Test
-    void shallIncludeEmptyComplements() {
-        setupMockToReturnComplements();
-
-        final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
-
-        assertEquals(0, actualQuestions.get(0).getComplements().length, "Expect three question to be returned");
-    }
-
     private void setupMockToReturnQuestions() {
         doReturn(
             List.of(FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar())))
@@ -85,17 +75,6 @@ class FragaSvarToQuestionFacadeServiceImplTest {
             .getFragaSvar(CERTIFICATE_ID);
 
         doReturn(Question.builder().build())
-            .when(fragaSvarToQuestionConverter)
-            .convert(any(FragaSvar.class));
-    }
-
-    private void setupMockToReturnComplements() {
-        doReturn(
-            List.of(FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar())))
-            .when(fragaSvarService)
-            .getFragaSvar(CERTIFICATE_ID);
-
-        doReturn(Question.builder().complements(new Complement[0]).build())
             .when(fragaSvarToQuestionConverter)
             .convert(any(FragaSvar.class));
     }

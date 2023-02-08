@@ -19,10 +19,11 @@
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
 import static java.util.Comparator.comparing;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getAuthor;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getLastUpdate;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getType;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -74,28 +75,6 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
                     getAnswersByCertificate(fragaSvar.getIntygsReferens().getIntygsId(),
                         fragaSvar.getKompletteringar())) : null)
             .build();
-    }
-
-    private LocalDateTime getLastUpdate(FragaSvar fragaSvar) {
-        if (fragaSvar.getSvarSkickadDatum() != null) {
-            return fragaSvar.getSvarSkickadDatum();
-        } else {
-            return fragaSvar.getFrageSkickadDatum();
-        }
-    }
-
-    private String getAuthor(String frageStallare, String vardpersonn) {
-        if (frageStallare == null) {
-            return null;
-        }
-        switch (frageStallare) {
-            case "FK":
-                return "Försäkringskassan";
-            case "WC":
-                return vardpersonn;
-            default:
-                return null;
-        }
     }
 
     private Complement[] getComplements(FragaSvar fragaSvar) {

@@ -51,8 +51,7 @@ public class FragaSvarToQuestionFacadeServiceImpl implements GetQuestionsFacadeS
 
     @Override
     public List<Question> getQuestions(String certificateId) {
-        final var fragaSvarView = fragaSvarService.getFragaSvar(certificateId);
-        return fragaSvarView.stream()
+        return fragaSvarService.getFragaSvar(certificateId).stream()
             .map(fragaSvarViewElem -> fragaSvarToQuestionConverter.convert(fragaSvarViewElem.getFragaSvar()))
             .collect(Collectors.toList());
     }

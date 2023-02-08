@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
+import java.time.LocalDateTime;
 import java.util.function.Predicate;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -159,5 +160,27 @@ public final class QuestionUtil {
 
     public static Predicate<Arende> isReminder() {
         return arende -> arende.getPaminnelseMeddelandeId() != null && !arende.getPaminnelseMeddelandeId().isBlank();
+    }
+
+    public static String getAuthor(String frageStallare, String vardperson) {
+        if (frageStallare == null) {
+            return null;
+        }
+        switch (frageStallare) {
+            case "FK":
+                return "Försäkringskassan";
+            case "WC":
+                return vardperson;
+            default:
+                return null;
+        }
+    }
+
+    public static LocalDateTime getLastUpdate(FragaSvar fragaSvar) {
+        if (fragaSvar.getSvarSkickadDatum() != null) {
+            return fragaSvar.getSvarSkickadDatum();
+        } else {
+            return fragaSvar.getFrageSkickadDatum();
+        }
     }
 }

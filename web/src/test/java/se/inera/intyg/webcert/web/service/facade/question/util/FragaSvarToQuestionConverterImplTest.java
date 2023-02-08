@@ -24,9 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -34,9 +37,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -45,8 +55,11 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 @ExtendWith(MockitoExtension.class)
 class FragaSvarToQuestionConverterImplTest {
 
+    private static final String CERTIFICATE_ID = "certificateId";
+
     @Mock
-    GetCertificateFacadeService getCertificateFacadeService;
+    private GetCertificateFacadeService getCertificateFacadeService;
+
     private FragaSvarToQuestionConverterImpl fragaSvarToQuestionConverter;
     private FragaSvar fragaSvar;
 
@@ -57,7 +70,11 @@ class FragaSvarToQuestionConverterImplTest {
         final var vardperson = new Vardperson();
         vardperson.setNamn("namn");
         fragaSvar.setVardperson(vardperson);
-        fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl(null);
+        fragaSvar.setKompletteringar(Collections.emptySet());
+        final var intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsId(CERTIFICATE_ID);
+        fragaSvar.setIntygsReferens(intygsReferens);
+        fragaSvarToQuestionConverter = new FragaSvarToQuestionConverterImpl(getCertificateFacadeService);
     }
 
     @Test
@@ -301,11 +318,107 @@ class FragaSvarToQuestionConverterImplTest {
         assertTrue(actualQuestions.isForwarded());
     }
 
-    @Test
-    void shallIncludeAnsweredByCertificate() {
-        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
-        fragaSvar.setKompletteringar(kompletteringTestSetup());
-        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+    @Nested
+    class IncludeAnsweredByCertificateTests {
+
+        @Test
+        void shallIncludeAnsweredByCertificate() {
+            fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+            fragaSvar.setKompletteringar(kompletteringTestSetup());
+
+            Certificate certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .relations(
+                        CertificateRelations.builder()
+                            .children(
+                                new CertificateRelation[]{
+                                    CertificateRelation.builder()
+                                        .type(CertificateRelationType.COMPLEMENTED)
+                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .status(CertificateStatus.SIGNED)
+                                        .build()
+                                }
+                            ).build()
+                    )
+                    .build()
+            );
+
+            fragaSvar.setSvarSkickadDatum(LocalDateTime.now());
+
+            doReturn(certificate)
+                .when(getCertificateFacadeService)
+                .getCertificate(CERTIFICATE_ID, false);
+
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+            assertNotNull(actualQuestions.getAnsweredByCertificate());
+        }
+
+        @Test
+        void shallNotIncludeAnsweredByCertificateIfChildrenHasStatusRevoked() {
+            fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+            fragaSvar.setKompletteringar(kompletteringTestSetup());
+
+            Certificate certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .relations(
+                        CertificateRelations.builder()
+                            .children(
+                                new CertificateRelation[]{
+                                    CertificateRelation.builder()
+                                        .type(CertificateRelationType.COMPLEMENTED)
+                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .status(CertificateStatus.REVOKED)
+                                        .build()
+                                }
+                            ).build()
+                    )
+                    .build()
+            );
+
+            fragaSvar.setSvarSkickadDatum(LocalDateTime.now());
+
+            doReturn(certificate)
+                .when(getCertificateFacadeService)
+                .getCertificate(CERTIFICATE_ID, false);
+
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+            assertNull(actualQuestions.getAnsweredByCertificate());
+        }
+
+        @Test
+        void shallNotIncludeAnsweredByCertificateIfChildrenWasCreatedBeforeSvarWasSent() {
+            fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+            fragaSvar.setKompletteringar(kompletteringTestSetup());
+
+            Certificate certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .relations(
+                        CertificateRelations.builder()
+                            .children(
+                                new CertificateRelation[]{
+                                    CertificateRelation.builder()
+                                        .type(CertificateRelationType.COMPLEMENTED)
+                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .status(CertificateStatus.REVOKED)
+                                        .build()
+                                }
+                            ).build()
+                    )
+                    .build()
+            );
+
+            fragaSvar.setSvarSkickadDatum(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
+
+            doReturn(certificate)
+                .when(getCertificateFacadeService)
+                .getCertificate(CERTIFICATE_ID, false);
+
+            final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+            assertNull(actualQuestions.getAnsweredByCertificate());
+        }
     }
 
     private Set<Komplettering> kompletteringTestSetup() {
