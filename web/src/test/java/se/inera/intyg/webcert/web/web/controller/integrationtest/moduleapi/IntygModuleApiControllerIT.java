@@ -26,21 +26,17 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -198,7 +194,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         spec()
             .redirects().follow(false)
             .expect().statusCode(HttpServletResponse.SC_FOUND)
-            .when().get("logout");
+            .when().post("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -226,7 +222,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         spec()
             .redirects().follow(false)
             .expect().statusCode(HttpServletResponse.SC_FOUND)
-            .when().get("logout");
+            .when().post("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -386,7 +382,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         spec()
             .redirects().follow(false)
             .expect().statusCode(HttpServletResponse.SC_FOUND)
-            .when().get("logout");
+            .when().post("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
