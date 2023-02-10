@@ -20,35 +20,49 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 
 @Service(value = "GetQuestionsFacadeServiceImpl")
 public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
 
-    private final ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService;
-
-    private final FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
+    private final IntygService intygService;
+    private final GetQuestionsFacadeService arendeToQuestionFacadeService;
+    private final GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
 
     @Autowired
-    public GetQuestionsFacadeServiceImpl(ArendeToQuestionFacadeServiceImpl arendeToQuestionFacadeService,
-        FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService) {
+    public GetQuestionsFacadeServiceImpl(
+        IntygService intygService,
+        @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
+        @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
+        this.intygService = intygService;
         this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
         this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;
     }
 
     @Override
-    public List<Question> getComplementQuestions(String certificateId) {
-        final var complementQuestions = arendeToQuestionFacadeService.getComplementQuestions(certificateId);
-        complementQuestions.addAll(fragaSvarToQuestionFacadeService.getComplementQuestions(certificateId));
-        return complementQuestions;
+    public List<Question> getQuestions(String certificateId) {
+        if (useFragaSvarToQuestion(certificateId)) {
+            return fragaSvarToQuestionFacadeService.getQuestions(certificateId);
+        }
+        return arendeToQuestionFacadeService.getQuestions(certificateId);
     }
 
     @Override
-    public List<Question> getQuestions(String certificateId) {
-        var questions = arendeToQuestionFacadeService.getQuestions(certificateId);
-        questions.addAll(fragaSvarToQuestionFacadeService.getQuestions(certificateId));
-        return questions;
+    public List<Question> getComplementQuestions(String certificateId) {
+        if (useFragaSvarToQuestion(certificateId)) {
+            return fragaSvarToQuestionFacadeService.getComplementQuestions(certificateId);
+        }
+        return arendeToQuestionFacadeService.getComplementQuestions(certificateId);
+    }
+
+    private boolean useFragaSvarToQuestion(String certificateId) {
+        return Fk7263EntryPoint.MODULE_ID.equals(
+            intygService.getIntygTypeInfo(certificateId).getIntygType()
+        );
     }
 }

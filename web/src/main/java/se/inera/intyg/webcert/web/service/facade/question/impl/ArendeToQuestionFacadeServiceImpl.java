@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeServ
 import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConverter;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
-@Service(value = "ArendeToQuestionFacadeServiceImpl")
+@Service(value = "ArendeToQuestionFacadeService")
 public class ArendeToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
     private final ArendeService arendeService;

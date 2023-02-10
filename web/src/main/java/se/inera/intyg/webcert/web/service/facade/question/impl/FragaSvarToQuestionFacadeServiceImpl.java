@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeServ
 import se.inera.intyg.webcert.web.service.facade.question.util.FragaSvarToQuestionConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 
-@Service(value = "FragaSvarToQuestionFacadeServiceImpl")
+@Service(value = "FragaSvarToQuestionFacadeService")
 public class FragaSvarToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
     private final FragaSvarService fragaSvarService;
