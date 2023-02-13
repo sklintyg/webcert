@@ -18,11 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
+import java.time.LocalDateTime;
 import java.util.function.Predicate;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 
 public final class QuestionUtil {
 
@@ -52,6 +56,27 @@ public final class QuestionUtil {
         }
     }
 
+    public static QuestionType getType(Amne amne) {
+        if (amne == null) {
+            return null;
+        }
+        switch (amne) {
+            case AVSTAMNINGSMOTE:
+            case PAMINNELSE:
+            case ARBETSTIDSFORLAGGNING:
+            case MAKULERING_AV_LAKARINTYG:
+                return QuestionType.COORDINATION;
+            case KONTAKT:
+                return QuestionType.CONTACT;
+            case OVRIGT:
+                return QuestionType.OTHER;
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return QuestionType.COMPLEMENT;
+            default:
+                throw new IllegalArgumentException("The type is not supported: " + amne);
+        }
+    }
+
     public static String getSubject(Arende arende) {
         final var subjectBuilder = new StringBuilder();
         subjectBuilder.append(arende.getAmne().getDescription());
@@ -60,6 +85,57 @@ public final class QuestionUtil {
             subjectBuilder.append(arende.getRubrik());
         }
         return subjectBuilder.toString();
+    }
+
+    public static String getSubject(FragaSvar fragaSvar) {
+        if (fragaSvar.getAmne() == null) {
+            return null;
+        }
+        final var subjectBuilder = new StringBuilder();
+        subjectBuilder.append(getSubjectAsString(fragaSvar.getAmne()));
+        if (fragaSvar.getMeddelandeRubrik() != null && !fragaSvar.getMeddelandeRubrik().isBlank()) {
+            subjectBuilder.append(" - ");
+            subjectBuilder.append(fragaSvar.getMeddelandeRubrik());
+        }
+        return subjectBuilder.toString();
+    }
+
+    public static String getMessage(FragaSvar fragaSvar) {
+        final var frageText = fragaSvar.getFrageText();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(frageText);
+
+        final var kompletteringar = fragaSvar.getKompletteringar();
+        if (kompletteringar == null || kompletteringar.isEmpty()) {
+            return stringBuilder.toString();
+        }
+
+        for (Komplettering komplettering : kompletteringar) {
+            stringBuilder.append("\n\n").append(komplettering.getFalt()).append("\n\n").append(komplettering.getText());
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private static String getSubjectAsString(Amne amne) {
+        switch (amne) {
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return "Komplettering";
+            case MAKULERING_AV_LAKARINTYG:
+                return "Makulering";
+            case AVSTAMNINGSMOTE:
+                return "Avstämningsmöte";
+            case KONTAKT:
+                return "Kontakt";
+            case ARBETSTIDSFORLAGGNING:
+                return "Arbetstidsförläggning";
+            case PAMINNELSE:
+                return "Påminnelse";
+            case OVRIGT:
+                return "Övrigt";
+            default:
+                throw new IllegalArgumentException("The type is not supported: " + amne);
+        }
     }
 
     public static String getSubjectAsString(QuestionType type) {
@@ -102,5 +178,27 @@ public final class QuestionUtil {
 
     public static Predicate<Arende> isReminder() {
         return arende -> arende.getPaminnelseMeddelandeId() != null && !arende.getPaminnelseMeddelandeId().isBlank();
+    }
+
+    public static String getAuthor(String frageStallare, String vardperson) {
+        if (frageStallare == null) {
+            return null;
+        }
+        switch (frageStallare) {
+            case "FK":
+                return "Försäkringskassan";
+            case "WC":
+                return vardperson;
+            default:
+                return null;
+        }
+    }
+
+    public static LocalDateTime getLastUpdate(FragaSvar fragaSvar) {
+        if (fragaSvar.getSvarSkickadDatum() != null) {
+            return fragaSvar.getSvarSkickadDatum();
+        } else {
+            return fragaSvar.getFrageSkickadDatum();
+        }
     }
 }

@@ -38,11 +38,12 @@ public interface FragaSvarService {
 
     FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
 
-
     /**
      * Returns all the question/answer pairs that exist for the given certificate.
      */
     List<FragaSvarView> getFragaSvar(String intygId);
+
+    FragaSvar getFragaSvarById(Long fragaSvarId);
 
     /**
      * Create an answer for an existing question.

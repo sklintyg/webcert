@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -45,15 +46,17 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
     private final ArendeService arendeService;
     private final HsaOrganizationsService hsaOrganizationsService;
+    private final FragaSvarService fragaSvarService;
 
     @Autowired
     public GetQuestionsResourceLinkServiceImpl(GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
         CertificateAccessServiceHelper certificateAccessServiceHelper,
-        ArendeService arendeService, HsaOrganizationsService hsaOrganizationsService) {
+        ArendeService arendeService, HsaOrganizationsService hsaOrganizationsService, FragaSvarService fragaSvarService) {
         this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
         this.arendeService = arendeService;
         this.hsaOrganizationsService = hsaOrganizationsService;
+        this.fragaSvarService = fragaSvarService;
     }
 
     @Override
@@ -78,20 +81,39 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
 
     @Override
     public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions) {
-        return questions.stream()
-            .collect(Collectors.toMap(Function.identity(), this::get));
+        final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
+        for (Question question : questions) {
+            final var resourceLinkDTOS = get(question);
+            questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
+        }
+        return questionResourceLinkDTOHashMap;
     }
 
     private AccessEvaluationParameters createAccessEvaluationParameters(Question question) {
         final var arende = arendeService.getArende(question.getId());
-        final var careProviderId = hsaOrganizationsService.getVardgivareOfVardenhet(arende.getEnhetId());
-        return AccessEvaluationParameters.create(
+        if (arende == null) {
+            final var fragaSvar = fragaSvarService.getFragaSvarById(Long.parseLong(question.getId()));
+            return getAccessEvaluationParameters(
+                fragaSvar.getVardperson().getEnhetsId(),
+                fragaSvar.getIntygsReferens().getIntygsTyp(),
+                fragaSvar.getIntygsReferens().getPatientId()
+            );
+        }
+        return getAccessEvaluationParameters(
+            arende.getEnhetId(),
             arende.getIntygTyp(),
-            null,
-            UtkastUtil.getCareUnit(careProviderId, arende.getEnhetId()),
-            Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow(),
-            false
+            Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow()
         );
+    }
+
+    private AccessEvaluationParameters getAccessEvaluationParameters(String unitId, String certificateType, Personnummer patientId) {
+        final var careProviderId = hsaOrganizationsService.getVardgivareOfVardenhet(unitId);
+        return AccessEvaluationParameters.create(
+            certificateType,
+            null,
+            UtkastUtil.getCareUnit(careProviderId, unitId),
+            patientId,
+            false);
     }
 
     private Map<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck> getAccessFunctions() {
