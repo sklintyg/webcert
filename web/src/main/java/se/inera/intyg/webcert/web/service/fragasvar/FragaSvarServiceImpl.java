@@ -254,6 +254,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    public FragaSvar getFragaSvarById(Long fragaSvarId) {
+        return lookupFragaSvar(fragaSvarId);
+    }
+
+    @Override
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
 
         // Input sanity check

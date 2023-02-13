@@ -89,7 +89,7 @@ public class QuestionController {
         }
 
         final var questions = getQuestionsFacadeService.getQuestions(certificateId);
-        final var links = getQuestionsResourceLinkService.get(questions, certificateId);
+        final var links = getQuestionsResourceLinkService.get(questions);
         return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
     }
 
@@ -134,7 +134,7 @@ public class QuestionController {
             createQuestionRequest.getMessage()
         );
 
-        final var links = getQuestionsResourceLinkService.get(question, null);
+        final var links = getQuestionsResourceLinkService.get(question);
         return Response.ok(QuestionResponseDTO.create(question, links)).build();
     }
 
@@ -148,7 +148,7 @@ public class QuestionController {
         }
 
         final var savedQuestion = saveQuestionFacadeService.save(saveQuestionRequest.getQuestion());
-        final var links = getQuestionsResourceLinkService.get(savedQuestion, null);
+        final var links = getQuestionsResourceLinkService.get(savedQuestion);
         return Response.ok(QuestionResponseDTO.create(savedQuestion, links)).build();
     }
 
@@ -162,7 +162,7 @@ public class QuestionController {
         }
 
         final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
-        final var links = getQuestionsResourceLinkService.get(question, null);
+        final var links = getQuestionsResourceLinkService.get(question);
         return Response.ok(QuestionResponseDTO.create(question, links)).build();
     }
 
@@ -176,7 +176,7 @@ public class QuestionController {
         }
 
         final var questionWithSavedAnswer = saveQuestionAnswerFacadeService.save(questionId, answerRequestDTO.getMessage());
-        final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer, null);
+        final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer, links)).build();
     }
 
@@ -190,7 +190,7 @@ public class QuestionController {
         }
 
         final var questionWithDeletedAnswer = deleteQuestionAnswerFacadeService.delete(questionId);
-        final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer, null);
+        final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
     }
 
@@ -204,7 +204,7 @@ public class QuestionController {
         }
 
         final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
-        final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer, null);
+        final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
     }
 
@@ -218,7 +218,7 @@ public class QuestionController {
         }
 
         final var handledQuestion = handleQuestionFacadeService.handle(questionId, handleQuestionRequestDTO.isHandled());
-        final var links = getQuestionsResourceLinkService.get(handledQuestion, null);
+        final var links = getQuestionsResourceLinkService.get(handledQuestion);
         return Response.ok(QuestionResponseDTO.create(handledQuestion, links)).build();
     }
 }

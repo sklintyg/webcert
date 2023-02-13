@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -46,7 +46,6 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -70,23 +69,22 @@ class GetQuestionsResourceLinkServiceImplTest {
     @InjectMocks
     private GetQuestionsResourceLinkServiceImpl getQuestionsResourceLinkService;
 
-    private static String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_ID = "certificateId";
     private Question question;
     private ResourceLinkDTO resourceLinkDTO;
-    private AccessEvaluationParameters accessEvaluationParameters;
 
     @Test
     void shallIncludeNoLinksIfQuestionDraft() {
         question = Question.builder().id("questionId").build();
-        final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
-        assertTrue(actualLinks.size() == 0, "Links should be empty");
+        final var actualLinks = getQuestionsResourceLinkService.get(question);
+        assertEquals(0, actualLinks.size(), "Links should be empty");
     }
 
     @Test
     void shallIncludeNoLinksIfListHaveQuestionDraft() {
         question = Question.builder().id("questionId").build();
-        final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
-        assertTrue(actualLinks.get(question).size() == 0, "Links should be empty");
+        final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+        assertEquals(0, actualLinks.get(question).size(), "Links should be empty");
     }
 
     @Nested
@@ -111,7 +109,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
         }
@@ -122,7 +120,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
         }
@@ -133,7 +131,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -144,7 +142,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -157,7 +155,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
@@ -169,7 +167,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
@@ -181,7 +179,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -193,7 +191,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -204,10 +202,10 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
             doReturn(null).when(arendeService).getArende(question.getId());
 
-            final var fragaSvarViewMock = getFragaSvarViewsMock();
-            doReturn(fragaSvarViewMock).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -217,10 +215,10 @@ class GetQuestionsResourceLinkServiceImplTest {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var fragaSvarViewMock = getFragaSvarViewsMock();
-            doReturn(fragaSvarViewMock).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(question, CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -248,7 +246,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
         }
@@ -259,7 +257,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
         }
@@ -270,7 +268,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -281,7 +279,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -293,7 +291,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
@@ -305,7 +303,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
         }
@@ -317,7 +315,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -329,7 +327,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -340,10 +338,10 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
             doReturn(null).when(arendeService).getArende(question.getId());
 
-            final var fragaSvarViewMock = getFragaSvarViewsMock();
-            doReturn(fragaSvarViewMock).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
         }
@@ -353,10 +351,10 @@ class GetQuestionsResourceLinkServiceImplTest {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-            final var fragaSvarViewMock = getFragaSvarViewsMock();
-            doReturn(fragaSvarViewMock).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question), CERTIFICATE_ID);
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
             assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
@@ -379,7 +377,7 @@ class GetQuestionsResourceLinkServiceImplTest {
             .orElse(null);
     }
 
-    private List<FragaSvarView> getFragaSvarViewsMock() {
+    private FragaSvar getFragaSvar() {
         final var fragaSvar = new FragaSvar();
         final var intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(CERTIFICATE_ID);
@@ -389,7 +387,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         fragaSvar.setVardperson(vardperson);
         fragaSvar.setIntygsReferens(intygsReferens);
         fragaSvar.setInternReferens(123L);
-        return List.of(FragaSvarView.create(fragaSvar));
+        return fragaSvar;
     }
 
     private void getArendeMocksAndStubber() {

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -37,7 +36,6 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableF
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -62,12 +60,12 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     }
 
     @Override
-    public List<ResourceLinkDTO> get(Question question, String certificateId) {
+    public List<ResourceLinkDTO> get(Question question) {
         if (question.getSent() == null) {
             return Collections.emptyList();
         }
 
-        final var accessEvaluationParameters = createAccessEvaluationParameters(question, certificateId);
+        final var accessEvaluationParameters = createAccessEvaluationParameters(question);
         final var availableFunctions = getQuestionsAvailableFunctionsService.get(question);
         final var functions = getAccessFunctions();
         return availableFunctions.stream()
@@ -82,30 +80,30 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     }
 
     @Override
-    public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions, String certificateId) {
+    public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions) {
         final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
         for (Question question : questions) {
-            final var resourceLinkDTOS = get(question, certificateId);
+            final var resourceLinkDTOS = get(question);
             questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
         }
         return questionResourceLinkDTOHashMap;
     }
 
-    private AccessEvaluationParameters createAccessEvaluationParameters(Question question, String certificateId) {
+    private AccessEvaluationParameters createAccessEvaluationParameters(Question question) {
         final var arende = arendeService.getArende(question.getId());
         if (arende == null) {
-            final var fragaSvarViewList = fragaSvarService.getFragaSvar(certificateId);
-            final var fragaSvar = getFragaSvarRelatedToQuestion(question, fragaSvarViewList);
-            return getAccessEvaluationParameters(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
-                fragaSvar.getIntygsReferens().getPatientId());
+            final var fragaSvar = fragaSvarService.getFragaSvarById(Long.parseLong(question.getId()));
+            return getAccessEvaluationParameters(
+                fragaSvar.getVardperson().getEnhetsId(),
+                fragaSvar.getIntygsReferens().getIntygsTyp(),
+                fragaSvar.getIntygsReferens().getPatientId()
+            );
         }
-        return getAccessEvaluationParameters(arende.getEnhetId(), arende.getIntygTyp(),
-            Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow());
-    }
-
-    private static FragaSvar getFragaSvarRelatedToQuestion(Question question, List<FragaSvarView> fragaSvarViewList) {
-        return fragaSvarViewList.stream().map(FragaSvarView::getFragaSvar)
-            .filter(fraga -> fraga.getInternReferens().equals(Long.valueOf(question.getId()))).findFirst().orElseThrow();
+        return getAccessEvaluationParameters(
+            arende.getEnhetId(),
+            arende.getIntygTyp(),
+            Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow()
+        );
     }
 
     private AccessEvaluationParameters getAccessEvaluationParameters(String unitId, String certificateType, Personnummer patientId) {
