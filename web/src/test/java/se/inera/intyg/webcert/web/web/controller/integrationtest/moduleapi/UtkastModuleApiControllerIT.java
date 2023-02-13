@@ -98,7 +98,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
             .expect().statusCode(HTTP_FOUND)
-            .when().get("logout");
+            .when().post("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -345,7 +345,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
             .then()
             .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
-            .body("version",  equalTo(0));
+            .body("version", equalTo(0));
     }
 
     @Test
@@ -379,7 +379,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
             .then()
             .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
-            .body("version",  equalTo(0));
+            .body("version", equalTo(0));
     }
 
     @Test
@@ -409,7 +409,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
             .then()
             .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
-            .body("version",  equalTo(0));
+            .body("version", equalTo(0));
     }
 
     @Test
