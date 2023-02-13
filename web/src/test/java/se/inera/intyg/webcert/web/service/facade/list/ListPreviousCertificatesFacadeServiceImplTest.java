@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType.CERTIFICATE_TYPE_NAME;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cache.Cache;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -47,7 +45,6 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterTextV
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.previous.CertificateForPatientService;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -60,10 +57,6 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 class ListPreviousCertificatesFacadeServiceImplTest {
 
     @Mock
-    private Cache redisCachePrevious;
-    @Mock
-    private ObjectMapper objectMapper;
-    @Mock
     private WebCertUserService webCertUserService;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
@@ -73,9 +66,6 @@ class ListPreviousCertificatesFacadeServiceImplTest {
 
     @Mock
     private GetStaffInfoFacadeService getStaffInfoFacadeService;
-
-    @Mock
-    private IntygService intygService;
 
     @Mock
     private ResourceLinkHelper resourceLinkListHelper;
