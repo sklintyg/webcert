@@ -77,9 +77,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
             CertificateListItemStatus.REPLACED.getName(), CertificateListItemStatus.COMPLEMENTED.getName());
     private static final List<UtkastStatus> ALL_DRAFTS =
         Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.SIGNED);
-    private static final String CHARSET_NAME = "UTF-8";
     private static final String ALGORITHM = "SHA-1";
-    private static final int BINARY_VALUE = 0xff;
 
     private final WebCertUserService webCertUserService;
     private final LogService logService;
