@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -120,7 +121,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
      */
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
-        UserService userService, GetQuestionsFacadeService getQuestionsFacadeService,
+        UserService userService, @Qualifier("GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFacadeService,
         CertificateSignConfirmationFunction certificateSignConfirmationFunction,
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
@@ -506,7 +507,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.PRINT_CERTIFICATE,
                     PRINT_NAME,
-                    certificate.getMetadata().getStatus() == CertificateStatus.SIGNED ? PRINT_CERTIFICATE_DESCRIPTION
+                    certificate.getMetadata().getStatus() == SIGNED ? PRINT_CERTIFICATE_DESCRIPTION
                         : PRINT_DRAFT_DESCRIPTION,
                     true
                 );
@@ -515,7 +516,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.PRINT_CERTIFICATE,
                     PRINT_NAME,
-                    certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED ? PRINT_DRAFT_DESCRIPTION
+                    certificate.getMetadata().getStatus() == UNSIGNED ? PRINT_DRAFT_DESCRIPTION
                         : PRINT_CERTIFICATE_DESCRIPTION,
                     PRINT_PROTECTED_PERSON_BODY,
                     true

@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
@@ -57,6 +58,7 @@ public class QuestionController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
+    @Qualifier(value = "GetQuestionsFacadeServiceImpl")
     private GetQuestionsFacadeService getQuestionsFacadeService;
     @Autowired
     private DeleteQuestionFacadeService deleteQuestionFacadeService;

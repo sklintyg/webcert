@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -38,10 +38,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -59,26 +63,28 @@ class GetQuestionsResourceLinkServiceImplTest {
 
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
+    @Mock
+    private FragaSvarService fragaSvarService;
 
     @InjectMocks
     private GetQuestionsResourceLinkServiceImpl getQuestionsResourceLinkService;
 
+    private static final String CERTIFICATE_ID = "certificateId";
     private Question question;
     private ResourceLinkDTO resourceLinkDTO;
-    private AccessEvaluationParameters accessEvaluationParameters;
 
     @Test
     void shallIncludeNoLinksIfQuestionDraft() {
         question = Question.builder().id("questionId").build();
         final var actualLinks = getQuestionsResourceLinkService.get(question);
-        assertTrue(actualLinks.size() == 0, "Links should be empty");
+        assertEquals(0, actualLinks.size(), "Links should be empty");
     }
 
     @Test
     void shallIncludeNoLinksIfListHaveQuestionDraft() {
         question = Question.builder().id("questionId").build();
         final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-        assertTrue(actualLinks.get(question).size() == 0, "Links should be empty");
+        assertEquals(0, actualLinks.get(question).size(), "Links should be empty");
     }
 
     @Nested
@@ -87,7 +93,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @BeforeEach
         void setUp() {
             question = Question.builder()
-                .id("questionId")
+                .id("123")
                 .sent(LocalDateTime.now())
                 .build();
             resourceLinkDTO = new ResourceLinkDTO();
@@ -95,23 +101,12 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(Collections.singletonList(resourceLinkDTO))
                 .when(getQuestionsAvailableFunctionsService)
                 .get(question);
-
-            final var arende = new Arende();
-            arende.setEnhetId("unitId");
-            arende.setPatientPersonId("191212121212");
-            doReturn(arende)
-                .when(arendeService)
-                .getArende(question.getId());
-
-            final var careProviderId = "careProviderId";
-            doReturn(careProviderId)
-                .when(hsaOrganizationsService)
-                .getVardgivareOfVardenhet(arende.getEnhetId());
         }
 
         @Test
         void shallIncludeAnswerQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(question);
@@ -122,6 +117,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeAnswerQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(question);
@@ -132,6 +128,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeHandleQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(question);
@@ -142,6 +139,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeHandleQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(question);
@@ -153,6 +151,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -164,6 +163,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -175,6 +175,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeCannotComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -186,8 +187,36 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeCannotComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeHandleQuestionFragaSvar() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+            doReturn(null).when(arendeService).getArende(question.getId());
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallExcludeHandleQuestionFragaSvar() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
             final var actualLinks = getQuestionsResourceLinkService.get(question);
 
@@ -201,7 +230,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @BeforeEach
         void setUp() {
             question = Question.builder()
-                .id("questionId")
+                .id("123")
                 .sent(LocalDateTime.now())
                 .build();
             resourceLinkDTO = new ResourceLinkDTO();
@@ -209,23 +238,12 @@ class GetQuestionsResourceLinkServiceImplTest {
             doReturn(Collections.singletonList(resourceLinkDTO))
                 .when(getQuestionsAvailableFunctionsService)
                 .get(question);
-
-            final var arende = new Arende();
-            arende.setEnhetId("unitId");
-            arende.setPatientPersonId("191212121212");
-            doReturn(arende)
-                .when(arendeService)
-                .getArende(question.getId());
-
-            final var careProviderId = "careProviderId";
-            doReturn(careProviderId)
-                .when(hsaOrganizationsService)
-                .getVardgivareOfVardenhet(arende.getEnhetId());
         }
 
         @Test
         void shallIncludeAnswerQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
@@ -236,6 +254,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeAnswerQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
@@ -246,6 +265,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeHandleQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
@@ -256,6 +276,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeHandleQuestion() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
@@ -266,6 +287,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -277,6 +299,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -288,6 +311,7 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallIncludeCannotComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(true).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
@@ -299,8 +323,36 @@ class GetQuestionsResourceLinkServiceImplTest {
         @Test
         void shallExcludeCannotComplementCertificate() {
             resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            getArendeMocksAndStubber();
             doReturn(false).when(certificateAccessServiceHelper)
                 .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeHandleQuestionFragaSvar() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+            doReturn(null).when(arendeService).getArende(question.getId());
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
+        }
+
+        @Test
+        void shallExcludeHandleQuestionFragaSvar() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
 
             final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
@@ -323,5 +375,32 @@ class GetQuestionsResourceLinkServiceImplTest {
             .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
             .findFirst()
             .orElse(null);
+    }
+
+    private FragaSvar getFragaSvar() {
+        final var fragaSvar = new FragaSvar();
+        final var intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsId(CERTIFICATE_ID);
+        intygsReferens.setIntygsTyp("intygsTyp");
+        final var vardperson = new Vardperson();
+        vardperson.setEnhetsId("unitId");
+        fragaSvar.setVardperson(vardperson);
+        fragaSvar.setIntygsReferens(intygsReferens);
+        fragaSvar.setInternReferens(123L);
+        return fragaSvar;
+    }
+
+    private void getArendeMocksAndStubber() {
+        final var arende = new Arende();
+        arende.setEnhetId("unitId");
+        arende.setPatientPersonId("191212121212");
+        doReturn(arende)
+            .when(arendeService)
+            .getArende(question.getId());
+
+        final var careProviderId = "careProviderId";
+        doReturn(careProviderId)
+            .when(hsaOrganizationsService)
+            .getVardgivareOfVardenhet(arende.getEnhetId());
     }
 }
