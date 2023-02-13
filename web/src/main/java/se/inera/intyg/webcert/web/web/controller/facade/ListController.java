@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import java.io.IOException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +34,6 @@ import se.inera.intyg.webcert.web.service.facade.list.ListQuestionsFacadeService
 import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("/list")
 public class ListController {
@@ -47,9 +49,9 @@ public class ListController {
 
     @Autowired
     public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService,
-                          ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
-                          ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
-                          ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
+        ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
+        ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
+        ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
         this.listDraftsFacadeService = listDraftsFacadeService;
         this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
         this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;
@@ -79,7 +81,7 @@ public class ListController {
     @Path("/previous")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getListOfPreviousCertificates(ListRequestDTO request) {
+    public Response getListOfPreviousCertificates(ListRequestDTO request) throws IOException {
         final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }

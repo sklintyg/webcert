@@ -16,13 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
 
-import java.io.IOException;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+package se.inera.intyg.webcert.web.service.facade.list.previous;
 
-public interface ListPreviousCertificatesFacadeService {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-    ListInfo get(ListFilter filter) throws IOException;
+@Service
+public interface CertificateForPatientService {
+
+    List<ListIntygEntry> get(String key, List<Utkast> drafts, Personnummer patientId, List<String> units) throws JsonProcessingException;
 }
