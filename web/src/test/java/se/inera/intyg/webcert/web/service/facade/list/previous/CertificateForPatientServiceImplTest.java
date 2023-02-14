@@ -41,7 +41,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -67,12 +70,14 @@ class CertificateForPatientServiceImplTest {
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
         final var key = "key";
+        final var webCertUser = new WebCertUser();
+        final var listFilter = getTestListFilter();
         final var expectedResult = List.of(
             listIntygEntryFromWc("4", LocalDateTime.parse("2014-01-03T12:12:18")));
         when(certificatesForPatientCache.get(any(String.class), eq(String.class))).thenReturn(key);
         when(objectMapper.getTypeFactory()).thenReturn(TypeFactory.defaultInstance());
         when(objectMapper.readValue(any(String.class), any(CollectionType.class))).thenReturn(expectedResult);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertIterableEquals(expectedResult, actualResult);
     }
@@ -82,14 +87,15 @@ class CertificateForPatientServiceImplTest {
         final var utkasts = TestIntygFactory.createListWithUtkast();
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
-        final var key = "key";
+        final var webCertUser = new WebCertUser();
+        final var listFilter = getTestListFilter();
         final var expectedResult = List.of(
             TestIntygFactory.createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")),
             TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-03T12:12:18")),
             TestIntygFactory.createIntygItem("2", LocalDateTime.parse("2014-01-03T12:12:18")),
             TestIntygFactory.createIntygItem("1", LocalDateTime.parse("2014-01-03T12:12:18")));
         when(intygService.listIntyg(any(), any(Personnummer.class))).thenReturn(intygItemListResponse);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertIterableEquals(expectedResult, actualResult);
     }
@@ -115,11 +121,13 @@ class CertificateForPatientServiceImplTest {
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
         final var key = "key";
+        final var listFilter = getTestListFilter();
+        final var webCertUser = new WebCertUser();
 
         when(certificatesForPatientCache.get(any(String.class), eq(String.class))).thenReturn(key);
         when(objectMapper.getTypeFactory()).thenReturn(TypeFactory.defaultInstance());
         when(objectMapper.readValue(any(String.class), any(CollectionType.class))).thenReturn(valuesStoredInRedis);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertIterableEquals(expectedResult, actualResult);
     }
@@ -147,11 +155,13 @@ class CertificateForPatientServiceImplTest {
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
         final var key = "key";
+        final var listFilter = getTestListFilter();
+        final var webCertUser = new WebCertUser();
 
         when(certificatesForPatientCache.get(any(String.class), eq(String.class))).thenReturn(key);
         when(objectMapper.getTypeFactory()).thenReturn(TypeFactory.defaultInstance());
         when(objectMapper.readValue(any(String.class), any(CollectionType.class))).thenReturn(valuesStoredInRedis);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertAll(
             () -> assertEquals(expectedResult.get(0).getLastUpdatedSigned(), actualResult.get(0).getLastUpdatedSigned()),
@@ -182,11 +192,13 @@ class CertificateForPatientServiceImplTest {
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
         final var key = "key";
+        final var listFilter = getTestListFilter();
+        final var webCertUser = new WebCertUser();
 
         when(certificatesForPatientCache.get(any(String.class), eq(String.class))).thenReturn(key);
         when(objectMapper.getTypeFactory()).thenReturn(TypeFactory.defaultInstance());
         when(objectMapper.readValue(any(String.class), any(CollectionType.class))).thenReturn(valuesStoredInRedis);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertIterableEquals(expectedResult, actualResult);
     }
@@ -213,11 +225,13 @@ class CertificateForPatientServiceImplTest {
         final var personnummer = Personnummer.createPersonnummer("1912121212").get();
         final var unitId = List.of("unitId");
         final var key = "key";
+        final var listFilter = getTestListFilter();
+        final var webCertUser = new WebCertUser();
 
         when(certificatesForPatientCache.get(any(String.class), eq(String.class))).thenReturn(key);
         when(objectMapper.getTypeFactory()).thenReturn(TypeFactory.defaultInstance());
         when(objectMapper.readValue(any(String.class), any(CollectionType.class))).thenReturn(valuesStoredInRedis);
-        final var actualResult = certificateForPatient.get(key, utkasts, personnummer, unitId);
+        final var actualResult = certificateForPatient.get(listFilter, webCertUser, utkasts, personnummer, unitId);
 
         assertIterableEquals(expectedResult, actualResult);
     }
@@ -232,5 +246,11 @@ class CertificateForPatientServiceImplTest {
         final var entry = TestIntygFactory.createIntygItem(id, signedDate);
         entry.setSource(IntygSource.IT);
         return entry;
+    }
+
+    private ListFilter getTestListFilter() {
+        final var listFilter = new ListFilter();
+        listFilter.addValue(new ListFilterPersonIdValue("19121212-1212"), "PATIENT_ID");
+        return listFilter;
     }
 }

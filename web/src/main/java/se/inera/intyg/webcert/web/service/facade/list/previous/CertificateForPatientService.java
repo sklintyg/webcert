@@ -24,10 +24,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @Service
 public interface CertificateForPatientService {
 
-    List<ListIntygEntry> get(String key, List<Utkast> drafts, Personnummer patientId, List<String> units) throws JsonProcessingException;
+    List<ListIntygEntry> get(ListFilter filter, WebCertUser user, List<Utkast> drafts, Personnummer patientId, List<String> units)
+        throws JsonProcessingException;
 }

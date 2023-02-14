@@ -112,7 +112,7 @@ class ListPreviousCertificatesFacadeServiceImplTest {
         when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
         when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
         when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientServiceImpl.get(any(), anyList(), any(), anyList())).thenReturn(
+        when(certificateForPatientServiceImpl.get(any(), any(), anyList(), any(), anyList())).thenReturn(
             TestIntygFactory.createListWithIntygItems());
 
         final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);
@@ -131,7 +131,7 @@ class ListPreviousCertificatesFacadeServiceImplTest {
         when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
         when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
         when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientServiceImpl.get(any(), anyList(), any(), anyList())).thenReturn(
+        when(certificateForPatientServiceImpl.get(any(), any(), anyList(), any(), anyList())).thenReturn(
             TestIntygFactory.createListWithIntygItems());
 
         final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);

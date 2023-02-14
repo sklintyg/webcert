@@ -19,11 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -77,8 +73,6 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
             CertificateListItemStatus.REPLACED.getName(), CertificateListItemStatus.COMPLEMENTED.getName());
     private static final List<UtkastStatus> ALL_DRAFTS =
         Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.SIGNED);
-    private static final String ALGORITHM = "SHA-1";
-
     private final WebCertUserService webCertUserService;
     private final LogService logService;
     private final ListPaginationHelper listPaginationHelper;
@@ -124,10 +118,9 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         final var patientId = formatPatientId(filter);
         final var user = webCertUserService.getUser();
         final var units = getUnits();
-        final var key = getSHA1Hash(base64EncodedString(filter, user, units));
         final var drafts = getDrafts(user, patientId, units);
         final var protectedPatientStatus = checkUserAccess(user, patientId);
-        final var certificatesForPatient = certificatesForPatientServiceImpl.get(key, drafts, patientId, units);
+        final var certificatesForPatient = certificatesForPatientServiceImpl.get(filter, user, drafts, patientId, units);
         final var filteredList = filterProtectedPatients(protectedPatientStatus, certificatesForPatient);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
@@ -141,11 +134,6 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         final var paginatedList = listPaginationHelper.paginate(filteredListOnStatus, filter);
         logListUsage(patientId, user);
         return new ListInfo(totalListCount, paginatedList);
-    }
-
-    private static String base64EncodedString(ListFilter filter, WebCertUser user, List<String> units) {
-        final var patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
-        return Base64.getEncoder().encodeToString((patientId.getValue() + user.getPersonId() + units).getBytes(StandardCharsets.UTF_8));
     }
 
     private String getOrderBy(ListFilter filter) {
@@ -246,19 +234,5 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
         return intygEntryList.stream().map((item) -> certificateListItemConverter.convert(item, LIST_TYPE)).collect(Collectors.toList());
-    }
-
-    private static String getSHA1Hash(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance(ALGORITHM);
-            byte[] messageDigest = md.digest(input.getBytes());
-            StringBuilder stringBuilder = new StringBuilder();
-            for (byte bytes : messageDigest) {
-                stringBuilder.append(String.format("%02x", bytes));
-            }
-            return stringBuilder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

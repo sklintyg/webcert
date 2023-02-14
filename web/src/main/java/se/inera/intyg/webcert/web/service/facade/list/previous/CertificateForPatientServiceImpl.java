@@ -21,7 +21,11 @@ package se.inera.intyg.webcert.web.service.facade.list.previous;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -31,7 +35,10 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
@@ -42,6 +49,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private final ObjectMapper objectMapper;
     private final IntygService intygService;
     public static final Logger LOG = LoggerFactory.getLogger(CertificateForPatientServiceImpl.class);
+    private static final String ALGORITHM = "SHA-1";
 
 
     public CertificateForPatientServiceImpl(Cache certificatesForPatientCache, ObjectMapper objectMapper, IntygService intygService) {
@@ -51,8 +59,9 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     }
 
     @Override
-    public List<ListIntygEntry> get(String key, List<Utkast> drafts, Personnummer patientId, List<String> units)
+    public List<ListIntygEntry> get(ListFilter filter, WebCertUser user, List<Utkast> drafts, Personnummer patientId, List<String> units)
         throws JsonProcessingException {
+        final var key = getSHA1Hash(base64EncodedString(filter, user, units));
         if (certificatesForPatientCache.get(key, String.class) == null) {
             final var certificates = getCertificates(patientId, units);
             final var listIntygEntries = IntygDraftsConverter.merge(certificates.getLeft(), drafts);
@@ -82,5 +91,24 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         final var certificates = intygService.listIntyg(units, patientId);
         LOG.debug("Got #{} intyg", certificates.getLeft().size());
         return certificates;
+    }
+
+    private static String getSHA1Hash(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance(ALGORITHM);
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte bytes : messageDigest) {
+                stringBuilder.append(String.format("%02x", bytes));
+            }
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String base64EncodedString(ListFilter filter, WebCertUser user, List<String> units) {
+        final var patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
+        return Base64.getEncoder().encodeToString((patientId.getValue() + user.getPersonId() + units).getBytes(StandardCharsets.UTF_8));
     }
 }
