@@ -96,7 +96,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private static String getSHA1Hash(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance(ALGORITHM);
-            byte[] messageDigest = md.digest(input.getBytes());
+            byte[] messageDigest = md.digest(input.getBytes(StandardCharsets.UTF_8));
             StringBuilder stringBuilder = new StringBuilder();
             for (byte bytes : messageDigest) {
                 stringBuilder.append(String.format("%02x", bytes));
