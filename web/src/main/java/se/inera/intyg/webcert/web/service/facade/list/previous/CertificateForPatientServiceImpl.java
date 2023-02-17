@@ -31,46 +31,56 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-@Component(value = "certificatesForPatientServiceImpl")
+@Service(value = "certificatesForPatientServiceImpl")
 public class CertificateForPatientServiceImpl implements CertificateForPatientService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateForPatientServiceImpl.class);
+    private static final String ALGORITHM = "SHA-1";
 
     private final Cache certificatesForPatientCache;
     private final ObjectMapper objectMapper;
     private final IntygService intygService;
-    public static final Logger LOG = LoggerFactory.getLogger(CertificateForPatientServiceImpl.class);
-    private static final String ALGORITHM = "SHA-1";
+    private final UtkastService utkastService;
+    private final WebCertUserService webCertUserService;
 
-
-    public CertificateForPatientServiceImpl(Cache certificatesForPatientCache, ObjectMapper objectMapper, IntygService intygService) {
+    public CertificateForPatientServiceImpl(Cache certificatesForPatientCache, ObjectMapper objectMapper, IntygService intygService,
+        UtkastService utkastService, WebCertUserService webCertUserService) {
         this.certificatesForPatientCache = certificatesForPatientCache;
         this.objectMapper = objectMapper;
         this.intygService = intygService;
+        this.utkastService = utkastService;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
-    public List<ListIntygEntry> get(ListFilter filter, WebCertUser user, List<Utkast> drafts, Personnummer patientId, List<String> units)
+    public List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units)
         throws JsonProcessingException {
-        final var key = getSHA1Hash(base64EncodedString(filter, user, units));
+        final var drafts = utkastService.findUtkastByPatientAndUnits(patientId, units);
+        LOG.debug("UtkastService returned {} certificates", drafts.size());
+        final var key = getSHA1Hash(base64EncodedString(filter, units));
         if (certificatesForPatientCache.get(key, String.class) == null) {
+            LOG.debug("No data was found in cache for key '{}'", key);
             final var certificates = getCertificates(patientId, units);
             final var listIntygEntries = IntygDraftsConverter.merge(certificates.getLeft(), drafts);
+            LOG.debug("'{}' certificates was put in cache for key '{}'", listIntygEntries.size(), key);
             certificatesForPatientCache.put(key, objectMapper.writeValueAsString(listIntygEntries));
             return listIntygEntries;
         }
         final var jsonData = certificatesForPatientCache.get(key, String.class);
         final var utkastsToListIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
         final var certificatesForPatient = getCachedCertificatesForPatient(jsonData);
+        LOG.debug("Cache returned {} certificates", certificatesForPatient.size());
         final var entries = new ArrayList<>(utkastsToListIntygEntries);
 
         for (ListIntygEntry entry : certificatesForPatient) {
@@ -78,6 +88,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
                 entries.add(entry);
             }
         }
+        LOG.debug("'{}' certificates was put in cache for key '{}'", entries.size(), key);
         certificatesForPatientCache.put(key, objectMapper.writeValueAsString(entries));
         return entries;
     }
@@ -89,7 +100,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
 
     private Pair<List<ListIntygEntry>, Boolean> getCertificates(Personnummer patientId, List<String> units) {
         final var certificates = intygService.listIntyg(units, patientId);
-        LOG.debug("Got #{} intyg", certificates.getLeft().size());
+        LOG.debug("IntygsService returned {} certificates", certificates.getLeft().size());
         return certificates;
     }
 
@@ -107,7 +118,8 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         }
     }
 
-    private static String base64EncodedString(ListFilter filter, WebCertUser user, List<String> units) {
+    private String base64EncodedString(ListFilter filter, List<String> units) {
+        final var user = webCertUserService.getUser();
         final var patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
         return Base64.getEncoder().encodeToString((patientId.getValue() + user.getPersonId() + units).getBytes(StandardCharsets.UTF_8));
     }

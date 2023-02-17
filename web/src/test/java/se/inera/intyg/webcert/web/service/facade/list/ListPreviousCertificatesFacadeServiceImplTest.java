@@ -27,7 +27,6 @@ import static se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColu
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,8 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
@@ -50,7 +47,6 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,10 +67,8 @@ class ListPreviousCertificatesFacadeServiceImplTest {
     private ResourceLinkHelper resourceLinkListHelper;
 
     @Mock
-    private IntygDraftDecorator intygDraftDecorator;
-
-    @Mock
     private ListDecorator listDecorator;
+
     @Mock
     private IntygModuleRegistry intygModuleRegistry;
 
@@ -88,18 +82,13 @@ class ListPreviousCertificatesFacadeServiceImplTest {
     private ListPaginationHelper listPaginationHelper;
 
     @Mock
-    private UtkastRepository utkastRepository;
-
-    @Mock
     private LogService logService;
 
     @Mock
-    private CertificateForPatientService certificateForPatientServiceImpl;
+    private CertificateForPatientService certificateForPatientService;
+
     @InjectMocks
     private ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
-
-    private static final Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = Pair.of(TestIntygFactory.createListWithIntygItems(),
-        false);
 
     @Test
     void shouldReturnListInfoWithPaginatedList() throws IOException, ModuleNotFoundException {
@@ -112,7 +101,7 @@ class ListPreviousCertificatesFacadeServiceImplTest {
         when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
         when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
         when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientServiceImpl.get(any(), any(), anyList(), any(), anyList())).thenReturn(
+        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
             TestIntygFactory.createListWithIntygItems());
 
         final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);
@@ -131,7 +120,7 @@ class ListPreviousCertificatesFacadeServiceImplTest {
         when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
         when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
         when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientServiceImpl.get(any(), any(), anyList(), any(), anyList())).thenReturn(
+        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
             TestIntygFactory.createListWithIntygItems());
 
         final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);

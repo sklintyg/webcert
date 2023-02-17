@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,9 +60,11 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -112,6 +115,12 @@ public class UtkastServiceImpl implements UtkastService {
 
     private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
     private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(
+        UtkastStatus.DRAFT_COMPLETE,
+        UtkastStatus.DRAFT_INCOMPLETE,
+        UtkastStatus.DRAFT_LOCKED,
+        UtkastStatus.SIGNED
+    );
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
     public static final String INTYG_INDICATOR = "intyg";
@@ -804,6 +813,25 @@ public class UtkastServiceImpl implements UtkastService {
     public boolean isDraftCreatedFromReplacement(String certificateId) {
         return utkastRepository.findParentRelation(certificateId).stream()
             .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
+    }
+
+    @Override
+    public List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds) {
+        final var user = webCertUserService.getUser();
+        if (new AuthoritiesValidator().given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified()) {
+            Set<String> intygstyper = authoritiesHelper
+                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+            final var drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
+                DaoUtil.formatPnrForPersistence(patientId),
+                unitIds,
+                ALL_DRAFTS,
+                intygstyper);
+
+            LOG.debug("Got #{} utkast", drafts.size());
+            return drafts;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

@@ -20,17 +20,11 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -38,8 +32,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
@@ -63,7 +55,6 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCertificatesFacadeService {
 
     private static final ListType LIST_TYPE = ListType.PREVIOUS_CERTIFICATES;
-    private static final Logger LOG = LoggerFactory.getLogger(ListPreviousCertificatesFacadeServiceImpl.class);
     private static final List<String> CURRENT_CERTIFICATES =
         Arrays.asList(CertificateListItemStatus.INCOMPLETE.getName(), CertificateListItemStatus.COMPLETE.getName(),
             CertificateListItemStatus.SIGNED.getName(), CertificateListItemStatus.SENT.getName());
@@ -71,8 +62,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     private static final List<String> MODIFIED_CERTIFICATES =
         Arrays.asList(CertificateListItemStatus.LOCKED.getName(), CertificateListItemStatus.REVOKED.getName(),
             CertificateListItemStatus.REPLACED.getName(), CertificateListItemStatus.COMPLEMENTED.getName());
-    private static final List<UtkastStatus> ALL_DRAFTS =
-        Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED, UtkastStatus.SIGNED);
+
     private final WebCertUserService webCertUserService;
     private final LogService logService;
     private final ListPaginationHelper listPaginationHelper;
@@ -84,9 +74,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     private final ResourceLinkHelper resourceLinkHelper;
     private final ListSortHelper listSortHelper;
     private final ListDecorator listDecorator;
-    private final CertificateForPatientService certificatesForPatientServiceImpl;
-    private final UtkastRepository utkastRepository;
-
+    private final CertificateForPatientService certificateForPatientService;
 
     @Autowired
     public ListPreviousCertificatesFacadeServiceImpl(WebCertUserService webCertUserService, LogService logService,
@@ -97,8 +85,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         AuthoritiesHelper authoritiesHelper,
         ResourceLinkHelper resourceLinkHelper,
         ListSortHelper listSortHelper, ListDecorator listDecorator,
-        @Qualifier("certificatesForPatientServiceImpl") CertificateForPatientService certificatesForPatientServiceImpl,
-        UtkastRepository utkastRepository) {
+        CertificateForPatientService certificatesForPatientService) {
         this.webCertUserService = webCertUserService;
         this.logService = logService;
         this.listPaginationHelper = listPaginationHelper;
@@ -109,8 +96,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         this.resourceLinkHelper = resourceLinkHelper;
         this.listSortHelper = listSortHelper;
         this.listDecorator = listDecorator;
-        this.certificatesForPatientServiceImpl = certificatesForPatientServiceImpl;
-        this.utkastRepository = utkastRepository;
+        this.certificateForPatientService = certificatesForPatientService;
     }
 
     @Override
@@ -118,9 +104,8 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         final var patientId = formatPatientId(filter);
         final var user = webCertUserService.getUser();
         final var units = getUnits();
-        final var drafts = getDrafts(user, patientId, units);
+        final var certificatesForPatient = certificateForPatientService.get(filter, patientId, units);
         final var protectedPatientStatus = checkUserAccess(user, patientId);
-        final var certificatesForPatient = certificatesForPatientServiceImpl.get(filter, user, drafts, patientId, units);
         final var filteredList = filterProtectedPatients(protectedPatientStatus, certificatesForPatient);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
@@ -169,24 +154,6 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
                 "Current user has no assignments");
         }
         return units;
-    }
-
-
-    private List<Utkast> getDrafts(WebCertUser user, Personnummer patientId, List<String> units) {
-        if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified()) {
-            Set<String> intygstyper = authoritiesHelper
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-            final var drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                DaoUtil.formatPnrForPersistence(patientId),
-                units,
-                ALL_DRAFTS,
-                intygstyper);
-
-            LOG.debug("Got #{} utkast", drafts.size());
-            return drafts;
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     private List<CertificateListItem> filterListOnStatus(ListFilter filter, List<CertificateListItem> list) {
