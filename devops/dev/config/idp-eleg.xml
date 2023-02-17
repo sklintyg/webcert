@@ -1,41 +1,23 @@
-<!--
-  ~ Copyright (C) 2022 Inera AB (http://www.inera.se)
-  ~
-  ~ This file is part of sklintyg (https://github.com/sklintyg).
-  ~
-  ~ sklintyg is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ sklintyg is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_03342cabf13ca57a22f03fb99f4eed24b1" cacheDuration="P0Y0M0DT0H59M59.000S" entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/10">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_03ab13047f00300cb2b07108f1991ac8a6" cacheDuration="P0Y0M0DT0H59M59.000S" entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/30">
   <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
     <ds:SignedInfo>
       <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
       <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-      <ds:Reference URI="#_03342cabf13ca57a22f03fb99f4eed24b1">
+      <ds:Reference URI="#_03ab13047f00300cb2b07108f1991ac8a6">
         <ds:Transforms>
           <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
           <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
         </ds:Transforms>
         <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <ds:DigestValue>VCvODbP2TzhSJx/2ee8YzYbtJ4WUc9GwItQ9V2qM5WU=</ds:DigestValue>
+        <ds:DigestValue>fMcb/7+RDZ2IhyTjbDP97FwWmb9eQFkxFZw8R6FHWVE=</ds:DigestValue>
       </ds:Reference>
     </ds:SignedInfo>
     <ds:SignatureValue>
-      XgP3QkNW1aUDUNvQ6jkjOSLg8TploeJlipUCS5SXhHgZRh0MN40XqoH8H8BinKvTAvZA6FC5ud4g
-      x/8Xt+lxoRrowBO0j/q/C+esvVxup53hjjgbq0JriMr2O9JLV79JrtC3eRS31TO93C2s1RrdjdXp
-      wsLXMvNYZWPpx7xJrpRU16n0DUlhzsERnqSuBGAArxoe51o5VmXB/SjA5HPCHTh76XF22ZjwZHT3
-      0weJ9xROP0WKdBuwgLlqt4XB/S5eLz0pMydeJ7gUz9GsUzNBCcT3QawdiqTF6YY7P69Obp6ERLvC /g8BjxQcMBXKx8nhNM60tWs5Bztga40zVGZyKA==
+      qIckjYGDKDrM6oyBzWSqk4NNB+27YCwx4W5ChG8uxk7B0Lu7N6p/dkxygB3Bxj/n/iTNdddd/J+E
+      E2mQBx2zCx+wCijiTpqIAg1R6oIKwxvA5P88oi90E+0Yf6/65QbqpY+AM0ZmdINCp8YyQyHdCvms
+      qb2e6W4xXPoF926Nl+qz/y+FZfy7PTSYN576YL/seEo/2MkX5fTsUkBPmBcNFShi11iMgsqpQlfJ
+      oCRdmOFzU4rrOOFYtnQtnXeeYV/ffkk9ZWQOo7sxyY8WEKOg7ERgMXhBE2M3UTqg6H0Y5hNMXbF+ OnW7YK01WbDbbw7daM0NiEAzWJLpnts3C3Qebg==
     </ds:SignatureValue>
     <ds:KeyInfo>
       <ds:X509Data>
@@ -147,12 +129,12 @@
         </ds:X509Data>
       </ds:KeyInfo>
     </md:KeyDescriptor>
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/10?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/10?mgvhostparam=0"/>
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/10?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/10?mgvhostparam=0"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/30?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/30?mgvhostparam=0"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/30?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/30?mgvhostparam=0"/>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/10?mgvhostparam=0"/>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/10?mgvhostparam=0"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/30?mgvhostparam=0"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/30?mgvhostparam=0"/>
   </md:IDPSSODescriptor>
   <md:Organization>
     <md:OrganizationName xml:lang="sv">CGI Sverige</md:OrganizationName>
