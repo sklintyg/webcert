@@ -39,7 +39,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @Service(value = "certificatesForPatientServiceImpl")
@@ -69,28 +68,20 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         final var drafts = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", drafts.size());
         final var key = getSHA1Hash(base64EncodedString(filter, units));
+        final var certificatesFromIT = new ArrayList<ListIntygEntry>();
         if (certificatesForPatientCache.get(key, String.class) == null) {
             LOG.debug("No data was found in cache for key '{}'", key);
             final var certificates = getCertificates(patientId, units);
-            final var listIntygEntries = IntygDraftsConverter.merge(certificates.getLeft(), drafts);
-            LOG.debug("'{}' certificates was put in cache for key '{}'", listIntygEntries.size(), key);
-            certificatesForPatientCache.put(key, objectMapper.writeValueAsString(listIntygEntries));
-            return listIntygEntries;
+            certificatesFromIT.addAll(certificates.getLeft());
+            LOG.debug("'{}' certificates was put in cache for key '{}'", certificatesFromIT.size(), key);
+            certificatesForPatientCache.put(key, objectMapper.writeValueAsString(certificatesFromIT));
+        } else {
+            final var jsonData = certificatesForPatientCache.get(key, String.class);
+            final var certificatesForPatient = getCachedCertificatesForPatient(jsonData);
+            LOG.debug("Cache returned {} certificates", certificatesForPatient.size());
+            certificatesFromIT.addAll(certificatesForPatient);
         }
-        final var jsonData = certificatesForPatientCache.get(key, String.class);
-        final var utkastsToListIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
-        final var certificatesForPatient = getCachedCertificatesForPatient(jsonData);
-        LOG.debug("Cache returned {} certificates", certificatesForPatient.size());
-        final var entries = new ArrayList<>(utkastsToListIntygEntries);
-
-        for (ListIntygEntry entry : certificatesForPatient) {
-            if (!entries.contains(entry) && entry.getSource().equals(IntygSource.IT)) {
-                entries.add(entry);
-            }
-        }
-        LOG.debug("'{}' certificates was put in cache for key '{}'", entries.size(), key);
-        certificatesForPatientCache.put(key, objectMapper.writeValueAsString(entries));
-        return entries;
+        return IntygDraftsConverter.merge(certificatesFromIT, drafts);
     }
 
     private List<ListIntygEntry> getCachedCertificatesForPatient(String jsonData) throws JsonProcessingException {

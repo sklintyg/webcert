@@ -114,10 +114,8 @@ class CertificateForPatientServiceImplTest {
         }
 
         @Test
-        void shouldCacheListWithCertificatesFromITAndWC() throws IOException {
+        void shouldCacheListWithCertificatesFromIT() throws IOException {
             final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"))
             );
 
@@ -151,8 +149,6 @@ class CertificateForPatientServiceImplTest {
             doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
 
             final var cachedData = objectMapper.writeValueAsString(List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
             ));
             doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
@@ -167,30 +163,6 @@ class CertificateForPatientServiceImplTest {
             );
 
             final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-
-        @Test
-        void shouldCacheListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-            certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            verify(certificatesForPatientCache).put(any(String.class), stringArgumentCaptor.capture());
-
-            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(stringArgumentCaptor.getValue(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
-            );
 
             assertEquals(expectedResult.size(), actualResult.size());
             for (int i = 0; i < expectedResult.size(); i++) {
@@ -213,8 +185,6 @@ class CertificateForPatientServiceImplTest {
             doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
 
             final var cachedData = objectMapper.writeValueAsString(List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
             ));
             doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
@@ -237,168 +207,6 @@ class CertificateForPatientServiceImplTest {
                 assertEquals(expectedResult.get(i), actualResult.get(i));
             }
         }
-
-        @Test
-        void shouldCacheListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))),
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-            certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            verify(certificatesForPatientCache).put(any(String.class), stringArgumentCaptor.capture());
-
-            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(stringArgumentCaptor.getValue(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
-            );
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-    }
-
-    @Nested
-    class CachedDataWithRemovedCertificateInWebcert {
-
-        @BeforeEach
-        void setUp() throws JsonProcessingException {
-            doReturn(mock(WebCertUser.class)).when(webCertUserService).getUser();
-
-            final var fromWebcert = List.of(
-                TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))
-            );
-            doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
-
-            final var cachedData = objectMapper.writeValueAsString(List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            ));
-            doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
-        }
-
-        @Test
-        void shouldReturnListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-
-        @Test
-        void shouldCacheListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-            certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            verify(certificatesForPatientCache).put(any(String.class), stringArgumentCaptor.capture());
-
-            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(stringArgumentCaptor.getValue(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
-            );
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-    }
-
-    @Nested
-    class CachedDataWithChangedCertificateInWebcert {
-
-        @BeforeEach
-        void setUp() throws JsonProcessingException {
-            doReturn(mock(WebCertUser.class)).when(webCertUserService).getUser();
-
-            final var fromWebcert = List.of(
-                TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:15:18"))
-            );
-            doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
-
-            final var cachedData = objectMapper.writeValueAsString(List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            ));
-            doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
-        }
-
-        @Test
-        void shouldReturnListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:15:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-
-        @Test
-        void shouldCacheListWithCertificatesFromITAndWC() throws IOException {
-            final var expectedResult = List.of(
-                IntygDraftsConverter.convertUtkastToListIntygEntry(
-                    TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:15:18"))),
-                TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
-            );
-
-            final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-            certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
-
-            verify(certificatesForPatientCache).put(any(String.class), stringArgumentCaptor.capture());
-
-            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(stringArgumentCaptor.getValue(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
-            );
-
-            assertEquals(expectedResult.size(), actualResult.size());
-            for (int i = 0; i < expectedResult.size(); i++) {
-                assertEquals(expectedResult.get(i), actualResult.get(i));
-            }
-        }
-    }
-
-    private ListIntygEntry listIntygEntryFromWc(String id, LocalDateTime signedDate) {
-        final var entry = TestIntygFactory.createIntygItem(id, signedDate);
-        entry.setSource(IntygSource.WC);
-        return entry;
-    }
-
-    private ListIntygEntry listIntygEntryFromIt(String id, LocalDateTime signedDate) {
-        final var entry = TestIntygFactory.createIntygItem(id, signedDate);
-        entry.setSource(IntygSource.IT);
-        return entry;
     }
 
     private ListFilter getTestListFilter() {
