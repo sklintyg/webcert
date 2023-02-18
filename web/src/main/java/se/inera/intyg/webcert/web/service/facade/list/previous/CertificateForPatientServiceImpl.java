@@ -140,15 +140,15 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         return fromIt.getIntygId().equalsIgnoreCase(fromWc.getIntygId());
     }
 
-    private static boolean isCancelled(ListIntygEntry fromIt) {
-        return fromIt.getStatus().equalsIgnoreCase(CertificateState.CANCELLED.name());
+    private static boolean isCancelled(ListIntygEntry entry) {
+        return entry.getStatus().equalsIgnoreCase(CertificateState.CANCELLED.name());
     }
 
     private static boolean isOnlySentInIT(ListIntygEntry fromIT, ListIntygEntry fromWC) {
         return isSent(fromIT) && !isSent(fromWC);
     }
 
-    private static boolean isSent(ListIntygEntry fromWC) {
-        return fromWC.getStatus().equalsIgnoreCase(CertificateState.SENT.name());
+    private static boolean isSent(ListIntygEntry entry) {
+        return entry.getStatus().equalsIgnoreCase(CertificateState.SENT.name());
     }
 }
