@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import java.io.IOException;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 
 public interface ListPreviousCertificatesFacadeService {
 
-    ListInfo get(ListFilter filter) throws IOException;
+    ListInfo get(ListFilter filter);
 }

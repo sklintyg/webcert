@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.io.IOException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -81,7 +80,7 @@ public class ListController {
     @Path("/previous")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public Response getListOfPreviousCertificates(ListRequestDTO request) throws IOException {
+    public Response getListOfPreviousCertificates(ListRequestDTO request) {
         final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
     }

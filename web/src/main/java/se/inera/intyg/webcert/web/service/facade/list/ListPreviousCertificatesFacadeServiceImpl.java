@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,12 +98,13 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     }
 
     @Override
-    public ListInfo get(ListFilter filter) throws IOException {
+    public ListInfo get(ListFilter filter) {
         final var patientId = formatPatientId(filter);
         final var user = webCertUserService.getUser();
         final var units = getUnits();
-        final var certificatesForPatient = certificateForPatientService.get(filter, patientId, units);
+
         final var protectedPatientStatus = checkUserAccess(user, patientId);
+        final var certificatesForPatient = certificateForPatientService.get(filter, patientId, units);
         final var filteredList = filterProtectedPatients(protectedPatientStatus, certificatesForPatient);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
@@ -133,49 +132,56 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
     private List<ListIntygEntry> filterProtectedPatients(SekretessStatus protectedPatientStatus, List<ListIntygEntry> list) {
         if (protectedPatientStatus == SekretessStatus.TRUE) {
-            Set<String> allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
-            return list.stream().filter(certificate -> allowedTypes.contains(certificate.getIntygType())).collect(Collectors.toList());
-        } else {
-            return list;
+            final var allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
+            return list.stream()
+                .filter(certificate -> allowedTypes.contains(certificate.getIntygType()))
+                .collect(Collectors.toList());
         }
+        return list;
     }
 
     private Personnummer formatPatientId(ListFilter filter) {
         final var patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
         return Personnummer.createPersonnummer(patientId.getValue())
-            .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                String.format("Cannot create Personnummer object with invalid personId %s", patientId)));
+            .orElseThrow(() ->
+                new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    String.format("Cannot create Personnummer object with invalid personId %s", patientId))
+            );
     }
 
     private List<String> getUnits() {
         final var units = getStaffInfoFacadeService.getIdsOfSelectedUnit();
         if (units.isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "Current user has no assignments");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Current user has no assignments");
         }
         return units;
     }
 
     private List<CertificateListItem> filterListOnStatus(ListFilter filter, List<CertificateListItem> list) {
         final var statusFilter = (ListFilterRadioValue) filter.getValue("STATUS");
-        if (statusFilter == null || doesFilterMatchList(statusFilter, FilterStatusType.ALL_CERTIFICATES)) {
-            return list;
-        } else if (doesFilterMatchList(statusFilter, FilterStatusType.MODIFIED_CERTIFICATES)) {
+
+        if (doesFilterMatchList(statusFilter, FilterStatusType.MODIFIED_CERTIFICATES)) {
             return performStatusFiltering(list, MODIFIED_CERTIFICATES);
-        } else if (doesFilterMatchList(statusFilter, FilterStatusType.CURRENT_CERTIFICATES)) {
+        }
+
+        if (doesFilterMatchList(statusFilter, FilterStatusType.CURRENT_CERTIFICATES)) {
             return performStatusFiltering(list, CURRENT_CERTIFICATES);
         }
+
         return list;
     }
 
     private List<CertificateListItem> performStatusFiltering(List<CertificateListItem> list, List<String> wantedStatuses) {
-        return list
-            .stream()
+        return list.stream()
             .filter((item) -> wantedStatuses.contains((String) item.getValue("STATUS")))
             .collect(Collectors.toList());
     }
 
     private boolean doesFilterMatchList(ListFilterRadioValue statusFilter, FilterStatusType statusType) {
+        if (statusFilter == null) {
+            return false;
+        }
+        
         return statusFilter.getValue().equals(statusType.toString());
     }
 
@@ -187,10 +193,11 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         }
 
         authoritiesValidator.given(user)
-            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                protectedPatientStatus == SekretessStatus.TRUE)
-            .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                "User missing required privilege or cannot handle sekretessmarkerad patient"));
+            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, protectedPatientStatus == SekretessStatus.TRUE)
+            .orThrow(
+                new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                    "User missing required privilege or cannot handle sekretessmarkerad patient")
+            );
 
         return protectedPatientStatus;
     }
@@ -200,6 +207,8 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     }
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
-        return intygEntryList.stream().map((item) -> certificateListItemConverter.convert(item, LIST_TYPE)).collect(Collectors.toList());
+        return intygEntryList.stream()
+            .map((item) -> certificateListItemConverter.convert(item, LIST_TYPE))
+            .collect(Collectors.toList());
     }
 }
