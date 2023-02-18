@@ -19,15 +19,20 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.previous;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -58,13 +63,15 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     public List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units) {
         final var certificatesFromWC = getCertificatesFromWC(patientId, units);
         final var certificatesFromIT = getCertificatesFromIT(patientId, units);
-        return IntygDraftsConverter.merge(certificatesFromIT, certificatesFromWC);
+        return merge(certificatesFromWC, certificatesFromIT);
     }
 
-    private List<Utkast> getCertificatesFromWC(Personnummer patientId, List<String> units) {
+    private List<ListIntygEntry> getCertificatesFromWC(Personnummer patientId, List<String> units) {
         final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
-        return certificatesFromWC;
+        return certificatesFromWC.stream()
+            .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
+            .collect(Collectors.toList());
     }
 
     private List<ListIntygEntry> getCertificatesFromIT(Personnummer patientId, List<String> units) {
@@ -83,7 +90,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private String generateKey(Personnummer patientId, List<String> units) {
         return Integer.toString(
             patientId.getPersonnummerHash()
-                .concat(webCertUserService.getUser().getPersonId())
+                .concat(webCertUserService.getUser().getHsaId())
                 .concat(units.toString())
                 .hashCode()
         );
@@ -98,5 +105,50 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static List<ListIntygEntry> merge(List<ListIntygEntry> certificatesFromWC, List<ListIntygEntry> certificatesFromIT) {
+        return Stream.concat(
+                certificatesFromIT.stream().filter(fromIT -> keepITCertificate(certificatesFromWC, fromIT)),
+                certificatesFromWC.stream().filter(fromWC -> keepWCCertificate(certificatesFromIT, fromWC)))
+            .sorted(comparing(ListIntygEntry::getLastUpdatedSigned, reverseOrder()))
+            .collect(Collectors.toList());
+    }
+
+    private static boolean keepITCertificate(List<ListIntygEntry> certificatesFromWC, ListIntygEntry fromIT) {
+        return certificatesFromWC.stream()
+            .filter(fromWC ->
+                matchingIds(fromIT, fromWC)
+                    && !isCancelled(fromIT)
+                    && (!isOnlySentInIT(fromIT, fromWC) || isOnlySentInIT(fromIT, fromWC) && isCancelled(fromWC))
+            )
+            .findAny()
+            .isEmpty();
+    }
+
+    private static boolean keepWCCertificate(List<ListIntygEntry> certificatesFromIT, ListIntygEntry fromWC) {
+        return certificatesFromIT.stream()
+            .filter(fromIT ->
+                matchingIds(fromWC, fromIT)
+                    && (isCancelled(fromIT) || (isOnlySentInIT(fromIT, fromWC) && !isCancelled(fromWC)))
+            )
+            .findAny()
+            .isEmpty();
+    }
+
+    private static boolean matchingIds(ListIntygEntry fromIt, ListIntygEntry fromWc) {
+        return fromIt.getIntygId().equalsIgnoreCase(fromWc.getIntygId());
+    }
+
+    private static boolean isCancelled(ListIntygEntry fromIt) {
+        return fromIt.getStatus().equalsIgnoreCase(CertificateState.CANCELLED.name());
+    }
+
+    private static boolean isOnlySentInIT(ListIntygEntry fromIT, ListIntygEntry fromWC) {
+        return isSent(fromIT) && !isSent(fromWC);
+    }
+
+    private static boolean isSent(ListIntygEntry fromWC) {
+        return fromWC.getStatus().equalsIgnoreCase(CertificateState.SENT.name());
     }
 }
