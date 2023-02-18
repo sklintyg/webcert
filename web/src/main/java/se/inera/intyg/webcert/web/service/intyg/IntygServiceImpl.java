@@ -317,6 +317,24 @@ public class IntygServiceImpl implements IntygService {
         return Pair.of(webcertCerts, Boolean.TRUE);
     }
 
+    @Override
+    public List<ListIntygEntry> listIntygFromIT(List<String> enhetId, Personnummer personnummer) {
+        final var request = new ListCertificatesForCareType();
+        request.setPersonId(InternalConverterUtil.getPersonId(personnummer));
+        for (String id : enhetId) {
+            request.getEnhetsId().add(InternalConverterUtil.getHsaId(id));
+        }
+
+        final var sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
+        final var response = listCertificateService.listCertificatesForCare(logicalAddress, request);
+        final var fullIntygItemList = response.getIntygsLista().getIntyg().stream()
+            .map(intyg -> intygConverter.convertIntygToListIntygEntry(intyg, null))
+            .collect(Collectors.toList());
+
+        intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
+        return filterByIntygTypeForUser(fullIntygItemList, sekretessmarkering);
+    }
+
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
         SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege

@@ -78,7 +78,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         final var key = generateKey(patientId, units);
         final var certificatesFromIT = deserialize(
             certificatesForPatientCache.get(key, () -> {
-                final var certificates = intygService.listIntyg(units, patientId).getLeft();
+                final var certificates = intygService.listIntygFromIT(units, patientId);
                 LOG.debug("'{}' certificates from IntygService was put in cache for key '{}'", certificates.size(), key);
                 return objectMapper.writeValueAsString(certificates);
             })

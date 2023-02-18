@@ -164,7 +164,7 @@ public class IntygDraftsConverter {
             .collect(Collectors.toList());
     }
 
-    private ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
+    public ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
         entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));

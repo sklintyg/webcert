@@ -28,7 +28,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -98,10 +97,10 @@ class CertificateForPatientServiceImplTest {
             );
             doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
 
-            final var fromIntygstjanst = Pair.of(List.of(
+            final var fromIntygstjanst = List.of(
                 intygListItemFromIT("3", "2014-01-02T10:11:23", CertificateState.SENT.name())
-            ), false);
-            doReturn(fromIntygstjanst).when(intygService).listIntyg(notNull(), notNull());
+            );
+            doReturn(fromIntygstjanst).when(intygService).listIntygFromIT(notNull(), notNull());
         }
 
         @Test
