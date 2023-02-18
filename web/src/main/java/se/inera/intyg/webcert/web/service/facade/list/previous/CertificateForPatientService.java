@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.facade.list.previous;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -27,6 +26,5 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public interface CertificateForPatientService {
 
-    List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units)
-        throws JsonProcessingException;
+    List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units);
 }

@@ -21,20 +21,14 @@ package se.inera.intyg.webcert.web.service.facade.list.previous;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -45,8 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 public class CertificateForPatientServiceImpl implements CertificateForPatientService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateForPatientServiceImpl.class);
-    private static final String ALGORITHM = "SHA-1";
-
     private final Cache certificatesForPatientCache;
     private final ObjectMapper objectMapper;
     private final IntygService intygService;
@@ -63,55 +55,48 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     }
 
     @Override
-    public List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units)
-        throws JsonProcessingException {
-        final var drafts = utkastService.findUtkastByPatientAndUnits(patientId, units);
-        LOG.debug("UtkastService returned {} certificates", drafts.size());
-        final var key = getSHA1Hash(base64EncodedString(filter, units));
-        final var certificatesFromIT = new ArrayList<ListIntygEntry>();
-        if (certificatesForPatientCache.get(key, String.class) == null) {
-            LOG.debug("No data was found in cache for key '{}'", key);
-            final var certificates = getCertificates(patientId, units);
-            certificatesFromIT.addAll(certificates.getLeft());
-            LOG.debug("'{}' certificates was put in cache for key '{}'", certificatesFromIT.size(), key);
-            certificatesForPatientCache.put(key, objectMapper.writeValueAsString(certificatesFromIT));
-        } else {
-            final var jsonData = certificatesForPatientCache.get(key, String.class);
-            final var certificatesForPatient = getCachedCertificatesForPatient(jsonData);
-            LOG.debug("Cache returned {} certificates", certificatesForPatient.size());
-            certificatesFromIT.addAll(certificatesForPatient);
-        }
-        return IntygDraftsConverter.merge(certificatesFromIT, drafts);
+    public List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units) {
+        final var certificatesFromWC = getCertificatesFromWC(patientId, units);
+        final var certificatesFromIT = getCertificatesFromIT(patientId, units);
+        return IntygDraftsConverter.merge(certificatesFromIT, certificatesFromWC);
     }
 
-    private List<ListIntygEntry> getCachedCertificatesForPatient(String jsonData) throws JsonProcessingException {
-        return objectMapper.readValue(jsonData,
-            objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class));
+    private List<Utkast> getCertificatesFromWC(Personnummer patientId, List<String> units) {
+        final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
+        LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
+        return certificatesFromWC;
     }
 
-    private Pair<List<ListIntygEntry>, Boolean> getCertificates(Personnummer patientId, List<String> units) {
-        final var certificates = intygService.listIntyg(units, patientId);
-        LOG.debug("IntygsService returned {} certificates", certificates.getLeft().size());
-        return certificates;
+    private List<ListIntygEntry> getCertificatesFromIT(Personnummer patientId, List<String> units) {
+        final var key = generateKey(patientId, units);
+        final var certificatesFromIT = deserialize(
+            certificatesForPatientCache.get(key, () -> {
+                final var certificates = intygService.listIntyg(units, patientId).getLeft();
+                LOG.debug("'{}' certificates from IntygService was put in cache for key '{}'", certificates.size(), key);
+                return objectMapper.writeValueAsString(certificates);
+            })
+        );
+        LOG.debug("IntygsService returned {} certificates from cache for key '{}'", certificatesFromIT.size(), key);
+        return certificatesFromIT;
     }
 
-    private static String getSHA1Hash(String input) {
+    private String generateKey(Personnummer patientId, List<String> units) {
+        return Integer.toString(
+            patientId.getPersonnummerHash()
+                .concat(webCertUserService.getUser().getPersonId())
+                .concat(units.toString())
+                .hashCode()
+        );
+    }
+
+    private List<ListIntygEntry> deserialize(String jsonData) {
         try {
-            MessageDigest md = MessageDigest.getInstance(ALGORITHM);
-            byte[] messageDigest = md.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder stringBuilder = new StringBuilder();
-            for (byte bytes : messageDigest) {
-                stringBuilder.append(String.format("%02x", bytes));
-            }
-            return stringBuilder.toString();
-        } catch (NoSuchAlgorithmException e) {
+            return objectMapper.readValue(
+                jsonData,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
+            );
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String base64EncodedString(ListFilter filter, List<String> units) {
-        final var user = webCertUserService.getUser();
-        final var patientId = (ListFilterPersonIdValue) filter.getValue("PATIENT_ID");
-        return Base64.getEncoder().encodeToString((patientId.getValue() + user.getPersonId() + units).getBytes(StandardCharsets.UTF_8));
     }
 }

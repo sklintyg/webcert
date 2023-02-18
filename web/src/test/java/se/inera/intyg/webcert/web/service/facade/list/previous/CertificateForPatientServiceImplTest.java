@@ -20,29 +20,22 @@
 package se.inera.intyg.webcert.web.service.facade.list.previous;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
@@ -59,9 +52,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 @ExtendWith(MockitoExtension.class)
 class CertificateForPatientServiceImplTest {
 
-    @Mock
-    private Cache certificatesForPatientCache;
-    @Spy
+    private ConcurrentMapCache certificatesForPatientCache;
     private CustomObjectMapper objectMapper;
     @Mock
     private IntygService intygService;
@@ -69,23 +60,35 @@ class CertificateForPatientServiceImplTest {
     private UtkastService utkastService;
     @Mock
     private WebCertUserService webCertUserService;
-    @InjectMocks
     private CertificateForPatientServiceImpl certificateForPatient;
-    private static final Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = Pair.of(TestIntygFactory.createListWithIntygItems(),
-        false);
-
+    public static final String CACHE_KEY = "-2053878503";
     private static final String PATIENT_ID = "1912121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
     private static final List<String> UNIT_IDS = List.of("Unit1", "Unit2");
-    private static final Set<String> INTYGS_TYPER = Set.of("Intygstyp1", "Intygstyp2", "Intygstyp3", "Intygstyp4");
+    private static final String HSA_ID = "HSAID-11223";
+
+    @BeforeEach
+    void setUp() {
+        certificatesForPatientCache = new ConcurrentMapCache("test-cache");
+        objectMapper = new CustomObjectMapper();
+        certificateForPatient = new CertificateForPatientServiceImpl(
+            certificatesForPatientCache,
+            objectMapper,
+            intygService,
+            utkastService,
+            webCertUserService
+        );
+
+        final var webCertUser = mock(WebCertUser.class);
+        doReturn(HSA_ID).when(webCertUser).getPersonId();
+        doReturn(webCertUser).when(webCertUserService).getUser();
+    }
 
     @Nested
     class NoCachedData {
 
         @BeforeEach
         void setUp() {
-            doReturn(mock(WebCertUser.class)).when(webCertUserService).getUser();
-
             final var fromWebcert = List.of(
                 TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))
             );
@@ -119,13 +122,10 @@ class CertificateForPatientServiceImplTest {
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"))
             );
 
-            final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
             certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
 
-            verify(certificatesForPatientCache).put(any(String.class), stringArgumentCaptor.capture());
-
-            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(stringArgumentCaptor.getValue(),
+            final var actualResult = (List<ListIntygEntry>) objectMapper.readValue(
+                certificatesForPatientCache.get(CACHE_KEY, String.class),
                 objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class)
             );
 
@@ -141,8 +141,6 @@ class CertificateForPatientServiceImplTest {
 
         @BeforeEach
         void setUp() throws JsonProcessingException {
-            doReturn(mock(WebCertUser.class)).when(webCertUserService).getUser();
-
             final var fromWebcert = List.of(
                 TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18"))
             );
@@ -151,7 +149,7 @@ class CertificateForPatientServiceImplTest {
             final var cachedData = objectMapper.writeValueAsString(List.of(
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
             ));
-            doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
+            certificatesForPatientCache.put(CACHE_KEY, cachedData);
         }
 
         @Test
@@ -176,8 +174,6 @@ class CertificateForPatientServiceImplTest {
 
         @BeforeEach
         void setUp() throws JsonProcessingException {
-            doReturn(mock(WebCertUser.class)).when(webCertUserService).getUser();
-
             final var fromWebcert = List.of(
                 TestIntygFactory.createUtkast("4", LocalDateTime.parse("2014-01-03T12:12:18")),
                 TestIntygFactory.createUtkast("5", LocalDateTime.parse("2014-01-03T12:13:18"))
@@ -187,7 +183,7 @@ class CertificateForPatientServiceImplTest {
             final var cachedData = objectMapper.writeValueAsString(List.of(
                 TestIntygFactory.createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23"), IntygSource.IT)
             ));
-            doReturn(cachedData).when(certificatesForPatientCache).get(any(String.class), eq(String.class));
+            certificatesForPatientCache.put(CACHE_KEY, cachedData);
         }
 
         @Test
