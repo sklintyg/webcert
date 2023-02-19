@@ -30,6 +30,10 @@ public class CertificateType {
     private List<CertificateStatus> statuses;
     private List<CreateCertificateFillType> fillType;
 
+    public CertificateType() {
+        // For deserialization
+    }
+
     public CertificateType(String type, String internalType, String name, List<String> versions, List<CertificateStatus> statuses,
         List<CreateCertificateFillType> fillType) {
         this.type = type;
