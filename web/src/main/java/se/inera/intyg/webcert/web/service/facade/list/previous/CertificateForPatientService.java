@@ -16,12 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.list;
 
+package se.inera.intyg.webcert.web.service.facade.list.previous;
+
+import java.util.List;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-public interface ListPreviousCertificatesFacadeService {
+public interface CertificateForPatientService {
 
-    ListInfo get(ListFilter filter);
+    List<ListIntygEntry> get(ListFilter filter, Personnummer patientId, List<String> units);
 }

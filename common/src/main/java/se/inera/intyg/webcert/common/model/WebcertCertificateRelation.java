@@ -69,6 +69,9 @@ public class WebcertCertificateRelation {
         this.makulerat = makulerat;
     }
 
+    public WebcertCertificateRelation() {
+    }
+
     public String getIntygsId() {
         return intygsId;
     }

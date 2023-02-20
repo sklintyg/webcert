@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.util.Objects;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -50,7 +49,6 @@ public class ListIntygEntry {
     private LocalDateTime lastUpdatedSigned;
 
     private String updatedSignedBy;
-    @JsonIgnore
     private String updatedSignedById;
 
     private boolean vidarebefordrad;
@@ -236,17 +234,51 @@ public class ListIntygEntry {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ListIntygEntry)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        ListIntygEntry intygItem = (ListIntygEntry) o;
-
-        return intygId.equals(intygItem.intygId);
+        ListIntygEntry that = (ListIntygEntry) o;
+        return vidarebefordrad == that.vidarebefordrad && version == that.version && sekretessmarkering == that.sekretessmarkering
+            && avliden == that.avliden && isTestIntyg == that.isTestIntyg && Objects.equals(intygId, that.intygId)
+            && Objects.equals(patientId, that.patientId) && source == that.source && Objects.equals(intygType,
+            that.intygType) && Objects.equals(intygTypeVersion, that.intygTypeVersion) && Objects.equals(intygTypeName,
+            that.intygTypeName) && Objects.equals(status, that.status) && Objects.equals(statusName, that.statusName)
+            && Objects.equals(lastUpdatedSigned, that.lastUpdatedSigned) && Objects.equals(updatedSignedBy,
+            that.updatedSignedBy) && Objects.equals(updatedSignedById, that.updatedSignedById) && Objects.equals(
+            vardenhetId, that.vardenhetId) && Objects.equals(vardgivarId, that.vardgivarId) && Objects.equals(relations,
+            that.relations) && Objects.equals(links, that.links);
     }
 
     @Override
     public int hashCode() {
-        return intygId.hashCode();
+        return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdatedSigned,
+            updatedSignedBy, updatedSignedById, vidarebefordrad, version, vardenhetId, vardgivarId, relations, sekretessmarkering, avliden,
+            links, isTestIntyg);
+    }
+
+    @Override
+    public String toString() {
+        return "ListIntygEntry{"
+            + "intygId='" + intygId + '\''
+            + ", patientId=" + (patientId != null ? patientId.getPersonnummerHash() : null)
+            + ", source=" + source
+            + ", intygType='" + intygType + '\''
+            + ", intygTypeVersion='" + intygTypeVersion + '\''
+            + ", intygTypeName='" + intygTypeName + '\''
+            + ", status='" + status + '\''
+            + ", statusName='" + statusName + '\''
+            + ", lastUpdatedSigned=" + lastUpdatedSigned
+            + ", updatedSignedBy='" + updatedSignedBy + '\''
+            + ", updatedSignedById='" + updatedSignedById + '\''
+            + ", vidarebefordrad=" + vidarebefordrad
+            + ", version=" + version
+            + ", vardenhetId='" + vardenhetId + '\''
+            + ", vardgivarId='" + vardgivarId + '\''
+            + ", relations=" + relations
+            + ", sekretessmarkering=" + sekretessmarkering
+            + ", avliden=" + avliden
+            + ", links=" + links
+            + ", isTestIntyg=" + isTestIntyg
+            + '}';
     }
 }
