@@ -133,4 +133,6 @@ public interface UtkastService {
      * @return true or false value if draft has been created through a replacement of another certificate.
      */
     boolean isDraftCreatedFromReplacement(String certificateId);
+
+    List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds);
 }

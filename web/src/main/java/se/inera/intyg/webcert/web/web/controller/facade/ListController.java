@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +33,6 @@ import se.inera.intyg.webcert.web.service.facade.list.ListQuestionsFacadeService
 import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("/list")
 public class ListController {
@@ -47,9 +48,9 @@ public class ListController {
 
     @Autowired
     public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService,
-                          ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
-                          ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
-                          ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
+        ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
+        ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
+        ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
         this.listDraftsFacadeService = listDraftsFacadeService;
         this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
         this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;

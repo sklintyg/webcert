@@ -18,11 +18,50 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
@@ -102,22 +141,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 /**
  * @author andreaskaltenbach
@@ -542,6 +565,35 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void testListIntygFromIT() {
+        final String enhetsId = "enhet-1";
+
+        // setup intygstjansten WS mock to return intyg information
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
+            .thenReturn(listResponse);
+
+        final var intygItemListResponse = intygService.listIntygFromIT(Collections.singletonList(enhetsId), PERSNR);
+
+        ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
+
+        verify(listCertificatesForCareResponder).listCertificatesForCare(eq(LOGICAL_ADDRESS), argument.capture());
+
+        assertEquals(2, intygItemListResponse.size());
+
+        ListIntygEntry meta = intygItemListResponse.get(0);
+
+        assertEquals("1", meta.getIntygId());
+        assertEquals("fk7263", meta.getIntygType());
+        assertEquals(CertificateState.SENT.name(), meta.getStatus());
+        assertEquals(PERSNR, meta.getPatientId());
+        assertEquals(1, argument.getValue().getEnhetsId().size());
+        assertNotNull(argument.getValue().getEnhetsId().get(0).getRoot());
+        assertEquals(enhetsId, argument.getValue().getEnhetsId().get(0).getExtension());
+        assertNotNull(argument.getValue().getPersonId().getRoot());
+        assertEquals("191212121212", argument.getValue().getPersonId().getExtension());
+    }
+
+    @Test
     public void testListIntygTakesStatusFromWebcertWhenNecessary() throws IOException {
         final String enhetsId = "enhet-1";
 
@@ -864,7 +916,8 @@ public class IntygServiceTest {
     @Test(expected = WebCertServiceException.class)
     public void testFetchRevokedIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
         // Return a signed utkast, to make it fetch intyg from IT
-        when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.of(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now())));
+        when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(
+            Optional.of(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now())));
 
         CertificateMetaData metaData = buildCertificateMetaData();
 
@@ -1139,7 +1192,8 @@ public class IntygServiceTest {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1179,7 +1233,8 @@ public class IntygServiceTest {
         when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
         when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
         assertEquals(0, res.size());
