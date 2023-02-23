@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -35,13 +36,13 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.facade.TextVersionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
-public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
+public class CertificateTextVersionFacadeServiceImpl implements CertificateTextVersionFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TextVersionFacadeServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateTextVersionFacadeServiceImpl.class);
 
     private final IntygTextsService intygTextsService;
     private final UtkastRepository utkastRepository;
@@ -49,8 +50,8 @@ public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
     private final IntygModuleRegistry moduleRegistry;
     private final MonitoringLogService monitoringLogService;
 
-    public TextVersionFacadeServiceImpl(IntygTextsService intygTextsService, UtkastRepository utkastRepository, ObjectMapper objectMapper,
-        IntygModuleRegistry moduleRegistry, MonitoringLogService monitoringLogService) {
+    public CertificateTextVersionFacadeServiceImpl(IntygTextsService intygTextsService, UtkastRepository utkastRepository,
+        ObjectMapper objectMapper, IntygModuleRegistry moduleRegistry, MonitoringLogService monitoringLogService) {
         this.intygTextsService = intygTextsService;
         this.utkastRepository = utkastRepository;
         this.objectMapper = objectMapper;
@@ -59,7 +60,12 @@ public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
     }
 
     @Override
-    public Utkast assertLatestTextVersionForDraft(Utkast utkast) {
+    public Utkast upgradeToLatestMinorTextVersion(Utkast utkast) {
+
+        if (utkast == null || isLockedOrSigned(utkast)) {
+            return utkast;
+        }
+
         final var certificateId = utkast.getIntygsId();
         final var certificateType = utkast.getIntygsTyp();
         final var objectTextVersion = utkast.getIntygTypeVersion();
@@ -77,27 +83,26 @@ public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
             }
 
             utkast.setIntygTypeVersion(latestTextVersion);
-
-            final var previousVersion = !objectTextVersion.equals(latestTextVersion) ? objectTextVersion : jsonModelTextVersion;
-            LOG.info("Updating text version for certificate {} of type {} from version {} to version {}.", certificateId, certificateType,
-                previousVersion, latestTextVersion);
-
+            logUpdatedTextVersion(certificateId, certificateType, objectTextVersion, latestTextVersion, jsonModelTextVersion);
             return utkastRepository.save(utkast);
 
         } catch (OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(certificateId, certificateType);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-
         } catch (JsonProcessingException e) {
             LOG.error("Failure updating json model to latest minor text version for certificate {} of type {} with text version {}.",
                 certificateId, certificateType, objectTextVersion, e);
             return utkast;
-
         } catch (ModuleNotFoundException | IOException | ModuleException e) {
             LOG.error("Could not confirm latest minor text version for certificate {} of type {} with text version {}.",
                 certificateId, certificateType, objectTextVersion, e);
             return utkast;
         }
+    }
+
+    private boolean isLockedOrSigned(Utkast utkast) {
+        final var status = utkast.getStatus();
+        return status == UtkastStatus.DRAFT_LOCKED || status == UtkastStatus.SIGNED;
     }
 
     private String getModelTextVersion(Utkast utkast) throws ModuleNotFoundException, IOException, ModuleException {
@@ -106,8 +111,8 @@ public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
         return utlatande.getTextVersion();
     }
 
-    private boolean isLatestTextVersion(String textVersion, String modelTextVersion, String latestTextVersion) {
-        return textVersion.equals(latestTextVersion) && modelTextVersion.equals(latestTextVersion);
+    private boolean isLatestTextVersion(String objectTextVersion, String modelTextVersion, String latestTextVersion) {
+        return objectTextVersion.equals(latestTextVersion) && modelTextVersion.equals(latestTextVersion);
     }
 
     private void updateJsonModelTextVersion(Utkast utkast, String latestTextVersion) throws JsonProcessingException {
@@ -116,5 +121,12 @@ public class TextVersionFacadeServiceImpl implements TextVersionFacadeService {
         final var textVersionNode = objectMapper.readTree("\"" + latestTextVersion + "\"");
         final var updatedModel = ((ObjectNode) jsonNode).set("textVersion", textVersionNode).toString();
         utkast.setModel(updatedModel);
+    }
+
+    private void logUpdatedTextVersion(String certificateId, String certificateType, String objectTextVersion, String latestTextVersion,
+        String jsonModelTextVersion) {
+        final var previousVersion = !objectTextVersion.equals(latestTextVersion) ? objectTextVersion : jsonModelTextVersion;
+        LOG.info("Updating text version for certificate {} of type {} from version {} to version {}.", certificateId, certificateType,
+            previousVersion, latestTextVersion);
     }
 }

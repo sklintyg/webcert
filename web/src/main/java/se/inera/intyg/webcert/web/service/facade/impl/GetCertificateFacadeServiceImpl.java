@@ -32,7 +32,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.TextVersionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -56,7 +56,7 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
 
     private final ITIntegrationService itIntegrationService;
 
-    private final TextVersionFacadeService textVersionFacadeService;
+    private final CertificateTextVersionFacadeService certificateTextVersionFacadeService;
 
     @Autowired
     public GetCertificateFacadeServiceImpl(UtkastService utkastService,
@@ -64,19 +64,19 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
         UtkastToCertificateConverter utkastToCertificateConverter,
         IntygToCertificateConverter intygToCertificateConverter,
         DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService,
-        TextVersionFacadeService textVersionFacadeService) {
+        CertificateTextVersionFacadeService certificateTextVersionFacadeService) {
         this.utkastService = utkastService;
         this.intygService = intygService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
         this.intygToCertificateConverter = intygToCertificateConverter;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
         this.itIntegrationService = itIntegrationService;
-        this.textVersionFacadeService = textVersionFacadeService;
+        this.certificateTextVersionFacadeService = certificateTextVersionFacadeService;
     }
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog) {
-        Utkast utkast = getCertificateFromWebcert(certificateId, pdlLog);
+        final Utkast utkast = getCertificateFromWebcert(certificateId, pdlLog);
         if (utkast == null) {
             LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'", certificateId, pdlLog);
             final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog);
@@ -92,21 +92,12 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             utkast.setSkickadTillMottagare(getRecipient(certificateInfo));
         }
 
-        if (isUnlockedDraft(utkast)) {
-            utkast = textVersionFacadeService.assertLatestTextVersionForDraft(utkast);
-        }
-
         LOG.debug("Converting Utkast to Certificate");
         return utkastToCertificateConverter.convert(utkast);
     }
 
     private boolean isSignedButNotSent(Utkast utkast) {
         return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
-    }
-
-    private boolean isUnlockedDraft(Utkast utkast) {
-        final var status = utkast.getStatus();
-        return status == UtkastStatus.DRAFT_INCOMPLETE || status == UtkastStatus.DRAFT_COMPLETE;
     }
 
     private String getRecipient(ItIntygInfo certificateInfo) {
@@ -122,7 +113,7 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
             final var utkast = utkastService.getDraft(certificateId, pdlLog);
             draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
-            return utkast;
+            return certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(utkast);
         } catch (WebCertServiceException ex) {
             if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
                 LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);

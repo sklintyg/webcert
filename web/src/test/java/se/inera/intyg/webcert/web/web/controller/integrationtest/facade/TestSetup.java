@@ -30,6 +30,8 @@ import io.restassured.mapper.ObjectMapper;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionRequestDTO;
@@ -99,6 +102,37 @@ public class TestSetup {
                 .header("X-XSRF-TOKEN", csrfToken);
         }
         return spec;
+    }
+
+    public static String getLatestMinorTextVersion(String certificateType, String majorVersion) {
+        return getTextVersionForType(certificateType, majorVersion, 0);
+    }
+
+    public static String getPreviousMinorTextVersion(String certificateType, String majorVersion) {
+        return getTextVersionForType(certificateType, majorVersion, 1);
+    }
+
+    public static String getLatestTextVersion(String certificateType) {
+        return getTextVersionForType(certificateType, null, 1);
+    }
+
+    private static String getTextVersionForType(String certificateType, String majorVersion, int skip) {
+        return getSupportedCertificateTypes().stream()
+            .filter(type -> type.getInternalType().equals(certificateType))
+            .limit(1)
+            .flatMap(f -> f.getVersions().stream())
+            .filter(majorVersion != null ? version -> version.split("\\.")[0].equals(majorVersion) : version -> true)
+            .map(Double::parseDouble)
+            .sorted(Comparator.reverseOrder())
+            .skip(skip)
+            .max(Comparator.naturalOrder()).orElseThrow().toString();
+    }
+
+    private static List<CertificateType> getSupportedCertificateTypes() {
+        return given()
+            .when().get("/testability/certificate/types")
+            .then().statusCode(HttpStatus.OK.value())
+            .extract().body().jsonPath().getList("certificateTypes", CertificateType.class);
     }
 
     public static class TestSetupBuilder {

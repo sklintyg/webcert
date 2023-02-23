@@ -29,6 +29,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
@@ -832,6 +834,58 @@ public class Ag7804IT extends BaseFacadeIT {
         assertAll(
             () -> assertEquals(200, response.getStatusCode())
         );
+    }
+
+    @Nested
+    class UpdateDraftsToLatestMinorVersion {
+
+        private String latestMinorTextVersion;
+        private String previousMinorTextVersion;
+        private final String certificateType = Ag7804EntryPoint.MODULE_ID;
+        private final String patientAthena = ATHENA_ANDERSSON.getPersonId().getId();
+
+        @BeforeEach
+        void setup() {
+            latestMinorTextVersion = TestSetup.getLatestMinorTextVersion(certificateType, "1");
+            previousMinorTextVersion = TestSetup.getPreviousMinorTextVersion(certificateType, "1");
+        }
+
+        @Test
+        public void shouldOpenSavedDraftWithLatestTextVersionForLisjp() {
+            final var testSetup = TestSetup.create()
+                .draft(certificateType, previousMinorTextVersion, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL,
+                    patientAthena)
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateResponse = getCertificate(testSetup);
+
+            assertEquals(latestMinorTextVersion, certificateResponse.getMetadata().getTypeVersion());
+        }
+
+        @Test
+        public void shouldOpenSignedCertificateWithOriginalTextVersionForLisjp() {
+            final var testSetup = TestSetup.create()
+                .certificate(certificateType, previousMinorTextVersion, ALFA_VARDCENTRAL, DR_AJLA, patientAthena)
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateResponse = getCertificate(testSetup);
+
+            assertEquals(previousMinorTextVersion, certificateResponse.getMetadata().getTypeVersion());
+        }
+
+        private CertificateDTO getCertificate(TestSetup testSetup) {
+            return testSetup.spec()
+                .pathParam("certificateId", testSetup.certificateId())
+                .when().get("api/certificate/{certificateId}")
+                .then().statusCode(200)
+                .extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+        }
     }
 
     private String createAg7804Draft() {

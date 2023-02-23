@@ -29,9 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,7 +57,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.TextVersionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -88,7 +86,7 @@ class GetCertificateFacadeServiceImplTest {
     private ITIntegrationService itIntegrationService;
 
     @Mock
-    private TextVersionFacadeService textVersionFacadeService;
+    private CertificateTextVersionFacadeService certificateTextVersionFacadeService;
 
     @InjectMocks
     private GetCertificateFacadeServiceImpl getCertificateService;
@@ -108,6 +106,8 @@ class GetCertificateFacadeServiceImplTest {
 
             doReturn(createCertificate())
                 .when(utkastToCertificateConverter).convert(utkastArgumentCaptor.capture());
+
+            doReturn(draft).when(certificateTextVersionFacadeService).upgradeToLatestMinorTextVersion(draft);
         }
 
         @Test
@@ -235,43 +235,6 @@ class GetCertificateFacadeServiceImplTest {
                 getCertificateService.getCertificate(draft.getIntygsId(), false);
                 verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
                 assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
-            }
-        }
-
-        @Nested
-        class CheckDraftVersion {
-
-            @BeforeEach
-            void setUp() {
-                draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            }
-
-            @Test
-            void shouldNotCheckDraftVersionIfSignedCertificate() {
-                draft.setStatus(UtkastStatus.SIGNED);
-                getCertificateService.getCertificate(draft.getIntygsId(), false);
-                verifyNoInteractions(textVersionFacadeService);
-            }
-
-            @Test
-            void shouldNotCheckDraftVersionIfLockedDraft() {
-                draft.setStatus(UtkastStatus.DRAFT_LOCKED);
-                getCertificateService.getCertificate(draft.getIntygsId(), false);
-                verifyNoInteractions(textVersionFacadeService);
-            }
-
-            @Test
-            void shouldCheckDraftVersionIfCompleteDraft() {
-                draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
-                getCertificateService.getCertificate(draft.getIntygsId(), false);
-                verify(textVersionFacadeService, times(1)).assertLatestTextVersionForDraft(draft);
-            }
-
-            @Test
-            void shouldCheckDraftVersionIfIncompleteDraft() {
-                draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-                getCertificateService.getCertificate(draft.getIntygsId(), false);
-                verify(textVersionFacadeService, times(1)).assertLatestTextVersionForDraft(draft);
             }
         }
 

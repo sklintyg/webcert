@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.service.facade;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-public interface TextVersionFacadeService {
+public interface CertificateTextVersionFacadeService {
 
-    Utkast assertLatestTextVersionForDraft(Utkast utkast);
+    Utkast upgradeToLatestMinorTextVersion(Utkast utkast);
 
 }

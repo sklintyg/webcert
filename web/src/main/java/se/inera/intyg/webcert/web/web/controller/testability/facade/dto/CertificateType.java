@@ -31,7 +31,6 @@ public class CertificateType {
     private List<CreateCertificateFillType> fillType;
 
     public CertificateType() {
-        // For deserialization
     }
 
     public CertificateType(String type, String internalType, String name, List<String> versions, List<CertificateStatus> statuses,
