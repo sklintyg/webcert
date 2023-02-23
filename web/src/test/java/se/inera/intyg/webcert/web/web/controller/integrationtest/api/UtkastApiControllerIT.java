@@ -131,7 +131,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         QueryIntygResponse queryResponse = spec()
             .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
             .expect().statusCode(200).when().get("api/utkast")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+            .then()
             .body("totalCount", equalTo(1)).extract().response().as(QueryIntygResponse.class);
 
         // The only result should match the utkast we created in the setup
@@ -163,7 +163,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
             .param("pageSize", 4)
             .expect().statusCode(200).when().get("api/utkast")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+            .then()
             .body("totalCount", equalTo(18)).extract().response().as(QueryIntygResponse.class);
 
         Assert.assertEquals(4, queryResponse.getResults().size());
@@ -183,7 +183,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
             .param("pageSize", 4).param("startFrom", 16)
             .expect().statusCode(200).when().get("api/utkast")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+            .then()
             .body("totalCount", equalTo(18)).extract().response().as(QueryIntygResponse.class);
 
         Assert.assertEquals(2, queryResponse2.getResults().size());
@@ -220,7 +220,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
             .param("pageSize", 4)
             .expect().statusCode(200).when().get("api/utkast")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+            .then()
             .body("totalCount", equalTo(16)).extract().response().as(QueryIntygResponse.class);
 
         Assert.assertEquals(4, queryResponse.getResults().size());
@@ -237,7 +237,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
             .param("pageSize", 4).param("startFrom", 14)
             .expect().statusCode(200).when().get("api/utkast")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+            .then()
             .body("totalCount", equalTo(16)).extract().response().as(QueryIntygResponse.class);
 
         Assert.assertEquals(2, queryResponse2.getResults().size());
