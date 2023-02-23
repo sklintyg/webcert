@@ -1,0 +1,11 @@
+FROM docker.drift.inera.se/intyg/app-builder-image:11.0.8 as builder
+ENV GRADLE_USER_HOME /tmp/cache
+WORKDIR /app/
+COPY . .
+RUN gradle --no-daemon build -PcodeQuality -DinfraVersion=3.19.0.+ -DcommonVersion=3.19.0.+ -Dfile.encoding=UTF-8
+RUN find ${GRADLE_USER_HOME} -type f -name "*.lock" -delete
+
+FROM docker.drift.inera.se/intyg/app-builder-image:11.0.8
+ENV GRADLE_RO_DEP_CACHE /tmp/cache/caches/
+COPY --from=builder /tmp/cache/caches/modules-2 /tmp/cache/caches/modules-2
+RUN chmod 777 -R /tmp/cache/
