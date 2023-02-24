@@ -39,7 +39,24 @@ public class ReactPilotUtil {
         return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
+    public boolean useReactClientFristaende(WebCertUser user, String certificateType) {
+        if (isOriginDifferentThanFristaende(user)) {
+            return false;
+        }
+
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
+        if (feature == null) {
+            return false;
+        }
+
+        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
+    }
+
     private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
         return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin());
+    }
+
+    private boolean isOriginDifferentThanFristaende(WebCertUser user) {
+        return !UserOriginType.NORMAL.name().equalsIgnoreCase(user.getOrigin());
     }
 }

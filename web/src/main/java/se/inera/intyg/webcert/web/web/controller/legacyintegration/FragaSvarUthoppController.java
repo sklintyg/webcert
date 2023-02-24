@@ -43,8 +43,11 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
@@ -76,6 +79,15 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @Autowired
     private IntygService intygService;
 
+    @Autowired
+    private WebCertUserService webCertUserService;
+
+    @Autowired
+    private ReactUriFactory reactUriFactory;
+
+    @Autowired
+    private ReactPilotUtil reactPilotUtil;
+
     // api
 
     /**
@@ -92,14 +104,23 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateParameter("type", type);
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
-        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
+        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), type)) {
+            return getReactRedirectResponse(uriInfo, intygId);
+        } else {
+            super.validateParameter("type", type);
+            super.validateParameter("intygId", intygId);
+            super.validateAuthorities();
+            this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
-        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
+            LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
+            final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
+            return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
+        }
+    }
+
+    private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
+        final var uri = reactUriFactory.uriForCertificate(uriInfo, intygId);
+        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
     }
 
     /**
@@ -115,15 +136,19 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
-        //This is hardwired to fk7263 only
-        String intygType = DEFAULT_TYPE;
-        String intygTypeVersion = DEFAULT_TYPE_VERSION;
-        this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
+        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), null)) {
+            return getReactRedirectResponse(uriInfo, intygId);
+        } else {
+            super.validateParameter("intygId", intygId);
+            super.validateAuthorities();
+            //This is hardwired to fk7263 only
+            String intygType = DEFAULT_TYPE;
+            String intygTypeVersion = DEFAULT_TYPE_VERSION;
+            this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
 
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
+            LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
+            return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
+        }
     }
 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
