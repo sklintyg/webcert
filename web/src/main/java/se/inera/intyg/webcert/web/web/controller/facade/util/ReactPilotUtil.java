@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.util;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -36,7 +37,7 @@ public class ReactPilotUtil {
             return false;
         }
 
-        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
+        return isFeatureActive(certificateType, feature);
     }
 
     public boolean useReactClientFristaende(WebCertUser user, String certificateType) {
@@ -49,6 +50,10 @@ public class ReactPilotUtil {
             return false;
         }
 
+        return isFeatureActive(certificateType, feature);
+    }
+
+    private static boolean isFeatureActive(String certificateType, Feature feature) {
         return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
