@@ -22,11 +22,13 @@ public class ForwardedListInfo {
    private boolean forwarded;
    private String unitName;
    private String careProviderName;
+   private String certificateType;
 
-    public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName) {
+    public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName, String certificateType) {
         this.forwarded = forwarded;
         this.unitName = unitName;
         this.careProviderName = careProviderName;
+        this.certificateType = certificateType;
     }
 
     public boolean isForwarded() {
@@ -51,5 +53,13 @@ public class ForwardedListInfo {
 
     public void setCareProviderName(String careProviderName) {
         this.careProviderName = careProviderName;
+    }
+
+    public String getCertificateType() {
+        return certificateType;
+    }
+
+    public void setCertificateType(String certificateType) {
+        this.certificateType = certificateType;
     }
 }
