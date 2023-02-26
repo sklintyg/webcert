@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public class Tstrk1031V4IT extends BaseFacadeIT {
 
-    private static final String CURRENT_VERSION = "4.0";
+    private static final String CURRENT_VERSION = "4.1";
 
     @Nested
     class Draft {
@@ -505,7 +505,7 @@ public class Tstrk1031V4IT extends BaseFacadeIT {
         }
 
         @Test
-        public void shouldOpenSavedDraftWithLatestTextVersionForLisjp() {
+        public void shouldOpenSavedDraftWithLatestTextVersion() {
             final var testSetup = TestSetup.create()
                 .draft(certificateType, previousMinorTextVersion, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL,
                     patientAthena)
@@ -520,7 +520,7 @@ public class Tstrk1031V4IT extends BaseFacadeIT {
         }
 
         @Test
-        public void shouldOpenSignedCertificateWithOriginalTextVersionForLisjp() {
+        public void shouldOpenSignedCertificateWithOriginalTextVersion() {
             final var testSetup = TestSetup.create()
                 .certificate(certificateType, previousMinorTextVersion, ALFA_VARDCENTRAL, DR_AJLA, patientAthena)
                 .login(DR_AJLA_ALFA_VARDCENTRAL)
