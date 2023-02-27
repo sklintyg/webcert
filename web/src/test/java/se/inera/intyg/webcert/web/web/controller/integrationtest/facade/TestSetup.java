@@ -113,7 +113,7 @@ public class TestSetup {
     }
 
     public static String getLatestTextVersion(String certificateType) {
-        return getTextVersionForType(certificateType, null, 1);
+        return getTextVersionForType(certificateType, null, 0);
     }
 
     private static String getTextVersionForType(String certificateType, String majorVersion, int skip) {
