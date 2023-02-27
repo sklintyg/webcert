@@ -18,141 +18,95 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
-
-import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
-import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.pu.PuIT;
 
-public class DoiIT extends BaseFacadeIT {
+public class DoiIT {
+
+    private static final String CURRENT_VERSION = "1.0";
 
     @Nested
-    class Draft {
+    @TestInstance(Lifecycle.PER_CLASS)
+    class IncludeCommonCertificateIT extends CommonCertificateIT {
 
-        @Test
-        void shallCreateDoiDraft() {
-            final var testSetup = TestSetup.create()
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            final var certificateId = createDoiDraft(testSetup);
-
-            final var response = getTestDraft(certificateId);
-
-            assertNotNull(response.getMetadata(), "Expect draft to include meta data");
+        @Override
+        protected String moduleId() {
+            return DoiModuleEntryPoint.MODULE_ID;
         }
 
-        @Test
-        void shallCreateDraftWithData() {
-            final var testSetup = TestSetup.create()
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            final var certificateId = createDoiDraft(testSetup);
-
-            final var response = getTestDraft(certificateId);
-
-            assertTrue(response.getData().size() > 0, "Expect draft to include data");
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
 
-        @Test
-        void shallSaveDraftWithData() {
-            final var testSetup = TestSetup.create()
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            final var certificateId = createDoiDraft(testSetup);
-
-            final var certificate = getTestDraft(certificateId);
-
-            final var unit = certificate.getMetadata().getUnit();
-            certificate.getMetadata().setUnit(
-                Unit.builder()
-                    .unitId(unit.getUnitId())
-                    .unitName(unit.getUnitName())
-                    .build()
-            );
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", certificate.getMetadata().getId())
-                .contentType(ContentType.JSON)
-                .body(certificate)
-                .expect().statusCode(200)
-                .when()
-                .put("api/certificate/{certificateId}")
-                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-            assertTrue(response.getVersion() > certificate.getMetadata().getVersion(),
-                "Expect version after save to be incremented");
+        @Override
+        protected Boolean shouldReturnLatestVersion() {
+            return false;
         }
 
-        @Test
-        void shallValidateDraft() {
-            final var testSetup = TestSetup.create()
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
+        @Override
+        protected List<String> typeVersionList() {
+            return List.of(CURRENT_VERSION);
+        }
+    }
 
-            final var certificateId = createDoiDraft(testSetup);
+    @Nested
+    class IncludeCommonDraftIT extends CommonDraftIT {
 
-            final var response = getTestDraft(certificateId);
-
-            final var validation = testSetup
-                .spec()
-                .pathParam("certificateId", certificateId)
-                .contentType(ContentType.JSON)
-                .body(response)
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateId}/validate")
-                .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-            assertTrue(validation.getValidationErrors().length > 0, "Expect draft to include validationsErrors");
+        @Override
+        protected String moduleId() {
+            return DoiModuleEntryPoint.MODULE_ID;
         }
 
-        @Test
-        void shallCreateDraftWithResourceLinks() {
-            final var testSetup = TestSetup.create()
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
+        }
+    }
 
-            final var certificateId = createDoiDraft(testSetup);
+    @Nested
+    @TestInstance(Lifecycle.PER_CLASS)
+    class IncludeCommonLockedCertificateIT extends CommonLockedCertificateIT {
 
-            final var response = getTestDraft(certificateId);
-
-            assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
+        @Override
+        protected String moduleId() {
+            return DoiModuleEntryPoint.MODULE_ID;
         }
 
-        private CertificateDTO getTestDraft(String certificateId) {
-            return given()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .get("api/certificate/{certificateId}")
-                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
 
-        private String createDoiDraft(TestSetup testSetup) {
-            final var certificateId = testSetup
-                .spec()
-                .pathParam("certificateType", DoiModuleEntryPoint.MODULE_ID)
-                .pathParam("patientId", ATHENA_ANDERSSON.getPersonId().getId())
-                .expect().statusCode(200)
-                .when()
-                .post("api/certificate/{certificateType}/{patientId}")
-                .then().extract().path("certificateId").toString();
-            certificateIdsToCleanAfterTest.add(certificateId);
-            return certificateId;
+        @Override
+        protected List<String> typeVersionList() {
+            return List.of(CURRENT_VERSION);
+        }
+
+        @Override
+        protected Boolean shouldReturnLatestVersion() {
+            return false;
+        }
+    }
+
+    @Nested
+    class IncludePuIT extends PuIT {
+
+        @Override
+        protected String moduleId() {
+            return DoiModuleEntryPoint.MODULE_ID;
+        }
+
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
     }
 }

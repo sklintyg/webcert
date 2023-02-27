@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
 
 public class QuestionIT extends BaseFacadeIT {
 

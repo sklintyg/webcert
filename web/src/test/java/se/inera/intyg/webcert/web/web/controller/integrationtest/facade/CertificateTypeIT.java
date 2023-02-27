@@ -24,6 +24,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
 
 /**
  * This needs webcert to be up and running.

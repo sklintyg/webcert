@@ -19,483 +19,96 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.facade;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ALFA_VARDCENTRAL;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
-
-import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.RevokeCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
 
 public class Tstrk1031V4IT extends BaseFacadeIT {
 
-    private static final String CURRENT_VERSION = "4.0";
+    private static final String CURRENT_VERSION = "4.1";
 
     @Nested
-    class Draft {
+    @TestInstance(Lifecycle.PER_CLASS)
+    class IncludeCommonCertificateIT extends CommonCertificateIT {
 
-        @Test
-        void draftShouldContainData() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertTrue(response.getData().size() > 0, "Expect draft to include data");
+        @Override
+        protected String moduleId() {
+            return TsDiabetesEntryPoint.MODULE_ID;
         }
 
-        @Test
-        void draftShouldContainMetaData() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertNotNull(response.getMetadata(), "Expect draft to include meta data");
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
 
-        @Test
-        void draftShouldContainResourceLinks() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
+        @Override
+        protected Boolean shouldReturnLatestVersion() {
+            return false;
         }
 
-        @Test
-        void shallBeAbleToSaveDraft() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var certificate = getCertificate(testSetup);
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", certificate.getMetadata().getId())
-                .contentType(ContentType.JSON)
-                .body(certificate)
-                .expect().statusCode(200)
-                .when()
-                .put("api/certificate/{certificateId}")
-                .then().extract().response().as(SaveCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-            assertTrue(response.getVersion() > certificate.getMetadata().getVersion(),
-                "Expect version after save to be incremented");
-        }
-
-        @Test
-        public void shallBeAbleToDeleteDraft() {
-            final var testSetup = TestSetup.create()
-                .draft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    CreateCertificateFillType.EMPTY,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .pathParam("version", 1)
-                .when()
-                .delete("api/certificate/{certificateId}/{version}")
-                .then().extract().response();
-
-            assertEquals(200, response.getStatusCode());
-        }
-
-        @Nested
-        class Validation {
-
-            @Test
-            void shallValidateEmptyDraftAndReturnValidationErrors() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        TsDiabetesEntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.EMPTY,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = getCertificate(testSetup);
-
-                final var validation = testSetup
-                    .spec()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(response)
-                    .expect().statusCode(200)
-                    .when()
-                    .post("api/certificate/{certificateId}/validate")
-                    .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-                assertTrue(validation.getValidationErrors().length > 0, "Expect draft to include validationsErrors");
-            }
-
-            @Test
-            void shallValidateMinimalDraftAndReturnNoValidationErrors() {
-                final var testSetup = TestSetup.create()
-                    .draft(
-                        TsDiabetesEntryPoint.MODULE_ID,
-                        CURRENT_VERSION,
-                        CreateCertificateFillType.MINIMAL,
-                        DR_AJLA,
-                        ALFA_VARDCENTRAL,
-                        ATHENA_ANDERSSON.getPersonId().getId()
-                    )
-                    .login(DR_AJLA_ALFA_VARDCENTRAL)
-                    .setup();
-
-                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-                final var response = getCertificate(testSetup);
-
-                final var validation = testSetup
-                    .spec()
-                    .pathParam("certificateId", testSetup.certificateId())
-                    .contentType(ContentType.JSON)
-                    .body(response)
-                    .expect().statusCode(200)
-                    .when()
-                    .post("api/certificate/{certificateId}/validate")
-                    .then().extract().response().as(ValidateCertificateResponseDTO.class, getObjectMapperForDeserialization());
-
-                assertEquals(0, validation.getValidationErrors().length, "Expect draft to not include validationsErrors");
-            }
+        @Override
+        protected List<String> typeVersionList() {
+            return List.of("4.0", CURRENT_VERSION);
         }
     }
 
     @Nested
-    class Certificate {
+    class IncludeCommonDraftIT extends CommonDraftIT {
 
-        @Test
-        void certificateShouldContainData() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertTrue(response.getData().size() > 0, "Expect draft to include data");
+        @Override
+        protected String moduleId() {
+            return TsDiabetesEntryPoint.MODULE_ID;
         }
 
-        @Test
-        void certificateShouldContainMetaData() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertNotNull(response.getMetadata(), "Expect draft to include meta data");
-        }
-
-        @Test
-        void certificateShouldContainResourceLinks() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = getCertificate(testSetup);
-
-            assertTrue(response.getLinks().length > 0, "Expect draft to include resourceLinks");
-        }
-
-        @Test
-        public void shallBeAbleToPrintCertificate() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .pathParam("certificateType", testSetup.certificate().getMetadata().getType())
-                .when()
-                .get("/moduleapi/intyg/{certificateType}/{certificateId}/pdf")
-                .then().extract().response();
-
-            assertEquals(200, response.getStatusCode());
-        }
-
-        @Test
-        void shallReturnCertificateOfCurrentVersionAfterReplace() {
-
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
-
-            final var certificateId = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
-                .body(newCertificateRequestDTO)
-                .expect().statusCode(200)
-                .when().post("api/certificate/{certificateId}/replace")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", certificateId)
-                .expect().statusCode(200)
-                .when()
-                .get("api/certificate/{certificateId}")
-                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
-
-            assertEquals(CURRENT_VERSION, response.getMetadata().getTypeVersion());
-
-        }
-
-        @Test
-        public void shallBeAbleToRevokeCertificate() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
-            revokeCertificateRequest.setReason("Reason");
-            revokeCertificateRequest.setMessage("Message");
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
-                .body(revokeCertificateRequest)
-                .when().post("api/certificate/{certificateId}/revoke")
-                .then().extract().response();
-
-            assertEquals(200, response.getStatusCode());
-        }
-
-        @Test
-        public void shallBeAbleToRevokeLockedCertificate() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var revokeCertificateRequest = new RevokeCertificateRequestDTO();
-            revokeCertificateRequest.setReason("Reason");
-            revokeCertificateRequest.setMessage("Message");
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
-                .body(revokeCertificateRequest)
-                .when().post("api/certificate/{certificateId}/revoke")
-                .then().extract().response();
-
-            assertEquals(200, response.getStatusCode());
-        }
-
-        @Test
-        void shallNotBeAbleToCreateCertificateFromTemplateCurrentVersion() {
-            final var testSetup = TestSetup.create()
-                .certificate(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    ALFA_VARDCENTRAL,
-                    DR_AJLA,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
-
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
-
-            final var response = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .expect().statusCode(500)
-                .when().post("api/certificate/{certificateId}/template")
-                .then().extract().statusCode();
-
-            assertEquals(response, 500);
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
     }
 
     @Nested
-    class LockedCertificate {
+    @TestInstance(Lifecycle.PER_CLASS)
+    class IncludeCommonLockedCertificateIT extends CommonLockedCertificateIT {
 
-        @Test
-        void shallBeAbleToCopyCurrentVersion() {
-            final var testSetup = TestSetup.create()
-                .lockedDraft(
-                    TsDiabetesEntryPoint.MODULE_ID,
-                    CURRENT_VERSION,
-                    DR_AJLA,
-                    ALFA_VARDCENTRAL,
-                    ATHENA_ANDERSSON.getPersonId().getId()
-                )
-                .login(DR_AJLA_ALFA_VARDCENTRAL)
-                .setup();
+        @Override
+        protected String moduleId() {
+            return TsDiabetesEntryPoint.MODULE_ID;
+        }
 
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
+        }
 
-            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-            newCertificateRequestDTO.setPatientId(testSetup.certificate().getMetadata().getPatient().getPersonId());
-            newCertificateRequestDTO.setCertificateType(testSetup.certificate().getMetadata().getType());
+        @Override
+        protected List<String> typeVersionList() {
+            return List.of("4.0", CURRENT_VERSION);
+        }
 
-            final var certificateId = testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
-                .body(newCertificateRequestDTO)
-                .expect().statusCode(200)
-                .when().post("api/certificate/{certificateId}/copy")
-                .then().extract().path("certificateId").toString();
-
-            certificateIdsToCleanAfterTest.add(certificateId);
-
-            assertNotNull(certificateId, "Expect certificate id to have a value");
+        @Override
+        protected Boolean shouldReturnLatestVersion() {
+            return false;
         }
     }
 
-    private CertificateDTO getCertificate(TestSetup testSetup) {
-        return testSetup
-            .spec()
-            .pathParam("certificateId", testSetup.certificateId())
-            .expect().statusCode(200)
-            .when()
-            .get("api/certificate/{certificateId}")
-            .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+    @Nested
+    class IncludeSendIT extends SendIT {
+
+        @Override
+        protected String moduleId() {
+            return TsDiabetesEntryPoint.MODULE_ID;
+        }
+
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
+        }
     }
 }

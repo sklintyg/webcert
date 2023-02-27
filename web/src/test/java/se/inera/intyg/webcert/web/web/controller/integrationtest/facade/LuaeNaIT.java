@@ -22,19 +22,17 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.complement.ComplementIT;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.fmb.UpdateFmbIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.renew.RenewIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.template.TemplateIT;
 
-public class LisjpIT {
+public class LuaeNaIT {
 
-    private static final String CURRENT_VERSION = "1.3";
-    private static final String AG7804_CURRENT_VERSION = "1.2";
+    private static final String CURRENT_VERSION = "1.0";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -42,7 +40,7 @@ public class LisjpIT {
 
         @Override
         protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -52,12 +50,12 @@ public class LisjpIT {
 
         @Override
         protected Boolean shouldReturnLatestVersion() {
-            return true;
+            return false;
         }
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", CURRENT_VERSION);
+            return List.of(CURRENT_VERSION);
         }
     }
 
@@ -66,7 +64,7 @@ public class LisjpIT {
 
         @Override
         protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -81,7 +79,7 @@ public class LisjpIT {
 
         @Override
         protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -91,12 +89,26 @@ public class LisjpIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", CURRENT_VERSION);
+            return List.of(CURRENT_VERSION);
         }
 
         @Override
         protected Boolean shouldReturnLatestVersion() {
-            return true;
+            return false;
+        }
+    }
+
+    @Nested
+    class IncludeSendIT extends SendIT {
+
+        @Override
+        protected String moduleId() {
+            return LuaenaEntryPoint.MODULE_ID;
+        }
+
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
     }
 
@@ -106,7 +118,7 @@ public class LisjpIT {
 
         @Override
         protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -116,60 +128,37 @@ public class LisjpIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", CURRENT_VERSION);
+            return List.of(CURRENT_VERSION);
         }
 
         @Override
         protected Boolean shouldReturnLastestVersion() {
-            return true;
+            return false;
         }
     }
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
-    class IncludeTemplateIT extends TemplateIT {
+    class IncludeRenewIT extends RenewIT {
 
         @Override
         protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
-        protected String expectedVersion() {
-            return AG7804_CURRENT_VERSION;
+        protected String currentTypeVersion() {
+            return CURRENT_VERSION;
         }
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2");
-        }
-    }
-
-    @Nested
-    class IncludeSendIT extends SendIT {
-
-        @Override
-        protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
+            return List.of(CURRENT_VERSION);
         }
 
         @Override
-        protected String typeVersion() {
-            return CURRENT_VERSION;
-        }
-    }
-
-    @Nested
-    class IncludeUpdateFmbIT extends UpdateFmbIT {
-
-        @Override
-        protected String moduleId() {
-            return LisjpEntryPoint.MODULE_ID;
-        }
-
-        @Override
-        protected String typeVersion() {
-            return CURRENT_VERSION;
+        protected Boolean shouldReturnLatestVersion() {
+            return false;
         }
     }
 }
