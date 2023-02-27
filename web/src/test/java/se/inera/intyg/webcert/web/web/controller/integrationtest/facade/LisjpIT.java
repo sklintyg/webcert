@@ -26,8 +26,9 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.complement.ComplementIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.fmb.UpdateFmbIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.question.AdministrativeQuestionIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.question.ComplementQuestionIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.template.TemplateIT;
 
@@ -102,7 +103,7 @@ public class LisjpIT {
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
-    class IncludeComplementIT extends ComplementIT {
+    class IncludeComplementQuestionIT extends ComplementQuestionIT {
 
         @Override
         protected String moduleId() {
@@ -161,6 +162,20 @@ public class LisjpIT {
 
     @Nested
     class IncludeUpdateFmbIT extends UpdateFmbIT {
+
+        @Override
+        protected String moduleId() {
+            return LisjpEntryPoint.MODULE_ID;
+        }
+
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
+        }
+    }
+
+    @Nested
+    class IncludeAdministrativeQuestionIT extends AdministrativeQuestionIT {
 
         @Override
         protected String moduleId() {

@@ -42,6 +42,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.TestSetup.TestSetupBuilder;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
@@ -300,6 +301,50 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
             .complementQuestion()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
+    }
+
+    protected TestSetup getCertificateTestSetupWithComplementQuestionsAndSend(String moduleId, String typeVersion) {
+        return TestSetup.create()
+            .certificate(
+                moduleId,
+                typeVersion,
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .setup();
+    }
+
+    protected TestSetup getCertificateTestSetupWithQuestionsAndSend(String moduleId, String typeVersion) {
+        return TestSetup.create()
+            .certificate(
+                moduleId,
+                typeVersion,
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .sendCertificate()
+            .question()
+            .useDjupIntegratedOrigin()
+            .login(DR_AJLA_ALFA_VARDCENTRAL)
+            .setup();
+    }
+
+    protected TestSetupBuilder getCertificateTestSetupBuilder(String moduleId, String typeVersion) {
+        return TestSetup.create()
+            .certificate(
+                moduleId,
+                typeVersion,
+                ALFA_VARDCENTRAL,
+                DR_AJLA,
+                ATHENA_ANDERSSON.getPersonId().getId()
+            )
+            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
     protected CertificateDTO getCertificate(TestSetup testSetup) {

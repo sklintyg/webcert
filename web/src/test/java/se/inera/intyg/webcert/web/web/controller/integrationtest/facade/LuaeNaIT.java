@@ -26,7 +26,8 @@ import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.complement.ComplementIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.question.AdministrativeQuestionIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.question.ComplementQuestionIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.renew.RenewIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
 
@@ -114,7 +115,7 @@ public class LuaeNaIT {
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
-    class IncludeComplementIT extends ComplementIT {
+    class IncludeComplementQuestionIT extends ComplementQuestionIT {
 
         @Override
         protected String moduleId() {
@@ -159,6 +160,20 @@ public class LuaeNaIT {
         @Override
         protected Boolean shouldReturnLatestVersion() {
             return false;
+        }
+    }
+
+    @Nested
+    class IncludeAdministrativeQuestionIT extends AdministrativeQuestionIT {
+
+        @Override
+        protected String moduleId() {
+            return LuaenaEntryPoint.MODULE_ID;
+        }
+
+        @Override
+        protected String typeVersion() {
+            return CURRENT_VERSION;
         }
     }
 }
