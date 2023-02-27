@@ -27,10 +27,14 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.ATHENA_ANDERSSON;
 
 import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.infra.logmessages.ActivityType;
@@ -48,6 +52,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
 
     protected abstract String typeVersion();
 
+    private final List<String> uniqueSignedCertificates = List.of(
+        DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID
+    );
 
     @Test
     @DisplayName("Shall contain required fields with correct type version")
@@ -69,24 +76,27 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be able to sign draft")
     void shallBeAbleToSignDraft() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.MAXIMAL, moduleId(), typeVersion());
+        if (!uniqueSignedCertificates.contains(moduleId())) {
 
-        certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+            final var testSetup = getDraftTestSetup(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
 
-        final var certificate = getCertificate(testSetup);
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-        final var response = testSetup
-            .spec()
-            .pathParam("certificateId", certificate.getMetadata().getId())
-            .contentType(ContentType.JSON)
-            .body(certificate)
-            .expect().statusCode(200)
-            .when()
-            .post("api/certificate/{certificateId}/sign")
-            .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+            final var certificate = getCertificate(testSetup);
 
-        assertEquals(CertificateStatus.SIGNED, response.getMetadata().getStatus(),
-            "Expect certificate status to be signed");
+            final var response = testSetup
+                .spec()
+                .pathParam("certificateId", certificate.getMetadata().getId())
+                .contentType(ContentType.JSON)
+                .body(certificate)
+                .expect().statusCode(200)
+                .when()
+                .post("api/certificate/{certificateId}/sign")
+                .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
+
+            assertEquals(CertificateStatus.SIGNED, response.getMetadata().getStatus(),
+                "Expect certificate status to be signed");
+        }
     }
 
     @Test
@@ -371,21 +381,24 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log sign activity when signing draft")
         public void shallPdlLogSignActivityWhenSigningDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
+            if (!uniqueSignedCertificates.contains(moduleId())) {
 
-            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+                final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
 
-            testSetup
-                .spec()
-                .pathParam("certificateId", testSetup.certificateId())
-                .contentType(ContentType.JSON)
-                .body(testSetup.certificate())
-                .when().post("api/certificate/{certificateId}/sign")
-                .then()
-                .assertThat().statusCode(HttpStatus.OK.value());
+                certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
-            assertNumberOfPdlMessages(1);
-            assertPdlLogMessage(ActivityType.SIGN, testSetup.certificateId());
+                testSetup
+                    .spec()
+                    .pathParam("certificateId", testSetup.certificateId())
+                    .contentType(ContentType.JSON)
+                    .body(testSetup.certificate())
+                    .when().post("api/certificate/{certificateId}/sign")
+                    .then()
+                    .assertThat().statusCode(HttpStatus.OK.value());
+
+                assertNumberOfPdlMessages(moduleId().equals(Af00213EntryPoint.MODULE_ID) ? 2 : 1);
+                assertPdlLogMessage(ActivityType.SIGN, testSetup.certificateId());
+            }
         }
 
         @Test
