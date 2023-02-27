@@ -48,9 +48,9 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public abstract class CommonFacadeITSetup extends BaseFacadeIT {
 
-    protected final static String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
-    protected final static String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
-    protected final static String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
+    protected static final String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
+    protected static final String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
+    protected static final String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
 
     protected TestSetup getLoginTestSetup() {
         return TestSetup.create().login(DR_AJLA_ALFA_VARDCENTRAL).setup();

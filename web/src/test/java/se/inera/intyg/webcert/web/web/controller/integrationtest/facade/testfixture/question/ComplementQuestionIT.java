@@ -201,7 +201,8 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
         );
     }
 
-    @Disabled("This test doesn't succeed in the pipeline, but works locally. Might be caused by Intygstjansten, but when using it locally it still works")
+    @Disabled("This test doesn't succeed in the pipeline, but works locally."
+        + " Might be caused by Intygstjansten, but when using it locally it still works")
     @Test
     @DisplayName("Shall return complement question with answered by certificate")
     void shallReturnComplementQuestionWithAnsweredByCertificate() {
