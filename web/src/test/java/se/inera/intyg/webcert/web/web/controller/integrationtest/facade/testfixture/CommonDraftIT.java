@@ -59,7 +59,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall contain required fields with correct type version")
     void draftShouldContainRequiredFieldsWithCorrectTypeVersion() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -78,7 +78,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     void shallBeAbleToSignDraft() {
         if (!uniqueSignedCertificates.contains(moduleId())) {
 
-            final var testSetup = getDraftTestSetup(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion()).setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -102,7 +102,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be able to save draft")
     void shallBeAbleToSaveDraft() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -125,7 +125,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be able to remove draft")
     public void shallBeAbleToRemoveDraft() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -143,7 +143,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be return validation errors for empty draft")
     void shallReturnValidationErrorsForEmptyDraft() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -165,7 +165,7 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be able to print draft")
     void shallBeAbleToPrintDraft() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -186,7 +186,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log create activity when creating draft")
         public void shallPdlLogCreateActivityWhenCreatingDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             final var createUtkastRequest = new CreateUtkastRequest();
             createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
@@ -214,7 +216,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall not pdl log when working with a test indicated patient")
         public void shallNotPdlLogWhenWorkingWithATestIndicatedPatient() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             final var createUtkastRequest = new CreateUtkastRequest();
             createUtkastRequest.setIntygType(LisjpEntryPoint.MODULE_ID);
@@ -248,7 +252,10 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log read activity when feting draft")
         public void shallPdlLogReadActivityWhenFetchingDraft() {
-            final var testSetup = getDraftTestSetupForPdlWithSjf(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .sjf()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -287,7 +294,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall not pdl log when validating draft")
         public void shallNotPdlLogWhenValidatingDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -307,7 +316,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log update activity when saving draft")
         public void shallPdlLogUpdateActivityWhenSavingDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -328,7 +339,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log update activity when saving draft multiple times in a session")
         public void shallPdlLogUpdateActivityOnceWhenSavingDraftMultipleTimesInASession() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -361,7 +374,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log print activity when printing draft")
         public void shallPdlLogPrintActivityWhenPrintingDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -383,7 +398,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         public void shallPdlLogSignActivityWhenSigningDraft() {
             if (!uniqueSignedCertificates.contains(moduleId())) {
 
-                final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion());
+                final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.MINIMAL, moduleId(), typeVersion())
+                    .clearPdlLogMessages()
+                    .setup();
 
                 certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -404,7 +421,9 @@ public abstract class CommonDraftIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log delete activity when deleting draft")
         public void shallPdlLogDeleteActivityWhenDeleteDraft() {
-            final var testSetup = getDraftTestSetupForPdl(CreateCertificateFillType.EMPTY, moduleId(), typeVersion());
+            final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             testSetup
                 .spec()

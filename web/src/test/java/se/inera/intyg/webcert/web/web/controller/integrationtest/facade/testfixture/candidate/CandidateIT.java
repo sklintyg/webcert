@@ -39,7 +39,9 @@
      @DisplayName("Create draft from candidate")
      public void shallCreateDraftFromCandidate() {
 
-         final var testSetup = getCertificateTestSetupWithOriginDjupIntegrated(candidateModuleId(), candidateTypeVersion());
+         final var testSetup = getCertificateTestSetupBuilder(candidateModuleId(), candidateTypeVersion())
+             .useDjupIntegratedOrigin()
+             .setup();
 
          final var draftId = createDraftAndReturnCertificateId(moduleId(), ATHENA_ANDERSSON);
 

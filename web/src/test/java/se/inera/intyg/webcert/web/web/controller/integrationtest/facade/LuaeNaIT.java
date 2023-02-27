@@ -148,7 +148,7 @@ public class LuaeNaIT {
         }
 
         @Override
-        protected String currentTypeVersion() {
+        protected String typeVersion() {
             return CURRENT_VERSION;
         }
 

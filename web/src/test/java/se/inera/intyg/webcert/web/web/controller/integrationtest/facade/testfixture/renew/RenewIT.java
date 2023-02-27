@@ -35,7 +35,7 @@
 
      protected abstract String moduleId();
 
-     protected abstract String currentTypeVersion();
+     protected abstract String typeVersion();
 
      protected abstract List<String> typeVersionList();
 
@@ -50,7 +50,7 @@
      @MethodSource("typeVersionStream")
      @DisplayName("Shall return certificate with correct version after renewing")
      void shallReturnCertificateWhenRenewing(String typeVersion) {
-         final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
          certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -72,7 +72,7 @@
              .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
 
          if (shouldReturnLatestVersion()) {
-             assertEquals(currentTypeVersion(), response.getMetadata().getTypeVersion());
+             assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
          } else {
              assertEquals(typeVersion, response.getMetadata().getTypeVersion());
          }
@@ -81,7 +81,9 @@
      @Test
      @DisplayName("Shall pdl log create activity when certificate is being renewed")
      public void shallPdlLogCreateActivityWhenRenewCertificate() {
-         final var testSetup = getCertificateTestSetupForPdl(moduleId(), currentTypeVersion());
+         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+             .clearPdlLogMessages()
+             .setup();
 
          certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

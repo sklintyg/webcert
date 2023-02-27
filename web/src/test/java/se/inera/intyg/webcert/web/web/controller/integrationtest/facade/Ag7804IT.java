@@ -128,7 +128,7 @@ public class Ag7804IT {
         }
 
         @Override
-        protected String currentTypeVersion() {
+        protected String typeVersion() {
             return CURRENT_VERSION;
         }
 

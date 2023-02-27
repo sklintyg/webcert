@@ -45,7 +45,7 @@
      @MethodSource("typeVersionStream")
      @DisplayName("Shall return certificate of current version when creating certificate from template")
      void shallReturnCertificateOfCurrentVersionWhenCreatingFromTemplate(String typeVersion) {
-         final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
          certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

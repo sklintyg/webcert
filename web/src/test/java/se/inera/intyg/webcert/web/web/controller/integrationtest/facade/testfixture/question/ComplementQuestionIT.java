@@ -58,7 +58,9 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall be able to complement current version")
     void shallBeAbleToComplementCurrentVersion() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestions(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .complementQuestion()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -85,7 +87,9 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall return draft when complementing")
     void shallReturnCertificateWhenComplement(String typeVersion) {
-        final var testSetup = getCertificateTestSetupWithComplementQuestions(moduleId(), typeVersion);
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion)
+            .complementQuestion()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -113,7 +117,10 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall pdl log crete activity when complementing a certificate")
     void shallPdlLogCreateActivityWhenComplementCertificate() {
-        final var testSetup = getCertificateTestSetupForPdlWithComplementQuestion(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .clearPdlLogMessages()
+            .complementQuestion()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -140,7 +147,11 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall get question with complement")
     void shallGetQuestionWithComplement() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -164,7 +175,11 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall set complement question as handled")
     void shallSetComplementQuestionAsHandled() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -190,7 +205,11 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall return complement question with answered by certificate")
     void shallReturnComplementQuestionWithAnsweredByCertificate() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -226,7 +245,11 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall return complement question for draft answering the complement question")
     void shallReturnComplementQuestionForDraftAnsweringTheComplement() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -258,7 +281,11 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall return complement question with answer")
     void shallReturnComplementQuestionWithAnswer() {
-        final var testSetup = getCertificateTestSetupWithComplementQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .complementQuestion()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

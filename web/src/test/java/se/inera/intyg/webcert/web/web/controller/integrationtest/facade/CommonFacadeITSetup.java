@@ -56,63 +56,20 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
         return TestSetup.create().login(DR_AJLA_ALFA_VARDCENTRAL).setup();
     }
 
-    protected TestSetup getDraftWithValuesTestSetup(String moduleId, String typeVersion, Map<String, CertificateDataValue> valueMap) {
+    protected TestSetupBuilder getCertificateTestSetupBuilder(String moduleId, String typeVersion) {
         return TestSetup.create()
-            .draftWithValues(
+            .certificate(
                 moduleId,
                 typeVersion,
-                DR_AJLA,
                 ALFA_VARDCENTRAL,
-                ATHENA_ANDERSSON.getPersonId().getId(),
-                valueMap
-            )
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getLockedCertificateTestSetup(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .lockedDraft(
-                moduleId,
-                typeVersion,
                 DR_AJLA,
-                ALFA_VARDCENTRAL,
                 ATHENA_ANDERSSON.getPersonId().getId()
             )
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
+            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
-    protected TestSetup getLockedCertificateTestSetupForPdlWithSjf(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .lockedDraft(
-                moduleId,
-                typeVersion,
-                DR_AJLA,
-                ALFA_VARDCENTRAL,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .sjf()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getLockedCertificateTestSetupForPdl(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .lockedDraft(
-                moduleId,
-                typeVersion,
-                DR_AJLA,
-                ALFA_VARDCENTRAL,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getDraftTestSetup(CreateCertificateFillType fillType, String moduleId, String typeVersion) {
+    protected TestSetupBuilder getDraftTestSetupBuilder(CreateCertificateFillType fillType, String moduleId,
+        String typeVersion) {
         return TestSetup.create()
             .draft(
                 moduleId,
@@ -122,11 +79,11 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
                 ALFA_VARDCENTRAL,
                 ATHENA_ANDERSSON.getPersonId().getId()
             )
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
+            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
-    protected TestSetup getDraftTestSetup(CreateCertificateFillType fillType, String moduleId, String typeVersion, Patient patient) {
+    protected TestSetupBuilder getDraftTestSetupBuilder(CreateCertificateFillType fillType, String moduleId,
+        String typeVersion, Patient patient) {
         return TestSetup.create()
             .draft(
                 moduleId,
@@ -136,39 +93,19 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
                 ALFA_VARDCENTRAL,
                 patient.getPersonId().getId()
             )
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
+            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
-    protected TestSetup getDraftTestSetupForPdl(CreateCertificateFillType fillType, String moduleId, String typeVersion) {
+    protected TestSetupBuilder getLockedCertificateTestSetupBuilder(String moduleId, String typeVersion) {
         return TestSetup.create()
-            .draft(
+            .lockedDraft(
                 moduleId,
                 typeVersion,
-                fillType,
                 DR_AJLA,
                 ALFA_VARDCENTRAL,
                 ATHENA_ANDERSSON.getPersonId().getId()
             )
-            .clearPdlLogMessages()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getDraftTestSetupForPdlWithSjf(CreateCertificateFillType fillType, String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .draft(
-                moduleId,
-                typeVersion,
-                fillType,
-                DR_AJLA,
-                ALFA_VARDCENTRAL,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .sjf()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
+            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
     protected TestSetup getDraftTestSetupForPdlWithSjfDifferentCareProvider(CreateCertificateFillType fillType, String moduleId,
@@ -188,79 +125,8 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
             .setup();
     }
 
-    protected TestSetup getCertificateTestSetup(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupForPdl(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupForPdlWithOriginDjupIntegrated(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .useDjupIntegratedOrigin()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupForPdlWithComplementQuestion(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .complementQuestion()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupForPdlWithSjf(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .clearPdlLogMessages()
-            .sjf()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupForPdlWithSjfDifferentCareProvider(String moduleId, String typeVersion) {
+    protected TestSetup getCertificateTestSetupForPdlWithSjfDifferentCareProvider(String moduleId,
+        String typeVersion) {
         return TestSetup.create()
             .certificate(
                 moduleId,
@@ -275,76 +141,18 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
             .setup();
     }
 
-    protected TestSetup getCertificateTestSetupWithOriginDjupIntegrated(String moduleId, String typeVersion) {
+    protected TestSetup getDraftWithValuesTestSetup(String moduleId, String typeVersion, Map<String, CertificateDataValue> valueMap) {
         return TestSetup.create()
-            .certificate(
+            .draftWithValues(
                 moduleId,
                 typeVersion,
-                ALFA_VARDCENTRAL,
                 DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
+                ALFA_VARDCENTRAL,
+                ATHENA_ANDERSSON.getPersonId().getId(),
+                valueMap
             )
-            .useDjupIntegratedOrigin()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
             .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupWithComplementQuestions(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .complementQuestion()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupWithComplementQuestionsAndSend(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .sendCertificate()
-            .complementQuestion()
-            .useDjupIntegratedOrigin()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetup getCertificateTestSetupWithQuestionsAndSend(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .sendCertificate()
-            .question()
-            .useDjupIntegratedOrigin()
-            .login(DR_AJLA_ALFA_VARDCENTRAL)
-            .setup();
-    }
-
-    protected TestSetupBuilder getCertificateTestSetupBuilder(String moduleId, String typeVersion) {
-        return TestSetup.create()
-            .certificate(
-                moduleId,
-                typeVersion,
-                ALFA_VARDCENTRAL,
-                DR_AJLA,
-                ATHENA_ANDERSSON.getPersonId().getId()
-            )
-            .login(DR_AJLA_ALFA_VARDCENTRAL);
     }
 
     protected CertificateDTO getCertificate(TestSetup testSetup) {

@@ -62,7 +62,7 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall contain required fields with correct type version")
     void certificateShouldContainRequiredFieldsWithCorrectTypeVersion(String typeVersion) {
-        final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -80,7 +80,7 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to print certificate")
     public void shallBeAbleToPrintCertificate(String typeVersion) {
-        final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -99,7 +99,7 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to revoke certificate")
     public void shallBeAbleToRevokeCertificate(String typeVersion) {
-        final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -122,7 +122,7 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to replace certificate")
     void shallBeAbleToReplaceCertificate(String typeVersion) {
-        final var testSetup = getCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -166,7 +166,10 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log read activity when fetching certificate")
         public void shallPdlLogReadActivityWhenFetchingCertificate() {
-            final var testSetup = getCertificateTestSetupForPdlWithSjf(moduleId(), typeVersion());
+            final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .sjf()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -204,7 +207,9 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log print activity when printing certificate")
         public void shallPdlLogPrintActivityWhenPrintingCertificate() {
-            final var testSetup = getCertificateTestSetupForPdl(moduleId(), typeVersion());
+            final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -225,7 +230,10 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @DisplayName("Shall pdl log create activity when copy certificate from template")
         public void shallPdlLogCreateActivityWhenCopyFromTemplate() {
             if (moduleId().equals(LisjpEntryPoint.MODULE_ID)) {
-                final var testSetup = getCertificateTestSetupForPdl(moduleId(), typeVersion());
+                final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                    .clearPdlLogMessages()
+                    .setup();
+
                 certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
                 final var response = testSetup
@@ -248,7 +256,10 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @DisplayName("Shall pdl log create activity when fill certificate from candidate")
         public void shallPdlLogCreateActivityWhenFillFromCandidate() {
             if (moduleId().equals(LisjpEntryPoint.MODULE_ID)) {
-                final var testSetup = getCertificateTestSetupForPdlWithOriginDjupIntegrated(moduleId(), typeVersion());
+                final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                    .clearPdlLogMessages()
+                    .useDjupIntegratedOrigin()
+                    .setup();
 
                 final var draftId = createDraftAndReturnCertificateId(Ag7804EntryPoint.MODULE_ID, ATHENA_ANDERSSON);
                 certificateIdsToCleanAfterTest.add(testSetup.certificateId());
@@ -275,7 +286,9 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log create activity when replacing certificate")
         public void shallPdlLogCreateActivityWhenReplaceCertificate() {
-            final var testSetup = getCertificateTestSetupForPdl(moduleId(), typeVersion());
+            final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -301,7 +314,9 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log revoke activity when revoking certificate")
         public void shallPdlLogRevokeActivityWhenRevokeCertificate() {
-            final var testSetup = getCertificateTestSetupForPdl(moduleId(), typeVersion());
+            final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

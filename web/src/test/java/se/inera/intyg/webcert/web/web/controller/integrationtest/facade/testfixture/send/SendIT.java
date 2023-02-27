@@ -37,7 +37,7 @@
      @Test
      @DisplayName("Shall be able to send certificate")
      void shallBeAbleToSendCertificate() {
-         final var testSetup = getCertificateTestSetup(moduleId(), typeVersion());
+         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion()).setup();
 
          final var expectedResult = "OK";
          certificateIdsToCleanAfterTest.add(testSetup.certificateId());
@@ -55,7 +55,10 @@
      @Test
      @DisplayName("Shall pdl log send activity when sending certificate")
      public void shallPdlLogSendActivityWhenSendingCertificate() {
-         final var testSetup = getCertificateTestSetupForPdl(moduleId(), typeVersion());
+         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+             .clearPdlLogMessages()
+             .setup();
+
          certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
          testSetup

@@ -54,7 +54,7 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall return certificate of correct version when copy")
     void shallReturnCertificateOfCurrentVersionWhenCopy(String typeVersion) {
-        final var testSetup = getLockedCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -93,7 +93,7 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
     @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to revoke locked certificate of version")
     public void shallBeAbleToRevokeLockedCertificateOfVersion(String typeVersion) {
-        final var testSetup = getLockedCertificateTestSetup(moduleId(), typeVersion);
+        final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -118,7 +118,10 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log read activity when fetching locked drafts")
         public void shallPdlLogReadActivityWhenFetchingLockedDraft() {
-            final var testSetup = getLockedCertificateTestSetupForPdlWithSjf(moduleId(), typeVersion());
+            final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .sjf()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -137,7 +140,10 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log create activity when copying locked drafts")
         public void shallPdlLogCreateActivityWhenCopyLockedDraft() {
-            final var testSetup = getLockedCertificateTestSetupForPdl(moduleId(), typeVersion());
+            final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion())
+                .clearPdlLogMessages()
+                .sjf()
+                .setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -163,7 +169,7 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
         @Test
         @DisplayName("Shall pdl log revoke activity when revoking locked drafts")
         public void shallPdlLogRevokeActivityWhenRevokeLockedDraft() {
-            final var testSetup = getLockedCertificateTestSetupForPdl(moduleId(), typeVersion());
+            final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion()).clearPdlLogMessages().setup();
 
             certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

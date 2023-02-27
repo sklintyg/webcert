@@ -49,7 +49,11 @@ public abstract class AdministrativeQuestionIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall get question for certificate")
     void shallGetQuestionForCertificate() {
-        final var testSetup = getCertificateTestSetupWithQuestionsAndSend(moduleId(), typeVersion());
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion())
+            .sendCertificate()
+            .question()
+            .useDjupIntegratedOrigin()
+            .setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

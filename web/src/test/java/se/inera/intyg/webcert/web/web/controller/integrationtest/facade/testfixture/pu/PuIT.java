@@ -44,7 +44,8 @@ public abstract class PuIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall include patient address if it's existing in PU")
     void shallIncludePatientAddressIfExistsInPU() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(), ATHENA_ANDERSSON);
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(),
+            ATHENA_ANDERSSON).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -61,7 +62,8 @@ public abstract class PuIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall not include patient address if it's missing in PU")
     void shallExcludePatientAddressIfMissingInPU() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(), BOSTADSLOSE_ANDERSSON);
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(),
+            BOSTADSLOSE_ANDERSSON).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -78,7 +80,8 @@ public abstract class PuIT extends CommonFacadeITSetup {
     @Test
     @DisplayName("Shall include patient address if it's missing in PU, but entered by user")
     void shallIncludePatientAddressIfMissingInPUAndEnteredByUser() {
-        final var testSetup = getDraftTestSetup(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(), BOSTADSLOSE_ANDERSSON);
+        final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.EMPTY, moduleId(), typeVersion(),
+            BOSTADSLOSE_ANDERSSON).setup();
 
         final var expectedZipCode = "99999";
         final var expectedStreet = "New Street address";
