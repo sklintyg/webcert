@@ -190,7 +190,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), null)) {
+        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
             return getReactRedirectResponse(uriInfo, certificateId);
         } else {
             UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
