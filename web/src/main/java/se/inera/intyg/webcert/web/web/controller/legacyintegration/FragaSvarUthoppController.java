@@ -104,15 +104,14 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
+        super.validateParameter("type", type);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
+        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
         final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
         return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
-    }
-
-    private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
-        final var uri = reactUriFactory.uriForCertificate(uriInfo, intygId);
-        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
     }
 
     /**
@@ -136,7 +135,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-
         return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
     }
 
@@ -184,6 +182,11 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
                     "User does not have access to enhet " + enhetHsaId);
             }
         }
+    }
+
+    private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
+        final var uri = reactUriFactory.uriForCertificate(uriInfo, intygId);
+        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
