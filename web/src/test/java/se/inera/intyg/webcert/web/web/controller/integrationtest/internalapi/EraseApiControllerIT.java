@@ -27,7 +27,6 @@ import static se.inera.intyg.webcert.web.web.controller.testability.facade.dto.C
 
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
-import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.SessionConfig;
 import io.restassured.http.ContentType;
 import io.restassured.common.mapper.TypeRef;
