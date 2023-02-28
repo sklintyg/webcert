@@ -28,7 +28,6 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -46,9 +45,9 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     @Autowired
     public ForwardCertificateFacadeServiceImpl(UtkastService utkastService,
-                                               GetCertificateFacadeService getCertificateFacadeService,
-                                               UtkastToCertificateConverter utkastToCertificateConverter,
-                                               ArendeService arendeService) {
+        GetCertificateFacadeService getCertificateFacadeService,
+        UtkastToCertificateConverter utkastToCertificateConverter,
+        ArendeService arendeService) {
         this.utkastService = utkastService;
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.utkastToCertificateConverter = utkastToCertificateConverter;
@@ -69,9 +68,9 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     private Certificate forwardDraft(String certificateId, Certificate certificate, boolean forwarded) {
         LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId,
-                certificate.getMetadata().getVersion(), forwarded);
+            certificate.getMetadata().getVersion(), forwarded);
         final var draft = utkastService.setNotifiedOnDraft(certificateId,
-                certificate.getMetadata().getVersion(), forwarded);
+            certificate.getMetadata().getVersion(), forwarded);
 
         LOG.debug("Get the forwarded certificate '{}'", certificateId);
         return utkastToCertificateConverter.convert(draft);
