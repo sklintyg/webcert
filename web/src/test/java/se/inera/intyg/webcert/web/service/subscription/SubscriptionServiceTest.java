@@ -111,7 +111,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.NONE, sithsUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertTrue(sithsUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().isEmpty()),
             () -> assertTrue(sithsUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty())
@@ -125,7 +125,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(ADAPTATION_START_DATE, sithsUser.getSubscriptionInfo().getSubscriptionAdaptationStartDate()),
             () -> assertEquals(REQUIRE_START_DATE, sithsUser.getSubscriptionInfo().getRequireSubscriptionStartDate())
         );
@@ -145,13 +145,13 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldHaveExactImmutableCopyOfMissingSubscriptions() {
-        final var webCertUser = createWebCertSithsUser( 3, 3, 3);
+        final var webCertUser = createWebCertSithsUser(3, 3, 3);
 
         setRestServiceMockToReturn(3);
         setFeaturesHelperMockToReturn(false, true);
         subscriptionService.checkSubscriptions(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertIterableEquals(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal(),
                 webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription()),
             () -> assertThrows(UnsupportedOperationException.class, () -> webCertUser.getSubscriptionInfo()
@@ -167,7 +167,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.NONE, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty())
         );
@@ -182,7 +182,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size())
         );
@@ -197,7 +197,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains("CARE_PROVIDER_HSA_ID_1"))
@@ -216,7 +216,7 @@ public class SubscriptionServiceTest {
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
 
-        assertAll (
+        assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
             () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
         );
@@ -326,7 +326,7 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(sithsUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        assertAll (
+        assertAll(
             () -> assertEquals(3, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_1").size()),
             () -> assertEquals(1, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_4").size())
         );
@@ -338,7 +338,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.checkSubscriptions(elegUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(ADAPTATION_START_DATE, elegUser.getSubscriptionInfo().getSubscriptionAdaptationStartDate()),
             () -> assertEquals(REQUIRE_START_DATE, elegUser.getSubscriptionInfo().getRequireSubscriptionStartDate())
         );
@@ -368,7 +368,7 @@ public class SubscriptionServiceTest {
         subscriptionService.checkSubscriptions(webCertUser);
 
         verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
-        assertAll (
+        assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
             () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
         );
@@ -494,7 +494,7 @@ public class SubscriptionServiceTest {
         setRestServiceUnregisteredElegMockToReturn(false);
         final var boolean2 = subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
 
-        assertAll (
+        assertAll(
             () -> assertTrue(boolean1),
             () -> assertFalse(boolean2)
         );
@@ -562,7 +562,7 @@ public class SubscriptionServiceTest {
         final var webCertUser = createWebCertElegUser();
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(webCertUser.getVardgivare()
@@ -571,7 +571,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.acknowledgeSubscriptionModal(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().isEmpty())
         );
@@ -584,7 +584,7 @@ public class SubscriptionServiceTest {
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
         webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().add(webCertUser.getVardgivare().get(2).getId());
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(2, webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(webCertUser.getVardgivare()
@@ -595,7 +595,7 @@ public class SubscriptionServiceTest {
 
         subscriptionService.acknowledgeSubscriptionModal(webCertUser);
 
-        assertAll (
+        assertAll(
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(webCertUser.getVardgivare()
@@ -614,7 +614,7 @@ public class SubscriptionServiceTest {
         setFeaturesHelperMockToReturn(false, false);
         final var boolean3 = subscriptionService.isSubscriptionAdaptation();
 
-        assertAll (
+        assertAll(
             () -> assertTrue(boolean1),
             () -> assertFalse(boolean2),
             () -> assertFalse(boolean3)
@@ -632,7 +632,7 @@ public class SubscriptionServiceTest {
         setFeaturesHelperMockToReturn(false, false);
         final var boolean3 = subscriptionService.isSubscriptionRequired();
 
-        assertAll (
+        assertAll(
             () -> assertTrue(boolean1),
             () -> assertTrue(boolean2),
             () -> assertFalse(boolean3)
@@ -653,7 +653,7 @@ public class SubscriptionServiceTest {
         setFeaturesHelperMockToReturn(false, false);
         final var boolean4 = subscriptionService.isAnySubscriptionFeatureActive();
 
-        assertAll (
+        assertAll(
             () -> assertTrue(boolean1),
             () -> assertTrue(boolean2),
             () -> assertTrue(boolean3),

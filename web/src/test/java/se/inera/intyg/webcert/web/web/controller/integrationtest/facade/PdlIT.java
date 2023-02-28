@@ -52,9 +52,9 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public class PdlIT extends BaseFacadeIT {
 
-    private final static String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
-    private final static String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
-    private final static String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
+    private static final String ACTIVITY_ARGS_DRAFT_PRINTED = "Utkastet utskrivet";
+    private static final String ACTIVITY_ARGS_CERTIFICATE_PRINTED = "Intyg utskrivet";
+    private static final String ACTIVITY_ARGS_READ_SJF = "Läsning i enlighet med sammanhållen journalföring";
 
     private void assertPdlLogMessage(ActivityType expectedActivityType, String certificateId) {
         assertPdlLogMessage(expectedActivityType, certificateId, null);
@@ -393,7 +393,7 @@ public class PdlIT extends BaseFacadeIT {
             final var testSetup = TestSetup.create()
                 .draft(
                     LisjpEntryPoint.MODULE_ID,
-                    "1.2",
+                    "1.3",
                     CreateCertificateFillType.EMPTY,
                     DR_AJLA,
                     ALFA_VARDCENTRAL,

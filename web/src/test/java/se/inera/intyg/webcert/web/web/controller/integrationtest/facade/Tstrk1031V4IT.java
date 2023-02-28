@@ -28,6 +28,7 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_AJLA_ALFA_VARDCENTRAL;
 
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -41,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 
 public class Tstrk1031V4IT extends BaseFacadeIT {
 
-    private static final String CURRENT_VERSION = "4.0";
+    private static final String CURRENT_VERSION = "4.1";
 
     @Nested
     class Draft {
@@ -486,6 +487,58 @@ public class Tstrk1031V4IT extends BaseFacadeIT {
             certificateIdsToCleanAfterTest.add(certificateId);
 
             assertNotNull(certificateId, "Expect certificate id to have a value");
+        }
+    }
+
+    @Nested
+    class UpdateDraftsToLatestMinorVersion {
+
+        private String latestMinorTextVersion;
+        private String previousMinorTextVersion;
+        private final String certificateType = TsDiabetesEntryPoint.MODULE_ID;
+        private final String patientAthena = ATHENA_ANDERSSON.getPersonId().getId();
+
+        @BeforeEach
+        void setup() {
+            latestMinorTextVersion = TestSetup.getLatestMinorTextVersion(certificateType, "4");
+            previousMinorTextVersion = TestSetup.getPreviousMinorTextVersion(certificateType, "4");
+        }
+
+        @Test
+        public void shouldOpenSavedDraftWithLatestTextVersion() {
+            final var testSetup = TestSetup.create()
+                .draft(certificateType, previousMinorTextVersion, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL,
+                    patientAthena)
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateResponse = getCertificate(testSetup);
+
+            assertEquals(latestMinorTextVersion, certificateResponse.getMetadata().getTypeVersion());
+        }
+
+        @Test
+        public void shouldOpenSignedCertificateWithOriginalTextVersion() {
+            final var testSetup = TestSetup.create()
+                .certificate(certificateType, previousMinorTextVersion, ALFA_VARDCENTRAL, DR_AJLA, patientAthena)
+                .login(DR_AJLA_ALFA_VARDCENTRAL)
+                .useDjupIntegratedOrigin()
+                .setup();
+            certificateIdsToCleanAfterTest.add(testSetup.certificateId());
+
+            final var certificateResponse = getCertificate(testSetup);
+
+            assertEquals(previousMinorTextVersion, certificateResponse.getMetadata().getTypeVersion());
+        }
+
+        private CertificateDTO getCertificate(TestSetup testSetup) {
+            return testSetup.spec()
+                .pathParam("certificateId", testSetup.certificateId())
+                .when().get("api/certificate/{certificateId}")
+                .then().statusCode(200)
+                .extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
         }
     }
 
