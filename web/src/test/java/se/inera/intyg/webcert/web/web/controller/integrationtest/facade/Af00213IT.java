@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 public class Af00213IT {
 
     private static final String CURRENT_VERSION = "1.0";
+    private static final String MAJOR_VERSION = "1.0";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -68,6 +69,7 @@ public class Af00213IT {
         protected String typeVersion() {
             return CURRENT_VERSION;
         }
+        
     }
 
     @Nested

@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 public class LuaeFsIT {
 
     private static final String CURRENT_VERSION = "1.0";
+    private static final String MAJOR_VERSION = "1";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -72,6 +73,7 @@ public class LuaeFsIT {
         protected String typeVersion() {
             return CURRENT_VERSION;
         }
+
     }
 
     @Nested

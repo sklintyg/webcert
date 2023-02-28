@@ -36,6 +36,7 @@ public class LisjpIT {
 
     private static final String CURRENT_VERSION = "1.3";
     private static final String AG7804_CURRENT_VERSION = "1.2";
+    private static final String MAJOR_VERSION = "1";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -74,6 +75,7 @@ public class LisjpIT {
         protected String typeVersion() {
             return CURRENT_VERSION;
         }
+
     }
 
     @Nested

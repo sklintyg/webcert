@@ -89,7 +89,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @TestInstance(Lifecycle.PER_CLASS)
 public class NotificationServicesIT {
 
-    private static final String VERSION_1_2 = "1.2";
+    private static final String VERSION_1_3 = "1.3";
     private static final String PATIENT_ATHENA = ATHENA_ANDERSSON.getPersonId().getId();
     private static final Integer POLL_DELAY = 1;
     private static final Integer POLL_INTERVAL = 3;
@@ -168,7 +168,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for sign draft should have event type SIGNAT")
     public void statusUpdateForSignDraftShouldHaveEventTypeSignat() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_3, CreateCertificateFillType.MINIMAL, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -196,7 +196,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for draft ready to sign should have event type KFSIGN")
     public void statusUpdateForDraftReadyToSignShouldHaveEventTypeKfsign() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.MINIMAL, VARDADMIN_ALVA, ALFA_VARDCENTRAL,
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_3, CreateCertificateFillType.MINIMAL, VARDADMIN_ALVA, ALFA_VARDCENTRAL,
                 PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
@@ -225,7 +225,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for delete draft should have event type RADERA")
     public void statusUpdateForDeleteDraftShouldHaveEventTypeRadera() {
         final var testSetup = TestSetup.create()
-            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CreateCertificateFillType.EMPTY, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
+            .draft(LisjpEntryPoint.MODULE_ID, VERSION_1_3, CreateCertificateFillType.EMPTY, DR_AJLA, ALFA_VARDCENTRAL, PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -253,7 +253,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for revoke certificate should have event type MAKULE")
     public void statusUpdateForRevokeCertificateShouldHaveEventTypeMakule() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -285,7 +285,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for send certificate should have event type SKICKA")
     public void statusUpdateForSendCertificateShouldHaveEventTypeSkicka() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -312,7 +312,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new question from care should have event type NYFRFV")
     public void statusUpdateForNewQuestionFromCareShouldHaveEventTypeNyfrfv() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionDraft()
             .useDjupIntegratedOrigin()
@@ -338,7 +338,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new answer from recipient should have event type NYSVFM")
     public void statusUpdateForNewAnswerFromRecipientShouldHaveEventTypeNysvfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .question()
             .useDjupIntegratedOrigin()
@@ -372,7 +372,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for handled question from care should have event type HANFRFV")
     public void statusUpdateForHandledQuestionFromCareShouldHaveEventTypeHanfrfv() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionDraft()
             .useDjupIntegratedOrigin()
@@ -408,7 +408,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for new question from recipient should have event type NYFRFM")
     public void statusUpdateForNewQuestionFromRecipientShouldHaveEventTypeNyfrfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .useDjupIntegratedOrigin()
             .clearNotificationStub()
             .login(DR_AJLA_ALFA_VARDCENTRAL)
@@ -441,7 +441,7 @@ public class NotificationServicesIT {
     @DisplayName("Status update for answered question from recipient should have event type HANFRFM")
     public void statusUpdateForAnsweredQuestionFromRecipientShouldHaveEventTypeHanfrfm() {
         final var testSetup = TestSetup.create()
-            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_2, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
+            .certificate(LisjpEntryPoint.MODULE_ID, VERSION_1_3, ALFA_VARDCENTRAL, DR_AJLA, PATIENT_ATHENA)
             .sendCertificate()
             .questionWithAnswerDraft()
             .useDjupIntegratedOrigin()

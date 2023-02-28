@@ -33,6 +33,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
  */
 public class DodsbevisIT {
 
+    private static final String MAJOR_VERSION = "1";
     private static final String CURRENT_VERSION = "1.0";
 
     @Nested

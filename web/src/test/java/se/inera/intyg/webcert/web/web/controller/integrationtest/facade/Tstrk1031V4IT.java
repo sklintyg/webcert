@@ -28,10 +28,12 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.textversion.UpdateToLatestMinorVersionIT;
 
 public class Tstrk1031V4IT {
 
     private static final String CURRENT_VERSION = "4.1";
+    private static final String MAJOR_VERSION = "4";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -70,6 +72,7 @@ public class Tstrk1031V4IT {
         protected String typeVersion() {
             return CURRENT_VERSION;
         }
+
     }
 
     @Nested
@@ -108,6 +111,20 @@ public class Tstrk1031V4IT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
+        }
+    }
+
+    @Nested
+    class IncludeUpdateToLatestTextVersionIT extends UpdateToLatestMinorVersionIT {
+
+        @Override
+        protected String lastMajorVersion() {
+            return MAJOR_VERSION;
+        }
+
+        @Override
+        protected String moduleId() {
+            return TsDiabetesEntryPoint.MODULE_ID;
         }
     }
 }
