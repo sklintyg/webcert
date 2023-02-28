@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfix
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.CommonFacadeITSetup;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
@@ -42,6 +43,7 @@ public abstract class UpdateToLatestMinorVersionIT extends CommonFacadeITSetup {
     }
 
     @Test
+    @DisplayName("Should get latest text version for draft")
     public void shouldOpenSavedDraftWithLatestTextVersion() {
         final var testSetup = getDraftTestSetupBuilder(CreateCertificateFillType.MINIMAL, moduleId(), previousMinorTextVersion)
             .useDjupIntegratedOrigin()
@@ -55,6 +57,7 @@ public abstract class UpdateToLatestMinorVersionIT extends CommonFacadeITSetup {
     }
 
     @Test
+    @DisplayName("Should get text version for certificate")
     public void shouldOpenSignedCertificateWithOriginalTextVersion() {
         final var testSetup = getCertificateTestSetupBuilder(moduleId(), previousMinorTextVersion)
             .useDjupIntegratedOrigin()
