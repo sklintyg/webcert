@@ -104,15 +104,15 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
+        super.validateParameter("type", type);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
+        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
+
         if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), type)) {
             return getReactRedirectResponse(uriInfo, intygId);
         } else {
-            super.validateParameter("type", type);
-            super.validateParameter("intygId", intygId);
-            super.validateAuthorities();
-            this.validateAndChangeEnhet(intygId, type, enhetHsaId);
-
-            LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
             final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
             return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
         }
@@ -136,17 +136,18 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
+        //This is hardwired to fk7263 only
+        String intygType = DEFAULT_TYPE;
+        String intygTypeVersion = DEFAULT_TYPE_VERSION;
+        this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
+
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
+
         if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), null)) {
             return getReactRedirectResponse(uriInfo, intygId);
         } else {
-            super.validateParameter("intygId", intygId);
-            super.validateAuthorities();
-            //This is hardwired to fk7263 only
-            String intygType = DEFAULT_TYPE;
-            String intygTypeVersion = DEFAULT_TYPE_VERSION;
-            this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
-
-            LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
             return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
         }
     }
