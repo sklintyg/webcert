@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.CommonFacadeITSetup;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.TestSetup;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public abstract class UpdateToLatestMinorVersionIT extends CommonFacadeITSetup {
@@ -38,8 +37,8 @@ public abstract class UpdateToLatestMinorVersionIT extends CommonFacadeITSetup {
 
     @BeforeEach
     void setup() {
-        latestMinorTextVersion = TestSetup.getLatestMinorTextVersion(moduleId(), lastMajorVersion());
-        previousMinorTextVersion = TestSetup.getPreviousMinorTextVersion(moduleId(), lastMajorVersion());
+        latestMinorTextVersion = getLatestMinorTextVersion(moduleId(), lastMajorVersion());
+        previousMinorTextVersion = getPreviousMinorTextVersion(moduleId(), lastMajorVersion());
     }
 
     @Test

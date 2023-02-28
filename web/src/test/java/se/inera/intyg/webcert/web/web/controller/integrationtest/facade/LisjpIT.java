@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.question.ComplementQuestionIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.template.TemplateIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.textversion.UpdateToLatestMinorVersionIT;
 
 public class LisjpIT {
 
@@ -50,11 +51,6 @@ public class LisjpIT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return true;
         }
 
         @Override
@@ -97,10 +93,6 @@ public class LisjpIT {
             return List.of("1.0", "1.1", "1.2", CURRENT_VERSION);
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return true;
-        }
     }
 
     @Nested
@@ -122,10 +114,6 @@ public class LisjpIT {
             return List.of("1.0", "1.1", "1.2", CURRENT_VERSION);
         }
 
-        @Override
-        protected Boolean shouldReturnLastestVersion() {
-            return true;
-        }
     }
 
     @Nested
@@ -187,6 +175,20 @@ public class LisjpIT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
+        }
+    }
+
+    @Nested
+    class IncludeUpdateToLatestTextVersionIT extends UpdateToLatestMinorVersionIT {
+
+        @Override
+        protected String lastMajorVersion() {
+            return MAJOR_VERSION;
+        }
+
+        @Override
+        protected String moduleId() {
+            return LisjpEntryPoint.MODULE_ID;
         }
     }
 }

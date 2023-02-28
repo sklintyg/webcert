@@ -32,7 +32,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 public class Tstrk1007IT {
 
     private static final String CURRENT_VERSION = "7.0";
-    private static final String MAJOR_VERSION = "7";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -46,11 +45,6 @@ public class Tstrk1007IT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
         }
 
         @Override
@@ -93,10 +87,6 @@ public class Tstrk1007IT {
             return List.of(CURRENT_VERSION);
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
     }
 
     @Nested

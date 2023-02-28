@@ -44,8 +44,6 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
 
     protected abstract List<String> typeVersionList();
 
-    protected abstract Boolean shouldReturnLatestVersion();
-
     protected Stream<String> typeVersionStream() {
         return typeVersionList().stream();
     }
@@ -81,19 +79,13 @@ public abstract class CommonLockedCertificateIT extends CommonFacadeITSetup {
             .get("api/certificate/{certificateId}")
             .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
 
-        if (shouldReturnLatestVersion()) {
-            assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
-
-        } else {
-            assertEquals(typeVersion, response.getMetadata().getTypeVersion());
-        }
+        assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
     }
 
-    @ParameterizedTest
-    @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to revoke locked certificate of version")
-    public void shallBeAbleToRevokeLockedCertificateOfVersion(String typeVersion) {
-        final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
+    @Test
+    public void shallBeAbleToRevokeLockedCertificateOfVersion() {
+        final var testSetup = getLockedCertificateTestSetupBuilder(moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 

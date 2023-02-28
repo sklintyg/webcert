@@ -32,7 +32,6 @@ public class Ag114V1IT {
 
     private static final String CURRENT_VERSION = "1.0";
     private static final String MODULE_ID = Ag114EntryPoint.MODULE_ID;
-    private static final String MAJOR_VERSION = "1";
 
     @Nested
     class IncludeCommomDraftTests extends CommonDraftIT {
@@ -63,10 +62,6 @@ public class Ag114V1IT {
             return CURRENT_VERSION;
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
 
         @Override
         protected List<String> typeVersionList() {
@@ -93,11 +88,6 @@ public class Ag114V1IT {
             return List.of(
                 "1.0"
             );
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
         }
     }
 }

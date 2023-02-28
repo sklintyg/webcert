@@ -31,7 +31,10 @@ import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.I
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.facade.IntegrationTest.DR_BEATA;
 
 import io.restassured.http.ContentType;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
@@ -44,6 +47,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.TestSetup.TestSetupBuilder;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public abstract class CommonFacadeITSetup extends BaseFacadeIT {
@@ -252,5 +256,32 @@ public abstract class CommonFacadeITSetup extends BaseFacadeIT {
 
     protected void incrementVersion(Certificate certificate) {
         certificate.getMetadata().setVersion(certificate.getMetadata().getVersion() + 1);
+    }
+
+    protected static String getLatestMinorTextVersion(String certificateType, String majorVersion) {
+        return getTextVersionForType(certificateType, majorVersion, 0);
+    }
+
+    protected static String getPreviousMinorTextVersion(String certificateType, String majorVersion) {
+        return getTextVersionForType(certificateType, majorVersion, 1);
+    }
+
+    private static String getTextVersionForType(String certificateType, String majorVersion, int skip) {
+        return getSupportedCertificateTypes().stream()
+            .filter(type -> type.getInternalType().equals(certificateType))
+            .limit(1)
+            .flatMap(f -> f.getVersions().stream())
+            .filter(majorVersion != null ? version -> version.split("\\.")[0].equals(majorVersion) : version -> true)
+            .map(Double::parseDouble)
+            .sorted(Comparator.reverseOrder())
+            .skip(skip)
+            .max(Comparator.naturalOrder()).orElseThrow().toString();
+    }
+
+    private static List<CertificateType> getSupportedCertificateTypes() {
+        return given()
+            .when().get("/testability/certificate/types")
+            .then().statusCode(HttpStatus.OK.value())
+            .extract().body().jsonPath().getList("certificateTypes", CertificateType.class);
     }
 }

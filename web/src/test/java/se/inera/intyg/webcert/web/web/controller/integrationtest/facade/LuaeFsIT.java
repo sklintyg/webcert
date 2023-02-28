@@ -34,7 +34,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 public class LuaeFsIT {
 
     private static final String CURRENT_VERSION = "1.0";
-    private static final String MAJOR_VERSION = "1";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -48,11 +47,6 @@ public class LuaeFsIT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
         }
 
         @Override
@@ -95,10 +89,6 @@ public class LuaeFsIT {
             return List.of(CURRENT_VERSION);
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
     }
 
     @Nested
@@ -133,11 +123,6 @@ public class LuaeFsIT {
         protected List<String> typeVersionList() {
             return List.of(CURRENT_VERSION);
         }
-
-        @Override
-        protected Boolean shouldReturnLastestVersion() {
-            return false;
-        }
     }
 
     @Nested
@@ -159,10 +144,6 @@ public class LuaeFsIT {
             return List.of(CURRENT_VERSION);
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
     }
 
     @Nested

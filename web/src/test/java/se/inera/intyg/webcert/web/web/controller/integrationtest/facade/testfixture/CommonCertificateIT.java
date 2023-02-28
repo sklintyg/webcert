@@ -50,19 +50,16 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
 
     protected abstract String typeVersion();
 
-    protected abstract Boolean shouldReturnLatestVersion();
-
     protected abstract List<String> typeVersionList();
 
     protected Stream<String> typeVersionStream() {
         return typeVersionList().stream();
     }
 
-    @ParameterizedTest
-    @MethodSource("typeVersionStream")
     @DisplayName("Shall contain required fields with correct type version")
-    void certificateShouldContainRequiredFieldsWithCorrectTypeVersion(String typeVersion) {
-        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
+    @Test
+    void certificateShouldContainRequiredFieldsWithCorrectTypeVersion() {
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -72,15 +69,14 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
             () -> assertTrue(response.getData().size() > 0, "Expect draft to include data"),
             () -> assertTrue(response.getLinks().length > 0, "Expect draft to include data"),
             () -> assertNotNull(response.getMetadata(), "Expect draft to include data"),
-            () -> assertEquals(typeVersion, response.getMetadata().getTypeVersion())
+            () -> assertEquals(typeVersion(), response.getMetadata().getTypeVersion())
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to print certificate")
-    public void shallBeAbleToPrintCertificate(String typeVersion) {
-        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
+    @Test
+    public void shallBeAbleToPrintCertificate() {
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -95,11 +91,10 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
         assertEquals(200, response.getStatusCode());
     }
 
-    @ParameterizedTest
-    @MethodSource("typeVersionStream")
     @DisplayName("Shall be able to revoke certificate")
-    public void shallBeAbleToRevokeCertificate(String typeVersion) {
-        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
+    @Test
+    public void shallBeAbleToRevokeCertificate() {
+        final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion()).setup();
 
         certificateIdsToCleanAfterTest.add(testSetup.certificateId());
 
@@ -120,7 +115,7 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
 
     @ParameterizedTest
     @MethodSource("typeVersionStream")
-    @DisplayName("Shall be able to replace certificate")
+    @DisplayName("Shall be able to replace certificate and get correct type version")
     void shallBeAbleToReplaceCertificate(String typeVersion) {
         final var testSetup = getCertificateTestSetupBuilder(moduleId(), typeVersion).setup();
 
@@ -152,16 +147,11 @@ public abstract class CommonCertificateIT extends CommonFacadeITSetup {
             .get("api/certificate/{certificateId}")
             .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
 
-        if (shouldReturnLatestVersion()) {
-            assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
-        } else {
-            assertEquals(typeVersion, response.getMetadata().getTypeVersion());
-        }
+        assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
     }
 
     @Nested
     class PdlTestRelatedToCertificate {
-
 
         @Test
         @DisplayName("Shall pdl log read activity when fetching certificate")

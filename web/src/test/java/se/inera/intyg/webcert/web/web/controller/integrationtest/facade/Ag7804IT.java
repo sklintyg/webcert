@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.candidate.CandidateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.renew.RenewIT;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.textversion.UpdateToLatestMinorVersionIT;
 
 public class Ag7804IT {
 
@@ -48,11 +49,6 @@ public class Ag7804IT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return null;
         }
 
         @Override
@@ -94,10 +90,6 @@ public class Ag7804IT {
             return List.of("1.0", "1.1", "1.2");
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return true;
-        }
     }
 
     @Nested
@@ -137,10 +129,20 @@ public class Ag7804IT {
         protected List<String> typeVersionList() {
             return List.of("1.0", "1.1", "1.2");
         }
+        
+    }
+
+    @Nested
+    class IncludeUpdateToLatestTextVersionIT extends UpdateToLatestMinorVersionIT {
 
         @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return true;
+        protected String lastMajorVersion() {
+            return MAJOR_VERSION;
+        }
+
+        @Override
+        protected String moduleId() {
+            return Ag7804EntryPoint.MODULE_ID;
         }
     }
 }

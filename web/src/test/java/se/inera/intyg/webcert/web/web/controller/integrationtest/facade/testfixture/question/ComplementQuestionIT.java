@@ -53,8 +53,6 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
         return typeVersionList().stream();
     }
 
-    protected abstract Boolean shouldReturnLastestVersion();
-
     @Test
     @DisplayName("Shall be able to complement current version")
     void shallBeAbleToComplementCurrentVersion() {
@@ -107,11 +105,7 @@ public abstract class ComplementQuestionIT extends CommonFacadeITSetup {
 
         certificateIdsToCleanAfterTest.add(newCertificate.getCertificate().getMetadata().getId());
 
-        if (shouldReturnLastestVersion()) {
-            assertEquals(typeVersion(), newCertificate.getCertificate().getMetadata().getTypeVersion());
-        } else {
-            assertEquals(typeVersion, newCertificate.getCertificate().getMetadata().getTypeVersion());
-        }
+        assertEquals(typeVersion(), newCertificate.getCertificate().getMetadata().getTypeVersion());
     }
 
     @Test

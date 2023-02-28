@@ -34,7 +34,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 public class LuseIT {
 
     private static final String CURRENT_VERSION = "1.3";
-    private static final String MAJOR_VERSION = "1";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -48,11 +47,6 @@ public class LuseIT {
         @Override
         protected String typeVersion() {
             return CURRENT_VERSION;
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
         }
 
         @Override
@@ -94,11 +88,6 @@ public class LuseIT {
         protected List<String> typeVersionList() {
             return List.of("1.0", "1.1", "1.2", "1.3");
         }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
     }
 
     @Nested
@@ -134,10 +123,6 @@ public class LuseIT {
             return List.of("1.0", "1.1", "1.2", "1.3");
         }
 
-        @Override
-        protected Boolean shouldReturnLastestVersion() {
-            return false;
-        }
     }
 
     @Nested
@@ -159,10 +144,6 @@ public class LuseIT {
             return List.of("1.0", "1.1", "1.2", "1.3");
         }
 
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
     }
 
     @Nested

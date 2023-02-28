@@ -50,11 +50,6 @@ public class Tstrk1031V4IT {
         }
 
         @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
-        }
-
-        @Override
         protected List<String> typeVersionList() {
             return List.of("4.0", CURRENT_VERSION);
         }
@@ -92,11 +87,6 @@ public class Tstrk1031V4IT {
         @Override
         protected List<String> typeVersionList() {
             return List.of("4.0", CURRENT_VERSION);
-        }
-
-        @Override
-        protected Boolean shouldReturnLatestVersion() {
-            return false;
         }
     }
 

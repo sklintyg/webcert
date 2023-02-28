@@ -39,8 +39,6 @@
 
      protected abstract List<String> typeVersionList();
 
-     protected abstract Boolean shouldReturnLatestVersion();
-
 
      protected Stream<String> typeVersionStream() {
          return typeVersionList().stream();
@@ -71,11 +69,7 @@
              .get("api/certificate/{certificateId}")
              .then().extract().response().as(CertificateResponseDTO.class, getObjectMapperForDeserialization()).getCertificate();
 
-         if (shouldReturnLatestVersion()) {
-             assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
-         } else {
-             assertEquals(typeVersion, response.getMetadata().getTypeVersion());
-         }
+         assertEquals(typeVersion(), response.getMetadata().getTypeVersion());
      }
 
      @Test
