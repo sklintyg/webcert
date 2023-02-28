@@ -104,18 +104,10 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateParameter("type", type);
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
-        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
 
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), type)) {
-            return getReactRedirectResponse(uriInfo, intygId);
-        } else {
-            final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
-            return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
-        }
+        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
+        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
     }
 
     private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
@@ -145,11 +137,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), null)) {
-            return getReactRedirectResponse(uriInfo, intygId);
-        } else {
-            return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
-        }
+        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
     }
 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
@@ -199,16 +187,20 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), null)) {
+            return getReactRedirectResponse(uriInfo, certificateId);
+        } else {
+            UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put(PARAM_CERT_TYPE, certificateType);
-        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
-        urlParams.put(PARAM_CERT_ID, certificateId);
+            Map<String, Object> urlParams = new HashMap<>();
+            urlParams.put(PARAM_CERT_TYPE, certificateType);
+            urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
+            urlParams.put(PARAM_CERT_ID, certificateId);
 
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+            URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+            return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+        }
     }
 
 }
