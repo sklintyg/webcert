@@ -40,6 +40,7 @@ public class SignaturBiljett implements Serializable {
     private SignMethod signMethod;
     private boolean wc2ClientRequest;
     private final static long serialVersionUID = 1L;
+    
 
     public String getTicketId() {
         return ticketId;
