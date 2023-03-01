@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonCertificateIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonDraftIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.CommonLockedCertificateIT;
@@ -31,9 +31,9 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixt
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.renew.RenewIT;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.send.SendIT;
 
-public class LuseIT {
+public class LuaeNaIT {
 
-    private static final String CURRENT_VERSION = "1.3";
+    private static final String CURRENT_VERSION = "1.0";
 
     @Nested
     @TestInstance(Lifecycle.PER_CLASS)
@@ -41,7 +41,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -51,7 +51,7 @@ public class LuseIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", "1.3");
+            return List.of(CURRENT_VERSION);
         }
     }
 
@@ -60,7 +60,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -76,7 +76,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -86,8 +86,9 @@ public class LuseIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", "1.3");
+            return List.of(CURRENT_VERSION);
         }
+
     }
 
     @Nested
@@ -95,7 +96,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -110,7 +111,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -120,9 +121,8 @@ public class LuseIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", "1.3");
+            return List.of(CURRENT_VERSION);
         }
-
     }
 
     @Nested
@@ -131,7 +131,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
@@ -141,7 +141,7 @@ public class LuseIT {
 
         @Override
         protected List<String> typeVersionList() {
-            return List.of("1.0", "1.1", "1.2", "1.3");
+            return List.of(CURRENT_VERSION);
         }
 
     }
@@ -151,7 +151,7 @@ public class LuseIT {
 
         @Override
         protected String moduleId() {
-            return LuseEntryPoint.MODULE_ID;
+            return LuaenaEntryPoint.MODULE_ID;
         }
 
         @Override
