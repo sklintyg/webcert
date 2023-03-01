@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.integrationtest.legacyintegration;
+package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +31,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -48,9 +47,6 @@ import se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIn
 @ExtendWith(MockitoExtension.class)
 public class CertificateIntegrationControllerTest {
 
-    @InjectMocks
-    private CertificateIntegrationController certificateIntegrationController;
-
     @Mock
     private IntygService intygService;
 
@@ -62,6 +58,9 @@ public class CertificateIntegrationControllerTest {
 
     @Mock
     private ReactPilotUtil reactPilotUtil;
+
+    @InjectMocks
+    private CertificateIntegrationController certificateIntegrationController;
 
     private Map<String, Feature> features = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
@@ -75,7 +74,7 @@ public class CertificateIntegrationControllerTest {
         doReturn(features).when(user).getFeatures();
         doReturn(roles).when(user).getRoles();
 
-        doReturn(user).when(webCertUserService).getUser();
+        when(webCertUserService.getUser()).thenReturn(user);
     }
 
     @Test
