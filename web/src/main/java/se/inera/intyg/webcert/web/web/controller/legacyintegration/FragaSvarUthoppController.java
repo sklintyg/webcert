@@ -43,7 +43,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
@@ -78,9 +77,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
     @Autowired
     private IntygService intygService;
-
-    @Autowired
-    private WebCertUserService webCertUserService;
 
     @Autowired
     private ReactUriFactory reactUriFactory;
