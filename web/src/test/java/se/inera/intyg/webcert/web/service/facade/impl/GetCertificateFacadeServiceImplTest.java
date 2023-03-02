@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -84,6 +85,9 @@ class GetCertificateFacadeServiceImplTest {
     @Mock
     private ITIntegrationService itIntegrationService;
 
+    @Mock
+    private CertificateTextVersionFacadeService certificateTextVersionFacadeService;
+
     @InjectMocks
     private GetCertificateFacadeServiceImpl getCertificateService;
 
@@ -102,6 +106,8 @@ class GetCertificateFacadeServiceImplTest {
 
             doReturn(createCertificate())
                 .when(utkastToCertificateConverter).convert(utkastArgumentCaptor.capture());
+
+            doReturn(draft).when(certificateTextVersionFacadeService).upgradeToLatestMinorTextVersion(draft);
         }
 
         @Test
@@ -250,7 +256,7 @@ class GetCertificateFacadeServiceImplTest {
     @Nested
     class CertificateMissingInWebcert {
 
-        private final String CERTIFICATE_ID = "certificateId";
+        private static final String CERTIFICATE_ID = "certificateId";
         private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
             .setRevoked(false)
             .setDeceased(false)

@@ -36,6 +36,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.facade.testfixture.BaseFacadeIT;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 public class DeepIntegrationIT extends BaseFacadeIT {
@@ -46,7 +47,7 @@ public class DeepIntegrationIT extends BaseFacadeIT {
         final var testSetup = TestSetup.create()
             .draft(
                 LisjpEntryPoint.MODULE_ID,
-                "1.2",
+                "1.3",
                 CreateCertificateFillType.EMPTY,
                 DR_AJLA,
                 ALFA_VARDCENTRAL,
@@ -81,7 +82,7 @@ public class DeepIntegrationIT extends BaseFacadeIT {
         final var testSetup = TestSetup.create()
             .draft(
                 LisjpEntryPoint.MODULE_ID,
-                "1.2",
+                "1.3",
                 CreateCertificateFillType.EMPTY,
                 DR_BEATA,
                 BETA_VARDCENTRAL,
@@ -105,7 +106,7 @@ public class DeepIntegrationIT extends BaseFacadeIT {
 
         assertAll(
             () -> assertEquals(HttpServletResponse.SC_SEE_OTHER, response.getStatusCode()),
-            () -> assertTrue(response.getHeader(HttpHeaders.LOCATION).contains("/lisjp/1.2/edit/"),
+            () -> assertTrue(response.getHeader(HttpHeaders.LOCATION).contains("/lisjp/1.3/edit/"),
                 () -> "Expect '" + response.getHeader(HttpHeaders.LOCATION) + "' header to refer to route used in the Angular client")
         );
     }
@@ -116,7 +117,7 @@ public class DeepIntegrationIT extends BaseFacadeIT {
         final var testSetup = TestSetup.create()
             .draft(
                 LisjpEntryPoint.MODULE_ID,
-                "1.2",
+                "1.3",
                 CreateCertificateFillType.EMPTY,
                 DR_BEATA,
                 BETA_VARDCENTRAL,
@@ -147,7 +148,7 @@ public class DeepIntegrationIT extends BaseFacadeIT {
         final var testSetup = TestSetup.create()
             .draft(
                 LisjpEntryPoint.MODULE_ID,
-                "1.2",
+                "1.3",
                 CreateCertificateFillType.EMPTY,
                 DR_BEATA,
                 BETA_VARDCENTRAL,
