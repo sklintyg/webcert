@@ -61,8 +61,16 @@ class ReactPilotUtilTest {
         return feature;
     }
 
+    private Feature getUseReactWebclientFristaendeFeature(boolean global) {
+        final var feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
+        feature.setIntygstyper(Arrays.asList(certificateType));
+        feature.setGlobal(global);
+        return feature;
+    }
+
     @Nested
-    class TestBasedOnOrigin {
+    class TestBasedOnOriginDjupintegration {
 
         @BeforeEach
         void setUp() {
@@ -108,59 +116,166 @@ class ReactPilotUtilTest {
     }
 
     @Nested
-    class TestBasedOnFeature {
+    class TestBasedOnOriginFristaende {
 
         @BeforeEach
         void setUp() {
+            final var reactPilotFeature = getUseReactWebclientFristaendeFeature(true);
+            features.put(reactPilotFeature.getName(), reactPilotFeature);
+        }
+
+        @Test
+        void shallNotUseReactClientIfOriginDjupintegration() {
             doReturn(UserOriginType.DJUPINTEGRATION.name()).when(user).getOrigin();
-        }
 
-        @Test
-        void shallNotUseReactClientIfFeatureMissing() {
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+            final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
 
             assertFalse(actualResult);
         }
 
         @Test
-        void shallNotUseReactClientIfFeatureNotActive() {
-            final var reactPilotFeature = getUseReactWebclientFeature(false);
-            features.put(reactPilotFeature.getName(), reactPilotFeature);
+        void shallNotUseReactClientIfOriginReadonly() {
+            doReturn(UserOriginType.READONLY.name()).when(user).getOrigin();
 
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-            assertFalse(actualResult);
-        }
-
-        @Test
-        void shallNotUseReactClientIfFeatureMissingType() {
-            final var reactPilotFeature = getUseReactWebclientFeature(true);
-            features.put(reactPilotFeature.getName(), reactPilotFeature);
-
-            final var actualResult = reactPilotUtil.useReactClient(user, "anotherType");
+            final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
 
             assertFalse(actualResult);
         }
 
         @Test
-        void shallUseReactClientIfFeatureActive() {
-            final var reactPilotFeature = getUseReactWebclientFeature(true);
-            features.put(reactPilotFeature.getName(), reactPilotFeature);
+        void shallNotUseReactClientIfOriginUthopp() {
+            doReturn(UserOriginType.UTHOPP.name()).when(user).getOrigin();
 
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+            final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
+
+            assertFalse(actualResult);
+        }
+
+        @Test
+        void shallUseReactClientIfOriginFristaende() {
+            doReturn(UserOriginType.NORMAL.name()).when(user).getOrigin();
+
+            final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
 
             assertTrue(actualResult);
         }
+    }
 
-        @Test
-        void shallUseReactClientIfFeatureActiveForAllCertificateTypes() {
-            final var reactPilotFeature = getUseReactWebclientFeature(true);
-            reactPilotFeature.setIntygstyper(Collections.emptyList());
-            features.put(reactPilotFeature.getName(), reactPilotFeature);
+    @Nested
+    class TestBasedOnFeature {
 
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+        @Nested
+        class TestDjupintegration {
 
-            assertTrue(actualResult);
+            @BeforeEach
+            void setUp() {
+                doReturn(UserOriginType.DJUPINTEGRATION.name()).when(user).getOrigin();
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureMissing() {
+                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureNotActive() {
+                final var reactPilotFeature = getUseReactWebclientFeature(false);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureMissingType() {
+                final var reactPilotFeature = getUseReactWebclientFeature(true);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClient(user, "anotherType");
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallUseReactClientIfFeatureActive() {
+                final var reactPilotFeature = getUseReactWebclientFeature(true);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+
+                assertTrue(actualResult);
+            }
+
+            @Test
+            void shallUseReactClientIfFeatureActiveForAllCertificateTypes() {
+                final var reactPilotFeature = getUseReactWebclientFeature(true);
+                reactPilotFeature.setIntygstyper(Collections.emptyList());
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
+
+                assertTrue(actualResult);
+            }
+        }
+
+        @Nested
+        class TestFristaende {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(UserOriginType.NORMAL.name()).when(user).getOrigin();
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureMissing() {
+                final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureNotActive() {
+                final var reactPilotFeature = getUseReactWebclientFristaendeFeature(false);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallNotUseReactClientIfFeatureMissingType() {
+                final var reactPilotFeature = getUseReactWebclientFristaendeFeature(true);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClientFristaende(user, "anotherType");
+
+                assertFalse(actualResult);
+            }
+
+            @Test
+            void shallUseReactClientIfFeatureActive() {
+                final var reactPilotFeature = getUseReactWebclientFristaendeFeature(true);
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
+
+                assertTrue(actualResult);
+            }
+
+            @Test
+            void shallUseReactClientIfFeatureActiveForAllCertificateTypes() {
+                final var reactPilotFeature = getUseReactWebclientFristaendeFeature(true);
+                reactPilotFeature.setIntygstyper(Collections.emptyList());
+                features.put(reactPilotFeature.getName(), reactPilotFeature);
+
+                final var actualResult = reactPilotUtil.useReactClientFristaende(user, certificateType);
+
+                assertTrue(actualResult);
+            }
         }
     }
 }
