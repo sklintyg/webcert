@@ -22,24 +22,26 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIntegrationController;
@@ -62,36 +64,75 @@ public class CertificateIntegrationControllerTest {
     @InjectMocks
     private CertificateIntegrationController certificateIntegrationController;
 
-    private Map<String, Feature> features = new HashMap<>();
-    private Map<String, Role> roles = new HashMap<>();
-    private WebCertUser user;
+    private UriInfo uriInfo;
 
     @BeforeEach
     void setup() {
-        user = mock(WebCertUser.class);
+        final var roles = new HashMap<>();
         roles.put("LAKARE", new Role());
+        WebCertUser user = mock(WebCertUser.class);
         doReturn("NORMAL").when(user).getOrigin();
-        doReturn(features).when(user).getFeatures();
         doReturn(roles).when(user).getRoles();
 
         when(webCertUserService.getUser()).thenReturn(user);
+        when(user.changeValdVardenhet(any())).thenReturn(true);
     }
 
-    @Test
-    public void shouldUseReactIfFeatureIsActivated() {
-        final var reactPilotFeature = getUseReactWebclientFeature(true);
-        features.put(reactPilotFeature.getName(), reactPilotFeature);
+    @Nested
+    class AngularTest {
 
-        certificateIntegrationController.redirectToIntyg(null, "certificateId", "unitId");
-        verify(reactUriFactory.uriForCertificate(any(), any()));
+        @BeforeEach
+        void setup() {
+            final var uriBuilder = mock(UriBuilder.class);
+            uriInfo = mock(UriInfo.class);
+            doReturn(uriBuilder).when(uriInfo).getBaseUriBuilder();
+            doReturn(uriBuilder).when(uriBuilder).replacePath(any());
+            doReturn(uriBuilder).when(uriBuilder).fragment(any());
+            doReturn(mock(URI.class)).when(uriBuilder).buildFromMap(any());
+
+            doReturn(false).when(reactPilotUtil).useReactClientFristaende(any(), any());
+
+        }
+
+        @Test
+        public void shouldNotUseReactIfFeatureIsInactivatedFk7263() {
+            certificateIntegrationController.redirectToIntyg(uriInfo, "certificateId", "unitId");
+            verify(reactUriFactory, never()).uriForCertificate(any(), any());
+        }
+
+        @Test
+        public void shouldNotUseReactIfFeatureIsInactivated() {
+            when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
+
+            certificateIntegrationController.redirectToIntyg(uriInfo, "type","certificateId", "unitId");
+
+            verify(reactUriFactory, never()).uriForCertificate(any(), any());
+        }
     }
 
-    private Feature getUseReactWebclientFeature(boolean global) {
-        final var feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
-        feature.setIntygstyper(List.of("lisjp"));
-        feature.setGlobal(global);
-        return feature;
+    @Nested
+    class ReactTest {
+
+        @BeforeEach
+        void setup() {
+            doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
+            doReturn(true).when(reactPilotUtil).useReactClientFristaende(any(), any());
+        }
+
+        @Test
+        public void shouldUseReactIfFeatureIsActivatedFk7263() {
+            certificateIntegrationController.redirectToIntyg(uriInfo, "certificateId", "unitId");
+            verify(reactUriFactory).uriForCertificate(any(), any());
+        }
+
+        @Test
+        public void shouldUseReactIfFeatureIsActivated() {
+            when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
+
+            certificateIntegrationController.redirectToIntyg(uriInfo, "type", "certificateId", "unitId");
+
+            verify(reactUriFactory).uriForCertificate(any(), any());
+        }
     }
 
 }
