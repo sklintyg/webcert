@@ -96,7 +96,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
             + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
             + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
-
     private static final String DB_TYPE = "db";
 
     private final AuthoritiesHelper authoritiesHelper;
@@ -116,6 +115,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final CopyCertificateFunction copyCertificateFunction;
 
+    private final SrsFunction srsFunction;
+
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
@@ -126,7 +127,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
-        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction) {
+        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction,
+        SrsFunction srsFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -138,6 +140,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.showRelatedCertificateFunction = showRelatedCertificateFunction;
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
         this.copyCertificateFunction = copyCertificateFunction;
+        this.srsFunction = srsFunction;
     }
 
     /**
@@ -280,6 +283,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent(resourceLinks::add);
 
         createCertificateFromCandidateFunction.get(certificate)
+            .ifPresent(resourceLinks::add);
+
+        srsFunction.get(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;
