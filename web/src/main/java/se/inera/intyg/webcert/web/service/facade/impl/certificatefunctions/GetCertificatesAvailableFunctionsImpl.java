@@ -96,6 +96,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
             + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
             + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
+
     private static final String DB_TYPE = "db";
 
     private final AuthoritiesHelper authoritiesHelper;
