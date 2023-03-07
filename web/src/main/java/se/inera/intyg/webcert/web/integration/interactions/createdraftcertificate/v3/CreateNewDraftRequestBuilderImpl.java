@@ -18,22 +18,20 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import com.google.common.base.Strings;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import se.inera.intyg.common.support.common.enumerations.PatientInfo;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -60,11 +58,38 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
         Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
 
-        final Patient patient = TransportConverterUtil.getPatient(intyg.getPatient(), PatientInfo.EXTENDED);
-        patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
+        final Patient patient = getPatient(intyg);
 
         return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,
             null, hosPerson, patient, intyg.getRef(), forifyllnad);
+    }
+
+    private Patient getPatient(Intyg intyg) {
+        final var pnr = intyg.getPatient().getPersonId().getExtension();
+        final var personnummer = Personnummer.createPersonnummer(pnr).orElseThrow();
+        return getPatientFromPU(personnummer);
+    }
+
+    private Patient getPatientFromPU(Personnummer personnummer) {
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer);
+        Patient patient = new Patient();
+        patient.setPersonId(personFromPUService.getPerson().getPersonnummer());
+        patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
+        patient.setFornamn(personFromPUService.getPerson().getFornamn());
+        patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
+        patient.setPostort(personFromPUService.getPerson().getPostort());
+        patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
+        patient.setPostadress(personFromPUService.getPerson().getPostadress());
+        if (Strings.nullToEmpty(personFromPUService.getPerson().getMellannamn()).trim().isEmpty()) {
+            patient.setFullstandigtNamn(
+                personFromPUService.getPerson().getFornamn() + " " + personFromPUService.getPerson().getEfternamn());
+        } else {
+            patient.setFullstandigtNamn(
+                personFromPUService.getPerson().getFornamn() + " " + personFromPUService.getPerson().getMellannamn() + " "
+                    + personFromPUService.getPerson().getEfternamn());
+        }
+        patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
+        return patient;
     }
 
     private Optional<Forifyllnad> getOptionalForifyllnadIfApplicable(String intygsType, Forifyllnad forifyllnad, IntygUser user) {

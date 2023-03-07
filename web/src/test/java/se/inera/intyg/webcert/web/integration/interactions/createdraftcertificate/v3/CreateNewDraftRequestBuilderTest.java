@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -29,18 +31,19 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -84,7 +87,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     public void setup() {
         user = buildWebCertUser();
         user.changeValdVardenhet(UNIT_HSAID);
-
+        when(patientDetailsResolver.getPersonFromPUService(any())).thenReturn(PersonSvar.notFound());
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
             .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
@@ -153,6 +156,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         assertTrue(res.getForifyllnad().isPresent());
         assertEquals(forifyllnad, res.getForifyllnad().get());
     }
+
     @Test
     public void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
 
@@ -177,6 +181,45 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         assertNotNull(res);
         assertNotNull(res.getHosPerson());
         assertFalse(res.getForifyllnad().isPresent());
+    }
+
+    @Test
+    public void shallUsePatientInformationFromPUIfPresent() {
+        Person person = new Person(Personnummer.createPersonnummer(PERSONNUMMER).get(), false, false, "Test", "Test", "Test", "Test",
+            "Test",
+            "Test");
+        final var personSvar = PersonSvar.found(person);
+
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(personSvar);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
+
+        assertAll(
+            () -> assertEquals(person.getFornamn(), res.getPatient().getFornamn()),
+            () -> assertEquals(person.getEfternamn(), res.getPatient().getEfternamn()),
+            () -> assertEquals(person.getPostnummer(), res.getPatient().getPostnummer()),
+            () -> assertEquals(person.getPostort(), res.getPatient().getPostort()),
+            () -> assertEquals(person.getPostadress(), res.getPatient().getPostadress()),
+            () -> assertEquals(person.getMellannamn(), res.getPatient().getMellannamn()),
+            () -> assertEquals(person.getFornamn() + " " + person.getMellannamn() + " " + person.getEfternamn(),
+                res.getPatient().getFullstandigtNamn())
+        );
+    }
+
+    @Test
+    public void shallNotUsePatientInformationFromPUIfNotPresent() {
+        when(patientDetailsResolver.getPersonFromPUService(any())).thenReturn(PersonSvar.notFound());
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
+
+        assertAll(
+            () -> assertEquals(FORNAMN, res.getPatient().getFornamn()),
+            () -> assertEquals(EFTERNAMN, res.getPatient().getEfternamn()),
+            () -> assertEquals(PATIENT_POSTNUMMER, res.getPatient().getPostnummer()),
+            () -> assertEquals(PATIENT_POSTORT, res.getPatient().getPostort()),
+            () -> assertEquals(PATIENT_POSTADRESS, res.getPatient().getPostadress()),
+            () -> assertEquals(MELLANNAMN, res.getPatient().getMellannamn()),
+            () -> assertEquals(FORNAMN + " " + MELLANNAMN + " " + EFTERNAMN,
+                res.getPatient().getFullstandigtNamn())
+        );
     }
 
     private Intyg createIntyg() {
