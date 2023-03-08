@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -46,34 +47,89 @@ class SrsFunctionImplTest {
         WebCertUser user = new WebCertUser();
         Map<String, Feature> features = new HashMap<>();
 
-        @BeforeEach
-        void setup() {
-            certificate = new Certificate();
-            final var metadata = CertificateMetadata.builder().type("lisjp").build();
-            certificate.setMetadata(metadata);
-        }
-        @Test
-        void shouldReturnResourceLinkIfFeatureIsActivated() {
-            updateUserFeatures(getFeature(true, "lisjp"));
-            assertTrue(srsFunction.get(certificate, user).isPresent());
+        @Nested
+        class TestDraft {
+            @BeforeEach
+            void setup() {
+                certificate = new Certificate();
+                final var metadata = CertificateMetadata.builder()
+                    .type("lisjp")
+                    .status(CertificateStatus.UNSIGNED)
+                    .build();
+                certificate.setMetadata(metadata);
+            }
+
+            @Test
+            void shouldReturnResourceLinkIfFeatureIsActivated() {
+                updateUserFeatures(getFeature(true, "lisjp"));
+                assertTrue(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfFeatureIsInactive() {
+                updateUserFeatures(getFeature(false, "lisjp"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfTypeIsWrong() {
+                updateUserFeatures(getFeature(true, "wrongType"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfFeatureIsMissing() {
+                updateUserFeatures(null);
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
         }
 
-        @Test
-        void shouldNotReturnResourceLinkIfFeatureIsInactive() {
-            updateUserFeatures(getFeature(false, "lisjp"));
-            assertFalse(srsFunction.get(certificate, user).isPresent());
+        @Nested
+        class TestNotDraft {
+
+            void setup(CertificateStatus status) {
+                certificate = new Certificate();
+                final var metadata = CertificateMetadata.builder()
+                    .type("lisjp")
+                    .status(status)
+                    .build();
+                certificate.setMetadata(metadata);
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfSigned() {
+                setup(CertificateStatus.SIGNED);
+                updateUserFeatures(getFeature(true, "lisjp"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfRevoked() {
+                setup(CertificateStatus.REVOKED);
+                updateUserFeatures(getFeature(true, "lisjp"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfLocked() {
+                setup(CertificateStatus.LOCKED);
+                updateUserFeatures(getFeature(true, "lisjp"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
+
+            @Test
+            void shouldNotReturnResourceLinkIfLockedRevoked() {
+                setup(CertificateStatus.LOCKED_REVOKED);
+                updateUserFeatures(getFeature(true, "lisjp"));
+                assertFalse(srsFunction.get(certificate, user).isPresent());
+            }
         }
 
-        @Test
-        void shouldNotReturnResourceLinkIfTypeIsWrong() {
-            updateUserFeatures(getFeature(true, "wrongType"));
-            assertFalse(srsFunction.get(certificate, user).isPresent());
-        }
-
-        @Test
-        void shouldNotReturnResourceLinkIfFeatureIsMissing() {
-            updateUserFeatures(null);
-            assertFalse(srsFunction.get(certificate, user).isPresent());
+        private void updateUserFeatures(Feature feature) {
+            if (feature != null) {
+                features.put(feature.getName(), feature);
+            }
+            user.setFeatures(features);
         }
 
         private Feature getFeature(boolean global, String certificateType) {
@@ -82,13 +138,6 @@ class SrsFunctionImplTest {
             feature.setIntygstyper(Collections.singletonList(certificateType));
             feature.setGlobal(global);
             return feature;
-        }
-
-        private void updateUserFeatures(Feature feature) {
-            if (feature != null) {
-                features.put(feature.getName(), feature);
-            }
-            user.setFeatures(features);
         }
     }
 }

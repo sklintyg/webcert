@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -50,7 +51,11 @@ public class SrsFunctionImpl implements SrsFunction {
             return false;
         }
 
-        return isFeatureActive(certificate.getMetadata().getType(), feature);
+        return isDraft(certificate) && isFeatureActive(certificate.getMetadata().getType(), feature);
+    }
+
+    private static boolean isDraft(Certificate certificate) {
+        return certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED;
     }
 
     private static boolean isFeatureActive(String certificateType, Feature feature) {
