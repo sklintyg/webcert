@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import com.google.common.base.Strings;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +31,7 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -80,14 +80,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         patient.setPostort(personFromPUService.getPerson().getPostort());
         patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
         patient.setPostadress(personFromPUService.getPerson().getPostadress());
-        if (Strings.nullToEmpty(personFromPUService.getPerson().getMellannamn()).trim().isEmpty()) {
-            patient.setFullstandigtNamn(
-                personFromPUService.getPerson().getFornamn() + " " + personFromPUService.getPerson().getEfternamn());
-        } else {
-            patient.setFullstandigtNamn(
-                personFromPUService.getPerson().getFornamn() + " " + personFromPUService.getPerson().getMellannamn() + " "
-                    + personFromPUService.getPerson().getEfternamn());
-        }
+        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.getPerson().getFornamn(),
+            personFromPUService.getPerson().getMellannamn(), personFromPUService.getPerson().getEfternamn()));
         patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
         return patient;
     }
