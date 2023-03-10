@@ -71,18 +71,18 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     }
 
     private Patient getPatientFromPU(Personnummer personnummer) {
-        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer);
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer).getPerson();
         Patient patient = new Patient();
-        patient.setPersonId(personFromPUService.getPerson().getPersonnummer());
-        patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
-        patient.setFornamn(personFromPUService.getPerson().getFornamn());
-        patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
-        patient.setPostort(personFromPUService.getPerson().getPostort());
-        patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
-        patient.setPostadress(personFromPUService.getPerson().getPostadress());
-        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.getPerson().getFornamn(),
-            personFromPUService.getPerson().getMellannamn(), personFromPUService.getPerson().getEfternamn()));
-        patient.setTestIndicator(patientDetailsResolver.isTestIndicator(patient.getPersonId()));
+        patient.setPersonId(personFromPUService.getPersonnummer());
+        patient.setEfternamn(personFromPUService.getEfternamn());
+        patient.setFornamn(personFromPUService.getFornamn());
+        patient.setMellannamn(personFromPUService.getMellannamn());
+        patient.setPostort(personFromPUService.getPostort());
+        patient.setPostnummer(personFromPUService.getPostnummer());
+        patient.setPostadress(personFromPUService.getPostadress());
+        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.getFornamn(),
+            personFromPUService.getMellannamn(), personFromPUService.getEfternamn()));
+        patient.setTestIndicator(personFromPUService.isTestIndicator());
         return patient;
     }
 

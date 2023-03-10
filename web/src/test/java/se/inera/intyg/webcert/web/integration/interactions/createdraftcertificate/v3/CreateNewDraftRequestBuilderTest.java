@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -63,11 +64,17 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
     public static final String PERSONNUMMER = "191212121212";
     public static final String FORNAMN = "Adam";
+    public static final String FORNAMN_FROM_PU = "Erik";
     public static final String MELLANNAMN = "Cesarsson";
+    public static final String MELLANNAMN_FROM_PU = "Sten";
     public static final String EFTERNAMN = "Eriksson";
+    public static final String EFTERNAMN_FROM_PU = "Svensson";
     public static final String PATIENT_POSTADRESS = "postadress";
+    public static final String PATIENT_POSTADRESS_FROM_PU = "postadress från pu";
     public static final String PATIENT_POSTNUMMER = "postnummer";
+    public static final String PATIENT_POSTNUMMER_FROM_PU = "postnummer från pu";
     public static final String PATIENT_POSTORT = "postort";
+    public static final String PATIENT_POSTORT_FROM_PU = "postort från pu";
     private static final String CERT_TYPE = "LUSE";
     private static final String INTYG_TYPE_VERSION = "1.0";
 
@@ -187,6 +194,29 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         assertNotNull(res);
         assertNotNull(res.getHosPerson());
         assertFalse(res.getForifyllnad().isPresent());
+    }
+
+    @Test
+    public void shouldUsePatientInformationFromPU() {
+        person = new Person(Personnummer.createPersonnummer(PERSONNUMMER).get(), false, false,
+            FORNAMN_FROM_PU, MELLANNAMN_FROM_PU, EFTERNAMN_FROM_PU, PATIENT_POSTADRESS_FROM_PU, PATIENT_POSTNUMMER_FROM_PU,
+            PATIENT_POSTORT_FROM_PU, true);
+        final var personSvar = PersonSvar.found(person);
+
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(personSvar);
+
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
+
+        assertAll(
+            () -> assertEquals(PERSONNUMMER, res.getPatient().getPersonId().getPersonnummer()),
+            () -> assertEquals(FORNAMN_FROM_PU, res.getPatient().getFornamn()),
+            () -> assertEquals(MELLANNAMN_FROM_PU, res.getPatient().getMellannamn()),
+            () -> assertEquals(EFTERNAMN_FROM_PU, res.getPatient().getEfternamn()),
+            () -> assertEquals(PATIENT_POSTADRESS_FROM_PU, res.getPatient().getPostadress()),
+            () -> assertEquals(PATIENT_POSTNUMMER_FROM_PU, res.getPatient().getPostnummer()),
+            () -> assertEquals(PATIENT_POSTORT_FROM_PU, res.getPatient().getPostort()),
+            () -> assertEquals(true, res.getPatient().isTestIndicator())
+        );
     }
 
     private Intyg createIntyg() {
