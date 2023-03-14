@@ -36,6 +36,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -49,14 +50,16 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private final IntygService intygService;
     private final UtkastService utkastService;
     private final WebCertUserService webCertUserService;
+    private final CertificateRelationService certificateRelationService;
 
     public CertificateForPatientServiceImpl(Cache certificatesForPatientCache, ObjectMapper objectMapper, IntygService intygService,
-        UtkastService utkastService, WebCertUserService webCertUserService) {
+        UtkastService utkastService, WebCertUserService webCertUserService, CertificateRelationService certificateRelationService) {
         this.certificatesForPatientCache = certificatesForPatientCache;
         this.objectMapper = objectMapper;
         this.intygService = intygService;
         this.utkastService = utkastService;
         this.webCertUserService = webCertUserService;
+        this.certificateRelationService = certificateRelationService;
     }
 
     @Override
@@ -71,7 +74,14 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
         return certificatesFromWC.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
+            .map(this::setRelations)
             .collect(Collectors.toList());
+    }
+
+    private ListIntygEntry setRelations(ListIntygEntry entry) {
+        final var relations = certificateRelationService.getRelations(entry.getIntygId());
+        entry.setRelations(relations);
+        return entry;
     }
 
     private List<ListIntygEntry> getCertificatesFromIT(Personnummer patientId, List<String> units) {

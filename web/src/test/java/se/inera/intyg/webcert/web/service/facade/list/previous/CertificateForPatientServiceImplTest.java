@@ -20,9 +20,11 @@
 package se.inera.intyg.webcert.web.service.facade.list.previous;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
@@ -35,22 +37,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateForPatientServiceImplTest {
@@ -64,6 +70,8 @@ class CertificateForPatientServiceImplTest {
     @Mock
     private WebCertUserService webCertUserService;
     private CertificateForPatientServiceImpl certificateForPatient;
+    @Mock
+    private CertificateRelationService certificateRelationService;
     public static final String CACHE_KEY = "-2053878503";
     private static final String PATIENT_ID = "1912121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
@@ -79,8 +87,8 @@ class CertificateForPatientServiceImplTest {
             objectMapper,
             intygService,
             utkastService,
-            webCertUserService
-        );
+            webCertUserService,
+            certificateRelationService);
 
         final var webCertUser = mock(WebCertUser.class);
         doReturn(HSA_ID).when(webCertUser).getHsaId();
@@ -333,6 +341,45 @@ class CertificateForPatientServiceImplTest {
             for (int i = 0; i < expectedResult.size(); i++) {
                 assertEquals(expectedResult.get(i), actualResult.get(i));
             }
+        }
+    }
+
+    @Nested
+    class IncludeRelationsOnListIntygEntry {
+
+        @BeforeEach
+        void setUp() {
+            final var fromWebcert = List.of(
+                utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name())
+            );
+            doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
+
+        }
+
+        @Test
+        void shouldAddRelationsToListIntygEntryIfPresent() {
+            final var expectedRelations = new Relations();
+            expectedRelations.getLatestChildRelations().setReplacedByIntyg(new WebcertCertificateRelation(
+                "5", RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_LOCKED, false
+            ));
+            final var intygListItemFromWC = intygListItemFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name());
+            intygListItemFromWC.setRelations(expectedRelations);
+            final var expectedResult = List.of(
+                intygListItemFromWC
+            );
+
+            when(certificateRelationService.getRelations(intygListItemFromWC.getIntygId())).thenReturn(expectedRelations);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedResult, actualResult);
+        }
+
+        @Test
+        void shouldNotAddRelationsToListIntygEntryIfNotPresent() {
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertNull(actualResult.get(0).getRelations());
         }
     }
 
