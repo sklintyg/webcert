@@ -409,9 +409,11 @@ class CertificateForPatientServiceImplTest {
     }
 
     private ListIntygEntry intygListItemFromWC(String id, String localDateTimeAsStr, String status) {
-        return IntygDraftsConverter.convertUtkastToListIntygEntry(
+        final var listIntygEntry = IntygDraftsConverter.convertUtkastToListIntygEntry(
             utkastFromWC(id, localDateTimeAsStr, status)
         );
+        listIntygEntry.setRelations(null);
+        return listIntygEntry;
     }
 
     private ListIntygEntry intygListItemFromIT(String id, String localDateTimeAsStr, String status) {

@@ -93,7 +93,6 @@ public class IntygDraftsConverter {
         entry.setVardenhetId(utkast.getEnhetsId());
         entry.setVardgivarId(utkast.getVardgivarId());
         entry.setTestIntyg(utkast.isTestIntyg());
-        entry.setRelations(null);
 
         return entry;
     }
