@@ -58,7 +58,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
         Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
 
-        final Patient patient = getPatient(intyg);
+        final var patient = getPatient(intyg);
 
         return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,
             null, hosPerson, patient, intyg.getRef(), forifyllnad);
@@ -72,7 +72,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Patient getPatientFromPU(Personnummer personnummer) {
         final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer).getPerson();
-        Patient patient = new Patient();
+        final var patient = new Patient();
         patient.setPersonId(personFromPUService.getPersonnummer());
         patient.setEfternamn(personFromPUService.getEfternamn());
         patient.setFornamn(personFromPUService.getFornamn());
