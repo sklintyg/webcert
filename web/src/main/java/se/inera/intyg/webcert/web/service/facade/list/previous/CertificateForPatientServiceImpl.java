@@ -24,22 +24,29 @@ import static java.util.Comparator.reverseOrder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
 @Service(value = "certificatesForPatientServiceImpl")
 public class CertificateForPatientServiceImpl implements CertificateForPatientService {
@@ -50,16 +57,14 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private final IntygService intygService;
     private final UtkastService utkastService;
     private final WebCertUserService webCertUserService;
-    private final CertificateRelationService certificateRelationService;
 
     public CertificateForPatientServiceImpl(Cache certificatesForPatientCache, ObjectMapper objectMapper, IntygService intygService,
-        UtkastService utkastService, WebCertUserService webCertUserService, CertificateRelationService certificateRelationService) {
+        UtkastService utkastService, WebCertUserService webCertUserService) {
         this.certificatesForPatientCache = certificatesForPatientCache;
         this.objectMapper = objectMapper;
         this.intygService = intygService;
         this.utkastService = utkastService;
         this.webCertUserService = webCertUserService;
-        this.certificateRelationService = certificateRelationService;
     }
 
     @Override
@@ -72,16 +77,11 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private List<ListIntygEntry> getCertificatesFromWC(Personnummer patientId, List<String> units) {
         final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
+        final var relationsMap = getRelationsMap(certificatesFromWC);
         return certificatesFromWC.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-            .map(this::setRelations)
+            .map(entry -> updateRelations(entry, relationsMap))
             .collect(Collectors.toList());
-    }
-
-    private ListIntygEntry setRelations(ListIntygEntry entry) {
-        final var relations = certificateRelationService.getRelations(entry.getIntygId());
-        entry.setRelations(relations);
-        return entry;
     }
 
     private List<ListIntygEntry> getCertificatesFromIT(Personnummer patientId, List<String> units) {
@@ -95,6 +95,65 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         );
         LOG.debug("IntygsService returned {} certificates from cache for key '{}'", certificatesFromIT.size(), key);
         return certificatesFromIT;
+    }
+
+    private ListIntygEntry updateRelations(ListIntygEntry entry, Map<String, Utkast> relationsMap) {
+        if (!relationsMap.containsKey(entry.getIntygId())) {
+            return entry;
+        }
+        final var utkast = relationsMap.get(entry.getIntygId());
+        if (utkast.getRelationKod().equals(RelationKod.ERSATT) && utkast.getStatus().equals(UtkastStatus.SIGNED)) {
+            entry.setRelations(setReplacedRelation(utkast));
+        }
+
+        if (utkast.getRelationKod().equals(RelationKod.KOMPLT)) {
+            entry.setRelations(setComplementedRelation(utkast));
+        }
+        return entry;
+    }
+
+    private Map<String, Utkast> getRelationsMap(List<Utkast> utkasts) {
+        final Map<String, Utkast> relationsMap = new HashMap<>();
+        for (Utkast utkast : utkasts) {
+            if (utkast.getRelationIntygsId() == null && utkast.getRelationKod() == null) {
+                continue;
+            }
+            relationsMap.put(utkast.getRelationIntygsId(), utkast);
+        }
+        return relationsMap;
+    }
+
+    private Relations setComplementedRelation(Utkast utkast) {
+        final var relations = new Relations();
+        final var frontendRelations = new FrontendRelations();
+        frontendRelations.setComplementedByIntyg(
+            new WebcertCertificateRelation(
+                utkast.getRelationIntygsId(),
+                utkast.getRelationKod(),
+                utkast.getSkapad(),
+                utkast.getStatus(),
+                utkast.getAterkalladDatum() != null
+            )
+        );
+
+        relations.setLatestChildRelations(frontendRelations);
+        return relations;
+    }
+
+    private Relations setReplacedRelation(Utkast utkast) {
+        final var relations = new Relations();
+        final var frontendRelations = new FrontendRelations();
+        frontendRelations.setReplacedByIntyg(
+            new WebcertCertificateRelation(
+                utkast.getRelationIntygsId(),
+                utkast.getRelationKod(),
+                utkast.getSkapad(),
+                utkast.getStatus(),
+                false
+            )
+        );
+        relations.setLatestChildRelations(frontendRelations);
+        return relations;
     }
 
     private String generateKey(Personnummer patientId, List<String> units) {
