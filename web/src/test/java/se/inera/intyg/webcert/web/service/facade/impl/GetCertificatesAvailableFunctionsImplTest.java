@@ -199,11 +199,15 @@ class GetCertificatesAvailableFunctionsImplTest {
             when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DoiModuleEntryPoint.MODULE_ID))
                 .thenReturn(true);
             when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var certificate = CertificateFacadeTestHelper.createCertificate(
+                DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED
+            );
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertTrue(
-                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains("Intyget skickas direkt till Socialstyrelsen.")));
+                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains(
+                    "Intyget skickas direkt till Socialstyrelsen.")
+                ));
         }
 
         @Test
