@@ -71,6 +71,7 @@ import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.Displ
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ShowRelatedCertificateFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SrsFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -113,6 +114,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     private CopyCertificateFunction copyCertificateFunction;
+
+    @Mock
+    private SrsFunction srsFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -282,6 +286,27 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FMB);
+        }
+
+        @Test
+        void shallIncludeSRS() {
+            when(srsFunction.get(any(), any()))
+                .thenReturn(
+                    Optional.of(
+                        ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS, "", "", "", true)
+                    )
+                );
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
+        }
+
+        @Test
+        void shallExcludeSRS() {
+            when(srsFunction.get(any(), any())).thenReturn(Optional.empty());
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
         }
 
         @Test
