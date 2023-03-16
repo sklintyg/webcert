@@ -77,10 +77,10 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private List<ListIntygEntry> getCertificatesFromWC(Personnummer patientId, List<String> units) {
         final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
-        final var relationsMap = getRelationsMap(certificatesFromWC);
+        final var draftRelationsMap = draftRelationsMap(certificatesFromWC);
         return certificatesFromWC.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-            .map(entry -> updateRelations(entry, relationsMap))
+            .map(entry -> updateRelations(entry, draftRelationsMap))
             .collect(Collectors.toList());
     }
 
@@ -103,16 +103,16 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         }
         final var utkast = relationsMap.get(entry.getIntygId());
         if (utkast.getRelationKod().equals(RelationKod.ERSATT) && utkast.getStatus().equals(UtkastStatus.SIGNED)) {
-            entry.setRelations(setReplacedRelation(utkast));
+            entry.setRelations(addRelationReplaced(utkast));
         }
 
-        if (utkast.getRelationKod().equals(RelationKod.KOMPLT)) {
-            entry.setRelations(setComplementedRelation(utkast));
+        if (utkast.getRelationKod().equals(RelationKod.KOMPLT) && utkast.getStatus().equals(UtkastStatus.SIGNED)) {
+            entry.setRelations(addRelationComplemented(utkast));
         }
         return entry;
     }
 
-    private Map<String, Utkast> getRelationsMap(List<Utkast> utkasts) {
+    private Map<String, Utkast> draftRelationsMap(List<Utkast> utkasts) {
         final Map<String, Utkast> relationsMap = new HashMap<>();
         for (Utkast utkast : utkasts) {
             if (utkast.getRelationIntygsId() == null && utkast.getRelationKod() == null) {
@@ -123,37 +123,34 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         return relationsMap;
     }
 
-    private Relations setComplementedRelation(Utkast utkast) {
+    private Relations addRelationComplemented(Utkast utkast) {
         final var relations = new Relations();
         final var frontendRelations = new FrontendRelations();
         frontendRelations.setComplementedByIntyg(
-            new WebcertCertificateRelation(
-                utkast.getRelationIntygsId(),
-                utkast.getRelationKod(),
-                utkast.getSkapad(),
-                utkast.getStatus(),
-                utkast.getAterkalladDatum() != null
-            )
+            getWebcertCertificateRelation(utkast)
         );
-
         relations.setLatestChildRelations(frontendRelations);
         return relations;
     }
 
-    private Relations setReplacedRelation(Utkast utkast) {
+    private Relations addRelationReplaced(Utkast utkast) {
         final var relations = new Relations();
         final var frontendRelations = new FrontendRelations();
         frontendRelations.setReplacedByIntyg(
-            new WebcertCertificateRelation(
-                utkast.getRelationIntygsId(),
-                utkast.getRelationKod(),
-                utkast.getSkapad(),
-                utkast.getStatus(),
-                false
-            )
+            getWebcertCertificateRelation(utkast)
         );
         relations.setLatestChildRelations(frontendRelations);
         return relations;
+    }
+
+    private static WebcertCertificateRelation getWebcertCertificateRelation(Utkast utkast) {
+        return new WebcertCertificateRelation(
+            utkast.getRelationIntygsId(),
+            utkast.getRelationKod(),
+            utkast.getSkapad(),
+            utkast.getStatus(),
+            utkast.getAterkalladDatum() != null
+        );
     }
 
     private String generateKey(Personnummer patientId, List<String> units) {
