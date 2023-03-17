@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -58,7 +59,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
     private static final String SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN = "Intyget skickas direkt till Arbetsförmedlingen.";
     private static final String SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET = "Intyget skickas direkt till Skatteverket.";
-
+    private static final String SIGN_AND_SEND_DESCRIPTION_SOC = "Intyget skickas direkt till Socialstyrelsen.";
     private static final String SIGN_NAME = "Signera intyget";
     private static final String SIGN_DESCRIPTION = "Intyget signeras.";
 
@@ -296,6 +297,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (DbModuleEntryPoint.MODULE_ID.equals(certificateType)) {
             return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
         }
+
+        if (DoiModuleEntryPoint.MODULE_ID.equals(certificateType)) {
+            return SIGN_AND_SEND_DESCRIPTION_SOC;
+        }
+
         return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
     }
 
