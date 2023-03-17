@@ -49,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -191,6 +192,22 @@ class GetCertificatesAvailableFunctionsImplTest {
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertTrue(
                 actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains("Intyget skickas direkt till Skatteverket.")));
+        }
+
+        @Test
+        void shallIncludeSignAndSendCertificateWithDescriptionSoc() {
+            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DoiModuleEntryPoint.MODULE_ID))
+                .thenReturn(true);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(
+                DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertTrue(
+                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains(
+                    "Intyget skickas direkt till Socialstyrelsen.")
+                ));
         }
 
         @Test
