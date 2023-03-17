@@ -24,21 +24,28 @@ import static java.util.Comparator.reverseOrder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
 @Service(value = "certificatesForPatientServiceImpl")
 public class CertificateForPatientServiceImpl implements CertificateForPatientService {
@@ -69,8 +76,10 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private List<ListIntygEntry> getCertificatesFromWC(Personnummer patientId, List<String> units) {
         final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
+        final var relationsMap = getRelationsMap(certificatesFromWC);
         return certificatesFromWC.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
+            .map(entry -> decorateWithRelation(entry, relationsMap))
             .collect(Collectors.toList());
     }
 
@@ -85,6 +94,46 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         );
         LOG.debug("IntygsService returned {} certificates from cache for key '{}'", certificatesFromIT.size(), key);
         return certificatesFromIT;
+    }
+
+    private Map<String, FrontendRelations> getRelationsMap(List<Utkast> utkasts) {
+        final Map<String, FrontendRelations> relationsMap = new HashMap<>();
+        getRelevantRelations(utkasts)
+            .forEach(relation -> {
+                    final var frontendRelations = relationsMap.computeIfAbsent(relation.getIntygsId(), id -> new FrontendRelations());
+                    if (RelationKod.ERSATT.equals(relation.getRelationKod())) {
+                        frontendRelations.setReplacedByIntyg(relation);
+                    }
+                    if (RelationKod.KOMPLT.equals(relation.getRelationKod())) {
+                        frontendRelations.setComplementedByIntyg(relation);
+                    }
+                }
+            );
+        return relationsMap;
+    }
+
+    private ListIntygEntry decorateWithRelation(ListIntygEntry entry, Map<String, FrontendRelations> relationsMap) {
+        entry.getRelations().setLatestChildRelations(relationsMap.getOrDefault(entry.getIntygId(), new FrontendRelations()));
+        return entry;
+    }
+
+    private List<WebcertCertificateRelation> getRelevantRelations(List<Utkast> utkasts) {
+        final var relevantRelationCodes = List.of(RelationKod.ERSATT, RelationKod.KOMPLT);
+        return utkasts.stream()
+            .filter(utkast -> utkast.getRelationIntygsId() != null && relevantRelationCodes.contains(utkast.getRelationKod())
+                && utkast.getStatus() == UtkastStatus.SIGNED && utkast.getAterkalladDatum() == null)
+            .map(this::getWebcertCertificateRelation)
+            .collect(Collectors.toList());
+    }
+
+    private WebcertCertificateRelation getWebcertCertificateRelation(Utkast utkast) {
+        return new WebcertCertificateRelation(
+            utkast.getRelationIntygsId(),
+            utkast.getRelationKod(),
+            utkast.getSkapad(),
+            utkast.getStatus(),
+            utkast.getAterkalladDatum() != null
+        );
     }
 
     private String generateKey(Personnummer patientId, List<String> units) {

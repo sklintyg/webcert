@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,10 +36,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
@@ -51,6 +54,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateForPatientServiceImplTest {
@@ -79,8 +84,7 @@ class CertificateForPatientServiceImplTest {
             objectMapper,
             intygService,
             utkastService,
-            webCertUserService
-        );
+            webCertUserService);
 
         final var webCertUser = mock(WebCertUser.class);
         doReturn(HSA_ID).when(webCertUser).getHsaId();
@@ -333,6 +337,128 @@ class CertificateForPatientServiceImplTest {
             for (int i = 0; i < expectedResult.size(); i++) {
                 assertEquals(expectedResult.get(i), actualResult.get(i));
             }
+        }
+    }
+
+    @Nested
+    class IncludeRelationsOnListIntygEntry {
+
+        @Test
+        void shouldNotAddRelationIfNoRelationExists() {
+            final var expectedRelations = prepareCertificates(null, null);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldAddRelationIfReplacedBySignedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.ERSATT), CertificateState.RECEIVED);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldNotAddRelationIfReplacedByUnsignedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.ERSATT), CertificateState.IN_PROGRESS);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldNotAddRelationIfReplacedByRevokedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.ERSATT), CertificateState.CANCELLED);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldAddRelationIfComplementedBySignedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.KOMPLT), CertificateState.RECEIVED);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldNotAddRelationIfComplementedByUnsignedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.KOMPLT), CertificateState.IN_PROGRESS);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldNotAddRelationIfComplementedByRevokedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.KOMPLT), CertificateState.CANCELLED);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        @Test
+        void shouldAddRelationsIfComplementedAndReplacedBySignedCertificate() {
+            final var expectedRelations = prepareCertificates(List.of(RelationKod.KOMPLT, RelationKod.ERSATT), CertificateState.RECEIVED);
+
+            final var actualResult = certificateForPatient.get(getTestListFilter(), PERSONNUMMER, UNIT_IDS);
+
+            assertEquals(expectedRelations, actualResult.get(0).getRelations());
+        }
+
+        private Relations prepareCertificates(List<RelationKod> relationKodList, CertificateState certificateState) {
+            if (relationKodList != null) {
+                final var fromWebcert = relationKodList.stream()
+                    .map(relationKod -> {
+                        final var certificateWithRelation = utkastFromWC("4", "2014-01-03T12:12:18", certificateState.name());
+                        certificateWithRelation.setRelationKod(relationKod);
+                        certificateWithRelation.setRelationIntygsId("3");
+                        certificateWithRelation.setSkapad(LocalDateTime.of(2014, 01, 03, 12, 13, 18));
+                        return certificateWithRelation;
+                    })
+                    .collect(Collectors.toList());
+                fromWebcert.add(utkastFromWC("3", "2014-01-03T12:13:18", CertificateState.RECEIVED.name()));
+
+                doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
+            } else {
+                final var fromWebcert = List.of(
+                    utkastFromWC("4", "2014-01-03T12:13:18", CertificateState.RECEIVED.name()),
+                    utkastFromWC("3", "2014-01-03T12:13:18", CertificateState.RECEIVED.name())
+                );
+
+                doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
+            }
+
+            final var relations = new Relations();
+            final var frontendRelations = new FrontendRelations();
+            relations.setLatestChildRelations(frontendRelations);
+            if (relationKodList != null && CertificateState.RECEIVED.equals(certificateState)) {
+                relationKodList.forEach(relationKod -> {
+                    final var webcertCertificateRelation = new WebcertCertificateRelation(
+                        "3",
+                        relationKod,
+                        LocalDateTime.of(2014, 01, 03, 12, 13, 18),
+                        UtkastStatus.SIGNED,
+                        false
+                    );
+                    if (RelationKod.ERSATT.equals(relationKod)) {
+                        frontendRelations.setReplacedByIntyg(webcertCertificateRelation);
+                    }
+                    if (RelationKod.KOMPLT.equals(relationKod)) {
+                        frontendRelations.setComplementedByIntyg(webcertCertificateRelation);
+                    }
+                });
+            }
+            return relations;
         }
     }
 
