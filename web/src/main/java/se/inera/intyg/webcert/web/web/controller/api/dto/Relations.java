@@ -26,7 +26,6 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 /**
  * Encapsulates relations for a given certificate, split into zero to one parent relations (I originate from) and 0..n
  * child relations (I am the parent of).
- *
  * Created by eriklupander on 2017-05-15.
  */
 public class Relations {
@@ -159,5 +158,13 @@ public class Relations {
     @Override
     public int hashCode() {
         return Objects.hash(parent, latestChildRelations);
+    }
+
+    @Override
+    public String toString() {
+        return "Relations{"
+            + "parent=" + parent
+            + ", latestChildRelations=" + latestChildRelations
+            + '}';
     }
 }

@@ -45,7 +45,6 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
 @Service(value = "certificatesForPatientServiceImpl")
@@ -77,10 +76,10 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
     private List<ListIntygEntry> getCertificatesFromWC(Personnummer patientId, List<String> units) {
         final var certificatesFromWC = utkastService.findUtkastByPatientAndUnits(patientId, units);
         LOG.debug("UtkastService returned {} certificates", certificatesFromWC.size());
-        final var draftRelationsMap = draftRelationsMap(certificatesFromWC);
+        final var relationsMap = getRelationsMap(certificatesFromWC);
         return certificatesFromWC.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-            .map(entry -> updateRelations(entry, draftRelationsMap))
+            .map(entry -> decorateWithRelation(entry, relationsMap))
             .collect(Collectors.toList());
     }
 
@@ -97,53 +96,37 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         return certificatesFromIT;
     }
 
-    private ListIntygEntry updateRelations(ListIntygEntry entry, Map<String, Utkast> relationsMap) {
-        if (!relationsMap.containsKey(entry.getIntygId())) {
-            return entry;
-        }
-        final var utkast = relationsMap.get(entry.getIntygId());
-        if (utkast.getRelationKod().equals(RelationKod.ERSATT) && utkast.getStatus().equals(UtkastStatus.SIGNED)) {
-            entry.setRelations(addRelationReplaced(utkast));
-        }
-
-        if (utkast.getRelationKod().equals(RelationKod.KOMPLT) && utkast.getStatus().equals(UtkastStatus.SIGNED)) {
-            entry.setRelations(addRelationComplemented(utkast));
-        }
-        return entry;
-    }
-
-    private Map<String, Utkast> draftRelationsMap(List<Utkast> utkasts) {
-        final Map<String, Utkast> relationsMap = new HashMap<>();
-        for (Utkast utkast : utkasts) {
-            if (utkast.getRelationIntygsId() == null && utkast.getRelationKod() == null) {
-                continue;
-            }
-            relationsMap.put(utkast.getRelationIntygsId(), utkast);
-        }
+    private Map<String, FrontendRelations> getRelationsMap(List<Utkast> utkasts) {
+        final Map<String, FrontendRelations> relationsMap = new HashMap<>();
+        getRelevantRelations(utkasts)
+            .forEach(relation -> {
+                    final var frontendRelations = relationsMap.computeIfAbsent(relation.getIntygsId(), id -> new FrontendRelations());
+                    if (RelationKod.ERSATT.equals(relation.getRelationKod())) {
+                        frontendRelations.setReplacedByIntyg(relation);
+                    }
+                    if (RelationKod.KOMPLT.equals(relation.getRelationKod())) {
+                        frontendRelations.setComplementedByIntyg(relation);
+                    }
+                }
+            );
         return relationsMap;
     }
 
-    private Relations addRelationComplemented(Utkast utkast) {
-        final var relations = new Relations();
-        final var frontendRelations = new FrontendRelations();
-        frontendRelations.setComplementedByIntyg(
-            getWebcertCertificateRelation(utkast)
-        );
-        relations.setLatestChildRelations(frontendRelations);
-        return relations;
+    private ListIntygEntry decorateWithRelation(ListIntygEntry entry, Map<String, FrontendRelations> relationsMap) {
+        entry.getRelations().setLatestChildRelations(relationsMap.getOrDefault(entry.getIntygId(), new FrontendRelations()));
+        return entry;
     }
 
-    private Relations addRelationReplaced(Utkast utkast) {
-        final var relations = new Relations();
-        final var frontendRelations = new FrontendRelations();
-        frontendRelations.setReplacedByIntyg(
-            getWebcertCertificateRelation(utkast)
-        );
-        relations.setLatestChildRelations(frontendRelations);
-        return relations;
+    private List<WebcertCertificateRelation> getRelevantRelations(List<Utkast> utkasts) {
+        final var relevantRelationCodes = List.of(RelationKod.ERSATT, RelationKod.KOMPLT);
+        return utkasts.stream()
+            .filter(utkast -> utkast.getRelationIntygsId() != null && relevantRelationCodes.contains(utkast.getRelationKod())
+                && utkast.getStatus() == UtkastStatus.SIGNED && utkast.getAterkalladDatum() == null)
+            .map(this::getWebcertCertificateRelation)
+            .collect(Collectors.toList());
     }
 
-    private static WebcertCertificateRelation getWebcertCertificateRelation(Utkast utkast) {
+    private WebcertCertificateRelation getWebcertCertificateRelation(Utkast utkast) {
         return new WebcertCertificateRelation(
             utkast.getRelationIntygsId(),
             utkast.getRelationKod(),
