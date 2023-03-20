@@ -56,8 +56,10 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
 
         final var certificate = utkastService.getDraft(certificateId, false);
-        final var candidateMetadata = candidateDataHelper.getCandidateMetadata(certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
-            certificate.getPatientPersonnummer()).get();
+        final var candidateMetadata = candidateDataHelper.getCandidateMetadata(
+            certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
+            certificate.getPatientPersonnummer()
+        ).get();
         var error = true;
 
         LOG.debug("Attempting to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'",
