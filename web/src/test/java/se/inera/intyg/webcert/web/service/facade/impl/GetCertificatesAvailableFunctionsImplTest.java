@@ -518,6 +518,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeForwardQuestionIfUnhandledComplement() {
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("normal"));
             when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
                 List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(false).build()));
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
@@ -527,11 +528,22 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeForwardQuestionIfUnhandledQuestion() {
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("normal"));
             when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
                 List.of(Question.builder().type(QuestionType.COORDINATION).isHandled(false).build()));
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
+        }
+
+        @Test
+        void shallExcludeForwardQuestionIfDjupintegration() {
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
+                List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(false).build()));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
         }
 
         @Test
