@@ -20,14 +20,17 @@ package se.inera.intyg.webcert.web.web.controller.facade.util;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.Map;
 import javax.ws.rs.core.UriInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 @Component
 public class ReactUriFactory {
 
     public static final String PARAM_CERT_ID = "certId";
+    public static final String STATUS = "status";
 
     @Value("${certificate.view.url.react.integration.template}")
     private String urlReactTemplate;
@@ -38,6 +41,15 @@ public class ReactUriFactory {
     public URI uriForCertificate(UriInfo uriInfo, String certificateId) {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
+        return uriBuilder
+            .host(hostReactClient)
+            .path(urlReactTemplate)
+            .buildFromMap(urlParams);
+    }
+
+    public URI uriForCertificateWithSignStatus(UriInfo uriInfo, String certificateId, SignaturStatus signStatus) {
+        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
+        final var urlParams = Map.of(PARAM_CERT_ID, certificateId, STATUS, signStatus);
         return uriBuilder
             .host(hostReactClient)
             .path(urlReactTemplate)
