@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.assertExclude;
 import static se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper.assertInclude;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +31,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.Question.QuestionBuilder;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 class GetQuestionsAvailableFunctionsServiceImplTest {
@@ -269,6 +265,32 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
             final var question = questionBuilder.build();
             final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
             assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+        }
+    }
+
+    @Nested
+    class FowardQuestion {
+
+        private QuestionBuilder questionBuilder;
+
+        @BeforeEach
+        void setUp() {
+            questionBuilder = Question.builder()
+                .author("Dr Doktor");
+        }
+
+        @Test
+        void shallExcludeForwardQuestion() {
+            final var question = questionBuilder.isHandled(true).build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+        }
+
+        @Test
+        void shallIncludeForwardQuestion() {
+            final var question = questionBuilder.isHandled(false).build();
+            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+            assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
         }
     }
 }
