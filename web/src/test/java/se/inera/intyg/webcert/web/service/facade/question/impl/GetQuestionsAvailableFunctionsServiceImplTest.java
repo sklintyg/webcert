@@ -269,7 +269,7 @@ class GetQuestionsAvailableFunctionsServiceImplTest {
     }
 
     @Nested
-    class FowardQuestion {
+    class ForwardQuestion {
 
         private QuestionBuilder questionBuilder;
 
