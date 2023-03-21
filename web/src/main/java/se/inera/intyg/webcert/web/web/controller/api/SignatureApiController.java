@@ -200,7 +200,9 @@ public class SignatureApiController extends AbstractApiController {
 
     private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
         if (signaturBiljett.isWc2ClientRequest()) {
-            return reactUriFactory.uriForCertificateWithSignStatus(uriInfo, signaturBiljett.getIntygsId(), signaturBiljett.getStatus());
+            return signaturBiljett.getStatus().equals(SignaturStatus.ERROR) ? reactUriFactory.uriForCertificateWithSignError(uriInfo,
+                signaturBiljett.getIntygsId(), signaturBiljett.getStatus())
+                : reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
         }
 
         return getRedirectUriForAngularClient(signaturBiljett);

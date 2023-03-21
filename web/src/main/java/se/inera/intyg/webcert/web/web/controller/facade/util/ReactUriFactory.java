@@ -31,9 +31,12 @@ public class ReactUriFactory {
 
     public static final String PARAM_CERT_ID = "certId";
     public static final String STATUS = "status";
+    public static final String ERROR_ENDPOINT = "status/";
 
     @Value("${certificate.view.url.react.integration.template}")
     private String urlReactTemplate;
+    @Value("${certificate.view.url.react.error.integration.template}")
+    private String urlReactErrorTemplate;
 
     @Value("${certificate.view.host.react.client}")
     private String hostReactClient;
@@ -47,12 +50,12 @@ public class ReactUriFactory {
             .buildFromMap(urlParams);
     }
 
-    public URI uriForCertificateWithSignStatus(UriInfo uriInfo, String certificateId, SignaturStatus signStatus) {
+    public URI uriForCertificateWithSignError(UriInfo uriInfo, String certificateId, SignaturStatus signStatus) {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Map.of(PARAM_CERT_ID, certificateId, STATUS, signStatus);
         return uriBuilder
             .host(hostReactClient)
-            .path(urlReactTemplate)
+            .path(urlReactErrorTemplate)
             .buildFromMap(urlParams);
     }
 }
