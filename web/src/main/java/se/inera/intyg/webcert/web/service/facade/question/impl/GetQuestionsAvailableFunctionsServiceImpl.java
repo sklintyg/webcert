@@ -30,6 +30,9 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Service
 public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAvailableFunctionsService {
 
+    private static final String FORWARD_DESCRIPTION_CERTIFICATE =
+        "Skapar ett e-postmeddelande med länk till intyget.";
+
     @Override
     public List<ResourceLinkDTO> get(Question question) {
         final var availableFunctions = new ArrayList<ResourceLinkDTO>();
@@ -78,6 +81,16 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
             );
         }
 
+        if (isUnhandled(question)) {
+            availableFunctions.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.FORWARD_QUESTION,
+                    "Vidarebefordra",
+                    FORWARD_DESCRIPTION_CERTIFICATE,
+                    true
+                )
+            );
+        }
         return availableFunctions;
     }
 
@@ -107,5 +120,12 @@ public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAv
 
     private boolean isQuestionSent(Question question) {
         return !isQuestionRecieved(question);
+    }
+
+    private boolean isUnhandled(Question question) {
+        if (question != null) {
+            return !question.isHandled();
+        }
+        return false;
     }
 }

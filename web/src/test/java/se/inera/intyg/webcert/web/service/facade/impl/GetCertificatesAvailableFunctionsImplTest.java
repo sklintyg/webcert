@@ -501,38 +501,6 @@ class GetCertificatesAvailableFunctionsImplTest {
                 == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
         }
 
-        @Test
-        void shallExcludeForwardQuestionIfUserIsPrivateDoctor() {
-            doReturn(true).when(user).isPrivatLakare();
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallExcludeForwardQuestionIfNoUnhandledComplementOrQuestions() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallIncludeForwardQuestionIfUnhandledComplement() {
-            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
-                List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(false).build()));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallIncludeForwardQuestionIfUnhandledQuestion() {
-            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
-                List.of(Question.builder().type(QuestionType.COORDINATION).isHandled(false).build()));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
 
         @Test
         void shallIncludeDisplayPatientAddress() {
