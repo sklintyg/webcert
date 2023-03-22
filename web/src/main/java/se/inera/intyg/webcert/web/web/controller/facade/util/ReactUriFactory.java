@@ -30,9 +30,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 public class ReactUriFactory {
 
     public static final String PARAM_CERT_ID = "certId";
-    public static final String STATUS = "status";
-    public static final String ERROR_ENDPOINT = "status/";
-
+    public static final String PARAM_ERROR = "error";
     @Value("${certificate.view.url.react.integration.template}")
     private String urlReactTemplate;
     @Value("${certificate.view.url.react.error.integration.template}")
@@ -52,7 +50,7 @@ public class ReactUriFactory {
 
     public URI uriForCertificateWithSignError(UriInfo uriInfo, String certificateId, SignaturStatus signStatus) {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
-        final var urlParams = Map.of(PARAM_CERT_ID, certificateId, STATUS, signStatus);
+        final var urlParams = Map.of(PARAM_CERT_ID, certificateId, PARAM_ERROR, signStatus.toString().toLowerCase());
         return uriBuilder
             .host(hostReactClient)
             .path(urlReactErrorTemplate)

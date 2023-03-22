@@ -87,7 +87,7 @@ public class SignatureApiControllerTest {
     private static final String TICKET_ID = "ticketId";
     private static final String WC_URI = "https://wc.localtest.me";
     private static final String WC2_URI = "https://wc2.wc.localtest.me";
-    private static final String WC2_URI_ERROR = "https://wc2.wc.localtest.me/status";
+    private static final String WC2_URI_ERROR = "https://wc2.wc.localtest.me/sign";
 
     private static final Boolean WC2_CLIENT_TRUE = true;
     private static final Boolean WC2_CLIENT_FALSE = false;
