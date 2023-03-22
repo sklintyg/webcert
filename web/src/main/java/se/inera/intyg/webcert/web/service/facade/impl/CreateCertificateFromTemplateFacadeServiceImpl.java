@@ -27,9 +27,10 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
@@ -40,27 +41,28 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
 
     private final CopyUtkastServiceHelper copyUtkastServiceHelper;
     private final CopyUtkastService copyUtkastService;
-    private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
+    private final GetCertificateFacadeService getCertificateFacadeService;
 
     @Autowired
     public CreateCertificateFromTemplateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, UtkastService utkastService,
-        IntygTextsService intygTextsService) {
+        CopyUtkastService copyUtkastService, IntygTextsService intygTextsService, GetCertificateFacadeService getCertificateFacadeService) {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
-        this.utkastService = utkastService;
         this.intygTextsService = intygTextsService;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
     public String createCertificateFromTemplate(String certificateId) {
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
-        final var certificate = utkastService.getDraft(certificateId, false);
-        final var certificateType = certificate.getIntygsTyp();
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificateType = certificate.getMetadata().getType();
         final var newCertificateType = getNewCertificateType(certificateType);
         final var copyRequest = new CopyIntygRequest();
-        copyRequest.setPatientPersonnummer(certificate.getPatientPersonnummer());
+        copyRequest.setPatientPersonnummer(
+            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow()
+        );
 
         LOG.debug("Preparing to create a renewal from template for '{}' with new type '{}' from old type '{}'", certificateId,
             newCertificateType, certificateType);

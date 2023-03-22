@@ -36,12 +36,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
@@ -57,7 +58,7 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
     private CopyUtkastService copyUtkastService;
 
     @Mock
-    private UtkastService utkastService;
+    private GetCertificateFacadeService getCertificateFacadeService;
 
     @Mock
     private IntygTextsService intygTextsService;
@@ -187,8 +188,8 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
             final var originalCertificateType = "orignalNotSupported";
             
             doReturn(createCertificate(originalCertificateType))
-                .when(utkastService)
-                .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+                .when(getCertificateFacadeService)
+                .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
             assertThrows(IllegalArgumentException.class,
                 () -> createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID)
@@ -198,8 +199,8 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
 
     private void setup(String originalCertificateType, String newCertificateType) {
         doReturn(createCertificate(originalCertificateType))
-            .when(utkastService)
-            .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+            .when(getCertificateFacadeService)
+            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
         doReturn(LATEST_VERSION).when(intygTextsService).getLatestVersion(anyString());
 
@@ -232,16 +233,25 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
             .createUtkastFromSignedTemplate(serviceRequest);
     }
 
-    private Utkast createCertificate(String certificateType) {
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(certificateType);
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.SIGNED);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
-        return draft;
+    private Certificate createCertificate(String certificateType) {
+        final var certificate = new Certificate();
+        final var metadata = CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(certificateType)
+            .typeVersion("certificateTypeVersion")
+            .status(CertificateStatus.SIGNED)
+            .created(LocalDateTime.now())
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id(PATIENT_ID)
+                            .build()
+                    )
+                    .build()
+            )
+            .build();
+        certificate.setMetadata(metadata);
+        return certificate;
     }
 }
