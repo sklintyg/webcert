@@ -222,6 +222,32 @@ class GetQuestionsResourceLinkServiceImplTest {
 
             assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
         }
+
+        @Test
+        void shallIncludeForwardQuestion() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
+            doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+        }
+
+        @Test
+        void shallExcludeForwardQuestion() {
+            resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
+            doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+
+            final var fragaSvar = getFragaSvar();
+            doReturn(fragaSvar).when(fragaSvarService).getFragaSvarById(Long.parseLong(question.getId()));
+
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+            assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+        }
     }
 
     @Nested

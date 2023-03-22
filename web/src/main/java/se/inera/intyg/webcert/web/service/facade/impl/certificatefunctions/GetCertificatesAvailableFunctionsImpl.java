@@ -310,12 +310,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         resourceLinks.add(getPrintResourceLink(certificate));
 
-        if (isForwardQuestionAvailable(certificate)) {
-            resourceLinks.add(
-                CertificateForwardFunction.createResourceLinkForQuestionPanel()
-            );
-        }
-
         if (isReplaceCertificateAvailable(certificate)) {
             if (hasUnhandledComplement(certificate)) {
                 resourceLinks.add(
@@ -396,12 +390,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;
-    }
-
-    private boolean isForwardQuestionAvailable(Certificate certificate) {
-        return webCertUserService.getUser() != null
-            && !webCertUserService.getUser().isPrivatLakare()
-            && hasUnhandledQuestionOrComplement(certificate);
     }
 
     private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
@@ -561,14 +549,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return questions.stream().anyMatch(
                 question -> !question.isHandled() && question.getType() == QuestionType.COMPLEMENT
             );
-        }
-        return false;
-    }
-
-    private boolean hasUnhandledQuestionOrComplement(Certificate certificate) {
-        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
-        if (questions != null) {
-            return questions.stream().anyMatch(question -> !question.isHandled());
         }
         return false;
     }
