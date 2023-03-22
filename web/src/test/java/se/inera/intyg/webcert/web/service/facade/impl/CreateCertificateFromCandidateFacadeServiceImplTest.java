@@ -76,10 +76,6 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
             .when(utkastService)
             .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
-        doReturn(createCandidateCertificate())
-            .when(utkastService)
-            .getDraft(eq(CANDIDATE_ID), eq(Boolean.FALSE));
-
         when(candidateDataHelper.getCandidateMetadata(anyString(), anyString(), any(Personnummer.class)))
             .thenReturn(Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
     }

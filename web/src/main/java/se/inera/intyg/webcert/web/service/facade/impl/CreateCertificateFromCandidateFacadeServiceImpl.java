@@ -56,22 +56,23 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
 
         final var certificate = utkastService.getDraft(certificateId, false);
-        final var candidateId = candidateDataHelper.getCandidateMetadata(certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
-            certificate.getPatientPersonnummer()).get().getIntygId();
-        final var candidate = utkastService.getDraft(candidateId, false);
+        final var candidateMetadata = candidateDataHelper.getCandidateMetadata(
+            certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
+            certificate.getPatientPersonnummer()
+        ).get();
         var error = true;
 
         LOG.debug("Attempting to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'",
-            candidate.getIntygsTyp(), candidateId, certificate.getIntygsTyp(), certificateId);
+            candidateMetadata.getIntygType(), candidateMetadata.getIntygId(), certificate.getIntygsTyp(), certificateId);
 
         draftAccessServiceHelper.validateAllowToCopyFromCandidate(certificate);
 
         try {
-            utkastService.updateDraftFromCandidate(candidateId, candidate.getIntygsTyp(), certificate);
+            utkastService.updateDraftFromCandidate(candidateMetadata.getIntygId(), candidateMetadata.getIntygType(), certificate);
             if (certificate.getSkapadAv() != null) {
                 monitoringLogService
                     .logUtkastCreatedTemplateAuto(certificateId, certificate.getIntygsTyp(), certificate.getSkapadAv().getHsaId(),
-                        certificate.getEnhetsId(), candidateId, candidate.getIntygsTyp());
+                        certificate.getEnhetsId(), candidateMetadata.getIntygId(), candidateMetadata.getIntygType());
             }
             error = false;
             return certificateId;
@@ -86,7 +87,7 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         } finally {
             if (error) {
                 LOG.error("Failed to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'.",
-                    candidate.getIntygsTyp(), candidateId, certificate.getIntygsTyp(), certificateId);
+                    candidateMetadata.getIntygType(), candidateMetadata.getIntygId(), certificate.getIntygsTyp(), certificateId);
             }
         }
     }
