@@ -69,6 +69,9 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
     }
 
     private Personnummer getPersonId(Patient patient) {
+        if (patient.isReserveId()) {
+            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
+        }
         return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }
