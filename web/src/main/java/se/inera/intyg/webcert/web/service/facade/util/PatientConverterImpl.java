@@ -85,9 +85,7 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private boolean hasReserveId(IntegrationParameters parameters, Personnummer patientId) {
-        return !isBeforeAlternateSSNSet(parameters)
-            && isAlternateSSNSet(parameters)
-            && !isPersonIdSameAsAlternateSSN(patientId, parameters)
+        return isAlternateSSNSet(parameters)
             && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
     }
 
@@ -144,18 +142,21 @@ public class PatientConverterImpl implements PatientConverter {
     }
 
     private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
-        if (!isPatientIdChanged(parameters, patientId)) {
-            return null;
-        } else if (!isBeforeAlternateSSNSet(parameters)) {
+        if (isBeforeAlternateSSNSet(parameters)) {
+            return PersonId.builder()
+                .id(parameters.getBeforeAlternateSsn())
+                .type("PERSON_NUMMER")
+                .build();
+        }
+
+        if (isAlternateSSNSet(parameters)) {
             return PersonId.builder()
                 .id(patientId.getPersonnummerWithDash())
                 .type("PERSON_NUMMER")
                 .build();
         }
-        return PersonId.builder()
-            .id(parameters.getBeforeAlternateSsn())
-            .type("PERSON_NUMMER")
-            .build();
+        
+        return null;
     }
 
     private boolean isAlternateSSNSet(IntegrationParameters parameters) {
