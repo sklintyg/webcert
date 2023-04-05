@@ -20,5 +20,5 @@ package se.inera.intyg.webcert.web.service.facade;
 
 public interface ReplaceCertificateFacadeService {
 
-    String replaceCertificate(String certificateId, String certificateType, String patientId);
+    String replaceCertificate(String certificateId);
 }
