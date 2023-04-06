@@ -317,6 +317,24 @@ public class IntygServiceImpl implements IntygService {
         return Pair.of(webcertCerts, Boolean.TRUE);
     }
 
+    @Override
+    public List<ListIntygEntry> listIntygFromIT(List<String> enhetId, Personnummer personnummer) {
+        final var request = new ListCertificatesForCareType();
+        request.setPersonId(InternalConverterUtil.getPersonId(personnummer));
+        for (String id : enhetId) {
+            request.getEnhetsId().add(InternalConverterUtil.getHsaId(id));
+        }
+
+        final var sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
+        final var response = listCertificateService.listCertificatesForCare(logicalAddress, request);
+        final var fullIntygItemList = response.getIntygsLista().getIntyg().stream()
+            .map(intyg -> intygConverter.convertIntygToListIntygEntry(intyg, null))
+            .collect(Collectors.toList());
+
+        intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
+        return filterByIntygTypeForUser(fullIntygItemList, sekretessmarkering);
+    }
+
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
         SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
@@ -337,8 +355,13 @@ public class IntygServiceImpl implements IntygService {
      */
     private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList,
         List<ListIntygEntry> webcertIntygItems) {
-        webcertIntygItems.removeAll(fullIntygItemList);
-        fullIntygItemList.addAll(webcertIntygItems);
+        fullIntygItemList.addAll(
+            webcertIntygItems.stream()
+                .filter(wcIntyg ->
+                    fullIntygItemList.stream()
+                        .noneMatch(itIntyg -> itIntyg.getIntygId().equalsIgnoreCase(wcIntyg.getIntygId())))
+                .collect(Collectors.toList())
+        );
     }
 
     private List<ListIntygEntry> buildIntygItemListFromDrafts(List<Utkast> drafts) {
@@ -579,7 +602,7 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             certificateSenderService.revokeCertificate(intygsId, moduleFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
-                IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
+                    IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
                 intyg.getUtlatande().getTextVersion());
             whenSuccessfulRevoke(intyg.getUtlatande(), reason);
             return IntygServiceResult.OK;

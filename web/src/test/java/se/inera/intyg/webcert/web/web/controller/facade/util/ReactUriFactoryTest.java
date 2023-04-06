@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 class ReactUriFactoryTest {
 
@@ -43,6 +44,7 @@ class ReactUriFactoryTest {
 
         ReflectionTestUtils.setField(reactUriFactory, "hostReactClient", "wc2.wc.localtest.me");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/certificate/{certId}/sign/{error}");
     }
 
     @Test
@@ -50,5 +52,12 @@ class ReactUriFactoryTest {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
         assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
+    }
+
+    @Test
+    void shallReturnUriWithSignErrorForCertificate() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificateWithSignError(uriInfo, certificateId, SignaturStatus.ERROR);
+        assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error", actualUri.toString());
     }
 }

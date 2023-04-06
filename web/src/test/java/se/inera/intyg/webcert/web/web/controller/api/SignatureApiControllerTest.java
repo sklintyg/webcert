@@ -87,6 +87,7 @@ public class SignatureApiControllerTest {
     private static final String TICKET_ID = "ticketId";
     private static final String WC_URI = "https://wc.localtest.me";
     private static final String WC2_URI = "https://wc2.wc.localtest.me";
+    private static final String WC2_URI_ERROR = "https://wc2.wc.localtest.me/sign";
 
     private static final Boolean WC2_CLIENT_TRUE = true;
     private static final Boolean WC2_CLIENT_FALSE = false;
@@ -149,7 +150,7 @@ public class SignatureApiControllerTest {
 
     @Test
     public void shouldFetchRedirectUrlForReactClient() {
-        final var signatureTicket = getSignatureTicket(WC2_CLIENT_TRUE);
+        final var signatureTicket = getSignatureTicket(WC2_CLIENT_TRUE, SignaturStatus.SIGNERAD);
 
         when(dssSignMessageService.validateDssMessageSignature(any(String.class))).thenReturn(getOkValidationResponse());
         when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class))).thenReturn(signatureTicket);
@@ -164,8 +165,26 @@ public class SignatureApiControllerTest {
     }
 
     @Test
+    public void shouldFetchRedirectUrlForReactClientWithErrorStatus() {
+        final var signatureTicket = getSignatureTicket(WC2_CLIENT_TRUE, SignaturStatus.ERROR);
+
+        when(dssSignMessageService.validateDssMessageSignature(any(String.class))).thenReturn(getOkValidationResponse());
+        when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class))).thenReturn(signatureTicket);
+        when(
+            reactUriFactory.uriForCertificateWithSignError(uriInfo, signatureTicket.getIntygsId(), signatureTicket.getStatus())).thenReturn(
+            URI.create(WC2_URI_ERROR));
+
+        final var response = signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
+
+        verify(reactUriFactory, times(1)).uriForCertificateWithSignError(uriInfo, CERT_ID, signatureTicket.getStatus());
+        verify(dssSignatureService, times(0)).findReturnUrl(any());
+        assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
+        assertEquals(WC2_URI_ERROR, response.getLocation().toString());
+    }
+
+    @Test
     public void shouldFetchRedirectUrlForAngularClient() {
-        final var signatureTicket = getSignatureTicket(WC2_CLIENT_FALSE);
+        final var signatureTicket = getSignatureTicket(WC2_CLIENT_FALSE, SignaturStatus.SIGNERAD);
 
         when(dssSignMessageService.validateDssMessageSignature(any(String.class))).thenReturn(getOkValidationResponse());
         when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class))).thenReturn(signatureTicket);
@@ -180,7 +199,7 @@ public class SignatureApiControllerTest {
     }
 
     private void setupMocksForSignDraft(boolean isWc2ClientRequest) {
-        final var signatureTicket = getSignatureTicket(isWc2ClientRequest);
+        final var signatureTicket = getSignatureTicket(isWc2ClientRequest, SignaturStatus.SIGNERAD);
         when(dssSignatureService.createTransactionID()).thenReturn(TICKET_ID);
         when(dssSignatureService.createSignatureRequestDTO(signatureTicket)).thenReturn(getSignRequestDto());
         when(underskriftService.startSigningProcess(CERT_ID, CERT_TYPE, VERSION, SIGN_SERVICE, TICKET_ID, isWc2ClientRequest))
@@ -201,10 +220,10 @@ public class SignatureApiControllerTest {
         return request;
     }
 
-    private SignaturBiljett getSignatureTicket(boolean isWc2ClientRequest) {
+    private SignaturBiljett getSignatureTicket(boolean isWc2ClientRequest, SignaturStatus status) {
         return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SIGN_SERVICE)
             .withIntygsId(CERT_ID)
-            .withStatus(SignaturStatus.SIGNERAD)
+            .withStatus(status)
             .withWc2ClientRequest(isWc2ClientRequest)
             .build();
     }

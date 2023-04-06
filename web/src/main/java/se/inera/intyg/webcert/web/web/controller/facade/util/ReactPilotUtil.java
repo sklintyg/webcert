@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.util;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -36,10 +37,31 @@ public class ReactPilotUtil {
             return false;
         }
 
+        return isFeatureActive(certificateType, feature);
+    }
+
+    public boolean useReactClientFristaende(WebCertUser user, String certificateType) {
+        if (isOriginDifferentThanFristaende(user)) {
+            return false;
+        }
+
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
+        if (feature == null) {
+            return false;
+        }
+
+        return isFeatureActive(certificateType, feature);
+    }
+
+    private static boolean isFeatureActive(String certificateType, Feature feature) {
         return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
     private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
         return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin());
+    }
+
+    private boolean isOriginDifferentThanFristaende(WebCertUser user) {
+        return !UserOriginType.NORMAL.name().equalsIgnoreCase(user.getOrigin());
     }
 }

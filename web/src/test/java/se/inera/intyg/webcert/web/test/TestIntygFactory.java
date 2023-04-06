@@ -26,6 +26,7 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 /**
@@ -50,6 +51,10 @@ public final class TestIntygFactory {
     }
 
     public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate) {
+        return createIntygItem(id, signedDate, null);
+    }
+
+    public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate, IntygSource intygSource) {
 
         ListIntygEntry it = new ListIntygEntry();
 
@@ -57,6 +62,7 @@ public final class TestIntygFactory {
         it.setUpdatedSignedBy("A Person");
         it.setLastUpdatedSigned(signedDate);
         it.setIntygType("Type 1");
+        it.setSource(intygSource);
 
         it.setStatus(CertificateState.SENT.name());
 

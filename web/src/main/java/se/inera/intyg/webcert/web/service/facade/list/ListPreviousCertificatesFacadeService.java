@@ -22,5 +22,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 
 public interface ListPreviousCertificatesFacadeService {
+
     ListInfo get(ListFilter filter);
 }

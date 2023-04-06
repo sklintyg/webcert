@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
@@ -67,7 +68,7 @@ public class ComplementCertificateFacadeServiceImpl implements ComplementCertifi
         final var copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setKommentar(message);
         copyIntygRequest.setPatientPersonnummer(
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow()
+            getPersonId(certificate.getMetadata().getPatient())
         );
 
         final var serviceRequest = copyUtkastServiceHelper.createCompletionCopyRequest(
@@ -78,5 +79,12 @@ public class ComplementCertificateFacadeServiceImpl implements ComplementCertifi
         );
 
         return copyUtkastService.createCompletion(serviceRequest).getNewDraftIntygId();
+    }
+
+    private Personnummer getPersonId(Patient patient) {
+        if (patient.isReserveId()) {
+            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
+        }
+        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }

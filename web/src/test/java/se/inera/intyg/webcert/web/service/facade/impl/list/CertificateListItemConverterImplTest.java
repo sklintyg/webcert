@@ -266,6 +266,15 @@ class CertificateListItemConverterImplTest {
 
             assertFalse(forwarded);
         }
+
+        @Test
+        public void shouldSetCertificateType() {
+            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
+            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
+
+            assertEquals(listIntygEntry.getIntygType(), forwardedListInfo.getCertificateType());
+        }
     }
 
     @Nested

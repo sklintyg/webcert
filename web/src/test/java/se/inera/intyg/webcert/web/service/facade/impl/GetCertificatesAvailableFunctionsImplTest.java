@@ -49,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -70,6 +71,7 @@ import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.Displ
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ShowRelatedCertificateFunction;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SrsFunction;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -112,6 +114,9 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     private CopyCertificateFunction copyCertificateFunction;
+
+    @Mock
+    private SrsFunction srsFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -187,6 +192,22 @@ class GetCertificatesAvailableFunctionsImplTest {
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertTrue(
                 actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains("Intyget skickas direkt till Skatteverket.")));
+        }
+
+        @Test
+        void shallIncludeSignAndSendCertificateWithDescriptionSoc() {
+            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DoiModuleEntryPoint.MODULE_ID))
+                .thenReturn(true);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var certificate = CertificateFacadeTestHelper.createCertificate(
+                DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED
+            );
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertTrue(
+                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains(
+                    "Intyget skickas direkt till Socialstyrelsen.")
+                ));
         }
 
         @Test
@@ -269,6 +290,27 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FMB);
+        }
+
+        @Test
+        void shallIncludeSRS() {
+            when(srsFunction.get(any(), any()))
+                .thenReturn(
+                    Optional.of(
+                        ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS, "", "", "", true)
+                    )
+                );
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
+        }
+
+        @Test
+        void shallExcludeSRS() {
+            when(srsFunction.get(any(), any())).thenReturn(Optional.empty());
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
         }
 
         @Test
@@ -459,38 +501,6 @@ class GetCertificatesAvailableFunctionsImplTest {
                 == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
         }
 
-        @Test
-        void shallExcludeForwardQuestionIfUserIsPrivateDoctor() {
-            doReturn(true).when(user).isPrivatLakare();
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallExcludeForwardQuestionIfNoUnhandledComplementOrQuestions() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallIncludeForwardQuestionIfUnhandledComplement() {
-            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
-                List.of(Question.builder().type(QuestionType.COMPLEMENT).isHandled(false).build()));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallIncludeForwardQuestionIfUnhandledQuestion() {
-            when(getQuestionsFacadeService.getQuestions(any())).thenReturn(
-                List.of(Question.builder().type(QuestionType.COORDINATION).isHandled(false).build()));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
 
         @Test
         void shallIncludeDisplayPatientAddress() {

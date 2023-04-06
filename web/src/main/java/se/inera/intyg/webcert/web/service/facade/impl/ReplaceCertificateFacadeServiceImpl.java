@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
@@ -37,25 +39,39 @@ public class ReplaceCertificateFacadeServiceImpl implements ReplaceCertificateFa
 
     private final CopyUtkastService copyUtkastService;
 
+    private final GetCertificateFacadeService getCertificateFacadeService;
+
     @Autowired
     public ReplaceCertificateFacadeServiceImpl(
-        CopyUtkastServiceHelper copyUtkastServiceHelper, CopyUtkastService copyUtkastService) {
+        CopyUtkastServiceHelper copyUtkastServiceHelper, CopyUtkastService copyUtkastService,
+        GetCertificateFacadeService getCertificateFacadeService) {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
-    public String replaceCertificate(String certificateId, String certificateType, String patientId) {
+    public String replaceCertificate(String certificateId) {
+        LOG.debug("Get certificate '{}' that will be replaced", certificateId);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificateType = certificate.getMetadata().getType();
         final var copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(
-            Personnummer.createPersonnummer(patientId).orElseThrow()
+            getPersonId(certificate.getMetadata().getPatient())
         );
 
         LOG.debug("Preparing to create a replacement for '{}' with type '{}'", certificateId, certificateType);
         final var serviceRequest = copyUtkastServiceHelper.createReplacementCopyRequest(certificateId, certificateType, copyIntygRequest);
         final var serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
 
-        LOG.debug("Created draft copy '{}'", serviceResponse.getNewDraftIntygId());
+        LOG.debug("Created replacement '{}'", serviceResponse.getNewDraftIntygId());
         return serviceResponse.getNewDraftIntygId();
+    }
+
+    private Personnummer getPersonId(Patient patient) {
+        if (patient.isReserveId()) {
+            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
+        }
+        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }

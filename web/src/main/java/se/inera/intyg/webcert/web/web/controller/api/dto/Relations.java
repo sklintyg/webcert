@@ -20,12 +20,12 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 
 /**
  * Encapsulates relations for a given certificate, split into zero to one parent relations (I originate from) and 0..n
  * child relations (I am the parent of).
- *
  * Created by eriklupander on 2017-05-15.
  */
 public class Relations {
@@ -121,5 +121,50 @@ public class Relations {
             }
             return !list.isEmpty() ? list.toString() : "Empty FrontendRelations";
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            FrontendRelations that = (FrontendRelations) o;
+            return Objects.equals(replacedByUtkast, that.replacedByUtkast) && Objects.equals(replacedByIntyg,
+                that.replacedByIntyg) && Objects.equals(complementedByUtkast, that.complementedByUtkast) && Objects.equals(
+                complementedByIntyg, that.complementedByIntyg) && Objects.equals(utkastCopy, that.utkastCopy);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(replacedByUtkast, replacedByIntyg, complementedByUtkast, complementedByIntyg, utkastCopy);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Relations relations = (Relations) o;
+        return Objects.equals(parent, relations.parent) && Objects.equals(latestChildRelations,
+            relations.latestChildRelations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parent, latestChildRelations);
+    }
+
+    @Override
+    public String toString() {
+        return "Relations{"
+            + "parent=" + parent
+            + ", latestChildRelations=" + latestChildRelations
+            + '}';
     }
 }

@@ -117,7 +117,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signerat dödsbevis finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Skatteverket",
+                "Intyget skickas direkt till Skatteverket.",
                 "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
                     + " Det är därför inte möjligt att signera detta dödsbevis.",
                 true);
@@ -153,7 +153,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Utkast på dödsbevis finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Skatteverket",
+                "Intyget skickas direkt till Skatteverket.",
                 "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
                     + " Senast skapade dödsbevis är det som gäller."
                     + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
@@ -182,7 +182,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Utkast på dödsbevis finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Skatteverket",
+                "Intyget skickas direkt till Skatteverket.",
                 "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
                     + " Senast skapade dödsbevis är det som gäller."
                     + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.",
@@ -257,7 +257,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Utkast på dödsorsaksintyg finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Socialstyrelsen",
+                "Intyget skickas direkt till Socialstyrelsen.",
                 "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
                     + "Senast skapade dödsorsaksintyg är det som gäller. "
                     + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
@@ -285,7 +285,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Signerat dödsorsaksintyg finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Socialstyrelsen",
+                "Intyget skickas direkt till Socialstyrelsen.",
                 "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
                     + "Senast skapade dödsorsaksintyg är det som gäller. "
                     + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
@@ -313,7 +313,7 @@ class CertificateSignConfirmationFunctionTest {
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
                 "Utkast på dödsorsaksintyg finns",
                 "Signera och skicka",
-                "Intyget skickas direkt till Socialstyrelsen",
+                "Intyget skickas direkt till Socialstyrelsen.",
                 "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
                     + "Senast skapade dödsorsaksintyg är det som gäller. "
                     + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",

@@ -80,9 +80,9 @@ public interface IntygService {
      *
      * The call will not be PDL-logged and no user validation will be made.
      *
-     * @param certificateId   Certificate id
+     * @param certificateId Certificate id
      * @param includeRelations If the returned {@link IntygContentHolder} should include relations to other certificates.
-     * @return  IntygContentHolder
+     * @return IntygContentHolder
      */
     IntygContentHolder fetchIntygDataForInternalUse(String certificateId, boolean includeRelations);
 
@@ -108,6 +108,8 @@ public interface IntygService {
      * the data was fetched from intygstjansten ("online") or from webcert ("offline").
      */
     Pair<List<ListIntygEntry>, Boolean> listIntyg(List<String> enhetId, Personnummer personnummer);
+
+    List<ListIntygEntry> listIntygFromIT(List<String> enhetId, Personnummer personnummer);
 
     /**
      * Returns a given certificate as PDF.

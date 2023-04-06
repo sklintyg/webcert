@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -58,7 +59,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
     private static final String SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN = "Intyget skickas direkt till Arbetsförmedlingen.";
     private static final String SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET = "Intyget skickas direkt till Skatteverket.";
-
+    private static final String SIGN_AND_SEND_DESCRIPTION_SOC = "Intyget skickas direkt till Socialstyrelsen.";
     private static final String SIGN_NAME = "Signera intyget";
     private static final String SIGN_DESCRIPTION = "Intyget signeras.";
 
@@ -116,6 +117,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private final CopyCertificateFunction copyCertificateFunction;
 
+    private final SrsFunction srsFunction;
+
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
@@ -126,7 +129,8 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
-        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction) {
+        CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction,
+        SrsFunction srsFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -138,6 +142,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.showRelatedCertificateFunction = showRelatedCertificateFunction;
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
         this.copyCertificateFunction = copyCertificateFunction;
+        this.srsFunction = srsFunction;
     }
 
     /**
@@ -282,6 +287,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         createCertificateFromCandidateFunction.get(certificate)
             .ifPresent(resourceLinks::add);
 
+        srsFunction.get(certificate, webCertUserService.getUser())
+            .ifPresent(resourceLinks::add);
+
         return resourceLinks;
     }
 
@@ -289,6 +297,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         if (DbModuleEntryPoint.MODULE_ID.equals(certificateType)) {
             return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
         }
+
+        if (DoiModuleEntryPoint.MODULE_ID.equals(certificateType)) {
+            return SIGN_AND_SEND_DESCRIPTION_SOC;
+        }
+
         return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
     }
 
@@ -296,12 +309,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
 
         resourceLinks.add(getPrintResourceLink(certificate));
-
-        if (isForwardQuestionAvailable(certificate)) {
-            resourceLinks.add(
-                CertificateForwardFunction.createResourceLinkForQuestionPanel()
-            );
-        }
 
         if (isReplaceCertificateAvailable(certificate)) {
             if (hasUnhandledComplement(certificate)) {
@@ -383,12 +390,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;
-    }
-
-    private boolean isForwardQuestionAvailable(Certificate certificate) {
-        return webCertUserService.getUser() != null
-            && !webCertUserService.getUser().isPrivatLakare()
-            && hasUnhandledQuestionOrComplement(certificate);
     }
 
     private ResourceLinkDTO getQuestionsResourceLink(Certificate certificate) {
@@ -548,14 +549,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             return questions.stream().anyMatch(
                 question -> !question.isHandled() && question.getType() == QuestionType.COMPLEMENT
             );
-        }
-        return false;
-    }
-
-    private boolean hasUnhandledQuestionOrComplement(Certificate certificate) {
-        final var questions = getQuestionsFacadeService.getQuestions(certificate.getMetadata().getId());
-        if (questions != null) {
-            return questions.stream().anyMatch(question -> !question.isHandled());
         }
         return false;
     }

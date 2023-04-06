@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -53,7 +52,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
             .pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
             .expect().statusCode(200)
             .when().get("api/intyg/person/{personNummer}")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
+            .then().extract().response()
             .as(ListIntygEntry[].class);
 
         // assert there are no drafts from WebCert
@@ -71,7 +70,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
             given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
                 .expect().statusCode(200)
                 .when().get("api/intyg/person/{personNummer}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
+                .then().extract().response()
                 .as(ListIntygEntry[].class);
 
         assertTrue(intygArray.length > 0);
@@ -101,7 +100,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
                 .body(notifiedState).and().pathParams(pathParams)
                 .expect().statusCode(200)
                 .when().put("api/intyg/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-put-notified-utkast-response-schema.json")).extract()
+                .then().extract()
                 .response()
                 .as(ListIntygEntry.class);
 

@@ -45,6 +45,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
@@ -75,6 +77,12 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private ReactUriFactory reactUriFactory;
+
+    @Autowired
+    private ReactPilotUtil reactPilotUtil;
 
     // api
 
@@ -173,6 +181,19 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
+        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
+            return getReactRedirectResponse(uriInfo, certificateId);
+        }
+
+        return getAngularRedirectResponse(uriInfo, certificateType, intygTypeVersion, certificateId);
+    }
+
+    private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
+        final var uri = reactUriFactory.uriForCertificate(uriInfo, intygId);
+        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
+    }
+
+    private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();

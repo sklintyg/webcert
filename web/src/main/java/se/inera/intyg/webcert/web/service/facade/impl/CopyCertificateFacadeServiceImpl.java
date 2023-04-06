@@ -22,8 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
@@ -37,18 +39,24 @@ public class CopyCertificateFacadeServiceImpl implements CopyCertificateFacadeSe
 
     private final CopyUtkastService copyUtkastService;
 
+    private final GetCertificateFacadeService getCertificateFacadeService;
+
     @Autowired
     public CopyCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService) {
+        CopyUtkastService copyUtkastService, GetCertificateFacadeService getCertificateFacadeService) {
         this.copyUtkastServiceHelper = copyUtkastServiceHelper;
         this.copyUtkastService = copyUtkastService;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
-    public String copyCertificate(String certificateId, String certificateType, String patientId) {
+    public String copyCertificate(String certificateId) {
+        LOG.debug("Get certificate '{}' that will be renewed", certificateId);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificateType = certificate.getMetadata().getType();
         final var copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(
-            Personnummer.createPersonnummer(patientId).orElseThrow()
+            getPersonId(certificate.getMetadata().getPatient())
         );
 
         LOG.debug("Preparing to create a draft copy for '{}' with type '{}'", certificateId, certificateType);
@@ -57,5 +65,12 @@ public class CopyCertificateFacadeServiceImpl implements CopyCertificateFacadeSe
 
         LOG.debug("Created draft copy '{}'", serviceResponse.getNewDraftIntygId());
         return serviceResponse.getNewDraftIntygId();
+    }
+
+    private Personnummer getPersonId(Patient patient) {
+        if (patient.isReserveId()) {
+            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
+        }
+        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }

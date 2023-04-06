@@ -112,7 +112,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         if (isAllowedToForward(convertedLinks)) {
             listItem.addValue(
                     ListColumnType.FORWARD_CERTIFICATE,
-                    getForwardedListInfo(entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad())
+                    getForwardedListInfo(entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad(), entry.getIntygTyp())
             );
         }
 
@@ -253,13 +253,14 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     private ForwardedListInfo getForwardedListInfo(ListIntygEntry entry) {
         final var unit = hsaOrganizationsService.getVardenhet(entry.getVardenhetId());
         final var careGiver = hsaOrganizationsService.getVardgivareInfo(entry.getVardgivarId());
-        return getForwardedListInfo(unit.getNamn(), careGiver.getNamn(), entry.isVidarebefordrad());
+        return getForwardedListInfo(unit.getNamn(), careGiver.getNamn(), entry.isVidarebefordrad(), entry.getIntygType());
     }
 
-    private ForwardedListInfo getForwardedListInfo(String unitName, String careGiverName, boolean isForwarded) {
+    private ForwardedListInfo getForwardedListInfo(String unitName, String careGiverName, boolean isForwarded, String certificateType) {
         return new ForwardedListInfo(
                 isForwarded,
                 unitName,
-                careGiverName);
+                careGiverName,
+                certificateType);
     }
 }
