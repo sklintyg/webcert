@@ -391,7 +391,7 @@ public class CertificateControllerTest {
 
             doReturn(expectedId)
                 .when(replaceCertificateFacadeService)
-                .replaceCertificate(anyString(), anyString(), anyString());
+                .replaceCertificate(anyString());
 
             final var newCertificateRequestDTO = new NewCertificateRequestDTO();
             newCertificateRequestDTO.setCertificateType("certificateType");
@@ -529,7 +529,7 @@ public class CertificateControllerTest {
 
             doReturn(expectedId)
                 .when(copyCertificateFacadeService)
-                .copyCertificate(anyString(), anyString(), anyString());
+                .copyCertificate(anyString());
 
             final var newCertificateRequestDTO = new NewCertificateRequestDTO();
             newCertificateRequestDTO.setCertificateType("certificateType");

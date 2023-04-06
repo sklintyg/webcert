@@ -71,6 +71,7 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
     private final static String CERTIFICATE_TYPE = "lisjp";
     private final static String NEW_CERTIFICATE_TYPE = "ag7804";
     private final static String PATIENT_ID = "191212121212";
+    private final static String RESERVE_ID = "19121212-121A";
     private final static String LATEST_VERSION = "2.0";
 
     @Nested
@@ -186,7 +187,7 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
         @Test
         void shallThrowExceptionWhenCertificateTypeNotSupported() {
             final var originalCertificateType = "orignalNotSupported";
-            
+
             doReturn(createCertificate(originalCertificateType))
                 .when(getCertificateFacadeService)
                 .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
@@ -197,8 +198,50 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
         }
     }
 
-    private void setup(String originalCertificateType, String newCertificateType) {
-        doReturn(createCertificate(originalCertificateType))
+    @Nested
+    class CreateFromTemplateWithReserveId {
+
+        @BeforeEach
+        void setUp() {
+
+            final var certificate = setup(CERTIFICATE_TYPE, NEW_CERTIFICATE_TYPE);
+
+            certificate.getMetadata().setPatient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id(RESERVE_ID)
+                            .build()
+                    )
+                    .previousPersonId(
+                        PersonId.builder()
+                            .id(PATIENT_ID)
+                            .build()
+                    )
+                    .reserveId(true)
+                    .build()
+            );
+
+        }
+
+        @Test
+        void shallIncludePatientId() {
+
+            createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID);
+
+            final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+
+            verify(copyUtkastServiceHelper)
+                .createUtkastFromDifferentIntygTypeRequest(anyString(), anyString(), anyString(),
+                    renewIntygRequestArgumentCaptor.capture());
+
+            assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+        }
+    }
+
+    private Certificate setup(String originalCertificateType, String newCertificateType) {
+        final var certificate = createCertificate(originalCertificateType);
+        doReturn(certificate)
             .when(getCertificateFacadeService)
             .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
@@ -231,6 +274,8 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
         doReturn(serviceResponse)
             .when(copyUtkastService)
             .createUtkastFromSignedTemplate(serviceRequest);
+
+        return certificate;
     }
 
     private Certificate createCertificate(String certificateType) {
