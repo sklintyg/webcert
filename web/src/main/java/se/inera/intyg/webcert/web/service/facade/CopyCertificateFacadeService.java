@@ -20,5 +20,5 @@ package se.inera.intyg.webcert.web.service.facade;
 
 public interface CopyCertificateFacadeService {
 
-    String copyCertificate(String certificateId, String certificateType, String patientId);
+    String copyCertificate(String certificateId);
 }

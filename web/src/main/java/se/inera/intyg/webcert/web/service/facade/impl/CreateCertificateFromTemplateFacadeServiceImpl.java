@@ -27,6 +27,7 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
@@ -61,7 +62,7 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
         final var newCertificateType = getNewCertificateType(certificateType);
         final var copyRequest = new CopyIntygRequest();
         copyRequest.setPatientPersonnummer(
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow()
+            getPersonId(certificate.getMetadata().getPatient())
         );
 
         LOG.debug("Preparing to create a renewal from template for '{}' with new type '{}' from old type '{}'", certificateId,
@@ -90,5 +91,12 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
                     String.format("Cannot create draft from template because certificate type '%s' is not supported", templateType)
                 );
         }
+    }
+
+    private Personnummer getPersonId(Patient patient) {
+        if (patient.isReserveId()) {
+            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
+        }
+        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
     }
 }

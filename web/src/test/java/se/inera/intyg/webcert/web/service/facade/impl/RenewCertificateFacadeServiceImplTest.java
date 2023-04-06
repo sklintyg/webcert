@@ -25,8 +25,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,10 +37,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
@@ -67,10 +63,159 @@ class RenewCertificateFacadeServiceImplTest {
     private final static String RENEW_CERTIFICATE_ID = "renewCertificateId";
     private final static String CERTIFICATE_TYPE = "certificateType";
     private final static String PATIENT_ID = "191212121212";
+    private final static String RESERVE_ID = "19121212-121A";
 
-    @BeforeEach
-    void setup() {
-        doReturn(createCertificate())
+    @Nested
+    class RenewCertificate {
+
+        @BeforeEach
+        void before() {
+            setup();
+        }
+
+        @Test
+        void shallIncludeCertificateId() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            verify(copyUtkastServiceHelper)
+                .createRenewalCopyRequest(certificateIdArgumentCaptor.capture(), anyString(), any(CopyIntygRequest.class));
+
+            assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shallIncludeCertificateType() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            verify(copyUtkastServiceHelper)
+                .createRenewalCopyRequest(anyString(), certificateTypeArgumentCaptor.capture(), any(CopyIntygRequest.class));
+
+            assertEquals(CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shallIncludePatientId() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+
+            verify(copyUtkastServiceHelper).createRenewalCopyRequest(anyString(), anyString(), renewIntygRequestArgumentCaptor.capture());
+
+            assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+        }
+
+        @Test
+        void shallReturnNewDraftId() {
+
+            final var actualCertificateId = renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            assertEquals(RENEW_CERTIFICATE_ID, actualCertificateId);
+        }
+
+        private Certificate createCertificate() {
+            final var certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .id(CERTIFICATE_ID)
+                    .type(CERTIFICATE_TYPE)
+                    .patient(
+                        Patient.builder()
+                            .personId(
+                                PersonId.builder()
+                                    .id(PATIENT_ID)
+                                    .type("PERSON_NUMMER")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+            return certificate;
+        }
+    }
+
+    @Nested
+    class RenewCertificateWithReserveId {
+
+        @BeforeEach
+        void before() {
+            final var certificate = setup();
+
+            certificate.getMetadata().setPatient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id(RESERVE_ID)
+                            .build()
+                    )
+                    .previousPersonId(
+                        PersonId.builder()
+                            .id(PATIENT_ID)
+                            .build()
+                    )
+                    .reserveId(true)
+                    .build()
+            );
+        }
+
+        @Test
+        void shallIncludeCertificateId() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            verify(copyUtkastServiceHelper)
+                .createRenewalCopyRequest(certificateIdArgumentCaptor.capture(), anyString(), any(CopyIntygRequest.class));
+
+            assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shallIncludeCertificateType() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+            verify(copyUtkastServiceHelper)
+                .createRenewalCopyRequest(anyString(), certificateTypeArgumentCaptor.capture(), any(CopyIntygRequest.class));
+
+            assertEquals(CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shallIncludePatientId() {
+
+            renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+
+            verify(copyUtkastServiceHelper).createRenewalCopyRequest(anyString(), anyString(), renewIntygRequestArgumentCaptor.capture());
+
+            assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+        }
+
+        @Test
+        void shallReturnNewDraftId() {
+
+            final var actualCertificateId = renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
+
+            assertEquals(RENEW_CERTIFICATE_ID, actualCertificateId);
+        }
+    }
+
+    private Certificate setup() {
+        final var certificate = createCertificate();
+
+        doReturn(certificate)
             .when(getCertificateFacadeService)
             .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
@@ -99,52 +244,8 @@ class RenewCertificateFacadeServiceImplTest {
         doReturn(serviceResponse)
             .when(copyUtkastService)
             .createRenewalCopy(serviceRequest);
-    }
 
-    @Test
-    void shallIncludeCertificateId() {
-
-        renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
-
-        final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-        verify(copyUtkastServiceHelper)
-            .createRenewalCopyRequest(certificateIdArgumentCaptor.capture(), anyString(), any(CopyIntygRequest.class));
-
-        assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
-    }
-
-    @Test
-    void shallIncludeCertificateType() {
-
-        renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
-
-        final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-        verify(copyUtkastServiceHelper)
-            .createRenewalCopyRequest(anyString(), certificateTypeArgumentCaptor.capture(), any(CopyIntygRequest.class));
-
-        assertEquals(CERTIFICATE_TYPE, certificateTypeArgumentCaptor.getValue());
-    }
-
-    @Test
-    void shallIncludePatientId() {
-
-        renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
-
-        final var renewIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-
-        verify(copyUtkastServiceHelper).createRenewalCopyRequest(anyString(), anyString(), renewIntygRequestArgumentCaptor.capture());
-
-        assertEquals(PATIENT_ID, renewIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-    }
-
-    @Test
-    void shallReturnNewDraftId() {
-
-        final var actualCertificateId = renewCertificateFacadeService.renewCertificate(CERTIFICATE_ID);
-
-        assertEquals(RENEW_CERTIFICATE_ID, actualCertificateId);
+        return certificate;
     }
 
     private Certificate createCertificate() {

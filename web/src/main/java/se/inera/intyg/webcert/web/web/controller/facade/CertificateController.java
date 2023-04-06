@@ -237,11 +237,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Replacing certificate with id: '{}'", certificateId);
         }
-        final var newCertificateId = replaceCertificateFacadeService.replaceCertificate(
-            certificateId,
-            newCertificateRequestDTO.getCertificateType(),
-            newCertificateRequestDTO.getPatientId().getId()
-        );
+        final var newCertificateId = replaceCertificateFacadeService.replaceCertificate(certificateId);
         return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
     }
 
@@ -329,9 +325,7 @@ public class CertificateController {
             LOG.debug("Copy certificate with id: '{}'", certificateId);
         }
         final var newCertificateId = copyCertificateFacadeService.copyCertificate(
-            certificateId,
-            copyCertificate.getCertificateType(),
-            copyCertificate.getPatientId().getId()
+            certificateId
         );
         return Response.ok(CopyCertificateResponseDTO.create(newCertificateId)).build();
     }
