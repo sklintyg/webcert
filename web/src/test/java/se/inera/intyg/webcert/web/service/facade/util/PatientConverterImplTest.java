@@ -233,6 +233,28 @@ class PatientConverterImplTest {
                     assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
                     assertFalse(patient.isPersonIdChanged());
                 }
+
+                @Test
+                public void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsNotAReserveId() {
+                    final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
+                    parameters.setBeforeAlternateSsn(PATIENT_ID.replace("-", ""));
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE,
+                        CERTIFICATE_TYPE_VERSION);
+                    assertEquals(PATIENT_ID, patient.getPreviousPersonId().getId());
+                    assertFalse(patient.isPersonIdChanged());
+                }
+
+                @Test
+                public void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsAReserveId() {
+                    final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
+                    parameters.setBeforeAlternateSsn(PATIENT_RESERVE_ID);
+                    user.setParameters(parameters);
+                    final var patient = patientConverter.convert(originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE,
+                        CERTIFICATE_TYPE_VERSION);
+                    assertEquals(PATIENT_RESERVE_ID, patient.getPreviousPersonId().getId());
+                    assertFalse(patient.isPersonIdChanged());
+                }
             }
 
             @Nested

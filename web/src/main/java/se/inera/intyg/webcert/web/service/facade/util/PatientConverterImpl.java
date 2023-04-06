@@ -143,8 +143,9 @@ public class PatientConverterImpl implements PatientConverter {
 
     private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
         if (isBeforeAlternateSSNSet(parameters)) {
+            final var personnummer = Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn()).orElse(null);
             return PersonId.builder()
-                .id(parameters.getBeforeAlternateSsn())
+                .id(personnummer != null ? personnummer.getPersonnummerWithDash() : parameters.getBeforeAlternateSsn())
                 .type("PERSON_NUMMER")
                 .build();
         }
@@ -155,7 +156,7 @@ public class PatientConverterImpl implements PatientConverter {
                 .type("PERSON_NUMMER")
                 .build();
         }
-        
+
         return null;
     }
 
