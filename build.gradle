@@ -1,13 +1,13 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "3.2.2" apply false
+    id "se.inera.intyg.plugin.common" version "3.2.5" apply false
     id "org.gretty" version "3.0.8" apply false
     id "nebula.node" version "1.4.2" apply false
     id "io.spring.dependency-management" version "1.0.13.RELEASE" apply false
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.19.0-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.19.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '3.19.1-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '3.19.1-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
     schemasContractVersion = "2.1.8"
