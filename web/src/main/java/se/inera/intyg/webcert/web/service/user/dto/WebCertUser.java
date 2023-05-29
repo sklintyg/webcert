@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -41,6 +40,7 @@ public class WebCertUser extends IntygUser {
     private IntegrationParameters parameters;
     private boolean useSigningService = false;
     private SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
+    private String identityProviderForSign;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -120,6 +120,14 @@ public class WebCertUser extends IntygUser {
 
     public void setSubscriptionInfo(SubscriptionInfo subscriptionInfo) {
         this.subscriptionInfo = subscriptionInfo;
+    }
+
+    public String getIdentityProviderForSign() {
+        return identityProviderForSign;
+    }
+
+    public void setIdentityProviderForSign(String identityProviderForSign) {
+        this.identityProviderForSign = identityProviderForSign;
     }
 
     @JsonIgnore

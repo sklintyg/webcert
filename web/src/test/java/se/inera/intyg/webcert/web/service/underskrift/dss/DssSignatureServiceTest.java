@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +71,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class DssSignatureServiceTest {
 
+    public static final String IDP_URL = "https://idpurl.se/samlv2/idp/metadata";
+    
     @Mock
     DssMetadataService dssMetadataService;
 
@@ -78,6 +81,9 @@ public class DssSignatureServiceTest {
 
     @Mock
     DssSignMessageService dssSignMessageService;
+
+    @Mock
+    DssSignMessageIdpProvider dssSignMessageIdpProvider;
 
     @Mock
     WebCertUser user;
@@ -142,7 +148,7 @@ public class DssSignatureServiceTest {
     public DssSignatureServiceTest() {
         MockitoAnnotations.initMocks(this);
         dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository,
-            underskriftService, redisTicketTracker, monitoringLogService, moduleRegistry);
+            dssSignMessageIdpProvider, underskriftService, redisTicketTracker, monitoringLogService, moduleRegistry);
     }
 
     @BeforeClass
@@ -155,12 +161,14 @@ public class DssSignatureServiceTest {
         when(dssMetadataService.getDssActionUrl()).thenReturn("ActionUrl");
         when(webCertUserService.getUser()).thenReturn(user);
         when(user.getPersonId()).thenReturn("191212121212");
+        when(user.getIdentityProviderForSign()).thenReturn(IDP_URL);
+        when(dssSignMessageIdpProvider.get(IDP_URL)).thenReturn(IDP_URL);
         when(utkastRepository.findById(Mockito.anyString())).thenReturn(utkastOptional);
-        when(utkastOptional.orElse(Mockito.any())).thenReturn(utkast);
+        when(utkastOptional.orElse(any())).thenReturn(utkast);
         when(utkast.getIntygsTyp()).thenReturn("intygsTyp");
         when(utkast.getPatientPersonnummer()).thenReturn(patient);
         when(patient.getPersonnummerWithDash()).thenReturn("19121212-1212");
-        when(dssSignMessageService.signSignRequest(Mockito.any()))
+        when(dssSignMessageService.signSignRequest(any()))
             .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
         when(moduleRegistry.getIntygModule(anyString()))
             .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
@@ -169,7 +177,6 @@ public class DssSignatureServiceTest {
         ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
         ReflectionTestUtils.setField(dssSignatureService, "customerId", "AnUn3ss3c@ary_Long--$@ClientIDwithr4nd0mCharacters");
         ReflectionTestUtils.setField(dssSignatureService, "applicationId", "App/ID\\With--w€|rd__CH@r$");
-        ReflectionTestUtils.setField(dssSignatureService, "idpUrl", "https://idpurl.se/samlv2/idp/metadata");
         ReflectionTestUtils.setField(dssSignatureService, "serviceUrl",
             "https://esign.v2.st.signatureservice.se/signservice-frontend/metadata/4321a111111");
         var signMessageTemplate = "Härmed skriver jag under {intygsTyp} utfärdat för {patientPnr}<br/><br/>Intygs-id: {intygsId}";
@@ -213,7 +220,7 @@ public class DssSignatureServiceTest {
             .getNotBefore().toGregorianCalendar().getTimeInMillis();
         final var notAfter = signRequestExtensionTypeJAXBElement.getValue().getConditions()
             .getNotOnOrAfter().toGregorianCalendar().getTimeInMillis();
-        assertEquals( "SignRequest should be valid for 10 minutes (2 min before and 8 min after", 10, (notAfter - notBefore) / 60000);
+        assertEquals("SignRequest should be valid for 10 minutes (2 min before and 8 min after", 10, (notAfter - notBefore) / 60000);
 
         // System.out.println(toXmlString(capturedSignRequest));
 
