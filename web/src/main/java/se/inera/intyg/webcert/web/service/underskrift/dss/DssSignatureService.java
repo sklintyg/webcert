@@ -100,6 +100,7 @@ public class DssSignatureService {
     private final WebCertUserService userService;
     private final UtkastRepository utkastRepository;
     private final DssSignMessageService dssSignMessageService;
+    private final DssSignMessageIdpProvider dssSignMessageIdpProvider;
     private final UnderskriftService underskriftService;
     private final RedisTicketTracker redisTicketTracker;
     private final MonitoringLogService monitoringLogService;
@@ -121,9 +122,6 @@ public class DssSignatureService {
     @Value("${dss.service.applicationid}")
     private String applicationId;
 
-    @Value("${dss.service.idpurl}")
-    private String idpUrl;
-
     @Value("${dss.service.serviceurl}")
     private String serviceUrl;
 
@@ -142,8 +140,10 @@ public class DssSignatureService {
 
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
-        WebCertUserService userService, UtkastRepository utkastRepository, UnderskriftService underskriftService,
+        WebCertUserService userService, UtkastRepository utkastRepository, DssSignMessageIdpProvider dssSignMessageIdpProvider,
+        UnderskriftService underskriftService,
         RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService, IntygModuleRegistry moduleRegistry) {
+        this.dssSignMessageIdpProvider = dssSignMessageIdpProvider;
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();
         objectFactoryCsig = new se.inera.intyg.webcert.dss.xsd.dssext.ObjectFactory();
         objectFactorySaml = new se.inera.intyg.webcert.dss.xsd.samlassertion.v2.ObjectFactory();
@@ -269,6 +269,10 @@ public class DssSignatureService {
 
         signRequestExtensionType.setAuthnProfile(AUTHN_PROFILE);
 
+        final var idpUrl = dssSignMessageIdpProvider.get(
+            userService.getUser().getIdentityProviderForSign()
+        );
+        
         var identityProvider = objectFactorySaml.createNameIDType();
         identityProvider.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
         identityProvider.setValue(idpUrl);
@@ -289,14 +293,14 @@ public class DssSignatureService {
 
         signRequestExtensionType.setCertRequestProperties(createCertRequestProperties());
 
-        signRequestExtensionType.setSignMessage(createSignMessage(intygsId));
+        signRequestExtensionType.setSignMessage(createSignMessage(intygsId, idpUrl));
 
         signRequestExtensionType.setVersion(ACTIVATE_SUPPORT_FOR_SEVERAL_LOA_AND_AUTH_PROFILE);
 
         return objectFactoryCsig.createSignRequestExtension(signRequestExtensionType);
     }
 
-    private SignMessageType createSignMessage(String intygsId) {
+    private SignMessageType createSignMessage(String intygsId, String idpUrl) {
         var utkast = utkastRepository.findById(intygsId).orElse(null);
         String intygsTyp = "";
         Personnummer patientPersonnummer = null;

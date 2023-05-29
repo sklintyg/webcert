@@ -275,6 +275,7 @@ dependencies {
     testCompile "org.springframework:spring-test"
     testCompile "org.xmlunit:xmlunit-legacy"
     testCompile "org.awaitility:awaitility"
+    testCompile "org.springframework.boot:spring-boot-test"
 
     testCompile "io.rest-assured:rest-assured"
     testCompile "io.rest-assured:json-schema-validator"
