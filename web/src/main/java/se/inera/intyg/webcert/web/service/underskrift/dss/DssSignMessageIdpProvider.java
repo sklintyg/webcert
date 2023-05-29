@@ -19,11 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DssSignMessageIdpProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageIdpProvider.class);
 
     private final String defaultIdpUrl;
     private final boolean useSameAsAuth;
@@ -43,6 +47,13 @@ public class DssSignMessageIdpProvider {
     }
 
     private boolean useIdentityProviderForSign(String identityProviderForSign) {
-        return useSameAsAuth && identityProviderForSign != null && !identityProviderForSign.isEmpty();
+        if (!useSameAsAuth) {
+            return false;
+        }
+        if (identityProviderForSign == null || identityProviderForSign.isEmpty()) {
+            LOG.warn("IdentityProviderForSign-attribute is missing! Default idp is used instead.");
+            return false;
+        }
+        return true;
     }
 }

@@ -20,11 +20,16 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
+@ExtendWith(OutputCaptureExtension.class)
 class DssSignMessageIdpProviderTest {
 
     public static final String IDENTITY_PROVIDER_FOR_SIGN = "IDENTITY_PROVIDER_FOR_SIGN";
@@ -60,6 +65,28 @@ class DssSignMessageIdpProviderTest {
         void shallUseDefaultIdpIfIdentityProviderForSignIsEmpty() {
             assertEquals(DEFAULT_IDP_URL,
                 dssSignMessageIdpProvider.get("")
+            );
+        }
+
+        @Test
+        void shallLoggWarningIfIdentityProviderForSignIsNull(CapturedOutput uatLog) {
+            dssSignMessageIdpProvider.get(null);
+            assertTrue(
+                uatLog
+                    .getOut()
+                    .contains("IdentityProviderForSign-attribute is missing! Default idp is used instead."),
+                () -> String.format("Incorrect log-message: '%s'", uatLog.getOut())
+            );
+        }
+
+        @Test
+        void shallLoggWarningIfIdentityProviderForSignIsEmpty(CapturedOutput uatLog) {
+            dssSignMessageIdpProvider.get("");
+            assertTrue(
+                uatLog
+                    .getOut()
+                    .contains("IdentityProviderForSign-attribute is missing! Default idp is used instead."),
+                () -> String.format("Incorrect log-message: '%s'", uatLog.getOut())
             );
         }
     }
