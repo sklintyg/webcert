@@ -147,8 +147,8 @@ class DssSignMessageIdpProviderTest {
 
         @Test
         void shallUseIdentityProviderForSignIfNotMtls() {
-            assertEquals(DEFAULT_IDP_URL,
-                dssSignMessageIdpProvider.get(IDENTITY_PROVIDER_FOR_SIGN_WHEN_MTLS)
+            assertEquals(IDENTITY_PROVIDER_FOR_SIGN,
+                dssSignMessageIdpProvider.get(IDENTITY_PROVIDER_FOR_SIGN)
             );
         }
     }
