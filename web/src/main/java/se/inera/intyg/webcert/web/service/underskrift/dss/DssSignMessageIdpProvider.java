@@ -31,12 +31,15 @@ public class DssSignMessageIdpProvider {
 
     private final String defaultIdpUrl;
     private final boolean useSameAsAuth;
+    private final String identityProviderForSignMtlsSuffix;
 
     public DssSignMessageIdpProvider(
         @Value("${dss.service.idpurl}") String defaultIdpUrl,
-        @Value("${dss.service.idpurl.sameAsAuth}") boolean useSameAsAuth) {
+        @Value("${dss.service.idpurl.sameAsAuth}") boolean useSameAsAuth,
+        @Value("${dss.service.idpurl.suffix.mtls}") String identityProviderForSignMtlsSuffix) {
         this.defaultIdpUrl = defaultIdpUrl;
         this.useSameAsAuth = useSameAsAuth;
+        this.identityProviderForSignMtlsSuffix = identityProviderForSignMtlsSuffix;
     }
 
     public String get(String identityProviderForSign) {
@@ -50,10 +53,12 @@ public class DssSignMessageIdpProvider {
         if (!useSameAsAuth) {
             return false;
         }
+
         if (identityProviderForSign == null || identityProviderForSign.isEmpty()) {
             LOG.warn("IdentityProviderForSign-attribute is missing! Default idp is used instead.");
             return false;
         }
-        return true;
+
+        return !identityProviderForSign.endsWith(identityProviderForSignMtlsSuffix);
     }
 }
