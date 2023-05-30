@@ -32,7 +32,8 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @ExtendWith(OutputCaptureExtension.class)
 class DssSignMessageIdpProviderTest {
 
-    public static final String IDENTITY_PROVIDER_FOR_SIGN = "IDENTITY_PROVIDER_FOR_SIGN";
+    public static final String IDENTITY_PROVIDER_FOR_SIGN = "https://idp.url.se/saml/sign/siths-eid-same";
+    public static final String IDENTITY_PROVIDER_FOR_SIGN_WHEN_MTLS = "https://idp.url.se/saml/sign";
     public static final String DEFAULT_IDP_URL = "DEFAULT_IDP_URL";
     private DssSignMessageIdpProvider dssSignMessageIdpProvider;
 
@@ -43,8 +44,8 @@ class DssSignMessageIdpProviderTest {
         void setUp() {
             dssSignMessageIdpProvider = new DssSignMessageIdpProvider(
                 DEFAULT_IDP_URL,
-                true
-            );
+                true,
+                "/saml/sign");
         }
 
         @Test
@@ -69,7 +70,8 @@ class DssSignMessageIdpProviderTest {
         }
 
         @Test
-        void shallLoggWarningIfIdentityProviderForSignIsNull(CapturedOutput uatLog) {
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        void shallLogWarningIfIdentityProviderForSignIsNull(CapturedOutput uatLog) {
             dssSignMessageIdpProvider.get(null);
             assertTrue(
                 uatLog
@@ -80,7 +82,8 @@ class DssSignMessageIdpProviderTest {
         }
 
         @Test
-        void shallLoggWarningIfIdentityProviderForSignIsEmpty(CapturedOutput uatLog) {
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        void shallLogWarningIfIdentityProviderForSignIsEmpty(CapturedOutput uatLog) {
             dssSignMessageIdpProvider.get("");
             assertTrue(
                 uatLog
@@ -98,8 +101,8 @@ class DssSignMessageIdpProviderTest {
         void setUp() {
             dssSignMessageIdpProvider = new DssSignMessageIdpProvider(
                 DEFAULT_IDP_URL,
-                false
-            );
+                false,
+                "/saml/sign");
         }
 
         @Test
@@ -120,6 +123,32 @@ class DssSignMessageIdpProviderTest {
         void shallUseDefaultIdpIfIdentityProviderForSignIsEmpty() {
             assertEquals(DEFAULT_IDP_URL,
                 dssSignMessageIdpProvider.get("")
+            );
+        }
+    }
+
+    @Nested
+    class UseSameDeviceWhenMtlsTest {
+
+        @BeforeEach
+        void setUp() {
+            dssSignMessageIdpProvider = new DssSignMessageIdpProvider(
+                DEFAULT_IDP_URL,
+                true,
+                "/saml/sign");
+        }
+
+        @Test
+        void shallUseDefaultIdpIfIdentityProviderForSignIsMtls() {
+            assertEquals(DEFAULT_IDP_URL,
+                dssSignMessageIdpProvider.get(IDENTITY_PROVIDER_FOR_SIGN_WHEN_MTLS)
+            );
+        }
+
+        @Test
+        void shallUseIdentityProviderForSignIfNotMtls() {
+            assertEquals(IDENTITY_PROVIDER_FOR_SIGN,
+                dssSignMessageIdpProvider.get(IDENTITY_PROVIDER_FOR_SIGN)
             );
         }
     }
