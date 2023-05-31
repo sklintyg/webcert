@@ -36,7 +36,6 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -70,8 +69,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_TANDLAKARE};
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
-    private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
-    private static final String DEFAULT_TYPE_VERSION = Fk7263EntryPoint.DEFAULT_LOCKED_TYPE_VERSION;
 
     private String urlFragmentTemplate;
 
@@ -110,12 +107,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
     }
 
-    /**
-     * Fetches a certificate from IT and then performs a redirect to the view that displays
-     * the certificate. Used for FK7263 only.
-     *
-     * @param intygId The id of the certificate to view.
-     */
     @GET
     @Path("/{intygId}/questions")
     @PrometheusTimeMethod
@@ -125,9 +116,10 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
-        //This is hardwired to fk7263 only
-        String intygType = DEFAULT_TYPE;
-        String intygTypeVersion = DEFAULT_TYPE_VERSION;
+
+        final var intygTypeInfo = intygService.getIntygTypeInfo(intygId);
+        final var intygType = intygTypeInfo.getIntygType();
+        final var intygTypeVersion = intygTypeInfo.getIntygTypeVersion();
         this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
