@@ -49,6 +49,11 @@ import se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIn
 @ExtendWith(MockitoExtension.class)
 public class CertificateIntegrationControllerTest {
 
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String UNIT_ID = "unitId";
+    private static final String CERTIFICATE_TYPE = "type";
+    private static final String CERTIFICATE_TYPE_VERSION = "typeVersion";
+
     @Mock
     private IntygService intygService;
 
@@ -95,16 +100,18 @@ public class CertificateIntegrationControllerTest {
         }
 
         @Test
-        public void shouldNotUseReactIfFeatureIsInactivatedFk7263() {
-            certificateIntegrationController.redirectToIntyg(uriInfo, "certificateId", "unitId");
+        void shouldNotUseReactIfFeatureIsInactivatedFk7263() {
+            doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
+                .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
             verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
 
         @Test
-        public void shouldNotUseReactIfFeatureIsInactivated() {
+        void shouldNotUseReactIfFeatureIsInactivated() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
 
-            certificateIntegrationController.redirectToIntyg(uriInfo, "type","certificateId", "unitId");
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
             verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
@@ -120,16 +127,18 @@ public class CertificateIntegrationControllerTest {
         }
 
         @Test
-        public void shouldUseReactIfFeatureIsActivatedFk7263() {
-            certificateIntegrationController.redirectToIntyg(uriInfo, "certificateId", "unitId");
+        void shouldUseReactIfFeatureIsActivatedFk7263() {
+            doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
+                .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
             verify(reactUriFactory).uriForCertificate(any(), any());
         }
 
         @Test
-        public void shouldUseReactIfFeatureIsActivated() {
+        void shouldUseReactIfFeatureIsActivated() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
 
-            certificateIntegrationController.redirectToIntyg(uriInfo, "type", "certificateId", "unitId");
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
             verify(reactUriFactory).uriForCertificate(any(), any());
         }
