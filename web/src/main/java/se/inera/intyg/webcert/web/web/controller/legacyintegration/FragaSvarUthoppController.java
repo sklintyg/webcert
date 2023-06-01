@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -80,6 +82,9 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
     @Autowired
     private ReactPilotUtil reactPilotUtil;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     // api
 
@@ -170,6 +175,12 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
                     "User does not have access to enhet " + enhetHsaId);
             }
         }
+
+        user.setFeatures(
+            commonAuthoritiesResolver.getFeatures(
+                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
+            )
+        );
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {

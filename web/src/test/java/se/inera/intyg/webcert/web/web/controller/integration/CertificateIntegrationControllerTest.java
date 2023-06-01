@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -37,6 +40,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -66,21 +71,30 @@ public class CertificateIntegrationControllerTest {
     @Mock
     private ReactPilotUtil reactPilotUtil;
 
+    @Mock
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
     @InjectMocks
     private CertificateIntegrationController certificateIntegrationController;
 
     private UriInfo uriInfo;
+    private WebCertUser webcertUser;
 
     @BeforeEach
     void setup() {
         final var roles = new HashMap<>();
         roles.put("LAKARE", new Role());
-        WebCertUser user = mock(WebCertUser.class);
-        doReturn("NORMAL").when(user).getOrigin();
-        doReturn(roles).when(user).getRoles();
+        webcertUser = mock(WebCertUser.class);
+        doReturn("NORMAL").when(webcertUser).getOrigin();
+        doReturn(roles).when(webcertUser).getRoles();
 
-        when(webCertUserService.getUser()).thenReturn(user);
-        when(user.changeValdVardenhet(any())).thenReturn(true);
+        when(webCertUserService.getUser()).thenReturn(webcertUser);
+        when(webcertUser.changeValdVardenhet(any())).thenReturn(true);
+
+        final var mockedSelectableVardenhet = mock(SelectableVardenhet.class);
+        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardenhet();
+        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardgivare();
+        doReturn(Collections.emptyMap()).when(commonAuthoritiesResolver).getFeatures(anyList());
     }
 
     @Nested
@@ -115,6 +129,15 @@ public class CertificateIntegrationControllerTest {
 
             verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
+
+        @Test
+        void shouldUpdateFeaturesForLoggedInUser() {
+            when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
+
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+
+            verify(webcertUser).setFeatures(anyMap());
+        }
     }
 
     @Nested
@@ -142,6 +165,14 @@ public class CertificateIntegrationControllerTest {
 
             verify(reactUriFactory).uriForCertificate(any(), any());
         }
-    }
 
+        @Test
+        void shouldUpdateFeaturesForLoggedInUser() {
+            when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
+
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+
+            verify(webcertUser).setFeatures(anyMap());
+        }
+    }
 }
