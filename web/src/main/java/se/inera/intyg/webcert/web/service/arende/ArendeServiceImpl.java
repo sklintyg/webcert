@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -407,7 +406,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende arende = lookupArende(meddelandeId);
 
-        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
+        validateAccessRightsToHandleQuestion(arende.getIntygsId());
 
         boolean arendeIsAnswered = !arendeRepository.findBySvarPaId(meddelandeId).isEmpty();
 
@@ -582,9 +581,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     private boolean isUnhandled(ArendeListItem item) {
         return !((item.getStatus() == Status.PENDING_INTERNAL_ACTION && isReminder(item) && item.getFragestallare().equals("FK"))
-                || item.getStatus() == Status.ANSWERED
-                || item.getStatus() == Status.CLOSED
-                || item.getAmne().equals("MAKULERING"));
+            || item.getStatus() == Status.ANSWERED
+            || item.getStatus() == Status.CLOSED
+            || item.getAmne().equals("MAKULERING"));
     }
 
     private boolean isReminder(ArendeListItem item) {
@@ -678,7 +677,7 @@ public class ArendeServiceImpl implements ArendeService {
     public ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp) {
         final Arende arende = lookupArende(meddelandeId);
 
-        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
+        validateAccessRightsToHandleQuestion(arende.getIntygsId());
 
         if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygTyp)) {
             fragaSvarService.closeQuestionAsHandled(Long.parseLong(meddelandeId));
@@ -1052,6 +1051,11 @@ public class ArendeServiceImpl implements ArendeService {
         NotificationEvent notificationEvent = determineReopenedNotificationEvent(reopenedArende);
         sendNotificationAndCreateEvent(reopenedArende, notificationEvent);
 
+    }
+
+    private void validateAccessRightsToHandleQuestion(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        certificateAccessServiceHelper.validateAccessToSetQuestionAsHandled(utlatande);
     }
 
     private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
