@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller;
 
 import java.net.URI;
+import java.util.Arrays;
 import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -54,6 +56,9 @@ public class PageController {
     @Autowired
     private IntygService intygService;
 
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     @PrometheusTimeMethod
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
@@ -75,6 +80,12 @@ public class PageController {
             httpHeaders.setLocation(uri);
             return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
         }
+
+        user.setFeatures(
+            commonAuthoritiesResolver.getFeatures(
+                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
+            )
+        );
 
         String intygTypeVersion = intygService.getIntygTypeInfo(intygId).getIntygTypeVersion();
         URI uri = mailLinkService.intygRedirect(typ, intygTypeVersion, intygId);
