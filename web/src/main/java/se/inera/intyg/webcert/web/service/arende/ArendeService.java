@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,4 +96,6 @@ public interface ArendeService {
     List<Arende> getArendenInternal(String intygsId);
 
     List<Arende> getRelatedArenden(String questionId);
+
+    List<Arende> getArendenForPatientsWithTimestampAfterDate(List<String> patientIds, LocalDateTime earliestValidDate);
 }

@@ -699,6 +699,12 @@
       <column name="TIMESTAMP"/>
     </createIndex>
 
+    <createIndex indexName="IDX_ARENDE_PATIENT_PERSON_ID_TIMESTAMP"
+        tableName="ARENDE" unique="false">
+      <column name="PATIENT_PERSON_ID"/>
+      <column name="TIMESTAMP"/>
+    </createIndex>
+
   </changeSet>
 
   <changeSet id="25" author="mn">
