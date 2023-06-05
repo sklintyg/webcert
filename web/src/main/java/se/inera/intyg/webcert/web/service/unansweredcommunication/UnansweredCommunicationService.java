@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.unansweredCommunication;
+package se.inera.intyg.webcert.web.service.unansweredcommunication;
 
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;

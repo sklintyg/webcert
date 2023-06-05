@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.unansweredCommunication;
+package se.inera.intyg.webcert.web.service.unansweredcommunication;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -161,7 +161,7 @@ class UnansweredCommunicationServiceImplTest {
             eq(request.getPatientIds()),
             any()
         );
-        
+
         final var result = unansweredCommunicationService.get(request);
         Assertions.assertEquals(1, result.getUnansweredQAsMap().get(expecteCertificateId).getOthers());
     }

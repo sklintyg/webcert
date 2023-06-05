@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.service.unansweredCommunication.UnansweredCommunicationService;
+import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredCommunicationService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
