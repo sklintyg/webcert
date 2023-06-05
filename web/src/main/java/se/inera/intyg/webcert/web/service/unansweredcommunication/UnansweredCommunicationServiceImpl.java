@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -42,6 +43,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
 public class UnansweredCommunicationServiceImpl implements UnansweredCommunicationService {
 
     private final ArendeService arendeService;
+    private static final String FK = "FK";
 
     public UnansweredCommunicationServiceImpl(ArendeService arendeService) {
         this.arendeService = arendeService;
@@ -60,7 +62,7 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
         }
 
         final var arendenForPatients = arendeService.getArendenForPatientsWithTimestampAfterDate(
-            patientIds,
+            formatPatientIds(patientIds),
             LocalDateTime.now().minusDays(maxDaysOfUnansweredCommunication)
         );
 
@@ -68,31 +70,37 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
             return new UnansweredCommunicationResponse(Collections.emptyMap());
         }
 
-        return new UnansweredCommunicationResponse(getUnansweredCommunicationResponse(arendenForPatients));
+        return new UnansweredCommunicationResponse(createUnansweredCommunication(arendenForPatients));
     }
 
-    private Map<String, UnansweredQAs> getUnansweredCommunicationResponse(List<Arende> arenden) {
-        final var unansweredCommunicationResponse = new HashMap<String, UnansweredQAs>();
-        arenden.forEach(arende -> getUnansweredQAs(arende, unansweredCommunicationResponse));
-        return unansweredCommunicationResponse;
+    private static List<String> formatPatientIds(List<String> patientIds) {
+        return patientIds.stream()
+            .map(patientId -> patientId.replace("-", ""))
+            .collect(Collectors.toList());
     }
 
-    private void getUnansweredQAs(Arende arende, Map<String, UnansweredQAs> unansweredQAsMap) {
+    private Map<String, UnansweredQAs> createUnansweredCommunication(List<Arende> arenden) {
+        final var unansweredCommunication = new HashMap<String, UnansweredQAs>();
+        arenden.forEach(arende -> getUnansweredCommunication(arende, unansweredCommunication));
+        return unansweredCommunication;
+    }
+
+    private void getUnansweredCommunication(Arende arende, Map<String, UnansweredQAs> unansweredCommunication) {
         final var status = convertStatus(arende);
-        if (isNotUnansweredQA(arende, status)) {
+        if (isNotUnansweredCommunication(arende, status)) {
             return;
         }
-        final var unansweredQAs = getUnansweredQA(arende, unansweredQAsMap);
+        final var unansweredQAs = getUnansweredQA(arende, unansweredCommunication);
         if (KOMPLT.equals(arende.getAmne())) {
             unansweredQAs.incrementComplement();
         } else {
             unansweredQAs.incrementOther();
         }
-        unansweredQAsMap.put(arende.getIntygsId(), unansweredQAs);
+        unansweredCommunication.put(arende.getIntygsId(), unansweredQAs);
     }
 
-    private static boolean isNotUnansweredQA(Arende arende, StatusType status) {
-        return !OBESVARAD.equals(status) || ArendeAmne.PAMINN.equals(arende.getAmne());
+    private static boolean isNotUnansweredCommunication(Arende arende, StatusType status) {
+        return !OBESVARAD.equals(status) || arende.getAmne().equals(ArendeAmne.PAMINN) || !arende.getSkickatAv().equals(FK);
     }
 
     private StatusType convertStatus(Arende arende) {

@@ -795,7 +795,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<Arende> getArendenForPatientsWithTimestampAfterDate(List<String> patientIds, LocalDateTime earliestValidDate) {
-        return arendeRepository.findByPatientPersonIdInAndTimestampAfterOrEquals(
+        return arendeRepository.findByPatientPersonIdInAndTimestampAfter(
             patientIds,
             earliestValidDate
         );

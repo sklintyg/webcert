@@ -25,11 +25,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredCommunicationService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
-@Path("/internalapi/unanswered-communications")
+@RestController
+@Path("/unanswered-communications")
 public class UnansweredCommunicationController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
@@ -41,6 +44,7 @@ public class UnansweredCommunicationController {
 
     @POST
     @Path("/")
+    @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public UnansweredCommunicationResponse getUnansweredCommunications(@RequestBody UnansweredCommunicationRequest request) {

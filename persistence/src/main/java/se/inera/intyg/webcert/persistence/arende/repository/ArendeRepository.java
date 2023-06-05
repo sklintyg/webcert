@@ -30,7 +30,7 @@ public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRep
     @Query("select a from Arende a where a.intygsId in :certificateIds")
     List<Arende> getArendenByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    List<Arende> findByPatientPersonIdInAndTimestampAfterOrEquals(List<String> patientIds, LocalDateTime earliestValidDate);
+    List<Arende> findByPatientPersonIdInAndTimestampAfter(List<String> patientIds, LocalDateTime earliestValidDate);
 
     default int eraseArendenByCertificateIds(List<String> certificateIds) {
         final var arenden = getArendenByCertificateIds(certificateIds);
