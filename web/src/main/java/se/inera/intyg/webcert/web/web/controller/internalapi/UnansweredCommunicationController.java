@@ -32,7 +32,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommu
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
 @RestController
-@Path("/unanswered-communications")
+@Path("/unanswered-communication")
 public class UnansweredCommunicationController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
