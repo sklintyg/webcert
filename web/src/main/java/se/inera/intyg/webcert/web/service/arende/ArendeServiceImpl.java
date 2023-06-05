@@ -290,7 +290,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 
-        validateAccessRightsToAnswerComplement(svarPaMeddelande.getIntygsId(), false);
+        validateAccessRightsToAnswerAdminQuestion(svarPaMeddelande.getIntygsId());
 
         if (!Status.PENDING_INTERNAL_ACTION.equals(svarPaMeddelande.getStatus())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Arende with id "
@@ -335,7 +335,7 @@ public class ArendeServiceImpl implements ArendeService {
         List<Arende> allArende = getArendeForIntygId(intygsId);
         List<Arende> arendeList = filterKompletteringar(allArende);
 
-        validateAccessRightsToAnswerComplement(intygsId, false);
+        validateAccessRightsToAnswerComplement(intygsId);
 
         Arende latest = getLatestKomplArende(intygsId, arendeList);
         for (Arende arende : arendeList) {
@@ -486,7 +486,7 @@ public class ArendeServiceImpl implements ArendeService {
             messageImportService.importMessages(intygsId);
         }
 
-        validateAccessRightsToReadArenden(intygsId);
+        validateAccessRightsToReadQuestions(intygsId);
 
         List<Arende> arendeList = getArendeForIntygId(intygsId);
 
@@ -1053,14 +1053,19 @@ public class ArendeServiceImpl implements ArendeService {
 
     }
 
+    private void validateAccessRightsToAnswerAdminQuestion(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        certificateAccessServiceHelper.validateAccessToAnswerAdminQuestion(utlatande);
+    }
+
     private void validateAccessRightsToHandleQuestion(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         certificateAccessServiceHelper.validateAccessToSetQuestionAsHandled(utlatande);
     }
 
-    private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
+    private void validateAccessRightsToAnswerComplement(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
-        certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, newCertificate);
+        certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, false);
     }
 
     private void validateAccessRightsToForwardQuestions(String intygsId) {
@@ -1073,7 +1078,7 @@ public class ArendeServiceImpl implements ArendeService {
         certificateAccessServiceHelper.validateAccessToCreateQuestion(utlatande);
     }
 
-    private void validateAccessRightsToReadArenden(String intygsId) {
+    private void validateAccessRightsToReadQuestions(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         certificateAccessServiceHelper.validateAccessToReadQuestions(utlatande);
     }
