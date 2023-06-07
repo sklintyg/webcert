@@ -54,11 +54,8 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
         final var maxDaysOfUnansweredCommunication = request.getMaxDaysOfUnansweredCommunication();
         final var patientIds = request.getPatientIds();
 
-        if (patientIds == null || patientIds.isEmpty() || maxDaysOfUnansweredCommunication == null) {
-            throw new IllegalArgumentException(String.format(
-                "Request is missing parameters required to make request. patientIds '%s' maxDaysOfUnansweredCommunication '%s'",
-                patientIds,
-                maxDaysOfUnansweredCommunication));
+        if (assertPatientIds(patientIds) || assertMaxDaysOfUnansweredCommunication(maxDaysOfUnansweredCommunication)) {
+            throw new IllegalArgumentException("Request is missing parameters required to make request.");
         }
 
         final var arendenForPatients = arendeService.getArendenForPatientsWithTimestampAfterDate(
@@ -71,6 +68,14 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
         }
 
         return new UnansweredCommunicationResponse(createUnansweredCommunication(arendenForPatients));
+    }
+
+    private static boolean assertMaxDaysOfUnansweredCommunication(Integer maxDaysOfUnansweredCommunication) {
+        return maxDaysOfUnansweredCommunication == null;
+    }
+
+    private boolean assertPatientIds(List<String> patientIds) {
+        return patientIds == null || patientIds.isEmpty();
     }
 
     private static List<String> formatPatientIds(List<String> patientIds) {
