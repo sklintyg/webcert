@@ -51,6 +51,7 @@ class UnansweredCommunicationServiceImplTest {
     private static final String FK = "FK";
     private static final String WC = "WC";
     private static final String PATIENT_ID = "191212121212";
+    private static final String EXPECTED_CERTIFICATE_ID = "expectedCertificateId";
 
     @BeforeEach
     void setUp() {
@@ -120,7 +121,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldReturnCertificateId() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arende = getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         doReturn(List.of(arende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
             eq(request.getPatientIds()),
@@ -132,7 +133,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldIncrementComplemented() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arende = getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         doReturn(List.of(arende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
             eq(request.getPatientIds()),
@@ -144,7 +145,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldIncrementMultipleComplemented() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arende = getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         doReturn(List.of(arende, arende, arende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
             eq(request.getPatientIds()),
@@ -156,7 +157,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldIncrementMultipleOther() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arende = getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         doReturn(List.of(arende, arende, arende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
             eq(request.getPatientIds()),
@@ -168,7 +169,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldIncrementOther() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arende = getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         doReturn(List.of(arende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
             eq(request.getPatientIds()),
@@ -181,7 +182,7 @@ class UnansweredCommunicationServiceImplTest {
 
     @Test
     void shouldIncrementComplementAndOther() {
-        final var expecteCertificateId = "expecteCertificateId";
+        final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
         final var arendeOther = getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         final var arendeComplement = getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
         final var notValidArende = getArende(ArendeAmne.PAMINN, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
@@ -204,14 +205,15 @@ class UnansweredCommunicationServiceImplTest {
         final var arendeComplement = getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
         final var notValidArende = getArende(ArendeAmne.PAMINN, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
 
-        doReturn(List.of(arendeOther, arendeComplement, notValidArende)).when(arendeService).getArendenForPatientsWithTimestampAfterDate(
-            eq(request.getPatientIds()),
-            any()
-        );
+        doReturn(List.of(arendeOther, arendeOther, arendeComplement, arendeComplement, notValidArende)).when(arendeService)
+            .getArendenForPatientsWithTimestampAfterDate(
+                eq(request.getPatientIds()),
+                any()
+            );
 
         final var result = unansweredCommunicationService.get(request);
-        Assertions.assertEquals(1, result.getUnansweredQAsMap().get(certificateIdOne).getOthers());
-        Assertions.assertEquals(1, result.getUnansweredQAsMap().get(certificateITwo).getComplement());
+        Assertions.assertEquals(2, result.getUnansweredQAsMap().get(certificateIdOne).getOthers());
+        Assertions.assertEquals(2, result.getUnansweredQAsMap().get(certificateITwo).getComplement());
         Assertions.assertEquals(2, result.getUnansweredQAsMap().size());
     }
 

@@ -55,4 +55,10 @@ public class UnansweredQAs {
     public void setOthers(int others) {
         this.others = others;
     }
+
+    public UnansweredQAs add(UnansweredQAs newValue) {
+        this.complement += newValue.getComplement();
+        this.others += newValue.getOthers();
+        return this;
+    }
 }
