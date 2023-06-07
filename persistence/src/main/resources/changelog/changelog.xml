@@ -1448,4 +1448,12 @@
       <column name="VARDGIVAR_ID"/>
     </createIndex>
   </changeSet>
+
+  <changeSet id="73" author="cs">
+    <createIndex indexName="IDX_ARENDE_PATIENT_PERSON_ID_TIMESTAMP"
+        tableName="ARENDE" unique="false">
+      <column name="PATIENT_PERSON_ID"/>
+      <column name="TIMESTAMP"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>

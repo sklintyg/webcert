@@ -793,6 +793,14 @@ public class ArendeServiceImpl implements ArendeService {
         return Stream.of(answers, reminders).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
+    @Override
+    public List<Arende> getArendenForPatientsWithTimestampAfterDate(List<String> patientIds, LocalDateTime earliestValidDate) {
+        return arendeRepository.findByPatientPersonIdInAndTimestampAfter(
+            patientIds,
+            earliestValidDate
+        );
+    }
+
     @VisibleForTesting
     void setMockSystemClock(Clock systemClock) {
         this.systemClock = systemClock;
