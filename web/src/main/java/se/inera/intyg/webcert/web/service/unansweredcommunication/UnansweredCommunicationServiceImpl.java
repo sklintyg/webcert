@@ -100,7 +100,7 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
     }
 
     private static boolean isNotUnansweredCommunication(Arende arende, StatusType status) {
-        return !OBESVARAD.equals(status) || arende.getAmne().equals(ArendeAmne.PAMINN) || !arende.getSkickatAv().equals(FK);
+        return status != OBESVARAD || arende.getAmne() == ArendeAmne.PAMINN || !arende.getSkickatAv().equals(FK);
     }
 
     private StatusType convertStatus(Arende arende) {
