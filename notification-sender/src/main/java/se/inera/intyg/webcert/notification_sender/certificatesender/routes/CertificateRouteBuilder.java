@@ -57,8 +57,8 @@ public class CertificateRouteBuilder extends RouteBuilder {
         errorHandler(defaultErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
-            .onException(Exception.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
             .onException(PermanentException.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
+            .onException(Exception.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
             .transacted("txTemplate")
             .choice()
             .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
