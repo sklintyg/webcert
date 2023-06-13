@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.route;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
@@ -29,16 +30,12 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.junit5.CamelSpringTest;
 import org.apache.camel.test.spring.junit5.MockEndpointsAndSkip;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.collect.ImmutableMap;
-
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -48,7 +45,7 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.C
 @ContextConfiguration(classes = CertificateCamelTestConfig.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|bean:sendMessageToRecipientProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
-public class RouteTest {
+class RouteTest {
 
     private static final String MESSAGE_BODY = "message";
 
@@ -77,7 +74,7 @@ public class RouteTest {
     protected MockEndpoint temporaryErrorHandlerEndpoint;
 
     @Test
-    public void testNormalStoreRoute() throws InterruptedException {
+    void testNormalStoreRoute() throws InterruptedException {
         storeProcessor.expectedMessageCount(1);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -96,7 +93,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testNormalSendRoute() throws InterruptedException {
+    void testNormalSendRoute() throws InterruptedException {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(1);
         revokeProcessor.expectedMessageCount(0);
@@ -115,7 +112,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testNormalRevokeRoute() throws InterruptedException {
+    void testNormalRevokeRoute() throws InterruptedException {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(1);
@@ -135,7 +132,7 @@ public class RouteTest {
 
     @Disabled("This test is unstable, INTYGFV-12301")
     @Test
-    public void testNormalSendMessageRoute() throws InterruptedException {
+    void testNormalSendMessageRoute() throws InterruptedException {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -154,7 +151,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testUnknownMessageType() throws InterruptedException {
+    void testUnknownMessageType() throws InterruptedException {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
@@ -173,7 +170,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testPermanentException() throws InterruptedException {
+    void testPermanentException() throws InterruptedException {
         sendProcessor.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("");
         });
@@ -196,7 +193,7 @@ public class RouteTest {
     }
 
     @Test
-    public void testTemporaryException() throws InterruptedException {
+    void testTemporaryException() throws InterruptedException {
         revokeProcessor.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("");
         });
@@ -220,9 +217,34 @@ public class RouteTest {
     }
 
     @Test
-    public void testUnexpectedException() throws InterruptedException {
+    void shallHandleUnexpectedExceptionAsTemporaryError() throws InterruptedException {
         storeProcessor.whenAnyExchangeReceived(exchange -> {
             throw new IllegalArgumentException();
+        });
+
+        storeProcessor.expectedMessageCount(1);
+        sendProcessor.expectedMessageCount(0);
+        revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(1);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+
+        assertThrows(CamelExecutionException.class, () ->
+            producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE))
+        );
+
+        assertIsSatisfied(storeProcessor);
+        assertIsSatisfied(sendProcessor);
+        assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+    }
+
+    @Test
+    void shallHandlePermanentExceptionAsPermanentError() throws InterruptedException {
+        storeProcessor.whenAnyExchangeReceived(exchange -> {
+            throw new PermanentException("Permanent exception!");
         });
 
         storeProcessor.expectedMessageCount(1);
