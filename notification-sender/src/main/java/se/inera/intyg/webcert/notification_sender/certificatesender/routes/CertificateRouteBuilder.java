@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.common.Constants;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 
 public class CertificateRouteBuilder extends RouteBuilder {
 
@@ -57,8 +57,8 @@ public class CertificateRouteBuilder extends RouteBuilder {
         errorHandler(defaultErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
-            .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
-            .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
+            .onException(Exception.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
+            .onException(PermanentException.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
             .transacted("txTemplate")
             .choice()
             .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
