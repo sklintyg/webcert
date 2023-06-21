@@ -86,14 +86,6 @@ test {
     exclude '**/*IT*'
 }
 
-task restAssuredTest(type: Test) {
-    useJUnitPlatform()
-    outputs.upToDateWhen { false }
-    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:8020/"
-    systemProperty "integration.tests.actuatorUrl", System.properties['actuatorUrl'] ?: "http://localhost:8120/"
-    include '**/*IT*'
-}
-
 gretty {
     def instance = System.properties['instance'] ?: '0'
     def minified = System.properties['useMinifiedJavaScript'] ?: false
