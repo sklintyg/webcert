@@ -128,6 +128,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .reminders(remindersToAdd)
             .complements(complements)
             .answeredByCertificate(arende.getAmne() == ArendeAmne.KOMPLT ? answeredByCertificate : null)
+            .contactInfo(arende.getKontaktInfo())
             .lastDateToReply(
                 getLastDateToReply(arende, reminders)
             );

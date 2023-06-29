@@ -56,6 +56,7 @@ var DEFAULT_QUESTION = {
   rubrik: 'Komplettering',
   skickatTidpunkt: '2016-07-13T17:23:00',
   skickatAv: 'FKASSA',
+  kontaktInfo: 'Kontaktinfo',
   amne: 'AVSTMN',
   meddelande: '',
   paminnelseMeddelandeId: '',
@@ -328,6 +329,7 @@ angular.module('rhsIndexApp')
                               <urn2:code>' + q.skickatAv + '</urn2:code>         \
                               <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>  \
                             </urn1:part> \
+                            <urn1:kontaktInfo>' + q.kontaktInfo + '</urn1:kontaktInfo> \
                         </urn1:skickatAv> \
                         ' + kompletteringsMarkup + ' \
                         ' + sistaDatumForSvar + ' \
