@@ -287,7 +287,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         createCertificateFromCandidateFunction.get(certificate)
             .ifPresent(resourceLinks::add);
 
-        srsFunction.get(certificate, webCertUserService.getUser())
+        srsFunction.getSRSFullView(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;
@@ -388,6 +388,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
         sendCertificateFunction.get(certificate)
             .ifPresent(resourceLinks::add);
+
+        srsFunction.getSRSMinimizedView(certificate, webCertUserService.getUser())
+                .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }

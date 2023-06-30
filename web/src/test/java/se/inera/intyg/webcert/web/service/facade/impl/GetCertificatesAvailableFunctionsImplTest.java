@@ -293,24 +293,24 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeSRS() {
-            when(srsFunction.get(any(), any()))
+        void shallIncludeSRSFullView() {
+            when(srsFunction.getSRSFullView(any(), any()))
                 .thenReturn(
                     Optional.of(
-                        ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS, "", "", "", true)
+                        ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS_FULL_VIEW, "", "", "", true)
                     )
                 );
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS_FULL_VIEW);
         }
 
         @Test
-        void shallExcludeSRS() {
-            when(srsFunction.get(any(), any())).thenReturn(Optional.empty());
+        void shallExcludeSRSFullView() {
+            when(srsFunction.getSRSFullView(any(), any())).thenReturn(Optional.empty());
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS_FULL_VIEW);
         }
 
         @Test
@@ -481,6 +481,27 @@ class GetCertificatesAvailableFunctionsImplTest {
         void setup() {
             doReturn(user).when(webCertUserService).getUser();
             doReturn("DJUPINTEGRATION").when(user).getOrigin();
+        }
+
+        @Test
+        void shallIncludeSRSMinimizedView() {
+            when(srsFunction.getSRSMinimizedView(any(), any()))
+                    .thenReturn(
+                            Optional.of(
+                                    ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW, "", "", "", true)
+                            )
+                    );
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW);
+        }
+
+        @Test
+        void shallExcludeSRSMinimizedView() {
+            when(srsFunction.getSRSMinimizedView(any(), any())).thenReturn(Optional.empty());
+            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW);
         }
 
         @Test

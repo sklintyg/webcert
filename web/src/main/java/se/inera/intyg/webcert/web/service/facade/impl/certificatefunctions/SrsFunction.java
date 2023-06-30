@@ -25,5 +25,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 public interface SrsFunction {
 
-    Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser user);
+    Optional<ResourceLinkDTO> getSRSFullView(Certificate certificate, WebCertUser user);
+
+    Optional<ResourceLinkDTO> getSRSMinimizedView(Certificate certificate, WebCertUser user);
 }
