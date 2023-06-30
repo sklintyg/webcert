@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
@@ -50,6 +51,7 @@ import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConvert
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service(value = "ArendeToQuestionFacadeService")
+@Transactional
 public class ArendeToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
     private final ArendeService arendeService;

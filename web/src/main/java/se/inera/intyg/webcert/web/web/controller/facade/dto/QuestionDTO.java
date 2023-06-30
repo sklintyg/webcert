@@ -45,6 +45,7 @@ public class QuestionDTO {
     private LocalDateTime lastUpdate;
     private List<ResourceLinkDTO> links;
     private LocalDate lastDateToReply;
+    private String[] contactInfo;
 
     public static QuestionDTO create(Question question, List<ResourceLinkDTO> links) {
         final var questionDTO = new QuestionDTO();
@@ -63,6 +64,7 @@ public class QuestionDTO {
         questionDTO.lastUpdate = question.getLastUpdate();
         questionDTO.links = links;
         questionDTO.lastDateToReply = question.getLastDateToReply();
+        questionDTO.contactInfo = question.getContactInfo();
         return questionDTO;
     }
 
@@ -184,5 +186,13 @@ public class QuestionDTO {
 
     public void setLastDateToReply(LocalDate lastDateToReply) {
         this.lastDateToReply = lastDateToReply;
+    }
+
+    public void setContactInfo(String[] contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    public String[] getContactInfo() {
+        return contactInfo;
     }
 }
