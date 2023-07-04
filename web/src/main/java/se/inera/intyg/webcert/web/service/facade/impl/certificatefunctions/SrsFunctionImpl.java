@@ -32,16 +32,31 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class SrsFunctionImpl implements SrsFunction {
 
     @Override
-    public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser user) {
-        return isSRSActive(certificate, user) ? Optional.of(getResourceLink(true)) : Optional.empty();
+    public Optional<ResourceLinkDTO> getSRSFullView(Certificate certificate, WebCertUser user) {
+        return isDraft(certificate) && isSRSActive(certificate, user) ? Optional.of(getResourceLink(true)) : Optional.empty();
+    }
+
+    @Override
+    public Optional<ResourceLinkDTO> getSRSMinimizedView(Certificate certificate, WebCertUser user) {
+        return isSignedCertificate(certificate) && isSRSActive(certificate, user)
+                ? Optional.of(getSRSRecommendationsResourceLink(true)) : Optional.empty();
     }
 
     private ResourceLinkDTO getResourceLink(boolean enabled) {
         return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.SRS,
+            ResourceLinkTypeDTO.SRS_FULL_VIEW,
             "Risk och råd",
             "Risk och råd",
             enabled
+        );
+    }
+
+    private ResourceLinkDTO getSRSRecommendationsResourceLink(boolean enabled) {
+        return ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW,
+                "Risk och råd",
+                "Risk och råd",
+                enabled
         );
     }
 
@@ -51,11 +66,15 @@ public class SrsFunctionImpl implements SrsFunction {
             return false;
         }
 
-        return isDraft(certificate) && isFeatureActive(certificate.getMetadata().getType(), feature);
+        return isFeatureActive(certificate.getMetadata().getType(), feature);
     }
 
     private static boolean isDraft(Certificate certificate) {
         return certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED;
+    }
+
+    private static boolean isSignedCertificate(Certificate certificate) {
+        return certificate.getMetadata().getStatus() == CertificateStatus.SIGNED;
     }
 
     private static boolean isFeatureActive(String certificateType, Feature feature) {
