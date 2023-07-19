@@ -55,18 +55,21 @@
     class="se.inera.intyg.webcert.web.web.controller.legacyintegration.FragaSvarUthoppController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
+    <property name="urlFragmentTemplateWithOrigin" value="${certificate.view.url.fragment.template.origin}" />
   </bean>
 
   <bean id="privatePractitionerFragaSvarUthoppController"
       class="se.inera.intyg.webcert.web.web.controller.legacyintegration.PrivatePractitionerFragaSvarUthoppController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
+    <property name="urlFragmentTemplateWithOrigin" value="${certificate.view.url.fragment.template.origin}" />
   </bean>
 
   <bean id="certificateIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
+    <property name="urlFragmentTemplateWithOrigin" value="${certificate.view.url.fragment.template.origin}" />
   </bean>
 
 </beans>

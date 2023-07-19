@@ -58,6 +58,7 @@ public class CertificateIntegrationControllerTest {
     private static final String UNIT_ID = "unitId";
     private static final String CERTIFICATE_TYPE = "type";
     private static final String CERTIFICATE_TYPE_VERSION = "typeVersion";
+    private static final Boolean FROM_RS = null;
 
     @Mock
     private IntygService intygService;
@@ -117,7 +118,7 @@ public class CertificateIntegrationControllerTest {
         void shouldNotUseReactIfFeatureIsInactivatedFk7263() {
             doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
                 .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID, FROM_RS);
             verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
 
@@ -138,6 +139,7 @@ public class CertificateIntegrationControllerTest {
 
             verify(webcertUser).setFeatures(anyMap());
         }
+
     }
 
     @Nested
@@ -153,7 +155,7 @@ public class CertificateIntegrationControllerTest {
         void shouldUseReactIfFeatureIsActivatedFk7263() {
             doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
                 .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID, FROM_RS);
             verify(reactUriFactory).uriForCertificate(any(), any());
         }
 
