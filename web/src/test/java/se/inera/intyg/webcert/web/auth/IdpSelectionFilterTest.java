@@ -110,7 +110,7 @@ public class IdpSelectionFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn(DEFAULT_QA_PATH);
         when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp="));
+        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS_WC2 + "?idp="));
     }
 
     @Test
