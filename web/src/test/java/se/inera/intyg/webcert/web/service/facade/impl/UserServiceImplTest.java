@@ -85,6 +85,7 @@ class UserServiceImplTest {
     private static final String SORT_THIRD = "Älgantilop";
     private static final List<String> UNSORTED_NAMES = List.of(SORT_THIRD, SORT_FIRST, SORT_SECOND);
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+    private static final String LAUNCH_FROM_ORIGIN = "normal";
 
     @BeforeEach
     void setUp() {
@@ -531,6 +532,34 @@ class UserServiceImplTest {
 
             final var loggedInUser = userService.getLoggedInUser();
             assertTrue(loggedInUser.getCareProviders().get(0).isMissingSubscription());
+        }
+    }
+
+    @Nested
+    class LaunchFromOrigin {
+
+        @BeforeEach
+        void setUp() {
+            doReturn(AuthenticationMethod.FAKE)
+                .when(user)
+                .getAuthenticationMethod();
+        }
+
+        @Test
+        void shouldReturnUserWithLaunchFromOrigin() {
+            doReturn(LAUNCH_FROM_ORIGIN)
+                .when(user).getLaunchFromOrigin();
+
+            final var loggedInUser = userService.getLoggedInUser();
+
+            assertEquals(loggedInUser.getLaunchFromOrigin(), LAUNCH_FROM_ORIGIN);
+        }
+
+        @Test
+        void shouldNotReturnUserWithLaunchFromOrigin() {
+            final var loggedInUser = userService.getLoggedInUser();
+
+            assertNull(loggedInUser.getLaunchFromOrigin());
         }
     }
 
