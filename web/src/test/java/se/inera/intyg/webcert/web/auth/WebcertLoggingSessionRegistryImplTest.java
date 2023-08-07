@@ -18,80 +18,77 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class WebcertLoggingSessionRegistryImplTest {
+@ExtendWith(MockitoExtension.class)
+class WebcertLoggingSessionRegistryImplTest {
 
     @Mock
     private MonitoringLogService monitoringService;
+
+    @Mock
+    private FindByIndexNameSessionRepository<?> sessionRepository;
 
     @InjectMocks
     private WebcertLoggingSessionRegistryImpl loggingSessionRegistry;
 
     @Test
-    public void testRegisterNewSession() throws Exception {
-        final String sessionId = "session-id";
-        final String hsaId = "hsa-id";
-        final String authenticationScheme = "authenticationScheme";
-        final String origin = "origin";
-        Map<String, Role> roles = ImmutableMap.of("LAKARE", new Role());
-        final String roleTypeName = "Läkare-AT-typ";
+    void shallLogUserLoginWhenNewSessionIsRegistered() {
+        final var sessionId = "session-id";
+        final var hsaId = "hsa-id";
+        final var authenticationScheme = "authenticationScheme";
+        final var origin = "origin";
+        final var roles = ImmutableMap.of("LAKARE", new Role());
+        final var roleTypeName = "Läkare-AT-typ";
+        final var principal = mock(WebCertUser.class);
 
-        WebCertUser principal = mock(WebCertUser.class);
         when(principal.getHsaId()).thenReturn(hsaId);
         when(principal.getAuthenticationScheme()).thenReturn(authenticationScheme);
         when(principal.getOrigin()).thenReturn(origin);
         when(principal.getRoles()).thenReturn(roles);
         when(principal.getRoleTypeName()).thenReturn(roleTypeName);
+
         loggingSessionRegistry.registerNewSession(sessionId, principal);
 
         verify(monitoringService).logUserLogin(hsaId, roles.keySet().iterator().next(), roleTypeName, authenticationScheme, origin);
     }
 
     @Test
-    public void testRegisterNewSessionNoWebCertUser() throws Exception {
-        final String sessionId = "session-id";
-        loggingSessionRegistry.registerNewSession(sessionId, "principal");
+    void shallNotLogAnythingIfPrincipalIsNull() {
+        final String sessionId = "session-id-missing-principal";
+        loggingSessionRegistry.registerNewSession(sessionId, null);
 
         verifyNoInteractions(monitoringService);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRegisterNewSessionNoPrincipal() throws Exception {
-        final String sessionId = "session-id";
-        try {
-            loggingSessionRegistry.registerNewSession(sessionId, null);
-        } finally {
-            verifyNoInteractions(monitoringService);
-        }
-    }
-
     @Test
-    public void testRemoveSessionInformation() throws Exception {
-        final String sessionId = "session-id";
-        final String hsaId = "hsa-id";
-        final String authenticationScheme = "authenticationScheme";
-        final String origin = "origin";
-        WebCertUser principal = mock(WebCertUser.class);
+    void shallLogUserLogoutWhenSessionNotExpired() {
+        final var sessionId = "session-id";
+        final var hsaId = "hsa-id";
+        final var authenticationScheme = "authenticationScheme";
+        final var principal = mock(WebCertUser.class);
+
+        mockSession(sessionId, principal, false);
         when(principal.getHsaId()).thenReturn(hsaId);
         when(principal.getAuthenticationScheme()).thenReturn(authenticationScheme);
-        when(principal.getOrigin()).thenReturn(origin);
-        loggingSessionRegistry.registerNewSession(sessionId, principal);
 
         loggingSessionRegistry.removeSessionInformation(sessionId);
 
@@ -99,19 +96,48 @@ public class WebcertLoggingSessionRegistryImplTest {
     }
 
     @Test
-    public void testRemoveSessionInformationNoWebCertUser() throws Exception {
-        final String sessionId = "session-id";
-        loggingSessionRegistry.registerNewSession(sessionId, "principal");
+    void shallLogUserSessionExpiredWhenSessionExpired() {
+        final var sessionId = "session-id";
+        final var hsaId = "hsa-id";
+        final var authenticationScheme = "authenticationScheme";
+        final var principal = mock(WebCertUser.class);
 
+        mockSession(sessionId, principal, true);
+        when(principal.getHsaId()).thenReturn(hsaId);
+        when(principal.getAuthenticationScheme()).thenReturn(authenticationScheme);
+
+        loggingSessionRegistry.removeSessionInformation(sessionId);
+
+        verify(monitoringService).logUserSessionExpired(hsaId, authenticationScheme);
+    }
+
+    @Test
+    void shallNotLogAnythingIfSessionMissing() {
+        final var sessionId = "session-id-missing";
         loggingSessionRegistry.removeSessionInformation(sessionId);
 
         verifyNoInteractions(monitoringService);
     }
 
     @Test
-    public void testRemoveSessionInformationNoSession() throws Exception {
-        loggingSessionRegistry.removeSessionInformation("session-id");
+    void shallNotLogAnythingIfPrincipalMissing() {
+        final var sessionId = "session-id-principal-missing";
+        mockSession(sessionId, null, false);
+        loggingSessionRegistry.removeSessionInformation(sessionId);
 
         verifyNoInteractions(monitoringService);
+    }
+
+    private void mockSession(String sessionId, WebCertUser principal, boolean expired) {
+        final var mockedSession = mock(Session.class);
+        final var mockedSecurityContext = mock(SecurityContext.class);
+        final var mockedAuthentication = mock(Authentication.class);
+        doReturn(mockedSession).when(sessionRepository).findById(sessionId);
+        doReturn(mockedSecurityContext).when(mockedSession).getAttribute("SPRING_SECURITY_CONTEXT");
+        doReturn(mockedAuthentication).when(mockedSecurityContext).getAuthentication();
+        if (principal != null) {
+            doReturn(principal).when(mockedAuthentication).getPrincipal();
+            doReturn(expired).when(mockedSession).isExpired();
+        }
     }
 }
