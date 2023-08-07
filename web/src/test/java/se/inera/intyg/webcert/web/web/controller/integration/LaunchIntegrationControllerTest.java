@@ -20,8 +20,6 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -40,8 +37,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -49,15 +44,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
-import se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIntegrationController;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateIntegrationControllerTest {
+class LaunchIntegrationControllerTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String UNIT_ID = "unitId";
-    private static final String CERTIFICATE_TYPE = "type";
-    private static final String CERTIFICATE_TYPE_VERSION = "typeVersion";
 
     @Mock
     private IntygService intygService;
@@ -71,14 +62,12 @@ public class CertificateIntegrationControllerTest {
     @Mock
     private ReactPilotUtil reactPilotUtil;
 
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
     @InjectMocks
-    private CertificateIntegrationController certificateIntegrationController;
+    private LaunchIntegrationController certificateIntegrationController;
 
     private UriInfo uriInfo;
     private WebCertUser webcertUser;
+    private static final String ORIGIN = "normal";
 
     @BeforeEach
     void setup() {
@@ -87,14 +76,7 @@ public class CertificateIntegrationControllerTest {
         webcertUser = mock(WebCertUser.class);
         doReturn("NORMAL").when(webcertUser).getOrigin();
         doReturn(roles).when(webcertUser).getRoles();
-
         when(webCertUserService.getUser()).thenReturn(webcertUser);
-        when(webcertUser.changeValdVardenhet(any())).thenReturn(true);
-
-        final var mockedSelectableVardenhet = mock(SelectableVardenhet.class);
-        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardenhet();
-        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardgivare();
-        doReturn(Collections.emptyMap()).when(commonAuthoritiesResolver).getFeatures(anyList());
     }
 
     @Nested
@@ -108,35 +90,25 @@ public class CertificateIntegrationControllerTest {
             doReturn(uriBuilder).when(uriBuilder).replacePath(any());
             doReturn(uriBuilder).when(uriBuilder).fragment(any());
             doReturn(mock(URI.class)).when(uriBuilder).buildFromMap(any());
-
             doReturn(false).when(reactPilotUtil).useReactClientFristaende(any(), any());
-
-        }
-
-        @Test
-        void shouldNotUseReactIfFeatureIsInactivatedFk7263() {
-            doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-                .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
-            verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
 
         @Test
         void shouldNotUseReactIfFeatureIsInactivated() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
 
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
             verify(reactUriFactory, never()).uriForCertificate(any(), any());
         }
 
         @Test
-        void shouldUpdateFeaturesForLoggedInUser() {
+        void shouldSetLaunchFromOriginOnUser() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
 
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
-            verify(webcertUser).setFeatures(anyMap());
+            verify(webcertUser).setLaunchFromOrigin(ORIGIN);
         }
 
     }
@@ -151,29 +123,20 @@ public class CertificateIntegrationControllerTest {
         }
 
         @Test
-        void shouldUseReactIfFeatureIsActivatedFk7263() {
-            doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-                .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
-            verify(reactUriFactory).uriForCertificate(any(), any());
-        }
-
-        @Test
         void shouldUseReactIfFeatureIsActivated() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
-
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
             verify(reactUriFactory).uriForCertificate(any(), any());
         }
 
         @Test
-        void shouldUpdateFeaturesForLoggedInUser() {
+        void shouldSetLaunchFromOriginOnUser() {
             when(intygService.getIntygTypeInfo(any())).thenReturn(mock(IntygTypeInfo.class));
 
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+            certificateIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
-            verify(webcertUser).setFeatures(anyMap());
+            verify(webcertUser).setLaunchFromOrigin(ORIGIN);
         }
     }
 }
