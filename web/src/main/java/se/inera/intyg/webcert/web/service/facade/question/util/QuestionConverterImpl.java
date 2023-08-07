@@ -25,6 +25,7 @@ import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUt
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
@@ -128,6 +129,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .reminders(remindersToAdd)
             .complements(complements)
             .answeredByCertificate(arende.getAmne() == ArendeAmne.KOMPLT ? answeredByCertificate : null)
+            .contactInfo(arende.getKontaktInfo().toArray(new String[0]))
             .lastDateToReply(
                 getLastDateToReply(arende, reminders)
             );
