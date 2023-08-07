@@ -20,9 +20,10 @@ package se.inera.intyg.webcert.web.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -31,53 +32,69 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  *
  * @author npet
  */
-public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
+public class WebcertLoggingSessionRegistryImpl<T extends Session> extends SpringSessionBackedSessionRegistry<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebcertLoggingSessionRegistryImpl.class);
 
-    @Autowired
-    private MonitoringLogService monitoringService;
+    private final MonitoringLogService monitoringService;
+    private final FindByIndexNameSessionRepository<T> sessionRepository;
+
+    public WebcertLoggingSessionRegistryImpl(MonitoringLogService monitoringService,
+        FindByIndexNameSessionRepository<T> sessionRepository) {
+        super(sessionRepository);
+        this.sessionRepository = sessionRepository;
+        this.monitoringService = monitoringService;
+    }
 
     @Override
     public void registerNewSession(String sessionId, Object principal) {
-
         LOGGER.debug("Attempting to register new session '{}'", sessionId);
 
-        if (principal != null && principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) principal;
-            String userRole =
-                user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next() : "noRole?";
-            monitoringService
-                .logUserLogin(user.getHsaId(), userRole, user.getRoleTypeName(), user.getAuthenticationScheme(), user.getOrigin());
+        if (!isWebcertUser(principal)) {
+            return;
         }
+
+        final var user = (WebCertUser) principal;
+        final var userRole = getUserRole(user);
+        monitoringService.logUserLogin(user.getHsaId(), userRole, user.getRoleTypeName(), user.getAuthenticationScheme(), user.getOrigin());
 
         super.registerNewSession(sessionId, principal);
     }
 
     @Override
     public void removeSessionInformation(String sessionId) {
-
         LOGGER.debug("Attempting to remove session '{}'", sessionId);
 
-        SessionInformation sessionInformation = getSessionInformation(sessionId);
-
-        if (sessionInformation == null) {
+        final var session = sessionRepository.findById(sessionId);
+        final var user = getUser(session);
+        if (user == null) {
             super.removeSessionInformation(sessionId);
             return;
         }
 
-        Object principal = sessionInformation.getPrincipal();
-
-        if (principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) principal;
-            if (sessionInformation.isExpired()) {
-                monitoringService.logUserSessionExpired(user.getHsaId(), user.getAuthenticationScheme());
-            } else {
-                monitoringService.logUserLogout(user.getHsaId(), user.getAuthenticationScheme());
-            }
+        if (session.isExpired()) {
+            monitoringService.logUserSessionExpired(user.getHsaId(), user.getAuthenticationScheme());
+        } else {
+            monitoringService.logUserLogout(user.getHsaId(), user.getAuthenticationScheme());
         }
 
         super.removeSessionInformation(sessionId);
     }
 
+    private WebCertUser getUser(Session session) {
+        if (session == null) {
+            return null;
+        }
+        final var authenticator = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        final var principal = authenticator != null ? authenticator.getAuthentication().getPrincipal() : null;
+        return isWebcertUser(principal) ? (WebCertUser) principal : null;
+    }
+
+    private boolean isWebcertUser(Object principal) {
+        return principal instanceof WebCertUser;
+    }
+
+    private static String getUserRole(WebCertUser user) {
+        return user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next() : "noRole?";
+    }
 }

@@ -41,6 +41,7 @@ public class WebCertUser extends IntygUser {
     private boolean useSigningService = false;
     private SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
     private String identityProviderForSign;
+    private String launchFromOrigin;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -149,5 +150,13 @@ public class WebCertUser extends IntygUser {
             }
         }
         return false;
+    }
+
+    public String getLaunchFromOrigin() {
+        return launchFromOrigin;
+    }
+
+    public void setLaunchFromOrigin(String launchFromOrigin) {
+        this.launchFromOrigin = launchFromOrigin;
     }
 }

@@ -41,6 +41,7 @@
       <ref bean="fragaSvarUthoppController" />
       <ref bean="privatePractitionerFragaSvarUthoppController" />
       <ref bean="certificateIntegrationController" />
+      <ref bean="launchIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -65,6 +66,12 @@
 
   <bean id="certificateIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIntegrationController">
+    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
+    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
+  </bean>
+
+  <bean id="launchIntegrationController"
+      class="se.inera.intyg.webcert.web.web.controller.integration.LaunchIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>

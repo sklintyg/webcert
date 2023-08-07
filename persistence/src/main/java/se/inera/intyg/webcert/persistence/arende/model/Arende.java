@@ -34,6 +34,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -88,7 +91,8 @@ public class Arende {
     @Column(name = "SKICKAT_AV")
     private String skickatAv;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name = "ARENDE_KONTAKT_INFO")
     @Column(name = "KONTAKT_INFO")
     private List<String> kontaktInfo;

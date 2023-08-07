@@ -26,4 +26,4 @@ LABEL se.inera.from_image=${from_image}         \
 ENV APP_NAME=${artifact}
 ENV SCRIPT_DEBUG=true
 
-ADD /web/build/libs/*.war $JWS_HOME/webapps/${context_path}.war
+ADD /web/build/libs/*.war $CATALINA_HOME/webapps/${context_path}.war

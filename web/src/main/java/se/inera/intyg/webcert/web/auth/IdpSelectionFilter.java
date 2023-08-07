@@ -104,7 +104,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
     private boolean isAuthenticateWithSiths(String requestURI) {
         return requestURI.contains("/webcert/web/user/certificate/") || requestURI.contains("/webcert/web/user/basic-certificate/")
-            || requestURI.contains("/web/maillink");
+            || requestURI.contains("/web/maillink") || requestURI.contains("/webcert/web/user/launch/");
     }
 
     private Authentication extractAuthentication(HttpSession session) {

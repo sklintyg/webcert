@@ -67,13 +67,10 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     private static final String PARAM_CERT_ID = "certId";
-
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_TANDLAKARE};
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
-
     private String urlFragmentTemplate;
-
     @Autowired
     private IntygService intygService;
 
@@ -208,5 +205,4 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
-
 }
