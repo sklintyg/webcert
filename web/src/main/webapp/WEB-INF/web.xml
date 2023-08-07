@@ -251,6 +251,7 @@
     <filter-mapping>
         <filter-name>idpSelectionFilter</filter-name>
         <url-pattern>/webcert/web/user/*</url-pattern>
+        <url-pattern>/web/maillink/*</url-pattern>
     </filter-mapping>
 
     <filter>
