@@ -67,17 +67,10 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_ORIGIN = "origin";
-    private static final String FROM_RS = "rs";
-    private static final String NORMAL = "normal";
-
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_TANDLAKARE};
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
-
     private String urlFragmentTemplate;
-    private String urlFragmentTemplateWithOrigin;
-
     @Autowired
     private IntygService intygService;
 
@@ -113,7 +106,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
         final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
-        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId, false);
+        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
     }
 
     @GET
@@ -121,8 +114,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @PrometheusTimeMethod
     public Response redirectToIntyg(@Context UriInfo uriInfo,
         @PathParam("intygId") String intygId,
-        @QueryParam("enhet") String enhetHsaId,
-        @QueryParam("fromRs") Boolean fromRs) {
+        @QueryParam("enhet") String enhetHsaId) {
 
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
@@ -133,7 +125,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId, fromRs);
+        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
     }
 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
@@ -188,13 +180,12 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         );
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId,
-        Boolean fromRs) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
         if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
             return getReactRedirectResponse(uriInfo, certificateId);
         }
 
-        return getAngularRedirectResponse(uriInfo, certificateType, intygTypeVersion, certificateId, fromRs);
+        return getAngularRedirectResponse(uriInfo, certificateType, intygTypeVersion, certificateId);
     }
 
     private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
@@ -202,22 +193,16 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
     }
 
-    private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId,
-        Boolean fromRs) {
+    private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_ORIGIN, fromRs != null && fromRs ? FROM_RS : NORMAL);
 
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplateWithOrigin).buildFromMap(urlParams);
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    public void setUrlFragmentTemplateWithOrigin(String urlFragmentTemplateWithOrigin) {
-        this.urlFragmentTemplateWithOrigin = urlFragmentTemplateWithOrigin;
     }
 }
