@@ -50,6 +50,8 @@ public class IdpSelectionFilterTest {
 
     private static final String DEFAULT_QA_PATH = "/webcert/web/user/certificate/id/questions";
     private static final String PP_QA_PATH = "/webcert/web/user/pp-certificate/id/questions";
+    private static final String MAIL_LINK_PATH = "/web/maillink/intyg/certType/id";
+    private static final String LAUNCH_INTEGRATION_PATH = "/webcert/web/user/launch/id";
 
 
     @Mock
@@ -110,7 +112,7 @@ public class IdpSelectionFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn(DEFAULT_QA_PATH);
         when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp="));
+        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS_WC2 + "?idp="));
     }
 
     @Test
@@ -122,5 +124,21 @@ public class IdpSelectionFilterTest {
         verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_ELEG + "?idp="));
     }
 
+    @Test
+    public void shouldRedirectNonAuthenticatedUserWithMaillinkUrlPath() throws ServletException, IOException {
+        initMocksForUnauthenticated();
+        when(httpServletRequest.getRequestURI()).thenReturn(MAIL_LINK_PATH);
+        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
+        testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS_WC2 + "?idp="));
+    }
 
+    @Test
+    public void shouldRedirectNonAuthenticatedUserWithLaunchIntegrationUrlPath() throws ServletException, IOException {
+        initMocksForUnauthenticated();
+        when(httpServletRequest.getRequestURI()).thenReturn(LAUNCH_INTEGRATION_PATH);
+        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
+        testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+        verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS_WC2 + "?idp="));
+    }
 }

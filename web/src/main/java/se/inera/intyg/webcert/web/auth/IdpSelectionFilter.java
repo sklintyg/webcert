@@ -90,7 +90,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
         // Finally, send redirect to explicit login path for the appropriate IDP depending on the requestURI
         String requestURI = req.getRequestURI();
         if (isAuthenticateWithSiths(requestURI)) {
-            resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp=" + sithsIdp);
+            resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS_WC2 + "?idp=" + sithsIdp);
         }
         if (isAuthenticateWithEleg(requestURI)) {
             resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_ELEG + "?idp=" + elegIdp);
@@ -104,7 +104,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
     private boolean isAuthenticateWithSiths(String requestURI) {
         return requestURI.contains("/webcert/web/user/certificate/") || requestURI.contains("/webcert/web/user/basic-certificate/")
-            || requestURI.contains("/webcert/web/user/launch/");
+            || requestURI.contains("/web/maillink") || requestURI.contains("/webcert/web/user/launch/");
     }
 
     private Authentication extractAuthentication(HttpSession session) {
