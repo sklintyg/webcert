@@ -1,0 +1,22 @@
+A00-B99Vissa infektionssjukdomar och parasitsjukdomar
+C00-D48Tumörer
+D50-D89Sjukdomar i blod och blodbildande organ samt vissa rubbningar i immunsystemet
+E00-E90Endokrina sjukdomar, nutritionsrubbningar och ämnesomsättningssjukdomar
+F00-F99Psykiska sjukdomar och syndrom samt beteendestörningar
+G00-G99Sjukdomar i nervsystemet
+H00-H59Sjukdomar i ögat och närliggande organ
+H60-H95Sjukdomar i örat och mastoidutskottet
+I00-I99Cirkulationsorganens sjukdomar
+J00-J99Andningsorganens sjukdomar
+K00-K93Matsmältningsorganens sjukdomar
+L00-L99Hudens och underhudens sjukdomar
+M00-M99Sjukdomar i muskuloskeletala systemet och bindväven
+N00-N99Sjukdomar i urin- och könsorganen
+O00-O99Graviditet, förlossning och barnsängstid
+P00-P96Vissa perinatala tillstånd
+Q00-Q99Medfödda missbildningar, deformiteter och kromosomavvikelser
+R00-R99Symtom, sjukdomstecken och onormala kliniska fynd och laboratoriefynd som ej klassificeras på annan plats
+S00-T98Skador, förgiftningar och vissa andra följder av yttre orsaker
+U00-U99Koder för särskilda ändamål
+V01-Y98Yttre orsaker till sjukdom och död
+Z00-Z99Faktorer av betydelse för hälsotillståndet och för kontakter med hälso- och sjukvården

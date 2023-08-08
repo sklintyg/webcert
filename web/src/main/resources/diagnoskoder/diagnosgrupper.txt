@@ -1,0 +1,7 @@
+A00-E90,G00-L99,N00-N99:Somatiska sjukdomar
+M00-M99:Muskuloskeletala sjukdomar
+P00-P96,Q00-Q99,S00-Y98:Övrigt
+Z00-Z99:Faktorer av betydelse för hälsotillståndet och för kontakter med hälso- och sjukvården
+F00-F99:Psykiska sjukdomar
+O00-O99:Graviditet och förlossning
+R00-R99:Symtomdiagnoser
