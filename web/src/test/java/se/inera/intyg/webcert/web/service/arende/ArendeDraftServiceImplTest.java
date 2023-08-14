@@ -91,6 +91,51 @@ public class ArendeDraftServiceImplTest {
     }
 
     @Test
+    public void testCreateNew() {
+        final String intygId = "intygId";
+        final String questionId = "questionId";
+        final String text = "text";
+        final String amne = "amne";
+        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+
+        final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+        assertNotNull(result);
+        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+
+        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+        verify(repo).save(captor.capture());
+        assertEquals(intygId, captor.getValue().getIntygId());
+        assertEquals(questionId, captor.getValue().getQuestionId());
+        assertEquals(text, captor.getValue().getText());
+        assertEquals(amne, captor.getValue().getAmne());
+        verifyNoMoreInteractions(repo);
+    }
+
+    @Test
+    public void testCreateDraftUpdate() {
+        final String intygId = "intygId";
+        final String questionId = "questionId";
+        final String text = "text";
+        final String amne = "amne";
+        final var arendeDraft = buildArendeDraft(intygId, questionId, null, null);
+        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
+
+        final var res = arendeDraftService.create(intygId, amne, text, questionId);
+
+        assertEquals(arendeDraft, res);
+        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+
+        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+        verify(repo).save(captor.capture());
+        assertEquals(intygId, captor.getValue().getIntygId());
+        assertEquals(questionId, captor.getValue().getQuestionId());
+        assertEquals(text, captor.getValue().getText());
+        assertEquals(amne, captor.getValue().getAmne());
+        verifyNoMoreInteractions(repo);
+    }
+
+    @Test
     public void testDeleteExisting() {
         final String intygId = "intygId";
         final String questionId = "questionId";
