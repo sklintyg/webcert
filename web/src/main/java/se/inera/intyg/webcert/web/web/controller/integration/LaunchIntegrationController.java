@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -34,8 +34,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -51,6 +54,8 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     private ReactPilotUtil reactPilotUtil;
     @Autowired
     private ReactUriFactory reactUriFactory;
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
     private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
@@ -64,9 +69,12 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         @QueryParam("origin") String origin) {
         super.validateParameter("certificateId", certificateId);
         super.validateAuthorities();
+
         final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
         final var certificateType = intygTypeInfo.getIntygType();
         final var certificateTypeVersion = intygTypeInfo.getIntygTypeVersion();
+        validateAndChangeUnit(certificateId, certificateType);
+
         webCertUserService.getUser().setLaunchFromOrigin(origin);
 
         LOG.debug("Redirecting to view intyg {} of type {}", certificateId, certificateType);
@@ -87,7 +95,10 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion,
         String certificateId) {
         final var urlParams = getUrlParams(certificateType, certificateTypeVersion, certificateId);
-        URI location = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+        final var location = uriInfo.getBaseUriBuilder()
+            .replacePath(getUrlBaseTemplate())
+            .fragment(urlFragmentTemplate)
+            .buildFromMap(urlParams);
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
@@ -112,5 +123,22 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @Override
     protected UserOriginType getGrantedRequestOrigin() {
         return UserOriginType.NORMAL;
+    }
+
+    private void validateAndChangeUnit(String certificateId, String certificateType) {
+        final var user = webCertUserService.getUser();
+        final var unitId = intygService.getIssuingVardenhetHsaId(certificateId, certificateType);
+        if (!user.changeValdVardenhet(unitId)) {
+            throw new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                String.format("User does not have access to unitId '%s'", unitId)
+            );
+        }
+
+        user.setFeatures(
+            commonAuthoritiesResolver.getFeatures(
+                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
+            )
+        );
     }
 }
