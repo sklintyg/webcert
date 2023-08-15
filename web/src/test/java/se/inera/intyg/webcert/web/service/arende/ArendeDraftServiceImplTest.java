@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -91,6 +92,21 @@ public class ArendeDraftServiceImplTest {
     }
 
     @Test
+    public void shouldReturnSavedArendeDraftFromCreate() {
+        final String intygId = "intygId";
+        final String questionId = "questionId";
+        final String text = "text";
+        final String amne = "amne";
+        final var arendeDraft = buildArendeDraft(intygId, questionId, null, null);
+        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
+        when(repo.save(any())).thenReturn(arendeDraft);
+
+        final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+        assertEquals(arendeDraft, result);
+    }
+
+    @Test
     public void testCreateNew() {
         final String intygId = "intygId";
         final String questionId = "questionId";
@@ -98,9 +114,8 @@ public class ArendeDraftServiceImplTest {
         final String amne = "amne";
         when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
 
-        final var result = arendeDraftService.create(intygId, amne, text, questionId);
+        arendeDraftService.create(intygId, amne, text, questionId);
 
-        assertNotNull(result);
         verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
 
         ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
@@ -121,9 +136,8 @@ public class ArendeDraftServiceImplTest {
         final var arendeDraft = buildArendeDraft(intygId, questionId, null, null);
         when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
 
-        final var res = arendeDraftService.create(intygId, amne, text, questionId);
+        arendeDraftService.create(intygId, amne, text, questionId);
 
-        assertEquals(arendeDraft, res);
         verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
 
         ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);

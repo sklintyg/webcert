@@ -79,8 +79,7 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
         } else {
             draft = createDraft(certificateId, questionId, message, subject);
         }
-        arendeDraftRepository.save(draft);
-        return draft;
+        return arendeDraftRepository.save(draft);
     }
 
     @Override
