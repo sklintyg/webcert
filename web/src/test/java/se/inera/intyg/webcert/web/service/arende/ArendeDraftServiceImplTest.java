@@ -78,18 +78,44 @@ public class ArendeDraftServiceImplTest {
         }
 
         @Test
-        public void testCreateNew() {
+        public void testCreateCallsRepoCorrectly() {
             arendeDraftService.create(intygId, amne, text, questionId);
 
             verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
             ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
             verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
             verifyNoMoreInteractions(repo);
+        }
+
+        @Test
+        public void testCreateSetsQuestionId() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(questionId, result.getQuestionId());
+        }
+
+        @Test
+        public void testCreateSetsText() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(text, result.getText());
+        }
+
+        @Test
+        public void testCreateSetsSubject() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(amne, result.getAmne());
+        }
+
+
+        @Test
+        public void shouldReturnSavedArendeDraftFromCreate() {
+            when(repo.save(any())).thenReturn(arendeDraft);
+
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(arendeDraft, result);
         }
     }
 
@@ -117,28 +143,44 @@ public class ArendeDraftServiceImplTest {
         }
 
         @Test
+        public void testCreateCallsRepoCorrectly() {
+            arendeDraftService.create(intygId, amne, text, questionId);
+
+            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+            verify(repo).save(captor.capture());
+            verifyNoMoreInteractions(repo);
+        }
+
+        @Test
+        public void testCreateSetsQuestionId() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(questionId, result.getQuestionId());
+        }
+
+        @Test
+        public void testCreateSetsText() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(text, result.getText());
+        }
+
+        @Test
+        public void testCreateSetsSubject() {
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+            assertEquals(amne, result.getAmne());
+        }
+
+
+        @Test
         public void shouldReturnSavedArendeDraftFromCreate() {
-            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
             when(repo.save(any())).thenReturn(arendeDraft);
 
             final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
             assertEquals(arendeDraft, result);
-        }
-
-        @Test
-        public void testCreateDraftUpdate() {
-            arendeDraftService.create(intygId, amne, text, questionId);
-
-            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
-            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-            verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
-            verifyNoMoreInteractions(repo);
         }
     }
 
