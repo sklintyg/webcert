@@ -46,7 +46,8 @@ public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeServ
         final var questionDraft = arendeDraftService.create(
             certificateId,
             getSubjectAsString(type),
-            message
+            message,
+            null
         );
 
         return questionConverter.convert(questionDraft);

@@ -35,14 +35,7 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
 
     @Override
     public boolean saveDraft(String intygId, String questionId, String text, String amne) {
-        ArendeDraft draft = arendeDraftRepository.findByIntygIdAndQuestionId(intygId, questionId);
-        if (draft != null) {
-            draft.setText(text);
-            draft.setAmne(amne);
-        } else {
-            draft = createDraft(intygId, questionId, text, amne);
-        }
-        arendeDraftRepository.save(draft);
+        create(intygId, amne, text, questionId);
         return true;
     }
 
@@ -78,9 +71,15 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
     }
 
     @Override
-    public ArendeDraft create(String certificateId, String subject, String message) {
-        final var arendeDraft = createDraft(certificateId, null, message, subject);
-        return arendeDraftRepository.save(arendeDraft);
+    public ArendeDraft create(String certificateId, String subject, String message, String questionId) {
+        ArendeDraft draft = arendeDraftRepository.findByIntygIdAndQuestionId(certificateId, questionId);
+        if (draft != null) {
+            draft.setText(message);
+            draft.setAmne(subject);
+        } else {
+            draft = createDraft(certificateId, questionId, message, subject);
+        }
+        return arendeDraftRepository.save(draft);
     }
 
     @Override

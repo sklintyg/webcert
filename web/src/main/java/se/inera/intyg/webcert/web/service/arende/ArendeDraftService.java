@@ -35,7 +35,7 @@ public interface ArendeDraftService {
 
     ArendeDraft getQuestionDraftById(long id);
 
-    ArendeDraft create(String certificateId, String subject, String message);
+    ArendeDraft create(String certificateId, String subject, String message, String questionId);
 
     ArendeDraft save(ArendeDraft arendeDraft);
 }
