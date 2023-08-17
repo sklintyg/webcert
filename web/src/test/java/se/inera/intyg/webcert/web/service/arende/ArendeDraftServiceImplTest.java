@@ -27,6 +27,8 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -45,106 +47,99 @@ public class ArendeDraftServiceImplTest {
     @InjectMocks
     private ArendeDraftServiceImpl arendeDraftService;
 
-    @Test
-    public void testSaveDraftNew() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        final String text = "text";
-        final String amne = "amne";
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+    private static final String intygId = "intygId";
+    private static final String questionId = "questionId";
+    private static final String text = "text";
+    private static final String amne = "amne";
+    private final ArendeDraft arendeDraft = buildArendeDraft(intygId, questionId, null, null);
 
-        boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
+    @Nested
+    class NewDraft {
 
-        assertTrue(res);
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+        @BeforeEach
+        void setup() {
+            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+        }
 
-        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-        verify(repo).save(captor.capture());
-        assertEquals(intygId, captor.getValue().getIntygId());
-        assertEquals(questionId, captor.getValue().getQuestionId());
-        assertEquals(text, captor.getValue().getText());
-        assertEquals(amne, captor.getValue().getAmne());
-        verifyNoMoreInteractions(repo);
+        @Test
+        public void testSaveDraftNew() {
+            boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
+
+            assertTrue(res);
+            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+
+            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+            verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
+            verifyNoMoreInteractions(repo);
+        }
+
+        @Test
+        public void testCreateNew() {
+            arendeDraftService.create(intygId, amne, text, questionId);
+
+            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+
+            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+            verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
+            verifyNoMoreInteractions(repo);
+        }
     }
 
-    @Test
-    public void testSaveDraftUpdate() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        final String text = "text";
-        final String amne = "amne";
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(buildArendeDraft(intygId, questionId, null, null));
+    @Nested
+    class UpdateDraft {
+        @BeforeEach
+        void setup() {
+            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
+        }
 
-        boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
+        @Test
+        public void testSaveDraftUpdate() {
+            boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
 
-        assertTrue(res);
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+            assertTrue(res);
+            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
 
-        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-        verify(repo).save(captor.capture());
-        assertEquals(intygId, captor.getValue().getIntygId());
-        assertEquals(questionId, captor.getValue().getQuestionId());
-        assertEquals(text, captor.getValue().getText());
-        assertEquals(amne, captor.getValue().getAmne());
-        verifyNoMoreInteractions(repo);
-    }
+            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+            verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
+            verifyNoMoreInteractions(repo);
+        }
 
-    @Test
-    public void shouldReturnSavedArendeDraftFromCreate() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        final String text = "text";
-        final String amne = "amne";
-        final var arendeDraft = buildArendeDraft(intygId, questionId, null, null);
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
-        when(repo.save(any())).thenReturn(arendeDraft);
+        @Test
+        public void shouldReturnSavedArendeDraftFromCreate() {
+            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
+            when(repo.save(any())).thenReturn(arendeDraft);
 
-        final var result = arendeDraftService.create(intygId, amne, text, questionId);
+            final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
-        assertEquals(arendeDraft, result);
-    }
+            assertEquals(arendeDraft, result);
+        }
 
-    @Test
-    public void testCreateNew() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        final String text = "text";
-        final String amne = "amne";
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+        @Test
+        public void testCreateDraftUpdate() {
+            arendeDraftService.create(intygId, amne, text, questionId);
 
-        arendeDraftService.create(intygId, amne, text, questionId);
+            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
 
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
-        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-        verify(repo).save(captor.capture());
-        assertEquals(intygId, captor.getValue().getIntygId());
-        assertEquals(questionId, captor.getValue().getQuestionId());
-        assertEquals(text, captor.getValue().getText());
-        assertEquals(amne, captor.getValue().getAmne());
-        verifyNoMoreInteractions(repo);
-    }
-
-    @Test
-    public void testCreateDraftUpdate() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        final String text = "text";
-        final String amne = "amne";
-        final var arendeDraft = buildArendeDraft(intygId, questionId, null, null);
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
-
-        arendeDraftService.create(intygId, amne, text, questionId);
-
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
-        ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-        verify(repo).save(captor.capture());
-        assertEquals(intygId, captor.getValue().getIntygId());
-        assertEquals(questionId, captor.getValue().getQuestionId());
-        assertEquals(text, captor.getValue().getText());
-        assertEquals(amne, captor.getValue().getAmne());
-        verifyNoMoreInteractions(repo);
+            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+            verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
+            verifyNoMoreInteractions(repo);
+        }
     }
 
     @Test
