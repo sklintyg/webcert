@@ -51,7 +51,7 @@ public class ArendeDraftServiceImplTest {
     private static final String questionId = "questionId";
     private static final String text = "text";
     private static final String amne = "amne";
-    private final ArendeDraft arendeDraft = buildArendeDraft(intygId, questionId, null, null);
+    private final ArendeDraft arendeDraft = buildArendeDraft(intygId, questionId, text, amne);
 
     @Nested
     class NewDraft {
@@ -59,6 +59,7 @@ public class ArendeDraftServiceImplTest {
         @BeforeEach
         void setup() {
             when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+            when(repo.save(any())).thenReturn(arendeDraft);
         }
 
         @Test
@@ -108,15 +109,13 @@ public class ArendeDraftServiceImplTest {
             assertEquals(amne, result.getAmne());
         }
 
-
         @Test
         public void shouldReturnSavedArendeDraftFromCreate() {
-            when(repo.save(any())).thenReturn(arendeDraft);
-
             final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
             assertEquals(arendeDraft, result);
         }
+
     }
 
     @Nested
@@ -124,6 +123,7 @@ public class ArendeDraftServiceImplTest {
         @BeforeEach
         void setup() {
             when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
+            when(repo.save(any())).thenReturn(arendeDraft);
         }
 
         @Test
