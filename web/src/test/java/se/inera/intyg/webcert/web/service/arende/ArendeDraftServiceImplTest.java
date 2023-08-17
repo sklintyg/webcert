@@ -51,7 +51,10 @@ public class ArendeDraftServiceImplTest {
     private static final String questionId = "questionId";
     private static final String text = "text";
     private static final String amne = "amne";
-    private final ArendeDraft arendeDraft = buildArendeDraft(intygId, questionId, text, amne);
+    private static final String originalText = "original text";
+    private static final String originalAmne = "original amne";
+    private final ArendeDraft originalDraft = buildArendeDraft(intygId, questionId, originalText, originalAmne);
+    private final ArendeDraft updatedDraft = buildArendeDraft(intygId, questionId, text, amne);
 
     @Nested
     class NewDraft {
@@ -59,7 +62,7 @@ public class ArendeDraftServiceImplTest {
         @BeforeEach
         void setup() {
             when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
-            when(repo.save(any())).thenReturn(arendeDraft);
+            when(repo.save(any())).thenReturn(updatedDraft);
         }
 
         @Test
@@ -85,6 +88,10 @@ public class ArendeDraftServiceImplTest {
             verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
             ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
             verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
             verifyNoMoreInteractions(repo);
         }
 
@@ -113,7 +120,7 @@ public class ArendeDraftServiceImplTest {
         public void shouldReturnSavedArendeDraftFromCreate() {
             final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
-            assertEquals(arendeDraft, result);
+            assertEquals(updatedDraft, result);
         }
 
     }
@@ -122,8 +129,8 @@ public class ArendeDraftServiceImplTest {
     class UpdateDraft {
         @BeforeEach
         void setup() {
-            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(arendeDraft);
-            when(repo.save(any())).thenReturn(arendeDraft);
+            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(originalDraft);
+            when(repo.save(any())).thenReturn(updatedDraft);
         }
 
         @Test
@@ -149,6 +156,10 @@ public class ArendeDraftServiceImplTest {
             verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
             ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
             verify(repo).save(captor.capture());
+            assertEquals(intygId, captor.getValue().getIntygId());
+            assertEquals(questionId, captor.getValue().getQuestionId());
+            assertEquals(text, captor.getValue().getText());
+            assertEquals(amne, captor.getValue().getAmne());
             verifyNoMoreInteractions(repo);
         }
 
@@ -176,11 +187,9 @@ public class ArendeDraftServiceImplTest {
 
         @Test
         public void shouldReturnSavedArendeDraftFromCreate() {
-            when(repo.save(any())).thenReturn(arendeDraft);
-
             final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
-            assertEquals(arendeDraft, result);
+            assertEquals(updatedDraft, result);
         }
     }
 
