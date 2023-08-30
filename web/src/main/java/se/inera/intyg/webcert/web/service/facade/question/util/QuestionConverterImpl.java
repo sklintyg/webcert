@@ -78,6 +78,7 @@ public class QuestionConverterImpl implements QuestionConverter {
                     .message(answer.getMeddelande())
                     .author(getAuthor(answer))
                     .sent(answer.getTimestamp())
+                    .contactInfo(answer.getKontaktInfo().toArray(new String[0]))
                     .build()
             )
             .build();
