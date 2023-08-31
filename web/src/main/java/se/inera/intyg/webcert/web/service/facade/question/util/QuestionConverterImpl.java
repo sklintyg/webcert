@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+import io.vavr.collection.Array;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
@@ -130,7 +131,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .reminders(remindersToAdd)
             .complements(complements)
             .answeredByCertificate(arende.getAmne() == ArendeAmne.KOMPLT ? answeredByCertificate : null)
-            .contactInfo(arende.getKontaktInfo().toArray(new String[0]))
+            .contactInfo(arende.getKontaktInfo() != null ? arende.getKontaktInfo().toArray(new String[0]) : new String[0])
             .lastDateToReply(
                 getLastDateToReply(arende, reminders)
             );
