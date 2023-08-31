@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import io.vavr.collection.Array;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
