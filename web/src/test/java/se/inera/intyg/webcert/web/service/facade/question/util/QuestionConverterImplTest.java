@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.service.facade.question.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -313,6 +315,20 @@ class QuestionConverterImplTest {
             arendeSvarDraft = new ArendeDraft();
             arendeSvarDraft.setQuestionId(QUESTION_ID);
             arendeSvarDraft.setText(ANSWER_MESSAGE);
+        }
+
+        @Test
+        void shallReturnAnswerWithContactInfo() {
+            final var answer = mock(Arende.class);
+            final var contactInfo = List.of("Test 1", "Test 2");
+            when(answer.getKontaktInfo()).thenReturn(contactInfo);
+            when(answer.getAmne()).thenReturn(ArendeAmne.AVSTMN);
+
+            final var actualQuestion = questionConverter.convert(answer, new Complement[0], null, arendeSvar, Collections.emptyList());
+
+            assertEquals(contactInfo.size(), actualQuestion.getContactInfo().length);
+            assertEquals(contactInfo.get(0), actualQuestion.getContactInfo()[0]);
+            assertEquals(contactInfo.get(1), actualQuestion.getContactInfo()[1]);
         }
 
         @Test
