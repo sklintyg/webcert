@@ -78,6 +78,7 @@ public class QuestionConverterImpl implements QuestionConverter {
                     .message(answer.getMeddelande())
                     .author(getAuthor(answer))
                     .sent(answer.getTimestamp())
+                    .contactInfo(answer.getKontaktInfo().toArray(new String[0]))
                     .build()
             )
             .build();
@@ -129,7 +130,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .reminders(remindersToAdd)
             .complements(complements)
             .answeredByCertificate(arende.getAmne() == ArendeAmne.KOMPLT ? answeredByCertificate : null)
-            .contactInfo(arende.getKontaktInfo().toArray(new String[0]))
+            .contactInfo(arende.getKontaktInfo() != null ? arende.getKontaktInfo().toArray(new String[0]) : new String[0])
             .lastDateToReply(
                 getLastDateToReply(arende, reminders)
             );
