@@ -22,10 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Objects;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,20 +34,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
-@Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
+@Api(value = "testability logMessages")
 @Path("/logMessages")
 public class LogResource {
 
     private static final int DEFAULT_TIMEOUT = 1000;
 
-    private long timeOut = DEFAULT_TIMEOUT;
+    private final long timeOut = DEFAULT_TIMEOUT;
 
-    private ObjectMapper objectMapper = new CustomObjectMapper();
+    private final ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Autowired
     @Qualifier("jmsPDLLogTemplateNoTx")
@@ -62,8 +60,11 @@ public class LogResource {
         long originalTimeout = jmsTemplate.getReceiveTimeout();
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
-            for (int i = 0; i < count; i++) {
-                jmsTemplate.receive();
+            while (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    jmsTemplate.receive();
+                }
+                count = countMessages();
             }
         } finally {
             jmsTemplate.setReceiveTimeout(originalTimeout);
@@ -75,18 +76,16 @@ public class LogResource {
     @Path("/count")
     @Produces(MediaType.APPLICATION_JSON)
     public int countMessages() {
-        return jmsTemplate.browse(new BrowserCallback<Integer>() {
-            @Override
-            public Integer doInJms(Session session, QueueBrowser browser) throws JMSException {
-                Enumeration<?> messages = browser.getEnumeration();
-                int total = 0;
-                while (messages.hasMoreElements()) {
-                    messages.nextElement();
-                    total++;
-                }
-                return total;
+        final var count = jmsTemplate.browse((session, browser) -> {
+            Enumeration<?> messages = browser.getEnumeration();
+            int total = 0;
+            while (messages.hasMoreElements()) {
+                messages.nextElement();
+                total++;
             }
+            return total;
         });
+        return count != null ? count : 0;
     }
 
     @GET
@@ -97,7 +96,7 @@ public class LogResource {
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
             Message message = jmsTemplate.receive();
-            String body = ((TextMessage) message).getText();
+            String body = ((TextMessage) Objects.requireNonNull(message)).getText();
 
             return objectMapper.readValue(body, PdlLogMessage.class);
         } catch (JMSException e) {
