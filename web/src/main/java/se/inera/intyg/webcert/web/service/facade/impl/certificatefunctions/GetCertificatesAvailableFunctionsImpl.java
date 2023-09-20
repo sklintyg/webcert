@@ -92,12 +92,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private final CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction;
     private final CopyCertificateFunction copyCertificateFunction;
     private final SrsFunction srsFunction;
-    private final CertificateSignAndSendDescriptionFunction certificateSignAndSendDescriptionFunction;
+    private final CertificateSignAndSendFunction certificateSignAndSendFunction;
 
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
-    
+
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         UserService userService, @Qualifier("GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFacadeService,
@@ -106,7 +106,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
         CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction,
-        SrsFunction srsFunction, CertificateSignAndSendDescriptionFunction certificateSignAndSendDescriptionFunction) {
+        SrsFunction srsFunction, CertificateSignAndSendFunction certificateSignAndSendFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -119,7 +119,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
         this.copyCertificateFunction = copyCertificateFunction;
         this.srsFunction = srsFunction;
-        this.certificateSignAndSendDescriptionFunction = certificateSignAndSendDescriptionFunction;
+        this.certificateSignAndSendFunction = certificateSignAndSendFunction;
     }
 
     /**
@@ -247,7 +247,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         srsFunction.getSRSFullView(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
-        certificateSignAndSendDescriptionFunction.get(certificate)
+        certificateSignAndSendFunction.get(certificate)
             .ifPresent(resourceLinks::add);
 
         return resourceLinks;

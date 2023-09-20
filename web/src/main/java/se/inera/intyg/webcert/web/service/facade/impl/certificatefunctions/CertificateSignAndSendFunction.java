@@ -4,8 +4,8 @@ import java.util.Optional;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-public interface CertificateSignAndSendDescriptionFunction {
+public interface CertificateSignAndSendFunction {
 
     Optional<ResourceLinkDTO> get(Certificate certificate);
-    
+
 }

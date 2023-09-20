@@ -21,7 +21,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
-public class CertificateSignAndSendDescriptionFunctionImpl implements CertificateSignAndSendDescriptionFunction {
+public class CertificateSignAndSendFunctionImpl implements CertificateSignAndSendFunction {
 
     private final AuthoritiesHelper authoritiesHelper;
     private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
@@ -34,7 +34,7 @@ public class CertificateSignAndSendDescriptionFunctionImpl implements Certificat
     private static final String SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN = "Intyget skickas direkt till Transportstyrelsen.";
 
 
-    public CertificateSignAndSendDescriptionFunctionImpl(AuthoritiesHelper authoritiesHelper) {
+    public CertificateSignAndSendFunctionImpl(AuthoritiesHelper authoritiesHelper) {
         this.authoritiesHelper = authoritiesHelper;
     }
 
