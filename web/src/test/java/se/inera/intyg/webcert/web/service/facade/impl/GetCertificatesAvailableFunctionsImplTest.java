@@ -49,7 +49,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -63,6 +62,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignAndSendDescriptionFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CopyCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
@@ -118,6 +118,9 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Mock
     private SrsFunction srsFunction;
 
+    @Mock
+    private CertificateSignAndSendDescriptionFunction certificateSignAndSendDescriptionFunction;
+
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
 
@@ -167,6 +170,8 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeSignCertificate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            when(certificateSignAndSendDescriptionFunction.get(certificate)).thenReturn(
+                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera intyget", "", false)));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertFalse(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
@@ -174,63 +179,23 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeSignAndSendCertificate() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, Af00213EntryPoint.MODULE_ID))
-                .thenReturn(true);
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            when(certificateSignAndSendDescriptionFunction.get(certificate)).thenReturn(
+                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera och skicka", "", false)));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
         }
 
         @Test
-        void shallIncludeSignAndSendCertificateWithDescriptionSkatteverket() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DbModuleEntryPoint.MODULE_ID))
-                .thenReturn(true);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertTrue(
-                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains("Intyget skickas direkt till Skatteverket.")));
-        }
-
-        @Test
-        void shallIncludeSignAndSendCertificateWithDescriptionSoc() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DoiModuleEntryPoint.MODULE_ID))
-                .thenReturn(true);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
-            final var certificate = CertificateFacadeTestHelper.createCertificate(
-                DoiModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED
-            );
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertTrue(
-                actualAvailableFunctions.stream().anyMatch(r -> r.getDescription().contains(
-                    "Intyget skickas direkt till Socialstyrelsen.")
-                ));
-        }
-
-        @Test
-        void shallIncludeSignAndSendCertificateWithDescriptionArbetsformedlingen() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, Af00213EntryPoint.MODULE_ID))
-                .thenReturn(true);
-            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertTrue(
-                actualAvailableFunctions.stream()
-                    .anyMatch(r -> r.getDescription().contains("Intyget skickas direkt till Arbetsförmedlingen.")));
-        }
-
-        @Test
         void shallIncludeSignAndSendCertificateIfDraftIsComplementing() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, LisjpEntryPoint.MODULE_ID))
-                .thenReturn(false);
             final var relation = CertificateRelation.builder()
                 .type(CertificateRelationType.COMPLEMENTED)
                 .build();
             final var certificate = CertificateFacadeTestHelper
                 .createCertificateWithParentRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED, relation);
+            when(certificateSignAndSendDescriptionFunction.get(certificate)).thenReturn(
+                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera och skicka", "", false)));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
@@ -238,10 +203,10 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallNotIncludeSignAndSendCertificateForTestIndicatedPatient() {
-            when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, Af00213EntryPoint.MODULE_ID))
-                .thenReturn(true);
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             certificate.getMetadata().setPatient(Patient.builder().testIndicated(true).build());
+            when(certificateSignAndSendDescriptionFunction.get(certificate)).thenReturn(
+                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera intyget", "", false)));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             assertFalse(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
@@ -486,11 +451,11 @@ class GetCertificatesAvailableFunctionsImplTest {
         @Test
         void shallIncludeSRSMinimizedView() {
             when(srsFunction.getSRSMinimizedView(any(), any()))
-                    .thenReturn(
-                            Optional.of(
-                                    ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW, "", "", "", true)
-                            )
-                    );
+                .thenReturn(
+                    Optional.of(
+                        ResourceLinkDTO.create(ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW, "", "", "", true)
+                    )
+                );
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW);

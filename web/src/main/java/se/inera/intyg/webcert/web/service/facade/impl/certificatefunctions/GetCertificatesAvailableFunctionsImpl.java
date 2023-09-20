@@ -30,8 +30,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -52,44 +50,28 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private static final String EDIT_NAME = "Ändra";
     private static final String EDIT_DESCRIPTION = "Ändrar intygsutkast";
-
     private static final String REMOVE_NAME = "Radera";
     private static final String REMOVE_DESCRIPTION = "Raderar intygsutkastet.";
-
-    private static final String SIGN_AND_SEND_NAME = "Signera och skicka";
-    private static final String SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN = "Intyget skickas direkt till Arbetsförmedlingen.";
-    private static final String SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET = "Intyget skickas direkt till Skatteverket.";
-    private static final String SIGN_AND_SEND_DESCRIPTION_SOC = "Intyget skickas direkt till Socialstyrelsen.";
-    private static final String SIGN_NAME = "Signera intyget";
-    private static final String SIGN_DESCRIPTION = "Intyget signeras.";
-
     private static final String READY_FOR_SIGN_NAME = "Markera klart för signering";
     private static final String READY_FOR_SIGN_DESCRIPTION = "Utkastet markeras som klar för signering.";
-
     private static final String FMB_NAME = "FMB";
     private static final String FMB_DESCRIPTION = "Läs FMB - ett stöd för ifyllnad och bedömning.";
-
     private static final String REPLACE_NAME = "Ersätt";
     public static final String REPLACE_DESCRIPTION = "Skapar en kopia av detta intyg som du kan redigera.";
     public static final String REPLACE_DESCRIPTION_DISABLED = "Intyget har minst en ohanterad kompletteringsbegäran"
         + " och går inte att ersätta.";
-
     private static final String PRINT_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att skriva ut eller spara intyget "
         + "som PDF.";
     private static final String REVOKE_CERTIFICATE_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera intyget.";
-
     private static final String PRINT_NAME = "Skriv ut";
     private static final String PRINT_DRAFT_DESCRIPTION = "Öppnar ett fönster där du kan välja att skriva ut eller spara intygsutkastet "
         + "som PDF.";
     private static final String PRINT_PROTECTED_PERSON_BODY = "<div class='ic-alert ic-alert--status ic-alert--info'>\n"
         + "<i class='ic-alert__icon ic-info-icon'></i><p>Patienten har skyddade personuppgifter. Hantera utskriften varsamt.</p></div>";
-
     private static final String REVOKE_NAME = "Makulera";
     private static final String REVOKE_LOCKED_DRAFT_DESCRIPTION = "Öppnar ett fönster där du kan välja att makulera det låsta utkastet.";
-
     private static final String QUESTIONS_NAME = "Ärendekommunikation";
     private static final String QUESTIONS_DESCRIPTION = "Hantera kompletteringsbegäran, frågor och svar";
-
     private static final String NEW_QUESTION_NAME = "Ny fråga";
     private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
     private static final String DB_WARNING = "Kontrollera namn och personnummer";
@@ -97,27 +79,20 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
             + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
             + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
-
     private static final String DB_TYPE = "db";
-
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final UserService userService;
     private final GetQuestionsFacadeService getQuestionsFacadeService;
-
     private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
     private final DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
     private final SendCertificateFunction sendCertificateFunction;
-
     private final CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction;
-
     private final ShowRelatedCertificateFunction showRelatedCertificateFunction;
-
     private final CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction;
-
     private final CopyCertificateFunction copyCertificateFunction;
-
     private final SrsFunction srsFunction;
+    private final CertificateSignAndSendDescriptionFunction certificateSignAndSendDescriptionFunction;
 
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
@@ -130,7 +105,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         SendCertificateFunction sendCertificateFunction, CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
         ShowRelatedCertificateFunction showRelatedCertificateFunction,
         CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction, CopyCertificateFunction copyCertificateFunction,
-        SrsFunction srsFunction) {
+        SrsFunction srsFunction, CertificateSignAndSendDescriptionFunction certificateSignAndSendDescriptionFunction) {
         this.authoritiesHelper = authoritiesHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -143,6 +118,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
         this.copyCertificateFunction = copyCertificateFunction;
         this.srsFunction = srsFunction;
+        this.certificateSignAndSendDescriptionFunction = certificateSignAndSendDescriptionFunction;
     }
 
     /**
@@ -221,26 +197,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             )
         );
 
-        if (isSignedAndSendDirectly(certificate)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                    SIGN_AND_SEND_NAME,
-                    sendToDescription(certificate.getMetadata().getType()),
-                    true
-                )
-            );
-        } else {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                    SIGN_NAME,
-                    SIGN_DESCRIPTION,
-                    true
-                )
-            );
-        }
-
         if (isMessagingAvailable(certificate) && isComplementingCertificate(certificate)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
@@ -290,19 +246,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
         srsFunction.getSRSFullView(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
+        certificateSignAndSendDescriptionFunction.get(certificate)
+            .ifPresent(resourceLinks::add);
+
         return resourceLinks;
-    }
-
-    private String sendToDescription(String certificateType) {
-        if (DbModuleEntryPoint.MODULE_ID.equals(certificateType)) {
-            return SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET;
-        }
-
-        if (DoiModuleEntryPoint.MODULE_ID.equals(certificateType)) {
-            return SIGN_AND_SEND_DESCRIPTION_SOC;
-        }
-
-        return SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN;
     }
 
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForCertificate(Certificate certificate) {
@@ -390,7 +337,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             .ifPresent(resourceLinks::add);
 
         srsFunction.getSRSMinimizedView(certificate, webCertUserService.getUser())
-                .ifPresent(resourceLinks::add);
+            .ifPresent(resourceLinks::add);
 
         return resourceLinks;
     }
@@ -449,11 +396,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isSent(Certificate certificate) {
         return certificate.getMetadata().isSent();
-    }
-
-    private boolean isSignedAndSendDirectly(Certificate certificate) {
-        return (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, certificate.getMetadata().getType())
-            || isComplementingCertificate(certificate)) && !certificate.getMetadata().getPatient().isTestIndicated();
     }
 
     private boolean isComplementingCertificate(Certificate certificate) {
