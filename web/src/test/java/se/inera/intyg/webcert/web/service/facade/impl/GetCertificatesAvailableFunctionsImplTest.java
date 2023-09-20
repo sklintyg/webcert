@@ -62,7 +62,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignAndSendFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CopyCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
@@ -118,8 +117,6 @@ class GetCertificatesAvailableFunctionsImplTest {
     @Mock
     private SrsFunction srsFunction;
 
-    @Mock
-    private CertificateSignAndSendFunction certificateSignAndSendFunction;
 
     @InjectMocks
     private GetCertificatesAvailableFunctionsImpl getCertificatesAvailableFunctions;
@@ -166,51 +163,6 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.REMOVE_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeSignCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(certificateSignAndSendFunction.get(certificate)).thenReturn(
-                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera intyget", "", false)));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertFalse(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
-        }
-
-        @Test
-        void shallIncludeSignAndSendCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(certificateSignAndSendFunction.get(certificate)).thenReturn(
-                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera och skicka", "", false)));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
-        }
-
-        @Test
-        void shallIncludeSignAndSendCertificateIfDraftIsComplementing() {
-            final var relation = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .build();
-            final var certificate = CertificateFacadeTestHelper
-                .createCertificateWithParentRelation(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED, relation);
-            when(certificateSignAndSendFunction.get(certificate)).thenReturn(
-                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera och skicka", "", false)));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertTrue(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
-        }
-
-        @Test
-        void shallNotIncludeSignAndSendCertificateForTestIndicatedPatient() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            certificate.getMetadata().setPatient(Patient.builder().testIndicated(true).build());
-            when(certificateSignAndSendFunction.get(certificate)).thenReturn(
-                Optional.of(ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "Signera intyget", "", false)));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
-            assertFalse(actualAvailableFunctions.stream().anyMatch(r -> r.getName().contains("Signera och skicka")));
         }
 
         @Test
