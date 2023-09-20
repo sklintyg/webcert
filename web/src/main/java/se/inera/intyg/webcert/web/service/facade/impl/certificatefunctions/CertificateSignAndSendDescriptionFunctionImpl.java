@@ -33,6 +33,7 @@ public class CertificateSignAndSendDescriptionFunctionImpl implements Certificat
     private static final String SIGN_AND_SEND_DESCRIPTION_SOCIALSTYRELSEN = "Intyget skickas direkt till Socialstyrelsen.";
     private static final String SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN = "Intyget skickas direkt till Transportstyrelsen.";
 
+
     public CertificateSignAndSendDescriptionFunctionImpl(AuthoritiesHelper authoritiesHelper) {
         this.authoritiesHelper = authoritiesHelper;
     }

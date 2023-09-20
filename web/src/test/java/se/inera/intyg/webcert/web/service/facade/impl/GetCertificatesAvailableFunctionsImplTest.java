@@ -126,6 +126,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     private final WebCertUser user = mock(WebCertUser.class);
 
+    
     @Nested
     class Draft {
 

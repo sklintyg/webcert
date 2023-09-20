@@ -7,4 +7,5 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 public interface CertificateSignAndSendDescriptionFunction {
 
     Optional<ResourceLinkDTO> get(Certificate certificate);
+    
 }

@@ -58,6 +58,7 @@ class CertificateSignAndSendDescriptionFunctionImplTest {
     @InjectMocks
     private CertificateSignAndSendDescriptionFunctionImpl certificateSignAndSendDescriptionFunction;
 
+    
     @Test
     void shallIncludeSignAndSendCertificateWithDescriptionSkatteverketWhenCertificateTypeIsDb() {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, DbModuleEntryPoint.MODULE_ID))

@@ -97,6 +97,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     /**
      * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED certificates.
      */
+    
     @Autowired
     public GetCertificatesAvailableFunctionsImpl(AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         UserService userService, @Qualifier("GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFacadeService,
