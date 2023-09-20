@@ -196,8 +196,8 @@ class CertificateSignAndSendFunctionImplTest {
         assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
     }
 
-    private void setupFeature(String InvalidId) {
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, InvalidId))
+    private void setupFeature(String id) {
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, id))
             .thenReturn(true);
     }
 
