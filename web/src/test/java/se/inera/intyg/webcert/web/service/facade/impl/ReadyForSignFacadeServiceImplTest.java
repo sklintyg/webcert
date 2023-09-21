@@ -67,7 +67,7 @@ class ReadyForSignFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID, false);
+            .getCertificate(CERTIFICATE_ID, false, true);
     }
 
     @Test

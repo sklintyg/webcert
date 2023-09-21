@@ -89,7 +89,7 @@ class CopyCertificateFacadeServiceImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var serviceRequest = new CreateUtkastFromTemplateRequest(
                 CERTIFICATE_ID,
@@ -170,7 +170,7 @@ class CopyCertificateFacadeServiceImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var serviceRequest = new CreateUtkastFromTemplateRequest(
                 CERTIFICATE_ID,

@@ -329,7 +329,7 @@ class FragaSvarToQuestionConverterImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
             assertNotNull(actualQuestions.getAnsweredByCertificate());
@@ -362,7 +362,7 @@ class FragaSvarToQuestionConverterImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
             assertNull(actualQuestions.getAnsweredByCertificate());
@@ -395,7 +395,7 @@ class FragaSvarToQuestionConverterImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
             assertNull(actualQuestions.getAnsweredByCertificate());

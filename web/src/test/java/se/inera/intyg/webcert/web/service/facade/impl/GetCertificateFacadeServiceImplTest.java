@@ -112,13 +112,13 @@ class GetCertificateFacadeServiceImplTest {
 
         @Test
         void shallReturnCertificate() {
-            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             assertNotNull(certificate, "Certificate should not be null!");
         }
 
         @Test
         void shallCheckReadAccess() {
-            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             verify(draftAccessServiceHelper).validateAllowToReadUtkast(draft);
             assertNotNull(certificate, "Certificate should not be null!");
         }
@@ -146,7 +146,7 @@ class GetCertificateFacadeServiceImplTest {
                 final var expectedSentDateTime = LocalDateTime.now();
                 itIntygInfo.setSentToRecipient(expectedSentDateTime);
 
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
 
                 assertNotNull(certificate);
                 assertEquals(expectedSentDateTime, utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum());
@@ -160,7 +160,7 @@ class GetCertificateFacadeServiceImplTest {
                 intygInfoEvent.addData("intygsmottagare", expectedReceiver);
                 itIntygInfo.setEvents(List.of(intygInfoEvent));
 
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
 
                 assertNotNull(certificate);
                 assertEquals(expectedReceiver, utkastArgumentCaptor.getValue().getSkickadTillMottagare());
@@ -168,7 +168,7 @@ class GetCertificateFacadeServiceImplTest {
 
             @Test
             void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
 
                 assertNotNull(certificate);
                 assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum(), "Sent datetime should be null if not sent");
@@ -176,7 +176,7 @@ class GetCertificateFacadeServiceImplTest {
 
             @Test
             void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false);
+                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
 
                 assertNotNull(certificate);
                 assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagare(), "Receiver should be null if not sent!");
@@ -186,7 +186,7 @@ class GetCertificateFacadeServiceImplTest {
         @Test
         void shallNotGetCertificateStatusFromITIfSent() {
             draft.setStatus(UtkastStatus.SIGNED);
-            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -195,7 +195,7 @@ class GetCertificateFacadeServiceImplTest {
         void shallNotGetCertificateStatusFromITIfDraftIncomplete() {
             draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
             draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -204,7 +204,7 @@ class GetCertificateFacadeServiceImplTest {
         void shallNotGetCertificateStatusFromITIfDraftComplete() {
             draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
             draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -213,7 +213,7 @@ class GetCertificateFacadeServiceImplTest {
         void shallNotGetCertificateStatusFromITIfDraftLocked() {
             draft.setStatus(UtkastStatus.DRAFT_LOCKED);
             draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false);
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -224,7 +224,7 @@ class GetCertificateFacadeServiceImplTest {
             @Test
             void shallPdlLogIfRequired() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(draft.getIntygsId(), true);
+                getCertificateService.getCertificate(draft.getIntygsId(), true, true);
                 verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
                 assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
             }
@@ -232,7 +232,7 @@ class GetCertificateFacadeServiceImplTest {
             @Test
             void shallNotPdlLogIfRequired() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(draft.getIntygsId(), false);
+                getCertificateService.getCertificate(draft.getIntygsId(), false, true);
                 verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
                 assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
             }
@@ -272,7 +272,7 @@ class GetCertificateFacadeServiceImplTest {
                 .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
 
             doReturn(intygContentHolder)
-                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean());
+                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean(), anyBoolean());
 
             doReturn(createCertificate())
                 .when(intygToCertificateConverter).convert(intygContentHolder);
@@ -280,7 +280,7 @@ class GetCertificateFacadeServiceImplTest {
 
         @Test
         void shallReturnCertificate() {
-            final var certificate = getCertificateService.getCertificate(CERTIFICATE_ID, false);
+            final var certificate = getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
             assertNotNull(certificate, "Certificate should not be null!");
         }
 
@@ -290,17 +290,37 @@ class GetCertificateFacadeServiceImplTest {
             @Test
             void shallPdlLogIfRequired() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture());
+                getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
                 assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
             }
 
             @Test
             void shallNotPdlLogIfRequired() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, false);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture());
+                getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
+                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
                 assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+            }
+        }
+
+        @Nested
+        class ValidateAccess {
+
+            @Test
+            void shallValidateAccessIfRequired() {
+                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
+                assertTrue(actualValidateAccess.getValue(), "Expect true because validate access is required");
+            }
+
+            @Test
+            void shallNotValidateAccessWhenNotRequired() {
+                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
+                getCertificateService.getCertificate(CERTIFICATE_ID, true, false);
+                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
+                assertFalse(actualValidateAccess.getValue(), "Expect false because no access validation is required");
             }
         }
     }

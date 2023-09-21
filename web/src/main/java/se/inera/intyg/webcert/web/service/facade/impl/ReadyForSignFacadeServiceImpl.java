@@ -49,6 +49,6 @@ public class ReadyForSignFacadeServiceImpl implements ReadyForSignFacadeService 
         utkastService.setKlarForSigneraAndSendStatusMessage(certificateId, certificateType);
 
         LOG.debug("Get the 'ready to sign' certificate '{}'", certificateId);
-        return getCertificateFacadeService.getCertificate(certificateId, false);
+        return getCertificateFacadeService.getCertificate(certificateId, false, true);
     }
 }

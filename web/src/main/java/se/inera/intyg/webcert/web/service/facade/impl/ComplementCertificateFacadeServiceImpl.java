@@ -50,16 +50,16 @@ public class ComplementCertificateFacadeServiceImpl implements ComplementCertifi
 
     @Override
     public Certificate complement(String certificateId, String message) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
 
         final var newCertificateId = complement(certificate, message);
-        return getCertificateFacadeService.getCertificate(newCertificateId, true);
+        return getCertificateFacadeService.getCertificate(newCertificateId, true, true);
     }
 
     @Override
     public Certificate answerComplement(String certificateId, String message) {
         arendeService.answerKomplettering(certificateId, message);
-        return getCertificateFacadeService.getCertificate(certificateId, false);
+        return getCertificateFacadeService.getCertificate(certificateId, false, true);
     }
 
     private String complement(Certificate certificate, String message) {

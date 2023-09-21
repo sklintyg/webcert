@@ -108,7 +108,7 @@ public class ArendeToQuestionFacadeServiceImpl implements GetQuestionsFacadeServ
         }
 
         final var certificateRelations = getCertificateFacadeService
-            .getCertificate(certificateId, false)
+            .getCertificate(certificateId, false, true)
             .getMetadata()
             .getRelations();
         if (certificateRelations == null) {

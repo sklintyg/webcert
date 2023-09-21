@@ -95,7 +95,7 @@ class ComplementCertificateFacadeServiceImplTest {
 
             doReturn(originalCertificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(ORIGINAL_CERTIFICATE_ID, false); // Don't create PDL-LOG when retrieving orginal certificate
+                .getCertificate(ORIGINAL_CERTIFICATE_ID, false, true); // Don't create PDL-LOG when retrieving orginal certificate
 
             doReturn(LATEST_COMPLEMENT_QUESTION_ID)
                 .when(arendeService)
@@ -126,7 +126,7 @@ class ComplementCertificateFacadeServiceImplTest {
             final var newCertificate = new Certificate();
             doReturn(newCertificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(NEW_CERTIFICATE_ID, true); // Create PDL-log when retrieving new certificate
+                .getCertificate(NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
         }
 
         @Test
@@ -162,7 +162,7 @@ class ComplementCertificateFacadeServiceImplTest {
             final var newCertificate = new Certificate();
             doReturn(newCertificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false); // No PDL-log when reading the same certificate that was complemented
+                .getCertificate(CERTIFICATE_ID, false, true); // No PDL-log when reading the same certificate that was complemented
         }
 
         @Test
@@ -225,7 +225,7 @@ class ComplementCertificateFacadeServiceImplTest {
 
             doReturn(originalCertificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(ORIGINAL_CERTIFICATE_ID, false); // Don't create PDL-LOG when retrieving orginal certificate
+                .getCertificate(ORIGINAL_CERTIFICATE_ID, false, true); // Don't create PDL-LOG when retrieving orginal certificate
 
             doReturn(LATEST_COMPLEMENT_QUESTION_ID)
                 .when(arendeService)
@@ -256,7 +256,7 @@ class ComplementCertificateFacadeServiceImplTest {
             final var newCertificate = new Certificate();
             doReturn(newCertificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(NEW_CERTIFICATE_ID, true); // Create PDL-log when retrieving new certificate
+                .getCertificate(NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
         }
 
         @Test

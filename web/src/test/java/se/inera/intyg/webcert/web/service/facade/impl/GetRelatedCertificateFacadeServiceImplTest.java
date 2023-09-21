@@ -88,7 +88,7 @@ class GetRelatedCertificateFacadeServiceImplTest {
                         .build()
                 )
                 .build();
-            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false);
+            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
         }
 
         @Test
@@ -124,7 +124,7 @@ class GetRelatedCertificateFacadeServiceImplTest {
                         .build()
                 )
                 .build();
-            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false);
+            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
 
             webCertUser = mock(WebCertUser.class);
             doReturn(webCertUser).when(webCertUserService).getUser();

@@ -50,7 +50,7 @@ public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFaca
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
 
         if (isCertificateLocked(certificate)) {
             LOG.debug("Revoke locked draft {} with reason {}", certificateId, reason);
@@ -60,7 +60,7 @@ public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFaca
             intygService.revokeIntyg(certificateId, certificate.getMetadata().getType(), message, reason);
         }
 
-        return getCertificateFacadeService.getCertificate(certificateId, false);
+        return getCertificateFacadeService.getCertificate(certificateId, false, true);
     }
 
     private boolean isCertificateLocked(Certificate certificate) {

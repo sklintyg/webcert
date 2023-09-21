@@ -217,7 +217,7 @@ class RenewCertificateFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE), true);
 
         final var serviceRequest = new CreateRenewalCopyRequest(
             CERTIFICATE_ID,

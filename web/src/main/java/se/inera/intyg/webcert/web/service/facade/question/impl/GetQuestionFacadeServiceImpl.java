@@ -91,7 +91,7 @@ public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
             return null;
         }
 
-        final var certificate = getCertificateFacadeService.getCertificate(question.getIntygsId(), false);
+        final var certificate = getCertificateFacadeService.getCertificate(question.getIntygsId(), false, true);
         final var relations = certificate.getMetadata().getRelations();
         if (relations == null) {
             return null;

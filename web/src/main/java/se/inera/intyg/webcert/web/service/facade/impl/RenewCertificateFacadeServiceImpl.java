@@ -51,7 +51,7 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
     @Override
     public String renewCertificate(String certificateId) {
         LOG.debug("Get certificate '{}' that will be renewed", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         final var certificateType = certificate.getMetadata().getType();
         final var copyRequest = new CopyIntygRequest();
         copyRequest.setPatientPersonnummer(

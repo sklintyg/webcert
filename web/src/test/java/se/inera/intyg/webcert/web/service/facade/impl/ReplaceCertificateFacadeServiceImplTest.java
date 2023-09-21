@@ -89,7 +89,7 @@ class ReplaceCertificateFacadeServiceImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var serviceRequest = new CreateReplacementCopyRequest(
                 CERTIFICATE_ID,
@@ -170,7 +170,7 @@ class ReplaceCertificateFacadeServiceImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+                .getCertificate(CERTIFICATE_ID, false, true);
 
             final var serviceRequest = new CreateReplacementCopyRequest(
                 CERTIFICATE_ID,

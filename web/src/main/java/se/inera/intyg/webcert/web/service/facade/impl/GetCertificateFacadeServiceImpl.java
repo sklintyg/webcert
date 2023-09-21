@@ -31,8 +31,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.IntygToCertificateConverter;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -75,11 +75,11 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
     }
 
     @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog) {
-        final Utkast utkast = getCertificateFromWebcert(certificateId, pdlLog);
+    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
+        final var utkast = getCertificateFromWebcert(certificateId, pdlLog, validateAccess);
         if (utkast == null) {
             LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog);
+            final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog, validateAccess);
 
             LOG.debug("Converting IntygContentHolder to Certificate");
             return intygToCertificateConverter.convert(intygContentHolder);
@@ -108,11 +108,13 @@ public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeServ
             .orElse(null);
     }
 
-    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
+    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog, boolean validateAccess) {
         try {
             LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
             final var utkast = utkastService.getDraft(certificateId, pdlLog);
-            draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
+            if (validateAccess) {
+                draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
+            }
             return certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(utkast);
         } catch (WebCertServiceException ex) {
             if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
