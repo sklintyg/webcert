@@ -62,6 +62,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignAndSendFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateSignConfirmationFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CopyCertificateFunction;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CreateCertificateFromCandidateFunction;
@@ -116,6 +117,8 @@ class GetCertificatesAvailableFunctionsImplTest {
 
     @Mock
     private SrsFunction srsFunction;
+    @Mock
+    private CertificateSignAndSendFunction certificateSignAndSendFunction;
 
 
     @InjectMocks
@@ -307,6 +310,25 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_CANDIDATE);
+        }
+
+        @Test
+        void shallIncludeCertificateSignAndSendFunction() {
+            when(certificateSignAndSendFunction.get(any())).thenReturn(
+                Optional.of(
+                    ResourceLinkDTO.create(ResourceLinkTypeDTO.SIGN_CERTIFICATE, "", "", false)
+                )
+            );
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+        }
+
+        @Test
+        void shallExcludeCertificateSignAndSendFunction() {
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
     }
 

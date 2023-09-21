@@ -164,7 +164,7 @@ class CertificateSignAndSendFunctionImplTest {
             }
 
             @Test
-            void shallInludeSignAndSendIfComplementingAndRealPatient() {
+            void shallIncludeSignAndSendIfComplementingAndRealPatient() {
                 certificate.getMetadata().setPatient(Patient.builder().testIndicated(false).build());
 
                 final var function = certificateSignAndSendFunction.get(certificate);
@@ -205,10 +205,10 @@ class CertificateSignAndSendFunctionImplTest {
             when(webCertUserService.getUser()).thenReturn(getUserWithOrigin());
             final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+            final var function = certificateSignAndSendFunction.get(certificate);
 
-            assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET);
-            assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_SKATTEVERKET);
+            assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
 
         @Test
@@ -218,10 +218,10 @@ class CertificateSignAndSendFunctionImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID,
                 CertificateStatus.UNSIGNED);
 
-            final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+            final var function = certificateSignAndSendFunction.get(certificate);
 
-            assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_SOCIALSTYRELSEN);
-            assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_SOCIALSTYRELSEN);
+            assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
 
         @Test
@@ -229,10 +229,10 @@ class CertificateSignAndSendFunctionImplTest {
             setupFeature(Af00213EntryPoint.MODULE_ID);
             final var certificate = CertificateFacadeTestHelper.createCertificate(Af00213EntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-            final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+            final var function = certificateSignAndSendFunction.get(certificate);
 
-            assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN);
-            assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_ARBETSFORMEDLINGEN);
+            assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
 
         @Nested
@@ -244,10 +244,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(Fk7263EntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
 
             @Test
@@ -255,10 +255,10 @@ class CertificateSignAndSendFunctionImplTest {
                 setupFeature(LuseEntryPoint.MODULE_ID);
                 final var certificate = CertificateFacadeTestHelper.createCertificate(LuseEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
 
             @Test
@@ -267,10 +267,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
 
             @Test
@@ -279,10 +279,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(LuaefsEntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
 
             @Test
@@ -291,10 +291,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(LuaenaEntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_FORSAKRINGSKASSAN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
         }
 
@@ -307,10 +307,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(TsBasEntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
 
             @Test
@@ -319,10 +319,10 @@ class CertificateSignAndSendFunctionImplTest {
                 final var certificate = CertificateFacadeTestHelper.createCertificate(TsDiabetesEntryPoint.MODULE_ID,
                     CertificateStatus.UNSIGNED);
 
-                final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+                final var function = certificateSignAndSendFunction.get(certificate);
 
-                assertEquals(actualAvailableFunction.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN);
-                assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+                assertEquals(function.get().getDescription(), SIGN_AND_SEND_DESCRIPTION_TRANSPORTSTYRELSEN);
+                assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
             }
         }
 
@@ -331,10 +331,10 @@ class CertificateSignAndSendFunctionImplTest {
             setupFeature("InvalidId");
             final var certificate = CertificateFacadeTestHelper.createCertificate("InvalidId", CertificateStatus.UNSIGNED);
 
-            final var actualAvailableFunction = certificateSignAndSendFunction.get(certificate);
+            final var function = certificateSignAndSendFunction.get(certificate);
 
-            assertNull(actualAvailableFunction.get().getDescription());
-            assertEquals(actualAvailableFunction.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+            assertNull(function.get().getDescription());
+            assertEquals(function.get().getType(), ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
     }
 
