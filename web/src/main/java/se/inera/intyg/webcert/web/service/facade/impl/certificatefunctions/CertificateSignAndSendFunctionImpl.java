@@ -40,25 +40,20 @@ public class CertificateSignAndSendFunctionImpl implements CertificateSignAndSen
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
-
         if (isSignedAndSendDirectly(certificate)) {
-
             return Optional.of(ResourceLinkDTO.create(
                 ResourceLinkTypeDTO.SIGN_CERTIFICATE,
                 SIGN_AND_SEND_NAME,
                 sendToDescription(certificate.getMetadata().getType()),
                 true
             ));
-
-        } else {
-
-            return Optional.of(ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SIGN_CERTIFICATE,
-                SIGN_NAME,
-                SIGN_DESCRIPTION,
-                true
-            ));
         }
+        return Optional.of(ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.SIGN_CERTIFICATE,
+            SIGN_NAME,
+            SIGN_DESCRIPTION,
+            true
+        ));
     }
 
     private String sendToDescription(String certificateType) {
