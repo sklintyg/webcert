@@ -56,7 +56,7 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
 
     @Override
     public Certificate forwardCertificate(String certificateId, boolean forwarded) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
 
         if (certificate.getMetadata().getStatus() != CertificateStatus.SIGNED) {
             return forwardDraft(certificateId, certificate, forwarded);

@@ -59,6 +59,6 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
         underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);
 
         LOG.debug("Get signed certificate '{}' and return", certificateId);
-        return getCertificateFacadeService.getCertificate(certificateId, false);
+        return getCertificateFacadeService.getCertificate(certificateId, false, true);
     }
 }

@@ -48,7 +48,7 @@ public class GetRelatedCertificateFacadeServiceImpl implements GetRelatedCertifi
 
     @Override
     public String get(String certificateId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificate.getMetadata().getType())) {
             final var existingCertificates = utkastService.checkIfPersonHasExistingIntyg(
                 Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),

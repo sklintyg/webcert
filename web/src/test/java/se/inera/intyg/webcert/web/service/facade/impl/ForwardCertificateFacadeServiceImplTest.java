@@ -39,7 +39,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,17 +66,17 @@ class ForwardCertificateFacadeServiceImplTest {
     @BeforeEach
     void setupGlobal() {
         certificate = CertificateBuilder.create()
-                .metadata(
-                        CertificateMetadata.builder()
-                                .id(CERTIFICATE_ID)
-                                .version(VERSION)
-                                .build()
-                )
-                .build();
+            .metadata(
+                CertificateMetadata.builder()
+                    .id(CERTIFICATE_ID)
+                    .version(VERSION)
+                    .build()
+            )
+            .build();
 
         doReturn(certificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false);
+            .when(getCertificateFacadeService)
+            .getCertificate(CERTIFICATE_ID, false, true);
     }
 
     @Nested
@@ -90,12 +89,12 @@ class ForwardCertificateFacadeServiceImplTest {
             draft.setIntygsId(CERTIFICATE_ID);
 
             doReturn(draft)
-                    .when(utkastService)
-                    .setNotifiedOnDraft(eq(draft.getIntygsId()), eq(VERSION), anyBoolean());
+                .when(utkastService)
+                .setNotifiedOnDraft(eq(draft.getIntygsId()), eq(VERSION), anyBoolean());
 
             doReturn(certificate)
-                    .when(utkastToCertificateConverter)
-                    .convert(draft);
+                .when(utkastToCertificateConverter)
+                .convert(draft);
         }
 
         @Test
@@ -105,7 +104,7 @@ class ForwardCertificateFacadeServiceImplTest {
             certificate.getMetadata().setForwarded(expectedForward);
 
             final var actualCertificate =
-                    forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
             assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
         }
@@ -117,7 +116,7 @@ class ForwardCertificateFacadeServiceImplTest {
             certificate.getMetadata().setForwarded(expectedForward);
 
             final var actualCertificate =
-                    forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
+                forwardCertificateFacadeService.forwardCertificate(CERTIFICATE_ID, expectedForward);
 
             assertEquals(expectedForward, actualCertificate.getMetadata().isForwarded());
         }
@@ -125,6 +124,7 @@ class ForwardCertificateFacadeServiceImplTest {
 
     @Nested
     class TestCertificate {
+
         @BeforeEach
         void setup() {
             final var updatedMetadata = certificate.getMetadata();

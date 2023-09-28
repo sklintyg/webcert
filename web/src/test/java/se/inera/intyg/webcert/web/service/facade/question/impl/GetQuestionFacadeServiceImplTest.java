@@ -229,7 +229,7 @@ class GetQuestionFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(certificateId, false);
+            .getCertificate(certificateId, false, true);
 
         doReturn(
             Question.builder()
@@ -264,7 +264,7 @@ class GetQuestionFacadeServiceImplTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(certificateId, false);
+                .getCertificate(certificateId, false, true);
 
             answeredByCertificateCaptor = ArgumentCaptor.forClass(CertificateRelation.class);
             doReturn(

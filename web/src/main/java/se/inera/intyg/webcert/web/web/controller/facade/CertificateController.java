@@ -137,7 +137,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
         }
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, true);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, true, true);
         final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();

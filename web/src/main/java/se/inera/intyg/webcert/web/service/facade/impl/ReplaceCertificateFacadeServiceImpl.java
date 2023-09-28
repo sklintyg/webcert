@@ -53,7 +53,7 @@ public class ReplaceCertificateFacadeServiceImpl implements ReplaceCertificateFa
     @Override
     public String replaceCertificate(String certificateId) {
         LOG.debug("Get certificate '{}' that will be replaced", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         final var certificateType = certificate.getMetadata().getType();
         final var copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(

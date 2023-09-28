@@ -46,7 +46,7 @@ public class GetCandidateMessageForCertificateFacadeServiceImpl implements GetCa
 
     @Override
     public GetCandidateMessageForCertificateDTO get(String certificateId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         final var candidateMetadata = getCandidateMetadata(certificate);
 
         if (candidateMetadata.isEmpty()) {

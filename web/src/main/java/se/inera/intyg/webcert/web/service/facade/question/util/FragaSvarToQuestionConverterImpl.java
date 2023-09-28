@@ -83,7 +83,7 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
         }
 
         final var certificateRelations = getCertificateFacadeService
-            .getCertificate(certificateId, false)
+            .getCertificate(certificateId, false, true)
             .getMetadata()
             .getRelations();
         if (certificateRelations == null) {

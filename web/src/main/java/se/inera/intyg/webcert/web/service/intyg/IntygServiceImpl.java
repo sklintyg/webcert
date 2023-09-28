@@ -234,6 +234,11 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean pdlLogging, boolean validateAccess) {
+        return fetchIntygData(intygsId, intygsTyp, false, pdlLogging, validateAccess);
+    }
+
+    @Override
     public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp) {
         return fetchIntygData(intygId, intygsTyp, true, true, true);
     }

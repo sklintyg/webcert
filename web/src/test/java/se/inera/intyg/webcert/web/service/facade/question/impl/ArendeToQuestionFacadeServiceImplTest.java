@@ -355,7 +355,7 @@ public class ArendeToQuestionFacadeServiceImplTest {
         );
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID, false);
+            .getCertificate(CERTIFICATE_ID, false, true);
 
         doReturn(Question.builder()
             .complements(complements)
@@ -397,7 +397,7 @@ public class ArendeToQuestionFacadeServiceImplTest {
         );
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID, false);
+            .getCertificate(CERTIFICATE_ID, false, true);
 
         final var answeredByCertificateArgCaptor = ArgumentCaptor.forClass(CertificateRelation.class);
         doReturn(Question.builder()

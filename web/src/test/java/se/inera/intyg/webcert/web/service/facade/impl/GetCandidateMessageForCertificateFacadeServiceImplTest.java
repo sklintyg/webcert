@@ -62,7 +62,7 @@ class GetCandidateMessageForCertificateFacadeServiceImplTest {
             + "</span>. Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
         final var dbCertificate = getDbCertificate();
         doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false));
+            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false), true);
 
         doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "sopra steria")))
             .when(candidateDataHelper)
@@ -78,7 +78,7 @@ class GetCandidateMessageForCertificateFacadeServiceImplTest {
         final var expectedTitle = "Information om vårdenhet";
         final var dbCertificate = getDbCertificate();
         doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false));
+            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false), true);
 
         doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "enhet")))
             .when(candidateDataHelper)
@@ -95,7 +95,7 @@ class GetCandidateMessageForCertificateFacadeServiceImplTest {
         final var dbCertificate = getDbCertificate();
 
         doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false));
+            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false), true);
 
         doReturn(Optional.empty())
             .when(candidateDataHelper)
@@ -113,7 +113,7 @@ class GetCandidateMessageForCertificateFacadeServiceImplTest {
         final var dbCertificate = getDbCertificate();
 
         doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false));
+            .when(getCertificateFacadeService).getCertificate(eq(CERTIFICATE_ID), eq(false), true);
 
         doReturn(Optional.empty())
             .when(candidateDataHelper)

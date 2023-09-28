@@ -58,6 +58,8 @@ public interface IntygService {
      */
     IntygContentHolder fetchIntygData(String intygId, String typ, boolean pdlLogging);
 
+    IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean pdlLogging, boolean validateAccess);
+
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
      *

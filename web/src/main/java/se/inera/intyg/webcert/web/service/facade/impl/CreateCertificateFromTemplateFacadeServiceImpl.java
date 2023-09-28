@@ -57,7 +57,7 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
     @Override
     public String createCertificateFromTemplate(String certificateId) {
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false);
+        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         final var certificateType = certificate.getMetadata().getType();
         final var newCertificateType = getNewCertificateType(certificateType);
         final var copyRequest = new CopyIntygRequest();
