@@ -58,8 +58,8 @@ public class GetCertificateResponse {
 
     @Override
     public String toString() {
-        return "GetCertificateResponse{" +
-            "certificate=" + certificate +
-            '}';
+        return "GetCertificateResponse{"
+            + "certificate=" + certificate
+            + '}';
     }
 }
