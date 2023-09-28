@@ -118,27 +118,6 @@ class RenewCertificateFacadeServiceImplTest {
 
             assertEquals(RENEW_CERTIFICATE_ID, actualCertificateId);
         }
-
-        private Certificate createCertificate() {
-            final var certificate = new Certificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(PATIENT_ID)
-                                    .type("PERSON_NUMMER")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            );
-            return certificate;
-        }
     }
 
     @Nested
@@ -217,7 +196,7 @@ class RenewCertificateFacadeServiceImplTest {
 
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE), true);
+            .getCertificate(CERTIFICATE_ID, Boolean.FALSE, true);
 
         final var serviceRequest = new CreateRenewalCopyRequest(
             CERTIFICATE_ID,

@@ -189,7 +189,7 @@ public class CertificateControllerTest {
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)
-                .getCertificate(anyString(), anyBoolean(), true);
+                .getCertificate(anyString(), anyBoolean(), eq(true));
 
             resourceLinks = new ResourceLinkDTO[0];
 
@@ -203,7 +203,7 @@ public class CertificateControllerTest {
             certificateController.getCertificate(CERTIFICATE_ID);
 
             final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
-            verify(getCertificateFacadeService).getCertificate(anyString(), pdlLogCaptor.capture(), true);
+            verify(getCertificateFacadeService).getCertificate(anyString(), pdlLogCaptor.capture(), eq(true));
 
             assertTrue(pdlLogCaptor.getValue(), "Should fetch certificate with pdlLog == true");
         }

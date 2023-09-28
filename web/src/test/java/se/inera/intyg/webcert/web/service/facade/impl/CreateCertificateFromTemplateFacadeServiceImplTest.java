@@ -190,7 +190,7 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
 
             doReturn(createCertificate(originalCertificateType))
                 .when(getCertificateFacadeService)
-                .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE), true);
+                .getCertificate(CERTIFICATE_ID, Boolean.FALSE, true);
 
             assertThrows(IllegalArgumentException.class,
                 () -> createCertificateFromTemplateFacadeService.createCertificateFromTemplate(CERTIFICATE_ID)
@@ -243,7 +243,7 @@ class CreateCertificateFromTemplateFacadeServiceImplTest {
         final var certificate = createCertificate(originalCertificateType);
         doReturn(certificate)
             .when(getCertificateFacadeService)
-            .getCertificate(eq(CERTIFICATE_ID), eq(Boolean.FALSE), true);
+            .getCertificate(CERTIFICATE_ID, Boolean.FALSE, true);
 
         doReturn(LATEST_VERSION).when(intygTextsService).getLatestVersion(anyString());
 
