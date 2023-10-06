@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.service.facade.util.RecipientConverter.FKASSA;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -355,7 +354,7 @@ public class UtkastToCertificateConverterTest {
         void shallIncludeIsSentTrueIfCertificateIsSent() {
             final var expectedIsSent = true;
             draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkickadTillMottagare(FKASSA);
+            draft.setSkickadTillMottagare("FKASSA");
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -373,13 +372,17 @@ public class UtkastToCertificateConverterTest {
 
         @Test
         void shallIncludeReceiverIfCertificateIsSent() {
-            final var expectedSentTo = RecipientConverter.getRecipientName(FKASSA);
-            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkickadTillMottagare(FKASSA);
+            final var recipient = CertificateRecipient
+                .builder()
+                .name("Name")
+                .id("Id")
+                .build();
+            when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+                .thenReturn(recipient);
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            assertEquals(expectedSentTo, actualCertificate.getMetadata().getSentTo());
+            assertEquals("Name", actualCertificate.getMetadata().getSentTo());
         }
     }
 

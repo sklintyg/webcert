@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 @Service
 public class CertificateRecipientConverterImpl implements CertificateRecipientConverter {
@@ -20,6 +21,7 @@ public class CertificateRecipientConverterImpl implements CertificateRecipientCo
 
     return recipients
         .stream()
+        .filter(IntygReceiver::isLocked)
         .findFirst()
         .map(recipient -> CertificateRecipient
             .builder()
