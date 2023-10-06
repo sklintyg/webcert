@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.service.facade.util;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static se.inera.intyg.webcert.web.service.facade.util.RecipientConverter.FKASSA;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +47,7 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -83,6 +84,15 @@ public class IntygToCertificateConverterImplTest {
     public static final String PERSON_NAME = "Doctor Alpha";
     public static final String PERSON_ID_FROM_JSON = "PersonId - json";
     public static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
+    public static final String RECIPIENT_NAME = "Recipient name";
+    public static final String RECIPIENT_ID = "Recipient id";
+    public static final LocalDateTime SENT = LocalDateTime.now();
+    public static final CertificateRecipient RECIPIENT = CertificateRecipient
+        .builder()
+        .name(RECIPIENT_NAME)
+        .id(RECIPIENT_ID)
+        .sent(SENT)
+        .build();
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -101,6 +111,9 @@ public class IntygToCertificateConverterImplTest {
 
     @Mock
     private TypeAheadProvider typeAheadProvider;
+
+    @Mock
+    private CertificateRecipientConverter certificateRecipientConverter;
 
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
@@ -136,10 +149,23 @@ public class IntygToCertificateConverterImplTest {
 
         doReturn(getUnit())
             .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+
+    }
+
+    @Test
+    void shouldRecipientToNullIfNoRecipient() {
+        final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+        assertNull(actualCertificate.getMetadata().getRecipient());
     }
 
     @Nested
     class ValidateCommonMetadata {
+
+        @BeforeEach
+        void setup() {
+            doReturn(RECIPIENT).when(certificateRecipientConverter).get(any(), any(), any());
+        }
 
         @Test
         void shallIncludeCreatedDateTime() {
@@ -188,13 +214,19 @@ public class IntygToCertificateConverterImplTest {
         }
 
         @Test
+        void shouldSetRecipient() {
+            final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+            assertEquals(RECIPIENT, actualCertificate.getMetadata().getRecipient());
+        }
+
+        @Test
         void shallIncludeSentToWhenSent() {
-            final var expectedSentTo = RecipientConverter.getRecipientName(FKASSA);
-            statusList.add(new Status(CertificateState.SENT, FKASSA, LocalDateTime.now()));
+            statusList.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
-            assertEquals(expectedSentTo, actualCertificate.getMetadata().getSentTo());
+            assertEquals(RECIPIENT_NAME, actualCertificate.getMetadata().getSentTo());
         }
 
         @Test

@@ -56,19 +56,23 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final TypeAheadProvider typeAheadProvider;
 
+    private final CertificateRecipientConverter certificateRecipientConverter;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
         PatientConverter patientConverter,
         CertificateRelationsConverter certificateRelationsConverter,
         HsatkOrganizationService hsatkOrganizationService,
-        TypeAheadProvider typeAheadProvider) {
+        TypeAheadProvider typeAheadProvider,
+        CertificateRecipientConverter certificateRecipientConverter) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.hsatkOrganizationService = hsatkOrganizationService;
         this.typeAheadProvider = typeAheadProvider;
+        this.certificateRecipientConverter = certificateRecipientConverter;
     }
 
     @Override
@@ -78,6 +82,11 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Certificate convertToCertificate(IntygContentHolder certificate) {
+        final var sentStatus = certificate.getStatuses()
+            .stream()
+            .filter(status -> status.getType() == CertificateState.SENT)
+            .findFirst();
+
         final var certificateToReturn = getCertificateToReturn(
             certificate.getUtlatande().getTyp(),
             certificate.getUtlatande().getTextVersion(),
@@ -90,15 +99,18 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setVersion(DEFAULT_CERTIFICATE_VERSION);
         certificateToReturn.getMetadata().setForwarded(false);
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
-        certificateToReturn.getMetadata().setSent(
-            certificate.getStatuses().stream().anyMatch(status -> status.getType() == CertificateState.SENT)
+
+        certificateToReturn.getMetadata().setRecipient(
+            certificateRecipientConverter.get(
+                certificate.getUtlatande().getTyp(),
+                certificate.getUtlatande().getId(),
+                sentStatus.map(Status::getTimestamp).orElse(null))
         );
+
+        certificateToReturn.getMetadata().setSent(sentStatus.isPresent());
         certificateToReturn.getMetadata().setSentTo(
-            certificate.getStatuses().stream()
-                .filter(status -> status.getType() == CertificateState.SENT)
-                .findFirst()
-                .map(status -> RecipientConverter.getRecipientName(status.getTarget()))
-                .orElse(null)
+            certificateToReturn.getMetadata().getRecipient() != null
+                ? certificateToReturn.getMetadata().getRecipient().getName() : null
         );
 
         certificateToReturn.getMetadata().setCareProvider(

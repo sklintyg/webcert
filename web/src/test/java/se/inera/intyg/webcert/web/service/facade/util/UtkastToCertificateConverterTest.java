@@ -23,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.service.facade.util.RecipientConverter.FKASSA;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +47,7 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -85,6 +86,9 @@ public class UtkastToCertificateConverterTest {
 
     @Mock
     private TypeAheadProvider typeAheadProvider;
+
+    @Mock
+    private CertificateRecipientConverter certificateRecipientConverter;
 
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
@@ -350,7 +354,7 @@ public class UtkastToCertificateConverterTest {
         void shallIncludeIsSentTrueIfCertificateIsSent() {
             final var expectedIsSent = true;
             draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkickadTillMottagare(FKASSA);
+            draft.setSkickadTillMottagare("FKASSA");
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -368,13 +372,17 @@ public class UtkastToCertificateConverterTest {
 
         @Test
         void shallIncludeReceiverIfCertificateIsSent() {
-            final var expectedSentTo = RecipientConverter.getRecipientName(FKASSA);
-            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkickadTillMottagare(FKASSA);
+            final var recipient = CertificateRecipient
+                .builder()
+                .name("Name")
+                .id("Id")
+                .build();
+            when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+                .thenReturn(recipient);
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            assertEquals(expectedSentTo, actualCertificate.getMetadata().getSentTo());
+            assertEquals("Name", actualCertificate.getMetadata().getSentTo());
         }
     }
 
@@ -411,6 +419,16 @@ public class UtkastToCertificateConverterTest {
 
             assertEquals(expectedResponsibleHospName, actualCertificate.getMetadata().getResponsibleHospName());
         }
+    }
+
+    @Test
+    void shouldSetRecipient() {
+        final var recipient = CertificateRecipient.builder().build();
+        when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+            .thenReturn(recipient);
+        final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+        assertEquals(recipient, actualCertificate.getMetadata().getRecipient());
     }
 
     private Utkast createDraft() {

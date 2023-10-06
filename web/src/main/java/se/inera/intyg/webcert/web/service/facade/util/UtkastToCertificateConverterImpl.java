@@ -53,6 +53,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final TypeAheadProvider typeAheadProvider;
 
+    private final CertificateRecipientConverter certificateRecipientConverter;
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
@@ -60,7 +62,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         CertificateRelationsConverter certificateRelationsConverter,
         WebCertUserService webCertUserService,
         HsatkOrganizationService hsatkOrganizationService,
-        TypeAheadProvider typeAheadProvider) {
+        TypeAheadProvider typeAheadProvider,
+        CertificateRecipientConverter certificateRecipientConverter) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
@@ -68,6 +71,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         this.webCertUserService = webCertUserService;
         this.hsatkOrganizationService = hsatkOrganizationService;
         this.typeAheadProvider = typeAheadProvider;
+        this.certificateRecipientConverter = certificateRecipientConverter;
     }
 
     @Override
@@ -89,9 +93,17 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
+
+        certificateToReturn.getMetadata().setRecipient(
+            certificateRecipientConverter.get(
+                certificate.getIntygsTyp(),
+                certificate.getIntygsId(),
+                certificate.getSkickadTillMottagareDatum())
+        );
+
         certificateToReturn.getMetadata().setSentTo(
-            certificate.getSkickadTillMottagare() != null
-                ? RecipientConverter.getRecipientName(certificate.getSkickadTillMottagare())
+            certificateToReturn.getMetadata().getRecipient() != null
+                ? certificateToReturn.getMetadata().getRecipient().getName()
                 : null);
 
         certificateToReturn.getMetadata().setCareProvider(
