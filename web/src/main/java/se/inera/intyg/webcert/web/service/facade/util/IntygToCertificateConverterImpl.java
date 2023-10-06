@@ -82,10 +82,10 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Certificate convertToCertificate(IntygContentHolder certificate) {
-        final var sentStatus = certificate.getStatuses() != null ? certificate.getStatuses()
+        final var sentStatus = certificate.getStatuses()
             .stream()
             .filter(status -> status.getType() == CertificateState.SENT)
-            .findFirst() : null;
+            .findFirst();
 
         final var certificateToReturn = getCertificateToReturn(
             certificate.getUtlatande().getTyp(),
@@ -109,8 +109,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
         certificateToReturn.getMetadata().setSent(sentStatus.isPresent());
         certificateToReturn.getMetadata().setSentTo(
-            certificateToReturn.getMetadata().getRecipient() != null ?
-            certificateToReturn.getMetadata().getRecipient().getName() : null
+            certificateToReturn.getMetadata().getRecipient() != null
+                ? certificateToReturn.getMetadata().getRecipient().getName() : null
         );
 
         certificateToReturn.getMetadata().setCareProvider(
