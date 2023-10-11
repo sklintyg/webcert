@@ -27,12 +27,14 @@ class CertificateRecipientConverterImplTest {
   CertificateRecipientConverterImpl certificateRecipientConverter;
 
   private static final String ID = "RecipientId";
+  private static final String ANOTHER_ID = "AnotherRecipientId";
   private static final String NAME = "RecipientName";
   private static final LocalDateTime SENT = LocalDateTime.now();
 
 
   @Nested
   class NoRecipient {
+
     @BeforeEach
     void setup() {
       when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
@@ -49,11 +51,13 @@ class CertificateRecipientConverterImplTest {
 
   @Nested
   class HasRecipient {
+
     @BeforeEach
     void setup() {
       final var receiver = new IntygReceiver();
       receiver.setId(ID);
       receiver.setName(NAME);
+      receiver.setLocked(true);
 
       when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
           .thenReturn(List.of(receiver));
@@ -78,6 +82,48 @@ class CertificateRecipientConverterImplTest {
       final var response = certificateRecipientConverter.get("type", "id", SENT);
 
       assertEquals(SENT, response.getSent());
+    }
+  }
+
+  @Nested
+  class LockStatus {
+    final IntygReceiver receiver1 = new IntygReceiver();
+    final IntygReceiver receiver2 = new IntygReceiver();
+
+    @BeforeEach
+    void setup() {
+      receiver1.setId(ID);
+      receiver2.setId(ANOTHER_ID);
+
+      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+          .thenReturn(List.of(receiver1, receiver2));
+    }
+
+    @Test
+    void shouldReturnNullIfOnlyUnlockedReceivers() {
+      receiver1.setLocked(false);
+      receiver2.setLocked(false);
+
+      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      assertNull(response);
+    }
+
+    @Test
+    void shouldReturnFirstLockedReceiverAllLocked() {
+      receiver1.setLocked(true);
+      receiver2.setLocked(true);
+
+      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      assertEquals(ID, response.getId());
+    }
+
+    @Test
+    void shouldReturnFirstLockedReceiverIfMixed() {
+      receiver1.setLocked(false);
+      receiver2.setLocked(true);
+
+      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      assertEquals(ANOTHER_ID, response.getId());
     }
   }
 }
