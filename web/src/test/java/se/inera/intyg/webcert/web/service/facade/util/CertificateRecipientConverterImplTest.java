@@ -86,7 +86,7 @@ class CertificateRecipientConverterImplTest {
   }
 
   @Nested
-  class LockStatus {
+  class FilterMainRecipientOnLockStatus  {
     final IntygReceiver receiver1 = new IntygReceiver();
     final IntygReceiver receiver2 = new IntygReceiver();
 
@@ -109,7 +109,7 @@ class CertificateRecipientConverterImplTest {
     }
 
     @Test
-    void shouldReturnFirstLockedReceiverAllLocked() {
+    void shouldReturnFirstLockedReceiverIfAllLocked() {
       receiver1.setLocked(true);
       receiver2.setLocked(true);
 
