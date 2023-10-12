@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        maven { url "http://172.21.0.1:37373/repository/it-public/" }
         mavenLocal()
         maven { url "https://nexus.drift.inera.se/repository/it-public/" }
         gradlePluginPortal()
