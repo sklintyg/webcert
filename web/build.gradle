@@ -259,7 +259,12 @@ dependencies {
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
-    testCompile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+
+
+    compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+
+
+
     testCompile "org.hamcrest:hamcrest"
     testCompile "org.hamcrest:hamcrest-library"
     testCompile "org.assertj:assertj-core"
