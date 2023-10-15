@@ -8,7 +8,7 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '3.19.1.26'
     //commonVersion = System.properties['commonVersion'] ?: '3.19.1-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.19.1.17'
+    infraVersion = System.properties['infraVersion'] ?: '3.19.1.19'
     //infraVersion = System.properties['infraVersion'] ?: '3.19.1-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
