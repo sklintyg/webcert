@@ -21,12 +21,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
     xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
   <context:annotation-config />
 
@@ -116,6 +114,7 @@
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
+    <bean id="summaryConverter" class="se.inera.intyg.common.support.modules.converter.SummaryConverter" />
 
 
   </beans>
