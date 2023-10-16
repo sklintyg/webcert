@@ -28,6 +28,8 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+  <context:annotation-config />
+
   <import resource="classpath:webcert-common-config.xml" />
   <import resource="classpath:repository-context.xml" />
   <import resource="security/securityContext.xml" />
