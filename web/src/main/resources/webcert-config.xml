@@ -116,6 +116,7 @@
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
+    <bean id="summaryConverter" class="se.inera.intyg.common.support.modules.converter.SummaryConverter" />
 
 
   </beans>
