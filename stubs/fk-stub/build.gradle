@@ -1,6 +1,8 @@
 dependencies {
   compile project(":webcert-common")
 
+  implementation "org.jvnet.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
+
   testCompile "org.hamcrest:hamcrest"
   testCompile "org.hamcrest:hamcrest-library"
 }
